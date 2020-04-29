@@ -1,5 +1,5 @@
 package fr.insee.pearljam.api.domain;
 
-public enum Type {
+public enum OrganizationUnitType {
 	LOCAL, NATIONAL
 }

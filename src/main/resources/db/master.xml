@@ -8,5 +8,5 @@
 	        CREATE SCHEMA IF NOT EXISTS public
 	    </sql>
 	</changeSet>
-
+	<include file="changelog/000_init.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
