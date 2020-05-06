@@ -1,48 +1,26 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.api.dto.sampleidentifier;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-/**
-* Entity InseeSampleIdentifier : represent the entity table in DB
-* 
-* @author Claudel Benjamin
-* 
-*/
-@Entity
-public class InseeSampleIdentifier extends SampleIdentifier {
-	@Column
-	private Integer bs;
-	@Column(length=1)
-	private String ec;
-	@Column
-	private Integer le;
-	@Column
-	private Integer noi;
-	@Column
-	private Integer numfa;
-	@Column
-	private Integer rges; 
-	@Column
-	private Integer ssech; 
-	@Column
-	private Integer nolog; 
-	@Column
-	private Integer nole; 
-	@Column(length=50)
-	private String autre; 
-	@Column(length=50)
-	private String nograp;
-	
-	/**
+
+public class SampleIdentifiersDto {
+	 String bs;
+	 String ec;
+	 String le;
+     String noi;
+     String numfa;
+     String rges;
+     String ssech;
+     String nolog;
+     String nole;
+     /**
 	 * @return the bs
 	 */
-	public Integer getBs() {
+	public String getBs() {
 		return bs;
 	}
 	/**
 	 * @param bs the bs to set
 	 */
-	public void setBs(Integer bs) {
+	public void setBs(String bs) {
 		this.bs = bs;
 	}
 	/**
@@ -60,85 +38,85 @@ public class InseeSampleIdentifier extends SampleIdentifier {
 	/**
 	 * @return the le
 	 */
-	public Integer getLe() {
+	public String getLe() {
 		return le;
 	}
 	/**
 	 * @param le the le to set
 	 */
-	public void setLe(Integer le) {
+	public void setLe(String le) {
 		this.le = le;
 	}
 	/**
 	 * @return the noi
 	 */
-	public Integer getNoi() {
+	public String getNoi() {
 		return noi;
 	}
 	/**
 	 * @param noi the noi to set
 	 */
-	public void setNoi(Integer noi) {
+	public void setNoi(String noi) {
 		this.noi = noi;
 	}
 	/**
 	 * @return the numfa
 	 */
-	public Integer getNumfa() {
+	public String getNumfa() {
 		return numfa;
 	}
 	/**
 	 * @param numfa the numfa to set
 	 */
-	public void setNumfa(Integer numfa) {
+	public void setNumfa(String numfa) {
 		this.numfa = numfa;
 	}
 	/**
 	 * @return the rges
 	 */
-	public Integer getRges() {
+	public String getRges() {
 		return rges;
 	}
 	/**
 	 * @param rges the rges to set
 	 */
-	public void setRges(Integer rges) {
+	public void setRges(String rges) {
 		this.rges = rges;
 	}
 	/**
 	 * @return the ssech
 	 */
-	public Integer getSsech() {
+	public String getSsech() {
 		return ssech;
 	}
 	/**
 	 * @param ssech the ssech to set
 	 */
-	public void setSsech(Integer ssech) {
+	public void setSsech(String ssech) {
 		this.ssech = ssech;
 	}
 	/**
 	 * @return the nolog
 	 */
-	public Integer getNolog() {
+	public String getNolog() {
 		return nolog;
 	}
 	/**
 	 * @param nolog the nolog to set
 	 */
-	public void setNolog(Integer nolog) {
+	public void setNolog(String nolog) {
 		this.nolog = nolog;
 	}
 	/**
 	 * @return the nole
 	 */
-	public Integer getNole() {
+	public String getNole() {
 		return nole;
 	}
 	/**
 	 * @param nole the nole to set
 	 */
-	public void setNole(Integer nole) {
+	public void setNole(String nole) {
 		this.nole = nole;
 	}
 	/**
@@ -164,5 +142,7 @@ public class InseeSampleIdentifier extends SampleIdentifier {
 	 */
 	public void setNograp(String nograp) {
 		this.nograp = nograp;
-	} 
+	}
+	String autre;
+     String nograp; 
 }

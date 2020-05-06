@@ -31,7 +31,7 @@ public class State {
 	private Long date;
 	
 	@ManyToOne
-	private SurveyUnit SurveyUnit;
+	private SurveyUnit surveyUnit;
 	
 	/**
 	* The type of State 
@@ -80,13 +80,13 @@ public class State {
 	 * @return the surveyUnit
 	 */
 	public SurveyUnit getSurveyUnit() {
-		return SurveyUnit;
+		return surveyUnit;
 	}
 	/**
 	 * @param surveyUnit the surveyUnit to set
 	 */
 	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		SurveyUnit = surveyUnit;
+		this.surveyUnit = surveyUnit;
 	}
 	
 }

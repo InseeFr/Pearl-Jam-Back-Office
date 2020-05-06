@@ -39,7 +39,7 @@ public class ContactAttempt {
 	* The SurveyUnit associated to Contact attempt 
 	*/
 	@ManyToOne
-	private SurveyUnit SurveyUnit;
+	private SurveyUnit surveyUnit;
 	
 	/**
 	 * @return the id
@@ -82,13 +82,13 @@ public class ContactAttempt {
 	 * @return the surveyUnit
 	 */
 	public SurveyUnit getSurveyUnit() {
-		return SurveyUnit;
+		return surveyUnit;
 	}
 	/**
 	 * @param surveyUnit the surveyUnit to set
 	 */
 	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		SurveyUnit = surveyUnit;
+		this.surveyUnit = surveyUnit;
 	}
 	
 }

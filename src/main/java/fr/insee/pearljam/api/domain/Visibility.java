@@ -2,10 +2,12 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 /**
@@ -17,23 +19,24 @@ import javax.persistence.Table;
 @Entity
 @Table
 public class Visibility implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
+		
+	@EmbeddedId
+	private VisibilityId visibilityId;
 	/**
 	* The organizationUnit associated to Visibility 
 	*/
-	@Id
-    @ManyToOne
-    @JoinColumn
+	@ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("organization_unit_id")
     private OrganizationUnit organizationUnit;
+    
 	/**
 	* The Campaign associated to Visibility 
 	*/
-    @Id
-    @ManyToOne
-    @JoinColumn
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@MapsId("campaign_id")
     private Campaign campaign;
 	/**
 	 * The start date of Visibility

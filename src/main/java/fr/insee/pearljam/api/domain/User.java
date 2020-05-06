@@ -26,6 +26,7 @@ public class User {
 	* The id of User 
 	*/
 	@Id
+	@Column(length=50)
 	public String id;
 	
 	/**

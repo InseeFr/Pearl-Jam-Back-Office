@@ -17,12 +17,13 @@ public class GeographicalLocation {
 	* The id of GeographicalLocation 
 	*/
 	@Id
+	@Column(length=50)
 	private String id;
 	
 	/**
 	* The label of GeographicalLocation 
 	*/
-	@Column
+	@Column(length=255)
 	private String label;
 	
 	/**

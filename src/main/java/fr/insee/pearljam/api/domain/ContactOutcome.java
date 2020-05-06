@@ -34,7 +34,7 @@ public class ContactOutcome {
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column
-	private OutcomeType outcomeType;
+	private ContactOutcomeType type;
 	/**
 	 * the totalNumberOfContactAttempts of ContactAttempt
 	 */
@@ -44,7 +44,7 @@ public class ContactOutcome {
 	* The SurveyUnit associated to ContactOutcome 
 	*/
 	@ManyToOne
-	private SurveyUnit SurveyUnit;
+	private SurveyUnit surveyUnit;
 	/**
 	 * @return the id
 	 */
@@ -72,14 +72,14 @@ public class ContactOutcome {
 	/**
 	 * @return the outcomeType
 	 */
-	public OutcomeType getOutcomeType() {
-		return outcomeType;
+	public ContactOutcomeType getType() {
+		return type;
 	}
 	/**
-	 * @param outcomeType the outcomeType to set
+	 * @param contactOutcomeType the outcomeType to set
 	 */
-	public void setOutcomeType(OutcomeType outcomeType) {
-		this.outcomeType = outcomeType;
+	public void setType(ContactOutcomeType type) {
+		this.type = type;
 	}
 	/**
 	 * @return the totalNumberOfContactAttempts
@@ -97,12 +97,12 @@ public class ContactOutcome {
 	 * @return the surveyUnit
 	 */
 	public SurveyUnit getSurveyUnit() {
-		return SurveyUnit;
+		return surveyUnit;
 	}
 	/**
 	 * @param surveyUnit the surveyUnit to set
 	 */
 	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		SurveyUnit = surveyUnit;
+		this.surveyUnit = surveyUnit;
 	}
 }

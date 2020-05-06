@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
-public enum OutcomeType {
+public enum ContactOutcomeType {
 	INA("Interview accepted"),
 	REF("Refusal"),
 	INI("Interview impossible"),
@@ -17,7 +17,7 @@ public enum OutcomeType {
 	 * 
 	 * @param label
 	 */
-	OutcomeType(String label) {
+	ContactOutcomeType(String label) {
 		this.label = label;
 	}
 

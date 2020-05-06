@@ -34,7 +34,7 @@ public class Comment {
 	/**
 	* The value of Comment 
 	*/
-	@Column
+	@Column(length=255)
 	private String value;
 	
 	/**
@@ -42,7 +42,7 @@ public class Comment {
 	*/
 	@ManyToOne
 	@Size(min=0, max=2)
-	private SurveyUnit SurveyUnit;
+	private SurveyUnit surveyUnit;
 	/**
 	 * @return the id
 	 */
@@ -83,13 +83,13 @@ public class Comment {
 	 * @return the surveyUnit
 	 */
 	public SurveyUnit getSurveyUnit() {
-		return SurveyUnit;
+		return surveyUnit;
 	}
 	/**
 	 * @param surveyUnit the surveyUnit to set
 	 */
 	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		SurveyUnit = surveyUnit;
+		this.surveyUnit = surveyUnit;
 	}
 	
 }

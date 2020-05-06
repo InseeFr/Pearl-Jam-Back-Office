@@ -9,4 +9,7 @@
 	    </sql>
 	</changeSet>
 	<include file="changelog/000_init.xml" relativeToChangelogFile="true"/>
+	
+	<!-- Data for dev on POSTGRES DB  -->
+	<include file="changelog/data/insert_data.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

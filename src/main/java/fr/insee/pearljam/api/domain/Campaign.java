@@ -1,13 +1,11 @@
 package fr.insee.pearljam.api.domain;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,6 +23,7 @@ public class Campaign {
 	* The id of Campaign 
 	*/
 	@Id
+	@Column(length=50)
 	public String id;
 	
 	/**
@@ -36,17 +35,17 @@ public class Campaign {
 	/**
 	 * The start date of the Campaign
 	 */
-	public Date collectionStartDate;
+	public Long collectionStartDate;
 	
 	/**
 	 * The end date of the Campaign
 	 */
-	public Date collectionEndDate;
+	public Long collectionEndDate;
 	
 	/**
 	 * The reference to visibility table
 	 */
-	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visibility> visibilities;
 	
 	/**
@@ -80,28 +79,28 @@ public class Campaign {
 	/**
 	 * @return the start date of the Campaign
 	 */
-	public Date getCollectionStartDate() {
+	public Long getCollectionStartDate() {
 		return collectionStartDate;
 	}
 
 	/**
 	 * @param start date of the Campaign
 	 */
-	public void setCollectionStartDate(Date collectionStartDate) {
+	public void setCollectionStartDate(Long collectionStartDate) {
 		this.collectionStartDate = collectionStartDate;
 	}
 
 	/**
 	 * @return the end date of the Campaign
 	 */
-	public Date getCollectionEndDate() {
+	public Long getCollectionEndDate() {
 		return collectionEndDate;
 	}
 
 	/**
 	 * @param end date of the Campaign
 	 */
-	public void setCollectionEndDate(Date collectionEndDate) {
+	public void setCollectionEndDate(Long collectionEndDate) {
 		this.collectionEndDate = collectionEndDate;
 	}
 

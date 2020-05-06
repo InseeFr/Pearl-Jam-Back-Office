@@ -1,27 +1,22 @@
 package fr.insee.pearljam.api.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 /**
 * Entity SurveyUnit : represent the entity table in DB
 * 
 * @author Claudel Benjamin
 * 
 */
-@TypeDef(
-	    name = "list-array",
-	    typeClass = ArrayList.class
-	)
+
 @Entity
 @Table
 public class SurveyUnit {
@@ -29,25 +24,22 @@ public class SurveyUnit {
 	* The id of SurveyUnit 
 	*/
 	@Id
+	@Column(length=50)
 	private String id;
 	
 	/**
 	 * The firstname of SurveyUnit
 	 */
-	@Column
+	@Column(length=255)
 	private String firstName;
 	
 	/**
 	 * The lastname of SurveyUnit
 	 */
-	@Column
-	private String lasttName;
+	@Column(length=255)
+	private String lastName;
 	
-	/**
-	 * The list of phonenumbers of SurveyUnit
-	 */
-	@Type(type = "list-array")
-	@Column(columnDefinition = "character varying[]")
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> phoneNumbers;
 	/**
 	 * The priority of SurveyUnit
@@ -67,7 +59,7 @@ public class SurveyUnit {
 	/**
 	 * The Campaign of SurveyUnit
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
 	/**
 	 * The Interviewer of SurveyUnit
@@ -75,6 +67,28 @@ public class SurveyUnit {
 	@ManyToOne
 	private Interviewer interviewer;
 	
+	public SurveyUnit() {
+	}
+	
+	public SurveyUnit(String firstName, String lastName, List<String> phoneNumbers) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.phoneNumbers = phoneNumbers;
+	}
+	
+	public SurveyUnit(String id, String firstName, String lastName, List<String> phoneNumbers, boolean priority,
+			Address address, SampleIdentifier sampleIdentifier, Campaign campaign, Interviewer interviewer) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.phoneNumbers = phoneNumbers;
+		this.priority = priority;
+		this.address = address;
+		this.sampleIdentifier = sampleIdentifier;
+		this.campaign = campaign;
+		this.interviewer = interviewer;
+	}
 	/**
 	 * @return the id
 	 */
@@ -103,13 +117,13 @@ public class SurveyUnit {
 	 * @return the lasttName
 	 */
 	public String getLasttName() {
-		return lasttName;
+		return lastName;
 	}
 	/**
 	 * @param lasttName the lasttName to set
 	 */
 	public void setLasttName(String lasttName) {
-		this.lasttName = lasttName;
+		this.lastName = lasttName;
 	}
 	/**
 	 * @return the phoneNumbers

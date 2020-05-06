@@ -2,7 +2,8 @@ package fr.insee.pearljam.api.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.address.AddressDto;
 /**
 * Entity InseeAddress : represent the entity table in DB
 * 
@@ -14,39 +15,61 @@ public class InseeAddress extends Address {
 	/**
 	* The line 1 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l1;
 	/**
 	* The line 2 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l2;
 	/**
 	* The line 3 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l3;
 	/**
 	* The line 4 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l4;
 	/**
 	* The line 5 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l5;
 	/**
 	* The line 6 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l6;
 	/**
 	* The line 7 of INSEE address
 	*/
-	@Column
+	@Column(length=255)
 	private String l7;
 	
+	public InseeAddress() {
+		
+	}
+	
+	public InseeAddress(String l1, String l2, String l3, String l4, String l5, String l6, String l7) {
+		this.l1 = l1;
+		this.l2 = l2;
+		this.l3 = l3;
+		this.l4 = l4;
+		this.l5 = l5;
+		this.l6 = l6;
+		this.l7 = l7;
+	}
+	public InseeAddress(AddressDto address) {
+		this.l1 = address.getL1();
+		this.l2 = address.getL2();
+		this.l3 = address.getL3();
+		this.l4 = address.getL4();
+		this.l5 = address.getL5();
+		this.l6 = address.getL6();
+		this.l7 = address.getL7();
+	}
 	/**
 	 * @return the line 1
 	 */

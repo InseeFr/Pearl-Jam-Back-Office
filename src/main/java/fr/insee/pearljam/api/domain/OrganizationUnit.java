@@ -22,6 +22,7 @@ import javax.persistence.Table;
 public class OrganizationUnit {
 	
 	@Id
+	@Column(length=50)
 	public String id;
 	
 	@Column(length=255)
@@ -29,9 +30,9 @@ public class OrganizationUnit {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length=8)
-	public OrganizationUnitType organizationUnitType;
+	public OrganizationUnitType type;
 	
-	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visibility> visibilities;
 
 	/**
@@ -65,15 +66,15 @@ public class OrganizationUnit {
 	/**
 	 * @return the organisationUnitType
 	 */
-	public OrganizationUnitType getOrganisationUnitType() {
-		return organizationUnitType;
+	public OrganizationUnitType getType() {
+		return type;
 	}
 
 	/**
 	 * @param organizationUnitType the organisationUnitType to set
 	 */
-	public void setOrganisationUnitType(OrganizationUnitType organizationUnitType) {
-		this.organizationUnitType = organizationUnitType;
+	public void setType(OrganizationUnitType type) {
+		this.type = type;
 	}
 
 	/**

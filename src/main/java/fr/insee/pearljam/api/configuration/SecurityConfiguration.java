@@ -91,8 +91,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 			case Basic:
 				http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 				http.authorizeRequests().antMatchers("/operations").hasRole("investigator")
-					.antMatchers("/operation/{idOperation}/reporting-units").hasRole("investigator")
-					.antMatchers("/operation/{idOperation}/questionnaire").hasRole("investigator")
+					.antMatchers("/api/survey-unit/{id}").hasRole("investigator")
+					.antMatchers("/api/survey-unit/").hasRole("investigator")
 					.antMatchers("/operation/{id}/required-nomenclatures").hasRole("investigator")
 					.antMatchers("/reporting-unit/{id}/data").hasRole("investigator")
 					.antMatchers("/reporting-unit/{id}/comment").hasRole("investigator")

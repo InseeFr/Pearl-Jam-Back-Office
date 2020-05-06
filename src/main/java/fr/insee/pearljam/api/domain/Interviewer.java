@@ -20,6 +20,7 @@ public class Interviewer {
 	* The id of Interviewer 
 	*/
 	@Id
+	@Column(length=50)
 	public String id;
 
 	/**
