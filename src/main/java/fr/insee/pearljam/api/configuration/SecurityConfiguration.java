@@ -37,7 +37,7 @@ import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
  */
 @Configuration
 @EnableWebSecurity
-@ConditionalOnExpression( "'${application.mode}' == 'Basic' or '${application.mode}' == 'NoAuth'" )
+@ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'" )
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	/**
 	 * The environment define in Spring application Generate with the application
