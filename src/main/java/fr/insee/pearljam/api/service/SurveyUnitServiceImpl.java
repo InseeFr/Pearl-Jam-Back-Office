@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.domain.Comment;
+import fr.insee.pearljam.api.domain.ContactAttempt;
+import fr.insee.pearljam.api.domain.ContactOutcome;
+import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
@@ -21,6 +26,7 @@ import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.CommentRepository;
 import fr.insee.pearljam.api.repository.ContactAttemptRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
+import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
 import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
@@ -51,6 +57,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	
 	@Autowired
 	CampaignRepository campaignRepository;
+	
+	@Autowired
+	GeographicalLocationRepository geographicalLocationRepository;
 	
 	@Override
 	public SurveyUnitDetailDto getSurveyUnitDetail(String id) {
@@ -84,12 +93,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return surveyUnitDtoReturned;
 	}
 	
+	/**
+	 * This method update all the fields passed in the SurveyUnitDeatilDto parameter
+	 * @return HttpStatus
+	 */
 	@Override
 	public HttpStatus updateSurveyUnitDetail(String id, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if(surveyUnitDetailDto == null) {
 			return HttpStatus.BAD_REQUEST;
 		}
-		//addressRepository.save(new InseeAddress(surveyUnitDetailDto.getAddress()));
+		
+		//Update of SurveyUnit
 		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
 		if(!surveyUnit.isPresent()) {
 			return HttpStatus.NOT_FOUND;
@@ -98,17 +112,54 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnit.get().setLasttName(surveyUnitDetailDto.getLastName());
 		surveyUnit.get().setPhoneNumbers(surveyUnitDetailDto.getPhoneNumbers());
 		surveyUnitRepository.save(surveyUnit.get());
-		/*for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {
-			commentRepository.saveBySurveyUnitId(commentDto.getType().toString(), commentDto.getValue(), id);
-		}
-		for(StateDto stateDto : surveyUnitDetailDto.getStates()) {
-			stateRepository.saveById(stateDto.getDate(), stateDto.getType().toString(), stateDto.getId());
-		}
-		for(ContactAttemptDto contactAttemptDto : surveyUnitDetailDto.getContactAttempts()) {
-			contactAttemptRepository.saveBySurveyUnitId(contactAttemptDto.getDate(), contactAttemptDto.getStatus().toString(), id);
-		}
-		contactOutcomeRepository.save(surveyUnitDetailDto.getContactOutcome());*/
 		
+		//Update Address
+		addressRepository.save(new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation()));
+			
+		//Update Comment
+		Comment comment;
+		for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {
+			Optional<Comment> optionalComment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType());
+			if(!optionalComment.isPresent()) {
+				comment = new Comment();
+			} else {
+				comment = optionalComment.get();
+			}
+			comment.setSurveyUnit(surveyUnit.get());
+			comment.setType(commentDto.getType());
+			comment.setValue(commentDto.getValue());
+			commentRepository.save(comment);
+		}
+		
+		//Update State
+		for(StateDto stateDto : surveyUnitDetailDto.getStates()) {
+			stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
+		}
+		
+		//Update ContactAttempt
+		for(ContactAttemptDto contactAttemptDto : surveyUnitDetailDto.getContactAttempts()) {
+			Optional<ContactAttempt> optionalContactAttempt = contactAttemptRepository.findBySurveyUnitAndStatus(surveyUnit.get(), contactAttemptDto.getStatus());
+			if(!optionalContactAttempt.isPresent()) {
+				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(), contactAttemptDto.getStatus(), surveyUnit.get()));
+			} else {
+				contactAttemptRepository.deleteByIdAndStatus(optionalContactAttempt.get().getId(), optionalContactAttempt.get().getStatus());
+				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(), contactAttemptDto.getStatus(), surveyUnit.get()));
+			}
+		}
+		
+		//Update ContactOutcome
+		ContactOutcome contactOutcome;
+		Optional<ContactOutcome> contactOutcomeOptional = contactOutcomeRepository.findBySurveyUnitAndType(surveyUnit.get(), surveyUnitDetailDto.getContactOutcome().getType());
+		if(contactOutcomeOptional.isPresent()) {
+			contactOutcome = contactOutcomeOptional.get();
+		} else {
+			contactOutcome = new ContactOutcome();
+		}
+		contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
+		contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
+		contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
+		contactOutcome.setSurveyUnit(surveyUnit.get());
+		contactOutcomeRepository.save(contactOutcome);
 		return HttpStatus.OK;
 	}
 

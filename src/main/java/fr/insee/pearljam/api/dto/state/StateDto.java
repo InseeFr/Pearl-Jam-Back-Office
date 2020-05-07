@@ -7,7 +7,7 @@ public class StateDto {
 	/**
 	 * The id of the StateDto
 	 */
-	String id;
+	Long id;
 	
 	/**
 	 * The date of the StateDto
@@ -22,14 +22,14 @@ public class StateDto {
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

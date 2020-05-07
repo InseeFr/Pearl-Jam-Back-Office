@@ -41,6 +41,18 @@ public class State {
 	private StateType type;
 
 	/**
+	 * @param id
+	 * @param date
+	 * @param surveyUnit
+	 * @param type
+	 */
+	public State(Long date, SurveyUnit surveyUnit, StateType type) {
+		super();
+		this.date = date;
+		this.surveyUnit = surveyUnit;
+		this.type = type;
+	}
+	/**
 	 * @return id of comment
 	 */
 	public Long getId() {

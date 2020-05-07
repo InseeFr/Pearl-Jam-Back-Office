@@ -41,6 +41,22 @@ public class ContactAttempt {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 	
+	public ContactAttempt() {
+		
+	}
+	
+	/**
+	 * @param id
+	 * @param date
+	 * @param status
+	 * @param surveyUnit
+	 */
+	public ContactAttempt(Long date, Status status, SurveyUnit surveyUnit) {
+		super();
+		this.date = date;
+		this.status = status;
+		this.surveyUnit = surveyUnit;
+	}
 	/**
 	 * @return the id
 	 */

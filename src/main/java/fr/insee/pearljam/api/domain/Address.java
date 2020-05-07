@@ -17,13 +17,13 @@ public abstract class Address {
 	*/
 	@Id
 	@GeneratedValue
-	private Long id;
+	protected Long id;
 	
 	/**
 	* The GeographicalLocation associated to Address 
 	*/
 	@ManyToOne
-	private GeographicalLocation geographicalLocation;
+	protected GeographicalLocation geographicalLocation;
 
 	/**
 	 * @return the id

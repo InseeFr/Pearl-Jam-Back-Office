@@ -19,7 +19,6 @@ public class UserUtils {
 		KeycloakAuthenticationToken principal = (KeycloakAuthenticationToken) request.getUserPrincipal();
 		IDToken token = principal.getAccount().getKeycloakSecurityContext().getIdToken();
         Map<String, Object> otherClaims = token.getOtherClaims();
-        
         if (otherClaims.containsKey(attribute)) {
         	attributeValue = String.valueOf(otherClaims.get(attribute));
         }
