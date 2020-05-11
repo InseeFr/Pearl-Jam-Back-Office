@@ -7,13 +7,19 @@ public class CommentDto {
 	/**
 	 * Type of the CommentDto
 	 */
-	CommentType type;
+	private CommentType type;
 	
 	/**
 	 * Value of the CommentDto
 	 */
-	String value;
+	private String value;
 	
+	public CommentDto(CommentType type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
+
 	/**
 	 * @return the type
 	 */

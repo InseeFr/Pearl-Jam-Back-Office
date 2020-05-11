@@ -25,6 +25,9 @@ public abstract class Address {
 	@ManyToOne
 	protected GeographicalLocation geographicalLocation;
 
+	public Address(){
+		
+	}
 	/**
 	 * @return the id
 	 */

@@ -90,25 +90,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		switch (this.applicationProperties.getMode()) {
 			case Basic:
 				http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
-				http.authorizeRequests().antMatchers("/operations").hasRole("investigator")
-					.antMatchers("/api/survey-unit/{id}").hasRole("investigator")
-					.antMatchers("/api/survey-unit/").hasRole("investigator")
-					.antMatchers("/operation/{id}/required-nomenclatures").hasRole("investigator")
-					.antMatchers("/reporting-unit/{id}/data").hasRole("investigator")
-					.antMatchers("/reporting-unit/{id}/comment").hasRole("investigator")
-					.antMatchers("/nomenclature/{id}").hasRole("investigator")
+				http.authorizeRequests().antMatchers("/api/survey-unit/{id}").hasRole("interviewer")
+					.antMatchers("/api/survey-units/").hasRole("interviewer")
 					.anyRequest().denyAll(); 
 				break;
 			default:
 				http.httpBasic().disable();
 				http.authorizeRequests()
-				.antMatchers("/operations",
-						"/operation/{idOperation}/reporting-units",
-						"/operation/{idOperation}/questionnaire",
-						"/operation/{id}/required-nomenclatures",
-						"/reporting-unit/{id}/data",
-						"/reporting-unit/{id}/comment",
-						"/nomenclature/{id}").permitAll();
+				.antMatchers("/survey-units/","/survey-unit/{id}").permitAll();
 				break;
 		}
 	}
@@ -121,7 +110,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case Basic:
-				auth.inMemoryAuthentication().withUser("admin").password("{noop}a").roles("investigator").and()
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles("interviewer").and()
 				.withUser("noWrite").password("{noop}a").roles();
 				break;
 			case NoAuth:

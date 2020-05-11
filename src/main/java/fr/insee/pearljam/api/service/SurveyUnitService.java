@@ -9,10 +9,10 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 
 public interface SurveyUnitService {
 
-	SurveyUnitDetailDto getSurveyUnitDetail(String id);
+	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id);
 	
-	List<SurveyUnitDto> getSurveyUnitDto(String idInterviewer);
+	List<SurveyUnitDto> getSurveyUnitDto(String userId);
 
-	HttpStatus updateSurveyUnitDetail(String id, SurveyUnitDetailDto surveyUnitDetailDto);
+	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
 
 }

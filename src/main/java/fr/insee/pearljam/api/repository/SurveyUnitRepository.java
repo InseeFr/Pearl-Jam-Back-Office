@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,5 +27,12 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "JOIN campaign camp ON camp.id = su.campaign_id "
 			+ "WHERE su.interviewer_id=?1", nativeQuery=true)
 	List<String> findDtoIdBy_IdInterviewer(String idInterviewer);
+
+	
+	Optional<SurveyUnit> findByIdAndInterviewerId(String id, String userId);
+
+	@Query(value="SELECT id "
+			+ "FROM survey_unit ", nativeQuery=true)
+	List<String> findAllIds();
 
 }

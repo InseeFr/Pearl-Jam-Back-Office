@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api;
 
 import static io.restassured.RestAssured.get;
-import static org.hamcrest.Matchers.hasItem;
+import static io.restassured.RestAssured.with;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,6 +37,7 @@ class ApiApplicationRestAssureTests {
 		RestAssured.port = port;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Container
 	public static PostgreSQLContainer postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
 			.withDatabaseName("pearljam").withUsername("pearljam").withPassword("pearljam");
@@ -48,18 +52,30 @@ class ApiApplicationRestAssureTests {
 		}
 	}
 
-//	@Test
-//	public void testGetSurveyUnits() throws InterruptedException {
-//	
-//	}
-//	
-//	@Test
-//	public void testGetSurveyUnitDetail() throws InterruptedException {
-//	
-//	}
-//	
+	@Test
+	public void testGetSurveyUnitDetail() throws InterruptedException {
+		get("api/survey-unit/12")
+		.then()
+		.statusCode(200);
+	}
+	
+	@Test
+	public void testGetAllSurveyUnit() throws InterruptedException {
+	  get("api/survey-units/")
+	  .then()
+	  .statusCode(200);
+	}
+	
 //	@Test
 //	public void testPutSurveyUnitDetail() throws InterruptedException {
-//	
+//		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto();
+//		with()
+//			.contentType(ContentType.JSON)
+//			.body(surveyUnitDetailDto)
+//		.put("api/survey-unit/21")
+//			.then()
+//			.statusCode(200);
+//		Response response = get("api/survey-unit/21");
+//		response.then().statusCode(200);
 //	}
 }

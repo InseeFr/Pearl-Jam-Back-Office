@@ -7,17 +7,25 @@ public class StateDto {
 	/**
 	 * The id of the StateDto
 	 */
-	Long id;
+	private Long id;
 	
 	/**
 	 * The date of the StateDto
 	 */
-    Long date;
+	private Long date;
     
     /**
      * The type of the StateDto
      */
-    StateType type;
+	private StateType type;
+
+    
+	public StateDto(Long id, Long date, StateType type) {
+		super();
+		this.id = id;
+		this.date = date;
+		this.type = type;
+	}
 
 	/**
 	 * @return the id

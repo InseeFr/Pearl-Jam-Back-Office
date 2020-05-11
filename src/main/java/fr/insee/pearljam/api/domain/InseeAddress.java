@@ -61,6 +61,7 @@ public class InseeAddress extends Address {
 		this.l6 = l6;
 		this.l7 = l7;
 	}
+	
 	public InseeAddress(AddressDto address, GeographicalLocation geographicalLocation) {
 		this.l1 = address.getL1();
 		this.l2 = address.getL2();

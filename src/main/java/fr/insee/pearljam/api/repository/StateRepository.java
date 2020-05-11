@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.state.StateDto;
 
 public interface StateRepository extends JpaRepository<State, Long> {
-
 	StateDto findFirstBySurveyUnitOrderByDate(SurveyUnit surveyUnit);
 
 }

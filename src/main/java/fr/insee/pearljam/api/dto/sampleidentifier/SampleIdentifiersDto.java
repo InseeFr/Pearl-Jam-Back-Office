@@ -1,26 +1,44 @@
 package fr.insee.pearljam.api.dto.sampleidentifier;
 
-
 public class SampleIdentifiersDto {
-	 String bs;
-	 String ec;
-	 String le;
-     String noi;
-     String numfa;
-     String rges;
-     String ssech;
-     String nolog;
-     String nole;
-     /**
+	private Integer bs;
+	private String ec;
+	private Integer le;
+	private Integer noi;
+	private Integer numfa;
+	private Integer rges;
+	private Integer ssech;
+	private Integer nolog;
+	private Integer nole;
+	private String autre;
+	private String nograp;
+	
+	
+	public SampleIdentifiersDto(Integer bs, String ec, Integer le, Integer noi, Integer numfa, Integer rges,
+			Integer ssech, Integer nolog, Integer nole, String autre, String nograp) {
+		super();
+		this.bs = bs;
+		this.ec = ec;
+		this.le = le;
+		this.noi = noi;
+		this.numfa = numfa;
+		this.rges = rges;
+		this.ssech = ssech;
+		this.nolog = nolog;
+		this.nole = nole;
+		this.autre = autre;
+		this.nograp = nograp;
+	}
+	/**
 	 * @return the bs
 	 */
-	public String getBs() {
+	public Integer getBs() {
 		return bs;
 	}
 	/**
 	 * @param bs the bs to set
 	 */
-	public void setBs(String bs) {
+	public void setBs(Integer bs) {
 		this.bs = bs;
 	}
 	/**
@@ -38,85 +56,85 @@ public class SampleIdentifiersDto {
 	/**
 	 * @return the le
 	 */
-	public String getLe() {
+	public Integer getLe() {
 		return le;
 	}
 	/**
 	 * @param le the le to set
 	 */
-	public void setLe(String le) {
+	public void setLe(Integer le) {
 		this.le = le;
 	}
 	/**
 	 * @return the noi
 	 */
-	public String getNoi() {
+	public Integer getNoi() {
 		return noi;
 	}
 	/**
 	 * @param noi the noi to set
 	 */
-	public void setNoi(String noi) {
+	public void setNoi(Integer noi) {
 		this.noi = noi;
 	}
 	/**
 	 * @return the numfa
 	 */
-	public String getNumfa() {
+	public Integer getNumfa() {
 		return numfa;
 	}
 	/**
 	 * @param numfa the numfa to set
 	 */
-	public void setNumfa(String numfa) {
+	public void setNumfa(Integer numfa) {
 		this.numfa = numfa;
 	}
 	/**
 	 * @return the rges
 	 */
-	public String getRges() {
+	public Integer getRges() {
 		return rges;
 	}
 	/**
 	 * @param rges the rges to set
 	 */
-	public void setRges(String rges) {
+	public void setRges(Integer rges) {
 		this.rges = rges;
 	}
 	/**
 	 * @return the ssech
 	 */
-	public String getSsech() {
+	public Integer getSsech() {
 		return ssech;
 	}
 	/**
 	 * @param ssech the ssech to set
 	 */
-	public void setSsech(String ssech) {
+	public void setSsech(Integer ssech) {
 		this.ssech = ssech;
 	}
 	/**
 	 * @return the nolog
 	 */
-	public String getNolog() {
+	public Integer getNolog() {
 		return nolog;
 	}
 	/**
 	 * @param nolog the nolog to set
 	 */
-	public void setNolog(String nolog) {
+	public void setNolog(Integer nolog) {
 		this.nolog = nolog;
 	}
 	/**
 	 * @return the nole
 	 */
-	public String getNole() {
+	public Integer getNole() {
 		return nole;
 	}
 	/**
 	 * @param nole the nole to set
 	 */
-	public void setNole(String nole) {
+	public void setNole(Integer nole) {
 		this.nole = nole;
 	}
 	/**
@@ -142,7 +160,5 @@ public class SampleIdentifiersDto {
 	 */
 	public void setNograp(String nograp) {
 		this.nograp = nograp;
-	}
-	String autre;
-     String nograp; 
+	} 
 }

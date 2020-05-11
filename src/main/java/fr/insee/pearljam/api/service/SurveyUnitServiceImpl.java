@@ -33,7 +33,7 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 
 @Service
 public class SurveyUnitServiceImpl implements SurveyUnitService {
-
+	private static final String GUEST = "GUEST";
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
 	
@@ -62,8 +62,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	GeographicalLocationRepository geographicalLocationRepository;
 	
 	@Override
-	public SurveyUnitDetailDto getSurveyUnitDetail(String id) {
-		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
+	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
+		Optional<SurveyUnit> surveyUnit = null;
+		if(userId.equals(GUEST)) {
+			surveyUnit = surveyUnitRepository.findById(id);
+		} else {
+			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
+		}
 		if(!surveyUnit.isPresent()) {
 			return null;
 		}
@@ -80,11 +85,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Override
-	public List<SurveyUnitDto> getSurveyUnitDto(String idInterviewer) {
-		List<String> surveyUnitDtoIds = surveyUnitRepository.findDtoIdBy_IdInterviewer(idInterviewer);
-		List<SurveyUnitDto> surveyUnitDtoReturned = new ArrayList<SurveyUnitDto>();
+	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
+		List<SurveyUnitDto> surveyUnitDtoReturned = new ArrayList<>();
+		List<String> surveyUnitDtoIds = null;
+		if(userId.equals(GUEST)) {
+			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
+		} else {
+			surveyUnitDtoIds = surveyUnitRepository.findDtoIdBy_IdInterviewer(userId);
+		}
 		if(surveyUnitDtoIds.isEmpty()) {
-			return null;
+			return List.of();
 		}
 		for(String idSurveyUnit : surveyUnitDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoBySurveyUnitId(idSurveyUnit);
@@ -98,24 +108,42 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	 * @return HttpStatus
 	 */
 	@Override
-	public HttpStatus updateSurveyUnitDetail(String id, SurveyUnitDetailDto surveyUnitDetailDto) {
+	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if(surveyUnitDetailDto == null) {
 			return HttpStatus.BAD_REQUEST;
 		}
-		
-		//Update of SurveyUnit
-		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
+		Optional<SurveyUnit> surveyUnit = null;
+		if(userId.equals(GUEST)) {
+			surveyUnit = surveyUnitRepository.findById(id);
+		}else {
+			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
+		}
 		if(!surveyUnit.isPresent()) {
 			return HttpStatus.NOT_FOUND;
 		}
+		//Update of SurveyUnit
 		surveyUnit.get().setFirstName(surveyUnitDetailDto.getFirstName());
 		surveyUnit.get().setLasttName(surveyUnitDetailDto.getLastName());
 		surveyUnit.get().setPhoneNumbers(surveyUnitDetailDto.getPhoneNumbers());
 		surveyUnitRepository.save(surveyUnit.get());
-		
+	
+		InseeAddress inseeAddress;
+		Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
+		if(!optionalInseeAddress.isPresent()) {
+			inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation());
+		} else {
+			inseeAddress = optionalInseeAddress.get();
+			inseeAddress.setL1(surveyUnitDetailDto.getAddress().getL1());
+			inseeAddress.setL2(surveyUnitDetailDto.getAddress().getL2());
+			inseeAddress.setL3(surveyUnitDetailDto.getAddress().getL3());
+			inseeAddress.setL4(surveyUnitDetailDto.getAddress().getL4());
+			inseeAddress.setL5(surveyUnitDetailDto.getAddress().getL5());
+			inseeAddress.setL6(surveyUnitDetailDto.getAddress().getL6());
+			inseeAddress.setL7(surveyUnitDetailDto.getAddress().getL7());
+		}
 		//Update Address
-		addressRepository.save(new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation()));
-			
+		addressRepository.save(inseeAddress);
+		
 		//Update Comment
 		Comment comment;
 		for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {

@@ -7,12 +7,18 @@ public class ContactAttemptDto {
 	/**
 	 * The date of the ContactAttemptDto
 	 */
-	Long date;
+	private Long date;
 	
 	/**
 	 * The status of the ContactAttemptDto
 	 */
-    Status status;
+	private Status status;
+    
+	public ContactAttemptDto(Long date, Status status) {
+		super();
+		this.date = date;
+		this.status = status;
+	}
 
 	/**
 	 * @return the date

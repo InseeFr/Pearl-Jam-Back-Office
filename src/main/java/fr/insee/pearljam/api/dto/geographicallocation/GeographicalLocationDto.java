@@ -6,10 +6,13 @@ public class GeographicalLocationDto {
 	private String id;
 	private String label;
 	
-	public GeographicalLocationDto() {
-		
-	}
 	
+	public GeographicalLocationDto(String id, String label) {
+		super();
+		this.id = id;
+		this.label = label;
+	}
+
 	public GeographicalLocationDto(GeographicalLocation geographicalLocation) {
 		this.id = geographicalLocation.getId();
 		this.label = geographicalLocation.getLabel();

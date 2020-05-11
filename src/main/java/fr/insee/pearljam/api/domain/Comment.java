@@ -41,8 +41,19 @@ public class Comment {
 	* The SurveyUnit associated to Comment 
 	*/
 	@ManyToOne
-	@Size(min=0, max=2)
 	private SurveyUnit surveyUnit;
+	
+	public Comment(Long id, CommentType type, String value, @Size(min = 0, max = 2) SurveyUnit surveyUnit) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.value = value;
+		this.surveyUnit = surveyUnit;
+	}
+	public Comment() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	/**
 	 * @return the id
 	 */

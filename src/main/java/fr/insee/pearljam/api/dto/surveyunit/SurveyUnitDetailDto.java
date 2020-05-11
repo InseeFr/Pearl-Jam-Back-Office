@@ -103,7 +103,7 @@ public class SurveyUnitDetailDto {
 	}
 
 	/**
-	 * @param address the address to set
+	 * @param address2 the address to set
 	 */
 	public void setAddress(AddressDto address) {
 		this.address = address;
@@ -165,7 +165,7 @@ public class SurveyUnitDetailDto {
 		this.comments = comments;
 	}
 
-	/**
+	/**	
 	 * @return the sampleIdentifiers
 	 */
 	public SampleIdentifiersDto getSampleIdentifiers() {
@@ -173,10 +173,10 @@ public class SurveyUnitDetailDto {
 	}
 
 	/**
-	 * @param sampleIdentifiers the sampleIdentifiers to set
+	 * @param sampleIdentifier the sampleIdentifiers to set
 	 */
-	public void setSampleIdentifiers(SampleIdentifiersDto sampleIdentifiers) {
-		this.sampleIdentifiers = sampleIdentifiers;
+	public void setSampleIdentifiers(SampleIdentifiersDto sampleIdentifier) {
+		this.sampleIdentifiers = sampleIdentifier;
 	}
 
 	/**
@@ -187,10 +187,10 @@ public class SurveyUnitDetailDto {
 	}
 
 	/**
-	 * @param lastState the lastState to set
+	 * @param state the lastState to set
 	 */
-	public void setLastState(StateDto lastState) {
-		this.lastState = lastState;
+	public void setLastState(StateDto state) {
+		this.lastState = state;
 	}
 
 	/**

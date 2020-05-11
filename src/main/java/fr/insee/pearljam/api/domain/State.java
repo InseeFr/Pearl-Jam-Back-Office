@@ -40,6 +40,10 @@ public class State {
 	@Column(length=3)
 	private StateType type;
 
+	public State() {
+		
+	}	
+	
 	/**
 	 * @param id
 	 * @param date

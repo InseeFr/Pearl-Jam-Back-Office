@@ -2,10 +2,10 @@ package fr.insee.pearljam.api.controller;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.utils.UserUtils;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -42,6 +41,9 @@ public class SurveyUnitController {
 	SurveyUnitService surveyUnitService;
 	
 	@Autowired
+	InterviewerService interviewerService;
+	
+	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
 	
 	/**
@@ -50,15 +52,20 @@ public class SurveyUnitController {
 	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get SurveyUnits")
-	@GetMapping(path = "/surveyUnits/")
-	public ResponseEntity<Object> getListOperation(HttpServletRequest request){
-		List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(UserUtils.handleUserInfoRequest(request, "idInterviewer"));
-		if(lstSurveyUnit==null || lstSurveyUnit.isEmpty()){
-			LOGGER.info("GET SurveyUnit resulting in 404" );
-			new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	@GetMapping(path = "/survey-units/")
+	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request){
+		String userId = interviewerService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
+			if(lstSurveyUnit==null || lstSurveyUnit.isEmpty()){
+				LOGGER.info("GET SurveyUnit resulting in 404" );
+				new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("GET SurveyUnit resulting in 200" );
+			return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
 		}
-		LOGGER.info("GET SurveyUnit resulting in 200" );
-		return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
 	}
 	
 	
@@ -69,15 +76,20 @@ public class SurveyUnitController {
 	*/
 	@ApiOperation(value = "Get detail of specific survey unit ")
 	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object>  getSurveyUnitById(@PathVariable(value = "id") String id){
-		SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(id);
-		if (surveyUnit==null) {
-			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
-			return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
-		}		
+	public ResponseEntity<Object>  getSurveyUnitById(HttpServletRequest request ,@PathVariable(value = "id") String id){
+		String userId = interviewerService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}else {
+			SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
+			if (surveyUnit==null) {
+				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
+				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
+			}
+		}
 	}
 	
 	/**
@@ -92,10 +104,14 @@ public class SurveyUnitController {
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> updateSurveyUnit(@RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) throws SQLException {
-		HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(id, surveyUnitUpdated);
-		LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
-		return new ResponseEntity<>(returnCode);
-			
+	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) throws SQLException {
+		String userId = interviewerService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}else {
+			HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
+			LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
 	}
 }

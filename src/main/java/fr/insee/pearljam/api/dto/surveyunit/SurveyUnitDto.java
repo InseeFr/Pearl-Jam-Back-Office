@@ -8,27 +8,27 @@ public class SurveyUnitDto {
 	/**
 	 * Id of the SurveyUnit
 	 */
-	String id;
+	private String id;
 	
 	/**
 	 * Id of the Campaign
 	 */
-	String campaign;
+	private String campaign;
 	
 	/**
 	 * Label of the Campaign
 	 */
-	String campaignLabel;
+	private String campaignLabel;
 	
 	/**
 	 * Start Date of the Campaign
 	 */
-	Long collectionStartDate;
+	private Long collectionStartDate;
 	
 	/**
 	 * End Date of the Campaign
 	 */
-	Long collectionEndDate;
+	private Long collectionEndDate;
 	
 	/**
 	 * Default constructor from SurveyUnitDto

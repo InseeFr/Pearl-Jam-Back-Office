@@ -7,17 +7,25 @@ public class ContactOutcomeDto {
 	/**
 	 * The date of the ContactOutcomeDto
 	 */
-	 Long date;
+	private Long date;
 	 
 	 /**
 	  * The type of the ContactOutcomeDto
 	  */
-     ContactOutcomeType type;
+	private ContactOutcomeType type;
      
      /**
       * The total number of contact attempt for the current ContactOutcomeDto
       */
-     Integer totalNumberOfContactAttempts;
+	private Integer totalNumberOfContactAttempts;
+
+     
+	public ContactOutcomeDto(Long date, ContactOutcomeType type, Integer totalNumberOfContactAttempts) {
+		super();
+		this.date = date;
+		this.type = type;
+		this.totalNumberOfContactAttempts = totalNumberOfContactAttempts;
+	}
 
 	/**
 	 * @return the date
