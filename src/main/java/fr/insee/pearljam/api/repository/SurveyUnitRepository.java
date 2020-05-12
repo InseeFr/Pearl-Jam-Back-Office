@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 
 /**
 * SurveyUnitRepository is the repository using to access to SurveyUnit table in DB
@@ -26,7 +27,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "LEFT JOIN state st ON st.survey_unit_id = su.id "
 			+ "JOIN campaign camp ON camp.id = su.campaign_id "
 			+ "WHERE su.interviewer_id=?1", nativeQuery=true)
-	List<String> findDtoIdBy_IdInterviewer(String idInterviewer);
+	List<String> findIdsByInterviewerId(String idInterviewer);
 
 	/**
 	 * This method retrieve the SurveyUnit in DB by Id and UserId
@@ -43,5 +44,10 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT id "
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
+	
+	@Query("SELECT "
+			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.collectionStartDate,su.campaign.collectionEndDate) "
+			+ "FROM SurveyUnit su WHERE su.id=?1")
+	CampaignDto findCampaignDtoById(String id);
 
 }

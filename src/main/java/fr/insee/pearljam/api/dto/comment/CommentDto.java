@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.comment;
 
+import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.CommentType;
 
 public class CommentDto {
@@ -18,6 +19,15 @@ public class CommentDto {
 		super();
 		this.type = type;
 		this.value = value;
+	}
+	
+	public CommentDto(Comment comment) {
+		super();
+		this.type = comment.getType();
+		this.value = comment.getValue();
+	}
+
+	public CommentDto() {
 	}
 
 	/**
@@ -46,6 +56,11 @@ public class CommentDto {
 	 */
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "CommentDto [type=" + type + ", value=" + value + "]";
 	}
 
 }

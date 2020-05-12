@@ -64,6 +64,7 @@ public class SwaggerConfiguration {
     	messages.add(new ResponseMessageBuilder().code(401).message("Not authorized!").build());
     	messages.add(new ResponseMessageBuilder().code(403).message("Forbidden!").build());
     	messages.add(new ResponseMessageBuilder().code(404).message("Not found!").build());
+    	messages.add(new ResponseMessageBuilder().code(400).message("Bad request! Please check your survey unit to update").build());
     	String urlString = "/";
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
         		.useDefaultResponseMessages(false)

@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.contactattempt;
 
+import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.Status;
 
 public class ContactAttemptDto {
@@ -18,6 +19,17 @@ public class ContactAttemptDto {
 		super();
 		this.date = date;
 		this.status = status;
+	}
+	
+	public ContactAttemptDto(ContactAttempt contactAttempt) {
+		super();
+		this.date = contactAttempt.getDate();
+		this.status = contactAttempt.getStatus();
+	}
+	
+
+	public ContactAttemptDto() {
+		super();
 	}
 
 	/**
@@ -47,4 +59,10 @@ public class ContactAttemptDto {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
+
+	@Override
+	public String toString() {
+		return "ContactAttemptDto [date=" + date + ", status=" + status + "]";
+	}
+	
 }

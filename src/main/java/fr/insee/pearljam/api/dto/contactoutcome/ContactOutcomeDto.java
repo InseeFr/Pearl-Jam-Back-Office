@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.contactoutcome;
 
+import fr.insee.pearljam.api.domain.ContactOutcome;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 
 public class ContactOutcomeDto {
@@ -26,6 +27,20 @@ public class ContactOutcomeDto {
 		this.type = type;
 		this.totalNumberOfContactAttempts = totalNumberOfContactAttempts;
 	}
+
+	
+	public ContactOutcomeDto(ContactOutcome contactOutcome) {
+		super();
+		this.date = contactOutcome.getDate();
+		this.type = contactOutcome.getType();
+		this.totalNumberOfContactAttempts = contactOutcome.getTotalNumberOfContactAttempts();
+	}
+
+
+	public ContactOutcomeDto() {
+		super();
+	}
+
 
 	/**
 	 * @return the date
@@ -68,4 +83,11 @@ public class ContactOutcomeDto {
 	public void setTotalNumberOfContactAttempts(Integer totalNumberOfContactAttempts) {
 		this.totalNumberOfContactAttempts = totalNumberOfContactAttempts;
 	}
+
+	@Override
+	public String toString() {
+		return "ContactOutcomeDto [date=" + date + ", type=" + type + ", totalNumberOfContactAttempts="
+				+ totalNumberOfContactAttempts + "]";
+	}
+
 }

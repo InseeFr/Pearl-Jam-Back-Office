@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 /**
 * Entity State : represent the entity table in DB
@@ -16,12 +18,16 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
+@SequenceGenerator(
+name = "seqid-gen", 
+sequenceName = "STATE_SEQ" ,
+initialValue = 10, allocationSize = 1)
 public class State {
 	/**
 	* The id of State 
 	*/
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
 	private Long id;
 	
 	/**

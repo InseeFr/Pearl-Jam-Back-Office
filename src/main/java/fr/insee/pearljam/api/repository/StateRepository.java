@@ -19,6 +19,6 @@ public interface StateRepository extends JpaRepository<State, Long> {
 	 * @param SurveyUnit
 	 * @return StateDto
 	 */
-	StateDto findFirstBySurveyUnitOrderByDate(SurveyUnit surveyUnit);
+	StateDto findFirstDtoBySurveyUnitOrderByDate(SurveyUnit surveyUnit);
 
 }

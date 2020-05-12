@@ -234,4 +234,15 @@ public class SurveyUnitDetailDto {
 	public void setContactOutcome(ContactOutcomeDto contactOutcome) {
 		this.contactOutcome = contactOutcome;
 	}
+	
+	@Override
+	public String toString() {
+		return "SurveyUnitDetailDto [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", phoneNumbers=" + phoneNumbers + ", address=" + address + ", geographicalLocation="
+				+ geographicalLocation + ", priority=" + priority + ", campaign=" + campaign + ", comments=" + comments
+				+ ", sampleIdentifiers=" + sampleIdentifiers + ", lastState=" + lastState + ", states=" + states
+				+ ", contactAttempts=" + contactAttempts + ", contactOutcome=" + contactOutcome + "]";
+	}
+	
+	
 }

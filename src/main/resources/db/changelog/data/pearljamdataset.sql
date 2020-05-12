@@ -46,14 +46,14 @@ INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALU
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('22', '+3351231231236');
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('23', '+3351231231237');
 
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (1, 1588236041, 'ANS', '11');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (2, 1588149641, 'ANS', '12');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (3, 1588063241, 'ANS', '13');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (4, 1587976841, 'ANS', '14');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (5, 1587890441, 'ANS', '20');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (6, 1587890441, 'ANS', '21');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (7, 1587890441, 'ANS', '22');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (8, 1587890441, 'ANS', '23');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588236041, 'ANS', '11');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588149641, 'ANS', '12');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588063241, 'ANS', '13');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587976841, 'ANS', '14');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '20');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '21');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '22');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '23');
 
 INSERT INTO public."user" (id, first_name, last_name, organization_unit_id) VALUES ('ABC', 'Melinda', 'Webb', 'OU-NORTH');
 INSERT INTO public."user" (id, first_name, last_name, organization_unit_id) VALUES ('DEF', 'Everett', 'Juste', 'OU-NORTH');

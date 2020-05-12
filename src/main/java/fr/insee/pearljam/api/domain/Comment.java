@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 /**
@@ -17,12 +19,16 @@ import javax.validation.constraints.Size;
 */
 @Entity
 @Table
+@SequenceGenerator(
+name = "seqid-gen", 
+sequenceName = "COMMENT_SEQ" ,
+initialValue = 10, allocationSize = 1)
 public class Comment {
 	/**
 	* The id of Address 
 	*/
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
 	private Long id;
 	/**
 	* The type of Comment 

@@ -14,9 +14,16 @@ public class GeographicalLocationDto {
 	}
 
 	public GeographicalLocationDto(GeographicalLocation geographicalLocation) {
+		super();
 		this.id = geographicalLocation.getId();
 		this.label = geographicalLocation.getLabel();
 	}
+	
+	
+	public GeographicalLocationDto() {
+		super();
+	}
+
 	/**
 	 * @return the id
 	 */
@@ -40,6 +47,11 @@ public class GeographicalLocationDto {
 	 */
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	@Override
+	public String toString() {
+		return "GeographicalLocationDto [id=" + id + ", label=" + label + "]";
 	}
 	
 	

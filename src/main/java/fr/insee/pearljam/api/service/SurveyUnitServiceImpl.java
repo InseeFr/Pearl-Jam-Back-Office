@@ -22,7 +22,6 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.repository.AddressRepository;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.CommentRepository;
 import fr.insee.pearljam.api.repository.ContactAttemptRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
@@ -61,9 +60,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	StateRepository stateRepository;
 	
 	@Autowired
-	CampaignRepository campaignRepository;
-	
-	@Autowired
 	GeographicalLocationRepository geographicalLocationRepository;
 	
 	/**
@@ -91,7 +87,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setStates(new ArrayList<StateDto>());
-		surveyUnitDetailDto.setLastState(stateRepository.findFirstBySurveyUnitOrderByDate(surveyUnit.get()));
+		surveyUnitDetailDto.setLastState(stateRepository.findFirstDtoBySurveyUnitOrderByDate(surveyUnit.get()));
 		return surveyUnitDetailDto;
 	}
 
@@ -107,13 +103,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
 		} else {
-			surveyUnitDtoIds = surveyUnitRepository.findDtoIdBy_IdInterviewer(userId);
+			surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
 		}
 		if(surveyUnitDtoIds.isEmpty()) {
 			return List.of();
 		}
 		for(String idSurveyUnit : surveyUnitDtoIds) {
-			CampaignDto campaign = campaignRepository.findDtoBySurveyUnitId(idSurveyUnit);
+			CampaignDto campaign = surveyUnitRepository.findCampaignDtoById(idSurveyUnit);
 			surveyUnitDtoReturned.add( new SurveyUnitDto(idSurveyUnit, campaign));
 		}
 		return surveyUnitDtoReturned;
@@ -128,7 +124,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	 */
 	@Override
 	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if(surveyUnitDetailDto == null) {
+		if(surveyUnitDetailDto == null || !id.equals(surveyUnitDetailDto.getId())) {
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<SurveyUnit> surveyUnit = null;

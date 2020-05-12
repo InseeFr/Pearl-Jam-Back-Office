@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 /**
@@ -10,13 +11,18 @@ import javax.persistence.ManyToOne;
 * @author Claudel Benjamin
 * 
 */
+import javax.persistence.SequenceGenerator;
 @Entity
+@SequenceGenerator(
+name = "seqid-gen", 
+sequenceName = "ADDRESS_SEQ" ,
+initialValue = 10, allocationSize = 1)
 public abstract class Address {
 	/**
 	* The id of Address 
 	*/
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
 	protected Long id;
 	
 	/**
