@@ -6,8 +6,18 @@ import org.springframework.data.jpa.repository.Query;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 
+/**
+* CampaignRepository is the repository using to access to Campaign table in DB
+* 
+* @author scorcaud
+* 
+*/
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 	
+	/**
+	* This method retrieve Campaign in DB by an Id
+	* @return List of all {@link Campaign}
+	*/
 	Campaign findDtoById(String id);
 	
 	/**

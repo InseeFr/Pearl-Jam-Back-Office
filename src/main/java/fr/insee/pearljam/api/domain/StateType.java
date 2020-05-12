@@ -1,5 +1,10 @@
 package fr.insee.pearljam.api.domain;
 
+/**
+ * The possible types of a State entity
+ * @author scorcaud
+ *
+ */
 public enum StateType {
 
 	ANS("Assigned, not started"), 
@@ -15,7 +20,7 @@ public enum StateType {
 	NVM("Not visible to management");
 
 	/**
-	 * label
+	 * label of the State type
 	 */
 	private String label;
 

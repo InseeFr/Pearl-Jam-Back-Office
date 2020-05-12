@@ -21,17 +21,29 @@ import javax.persistence.Table;
 @Table
 public class OrganizationUnit {
 	
+	/**
+	 * Id of the OrganizationUnit
+	 */
 	@Id
 	@Column(length=50)
 	public String id;
 	
+	/**
+	 * The label OrganizationUnit
+	 */
 	@Column(length=255)
 	public String label;
 	
+	/**
+	 * The OrganizationUnitType of the OrganizationUnit
+	 */
 	@Enumerated(EnumType.STRING)
 	@Column(length=8)
 	public OrganizationUnitType type;
 	
+	/**
+	 * The visibilites of the OrganizationUnit
+	 */
 	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visibility> visibilities;
 

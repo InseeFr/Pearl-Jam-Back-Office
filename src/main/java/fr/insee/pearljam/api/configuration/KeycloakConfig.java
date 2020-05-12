@@ -19,7 +19,11 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 
-
+/**
+ * This class defines the KeyCloak configuration
+ * @author scorcaud
+ *
+ */
 @Configuration
 @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
 @ComponentScan(
@@ -28,7 +32,9 @@ import org.springframework.security.web.savedrequest.NullRequestCache;
 @EnableWebSecurity
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-	
+	/**
+	 * Configure the accessible URI without any roles or permissions
+	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().headers().frameOptions().disable().and().requestCache()

@@ -48,10 +48,23 @@ public class InseeAddress extends Address {
 	@Column(length=255)
 	private String l7;
 	
+	/**
+	 * Defaut constructor for the entity
+	 */
 	public InseeAddress() {
 		
 	}
 	
+	/**
+	 * Constructor for the entity
+	 * @param l1
+	 * @param l2
+	 * @param l3
+	 * @param l4
+	 * @param l5
+	 * @param l6
+	 * @param l7
+	 */
 	public InseeAddress(String l1, String l2, String l3, String l4, String l5, String l6, String l7) {
 		this.l1 = l1;
 		this.l2 = l2;
@@ -62,6 +75,11 @@ public class InseeAddress extends Address {
 		this.l7 = l7;
 	}
 	
+	/**
+	 * Constructor for the entity
+	 * @param address
+	 * @param geographicalLocation
+	 */
 	public InseeAddress(AddressDto address, GeographicalLocation geographicalLocation) {
 		this.l1 = address.getL1();
 		this.l2 = address.getL2();

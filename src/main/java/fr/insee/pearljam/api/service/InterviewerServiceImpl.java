@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.api.configuration.ApplicationProperties;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 
+/**
+ * Implementation of the Service for the Interviewer entity
+ * @author scorcaud
+ *
+ */
 @Service
 public class InterviewerServiceImpl implements InterviewerService {
 	
@@ -25,11 +30,22 @@ public class InterviewerServiceImpl implements InterviewerService {
 	
 	private static final String IDINTERVIEWER = "idInterviewer";
 	
+	/**
+	 * This method check if the Interviewer exist or not in database
+	 * @param userId
+	 * @return boolean
+	 */
 	@Override
 	public boolean existInterviewer(String userId) {
-		return interviewerRepository.findById(userId).isPresent() || "GUEST".equals(userId);
+		return "GUEST".equals(userId) || interviewerRepository.findById(userId).isPresent();
 	}
 	
+	/**
+	 * This method retrieve retrieve the UserId passed in the HttpServletRequest. 
+	 * Three possible cases which depends of the authentication chosen.
+	 * @param HttpServletRequest
+	 * @return String of UserId
+	 */
 	public String getUserId(HttpServletRequest request) {
 		String userId = null;
 		switch (applicationProperties.getMode()) {

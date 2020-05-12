@@ -1,5 +1,9 @@
 package fr.insee.pearljam.api.domain;
 
+/**
+ * Define the possible Status of a SurveyUnit
+ * @author scorcaud
+ */
 public enum Status {
 	COM("Contact made"),
 	NIN("Number not in use"),

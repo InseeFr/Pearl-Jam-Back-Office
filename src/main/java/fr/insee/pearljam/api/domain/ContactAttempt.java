@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
-* Entity SurveyUnit : represent the entity table in DB
+* Entity ContactAttempt : represent the entity table in DB
 * 
 * @author Claudel Benjamin
 * 

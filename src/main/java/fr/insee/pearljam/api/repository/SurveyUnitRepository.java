@@ -28,9 +28,18 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "WHERE su.interviewer_id=?1", nativeQuery=true)
 	List<String> findDtoIdBy_IdInterviewer(String idInterviewer);
 
-	
+	/**
+	 * This method retrieve the SurveyUnit in DB by Id and UserId
+	 * @param id
+	 * @param userId
+	 * @return SurveyUnit
+	 */
 	Optional<SurveyUnit> findByIdAndInterviewerId(String id, String userId);
 
+	/**
+	 * This method retrieve all the Ids of the SurveyUnits in db
+	 * @return List of String
+	 */
 	@Query(value="SELECT id "
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();

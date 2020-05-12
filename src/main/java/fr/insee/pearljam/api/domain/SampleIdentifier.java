@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @Entity
 public abstract class SampleIdentifier {
 	/**
-	* The id of Address 
+	* The id of SampleIdentifier 
 	*/
 	@Id
 	@GeneratedValue

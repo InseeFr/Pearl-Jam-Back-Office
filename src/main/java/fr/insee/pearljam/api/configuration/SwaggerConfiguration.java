@@ -54,6 +54,9 @@ public class SwaggerConfiguration {
     @Value("${spring.application.name}")
     private String name;
     
+    /**
+     * @return Docket (from SpringFox dependency) with a configuration
+     */
     @Bean
     public Docket api() {
     	List<ResponseMessage> messages = new ArrayList<ResponseMessage>();

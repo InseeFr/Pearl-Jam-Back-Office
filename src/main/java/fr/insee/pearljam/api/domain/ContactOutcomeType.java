@@ -1,5 +1,10 @@
 package fr.insee.pearljam.api.domain;
 
+/**
+ * Define the type of the ContactOutcome entity
+ * @author scorcaud
+ *
+ */
 public enum ContactOutcomeType {
 	INA("Interview accepted"),
 	REF("Refusal"),
@@ -8,13 +13,12 @@ public enum ContactOutcomeType {
 	OOS("Out of scope");
 	
 	/**
-	 * label
+	 * label of the ContactOutcomeType
 	 */
 	private String label;
 
 	/**
-	 * Defaut constructor for a StateType
-	 * 
+	 * Defaut constructor for a ContactOutcomeType
 	 * @param label
 	 */
 	ContactOutcomeType(String label) {
@@ -22,8 +26,7 @@ public enum ContactOutcomeType {
 	}
 
 	/**
-	 * Get the label for a StateType
-	 * 
+	 * Get the label for a ContactOutcomeType
 	 * @return label
 	 */
 	public String getLabel() {

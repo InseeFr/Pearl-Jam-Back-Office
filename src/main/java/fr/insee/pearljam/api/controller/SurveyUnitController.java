@@ -48,12 +48,11 @@ public class SurveyUnitController {
 	
 	/**
 	* This method is using to get the list of SurveyUnit for current user
-	* 
 	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units/")
-	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request){
+	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request) {
 		String userId = interviewerService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -61,7 +60,7 @@ public class SurveyUnitController {
 			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
 			if(lstSurveyUnit==null || lstSurveyUnit.isEmpty()){
 				LOGGER.info("GET SurveyUnit resulting in 404" );
-				new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			LOGGER.info("GET SurveyUnit resulting in 200" );
 			return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
@@ -71,12 +70,12 @@ public class SurveyUnitController {
 	
 	/**
 	* This method is using to get the list of SurveyUnit for current user
-	* 
+	* @param id	the id of reporting unit
 	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get detail of specific survey unit ")
 	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object>  getSurveyUnitById(HttpServletRequest request ,@PathVariable(value = "id") String id){
+	public ResponseEntity<Object>  getSurveyUnitById(HttpServletRequest request ,@PathVariable(value = "id") String id) {
 		String userId = interviewerService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -4,6 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Redirect the user to swagger-ui.html
+ * @author scorcaud
+ *
+ */
 @Controller
 public class WebController {
 	

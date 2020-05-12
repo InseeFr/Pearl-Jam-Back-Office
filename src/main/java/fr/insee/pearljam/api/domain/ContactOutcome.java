@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
-* Entity SurveyUnit : represent the entity table in DB
+* Entity ContactOutcome : represent the entity table in DB
 * 
 * @author Claudel Benjamin
 * 
@@ -19,24 +19,24 @@ import javax.persistence.Table;
 @Table
 public class ContactOutcome {
 	/**
-	 * the id of ContactAttempt
+	 * the id of ContactOutcome
 	 */
 	@Id
 	@GeneratedValue
 	private Long id;
 	/**
-	 * the date of ContactAttempt
+	 * the date of ContactOutcome
 	 */
 	@Column
 	private Long date;
 	/**
-	 * the OutcomeType of ContactAttempt
+	 * the OutcomeType of ContactOutcome
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column
 	private ContactOutcomeType type;
 	/**
-	 * the totalNumberOfContactAttempts of ContactAttempt
+	 * the totalNumberOfContactAttempts of ContactOutcome
 	 */
 	@Column
 	private Integer totalNumberOfContactAttempts;

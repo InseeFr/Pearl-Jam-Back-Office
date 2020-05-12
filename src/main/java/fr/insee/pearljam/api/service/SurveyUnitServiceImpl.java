@@ -31,6 +31,11 @@ import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 
+
+/**
+ * @author scorcaud
+ *
+ */
 @Service
 public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private static final String GUEST = "GUEST";
@@ -61,6 +66,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Autowired
 	GeographicalLocationRepository geographicalLocationRepository;
 	
+	/**
+	 * Retrieve the SurveyUnitDetail entity by Id and UserId
+	 * @param userId
+	 * @param id
+	 * @return SurveyUnitDetailDto
+	 */
 	@Override
 	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
 		Optional<SurveyUnit> surveyUnit = null;
@@ -84,6 +95,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return surveyUnitDetailDto;
 	}
 
+	/**
+	 * Retrieve all the SurveyUnit entity by userId
+	 * @param userId
+	 * @return List of SurveyUnitDto
+	 */
 	@Override
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
 		List<SurveyUnitDto> surveyUnitDtoReturned = new ArrayList<>();
@@ -104,7 +120,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 	
 	/**
-	 * This method update all the fields passed in the SurveyUnitDeatilDto parameter
+	 * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in parameter
+	 * @param userId
+	 * @param id
+	 * @param surveyUnitDetailDto
 	 * @return HttpStatus
 	 */
 	@Override

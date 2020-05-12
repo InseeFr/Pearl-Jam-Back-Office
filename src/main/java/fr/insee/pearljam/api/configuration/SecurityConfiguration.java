@@ -27,10 +27,9 @@ import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
 
 /**
  * SecurityConfiguration is the class using to configure security.<br>
- * 3 ways to authenticated : <br>
+ * 2 ways to authenticated : <br>
  * 0 - without authentication,<br>
  * 1 - basic authentication <br>
- * 2 - and keycloak authentication <br>
  * 
  * @author Claudel Benjamin
  * 
