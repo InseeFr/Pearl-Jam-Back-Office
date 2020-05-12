@@ -1,17 +1,16 @@
 package fr.insee.pearljam.api;
 
 import static io.restassured.RestAssured.get;
-
-import java.sql.SQLException;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.blankOrNullString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +33,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.service.InterviewerService;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import io.restassured.RestAssured;
-import liquibase.Contexts;
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.FileSystemResourceAccessor;
-import liquibase.resource.ResourceAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,9 +45,18 @@ import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import liquibase.Contexts;
+import liquibase.Liquibase;
+import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 
 /**
  * Class for testing the application
@@ -82,9 +79,6 @@ class ApiApplicationRestAssureTests {
 	
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
-    
-	@Autowired
-	SurveyUnitService surveyUnitService;
 
 	@LocalServerPort
 	int port;
@@ -250,7 +244,7 @@ class ApiApplicationRestAssureTests {
 		ds.setUser(postgreSQLContainer.getUsername());
 		ds.setPassword(postgreSQLContainer.getPassword());
 		DatabaseConnection dbconn = new JdbcConnection(ds.getConnection());
-		ResourceAccessor ra = new FileSystemResourceAccessor("src/test/resources/sql/changelog");
+		ResourceAccessor ra = new FileSystemResourceAccessor("src/main/resources/db/changelog");
 		liquibase = new Liquibase("000_init.xml", ra, dbconn);
 		liquibase.dropAll();
 		liquibase.update(new Contexts());
