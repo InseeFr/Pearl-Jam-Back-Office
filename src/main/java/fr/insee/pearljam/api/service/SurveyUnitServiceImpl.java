@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -122,9 +124,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	 * @param surveyUnitDetailDto
 	 * @return HttpStatus
 	 */
+	@Transactional
 	@Override
 	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if(surveyUnitDetailDto == null || !id.equals(surveyUnitDetailDto.getId())) {
+		if(surveyUnitDetailDto == null || !id.equals(surveyUnitDetailDto.getId()) || !surveyUnitDetailDto.isValid()) {
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<SurveyUnit> surveyUnit = null;
@@ -142,22 +145,24 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnit.get().setPhoneNumbers(surveyUnitDetailDto.getPhoneNumbers());
 		surveyUnitRepository.save(surveyUnit.get());
 	
-		InseeAddress inseeAddress;
-		Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
-		if(!optionalInseeAddress.isPresent()) {
-			inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation());
-		} else {
-			inseeAddress = optionalInseeAddress.get();
-			inseeAddress.setL1(surveyUnitDetailDto.getAddress().getL1());
-			inseeAddress.setL2(surveyUnitDetailDto.getAddress().getL2());
-			inseeAddress.setL3(surveyUnitDetailDto.getAddress().getL3());
-			inseeAddress.setL4(surveyUnitDetailDto.getAddress().getL4());
-			inseeAddress.setL5(surveyUnitDetailDto.getAddress().getL5());
-			inseeAddress.setL6(surveyUnitDetailDto.getAddress().getL6());
-			inseeAddress.setL7(surveyUnitDetailDto.getAddress().getL7());
+		if(surveyUnitDetailDto.getAddress()!=null) {
+			InseeAddress inseeAddress;
+			Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
+			if(!optionalInseeAddress.isPresent()) {
+				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation());
+			} else {
+				inseeAddress = optionalInseeAddress.get();
+				inseeAddress.setL1(surveyUnitDetailDto.getAddress().getL1());
+				inseeAddress.setL2(surveyUnitDetailDto.getAddress().getL2());
+				inseeAddress.setL3(surveyUnitDetailDto.getAddress().getL3());
+				inseeAddress.setL4(surveyUnitDetailDto.getAddress().getL4());
+				inseeAddress.setL5(surveyUnitDetailDto.getAddress().getL5());
+				inseeAddress.setL6(surveyUnitDetailDto.getAddress().getL6());
+				inseeAddress.setL7(surveyUnitDetailDto.getAddress().getL7());
+			}
+			//Update Address
+			addressRepository.save(inseeAddress);
 		}
-		//Update Address
-		addressRepository.save(inseeAddress);
 		
 		//Update Comment
 		Comment comment;
@@ -191,19 +196,20 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		
 		//Update ContactOutcome
-		ContactOutcome contactOutcome;
-		Optional<ContactOutcome> contactOutcomeOptional = contactOutcomeRepository.findBySurveyUnitAndType(surveyUnit.get(), surveyUnitDetailDto.getContactOutcome().getType());
-		if(contactOutcomeOptional.isPresent()) {
-			contactOutcome = contactOutcomeOptional.get();
-		} else {
-			contactOutcome = new ContactOutcome();
+		if(surveyUnitDetailDto.getContactOutcome()!=null){
+			ContactOutcome contactOutcome;
+			Optional<ContactOutcome> contactOutcomeOptional = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get());
+			if(contactOutcomeOptional.isPresent()) {
+				contactOutcome = contactOutcomeOptional.get();
+			} else {
+				contactOutcome = new ContactOutcome();
+			}
+			contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
+			contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
+			contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
+			contactOutcome.setSurveyUnit(surveyUnit.get());
+			contactOutcomeRepository.save(contactOutcome);
 		}
-		contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
-		contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
-		contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
-		contactOutcome.setSurveyUnit(surveyUnit.get());
-		contactOutcomeRepository.save(contactOutcome);
 		return HttpStatus.OK;
 	}
-
 }

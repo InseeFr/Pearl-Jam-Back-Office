@@ -2,6 +2,10 @@ package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
@@ -242,6 +246,18 @@ public class SurveyUnitDetailDto {
 				+ geographicalLocation + ", priority=" + priority + ", campaign=" + campaign + ", comments=" + comments
 				+ ", sampleIdentifiers=" + sampleIdentifiers + ", lastState=" + lastState + ", states=" + states
 				+ ", contactAttempts=" + contactAttempts + ", contactOutcome=" + contactOutcome + "]";
+	}
+	
+	/**
+	 * This method checks if mandatory fields in the Survey Unit are valid or not
+	 * @return boolean
+	 */
+	@JsonIgnore
+	public boolean isValid() {
+		return (StringUtils.isNotBlank(this.id) && StringUtils.isNotBlank(this.firstName) && StringUtils.isNotBlank(this.lastName) 
+				&& StringUtils.isNotBlank(this.campaign) && (this.phoneNumbers != null && !this.phoneNumbers.isEmpty()) 
+				&& (this.states != null && !this.states.isEmpty()) && this.address != null && this.geographicalLocation != null 
+				&& this.sampleIdentifiers != null && this.priority != null);
 	}
 	
 	
