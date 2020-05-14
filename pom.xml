@@ -4,11 +4,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
-	<artifactId>api</artifactId>
+	<artifactId>pearljam</artifactId>
 	<version>1.0.1</version>
 	<packaging>war</packaging>
-	<name>Pearl Jam Api</name>
-	<description>Api for Pearl Jam project</description>
+	<name>Pearl-Jam-Back-Office</name>
+	<description>Pearl-Jam-Back-Office</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

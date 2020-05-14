@@ -121,6 +121,6 @@ public class SwaggerConfiguration {
     }
     
     private ApiInfo apiInfo() {
-        return new ApiInfo("Pearl Jam Api", "Api services for PearlJam", version, "", new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE", List.of());
+        return new ApiInfo("Pearl-Jam-Back-Office", "Back-office services for for PearlJam", version, "", new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE", List.of());
     }
 }
