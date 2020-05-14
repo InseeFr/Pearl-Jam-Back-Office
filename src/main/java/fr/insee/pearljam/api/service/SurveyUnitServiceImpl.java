@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,9 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
  */
 @Service
 public class SurveyUnitServiceImpl implements SurveyUnitService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitServiceImpl.class);
+
+	
 	private static final String GUEST = "GUEST";
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
@@ -79,6 +84,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
 		}
 		if(!surveyUnit.isPresent()) {
+			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
 			return null;
 		}
 		SurveyUnitDetailDto surveyUnitDetailDto= new SurveyUnitDetailDto(surveyUnit.get());
@@ -108,6 +114,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
 		}
 		if(surveyUnitDtoIds.isEmpty()) {
+			LOGGER.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
 		}
 		for(String idSurveyUnit : surveyUnitDtoIds) {
@@ -127,7 +134,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Transactional
 	@Override
 	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if(surveyUnitDetailDto == null || !id.equals(surveyUnitDetailDto.getId()) || !surveyUnitDetailDto.isValid()) {
+		if(surveyUnitDetailDto == null) {
+			LOGGER.error("Survey Unit in parameter is null");
+			return HttpStatus.BAD_REQUEST;
+		}
+		if(!id.equals(surveyUnitDetailDto.getId())) {
+			LOGGER.error("Survey unit id and id in parameter are different", userId);
+			return HttpStatus.BAD_REQUEST;
+		}
+		if(!surveyUnitDetailDto.isValid()) {
+			LOGGER.error("Survey Unit in parameter is not well formed", userId);
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<SurveyUnit> surveyUnit = null;
@@ -137,13 +153,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
 		}
 		if(!surveyUnit.isPresent()) {
+			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
 			return HttpStatus.NOT_FOUND;
 		}
 		//Update of SurveyUnit
+		LOGGER.info("Start update in DB");
 		surveyUnit.get().setFirstName(surveyUnitDetailDto.getFirstName());
 		surveyUnit.get().setLasttName(surveyUnitDetailDto.getLastName());
 		surveyUnit.get().setPhoneNumbers(surveyUnitDetailDto.getPhoneNumbers());
 		surveyUnitRepository.save(surveyUnit.get());
+		LOGGER.info("Update survey unit ok");
 	
 		if(surveyUnitDetailDto.getAddress()!=null) {
 			InseeAddress inseeAddress;
@@ -163,6 +182,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			//Update Address
 			addressRepository.save(inseeAddress);
 		}
+		LOGGER.info("Update address ok");
 		
 		//Update Comment
 		Comment comment;
@@ -178,11 +198,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			comment.setValue(commentDto.getValue());
 			commentRepository.save(comment);
 		}
+		LOGGER.info("Update comments ok");
 		
 		//Update State
 		for(StateDto stateDto : surveyUnitDetailDto.getStates()) {
 			stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
 		}
+		LOGGER.info("Update states ok");
 		
 		//Update ContactAttempt
 		for(ContactAttemptDto contactAttemptDto : surveyUnitDetailDto.getContactAttempts()) {
@@ -194,6 +216,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(), contactAttemptDto.getStatus(), surveyUnit.get()));
 			}
 		}
+		LOGGER.info("Update contact attempts ok");
 		
 		//Update ContactOutcome
 		if(surveyUnitDetailDto.getContactOutcome()!=null){
@@ -210,6 +233,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			contactOutcome.setSurveyUnit(surveyUnit.get());
 			contactOutcomeRepository.save(contactOutcome);
 		}
+		LOGGER.info("Update contact outcome ok");
+		LOGGER.info("Finish update in DB");
 		return HttpStatus.OK;
 	}
 }

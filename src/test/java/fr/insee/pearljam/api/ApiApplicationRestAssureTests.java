@@ -229,6 +229,79 @@ class ApiApplicationRestAssureTests {
 		.assertThat().body("contactAttempts[1].date", is(1589268800)).and()
 		.assertThat().body("contactAttempts[1].status", equalTo(Status.BUL.toString()));
 	}
+	
+	@Test
+	@Order(5)
+	public void testPutSurveyUnitDetailErrorOnIds() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
+		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
+		given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
+		.when()
+			.put("api/survey-unit/12")
+		.then()
+			.statusCode(400);
+	}
+	
+	@Test
+	@Order(6)
+	public void testPutSurveyUnitDetailErrorOnStates() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
+		surveyUnitDetailDto.setStates(List.of());
+		given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
+		.when()
+			.put("api/survey-unit/11")
+		.then()
+			.statusCode(400);
+	}
+	
+	@Test
+	@Order(7)
+	public void testPutSurveyUnitDetailErrorOnAddress() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
+		surveyUnitDetailDto.setAddress(null);
+		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
+		given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
+		.when()
+			.put("api/survey-unit/11")
+		.then()
+			.statusCode(400);
+	}
+	
+	@Test
+	@Order(8)
+	public void testPutSurveyUnitDetailErrorOnFirstName() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
+		surveyUnitDetailDto.setFirstName("");
+		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
+		given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
+		.when()
+			.put("api/survey-unit/11")
+		.then()
+			.statusCode(400);
+	}
+	
+	@Test
+	@Order(9)
+	public void testPutSurveyUnitDetailErrorOnLastName() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
+		surveyUnitDetailDto.setLastName("");
+		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC)));
+		given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
+		.when()
+			.put("api/survey-unit/11")
+		.then()
+			.statusCode(400);
+	}
 
 	/**
 	 * Test that the GET endpoint "api/survey-unit/"
@@ -236,7 +309,7 @@ class ApiApplicationRestAssureTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(5)
+	@Order(10)
 	public void testGetAllSurveyUnitNotFound() throws InterruptedException, SQLException, LiquibaseException {
 		PGSimpleDataSource ds = new PGSimpleDataSource();
 		// Datasource initialization
