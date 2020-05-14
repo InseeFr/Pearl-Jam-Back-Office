@@ -51,8 +51,11 @@ public class SwaggerConfiguration {
 	 * The name of Spring application.<br>
 	 * Generate with the application property spring.application.name
 	 */
-    @Value("${spring.application.name}")
-    private String name;
+	 @Value("${spring.application.name}")
+	 private String name;
+	 
+	 @Value("${fr.insee.pearljam.version}")
+	 private String version;
     
     /**
      * @return Docket (from SpringFox dependency) with a configuration
@@ -118,6 +121,6 @@ public class SwaggerConfiguration {
     }
     
     private ApiInfo apiInfo() {
-        return new ApiInfo("PearlJam Api", "Api services for PearlJam", "1.0", "", new Contact("Metallica", "https://github.com/InseeFr/Queen-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Queen-Back-Office/blob/master/LICENSE", List.of());
+        return new ApiInfo("Pearl Jam Api", "Api services for PearlJam", version, "", new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE", List.of());
     }
 }
