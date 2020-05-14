@@ -10,9 +10,9 @@ INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_
 INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('simpsons2020x00', 1640995200, 1577836800, 'Survey on the Simpsons tv show 2020');
 INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('vqs2021x00', 1640995200, 1577836800, 'Everyday life and health survey 2021');
 
-INSERT INTO public.organization_unit (id, label, type) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL');
-INSERT INTO public.organization_unit (id, label, type) VALUES ('OU-SOUTH', 'South region organizational unit', 'LOCAL');
-INSERT INTO public.organization_unit (id, label, type) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL');
+INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
+INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
+INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-SOUTH', 'South region organizational unit', 'LOCAL', 'OU-NATIONAL');
 
 INSERT INTO public.interviewer (id, email, first_name, last_name, phone_number, organization_unit_id) VALUES ('INTW1', 'margie.lucas@ou.com', 'Margie', 'Lucas', '+3391231231230', 'OU-NORTH');
 INSERT INTO public.interviewer (id, email, first_name, last_name, phone_number, organization_unit_id) VALUES ('INTW2', 'carlton.campbell@ou.com', 'Carlton', 'Campbell', '+3391231231231', 'OU-NORTH');

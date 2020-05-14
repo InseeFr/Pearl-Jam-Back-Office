@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -40,6 +41,9 @@ public class OrganizationUnit {
 	@Enumerated(EnumType.STRING)
 	@Column(length=8)
 	public OrganizationUnitType type;
+	
+	@ManyToOne
+	public OrganizationUnit organizationUnitParent;
 	
 	/**
 	 * The visibilites of the OrganizationUnit
@@ -90,6 +94,20 @@ public class OrganizationUnit {
 	}
 
 	/**
+	 * @return the organizationUnit
+	 */
+	public OrganizationUnit getOrganizationUnitParent() {
+		return organizationUnitParent;
+	}
+
+	/**
+	 * @param organizationUnit the organizationUnit to set
+	 */
+	public void setOrganizationUnitParent(OrganizationUnit organizationUnitParent) {
+		this.organizationUnitParent = organizationUnitParent;
+	}
+
+	/**
 	 * @return the visibilities
 	 */
 	public List<Visibility> getVisibilities() {
@@ -102,5 +120,7 @@ public class OrganizationUnit {
 	public void setVisibilities(List<Visibility> visibilities) {
 		this.visibilities = visibilities;
 	}
+	
+	
 	
 }
