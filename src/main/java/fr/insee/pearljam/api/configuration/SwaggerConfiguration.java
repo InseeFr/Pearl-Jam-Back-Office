@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,8 +56,8 @@ public class SwaggerConfiguration {
 	 @Value("${spring.application.name}")
 	 private String name;
 	 
-	 @Value("${fr.insee.pearljam.version}")
-	 private String version;
+	 @Autowired
+	 BuildProperties buildProperties;
     
     /**
      * @return Docket (from SpringFox dependency) with a configuration
@@ -121,6 +123,6 @@ public class SwaggerConfiguration {
     }
     
     private ApiInfo apiInfo() {
-        return new ApiInfo("Pearl-Jam-Back-Office", "Back-office services for for PearlJam", version, "", new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE", List.of());
+        return new ApiInfo(buildProperties.getName(), "Back-office services for for PearlJam", buildProperties.getVersion(), "", new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), "LICENSEE", "https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE", List.of());
     }
 }

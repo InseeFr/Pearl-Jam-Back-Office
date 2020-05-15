@@ -8,7 +8,7 @@
 	<version>1.0.1</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
-	<description>Pearl-Jam-Back-Office</description>
+	<description>Back-office services for for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -235,6 +235,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
 				<configuration>
 					<executable>true</executable>
 					<fork>true</fork>
