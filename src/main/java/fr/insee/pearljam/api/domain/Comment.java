@@ -19,16 +19,12 @@ import javax.validation.constraints.Size;
 */
 @Entity
 @Table
-@SequenceGenerator(
-name = "seqid-gen", 
-sequenceName = "COMMENT_SEQ" ,
-initialValue = 10, allocationSize = 1)
 public class Comment {
 	/**
 	* The id of Address 
 	*/
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	/**
 	* The type of Comment 

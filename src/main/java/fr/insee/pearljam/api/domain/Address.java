@@ -13,16 +13,12 @@ import javax.persistence.ManyToOne;
 */
 import javax.persistence.SequenceGenerator;
 @Entity
-@SequenceGenerator(
-name = "seqid-gen", 
-sequenceName = "ADDRESS_SEQ" ,
-initialValue = 10, allocationSize = 1)
 public abstract class Address {
 	/**
 	* The id of Address 
 	*/
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Long id;
 	
 	/**

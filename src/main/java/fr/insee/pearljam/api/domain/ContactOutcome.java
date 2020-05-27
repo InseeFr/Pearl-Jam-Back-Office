@@ -19,16 +19,12 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-@SequenceGenerator(
-name = "seqid-gen", 
-sequenceName = "CONTACT_OUTCOME_SEQ" ,
-initialValue = 10, allocationSize = 1)
 public class ContactOutcome {
 	/**
 	 * the id of ContactOutcome
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	/**
 	 * the date of ContactOutcome

@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -138,12 +139,12 @@ class ApiApplicationRestAssureTests {
 		.assertThat().body("geographicalLocation.label", equalTo("BELFORT")).and()
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("lastState.id", is(2)).and()
-		.assertThat().body("lastState.date", is(1588149641)).and()
 		.assertThat().body("lastState.type", equalTo(StateType.ANS.toString())).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
 		.assertThat().body("states", empty()).and()
 		.assertThat().body("contactAttempts", empty());
+		assertEquals(Long.valueOf(1590504468838L), get("api/survey-unit/12").then().extract().jsonPath().getLong("lastState.date"));
 		
 	}
 	
@@ -159,8 +160,8 @@ class ApiApplicationRestAssureTests {
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
 		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020")).and()
-		.assertThat().body("collectionStartDate",hasItem(1577836800) ).and()
-		.assertThat().body("collectionEndDate", hasItem(1640995200));
+		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
+		.assertThat().body("collectionEndDate", hasItem(1622035845000L));
 	}
 	
 	/**
@@ -195,8 +196,8 @@ class ApiApplicationRestAssureTests {
 		surveyUnitDetailDto.getAddress().setL7("test");
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "")));
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626L, Status.COM), new ContactAttemptDto(1589268800L, Status.BUL)));
-		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626L, ContactOutcomeType.INI, 2));
+		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.COM), new ContactAttemptDto(1589268800000L, Status.BUL)));
+		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
 		 given()
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
@@ -217,17 +218,19 @@ class ApiApplicationRestAssureTests {
 		.assertThat().body("address.l5", equalTo("test")).and()
 		.assertThat().body("address.l6", equalTo("test")).and()
 		.assertThat().body("address.l7", equalTo("test")).and()
-		.assertThat().body("contactOutcome.date", is(1589268626)).and()
 		.assertThat().body("contactOutcome.type", equalTo(ContactOutcomeType.INI.toString())).and()
 		.assertThat().body("contactOutcome.totalNumberOfContactAttempts", is(2)).and()
 		.assertThat().body("comments[0].value", equalTo("test")).and()
 		.assertThat().body("comments[0].type", equalTo(CommentType.INTERVIEWER.toString())).and()
 		.assertThat().body("comments[1].value", blankOrNullString()).and()
 		.assertThat().body("comments[1].type", equalTo(CommentType.MANAGEMENT.toString())).and()
-		.assertThat().body("contactAttempts[0].date", is(1589268626)).and()
 		.assertThat().body("contactAttempts[0].status", equalTo(Status.COM.toString())).and()
-		.assertThat().body("contactAttempts[1].date", is(1589268800)).and()
 		.assertThat().body("contactAttempts[1].status", equalTo(Status.BUL.toString()));
+		//Tests with Junit for Long values
+		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactOutcome.date"));
+		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactAttempts[0].date"));
+		assertEquals(Long.valueOf(1589268800000L), response.then().extract().jsonPath().getLong("contactAttempts[1].date"));
+
 	}
 	
 	@Test

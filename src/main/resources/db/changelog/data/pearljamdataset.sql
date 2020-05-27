@@ -7,8 +7,8 @@ INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_
 INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 7, 'Anthony Bennett' ,'','','7 avenue de la Liberté' ,'','62000 Arras' ,'France', '62041');
 INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 8, 'Christopher Lewis' ,'','','8 route du moulin' ,'','35000 Rennes' ,'France', '35238');
 
-INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('simpsons2020x00', 1640995200, 1577836800, 'Survey on the Simpsons tv show 2020');
-INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('vqs2021x00', 1640995200, 1577836800, 'Everyday life and health survey 2021');
+INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('simpsons2020x00', 1622035845000, 1577836800000, 'Survey on the Simpsons tv show 2020');
+INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('vqs2021x00', 1622035845000, 1577836800000, 'Everyday life and health survey 2021');
 
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
@@ -46,14 +46,14 @@ INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALU
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('22', '+3351231231236');
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('23', '+3351231231237');
 
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588236041, 'ANS', '11');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588149641, 'ANS', '12');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1588063241, 'ANS', '13');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587976841, 'ANS', '14');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '20');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '21');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '22');
-INSERT INTO public.state (id, date, type, survey_unit_id) VALUES (nextval('public.state_seq'), 1587890441, 'ANS', '23');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504459838, 'ANS', '11');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504468838, 'ANS', '12');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504472342, 'ANS', '13');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'ANS', '14');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'ANS', '20');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'ANS', '21');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'ANS', '22');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'ANS', '23');
 
 INSERT INTO public."user" (id, first_name, last_name, organization_unit_id) VALUES ('ABC', 'Melinda', 'Webb', 'OU-NORTH');
 INSERT INTO public."user" (id, first_name, last_name, organization_unit_id) VALUES ('DEF', 'Everett', 'Juste', 'OU-NORTH');
@@ -66,7 +66,6 @@ INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'simpsons202
 INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'vqs2021x00');
 INSERT INTO public.preference (id_user, id_campaign) VALUES ('GHI', 'vqs2021x00');
 
-INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1640908800, 1577923200, 'OU-NORTH', 'simpsons2020x00');
-INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1640908800, 1577923200, 'OU-NORTH', 'vqs2021x00');
-INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1640908800, 1577923200, 'OU-SOUTH', 'vqs2021x00');
-
+INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1622025045000, 1590504561350, 'OU-NORTH', 'simpsons2020x00');
+INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1622025045000, 1590504564383, 'OU-NORTH', 'vqs2021x00');
+INSERT INTO public.visibility (collection_end_date, collection_start_date, organization_unit_id, campaign_id) VALUES (1622025045000, 1590504567358, 'OU-SOUTH', 'vqs2021x00');

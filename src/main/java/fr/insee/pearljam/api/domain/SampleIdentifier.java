@@ -12,16 +12,12 @@ import javax.persistence.SequenceGenerator;
 * 
 */
 @Entity
-@SequenceGenerator(
-name = "seqid-gen", 
-sequenceName = "SAMPE_IDENTIFIER_SEQ" ,
-initialValue = 10, allocationSize = 1)
 public abstract class SampleIdentifier {
 	/**
 	* The id of SampleIdentifier 
 	*/
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqid-gen")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	/**

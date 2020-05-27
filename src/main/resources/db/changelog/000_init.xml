@@ -1,34 +1,12 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-	<changeSet author="admin (generated)" id="1589444862844-1">
-        <createSequence sequenceName="address_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-2">
-        <createSequence sequenceName="comment_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-3">
-        <createSequence sequenceName="contact_attempt_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-4">
-        <createSequence sequenceName="contact_outcome_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-5">
-        <createSequence sequenceName="sampe_identifier_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-6">
-        <createSequence sequenceName="state_seq"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-7">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="scorcaud (generated)" id="1590502762850-1">
         <createTable tableName="address">
             <column name="dtype" type="VARCHAR(31)">
                 <constraints nullable="false"/>
             </column>
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="addressPK"/>
             </column>
             <column name="l1" type="VARCHAR(255)"/>
             <column name="l2" type="VARCHAR(255)"/>
@@ -40,7 +18,7 @@
             <column name="geographical_location_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-8">
+    <changeSet author="scorcaud (generated)" id="1590502762850-2">
         <createTable tableName="campaign">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -50,30 +28,30 @@
             <column name="label" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-9">
+    <changeSet author="scorcaud (generated)" id="1590502762850-3">
         <createTable tableName="comment">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="commentPK"/>
             </column>
             <column name="type" type="VARCHAR(11)"/>
             <column name="value" type="VARCHAR(255)"/>
             <column name="survey_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-10">
+    <changeSet author="scorcaud (generated)" id="1590502762850-4">
         <createTable tableName="contact_attempt">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="contact_attemptPK"/>
             </column>
             <column name="date" type="BIGINT"/>
             <column name="status" type="VARCHAR(255)"/>
             <column name="survey_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-11">
+    <changeSet author="scorcaud (generated)" id="1590502762850-5">
         <createTable tableName="contact_outcome">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="contact_outcomePK"/>
             </column>
             <column name="date" type="BIGINT"/>
             <column name="total_number_of_contact_attempts" type="INT"/>
@@ -81,7 +59,7 @@
             <column name="survey_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-12">
+    <changeSet author="scorcaud (generated)" id="1590502762850-6">
         <createTable tableName="geographical_location">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -89,7 +67,7 @@
             <column name="label" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-13">
+    <changeSet author="scorcaud (generated)" id="1590502762850-7">
         <createTable tableName="interviewer">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -101,7 +79,7 @@
             <column name="organization_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-14">
+    <changeSet author="scorcaud (generated)" id="1590502762850-8">
         <createTable tableName="organization_unit">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -111,7 +89,7 @@
             <column name="organization_unit_parent_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-15">
+    <changeSet author="scorcaud (generated)" id="1590502762850-9">
         <createTable tableName="preference">
             <column name="id_user" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -121,13 +99,13 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-16">
+    <changeSet author="scorcaud (generated)" id="1590502762850-10">
         <createTable tableName="sample_identifier">
             <column name="dtype" type="VARCHAR(31)">
                 <constraints nullable="false"/>
             </column>
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="sample_identifierPK"/>
             </column>
             <column name="autre" type="VARCHAR(50)"/>
             <column name="bs" type="INT"/>
@@ -142,17 +120,17 @@
             <column name="ssech" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-17">
+    <changeSet author="scorcaud (generated)" id="1590502762850-11">
         <createTable tableName="state">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="statePK"/>
             </column>
             <column name="date" type="BIGINT"/>
             <column name="type" type="VARCHAR(3)"/>
             <column name="survey_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-18">
+    <changeSet author="scorcaud (generated)" id="1590502762850-12">
         <createTable tableName="survey_unit">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -166,7 +144,7 @@
             <column name="sample_identifier_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-19">
+    <changeSet author="scorcaud (generated)" id="1590502762850-13">
         <createTable tableName="survey_unit_phone_numbers">
             <column name="survey_unit_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -174,7 +152,7 @@
             <column name="phone_numbers" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-20">
+    <changeSet author="scorcaud (generated)" id="1590502762850-14">
         <createTable tableName="user">
             <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -184,7 +162,7 @@
             <column name="organization_unit_id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-21">
+    <changeSet author="scorcaud (generated)" id="1590502762850-15">
         <createTable tableName="visibility">
             <column name="campaign_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -196,94 +174,76 @@
             <column name="collection_start_date" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-22">
-        <addPrimaryKey columnNames="id" constraintName="addressPK" tableName="address"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-23">
+    <changeSet author="scorcaud (generated)" id="1590502762850-16">
         <addPrimaryKey columnNames="id" constraintName="campaignPK" tableName="campaign"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-24">
-        <addPrimaryKey columnNames="id" constraintName="commentPK" tableName="comment"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-25">
-        <addPrimaryKey columnNames="id" constraintName="contact_attemptPK" tableName="contact_attempt"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-26">
-        <addPrimaryKey columnNames="id" constraintName="contact_outcomePK" tableName="contact_outcome"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-27">
+    <changeSet author="scorcaud (generated)" id="1590502762850-17">
         <addPrimaryKey columnNames="id" constraintName="geographical_locationPK" tableName="geographical_location"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-28">
+    <changeSet author="scorcaud (generated)" id="1590502762850-18">
         <addPrimaryKey columnNames="id" constraintName="interviewerPK" tableName="interviewer"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-29">
+    <changeSet author="scorcaud (generated)" id="1590502762850-19">
         <addPrimaryKey columnNames="id" constraintName="organization_unitPK" tableName="organization_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-30">
-        <addPrimaryKey columnNames="id" constraintName="sample_identifierPK" tableName="sample_identifier"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-31">
-        <addPrimaryKey columnNames="id" constraintName="statePK" tableName="state"/>
-    </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-32">
+    <changeSet author="scorcaud (generated)" id="1590502762850-20">
         <addPrimaryKey columnNames="id" constraintName="survey_unitPK" tableName="survey_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-33">
+    <changeSet author="scorcaud (generated)" id="1590502762850-21">
         <addPrimaryKey columnNames="id" constraintName="userPK" tableName="user"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-34">
+    <changeSet author="scorcaud (generated)" id="1590502762850-22">
         <addPrimaryKey columnNames="campaign_id, organization_unit_id" constraintName="visibilityPK" tableName="visibility"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-35">
+    <changeSet author="scorcaud (generated)" id="1590502762850-23">
         <addForeignKeyConstraint baseColumnNames="organization_unit_id" baseTableName="user" constraintName="FK15k0inwfsiqjox8hhpcuqagac" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-36">
+    <changeSet author="scorcaud (generated)" id="1590502762850-24">
         <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="survey_unit_phone_numbers" constraintName="FK4ytqabrh31vpuqu7725qgvv0k" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-37">
+    <changeSet author="scorcaud (generated)" id="1590502762850-25">
         <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="contact_outcome" constraintName="FK5m8uar3ys6o0jueaob678ut8l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-38">
+    <changeSet author="scorcaud (generated)" id="1590502762850-26">
         <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="contact_attempt" constraintName="FK741l2mfs45vi309cvu1hngtpc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-39">
+    <changeSet author="scorcaud (generated)" id="1590502762850-27">
         <addForeignKeyConstraint baseColumnNames="campaign_id" baseTableName="survey_unit" constraintName="FKceojdjumb845c95ls1gb4lh98" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="campaign"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-40">
+    <changeSet author="scorcaud (generated)" id="1590502762850-28">
         <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="survey_unit" constraintName="FKcfmcr0ny1voq8kc0q5qpa0u7u" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-41">
+    <changeSet author="scorcaud (generated)" id="1590502762850-29">
         <addForeignKeyConstraint baseColumnNames="sample_identifier_id" baseTableName="survey_unit" constraintName="FKdel3e5om67ixieu4cl6oi442t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="sample_identifier"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-42">
+    <changeSet author="scorcaud (generated)" id="1590502762850-30">
         <addForeignKeyConstraint baseColumnNames="id_campaign" baseTableName="preference" constraintName="FKh1r8okfd9tdx34drbhxfkbok0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="campaign"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-43">
+    <changeSet author="scorcaud (generated)" id="1590502762850-31">
         <addForeignKeyConstraint baseColumnNames="organization_unit_parent_id" baseTableName="organization_unit" constraintName="FKi3yifw8opky684b61d8uqp2tv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-44">
+    <changeSet author="scorcaud (generated)" id="1590502762850-32">
         <addForeignKeyConstraint baseColumnNames="geographical_location_id" baseTableName="address" constraintName="FKkde8gpc211k0js7ski77m4q7h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="geographical_location"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-45">
+    <changeSet author="scorcaud (generated)" id="1590502762850-33">
         <addForeignKeyConstraint baseColumnNames="organization_unit_id" baseTableName="interviewer" constraintName="FKkja2mrmqcmteo44fq53m5ktst" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-46">
+    <changeSet author="scorcaud (generated)" id="1590502762850-34">
         <addForeignKeyConstraint baseColumnNames="interviewer_id" baseTableName="survey_unit" constraintName="FKm4vvylnwl7bywkm1lr01o216e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="interviewer"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-47">
+    <changeSet author="scorcaud (generated)" id="1590502762850-35">
         <addForeignKeyConstraint baseColumnNames="campaign_id" baseTableName="visibility" constraintName="FKmsqdmu3ek09g1p6da7ecf2bb" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="campaign"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-48">
+    <changeSet author="scorcaud (generated)" id="1590502762850-36">
         <addForeignKeyConstraint baseColumnNames="organization_unit_id" baseTableName="visibility" constraintName="FKoi44gi2u13hl608iqe2uekayj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-49">
+    <changeSet author="scorcaud (generated)" id="1590502762850-37">
         <addForeignKeyConstraint baseColumnNames="id_user" baseTableName="preference" constraintName="FKoww9dpbng58b4c25enfi45kl4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-50">
+    <changeSet author="scorcaud (generated)" id="1590502762850-38">
         <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="comment" constraintName="FKt3h4kiayxsaln3l0xol5tpbvg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
     </changeSet>
-    <changeSet author="admin (generated)" id="1589444862844-51">
+    <changeSet author="scorcaud (generated)" id="1590502762850-39">
         <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="state" constraintName="FKtkvilge16fs9ik6fq4r1fy214" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
     </changeSet>
 </databaseChangeLog>
