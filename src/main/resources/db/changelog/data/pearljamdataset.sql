@@ -1,11 +1,11 @@
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 1, 'Ted Farmer' ,'','','1 rue de la gare' ,'','29270 Carhaix' ,'France', '29024');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 2, 'Cecilia Ortega' ,'','','2 place de la mairie' ,'','90000 Belfort' ,'France', '90010');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 3, 'Claude Watkins' ,'','','3 avenue de la République' ,'','32230 Marciac' ,'France', '32233');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 4, 'Veronica Gill' ,'','','4 chemin du ruisseau' ,'','44190 Clisson' ,'France', '44043');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 5, 'Christine Aguilar' ,'','','5 rue de l''école' ,'','59620 Aulnoye-Aimeries' ,'France', '59033');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 6, 'Louise Walker' ,'','','6 impasse du lac' ,'','38200 Vienne' ,'France', '38544');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 7, 'Anthony Bennett' ,'','','7 avenue de la Liberté' ,'','62000 Arras' ,'France', '62041');
-INSERT INTO public.address (dtype, id, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 8, 'Christopher Lewis' ,'','','8 route du moulin' ,'','35000 Rennes' ,'France', '35238');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Ted Farmer' ,'','','1 rue de la gare' ,'','29270 Carhaix' ,'France', '29024');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Cecilia Ortega' ,'','','2 place de la mairie' ,'','90000 Belfort' ,'France', '90010');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Claude Watkins' ,'','','3 avenue de la République' ,'','32230 Marciac' ,'France', '32233');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Veronica Gill' ,'','','4 chemin du ruisseau' ,'','44190 Clisson' ,'France', '44043');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Christine Aguilar' ,'','','5 rue de l''école' ,'','59620 Aulnoye-Aimeries' ,'France', '59033');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Louise Walker' ,'','','6 impasse du lac' ,'','38200 Vienne' ,'France', '38544');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Anthony Bennett' ,'','','7 avenue de la Liberté' ,'','62000 Arras' ,'France', '62041');
+INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress', 'Christopher Lewis' ,'','','8 route du moulin' ,'','35000 Rennes' ,'France', '35238');
 
 INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('simpsons2020x00', 1622035845000, 1577836800000, 'Survey on the Simpsons tv show 2020');
 INSERT INTO public.campaign (id, collection_end_date, collection_start_date, label) VALUES ('vqs2021x00', 1622035845000, 1577836800000, 'Everyday life and health survey 2021');
@@ -19,14 +19,14 @@ INSERT INTO public.interviewer (id, email, first_name, last_name, phone_number, 
 INSERT INTO public.interviewer (id, email, first_name, last_name, phone_number, organization_unit_id) VALUES ('INTW3', 'gerald.edwards@ou.com', 'Gerald', 'Edwards', '+3391231231231', 'OU-NORTH');
 INSERT INTO public.interviewer (id, email, first_name, last_name, phone_number, organization_unit_id) VALUES ('INTW4', 'melody.grant@ou.com', 'Melody', 'Grant', '+3391231231231', 'OU-SOUTH');
 
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 1, '11', 11, '1', 11, '11', 11, 11, 11, 11, 11, 1);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 2, '12', 12, '1', 12, '12', 12, 12, 12, 12, 12, 1);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 3, '13', 13, '1', 13, '13', 13, 13, 13, 13, 13, 2);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 4, '14', 14, '1', 14, '14', 14, 14, 14, 14, 14, 3);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 5, '20', 20, '2', 20, '20', 20, 20, 20, 20, 20, 1);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 6, '21', 21, '2', 21, '21', 21, 21, 21, 21, 21, 1);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 7, '22', 22, '2', 22, '22', 22, 22, 22, 22, 22, 2);
-INSERT INTO public.sample_identifier (dtype, id, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', 8, '23', 23, '2', 23, '23', 23, 23, 23, 23, 23, 1);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '11', 11, '1', 11, '11', 11, 11, 11, 11, 11, 1);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '12', 12, '1', 12, '12', 12, 12, 12, 12, 12, 1);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '13', 13, '1', 13, '13', 13, 13, 13, 13, 13, 2);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '14', 14, '1', 14, '14', 14, 14, 14, 14, 14, 3);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '20', 20, '2', 20, '20', 20, 20, 20, 20, 20, 1);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '21', 21, '2', 21, '21', 21, 21, 21, 21, 21, 1);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '22', 22, '2', 22, '22', 22, 22, 22, 22, 22, 2);
+INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES ('InseeSampleIdentifier', '23', 23, '2', 23, '23', 23, 23, 23, 23, 23, 1);
 
 INSERT INTO public.survey_unit (id, first_name, last_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id) VALUES ('11', 'Ted', 'Farmer', TRUE, 1, 'simpsons2020x00', 'INTW1', 1);
 INSERT INTO public.survey_unit (id, first_name, last_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id) VALUES ('12', 'Cecilia', 'Ortega', TRUE, 2, 'simpsons2020x00', 'INTW1', 2);
