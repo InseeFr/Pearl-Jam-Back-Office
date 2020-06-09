@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 /**
@@ -54,7 +53,6 @@ public class Comment {
 	}
 	public Comment() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * @return the id

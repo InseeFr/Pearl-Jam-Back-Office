@@ -50,37 +50,41 @@ Copy your WAR file from target/ to the tomcat/webapps/ folder
 ### 3. Tomcat config
 Before to startup the tomcat server, some configurations are needed : 
  
-  
-#### Define the JAVA_OPTS
-Set the value of JAVA_OPTS  
-```shell
-JAVA_OPTS=-Dspring.profiles.active=prod -Dspring.config.location=classpath:/,${catalina.base}/webapps/insee.properties
-``` 
-This line will define the profile to use and the location of external properties.  
-
-#### Properties file
-In the classpath define before, create insee.properties and complete the following properties:  
+#### External Properties file
+Create pearljam-bo.properties near war file and complete the following properties:  
 ```shell  
-fr.insee.pearljam.application.mode=NoAuth #or KeyCloak or Basic
+#Profile configuration
+spring.profiles.active=prod
+
+#Logs configuration
+fr.insee.pearljam.logging.path=${catalina.base}/webapps/log4j2.xml
+fr.insee.pearljam.logging.level=DEBUG
+
+#Application configuration
+fr.insee.pearljam.application.mode=NoAuth
 fr.insee.pearljam.application.crosOrigin=*
 
-fr.insee.pearljam.persistence.database.host = localhost
-fr.insee.pearljam.persistence.database.port = 5433
-fr.insee.pearljam.persistence.database.schema = schema_name
-fr.insee.pearljam.persistence.database.user = user_name
-fr.insee.pearljam.persistence.database.password = password
+#Database configuration
+fr.insee.pearljam.persistence.database.host = pearljam-db
+fr.insee.pearljam.persistence.database.port = 5432
+fr.insee.pearljam.persistence.database.schema = pearljam
+fr.insee.pearljam.persistence.database.user = pearljam
+fr.insee.pearljam.persistence.database.password = pearljam
 fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
-
-fr.insee.qpearljamueen.logging.path=classpath:log4j2.xml
 fr.insee.pearljam.defaultSchema=public
 
-keycloak.realm=PearlJamAPI
-keycloak.resource=PearlJamAPI
+#Keycloak configuration
+keycloak.realm=pearljam
+keycloak.resource=pearljam
 keycloak.auth-server-url=http://localhost:8180/auth
 keycloak.ssl-required=external
 keycloak.public-client=true
-keycloak.principal-attribute:preferred_username	 
-```  
+keycloak.principal-attribute:preferred_username
+keycloak.enabled=false
+```
+
+#### External log file
+Create log4j2.xml near war file and define your  external config for logs. 
 
 ### 4. Tomcat start
 From a terminal navigate to tomcat/bin folder and execute  
@@ -92,7 +96,7 @@ catalina.sh run (on Unix-based systems)
 ```  
 
 ### 5. Application Access
-To access to swagger-ui, use this url : [http://localhost:8080/queen-0.0.1-SNAPSHOT/swagger-ui.html](http://localhost:8080/queen-0.0.1-SNAPSHOT/swagger-ui.html)  
+To access to swagger-ui, use this url : [http://localhost:8080/pearljam-1.1.0/swagger-ui.html](http://localhost:8080/pearljam-1.1.0/swagger-ui.html)  
 To access to keycloak, use this url : [http://localhost:8180](http://localhost:8180)  
 
 ## Before you commit

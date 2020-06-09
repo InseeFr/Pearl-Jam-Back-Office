@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam</artifactId>
-	<version>1.0.4</version>
+	<version>1.1.0</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>

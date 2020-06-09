@@ -5,13 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-/**
-* Entity Address : represent the entity table in DB
-* 
-* @author Claudel Benjamin
-* 
-*/
-import javax.persistence.SequenceGenerator;
 @Entity
 public abstract class Address {
 	/**
