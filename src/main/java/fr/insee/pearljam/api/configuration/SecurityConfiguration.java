@@ -89,14 +89,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		switch (this.applicationProperties.getMode()) {
 			case Basic:
 				http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
-				http.authorizeRequests().antMatchers("/api/survey-unit/{id}").hasRole("interviewer")
+				http.authorizeRequests()
+					.antMatchers(HttpMethod.OPTIONS).permitAll()
+					.antMatchers("/api/survey-unit/{id}").hasRole("interviewer")
 					.antMatchers("/api/survey-units/").hasRole("interviewer")
 					.anyRequest().denyAll(); 
 				break;
 			default:
 				http.httpBasic().disable();
 				http.authorizeRequests()
-				.antMatchers("/survey-units/","/survey-unit/{id}").permitAll();
+					.antMatchers(HttpMethod.OPTIONS).permitAll()
+					.antMatchers("/survey-units/","/survey-unit/{id}").permitAll();
 				break;
 		}
 	}
