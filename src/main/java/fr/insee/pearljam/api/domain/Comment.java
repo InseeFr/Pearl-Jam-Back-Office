@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 /**
 * Entity Comment : represent the entity table in DB
 * 
@@ -44,7 +43,7 @@ public class Comment {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 	
-	public Comment(Long id, CommentType type, String value, @Size(min = 0, max = 2) SurveyUnit surveyUnit) {
+	public Comment(Long id, CommentType type, String value, SurveyUnit surveyUnit) {
 		super();
 		this.id = id;
 		this.type = type;
