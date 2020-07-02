@@ -75,7 +75,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
    				.antMatchers("/api/survey-unit/{id}").hasRole("investigator")
-				.antMatchers("/api/survey-units/").hasRole("investigator")
+				.antMatchers("/api/survey-units").hasRole("investigator")
 				.anyRequest().denyAll(); 
 	}
 	

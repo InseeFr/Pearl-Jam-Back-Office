@@ -26,7 +26,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit su "
 			+ "LEFT JOIN state st ON st.survey_unit_id = su.id "
 			+ "JOIN campaign camp ON camp.id = su.campaign_id "
-			+ "WHERE su.interviewer_id=?1", nativeQuery=true)
+			+ "WHERE su.interviewer_id ILIKE ?1", nativeQuery=true)
 	List<String> findIdsByInterviewerId(String idInterviewer);
 
 	/**
