@@ -72,7 +72,7 @@ public class SwaggerConfiguration {
      */
 	 @Bean
     public Docket productApi() {
-		 List<ResponseMessage> messages = new ArrayList<ResponseMessage>();
+		 List<ResponseMessage> messages = new ArrayList<>();
 	    	messages.add(new ResponseMessageBuilder().code(200).message("Success!").build());
 	    	messages.add(new ResponseMessageBuilder().code(401).message("Not authorized!").build());
 	    	messages.add(new ResponseMessageBuilder().code(403).message("Forbidden!").build());
@@ -89,7 +89,7 @@ public class SwaggerConfiguration {
 	    			+ "\n- SampleIdentifiers must be fielded"
 	    			+ "\n- States must be fielded").build());
         return new Docket(DocumentationType.SWAGGER_2).select()
-                .apis(RequestHandlerSelectors.basePackage("fr.insee.queen.api.controller")).build().apiInfo(apiInfo())
+                .apis(RequestHandlerSelectors.basePackage("fr.insee.pearljam.api.controller")).build().apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
                 .useDefaultResponseMessages(false)
         		.globalResponseMessage(RequestMethod.GET, messages)
