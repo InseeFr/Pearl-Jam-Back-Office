@@ -51,7 +51,7 @@ public class SurveyUnitController {
 	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get SurveyUnits")
-	@GetMapping(path = "/survey-units/")
+	@GetMapping(path = "/survey-units")
 	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request) {
 		String userId = interviewerService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !interviewerService.existInterviewer(userId)) {

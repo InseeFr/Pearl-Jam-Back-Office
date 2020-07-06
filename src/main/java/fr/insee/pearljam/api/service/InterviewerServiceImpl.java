@@ -1,11 +1,8 @@
 package fr.insee.pearljam.api.service;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.IDToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +25,6 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Autowired
 	ApplicationProperties applicationProperties;
 	
-	private static final String IDINTERVIEWER = "idInterviewer";
 	
 	/**
 	 * This method check if the Interviewer exist or not in database
@@ -37,7 +33,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	 */
 	@Override
 	public boolean existInterviewer(String userId) {
-		return "GUEST".equals(userId) || interviewerRepository.findById(userId).isPresent();
+		return "GUEST".equals(userId) || interviewerRepository.findByIdIgnoreCase(userId).isPresent();
 	}
 	
 	/**
@@ -59,11 +55,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 			break;
 		case Keycloak:
 			KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
-			IDToken token = keycloak.getAccount().getKeycloakSecurityContext().getIdToken();
-			Map<String, Object> otherClaims = token.getOtherClaims();
-			if (otherClaims.containsKey(IDINTERVIEWER)) {
-				userId = String.valueOf(otherClaims.get(IDINTERVIEWER));
-			}
+			userId = keycloak.getPrincipal().toString();
 			break;
 		default:
 			userId = "GUEST";

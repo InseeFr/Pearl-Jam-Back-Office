@@ -61,7 +61,7 @@ fr.insee.pearljam.logging.path=${catalina.base}/webapps/log4j2.xml
 fr.insee.pearljam.logging.level=DEBUG
 
 #Application configuration
-fr.insee.pearljam.application.mode=NoAuth
+fr.insee.pearljam.application.mode=KeyCloak
 fr.insee.pearljam.application.crosOrigin=*
 
 #Database configuration
@@ -74,13 +74,12 @@ fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.defaultSchema=public
 
 #Keycloak configuration
-keycloak.realm=pearljam
-keycloak.resource=pearljam
+keycloak.realm=insee-realm
+keycloak.resource=pearljam-web
 keycloak.auth-server-url=http://localhost:8180/auth
-keycloak.ssl-required=external
 keycloak.public-client=true
+keycloak.bearer-only=true
 keycloak.principal-attribute:preferred_username
-keycloak.enabled=false
 ```
 
 #### External log file
