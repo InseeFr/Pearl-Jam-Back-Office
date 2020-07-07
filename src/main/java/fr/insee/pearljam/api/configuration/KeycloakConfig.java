@@ -8,6 +8,7 @@ import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,7 +39,10 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
 @EnableWebSecurity
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
-
+	
+	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
+	private String role;
+	
 	/**
 	 * Configure the accessible URI without any roles or permissions
 	 */
@@ -74,8 +78,8 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
-   				.antMatchers("/api/survey-unit/{id}").hasRole("investigator")
-				.antMatchers("/api/survey-units").hasRole("investigator")
+   				.antMatchers("/api/survey-unit/{id}").hasRole(role)
+				.antMatchers("/api/survey-units").hasRole(role)
 				.anyRequest().denyAll(); 
 	}
 	
@@ -94,6 +98,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
      * Required to handle spring boot configurations
      * @return
      */
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
     @Bean
     public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
@@ -102,6 +107,8 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     /**
      * Defines the session authentication strategy.
      */
+    @Bean
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
 	@Override
 	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
         // required for bearer-only applications.

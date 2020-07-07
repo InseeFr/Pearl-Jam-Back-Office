@@ -81,7 +81,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(userId.equals(GUEST)) {
 			surveyUnit = surveyUnitRepository.findById(id);
 		} else {
-			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
+			surveyUnit = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
 		if(!surveyUnit.isPresent()) {
 			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
@@ -150,7 +150,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(userId.equals(GUEST)) {
 			surveyUnit = surveyUnitRepository.findById(id);
 		}else {
-			surveyUnit = surveyUnitRepository.findByIdAndInterviewerId(id, userId);
+			surveyUnit = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
 		if(!surveyUnit.isPresent()) {
 			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
