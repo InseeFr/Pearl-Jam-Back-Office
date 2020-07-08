@@ -29,15 +29,6 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	UserRepository userRepository;
-	/**
-	 * This method check if the Interviewer exist or not in database
-	 * @param userId
-	 * @return boolean
-	 */
-	@Override
-	public boolean existUser(String userId) {
-			return "GUEST".equals(userId) || userRepository.findByIdIgnoreCase(userId).isPresent();
-	}
 	
 	public List<CampaignDto> getListCampaign(String userId) {
 		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
@@ -53,6 +44,10 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		for(String idCampaign : campaignDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
+			campaign.setAffected(0L);
+			campaign.setInProgress(0L);
+			campaign.setToAffect(0L);
+			campaign.setToControl(0L);
 			campaignDtoReturned.add(campaign);
 		}
 		return campaignDtoReturned;

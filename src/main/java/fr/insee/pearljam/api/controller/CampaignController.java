@@ -18,6 +18,7 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.InterviewerService;
+import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -31,15 +32,19 @@ public class CampaignController {
 	
 	@Autowired
 	InterviewerService interviewerService;
+	
+	@Autowired
+	UtilsService utilsService;
+	
 	/**
-	* This method is using to get the list of SurveyUnit for current user
+	* This method is using to get the list of Campaigns for current user
 	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
-	@ApiOperation(value = "Get SurveyUnits")
+	@ApiOperation(value = "Get Campaigns")
 	@GetMapping(path = "/campaigns")
 	public ResponseEntity<Object> getListCampaign(HttpServletRequest request) {
-		String userId = interviewerService.getUserId(request);
-		if(StringUtils.isBlank(userId)) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstSurveyUnit = campaignService.getListCampaign(userId);
