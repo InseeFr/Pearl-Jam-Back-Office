@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 
@@ -53,4 +54,19 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDtoReturned;
 	}
 
+  public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
+		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
+		if(userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) {
+      interviewersDtoReturned = campaignRepository.findInterviewersDtoByCampaignId(campaignId);
+		}
+		if(interviewersDtoReturned.isEmpty()) {
+			LOGGER.error("No interviewers found for the user {} and the campaign {}", userId, campaignId);
+			return List.of();
+		}
+		return interviewersDtoReturned;
+	}
+
+  public boolean isUserAssociatedToTheCampaign(String userId, String campaignId){
+  	return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty());
+  }
 }

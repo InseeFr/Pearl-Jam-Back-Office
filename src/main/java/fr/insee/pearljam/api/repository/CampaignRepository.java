@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	
@@ -27,4 +28,30 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	List<String> findIdsByUserId(String idInterviewer);
 	
 	CampaignDto findDtoById(String id);
+
+  /**
+	* This method allows to check if user userId is associated with campaign campaignId 
+	* 
+	* @return List of all {@link SurveyUnit}
+	*/
+	@Query(value="SELECT 1 "
+			+ "FROM preference pref "
+			+ "WHERE pref.id_user ILIKE ?1 "
+      + "AND pref.id_campaign = ?2", nativeQuery=true)
+	List<Integer> checkCampaignPreferences(String userId, String campaignId);
+
+
+  /**
+	* This method retrieve all interviewers associated with a campaign 
+	* 
+	* @return List of all {@link SurveyUnit}
+	*/
+  @Query("SELECT "
+			+ "new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName, COUNT(su.interviewer)) "
+      + "FROM SurveyUnit su "
+      + "INNER JOIN Interviewer interv ON su.interviewer.id = interv.id "
+      + "WHERE su.campaign.id=?1 "
+      + "GROUP BY interv.id")
+	List<InterviewerDto> findInterviewersDtoByCampaignId(String id);
 }
+

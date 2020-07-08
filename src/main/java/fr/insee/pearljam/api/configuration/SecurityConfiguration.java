@@ -83,6 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// configuration for endpoints
 				.antMatchers("/api/survey-unit/{id}").hasRole(role)
 				.antMatchers("/api/survey-units").hasRole(role)
+				.antMatchers("/api/campaigns/{id}/interviewers").hasRole(role)
 				.anyRequest().denyAll();
 		} else {
 			http.httpBasic().disable();
@@ -92,7 +93,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// configuration for Swagger
 				.antMatchers("/swagger-ui.html/**", "/v2/api-docs", "/csrf", "/", "/webjars/**", "/swagger-resources/**") .permitAll()
 				.antMatchers("/environnement", "/healthcheck").permitAll()
-				.antMatchers("/api/survey-units", "/api/survey-unit/{id}").permitAll();
+				.antMatchers("/api/survey-units", "/api/survey-unit/{id}","/api/campaigns/{id}/interviewers").permitAll();
 		}
 	}
 
