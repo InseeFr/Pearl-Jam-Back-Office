@@ -50,13 +50,13 @@ public class CampaignController {
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<CampaignDto> lstSurveyUnit = campaignService.getListCampaign(userId);
-			if(lstSurveyUnit==null || lstSurveyUnit.isEmpty()){
+			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
+			if(lstCampaigns==null || lstCampaigns.isEmpty()){
 				LOGGER.info("GET Campaign resulting in 404" );
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			LOGGER.info("GET Campaign resulting in 200" );
-			return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
+			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 		}
 	}
 

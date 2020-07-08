@@ -25,6 +25,7 @@ import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CommentRepository;
 import fr.insee.pearljam.api.repository.ContactAttemptRepository;
@@ -236,5 +237,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		LOGGER.info("Update contact outcome ok");
 		LOGGER.info("Finish update in DB");
 		return HttpStatus.OK;
+	}
+	
+	public List<SurveyUnitCampaign> getSurveyUnitByCampaign(String id, String userId) {
+		List<SurveyUnitCampaign> surveyUnitCampaignReturned = new ArrayList<>(surveyUnitRepository.getSurveyUnitByCampaignId(id, userId));
+		return surveyUnitCampaignReturned;		
 	}
 }

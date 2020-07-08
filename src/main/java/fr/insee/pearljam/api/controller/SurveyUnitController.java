@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -116,6 +117,34 @@ public class SurveyUnitController {
 			HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
 			LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	/**
+	* This method is using to update the comment associated to a specific reporting unit 
+	* 
+	* @param commentValue the value to update
+	* @param id	the id of reporting unit
+	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
+	* @throws ParseException 
+	* @throws SQLException 
+	* 
+	*/
+	@ApiOperation(value = "Update the Survey Unit")
+	@GetMapping(path = "/campaign/{id}/survey-units")
+	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id) throws SQLException {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}else {
+			List<SurveyUnitCampaign> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId);
+			if (surveyUnit==null) {
+				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
+				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
+			}
 		}
 	}
 }

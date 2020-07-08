@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 
 /**
  * Service for the SurveyUnit entity
@@ -37,5 +38,7 @@ public interface SurveyUnitService {
 	 * @return HttpStatus
 	 */
 	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
+	
+	List<SurveyUnitCampaign> getSurveyUnitByCampaign(String userId, String id);
 
 }
