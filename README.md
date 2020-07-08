@@ -80,6 +80,9 @@ keycloak.auth-server-url=http://localhost:8180/auth
 keycloak.public-client=true
 keycloak.bearer-only=true
 keycloak.principal-attribute:preferred_username
+
+#Keycloak roles
+fr.insee.pearljam.interviewer.role=interviewer
 ```
 
 #### External log file
