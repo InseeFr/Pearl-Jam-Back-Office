@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 
 /**
 * SurveyUnitRepository is the repository using to access to SurveyUnit table in DB
@@ -52,12 +50,11 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM SurveyUnit su WHERE su.id=?1")
 	CampaignDto findCampaignDtoById(String id);
 
-	@Query(value="SELECT su.id, ad.l6, si.ssech FROM survey_unit su " + 
-			"INNER JOIN address ad on ad.id = su.address_id " +
-			"INNER JOIN sample_identifier si ON si.id = su.sample_identifier_id " + 
+	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2", nativeQuery=true)
-	Collection<SurveyUnitCampaign> getSurveyUnitByCampaignId(String id, String userId);
+	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
 
 }

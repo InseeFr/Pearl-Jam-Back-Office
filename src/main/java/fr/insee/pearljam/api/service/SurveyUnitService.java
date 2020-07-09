@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 
 /**
  * Service for the SurveyUnit entity
@@ -39,6 +39,6 @@ public interface SurveyUnitService {
 	 */
 	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
 	
-	List<SurveyUnitCampaign> getSurveyUnitByCampaign(String userId, String id);
+	List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id);
 
 }

@@ -23,14 +23,15 @@ import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CommentRepository;
 import fr.insee.pearljam.api.repository.ContactAttemptRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
+import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
@@ -69,6 +70,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	
 	@Autowired
 	GeographicalLocationRepository geographicalLocationRepository;
+	
+	@Autowired
+	InterviewerRepository interviewerRepository;
 	
 	/**
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
@@ -239,8 +243,28 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return HttpStatus.OK;
 	}
 	
-	public List<SurveyUnitCampaign> getSurveyUnitByCampaign(String id, String userId) {
-		List<SurveyUnitCampaign> surveyUnitCampaignReturned = new ArrayList<>(surveyUnitRepository.getSurveyUnitByCampaignId(id, userId));
+	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String id, String userId) {
+		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
+		List<String> surveyUnitDtoIds = null;
+		if(userId.equals(GUEST)) {
+			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
+		} else {
+			surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserId(id, userId);
+		}
+		if(surveyUnitDtoIds.isEmpty()) {
+			LOGGER.error("No Survey Unit found for the user {}", userId);
+			return List.of();
+		}
+		for(String idSurveyUnit : surveyUnitDtoIds) {
+			SurveyUnitCampaignDto surveyUnit = new SurveyUnitCampaignDto();
+			surveyUnit.setId(idSurveyUnit);
+			surveyUnit.setSsech(sampleIdentifierRepository.findSsechBySurveyUnitId(idSurveyUnit));
+			surveyUnit.setInterviewer( interviewerRepository.findInterviewersDtoBySurveyUnitId(idSurveyUnit));
+			String locationAndCity = addressRepository.findLocationAndCityBySurveyUnitId(idSurveyUnit);
+			surveyUnit.setLocation(locationAndCity.split(" ")[0]);
+			surveyUnit.setCity(locationAndCity.split(" ")[1]);
+			surveyUnitCampaignReturned.add(surveyUnit);
+		}
 		return surveyUnitCampaignReturned;		
 	}
 }

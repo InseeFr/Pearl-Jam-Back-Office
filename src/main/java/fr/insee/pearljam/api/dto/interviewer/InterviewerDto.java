@@ -17,6 +17,13 @@ public class InterviewerDto {
 		this.surveyUnitCount = surveyUnitCount;
 	}
 	
+	public InterviewerDto(String id, String interviewerFirstName, String interviewerLastName) {
+		super();
+		this.id = id;
+		this.interviewerFirstName = interviewerFirstName;
+		this.interviewerLastName = interviewerLastName;
+	}
+	
 	public InterviewerDto(Interviewer interviewer) {
 		super();
 		this.id = interviewer.getId();

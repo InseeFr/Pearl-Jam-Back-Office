@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.projection.SurveyUnitCampaign;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -137,7 +137,7 @@ public class SurveyUnitController {
 		if(StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
-			List<SurveyUnitCampaign> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId);
+			List<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId);
 			if (surveyUnit==null) {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
