@@ -31,10 +31,13 @@ public class CampaignServiceImpl implements CampaignService {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
+	UtilsService utilsService;
+	
 	public List<CampaignDto> getListCampaign(String userId) {
 		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
 		List<String> campaignDtoIds = null;
-		if(userId.equals(GUEST)) {
+		if(userId.equals(GUEST) || utilsService.existUser(userId, "user")) {
 			campaignDtoIds = campaignRepository.findAllIds();
 		} else {
 			campaignDtoIds = campaignRepository.findIdsByUserId(userId);

@@ -54,7 +54,8 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
 			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
-			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2", nativeQuery=true)
+			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
 
 }
