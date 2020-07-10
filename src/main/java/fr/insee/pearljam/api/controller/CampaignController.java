@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -62,23 +64,50 @@ public class CampaignController {
 
 
   /**
-	* This method is using to get the list of interviewers associated with the campaign {id} for current user
+	* This method is used to get the list of interviewers associated with the campaign {id} for current user
 	* @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get interviewers")
 	@GetMapping(path = "/campaigns/{id}/interviewers")
 	public ResponseEntity<Object> getListInterviewers(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
+    List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<InterviewerDto> lstSurveyUnit = campaignService.getListInterviewers(userId, id);
+			List<InterviewerDto> lstSurveyUnit = campaignService.getListInterviewers(userId, id, associatedOrgUnits);
 			if(lstSurveyUnit==null || lstSurveyUnit.isEmpty()){
 				LOGGER.info("Get interviewers resulting in 404" );
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			LOGGER.info("Get interviewers resulting in 200" );
 			return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
+	  }
+	
+  }
+
+
+  /**
+	* This method is using to survey units counts by state of and interviewer for a  campaign
+	* @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	*/
+	@ApiOperation(value = "Get interviewerStateCount")
+	@GetMapping(path = "/campaigns/{id}/survey-units/interviewer/{idep}/state-count")
+	public ResponseEntity<Object> getInterviewerStateCount(HttpServletRequest request, @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep, @RequestParam(required=false, name = "date") Long date) {
+		String userId = utilsService.getUserId(request);
+    List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
+    
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			StateCountDto stateCountDto = campaignService.getStateCount(userId, id, idep, date, associatedOrgUnits);
+			if(stateCountDto==null){
+				LOGGER.info("Get interviewerStateCount resulting in 404" );
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+      
+			LOGGER.info("Get interviewerStateCount resulting in 200" );
+			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
 	  }
 	
   }

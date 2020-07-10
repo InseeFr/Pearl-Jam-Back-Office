@@ -2,6 +2,12 @@ package fr.insee.pearljam.api.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import fr.insee.pearljam.api.domain.User;
+
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +19,8 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.api.configuration.ApplicationProperties;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
+
 
 @Service
 public class UtilsServiceImpl implements UtilsService {
@@ -27,6 +35,9 @@ public class UtilsServiceImpl implements UtilsService {
 	
 	@Autowired
 	UserRepository userRepository;
+
+  @Autowired
+	OrganizationUnitRepository organizationUnitRepository;
 
 	/**
 	 * This method retrieve retrieve the UserId passed in the HttpServletRequest. 
@@ -71,7 +82,31 @@ public class UtilsServiceImpl implements UtilsService {
 			LOGGER.info("Choose a correct service");
 			return false;
 		}
-		
 
 	}
+  
+  /**
+	 * This method retreives the organizationUnit of the user as well as all of its children units as a list of String
+	 * @param userId
+	 * @return List<String> 
+	 */
+	public List<String> getRelatedOrganizationUnits(String userId){
+    List<String> l = new ArrayList<>();
+    Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+
+    if("GUEST".equals(userId)){
+      l.add("GUEST");
+    }
+    else if(user.isPresent()){
+      l.add(user.get().organizationUnit.id);
+      List<String> organizationUnitIds = new ArrayList<>();
+      organizationUnitIds = organizationUnitRepository.findChildren(user.get().organizationUnit.id);
+      l.addAll(organizationUnitIds);
+      for(String idOrg: organizationUnitIds){
+        l.addAll(organizationUnitRepository.findChildren(idOrg));
+      }
+    }
+
+    return l;
+  }
 }

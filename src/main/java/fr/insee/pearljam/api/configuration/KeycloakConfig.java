@@ -83,6 +83,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 				.antMatchers("/api/campaigns").hasRole(role)
         		.antMatchers("/api/campaigns/{id}/interviewers").hasRole(role)
 				.antMatchers("/api/campaign/{id}/survey-units").hasRole(role)
+        		.antMatchers("api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").hasRole(role)
 
 				.anyRequest().denyAll(); 
 	}

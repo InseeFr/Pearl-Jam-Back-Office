@@ -2,6 +2,11 @@ package fr.insee.pearljam.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import fr.insee.pearljam.api.domain.User;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.Interviewer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +15,10 @@ import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
-
+import fr.insee.pearljam.api.repository.InterviewerRepository;
 /**
  * Implementation of the Service for the Interviewer entity
  * @author scorcaud
@@ -30,6 +36,9 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	UserRepository userRepository;
+
+  @Autowired
+	InterviewerRepository interviewerRepository;
 	
 	@Autowired
 	UtilsService utilsService;
@@ -57,10 +66,13 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDtoReturned;
 	}
 
-  public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
+  public List<InterviewerDto> getListInterviewers(String userId, String campaignId, List<String> associatedOrgUnits) {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
+    
 		if(userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) {
-      interviewersDtoReturned = campaignRepository.findInterviewersDtoByCampaignId(campaignId);
+      for(String orgId: associatedOrgUnits){
+        interviewersDtoReturned.addAll(campaignRepository.findInterviewersDtoByCampaignId(campaignId, orgId));
+      }
 		}
 		if(interviewersDtoReturned.isEmpty()) {
 			LOGGER.error("No interviewers found for the user {} and the campaign {}", userId, campaignId);
@@ -72,4 +84,25 @@ public class CampaignServiceImpl implements CampaignService {
   public boolean isUserAssociatedToTheCampaign(String userId, String campaignId){
   	return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty());
   }
+
+  public StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date, List<String> associatedOrgUnits) {
+    StateCountDto stateCountDto = new StateCountDto();
+    Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(interviewerId);
+
+		if(userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) {
+      Long dateToUse = date;
+      if(dateToUse == null){
+        dateToUse = -1L;
+      }
+      if(interv.isPresent() && (associatedOrgUnits.contains(interv.get().organizationUnit.id) || userId.equals(GUEST))){
+        stateCountDto =  new StateCountDto(campaignRepository.getStateCount(campaignId, interviewerId, dateToUse));
+      }
+    }
+    if(stateCountDto.getTotal() == null) {
+			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId, userId, campaignId);
+			return null;
+		}
+
+		return stateCountDto;
+	}
 }

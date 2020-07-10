@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 public interface UtilsService {
@@ -17,4 +19,11 @@ public interface UtilsService {
 	 * @return boolean
 	 */
 	boolean existUser(String userId, String service);
+
+  /**
+	 * This method retreives the organizationUnit of the user as well as all of its children units as a list of String
+	 * @param userId
+	 * @return List<String> 
+	 */
+	List<String> getRelatedOrganizationUnits(String userId);
 }

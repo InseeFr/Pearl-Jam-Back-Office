@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountDto;
 
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	
@@ -44,7 +45,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 
   /**
-	* This method retrieve all interviewers associated with a campaign 
+	* This method retrieves all interviewers associated with a campaign 
 	* 
 	* @return List of all {@link SurveyUnit}
 	*/
@@ -53,7 +54,35 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
       + "FROM SurveyUnit su "
       + "INNER JOIN Interviewer interv ON su.interviewer.id = interv.id "
       + "WHERE su.campaign.id=?1 "
+      + "AND (interv.organizationUnit.id=?2 OR ?2='GUEST') "
       + "GROUP BY interv.id")
-	List<InterviewerDto> findInterviewersDtoByCampaignId(String id);
-}
+	List<InterviewerDto> findInterviewersDtoByCampaignId(String id, String organizationUnit);
 
+  /**
+	* This method retrieves the counts of survey units by state for an interviewer and a campaign 
+	* 
+	* @return {@link List<Object[]>}
+	*/
+  @Query(value="SELECT "
+      + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
+		  + "SUM(CASE WHEN type='PRC' THEN 1 ELSE 0 END) AS prcCount, "
+      + "SUM(CASE WHEN type='AOC' THEN 1 ELSE 0 END) AS aocCount, "
+      + "SUM(CASE WHEN type='APS' THEN 1 ELSE 0 END) AS apsCount, "
+      + "SUM(CASE WHEN type='INS' THEN 1 ELSE 0 END) AS insCount, "
+      + "SUM(CASE WHEN type='WFT' THEN 1 ELSE 0 END) AS wftCount, "
+      + "SUM(CASE WHEN type='WFS' THEN 1 ELSE 0 END) AS wfsCount, "
+      + "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS tbrCount, "
+      + "SUM(CASE WHEN type='FIN' THEN 1 ELSE 0 END) AS finCount, "
+      + "SUM(CASE WHEN type='NVI' THEN 1 ELSE 0 END) AS nviCount, "
+      + "SUM(CASE WHEN type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
+      + "COUNT(1) AS total "
+      + "FROM ( "
+	    + "SELECT survey_unit_id, type, date FROM state WHERE (survey_unit_id, date) IN ("
+	    + "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN ("
+      + "SELECT id FROM survey_unit "
+			+	"WHERE campaign_id=?1 "
+			+	"AND interviewer_id=?2 ) "
+		  + "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id) "
+      + ") as t", nativeQuery=true)
+  List<Object[]> getStateCount(String campaignId, String interviewerId, Long date);
+}   
