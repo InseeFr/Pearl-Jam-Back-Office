@@ -4,21 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.Interviewer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.repository.VisibilityRepository;
 /**
  * Implementation of the Service for the Interviewer entity
  * @author scorcaud
@@ -37,8 +36,14 @@ public class CampaignServiceImpl implements CampaignService {
 	@Autowired
 	UserRepository userRepository;
 
-  @Autowired
+	@Autowired
 	InterviewerRepository interviewerRepository;
+	
+	@Autowired
+	SurveyUnitRepository surveyUnitRepository;
+	
+	@Autowired
+	VisibilityRepository visibilityRepository;
 	
 	@Autowired
 	UtilsService utilsService;
@@ -57,10 +62,13 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		for(String idCampaign : campaignDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-			campaign.setAffected(0L);
-			campaign.setInProgress(0L);
+			campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
+			campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
+			campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
+			campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
 			campaign.setToAffect(0L);
 			campaign.setToControl(0L);
+			campaign.setToFollowUp(0L);
 			campaignDtoReturned.add(campaign);
 		}
 		return campaignDtoReturned;

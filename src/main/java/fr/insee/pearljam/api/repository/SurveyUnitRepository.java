@@ -57,5 +57,22 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
 			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
+	
+	@Query(value="SELECT COUNT(*) FROM survey_unit su "
+			+ "INNER JOIN campaign camp ON camp.id = su.campaign_id "
+			+ "WHERE camp.id=?1", nativeQuery=true)
+	Long getNbrOfSuForCampaign(String campaignId);
+	
+	@Query(value="SELECT COUNT(*) FROM survey_unit su "
+			+ "INNER JOIN campaign camp ON camp.id = su.campaign_id "
+			+ "INNER JOIN state st ON st.survey_unit_id = su.id "
+			+ "WHERE camp.id=?1 AND st.type IN('PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS')", nativeQuery=true)
+	Long getSuInProgressForCampaign(String campaignId);
+	
+	@Query(value="SELECT COUNT(*) FROM survey_unit su "
+			+ "INNER JOIN campaign camp ON camp.id = su.campaign_id "
+			+ "INNER JOIN state st ON st.survey_unit_id = su.id "
+			+ "WHERE camp.id = ?1 AND st.type IN('FIN')", nativeQuery=true)
+	Long getSuTerminatedByCampaign(String campaigId);
 
 }

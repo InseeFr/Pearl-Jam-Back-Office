@@ -36,7 +36,7 @@ public class UtilsServiceImpl implements UtilsService {
 	@Autowired
 	UserRepository userRepository;
 
-  @Autowired
+	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
 
 	/**

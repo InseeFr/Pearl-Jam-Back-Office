@@ -7,11 +7,14 @@ public class CampaignDto {
 	private String label;
 	private Long collectionStartDate;
 	private Long collectionEndDate;
+	private Long visibilityStartDate;
 	private Long treatmentEndDate;
 	private Long affected;
 	private Long toAffect;
 	private Long inProgress;
 	private Long toControl;
+	private Long terminated;
+	private Long toFollowUp;
 	
 	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate) {
 		super();
@@ -29,18 +32,21 @@ public class CampaignDto {
 		this.collectionEndDate = campaign.getCollectionEndDate();
 	}
 	
-	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate, Long treatmentEndDate,
-			Long affected, Long toAffect, Long inProgress, Long toControl) {
+	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate, Long visibilityStartDate, Long treatmentEndDate,
+			Long affected, Long toAffect, Long inProgress, Long toControl, Long terminated, Long toFollowUp) {
 		super();
 		this.id = id;
 		this.label = label;
 		this.collectionStartDate = collectionStartDate;
 		this.collectionEndDate = collectionEndDate;
+		this.visibilityStartDate = visibilityStartDate;
 		this.treatmentEndDate = treatmentEndDate;
 		this.affected = affected;
 		this.toAffect = toAffect;
 		this.inProgress = inProgress;
 		this.toControl = toControl;
+		this.terminated = terminated;
+		this.toFollowUp = toFollowUp;
 	}
 	
 	
@@ -96,6 +102,14 @@ public class CampaignDto {
 	 */
 	public void setCollectionEndDate(Long collectionEndDate) {
 		this.collectionEndDate = collectionEndDate;
+	}
+
+	public Long getVisibilityStartDate() {
+		return visibilityStartDate;
+	}
+
+	public void setVisibilityStartDate(Long visibilityStartDate) {
+		this.visibilityStartDate = visibilityStartDate;
 	}
 
 	/**
@@ -166,6 +180,22 @@ public class CampaignDto {
 	 */
 	public void setToControl(Long toControl) {
 		this.toControl = toControl;
+	}
+
+	public Long getTerminated() {
+		return terminated;
+	}
+
+	public void setTerminated(Long terminated) {
+		this.terminated = terminated;
+	}
+
+	public Long getToFollowUp() {
+		return toFollowUp;
+	}
+
+	public void setToFollowUp(Long toFollowUp) {
+		this.toFollowUp = toFollowUp;
 	}
 	
 	
