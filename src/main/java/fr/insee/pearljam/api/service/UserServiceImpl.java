@@ -39,17 +39,25 @@ public class UserServiceImpl implements UserService {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 			if (user.isPresent()) {
-				for (OrganizationUnit ou : organizationUnitRepository
-						.findChildren(user.get().getOrganizationUnit().getId())) {
-					organizationUnits.add(new OrganizationUnitDto(ou.getId(), ou.getLabel()));
-				}
-				return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-						organizationUnits);
+				 getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit());
+				 return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
+							organizationUnits);
 			} else {
 				return null;
 			}
 		} else {
 			return new UserDto("", "Guest", "", List.of());
+		}
+	}
+
+	private void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu) {
+		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
+		if(lstOu.isEmpty()) {
+			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
+		}else {
+			for (OrganizationUnit ou : lstOu) {
+				getOrganizationUnits(organizationUnits, ou);
+			}
 		}
 	}
 }
