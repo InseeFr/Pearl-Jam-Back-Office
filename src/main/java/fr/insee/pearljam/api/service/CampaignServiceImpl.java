@@ -69,6 +69,7 @@ public class CampaignServiceImpl implements CampaignService {
 			campaign.setToAffect(0L);
 			campaign.setToControl(0L);
 			campaign.setToFollowUp(0L);
+			campaign.setPreference(true);
 			campaignDtoReturned.add(campaign);
 		}
 		return campaignDtoReturned;

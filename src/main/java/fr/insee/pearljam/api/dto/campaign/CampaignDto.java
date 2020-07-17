@@ -15,6 +15,7 @@ public class CampaignDto {
 	private Long toControl;
 	private Long terminated;
 	private Long toFollowUp;
+	private Boolean preference;
 	
 	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate) {
 		super();
@@ -33,7 +34,7 @@ public class CampaignDto {
 	}
 	
 	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate, Long visibilityStartDate, Long treatmentEndDate,
-			Long affected, Long toAffect, Long inProgress, Long toControl, Long terminated, Long toFollowUp) {
+			Long affected, Long toAffect, Long inProgress, Long toControl, Long terminated, Long toFollowUp, Boolean preference) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -47,6 +48,7 @@ public class CampaignDto {
 		this.toControl = toControl;
 		this.terminated = terminated;
 		this.toFollowUp = toFollowUp;
+		this.preference = preference;
 	}
 	
 	
@@ -196,6 +198,14 @@ public class CampaignDto {
 
 	public void setToFollowUp(Long toFollowUp) {
 		this.toFollowUp = toFollowUp;
+	}
+
+	public Boolean getPreference() {
+		return preference;
+	}
+
+	public void setPreference(Boolean preference) {
+		this.preference = preference;
 	}
 	
 	
