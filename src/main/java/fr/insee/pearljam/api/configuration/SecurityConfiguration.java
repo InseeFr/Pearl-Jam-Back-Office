@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
+import fr.insee.pearljam.api.constants.Constants;
 
 /**
  * SecurityConfiguration is the class using to configure security.<br>
@@ -36,6 +37,7 @@ import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
 @ConditionalOnExpression("'${fr.insee.pearljam.application.mode}'=='Basic' or '${fr.insee.pearljam.application.mode}'=='NoAuth'")
 @Configuration
 @EnableWebSecurity
+@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * The environment define in Spring application Generate with the application
@@ -65,7 +67,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-<<<<<<< HEAD
 		System.setProperty("keycloak.enabled", applicationProperties.getMode() != Mode.Keycloak ? "false" : "true");
 		http
 			// disable csrf because of API mode
@@ -73,56 +74,33 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			// use previously declared bean
 			.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		if (this.applicationProperties.getMode() == Mode.Basic) {
-			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
-			http.authorizeRequests()
-				// manage routes securisation
-				.antMatchers(HttpMethod.OPTIONS).permitAll()
-				// configuration for Swagger
-				.antMatchers("/swagger-ui.html/**", "/v2/api-docs", "/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
-				.antMatchers("/environnement", "/healthcheck").permitAll()
-				// configuration for endpoints
-				.antMatchers("/api/survey-unit/{id}").hasRole(role)
-				.antMatchers("/api/survey-units").hasRole(role)
-				.antMatchers("/api/campaigns/{id}/interviewers").hasRole(role)
-				.antMatchers("/api/campaigns").hasRole(role)
-				.antMatchers("/api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").hasRole(role)
-				.anyRequest().denyAll();
-		} else {
-			http.httpBasic().disable();
-			http.authorizeRequests()
-				// manage routes securisation
-				.antMatchers(HttpMethod.OPTIONS).permitAll()
-				// configuration for Swagger
-				.antMatchers("/swagger-ui.html/**", "/v2/api-docs", "/csrf", "/", "/webjars/**", "/swagger-resources/**") .permitAll()
-				.antMatchers("/environnement", "/healthcheck").permitAll()
-				.antMatchers("/api/survey-units", "/api/survey-unit/{id}","/api/campaigns/{id}/interviewers","/api/campaigns", "api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").permitAll();
-=======
-		http.csrf().disable().headers().frameOptions().disable().and().requestCache()
-				.requestCache(new NullRequestCache());
 		switch (this.applicationProperties.getMode()) {
-			case Basic:
-				http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
-				http.authorizeRequests()
-					.antMatchers(HttpMethod.OPTIONS).permitAll()
-					.antMatchers("/api/survey-unit/{id}").hasRole("investigator")
-					.antMatchers("/api/survey-units/").hasRole("investigator")
-          .antMatchers("/api/campaigns/{id}/interviewers").hasRole("investigator")
-					.antMatchers("/api/campaigns").hasRole("investigator")
-          .antMatchers("api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").hasRole("investigator")
-					.anyRequest().denyAll(); 
-				break;
-			default:
-				http.httpBasic().disable();
-				http.authorizeRequests()
-					.antMatchers(HttpMethod.OPTIONS).permitAll()
-					.antMatchers("/survey-units/","/survey-unit/{id}","/api/campaigns/{id}/interviewers").permitAll()
-					.antMatchers("/survey-units/","/survey-unit/{id}").permitAll()
-					.antMatchers("/api/campaigns").permitAll()
-          .antMatchers("api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").permitAll()
-					.antMatchers("/survey-units/","/survey-unit/{id}","/api/campaigns/{id}/interviewers", "api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").permitAll();
-				break;
->>>>>>> Merged PR 146: feat: endpoint interviewer state count
+		case Basic:
+			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
+			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+					// configuration for endpoints
+					.antMatchers(Constants.API_SURVEYUNITS_ID).hasRole(role)
+					.antMatchers(Constants.API_SURVEYUNITS).hasRole(role)
+					.antMatchers(Constants.API_CAMPAIGN).hasRole(role)
+					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasRole(role)
+					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasRole(role)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasRole(role)
+			        .antMatchers(Constants.API_USER).hasRole(role)
+					.anyRequest().denyAll();
+			break;
+		default:
+			http.httpBasic().disable();
+			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+			// configuration for endpoints
+				.antMatchers(Constants.API_SURVEYUNITS_ID, 
+						Constants.API_SURVEYUNITS, 
+						Constants.API_CAMPAIGN,
+						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
+						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
+						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
+						Constants.API_USER)
+		        .permitAll();
+			break;
 		}
 	}
 

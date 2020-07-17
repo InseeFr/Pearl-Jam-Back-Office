@@ -2,61 +2,56 @@ package fr.insee.pearljam.api.dto.state;
 
 import java.util.List;
 
-import fr.insee.pearljam.api.domain.State;
-import fr.insee.pearljam.api.domain.StateType;
-
-public class StateCountDto {	
+public class StateCountDto {
 
 	private Long ansCount;
 	private Long prcCount;
-  private Long aocCount;
-  private Long apsCount;
-  private Long insCount;
-  private Long wftCount;
-  private Long wfsCount;
-  private Long tbrCount;
-  private Long finCount;
-  private Long nviCount;
-  private Long nvmCount;
-  private Long total;
-    
+	private Long aocCount;
+	private Long apsCount;
+	private Long insCount;
+	private Long wftCount;
+	private Long wfsCount;
+	private Long tbrCount;
+	private Long finCount;
+	private Long nviCount;
+	private Long nvmCount;
+	private Long total;
 
-    
-	public StateCountDto(Long ansCount, Long prcCount) {
+	public StateCountDto(Long ansCount, Long prcCount, Long aocCount, Long apsCount, Long insCount, Long wftCount,
+			Long wfsCount, Long tbrCount, Long finCount, Long nviCount, Long nvmCount, Long total) {
 		super();
 		this.ansCount = ansCount;
 		this.prcCount = prcCount;
-    this.aocCount = aocCount;
-    this.apsCount = apsCount;
-    this.insCount = insCount;
-    this.wftCount = wftCount;
-    this.wfsCount = wfsCount;
-    this.tbrCount = tbrCount;
-    this.finCount = finCount;
-    this.nviCount = nviCount;
-    this.nvmCount = nvmCount;
-    this.total = total;
+		this.aocCount = aocCount;
+		this.apsCount = apsCount;
+		this.insCount = insCount;
+		this.wftCount = wftCount;
+		this.wfsCount = wfsCount;
+		this.tbrCount = tbrCount;
+		this.finCount = finCount;
+		this.nviCount = nviCount;
+		this.nvmCount = nvmCount;
+		this.total = total;
 	}
 
-  public StateCountDto(List<Object[]> obj){
-    super();
-    if(obj!=null && !obj.isEmpty() && obj.get(0).length > 11 && obj.get(0)[0]!=null){
-      this.ansCount = ((java.math.BigInteger)obj.get(0)[0]).longValue();
-      this.prcCount = ((java.math.BigInteger)obj.get(0)[1]).longValue();
-      this.aocCount = ((java.math.BigInteger)obj.get(0)[2]).longValue();
-      this.apsCount = ((java.math.BigInteger)obj.get(0)[3]).longValue();
-      this.insCount = ((java.math.BigInteger)obj.get(0)[4]).longValue();
-      this.wftCount = ((java.math.BigInteger)obj.get(0)[5]).longValue();
-      this.wfsCount = ((java.math.BigInteger)obj.get(0)[6]).longValue();
-      this.tbrCount = ((java.math.BigInteger)obj.get(0)[7]).longValue();
-      this.finCount = ((java.math.BigInteger)obj.get(0)[8]).longValue();
-      this.nviCount = ((java.math.BigInteger)obj.get(0)[9]).longValue();
-      this.nvmCount = ((java.math.BigInteger)obj.get(0)[10]).longValue();
-      this.total = ((java.math.BigInteger)obj.get(0)[11]).longValue();
-    }
-  }
-	
-	
+	public StateCountDto(List<Object[]> obj) {
+		super();
+		if (obj != null && !obj.isEmpty() && obj.get(0).length > 11 && obj.get(0)[0] != null) {
+			this.ansCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
+			this.prcCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
+			this.aocCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
+			this.apsCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.insCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
+			this.wftCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
+			this.wfsCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
+			this.tbrCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
+			this.finCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
+			this.nviCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
+			this.nvmCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[11]).longValue();
+		}
+	}
+
 	public StateCountDto() {
 		super();
 	}
@@ -89,7 +84,7 @@ public class StateCountDto {
 		this.prcCount = prcCount;
 	}
 
-  /**
+	/**
 	 * @return the aocCount
 	 */
 	public Long getAocCount() {
@@ -103,7 +98,7 @@ public class StateCountDto {
 		this.aocCount = aocCount;
 	}
 
-  /**
+	/**
 	 * @return the apsCount
 	 */
 	public Long getApsCount() {
@@ -117,7 +112,7 @@ public class StateCountDto {
 		this.apsCount = apsCount;
 	}
 
-  /**
+	/**
 	 * @return the insCount
 	 */
 	public Long getInsCount() {
@@ -131,7 +126,7 @@ public class StateCountDto {
 		this.insCount = insCount;
 	}
 
-  /**
+	/**
 	 * @return the wftCount
 	 */
 	public Long getWftCount() {
@@ -145,7 +140,7 @@ public class StateCountDto {
 		this.wftCount = wftCount;
 	}
 
-  /**
+	/**
 	 * @return the wfsCount
 	 */
 	public Long getWfsCount() {
@@ -159,7 +154,7 @@ public class StateCountDto {
 		this.wfsCount = wfsCount;
 	}
 
-  /**
+	/**
 	 * @return the tbrCount
 	 */
 	public Long getTbrCount() {
@@ -173,7 +168,7 @@ public class StateCountDto {
 		this.tbrCount = tbrCount;
 	}
 
-  /**
+	/**
 	 * @return the finCount
 	 */
 	public Long getFinCount() {
@@ -187,7 +182,7 @@ public class StateCountDto {
 		this.finCount = finCount;
 	}
 
-  /**
+	/**
 	 * @return the nviCount
 	 */
 	public Long getNviCount() {
@@ -201,7 +196,7 @@ public class StateCountDto {
 		this.nviCount = nviCount;
 	}
 
-  /**
+	/**
 	 * @return the nvmCount
 	 */
 	public Long getNvmCount() {
@@ -215,7 +210,7 @@ public class StateCountDto {
 		this.nvmCount = nvmCount;
 	}
 
-  /**
+	/**
 	 * @return the total
 	 */
 	public Long getTotal() {
@@ -229,10 +224,9 @@ public class StateCountDto {
 		this.total = total;
 	}
 
-
 	@Override
 	public String toString() {
 		return "StateCountDto [ansCount=" + ansCount + ", prcCount=" + prcCount + "]";
 	}
-	
+
 }

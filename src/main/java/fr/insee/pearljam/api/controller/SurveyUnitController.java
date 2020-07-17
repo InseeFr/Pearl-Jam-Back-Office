@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -60,7 +61,7 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-units")
 	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "interviewer")) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
@@ -83,7 +84,7 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-unit/{id}")
 	public ResponseEntity<Object>  getSurveyUnitById(HttpServletRequest request ,@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "interviewer")) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
 			SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
@@ -109,9 +110,9 @@ public class SurveyUnitController {
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) throws SQLException {
+	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "interviewer")) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
 			HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
@@ -132,7 +133,7 @@ public class SurveyUnitController {
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
 	@GetMapping(path = "/campaign/{id}/survey-units")
-	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id) throws SQLException {
+	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.SQLException;
@@ -49,6 +50,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import liquibase.Contexts;
@@ -74,9 +76,12 @@ class ApiApplicationRestAssureTests {
 	
 	@Autowired
 	SurveyUnitService surveyUnitService;
-	
+
 	@Autowired
 	InterviewerService interviewerService;
+	
+	@Autowired
+	UserService userService;
 	
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
@@ -304,6 +309,28 @@ class ApiApplicationRestAssureTests {
 			.put("api/survey-unit/11")
 		.then()
 			.statusCode(400);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/survey-unit/"
+	 * return 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(2)
+	public void testGetUser() throws InterruptedException {
+		assertTrue(userService.getUser("jkl")!=null);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/survey-unit/{id}"
+	 * return 404.
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(3)
+	public void testGetUserNotFound() throws InterruptedException {
+		assertTrue(userService.getUser("test")==null);
 	}
 
 	/**

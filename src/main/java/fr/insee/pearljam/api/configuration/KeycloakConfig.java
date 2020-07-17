@@ -27,6 +27,8 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
+import fr.insee.pearljam.api.constants.Constants;
+
 /**
  * This class defines the KeyCloak configuration
  * @author scorcaud
@@ -78,12 +80,13 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
-   				.antMatchers("/api/survey-unit/{id}").hasRole(role)
-				.antMatchers("/api/survey-units").hasRole(role)
-				.antMatchers("/api/campaigns").hasRole(role)
-        		.antMatchers("/api/campaigns/{id}/interviewers").hasRole(role)
-				.antMatchers("/api/campaign/{id}/survey-units").hasRole(role)
-        		.antMatchers("api/campaigns/{id}/survey-units/interviewer/{idep}/state-count").hasRole(role)
+   				.antMatchers(Constants.API_SURVEYUNITS_ID).hasRole(role)
+				.antMatchers(Constants.API_SURVEYUNITS).hasRole(role)
+				.antMatchers(Constants.API_CAMPAIGN).hasRole(role)
+				.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasRole(role)
+				.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasRole(role)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasRole(role)
+		        .antMatchers(Constants.API_USER).hasRole(role)
 
 				.anyRequest().denyAll(); 
 	}

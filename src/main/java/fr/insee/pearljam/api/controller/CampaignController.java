@@ -46,7 +46,6 @@ public class CampaignController {
 	*/
 	@ApiOperation(value = "Get Campaigns")
 	@GetMapping(path = "/campaigns")
-
 	public ResponseEntity<Object> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {

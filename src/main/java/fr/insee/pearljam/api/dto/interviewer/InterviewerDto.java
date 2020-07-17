@@ -58,7 +58,7 @@ public class InterviewerDto {
 	/**
 	 * @param interviewerFirstName the interviewerFirstName to set
 	 */
-	public void setInterviewerFirstName(String label) {
+	public void setInterviewerFirstName(String interviewerFirstName) {
 		this.interviewerFirstName = interviewerFirstName;
 	}
 	/**

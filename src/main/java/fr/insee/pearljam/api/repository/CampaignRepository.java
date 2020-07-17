@@ -9,7 +9,6 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.dto.state.StateCountDto;
 
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	
