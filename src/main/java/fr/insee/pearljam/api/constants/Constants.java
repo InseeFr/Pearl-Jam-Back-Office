@@ -6,6 +6,7 @@ public class Constants {
 	}
 
 	public static final String INTERVIEWER = "interviewer";
+	public static final String USER = "user";
 	public static final String API_SURVEYUNITS = "/api/survey-units";
 	public static final String API_SURVEYUNITS_ID = "/api/survey-unit/{id}";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaigns/{id}/interviewers";

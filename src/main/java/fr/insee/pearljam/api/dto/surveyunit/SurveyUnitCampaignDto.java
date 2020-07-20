@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.dto.surveyunit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateDto;
 
 public class SurveyUnitCampaignDto {
 	private String id;
@@ -15,6 +16,8 @@ public class SurveyUnitCampaignDto {
 	
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
+	
+	private StateDto state;
 	
 	/**
 	 * @return the id
@@ -91,5 +94,11 @@ public class SurveyUnitCampaignDto {
 	 */
 	public void setInterviewer(InterviewerDto interviewer) {
 		this.interviewer = interviewer;
+	}
+	public StateDto getState() {
+		return state;
+	}
+	public void setState(StateDto state) {
+		this.state = state;
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
@@ -133,9 +134,9 @@ public class SurveyUnitController {
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
 	@GetMapping(path = "/campaign/{id}/survey-units")
-	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(value = "state", required=false) String state) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId)) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
 			List<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId);
