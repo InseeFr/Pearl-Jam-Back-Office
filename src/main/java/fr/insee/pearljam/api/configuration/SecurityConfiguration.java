@@ -85,6 +85,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasRole(role)
 					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasRole(role)
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasRole(role)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasRole(role)
 			        .antMatchers(Constants.API_USER).hasRole(role)
 					.anyRequest().denyAll();
 			break;
@@ -98,6 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
 						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
 						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
+						Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
 						Constants.API_USER)
 		        .permitAll();
 			break;

@@ -243,13 +243,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return HttpStatus.OK;
 	}
 	
-	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String id, String userId) {
+	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String id, String userId, String state) {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
 		List<String> surveyUnitDtoIds = null;
 		if(userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
 		} else {
-			surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserId(id, userId);
+			if(state == null || state.isEmpty()) {
+				surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserId(id, userId);
+			} else {
+				surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserIdAndState(id, userId, state);
+			}
 		}
 		if(surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for the user {}", userId);

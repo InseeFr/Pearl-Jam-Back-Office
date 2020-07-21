@@ -39,6 +39,6 @@ public interface SurveyUnitService {
 	 */
 	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
 	
-	List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id);
+	List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, String state);
 
 }

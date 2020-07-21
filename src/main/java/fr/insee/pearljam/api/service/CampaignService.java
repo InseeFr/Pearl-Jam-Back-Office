@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 
 /**
@@ -22,4 +23,6 @@ public interface CampaignService {
 
 	StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
 			List<String> associatedOrgUnits);
+	
+	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date);
 }

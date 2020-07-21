@@ -139,7 +139,7 @@ public class SurveyUnitController {
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
-			List<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId);
+			List<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
 			if (surveyUnit==null) {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);

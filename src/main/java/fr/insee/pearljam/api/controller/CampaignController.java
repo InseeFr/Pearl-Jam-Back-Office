@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.InterviewerService;
@@ -107,6 +108,28 @@ public class CampaignController {
       
 			LOGGER.info("Get interviewerStateCount resulting in 200" );
 			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
+	  }
+	
+  }
+	
+	/**
+	* This method is using to survey units counts by state and organizational units for a campaign
+	* @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	*/
+	@ApiOperation(value = "Get campaignStateCount")
+	@GetMapping(path = "/campaign/{id}/survey-units/state-count")
+	public ResponseEntity<Object> getCampaignStateCount(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(required=false, name = "date") Long date) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			StateCountCampaignDto stateCountCampaignDto = campaignService.getStateCountByCampaign(userId, id, date);
+			if(stateCountCampaignDto==null){
+				LOGGER.info("Get campaignStateCount resulting in 404" );
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get campaignStateCount resulting in 200" );
+			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
 	  }
 	
   }

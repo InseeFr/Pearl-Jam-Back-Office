@@ -45,18 +45,29 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
 	
+	
 	@Query("SELECT "
 			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.collectionStartDate,su.campaign.collectionEndDate) "
 			+ "FROM SurveyUnit su WHERE su.id=?1")
 	CampaignDto findCampaignDtoById(String id);
+	
+	@Query(value="SELECT su.id as id FROM survey_unit su " + 
+			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
+			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
+			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id ", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
 
 	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
 			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
-			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id", nativeQuery=true)
-	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
+			"INNER JOIN state st on st.survey_unit_id = su.id "+
+			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id "+ 
+			"AND st.type = ?3", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndUserIdAndState(String id, String userId, String state);
 	
 	@Query(value="SELECT COUNT(*) FROM survey_unit su "
 			+ "INNER JOIN campaign camp ON camp.id = su.campaign_id "

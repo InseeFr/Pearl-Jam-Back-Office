@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
@@ -61,16 +63,18 @@ public class CampaignServiceImpl implements CampaignService {
 			return List.of();
 		}
 		for(String idCampaign : campaignDtoIds) {
-			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-			campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
-			campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
-			campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
-			campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
-			campaign.setToAffect(0L);
-			campaign.setToControl(0L);
-			campaign.setToFollowUp(0L);
-			campaign.setPreference(true);
-			campaignDtoReturned.add(campaign);
+			if(isUserAssociatedToTheCampaign(userId, idCampaign)) {
+				CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
+				campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
+				campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
+				campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
+				campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
+				campaign.setToAffect(0L);
+				campaign.setToControl(0L);
+				campaign.setToFollowUp(0L);
+				campaign.setPreference(true);
+				campaignDtoReturned.add(campaign);
+			}
 		}
 		return campaignDtoReturned;
 	}
@@ -113,5 +117,26 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		return stateCountDto;
+	}
+  
+  public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) {
+	  	StateCountCampaignDto stateCountCampaignDto = new StateCountCampaignDto();
+	  	List<StateCountDto> stateCountList = new ArrayList<>();
+		if(userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) {
+	      Long dateToUse = date;
+	      if(dateToUse == null){
+	        dateToUse = -1L;
+	      }
+	      for(String idOrganizationalUnit : Constants.LIST_LABELS_OU) {
+		      stateCountList.add(new StateCountDto(idOrganizationalUnit, campaignRepository.getStateCountByCampaignAndOU(campaignId, idOrganizationalUnit, dateToUse)));
+	      }
+	      stateCountCampaignDto.setOrganizationUnits(stateCountList);
+	      stateCountCampaignDto.setFrance(new StateCountDto(campaignRepository.getStateCountByCampaignId(campaignId, dateToUse)));
+	    }
+		if(stateCountCampaignDto.getOrganizationUnits().isEmpty() || stateCountCampaignDto.getFrance() == null) {
+			LOGGER.error("No matching survey units states were found for the user {} and the campaign {}", userId, campaignId);
+			return null;
+		}
+		return stateCountCampaignDto;
 	}
 }

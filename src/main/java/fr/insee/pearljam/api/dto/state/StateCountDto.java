@@ -4,6 +4,7 @@ import java.util.List;
 
 public class StateCountDto {
 
+	private String idDem;
 	private Long ansCount;
 	private Long prcCount;
 	private Long aocCount;
@@ -16,7 +17,7 @@ public class StateCountDto {
 	private Long nviCount;
 	private Long nvmCount;
 	private Long total;
-
+	
 	public StateCountDto(Long ansCount, Long prcCount, Long aocCount, Long apsCount, Long insCount, Long wftCount,
 			Long wfsCount, Long tbrCount, Long finCount, Long nviCount, Long nvmCount, Long total) {
 		super();
@@ -51,9 +52,42 @@ public class StateCountDto {
 			this.total = ((java.math.BigInteger) obj.get(0)[11]).longValue();
 		}
 	}
+	
+	public StateCountDto(String idDem, List<Object[]> obj) {
+		super();
+		if (obj != null && !obj.isEmpty() && obj.get(0).length > 11 && obj.get(0)[0] != null) {
+			this.ansCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
+			this.prcCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
+			this.aocCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
+			this.apsCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.insCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
+			this.wftCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
+			this.wfsCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
+			this.tbrCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
+			this.finCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
+			this.nviCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
+			this.nvmCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[11]).longValue();
+		}
+		this.idDem = idDem;
+	}
 
 	public StateCountDto() {
 		super();
+	}
+
+	/**
+	 * @return the idDem
+	 */
+	public String getIdDem() {
+		return idDem;
+	}
+
+	/**
+	 * @param idDem the idDem to set
+	 */
+	public void setIdDem(String idDem) {
+		this.idDem = idDem;
 	}
 
 	/**
