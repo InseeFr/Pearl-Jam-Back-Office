@@ -157,7 +157,7 @@ public class SurveyUnitController {
 	* 
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
-	@GetMapping(path = "/campaign/{id}/survey-units")
+	@GetMapping(path = "/campaigns/{id}/survey-units")
 	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(value = "state", required=false) String state) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {

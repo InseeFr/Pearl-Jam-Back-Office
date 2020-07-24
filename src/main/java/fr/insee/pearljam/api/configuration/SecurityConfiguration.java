@@ -118,7 +118,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case Basic:
-				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(role).and()
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(role)
+						.and()
+						.withUser("ABC").password("{noop}a").roles(role)
+						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;
 			case NoAuth:

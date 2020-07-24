@@ -71,7 +71,7 @@ public class CampaignController {
 	@GetMapping(path = "/campaigns/{id}/interviewers")
 	public ResponseEntity<Object> getListInterviewers(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-    List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
+		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -117,7 +117,7 @@ public class CampaignController {
 	* @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get campaignStateCount")
-	@GetMapping(path = "/campaign/{id}/survey-units/state-count")
+	@GetMapping(path = "/campaigns/{id}/survey-units/state-count")
 	public ResponseEntity<Object> getCampaignStateCount(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(required=false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {

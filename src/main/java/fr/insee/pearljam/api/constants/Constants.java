@@ -10,10 +10,10 @@ public class Constants {
 	public static final String API_SURVEYUNITS = "/api/survey-units";
 	public static final String API_SURVEYUNITS_ID = "/api/survey-unit/{id}";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaigns/{id}/interviewers";
-	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";
+	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaigns/{id}/survey-units";
 	public static final String API_CAMPAIGN = "/api/campaigns";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaigns/{id}/survey-units/interviewer/{idep}/state-count";
-	public static final String API_CAMPAIGN_ID_SU_STATECOUNT = "/api/campaign/{id}/survey-units/state-count";
+	public static final String API_CAMPAIGN_ID_SU_STATECOUNT = "/api/campaigns/{id}/survey-units/state-count";
 	public static final String API_USER= "/api/user";
 	public static final String API_SURVEYUNITS_STATE= "/api/survey-units/state/{state}";
 	public static final String API_PREFERENCES = "/api/preferences";

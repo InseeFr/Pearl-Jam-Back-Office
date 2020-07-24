@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -38,6 +40,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.StateType;
@@ -52,7 +55,10 @@ import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
+import io.restassured.filter.session.SessionFilter;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
@@ -67,7 +73,7 @@ import liquibase.resource.ResourceAccessor;
  *
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = KeyCloak"})
 @ActiveProfiles({ "test" })
 @ContextConfiguration(initializers = { ApiApplicationRestAssureTests.Initializer.class })
 @Testcontainers
@@ -86,10 +92,13 @@ class ApiApplicationRestAssureTests {
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
 
+	@Container
+	public static KeycloakContainer keycloak = new KeycloakContainer().withRealmImportFile("realm.json");
+	
 	@LocalServerPort
 	int port;
 
-	private Liquibase liquibase; 
+	private Liquibase liquibase;
 
 	/**
 	 * This method set up the port of the PostgreSqlContainer
@@ -114,7 +123,8 @@ class ApiApplicationRestAssureTests {
 			TestPropertyValues
 					.of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
 							"spring.datasource.username=" + postgreSQLContainer.getUsername(),
-							"spring.datasource.password=" + postgreSQLContainer.getPassword())
+							"spring.datasource.password=" + postgreSQLContainer.getPassword(),
+					"keycloak.auth-server-url=" + keycloak.getAuthServerUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 	}
@@ -339,7 +349,7 @@ class ApiApplicationRestAssureTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(10)
+	@Order(11)
 	public void testGetAllSurveyUnitNotFound() throws InterruptedException, SQLException, LiquibaseException {
 		PGSimpleDataSource ds = new PGSimpleDataSource();
 		// Datasource initialization
@@ -354,5 +364,52 @@ class ApiApplicationRestAssureTests {
 		get("api/survey-units/")
 		.then()
 		.statusCode(404);
+	}
+	
+	private String resourceOwnerLogin(String clientId, String clientSecret, String username, String password) throws JSONException {
+        Response response =
+                given().auth().preemptive().basic(clientId, clientSecret)   
+                        .formParam("grant_type", "password")
+                        .formParam("username", username)
+                        .formParam("password", password)
+                        .when()
+                        .post( keycloak.getAuthServerUrl() + "/realms/insee-realm/protocol/openid-connect/token");
+        
+
+        JSONObject jsonObject = new JSONObject(response.getBody().asString());
+        String accessToken = jsonObject.get("access_token").toString();
+        String tokenType = jsonObject.get("token_type").toString();
+        return accessToken;
+     }
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns"
+	 * return 200
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(10)
+	public void testGetCampaign() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		given().auth().oauth2(accessToken).when().get("api/campaigns").then().statusCode(200).log().all();
+//		given().header("Authorization", "Bearer " + accessToken, "Content-Type",  ContentType.JSON, "Accept",
+//	              ContentType.JSON).when().get("api/campaigns").then().statusCode(200).log().all();
+
+		/*
+		.assertThat().body("id", hasItem("simpsons2020x00")).and()
+		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
+		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
+		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
+		.assertThat().body("visibilityStartDate",hasItem(1590504561350L)).and()
+		.assertThat().body("treatmentEndDate",hasItem(null)).and(
+		.assertThat().body("affected",hasItem(4)).and()
+		.assertThat().body("toAffect",hasItem(0)).and()
+		.assertThat().body("inProgress",hasItem(0)).and()
+		.assertThat().body("toControl",hasItem(1590504561350L)).and()
+		.assertThat().body("terminated",hasItem(1590504561350L)).and()
+		.assertThat().body("toFollowUp",hasItem(1590504561350L)).and()
+		.assertThat().body("preference",hasItem(true));*/
+
 	}
 }
