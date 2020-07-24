@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.ContactOutcome;
 import fr.insee.pearljam.api.domain.InseeAddress;
 import fr.insee.pearljam.api.domain.State;
+import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
@@ -270,5 +272,27 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitCampaignReturned.add(surveyUnit);
 		}
 		return surveyUnitCampaignReturned;		
+	}
+
+	
+	@Transactional
+	@Override
+	public HttpStatus addStateToSurveyUnits(List<String> listSU, StateType state) {
+		if(listSU == null || listSU.isEmpty()) {
+			LOGGER.error("list of SU to update is empty ");
+			return HttpStatus.BAD_REQUEST;
+		}
+		List<State> lstState = new ArrayList<>();
+		for(String idSu : listSU) {
+			LOGGER.info("Add state {} to survey unit {}", state, idSu);
+			Optional<SurveyUnit> su = surveyUnitRepository.findById(idSu);
+			if(su.isPresent()) {
+				lstState.add(new State(new Date().getTime(), su.get(), state));
+			} else {
+				return HttpStatus.BAD_REQUEST;
+			}
+		}
+		stateRepository.saveAll(lstState);
+		return HttpStatus.OK;
 	}
 }

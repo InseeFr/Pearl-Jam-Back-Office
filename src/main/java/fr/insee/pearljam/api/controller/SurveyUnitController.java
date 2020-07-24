@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -118,6 +119,29 @@ public class SurveyUnitController {
 		}else {
 			HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
 			LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	/**
+	* This method is using to update the state of Survey Units listed in request body 
+	* 
+	* @param commentValue the value to update
+	* @param id	the id of reporting unit
+	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
+	* @throws ParseException 
+	* @throws SQLException 
+	* 
+	*/
+	@ApiOperation(value = "Update the state of Survey Units listed in request body")
+	@PutMapping(path = "/survey-units/state/{state}")
+	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody List<String> listSU, @PathVariable(value = "state") StateType state) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}else {
+			HttpStatus returnCode = surveyUnitService.addStateToSurveyUnits(listSU, state);
+			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), String.join(", ", listSU) , returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
 	}

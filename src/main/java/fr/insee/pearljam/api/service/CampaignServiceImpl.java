@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
@@ -17,6 +16,7 @@ import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
@@ -43,9 +43,13 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
-	
+
 	@Autowired
 	VisibilityRepository visibilityRepository;
+	
+
+	@Autowired
+	OrganizationUnitRepository organizationUnitRepository;
 	
 	@Autowired
 	UtilsService utilsService;
@@ -127,7 +131,7 @@ public class CampaignServiceImpl implements CampaignService {
 	      if(dateToUse == null){
 	        dateToUse = -1L;
 	      }
-	      for(String idOrganizationalUnit : Constants.LIST_LABELS_OU) {
+	      for(String idOrganizationalUnit : organizationUnitRepository.findAllId()) {
 		      stateCountList.add(new StateCountDto(idOrganizationalUnit, campaignRepository.getStateCountByCampaignAndOU(campaignId, idOrganizationalUnit, dateToUse)));
 	      }
 	      stateCountCampaignDto.setOrganizationUnits(stateCountList);
