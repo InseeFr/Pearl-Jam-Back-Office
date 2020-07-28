@@ -27,7 +27,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "INNER JOIN visibility vi ON vi.campaign_id = camp.id "
 			+ "INNER JOIN public.user us ON us.organization_unit_id = vi.organization_unit_id "
 			+ "WHERE pref.id_user ILIKE ?1", nativeQuery=true)
-	List<String> findIdsByUserId(String idInterviewer);
+	List<String> findIdsByUserId(String userId);
 	
 	CampaignDto findDtoById(String id);
 

@@ -9,4 +9,5 @@ import fr.insee.pearljam.api.domain.User;
 public interface UserRepository extends JpaRepository<User, String> {
 
 	Optional<User> findByIdIgnoreCase(String userId);
+
 }

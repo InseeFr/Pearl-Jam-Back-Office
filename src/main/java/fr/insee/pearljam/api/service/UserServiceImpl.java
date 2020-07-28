@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 			if (user.isPresent()) {
-				 getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit());
+				 getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
 				 return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
 							organizationUnits);
 			} else {
@@ -50,13 +50,16 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	private void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu) {
+	private void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
 		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
 		if(lstOu.isEmpty()) {
 			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
 		}else {
+			if(saveAllLevels) {
+				organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
+			}
 			for (OrganizationUnit ou : lstOu) {
-				getOrganizationUnits(organizationUnits, ou);
+				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 			}
 		}
 	}
