@@ -21,13 +21,12 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	* 
 	* @return List of all {@link SurveyUnit}
 	*/
-	@Query(value="SELECT pref.id_campaign "
-			+ "FROM preference pref "
-			+ "INNER JOIN campaign camp ON camp.id = pref.id_campaign "
+	@Query(value="SELECT camp.id "
+			+ "FROM campaign camp "
 			+ "INNER JOIN visibility vi ON vi.campaign_id = camp.id "
-			+ "INNER JOIN public.user us ON us.organization_unit_id = vi.organization_unit_id "
-			+ "WHERE pref.id_user ILIKE ?1", nativeQuery=true)
-	List<String> findIdsByUserId(String userId);
+			+ "INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "
+			+ "WHERE ou.id ILIKE ?1", nativeQuery=true)
+	List<String> findIdsByOuId(String ouId);
 	
 	CampaignDto findDtoById(String id);
 

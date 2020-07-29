@@ -27,7 +27,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	public HttpStatus setPreferences(List<String> listPreference, String userId) {
 		if(listPreference == null || listPreference.isEmpty()) {
-			LOGGER.error("list of SU to update is empty ");
+			LOGGER.error("list of campaign to update is empty ");
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);

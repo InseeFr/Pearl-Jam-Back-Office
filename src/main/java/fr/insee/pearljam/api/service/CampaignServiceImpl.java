@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -46,39 +48,54 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	VisibilityRepository visibilityRepository;
-	
 
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
+	
+	@Autowired
+	UserService userService;
 	
 	@Autowired
 	UtilsService utilsService;
 	
 	public List<CampaignDto> getListCampaign(String userId) {
 		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
-		List<String> campaignDtoIds = null;
-		if(userId.equals(GUEST) || utilsService.existUser(userId, "user")) {
+		List<String> campaignDtoIds = new ArrayList<>();
+		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
+		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+		if(userId.equals(GUEST) || !utilsService.existUser(userId, "user")) {
 			campaignDtoIds = campaignRepository.findAllIds();
 		} else {
-			campaignDtoIds = campaignRepository.findIdsByUserId(userId);
+			userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
+			if(!organizationUnits.isEmpty()) {
+				for(OrganizationUnitDto orgaUser : organizationUnits) {
+					List<String> ids = campaignRepository.findIdsByOuId(orgaUser.getId());
+					for(String id: ids) {
+						if(!campaignDtoIds.contains(id)) {
+							campaignDtoIds.add(id);
+						}
+					}
+				}
+			} else {
+				LOGGER.error("No campaign found for user {}", userId);
+				return List.of();
+			}
 		}
 		if(campaignDtoIds.isEmpty()) {
 			LOGGER.error("No campaign found for user {}", userId);
 			return List.of();
 		}
 		for(String idCampaign : campaignDtoIds) {
-			if(isUserAssociatedToTheCampaign(userId, idCampaign)) {
-				CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-				campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
-				campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
-				campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
-				campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
-				campaign.setToAffect(0L);
-				campaign.setToControl(0L);
-				campaign.setToFollowUp(0L);
-				campaign.setPreference(true);
-				campaignDtoReturned.add(campaign);
-			}
+			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
+			campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
+			campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
+			campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
+			campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
+			campaign.setToAffect(0L);
+			campaign.setToControl(0L);
+			campaign.setToFollowUp(0L);
+			campaign.setPreference(isUserAssociatedToTheCampaign(userId, idCampaign));
+			campaignDtoReturned.add(campaign);
 		}
 		return campaignDtoReturned;
 	}

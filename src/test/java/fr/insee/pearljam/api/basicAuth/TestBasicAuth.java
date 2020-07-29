@@ -127,8 +127,8 @@ public class TestBasicAuth {
 		.assertThat().body("id", equalTo("ABC")).and()
 		.assertThat().body("firstName", equalTo("Melinda")).and()
 		.assertThat().body("lastName", equalTo("Webb")).and()
-		.assertThat().body("organizationUnits.id", equalTo("OU-NATIONAL")).and()
-		.assertThat().body("organizationUnits.label", equalTo("National organizational unit")).and()
+		.assertThat().body("organizationUnits.id", equalTo("OU-NORTH")).and()
+		.assertThat().body("organizationUnits.label", equalTo("North region organizational unit")).and()
 		.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH")).and()
 		.assertThat().body("localOrganizationUnits[0].label", equalTo("North region organizational unit"));
 	}
@@ -564,6 +564,44 @@ public class TestBasicAuth {
 			.put("api/survey-units/state/NVM")
 		.then()
 			.statusCode(400);
+	}
+	
+	/**
+	 * Test that the PUT endpoint "api/preferences"
+	 * return 200
+ 	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(23)
+	public void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listPreferences = new ArrayList<>();
+		listPreferences.add("simpsons2020x00");
+		 given().auth().preemptive().basic("ABC", "a")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listPreferences))
+		.when()
+			.put("api/preferences")
+		.then()
+			.statusCode(200);
+	}
+	
+	/**
+	 * Test that the PUT endpoint "api/preferences"
+	 * return 200
+ 	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(24)
+	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listPreferences = new ArrayList<>();
+		listPreferences.add("");
+		 given().auth().preemptive().basic("ABC", "a")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listPreferences))
+		.when()
+			.put("api/preferences")
+		.then()
+			.statusCode(404);
 	}
 	
 }

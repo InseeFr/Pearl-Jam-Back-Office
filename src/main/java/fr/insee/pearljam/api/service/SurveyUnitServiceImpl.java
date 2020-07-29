@@ -20,10 +20,12 @@ import fr.insee.pearljam.api.domain.InseeAddress;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -37,6 +39,7 @@ import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.UserRepository;
 
 
 /**
@@ -75,6 +78,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	
 	@Autowired
 	InterviewerRepository interviewerRepository;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	/**
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
@@ -247,14 +256,39 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	
 	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String id, String userId, String state) {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
-		List<String> surveyUnitDtoIds = null;
+		List<String> surveyUnitDtoIds = new ArrayList<>();
+		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
+		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+		userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
 		if(userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
 		} else {
-			if(state == null || state.isEmpty()) {
-				surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserId(id, userId);
-			} else {
-				surveyUnitDtoIds = surveyUnitRepository.findIdsByCampaignIdAndUserIdAndState(id, userId, state);
+			if(!organizationUnits.isEmpty()) {
+				if(state == null || state.isEmpty()) {
+					for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+						List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndOu(id, organizationUnitDto.getId());
+						for(String idSu: ids) {
+							if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null) {
+								surveyUnitDtoIds.add(idSu);
+							}
+							if(!surveyUnitDtoIds.contains(idSu)) {
+								surveyUnitDtoIds.add(idSu);
+							}
+						}
+					}
+				} else {
+					for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+						List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(id, state, organizationUnitDto.getId());
+						for(String idSu: ids) {
+							if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null) {
+								surveyUnitDtoIds.add(idSu);
+							}
+							if(!surveyUnitDtoIds.contains(idSu)) {
+								surveyUnitDtoIds.add(idSu);
+							}
+						}
+					}
+				}
 			}
 		}
 		if(surveyUnitDtoIds.isEmpty()) {

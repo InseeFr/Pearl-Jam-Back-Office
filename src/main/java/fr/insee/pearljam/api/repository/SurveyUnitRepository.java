@@ -53,21 +53,21 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	
 	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
 			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
-			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id ", nativeQuery=true)
-	List<String> findIdsByCampaignIdAndUserId(String id, String userId);
+			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
+			"WHERE camp.id =?1 AND ou.id ILIKE ?2 ", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndOu(String id, String ouId);
 
 	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN preference pref on pref.id_campaign = camp.id " +
 			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
 			"INNER JOIN state st on st.survey_unit_id = su.id "+
-			"WHERE camp.id =?1 AND pref.id_user ILIKE ?2 AND vi.organization_unit_id = int.organization_unit_id "+ 
-			"AND st.type = ?3", nativeQuery=true)
-	List<String> findIdsByCampaignIdAndUserIdAndState(String id, String userId, String state);
+			"WHERE camp.id =?1 AND st.type = ?2 "+ 
+			"AND ou.id ILIKE ?3 ", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndStateAndOu(String id, String state, String ouId);
 	
 	@Query(value="SELECT COUNT(*) FROM survey_unit su "
 			+ "INNER JOIN campaign camp ON camp.id = su.campaign_id "

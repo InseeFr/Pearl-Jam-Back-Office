@@ -158,7 +158,19 @@ public class TestNoAuth {
 	@Test
 	@Order(3)
 	public void testGetCampaign() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns").then().statusCode(404);
+		given().when().get("api/campaigns").then().statusCode(200).and().assertThat().body("id", hasItem("simpsons2020x00")).and()
+		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
+		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
+		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
+		.assertThat().body("[0].visibilityStartDate",equalTo(null)).and()
+		.assertThat().body("[0].treatmentEndDate",equalTo(null)).and()
+		.assertThat().body("affected",hasItem(4)).and()
+		.assertThat().body("toAffect",hasItem(0)).and()
+		.assertThat().body("inProgress",hasItem(0)).and()
+		.assertThat().body("toControl",hasItem(0)).and()
+		.assertThat().body("terminated",hasItem(0)).and()
+		.assertThat().body("toFollowUp",hasItem(0)).and()
+		.assertThat().body("preference",hasItem(false));
 	}
 	
 	/**
@@ -551,5 +563,44 @@ public class TestNoAuth {
 			.put("api/survey-units/state/NVM")
 		.then()
 			.statusCode(400);
+	}
+	
+
+	/**
+	 * Test that the PUT endpoint "api/preferences"
+	 * return 200
+ 	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(23)
+	public void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listPreferences = new ArrayList<>();
+		listPreferences.add("simpsons2020x00");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listPreferences))
+		.when()
+			.put("api/preferences")
+		.then()
+			.statusCode(404);
+	}
+	
+	/**
+	 * Test that the PUT endpoint "api/preferences"
+	 * return 200
+ 	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(24)
+	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listPreferences = new ArrayList<>();
+		listPreferences.add("");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listPreferences))
+		.when()
+			.put("api/preferences")
+		.then()
+			.statusCode(404);
 	}
 }

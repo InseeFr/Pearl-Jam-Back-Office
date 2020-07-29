@@ -39,11 +39,12 @@ public class UserServiceImpl implements UserService {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
-			if (user.isPresent()) {
-				 getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
-				 getOrganizationUnitsParents(organizationUnitsParent, user.get().getOrganizationUnit());
-				 return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-						 organizationUnitsParent, organizationUnits);
+			if (user.isPresent() && user.get() != null) {
+				organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
+				organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
+				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
+					return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
+							organizationUnitsParent, organizationUnits);
 			} else {
 				return null;
 			}
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	private void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
+	public void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
 		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
 		if(lstOu.isEmpty()) {
 			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
@@ -64,12 +65,5 @@ public class UserServiceImpl implements UserService {
 				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 			}
 		}
-	}
-	
-	private void getOrganizationUnitsParents(OrganizationUnitDto organizationUnitsParent, OrganizationUnit currentOu) {
-		String idOuParent = organizationUnitRepository.findIdParent(currentOu.getId());
-		OrganizationUnit parentOu = organizationUnitRepository.findOuById(idOuParent);
-		organizationUnitsParent.setId(parentOu.getId());
-		organizationUnitsParent.setLabel(parentOu.getLabel());
 	}
 }

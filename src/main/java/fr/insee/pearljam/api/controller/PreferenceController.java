@@ -46,7 +46,7 @@ public class PreferenceController {
 	* @throws SQLException 
 	* 
 	*/
-	@ApiOperation(value = "Update the state of Survey Units listed in request body")
+	@ApiOperation(value = "Update preferences with campaigns listed in request body")
 	@PutMapping(path = "/preferences")
 	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody List<String> listPreference) {
 		String userId = utilsService.getUserId(request);
