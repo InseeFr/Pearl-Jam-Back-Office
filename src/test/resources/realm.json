@@ -315,6 +315,33 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
+    "id" : "ea1f33ad-ba96-4e93-926f-1f61ea590f7a",
+    "createdTimestamp" : 1595864232470,
+    "username" : "intw1",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "p0RwysAqmYLaCf5YXQBT0Wci4/do990bzB+3pHT0ijJBEjpnls4si+nViiEemJSa7lqjyhnCaOEtU9AvlWp5Gw==",
+      "salt" : "NSzr+Uwpq9QzLafJcOiqNw==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1595864238243,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "investigator", "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "33cd1ba0-a885-476b-9b74-536820ab648a",
     "createdTimestamp" : 1591980268604,
     "username" : "investigator",

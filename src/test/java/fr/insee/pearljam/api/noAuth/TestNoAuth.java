@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api;
+package fr.insee.pearljam.api.noAuth;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
@@ -13,17 +13,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -40,7 +40,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.StateType;
@@ -50,36 +49,25 @@ import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
-import io.restassured.filter.session.SessionFilter;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import liquibase.Contexts;
 import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.FileSystemResourceAccessor;
-import liquibase.resource.ResourceAccessor;
 
-/**
- * Class for testing the application
- * @author scorcaud
- *
- */
+/* Test class for no Authentication */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = KeyCloak"})
 @ActiveProfiles({ "test" })
-@ContextConfiguration(initializers = { ApiApplicationRestAssureTests.Initializer.class })
+@ContextConfiguration(initializers = { TestNoAuth.Initializer.class })
 @Testcontainers
-@TestMethodOrder(OrderAnnotation.class)
-class ApiApplicationRestAssureTests {
-	
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = NoAuth"})
+public class TestNoAuth {
+
 	@Autowired
 	SurveyUnitService surveyUnitService;
 
@@ -91,14 +79,11 @@ class ApiApplicationRestAssureTests {
 	
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
-
-	@Container
-	public static KeycloakContainer keycloak = new KeycloakContainer().withRealmImportFile("realm.json");
 	
 	@LocalServerPort
 	int port;
 
-	private Liquibase liquibase;
+	public Liquibase liquibase;
 
 	/**
 	 * This method set up the port of the PostgreSqlContainer
@@ -115,27 +100,190 @@ class ApiApplicationRestAssureTests {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Container
+	@ClassRule
 	public static PostgreSQLContainer postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
 			.withDatabaseName("pearljam").withUsername("pearljam").withPassword("pearljam");
 
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	
+	public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues
 					.of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
 							"spring.datasource.username=" + postgreSQLContainer.getUsername(),
-							"spring.datasource.password=" + postgreSQLContainer.getPassword(),
-					"keycloak.auth-server-url=" + keycloak.getAuthServerUrl())
+							"spring.datasource.password=" + postgreSQLContainer.getPassword())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 	}
+		
+	/*UserController*/
+	
+	/**
+	 * Test that the GET endpoint "api/survey-unit/"
+	 * return 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(1)
+	public void testGetUser() throws InterruptedException {
+		given().when().get("api/user").then().statusCode(200).and()
+		.assertThat().body("id", equalTo("")).and()
+		.assertThat().body("firstName", equalTo("Guest")).and()
+		.assertThat().body("lastName", equalTo("")).and()
+		.assertThat().body("organizationUnits.id", equalTo(null)).and()
+		.assertThat().body("organizationUnits.label", equalTo(null)).and()
+		.assertThat().body("localOrganisationUnits", equalTo(null));
+	}
+	
+	
+	/**
+	 * Test that the GET endpoint "api/survey-unit/{id}"
+	 * return String 'Guest'.
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(2)
+	public void testGetUserNotFound() throws InterruptedException {
+		UserDto user = userService.getUser("test");
+		assertTrue(user.getFirstName().equals("Guest"));
+	}
 
+	/*CampaignController*/
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns"
+	 * return 404
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(3)
+	public void testGetCampaign() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * return 200
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(4)
+	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x00/interviewers").then().statusCode(200).and()
+		.assertThat().body("id", hasItem("INTW1")).and()
+		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
+		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
+		.assertThat().body("surveyUnitCount",hasItem(2));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * return 404 when campaign Id is false
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(5)
+	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x000000/interviewers").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * return 200
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(6)
+	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
+		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
+		.assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
+		.assertThat().body("organizationUnits[1].prcCount", equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].aocCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].apsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].insCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].wftCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].wfsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].tbrCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].finCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].nviCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].nvmCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[1].total",equalTo(4));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * return 404 when campaign Id is false
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(7)
+	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/test/survey-units/state-count").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * return 200
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(8)
+	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
+		.assertThat().body("idDem", equalTo(null)).and()
+		.assertThat().body("ansCount", equalTo(2)).and()
+		.assertThat().body("prcCount", equalTo(0)).and()
+		.assertThat().body("aocCount",equalTo(0)).and()
+		.assertThat().body("apsCount",equalTo(0)).and()
+		.assertThat().body("insCount",equalTo(0)).and()
+		.assertThat().body("wftCount",equalTo(0)).and()
+		.assertThat().body("wfsCount",equalTo(0)).and()
+		.assertThat().body("tbrCount",equalTo(0)).and()
+		.assertThat().body("finCount",equalTo(0)).and()
+		.assertThat().body("nviCount",equalTo(0)).and()
+		.assertThat().body("nvmCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * return 404 when campaign Id is false
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(9)
+	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * return 404 when interviewer Id is false
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(10)
+	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
+	}
+	
+	/*SurveyUnitController*/
+	
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 200.
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(1)
+	@Order(11)
 	public void testGetSurveyUnitDetail() throws InterruptedException {
 		get("api/survey-unit/12").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("12")).and()
@@ -169,7 +317,7 @@ class ApiApplicationRestAssureTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(2)
+	@Order(12)
 	public void testGetAllSurveyUnit() throws InterruptedException {
 		get("api/survey-units/").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("11")).and()
@@ -181,22 +329,24 @@ class ApiApplicationRestAssureTests {
 	
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
-	 * return 404.
+	 * return 404 when survey-unit is false
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(3)
+	@Order(13)
 	public void testGetSurveyUnitDetailNotFound() throws InterruptedException {
 		get("api/survey-unit/123456789")
 		.then()
 		.statusCode(404);
 	}
 	
-	
-		
-
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 200
+	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(4)
+	@Order(14)
 	public void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setFirstName("test");
@@ -248,8 +398,13 @@ class ApiApplicationRestAssureTests {
 
 	}
 	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with false survey-unit Id
+ 	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(5)
+	@Order(15)
 	public void testPutSurveyUnitDetailErrorOnIds() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
@@ -262,8 +417,13 @@ class ApiApplicationRestAssureTests {
 			.statusCode(400);
 	}
 	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with state null
+ 	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(6)
+	@Order(16)
 	public void testPutSurveyUnitDetailErrorOnStates() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setStates(List.of());
@@ -276,8 +436,13 @@ class ApiApplicationRestAssureTests {
 			.statusCode(400);
 	}
 	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with address null
+ 	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(7)
+	@Order(17)
 	public void testPutSurveyUnitDetailErrorOnAddress() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setAddress(null);
@@ -291,8 +456,13 @@ class ApiApplicationRestAssureTests {
 			.statusCode(400);
 	}
 	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with first name empty
+ 	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(8)
+	@Order(18)
 	public void testPutSurveyUnitDetailErrorOnFirstName() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setFirstName("");
@@ -306,8 +476,13 @@ class ApiApplicationRestAssureTests {
 			.statusCode(400);
 	}
 	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with last name empty
+ 	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(9)
+	@Order(19)
 	public void testPutSurveyUnitDetailErrorOnLastName() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setLastName("");
@@ -322,94 +497,59 @@ class ApiApplicationRestAssureTests {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/survey-unit/"
+	 * Test that the PUT endpoint "api/survey-unit/state/{state}"
 	 * return 200
-	 * @throws InterruptedException
+ 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(2)
-	public void testGetUser() throws InterruptedException {
-		assertTrue(userService.getUser("jkl")!=null);
-	}
-	
-	/**
-	 * Test that the GET endpoint "api/survey-unit/{id}"
-	 * return 404.
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(3)
-	public void testGetUserNotFound() throws InterruptedException {
-		assertTrue(userService.getUser("test")==null);
-	}
-
-	/**
-	 * Test that the GET endpoint "api/survey-unit/"
-	 * return 404
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(11)
-	public void testGetAllSurveyUnitNotFound() throws InterruptedException, SQLException, LiquibaseException {
-		PGSimpleDataSource ds = new PGSimpleDataSource();
-		// Datasource initialization
-		ds.setUrl(postgreSQLContainer.getJdbcUrl());
-		ds.setUser(postgreSQLContainer.getUsername());
-		ds.setPassword(postgreSQLContainer.getPassword());
-		DatabaseConnection dbconn = new JdbcConnection(ds.getConnection());
-		ResourceAccessor ra = new FileSystemResourceAccessor("src/main/resources/db/changelog");
-		liquibase = new Liquibase("000_init.xml", ra, dbconn);
-		liquibase.dropAll();
-		liquibase.update(new Contexts());
-		get("api/survey-units/")
+	@Order(20)
+	public void testGetPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listSu = new ArrayList<>();
+		listSu.add("11");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listSu))
+		.when()
+			.put("api/survey-units/state/NVM")
 		.then()
-		.statusCode(404);
+			.statusCode(200);
 	}
 	
-	private String resourceOwnerLogin(String clientId, String clientSecret, String username, String password) throws JSONException {
-        Response response =
-                given().auth().preemptive().basic(clientId, clientSecret)   
-                        .formParam("grant_type", "password")
-                        .formParam("username", username)
-                        .formParam("password", password)
-                        .when()
-                        .post( keycloak.getAuthServerUrl() + "/realms/insee-realm/protocol/openid-connect/token");
-        
-
-        JSONObject jsonObject = new JSONObject(response.getBody().asString());
-        String accessToken = jsonObject.get("access_token").toString();
-        String tokenType = jsonObject.get("token_type").toString();
-        return accessToken;
-     }
-	
 	/**
-	 * Test that the GET endpoint "api/campaigns"
-	 * return 200
-	 * @throws InterruptedException
-	 * @throws JSONException 
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with false state
+ 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(10)
-	public void testGetCampaign() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns").then().statusCode(200).log().all();
-//		given().header("Authorization", "Bearer " + accessToken, "Content-Type",  ContentType.JSON, "Accept",
-//	              ContentType.JSON).when().get("api/campaigns").then().statusCode(200).log().all();
-
-		/*
-		.assertThat().body("id", hasItem("simpsons2020x00")).and()
-		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
-		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
-		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
-		.assertThat().body("visibilityStartDate",hasItem(1590504561350L)).and()
-		.assertThat().body("treatmentEndDate",hasItem(null)).and(
-		.assertThat().body("affected",hasItem(4)).and()
-		.assertThat().body("toAffect",hasItem(0)).and()
-		.assertThat().body("inProgress",hasItem(0)).and()
-		.assertThat().body("toControl",hasItem(1590504561350L)).and()
-		.assertThat().body("terminated",hasItem(1590504561350L)).and()
-		.assertThat().body("toFollowUp",hasItem(1590504561350L)).and()
-		.assertThat().body("preference",hasItem(true));*/
-
+	@Order(21)
+	public void testGetPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listSu = new ArrayList<>();
+		listSu.add("11");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listSu))
+		.when()
+			.put("api/survey-units/state/test")
+		.then()
+			.statusCode(400);
+	}
+	
+	/**
+	 * Test that the PUT endpoint "api/survey-unit/{id}"
+	 * return 404 with no survey-unit
+ 	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(22)
+	public void testGetPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listSu = new ArrayList<>();
+		listSu.add("");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listSu))
+		.when()
+			.put("api/survey-units/state/NVM")
+		.then()
+			.statusCode(400);
 	}
 }

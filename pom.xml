@@ -148,6 +148,7 @@
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
@@ -336,10 +337,16 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.0.0-M4</version>
 					<configuration>
+						<includes>
+							<include>TestAuthKeyCloak.java</include>
+							<include>TestNoAuth.java</include>
+ 							<include>TestBasicAuth.java</include>
+						</includes>
 						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds>
 						<forkCount>3</forkCount>
 						<reuseForks>true</reuseForks>
 						<argLine>-Xmx2048m -Xmx1G -XX:PermSize=1024m</argLine>
+						<argLine>--illegal-access=permit</argLine>
 					</configuration>
 				</plugin>
 			</plugins>

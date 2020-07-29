@@ -126,7 +126,8 @@ public class CampaignServiceImpl implements CampaignService {
   public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) {
 	  	StateCountCampaignDto stateCountCampaignDto = new StateCountCampaignDto();
 	  	List<StateCountDto> stateCountList = new ArrayList<>();
-		if(userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) {
+	  	CampaignDto campaign = campaignRepository.findDtoById(campaignId);
+		if((userId.equals(GUEST) || isUserAssociatedToTheCampaign(userId, campaignId)) && campaign != null) {
 	      Long dateToUse = date;
 	      if(dateToUse == null){
 	        dateToUse = -1L;
@@ -137,7 +138,8 @@ public class CampaignServiceImpl implements CampaignService {
 	      stateCountCampaignDto.setOrganizationUnits(stateCountList);
 	      stateCountCampaignDto.setFrance(new StateCountDto(campaignRepository.getStateCountByCampaignId(campaignId, dateToUse)));
 	    }
-		if(stateCountCampaignDto.getOrganizationUnits().isEmpty() || stateCountCampaignDto.getFrance() == null) {
+		if(stateCountCampaignDto.getFrance() == null  || stateCountCampaignDto.getOrganizationUnits() == null
+				|| stateCountCampaignDto.getOrganizationUnits().isEmpty() ) {
 			LOGGER.error("No matching survey units states were found for the user {} and the campaign {}", userId, campaignId);
 			return null;
 		}

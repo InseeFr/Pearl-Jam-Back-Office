@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 
 public interface OrganizationUnitRepository extends JpaRepository<OrganizationUnit, String> {
 
@@ -27,6 +28,22 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
 	*/
 	@Query("SELECT ou FROM OrganizationUnit ou WHERE ou.organizationUnitParent.id =?1")
 	List<OrganizationUnit> findChildren(String orgUnitId);
+	
+	/**
+	* This method retrieves organizationUnit parent of children organizationUnit in param
+	* 
+	* @return List of all {@link String}
+	*/
+	@Query("SELECT ou.organizationUnitParent.id FROM OrganizationUnit ou WHERE ou.id =?1")
+	String findIdParent(String orgUnitId);
+	
+	/**
+	* This method retrieves organizationUnit parent of children organizationUnit in param
+	* 
+	* @return List of all {@link String}
+	*/
+	@Query("SELECT ou FROM OrganizationUnit ou WHERE ou.id =?1")
+	OrganizationUnit findOuById(String orgUnitId);
 	
 	/**
 	* This method retrieves organizationUnit of children organizationUnit in param
