@@ -37,13 +37,13 @@ public class UserServiceImpl implements UserService {
 	public UserDto getUser(String userId) {
 		if (applicationProperties.getMode() != Mode.NoAuth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-			List<OrganizationUnitDto> organizationUnitsLocals = new ArrayList<>();
+			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
 			if (user.isPresent()) {
 				 getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
 				 getOrganizationUnitsParents(organizationUnitsParent, user.get().getOrganizationUnit());
 				 return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-						 organizationUnitsParent, organizationUnitsLocals);
+						 organizationUnitsParent, organizationUnits);
 			} else {
 				return null;
 			}
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 	private void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
 		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
 		if(lstOu.isEmpty()) {
-			organizationUnitsLocals.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
+			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
 		}else {
 			if(saveAllLevels) {
 				organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
