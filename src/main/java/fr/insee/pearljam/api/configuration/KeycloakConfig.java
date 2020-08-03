@@ -80,15 +80,20 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
-   				.antMatchers(Constants.API_SURVEYUNITS_ID).hasRole(role)
 				.antMatchers(Constants.API_SURVEYUNITS).hasRole(role)
-				.antMatchers(Constants.API_CAMPAIGN).hasRole(role)
+		        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasRole(role)
+				.antMatchers(Constants.API_SURVEYUNIT_ID).hasRole(role)
+				.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasRole(role)
+
+				.antMatchers(Constants.API_CAMPAIGNS).hasRole(role)
 				.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasRole(role)
 				.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasRole(role)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasRole(role)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasRole(role)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasRole(role)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasRole(role)
+		        
 		        .antMatchers(Constants.API_USER).hasRole(role)
-		        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasRole(role)
 		        .antMatchers(Constants.API_PREFERENCES).hasRole(role)
 				.anyRequest().denyAll(); 
 	}

@@ -157,7 +157,7 @@ public class SurveyUnitController {
 	* 
 	*/
 	@ApiOperation(value = "Update the Survey Unit")
-	@GetMapping(path = "/campaigns/{id}/survey-units")
+	@GetMapping(path = "/campaign/{id}/survey-units")
 	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(value = "state", required=false) String state) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
@@ -171,6 +171,29 @@ public class SurveyUnitController {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
 				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 			}
+		}
+	}
+	
+	
+	
+	/**
+	* This method is using to update the comment associated to a specific reporting unit 
+	* 
+	* @param commentValue the value to update
+	* @param id	the id of reporting unit
+	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
+	* @throws ParseException 
+	* @throws SQLException 
+	* 
+	*/
+	@ApiOperation(value = "Get states of given survey unit")
+	@GetMapping(path = "/survey-unit/{id}/states")
+	public ResponseEntity<Object> getStatesBySurveyUnitId(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}else {
+			return surveyUnitService.getListStatesBySurveyUnitId(id, userId);
 		}
 	}
 }

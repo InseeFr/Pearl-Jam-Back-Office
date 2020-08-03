@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.domain.Comment;
@@ -328,5 +329,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		stateRepository.saveAll(lstState);
 		return HttpStatus.OK;
+	}
+
+	@Override
+	public ResponseEntity<Object> getListStatesBySurveyUnitId(String suId, String userId) {
+		Optional<SurveyUnit> su = surveyUnitRepository.findById(suId);
+		if(su.isPresent()) {
+			List<StateDto> lstState = stateRepository.findAllDtoBySurveyUnitId(suId);
+			return new ResponseEntity<Object>(lstState, HttpStatus.OK);
+		}else {
+			LOGGER.error("SU {} not found", suId);
+			return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+		}
 	}
 }

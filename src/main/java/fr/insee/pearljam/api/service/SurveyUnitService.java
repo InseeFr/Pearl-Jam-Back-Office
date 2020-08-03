@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
@@ -43,5 +44,7 @@ public interface SurveyUnitService {
 	List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, String state);
 
 	HttpStatus addStateToSurveyUnits(List<String> listSU, StateType state);
+
+	ResponseEntity<Object> getListStatesBySurveyUnitId(String id, String userId);
 
 }
