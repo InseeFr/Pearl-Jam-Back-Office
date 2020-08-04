@@ -34,7 +34,6 @@ import fr.insee.pearljam.api.constants.Constants;
  * @author Claudel Benjamin
  * 
  */
-@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}'=='Basic' or '${fr.insee.pearljam.application.mode}'=='NoAuth'")
 @Configuration
 @EnableWebSecurity
 @ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'")
