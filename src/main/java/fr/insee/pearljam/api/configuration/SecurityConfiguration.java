@@ -49,7 +49,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private ApplicationProperties applicationProperties;
 
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
-	private String role;
+	private String interviewerRole;
+	
+	@Value("${fr.insee.pearljam.user.local.role:#{null}}")
+	private String userLocalRole;
+	
+	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
+	private String userNationalRole;
 
 	/**
 	 * This method check if environment is development or test
@@ -78,19 +84,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 					// configuration for endpoints
-					.antMatchers(Constants.API_SURVEYUNITS).hasRole(role)
-			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasRole(role)
-					.antMatchers(Constants.API_SURVEYUNIT_ID).hasRole(role)
-					.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasRole(role)
-					.antMatchers(Constants.API_CAMPAIGNS).hasRole(role)
-					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasRole(role)
-					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasRole(role)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasRole(role)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasRole(role)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasRole(role)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasRole(role)
-			        .antMatchers(Constants.API_USER).hasRole(role)
-			        .antMatchers(Constants.API_PREFERENCES).hasRole(role)
+					.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
+			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+					.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
 					.anyRequest().denyAll();
 			break;
 		default:
@@ -120,9 +126,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case Basic:
-				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(role)
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(interviewerRole)
 						.and()
-						.withUser("ABC").password("{noop}a").roles(role)
+						.withUser("ABC").password("{noop}a").roles(userLocalRole, userNationalRole)
+						.and()
+						.withUser("JKL").password("{noop}a").roles(userLocalRole, userNationalRole)
 						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;
