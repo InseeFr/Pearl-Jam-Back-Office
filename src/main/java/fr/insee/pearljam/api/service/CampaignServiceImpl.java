@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,16 +85,23 @@ public class CampaignServiceImpl implements CampaignService {
 		if(campaignDtoIds.isEmpty()) {
 			LOGGER.error("No campaign found for user {}", userId);
 			return List.of();
-		}
+    }
+
+
+    List<String> OUids = new ArrayList<String>();
+
+    if(!userId.equals(GUEST)){
+      OUids = organizationUnits.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+    }
+    else{
+      OUids.add(GUEST);
+    }
+  
 		for(String idCampaign : campaignDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-			campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, userId));
-			campaign.setAffected(surveyUnitRepository.getNbrOfSuForCampaign(idCampaign));
-			campaign.setInProgress(surveyUnitRepository.getSuInProgressForCampaign(idCampaign));
-			campaign.setTerminated(surveyUnitRepository.getSuTerminatedByCampaign(idCampaign));
-			campaign.setToAffect(0L);
-			campaign.setToControl(0L);
-			campaign.setToFollowUp(0L);
+      campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, OUids));
+      campaign.setTreatmentEndDate(visibilityRepository.findTreatmentEndDateByCampaignId(idCampaign, OUids));
+			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(idCampaign, OUids));
 			campaign.setPreference(isUserAssociatedToTheCampaign(userId, idCampaign));
 			campaignDtoReturned.add(campaign);
 		}

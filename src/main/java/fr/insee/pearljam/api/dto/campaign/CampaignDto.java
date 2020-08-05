@@ -2,19 +2,21 @@ package fr.insee.pearljam.api.dto.campaign;
 
 import fr.insee.pearljam.api.domain.Campaign;
 
+import java.util.List;
+
 public class CampaignDto {
 	private String id;
 	private String label;
 	private Long collectionStartDate;
 	private Long collectionEndDate;
 	private Long visibilityStartDate;
-	private Long treatmentEndDate;
-	private Long affected;
-	private Long toAffect;
-	private Long inProgress;
-	private Long toControl;
-	private Long terminated;
+  private Long treatmentEndDate;
+  private Long allocated;
+  private Long toProcessInterviewer;
+  private Long toAffect;
 	private Long toFollowUp;
+  private Long toReview;
+	private Long finalized;
 	private Boolean preference;
 	
 	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate) {
@@ -34,28 +36,38 @@ public class CampaignDto {
 	}
 	
 	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate, Long visibilityStartDate, Long treatmentEndDate,
-			Long affected, Long toAffect, Long inProgress, Long toControl, Long terminated, Long toFollowUp, Boolean preference) {
+			Long allocated, Long toProcessInterviewer, Long toAffect, Long toFollowUp, Long toReview, Long finalized, Boolean preference) {
 		super();
 		this.id = id;
 		this.label = label;
 		this.collectionStartDate = collectionStartDate;
 		this.collectionEndDate = collectionEndDate;
 		this.visibilityStartDate = visibilityStartDate;
-		this.treatmentEndDate = treatmentEndDate;
-		this.affected = affected;
-		this.toAffect = toAffect;
-		this.inProgress = inProgress;
-		this.toControl = toControl;
-		this.terminated = terminated;
-		this.toFollowUp = toFollowUp;
-		this.preference = preference;
-	}
-	
+    this.treatmentEndDate = treatmentEndDate;
+    this.allocated = allocated;
+    this.toProcessInterviewer = toProcessInterviewer;
+    this.toAffect = toAffect;
+    this.toFollowUp = toFollowUp;
+    this.toReview = toReview;
+    this.finalized = finalized;
+    this.preference = preference;
+  }
+  
 	
 	public CampaignDto() {
 		super();
+  }
+  
+  public void setCampaignStats(List<Object[]> obj) {
+		if (obj != null && !obj.isEmpty() && obj.get(0).length > 3 && obj.get(0)[0] != null) {
+      this.toProcessInterviewer = ((java.math.BigInteger) obj.get(0)[0]).longValue();
+      this.toReview = ((java.math.BigInteger) obj.get(0)[1]).longValue();
+      this.finalized = ((java.math.BigInteger) obj.get(0)[2]).longValue();
+			this.allocated = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.toAffect = 0L;
+			this.toFollowUp = 0L;
+		}
 	}
-
 
 	/**
 	 * @return the id
@@ -129,17 +141,17 @@ public class CampaignDto {
 	}
 
 	/**
-	 * @return the affected
+	 * @return the allocated
 	 */
-	public Long getAffected() {
-		return affected;
+	public Long getAllocated() {
+		return allocated;
 	}
 
 	/**
-	 * @param affected the affected to set
+	 * @param allocated the allocated to set
 	 */
-	public void setAffected(Long affected) {
-		this.affected = affected;
+	public void setAllocated(Long allocated) {
+		this.allocated = allocated;
 	}
 
 	/**
@@ -157,39 +169,39 @@ public class CampaignDto {
 	}
 
 	/**
-	 * @return the inProgress
+	 * @return the toProcessInterviewer
 	 */
-	public Long getInProgress() {
-		return inProgress;
+	public Long getToProcessInterviewer() {
+		return toProcessInterviewer;
 	}
 
 	/**
-	 * @param inProgress the inProgress to set
+	 * @param toProcessInterviewer the inProgress to set
 	 */
-	public void setInProgress(Long inProgress) {
-		this.inProgress = inProgress;
+	public void setToProcessInterviewer(Long toProcessInterviewer) {
+		this.toProcessInterviewer = toProcessInterviewer;
 	}
 
 	/**
-	 * @return the toControl
+	 * @return the toReview
 	 */
-	public Long getToControl() {
-		return toControl;
+	public Long getToReview() {
+		return toReview;
 	}
 
 	/**
-	 * @param toControl the toControl to set
+	 * @param toReview the toReview to set
 	 */
-	public void setToControl(Long toControl) {
-		this.toControl = toControl;
+	public void setToReview(Long toReview) {
+		this.toReview = toReview;
 	}
 
-	public Long getTerminated() {
-		return terminated;
+	public Long getFinalized() {
+		return finalized;
 	}
 
-	public void setTerminated(Long terminated) {
-		this.terminated = terminated;
+	public void setFinalized(Long finalized) {
+		this.finalized = finalized;
 	}
 
 	public Long getToFollowUp() {

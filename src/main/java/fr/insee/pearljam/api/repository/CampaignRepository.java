@@ -62,7 +62,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	* @return {@link List<Object[]>}
 	*/
   @Query(value="SELECT "
+      + "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
       + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
+      + "SUM(CASE WHEN type='VIC' THEN 1 ELSE 0 END) AS vicCount, "
 		  + "SUM(CASE WHEN type='PRC' THEN 1 ELSE 0 END) AS prcCount, "
       + "SUM(CASE WHEN type='AOC' THEN 1 ELSE 0 END) AS aocCount, "
       + "SUM(CASE WHEN type='APS' THEN 1 ELSE 0 END) AS apsCount, "
@@ -85,9 +87,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
   List<Object[]> getStateCount(String campaignId, String interviewerId, Long date);
   
   @Query(value="SELECT "
-	      + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
-	      + "SUM(CASE WHEN type='PRC' THEN 1 ELSE 0 END) AS prcCount, "
-	      + "SUM(CASE WHEN type='AOC' THEN 1 ELSE 0 END) AS aocCount, "
+        + "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
+        + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
+        + "SUM(CASE WHEN type='VIC' THEN 1 ELSE 0 END) AS vicCount, "
 	      + "SUM(CASE WHEN type='APS' THEN 1 ELSE 0 END) AS apsCount, "
 	      + "SUM(CASE WHEN type='INS' THEN 1 ELSE 0 END) AS insCount, "
 	      + "SUM(CASE WHEN type='WFT' THEN 1 ELSE 0 END) AS wftCount, "
@@ -108,7 +110,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
   List<Object[]> getStateCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
   
   @Query(value="SELECT "
-	      + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
+        + "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
+        + "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
+        + "SUM(CASE WHEN type='VIC' THEN 1 ELSE 0 END) AS vicCount, "
 	      + "SUM(CASE WHEN type='PRC' THEN 1 ELSE 0 END) AS prcCount, "
 	      + "SUM(CASE WHEN type='AOC' THEN 1 ELSE 0 END) AS aocCount, "
 	      + "SUM(CASE WHEN type='APS' THEN 1 ELSE 0 END) AS apsCount, "

@@ -244,9 +244,11 @@ public class TestAuthKeyCloak {
 	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
 		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
-		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
+    .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
+    .assertThat().body("organizationUnits[1].nnsCount", equalTo(0)).and()
 		.assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
-		.assertThat().body("organizationUnits[1].prcCount", equalTo(0)).and()
+    .assertThat().body("organizationUnits[1].vicCount", equalTo(0)).and()
+    .assertThat().body("organizationUnits[1].prcCount", equalTo(0)).and()
 		.assertThat().body("organizationUnits[1].aocCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[1].apsCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[1].insCount",equalTo(0)).and()
@@ -284,7 +286,9 @@ public class TestAuthKeyCloak {
 		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
 		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
 		.assertThat().body("idDem", equalTo(null)).and()
-		.assertThat().body("ansCount", equalTo(2)).and()
+    .assertThat().body("nnsCount", equalTo(0)).and()
+    .assertThat().body("ansCount", equalTo(2)).and()
+    .assertThat().body("vicCount", equalTo(0)).and()
 		.assertThat().body("prcCount", equalTo(0)).and()
 		.assertThat().body("aocCount",equalTo(0)).and()
 		.assertThat().body("apsCount",equalTo(0)).and()
