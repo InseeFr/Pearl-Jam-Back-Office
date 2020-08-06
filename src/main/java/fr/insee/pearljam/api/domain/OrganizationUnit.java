@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,8 +21,13 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class OrganizationUnit {
+public class OrganizationUnit implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Id of the OrganizationUnit
 	 */

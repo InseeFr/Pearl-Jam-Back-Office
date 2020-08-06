@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
@@ -45,9 +46,43 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
 	
+	
 	@Query("SELECT "
 			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.collectionStartDate,su.campaign.collectionEndDate) "
 			+ "FROM SurveyUnit su WHERE su.id=?1")
 	CampaignDto findCampaignDtoById(String id);
+	
+	@Query(value="SELECT su.id as id FROM survey_unit su " + 
+			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
+			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
+			"WHERE camp.id =?1 AND ou.id ILIKE ?2 ", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndOu(String id, String ouId);
 
+	@Query(value="SELECT su.id as id FROM survey_unit su " + 
+			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
+			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
+			"INNER JOIN state st on st.survey_unit_id = su.id "+
+			"WHERE camp.id =?1 AND st.type = ?2 "+ 
+			"AND ou.id ILIKE ?3 ", nativeQuery=true)
+	List<String> findIdsByCampaignIdAndStateAndOu(String id, String state, String ouId);
+	
+	
+	@Query(value="SELECT "
+			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
+			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
+			+ "SUM(CASE WHEN type='FIN' THEN 1 ELSE 0 END) AS finalized, "
+			+ "COUNT(1) AS allocated "
+			+ "FROM ( "
+			+ "SELECT survey_unit_id, type, date FROM state WHERE (survey_unit_id, date) IN ("
+			+ "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN ("
+			+ "SELECT id FROM survey_unit "
+			+	"WHERE campaign_id=:campaignId "
+			+	"AND interviewer_id IN (SELECT int.id FROM interviewer int WHERE int.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
+			+ "GROUP BY survey_unit_id) "
+			+ ") as t", nativeQuery=true)
+	  List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
 }
