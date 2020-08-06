@@ -79,15 +79,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			// use previously declared bean
 			.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		switch (this.applicationProperties.getMode()) {
-		case Basic:
+		if(this.applicationProperties.getMode() == Mode.Basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 					// configuration for endpoints
-					.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
-			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
 					.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+
+			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
 					.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)
+					
 					.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
 					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
 					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
@@ -95,26 +96,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
+			        
 			        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
 					.anyRequest().denyAll();
-			break;
-		default:
+		}else{
 			http.httpBasic().disable();
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
 				.antMatchers(Constants.API_SURVEYUNIT_ID, 
 						Constants.API_SURVEYUNITS, 
+				        Constants.API_SURVEYUNITS_STATE, 
+				        Constants.API_SURVEYUNIT_ID_STATES, 
+				        
 						Constants.API_CAMPAIGNS,
 						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
 						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
 						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
 						Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
+						
 						Constants.API_USER,
-				        Constants.API_SURVEYUNITS_STATE, 
 				        Constants.API_PREFERENCES)
 				.permitAll();
-			break;
 		}
 	}
 
@@ -126,11 +129,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case Basic:
-				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(interviewerRole)
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(interviewerRole)
 						.and()
-						.withUser("ABC").password("{noop}a").roles(userLocalRole, userNationalRole)
+						.withUser("ABC").password("{noop}abc").roles(userLocalRole, userNationalRole)
 						.and()
-						.withUser("JKL").password("{noop}a").roles(userLocalRole, userNationalRole)
+						.withUser("JKL").password("{noop}jkl").roles(userLocalRole, userNationalRole)
 						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;

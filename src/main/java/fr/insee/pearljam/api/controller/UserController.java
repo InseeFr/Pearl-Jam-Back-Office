@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -25,32 +25,31 @@ public class UserController {
 
 	@Autowired
 	UtilsService utilsService;
-	
+
 	@Autowired
 	UserService userService;
 
 	/**
-	 * This method is using to get the list of Campaigns for current user
+	 * This method is using to get the current user informations
 	 * 
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
-	 *         {@link HttpStatus} FORBIDDEN
+	 * @param request
+	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get User")
 	@GetMapping(path = "/user")
 	public ResponseEntity<Object> getUser(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, "user")) {
-			LOGGER.info("GET User resulting in 403" );
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			LOGGER.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			UserDto user = userService.getUser(userId);
-			if(user!=null) {
-				LOGGER.info("GET User resulting in 200" );
-				return new ResponseEntity<>(user, HttpStatus.OK);
-			}else {
-				LOGGER.info("GET User resulting in 404" );
+			if (user == null) {
+				LOGGER.info("GET User resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
+			LOGGER.info("GET User resulting in 200");
+			return new ResponseEntity<>(user, HttpStatus.OK);
 		}
 	}
 }

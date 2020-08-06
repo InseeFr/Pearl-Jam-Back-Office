@@ -3,9 +3,9 @@ package fr.insee.pearljam.api.service;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import fr.insee.pearljam.api.domain.StateType;
+import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
@@ -21,14 +21,14 @@ public interface SurveyUnitService {
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
 	 * @param userId
 	 * @param id
-	 * @return SurveyUnitDetailDto
+	 * @return {@link SurveyUnitDetailDto}
 	 */
 	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id);
 	
 	/**
 	 * Retrieve all the SurveyUnit entity by userId
 	 * @param userId
-	 * @return List of SurveyUnitDto
+	 * @return {@link List} of {@link SurveyUnitDto}
 	 */
 	List<SurveyUnitDto> getSurveyUnitDto(String userId);
 
@@ -37,14 +37,29 @@ public interface SurveyUnitService {
 	 * @param userId
 	 * @param id
 	 * @param surveyUnitDetailDto
-	 * @return HttpStatus
+	 * @return {@link HttpStatus}
 	 */
 	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
 	
+	/**
+	 * @param userId
+	 * @param id
+	 * @param state
+	 * @return {@link HttpStatus}
+	 */
 	List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, String state);
 
+	/**
+	 * @param listSU
+	 * @param state
+	 * @return {@link HttpStatus}
+	 */
 	HttpStatus addStateToSurveyUnits(List<String> listSU, StateType state);
 
-	ResponseEntity<Object> getListStatesBySurveyUnitId(String id, String userId);
+	/**
+	 * @param suId
+	 * @return {@link List} of {@link StateDto}
+	 */
+	List<StateDto> getListStatesBySurveyUnitId(String suId);
 
 }

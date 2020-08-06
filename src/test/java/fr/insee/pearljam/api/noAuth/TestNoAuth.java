@@ -51,7 +51,6 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
@@ -71,9 +70,6 @@ public class TestNoAuth {
 	@Autowired
 	SurveyUnitService surveyUnitService;
 
-	@Autowired
-	InterviewerService interviewerService;
-	
 	@Autowired
 	UserService userService;
 	
@@ -162,19 +158,18 @@ public class TestNoAuth {
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
 		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
-		.assertThat().body("[0].visibilityStartDate",equalTo(1590504567358L)).and()
-		.assertThat().body("[0].treatmentEndDate",equalTo(1622025045000L)).and()
+		.assertThat().body("treatmentEndDate",hasItem(1622025045000L)).and()
 		.assertThat().body("allocated",hasItem(4)).and()
-		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
 		.assertThat().body("toAffect",hasItem(0)).and()
 		.assertThat().body("toFollowUp",hasItem(0)).and()
 		.assertThat().body("toReview",hasItem(0)).and()
 		.assertThat().body("finalized",hasItem(0)).and()
+		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
 		.assertThat().body("preference",hasItem(false));
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -182,7 +177,7 @@ public class TestNoAuth {
 	@Test
 	@Order(4)
 	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x00/interviewers").then().statusCode(200).and()
+		given().when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("INTW1")).and()
 		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
 		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
@@ -190,7 +185,7 @@ public class TestNoAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -198,11 +193,11 @@ public class TestNoAuth {
 	@Test
 	@Order(5)
 	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x000000/interviewers").then().statusCode(404);
+		given().when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -210,7 +205,7 @@ public class TestNoAuth {
 	@Test
 	@Order(6)
 	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
+		given().when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
     .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
     .assertThat().body("organizationUnits[1].nnsCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
@@ -229,7 +224,7 @@ public class TestNoAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -237,11 +232,11 @@ public class TestNoAuth {
 	@Test
 	@Order(7)
 	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/test/survey-units/state-count").then().statusCode(404);
+		given().when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -249,7 +244,7 @@ public class TestNoAuth {
 	@Test
 	@Order(8)
 	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
 		.assertThat().body("idDem", equalTo(null)).and()
     .assertThat().body("nnsCount", equalTo(0)).and()
     .assertThat().body("ansCount", equalTo(2)).and()
@@ -268,7 +263,7 @@ public class TestNoAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -276,11 +271,11 @@ public class TestNoAuth {
 	@Test
 	@Order(9)
 	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
+		given().when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when interviewer Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -288,7 +283,7 @@ public class TestNoAuth {
 	@Test
 	@Order(10)
 	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
-		given().when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
 	}
 	
 	/*SurveyUnitController*/

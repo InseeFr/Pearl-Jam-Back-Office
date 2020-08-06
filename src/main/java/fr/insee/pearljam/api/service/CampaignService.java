@@ -15,14 +15,37 @@ import fr.insee.pearljam.api.dto.state.StateCountDto;
  */
 public interface CampaignService {
 
+	/**
+	 * @param userId
+	 * @return {@link List} of {@link CampaignDto} 
+	 */
 	List<CampaignDto> getListCampaign(String userId);
 
-	List<InterviewerDto> getListInterviewers(String userId, String campaignId, List<String> associatedOrgUnits);
+	/**
+	 * @param userId
+	 * @param campaignId
+	 * @return {@link List} of {@link InterviewerDto}
+	 */
+	List<InterviewerDto> getListInterviewers(String userId, String campaignId);
 
-	boolean isUserAssociatedToTheCampaign(String userId, String campaignId);
+	boolean isUserPreference(String userId, String campaignId);
 
+	/**
+	 * @param userId
+	 * @param campaignId
+	 * @param interviewerId
+	 * @param date
+	 * @param associatedOrgUnits
+	 * @return {@link StateCountDto}
+	 */
 	StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
 			List<String> associatedOrgUnits);
 	
+	/**
+	 * @param userId
+	 * @param campaignId
+	 * @param date
+	 * @return {@link StateCountCampaignDto}
+	 */
 	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date);
 }

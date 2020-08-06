@@ -7,17 +7,13 @@ import fr.insee.pearljam.api.domain.InseeAddress;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 
 /**
-* AddressRepository is the repository using to access to  Comment table in DB
+* AddressRepository is the repository using to access to  Address table in DB
 * 
 * @author scorcaud
 * 
 */
 public interface AddressRepository extends JpaRepository<InseeAddress, Long> {
 	
-	/**
-	* This method retrieve Comment in DB by an Id
-	* @return List of all {@link AddressDto}
-	*/
 	AddressDto findDtoById(Long id);
 
 	@Query(value="SELECT l6 from address add "

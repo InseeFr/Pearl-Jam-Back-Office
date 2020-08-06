@@ -50,7 +50,6 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
@@ -69,9 +68,6 @@ public class TestAuthKeyCloak {
 	
 	@Autowired
 	SurveyUnitService surveyUnitService;
-
-	@Autowired
-	InterviewerService interviewerService;
 	
 	@Autowired
 	UserService userService;
@@ -86,7 +82,10 @@ public class TestAuthKeyCloak {
 	int port;
 
 	public Liquibase liquibase;
-
+	
+	public static final String CLIENT_SECRET = "8951f422-44dd-45b4-a6ac-dde6748075d7";
+	public static final String CLIENT = "client-web";
+	
 	/**
 	 * This method set up the port of the PostgreSqlContainer
 	 * @throws SQLException
@@ -151,7 +150,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(1)
 	public void testGetUser() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken).when().get("api/user").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("ABC")).and()
 		.assertThat().body("firstName", equalTo("Melinda")).and()
@@ -171,7 +170,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(2)
 	public void testGetUserNotFound() throws InterruptedException {
-		assertEquals(userService.getUser("test"), null);
+		assertEquals(null, userService.getUser("test"));
 	}
 	
 	
@@ -186,25 +185,25 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(3)
 	public void testGetCampaign() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken).when().get("api/campaigns").then().statusCode(200)
 		.and().assertThat().body("id", hasItem("simpsons2020x00")).and()
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
 		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
 		.assertThat().body("visibilityStartDate",hasItem(1590504561350L)).and()
-		.assertThat().body("[0].treatmentEndDate",equalTo(null)).and()
-		.assertThat().body("affected",hasItem(4)).and()
+		.assertThat().body("treatmentEndDate",hasItem(1622025045000L)).and()
+		.assertThat().body("allocated",hasItem(4)).and()
 		.assertThat().body("toAffect",hasItem(0)).and()
-		.assertThat().body("inProgress",hasItem(0)).and()
-		.assertThat().body("toControl",hasItem(0)).and()
-		.assertThat().body("terminated",hasItem(0)).and()
 		.assertThat().body("toFollowUp",hasItem(0)).and()
+		.assertThat().body("toReview",hasItem(0)).and()
+		.assertThat().body("finalized",hasItem(0)).and()
+		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
 		.assertThat().body("preference",hasItem(true));
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -212,8 +211,8 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(4)
 	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/interviewers").then().statusCode(200).and()
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("INTW1")).and()
 		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
 		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
@@ -221,7 +220,7 @@ public class TestAuthKeyCloak {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -229,12 +228,12 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(5)
 	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x000000/interviewers").then().statusCode(404);
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -242,8 +241,8 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(6)
 	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
     .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
     .assertThat().body("organizationUnits[1].nnsCount", equalTo(0)).and()
 		.assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
@@ -262,7 +261,7 @@ public class TestAuthKeyCloak {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -270,12 +269,12 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(7)
 	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/test/survey-units/state-count").then().statusCode(404);
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -283,8 +282,8 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(8)
 	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
 		.assertThat().body("idDem", equalTo(null)).and()
     .assertThat().body("nnsCount", equalTo(0)).and()
     .assertThat().body("ansCount", equalTo(2)).and()
@@ -303,7 +302,7 @@ public class TestAuthKeyCloak {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -311,12 +310,12 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(9)
 	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when interviewer Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -324,8 +323,8 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(10)
 	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
 	}
 
 	
@@ -340,7 +339,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(11)
 	public void testGetSurveyUnitDetail() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		given().auth().oauth2(accessToken).when().get("api/survey-unit/11").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("11")).and()
 		.assertThat().body("firstName", equalTo("Ted")).and()
@@ -376,7 +375,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(12)
 	public void testGetAllSurveyUnit() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		given().auth().oauth2(accessToken).when().get("api/survey-units").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
@@ -394,7 +393,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(13)
 	public void testGetSurveyUnitDetailNotFound() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		given().auth().oauth2(accessToken).when().get("api/survey-unit/123456789")
 		.then()
 		.statusCode(404);
@@ -408,7 +407,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(14)
 	public void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setFirstName("test");
 		surveyUnitDetailDto.setLastName("test");
@@ -467,7 +466,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(15)
 	public void testPutSurveyUnitDetailErrorOnIds() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "12");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
 		given().auth().oauth2(accessToken)
@@ -487,7 +486,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(16)
 	public void testPutSurveyUnitDetailErrorOnStates() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setStates(List.of());
 		given().auth().oauth2(accessToken)
@@ -507,7 +506,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(17)
 	public void testPutSurveyUnitDetailErrorOnAddress() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setAddress(null);
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
@@ -528,7 +527,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(18)
 	public void testPutSurveyUnitDetailErrorOnFirstName() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setFirstName("");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
@@ -549,7 +548,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(19)
 	public void testPutSurveyUnitDetailErrorOnLastName() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "INTW1", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setLastName("");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC)));
@@ -570,7 +569,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(20)
 	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listSu = new ArrayList<>();
 		listSu.add("12");
 		 given().auth().oauth2(accessToken)
@@ -590,7 +589,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(21)
 	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listSu = new ArrayList<>();
 		listSu.add("11");
 		 given().auth().oauth2(accessToken)
@@ -610,7 +609,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(22)
 	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listSu = new ArrayList<>();
 		listSu.add("");
 		 given().auth().oauth2(accessToken)
@@ -630,7 +629,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(23)
 	public void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("simpsons2020x00");
 		 given().auth().oauth2(accessToken)
@@ -650,7 +649,7 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(24)
 	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin("pearljam-web", "212dae88-bdff-43e8-a038-8d99792c165e", "abc", "abc");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("");
 		 given().auth().oauth2(accessToken)

@@ -48,7 +48,6 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
@@ -68,9 +67,6 @@ public class TestBasicAuth {
 	@Autowired
 	SurveyUnitService surveyUnitService;
 
-	@Autowired
-	InterviewerService interviewerService;
-	
 	@Autowired
 	UserService userService;
 	
@@ -123,7 +119,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(1)
 	public void testGetUser() throws InterruptedException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/user").then().statusCode(200).and()
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/user").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("ABC")).and()
 		.assertThat().body("firstName", equalTo("Melinda")).and()
 		.assertThat().body("lastName", equalTo("Webb")).and()
@@ -157,24 +153,24 @@ public class TestBasicAuth {
 	@Test
 	@Order(3)
 	public void testGetCampaign() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns").then().statusCode(200)
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaigns").then().statusCode(200)
 		.and().assertThat().body("id", hasItem("simpsons2020x00")).and()
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
 		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
 		.assertThat().body("visibilityStartDate",hasItem(1590504561350L)).and()
-		.assertThat().body("[0].treatmentEndDate",equalTo(null)).and()
-		.assertThat().body("affected",hasItem(4)).and()
+		.assertThat().body("treatmentEndDate",hasItem(1622025045000L)).and()
+		.assertThat().body("allocated",hasItem(4)).and()
 		.assertThat().body("toAffect",hasItem(0)).and()
-		.assertThat().body("inProgress",hasItem(0)).and()
-		.assertThat().body("toControl",hasItem(0)).and()
-		.assertThat().body("terminated",hasItem(0)).and()
 		.assertThat().body("toFollowUp",hasItem(0)).and()
+		.assertThat().body("toReview",hasItem(0)).and()
+		.assertThat().body("finalized",hasItem(0)).and()
+		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
 		.assertThat().body("preference",hasItem(true));
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -182,7 +178,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(4)
 	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x00/interviewers").then().statusCode(200).and()
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("INTW1")).and()
 		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
 		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
@@ -190,7 +186,7 @@ public class TestBasicAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/interviewers"
+	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -198,11 +194,11 @@ public class TestBasicAuth {
 	@Test
 	@Order(5)
 	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x000000/interviewers").then().statusCode(404);
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -210,7 +206,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(6)
 	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
 		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
     .assertThat().body("organizationUnits[1].nnsCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
@@ -229,7 +225,7 @@ public class TestBasicAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -237,11 +233,11 @@ public class TestBasicAuth {
 	@Test
 	@Order(7)
 	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/test/survey-units/state-count").then().statusCode(404);
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 200
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -249,7 +245,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(8)
 	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
     .assertThat().body("idDem", equalTo(null)).and()
     .assertThat().body("nnsCount", equalTo(0)).and()
 		.assertThat().body("ansCount", equalTo(2)).and()
@@ -268,7 +264,7 @@ public class TestBasicAuth {
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when campaign Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -276,11 +272,11 @@ public class TestBasicAuth {
 	@Test
 	@Order(9)
 	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
 	}
 	
 	/**
-	 * Test that the GET endpoint "api/campaigns/{id}/survey-units/interviewer/{id}/state-count"
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when interviewer Id is false
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -288,7 +284,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(10)
 	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
-		given().auth().preemptive().basic("ABC", "a").when().get("api/campaigns/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
 	}
 	
 	
@@ -302,7 +298,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(11)
 	public void testGetSurveyUnitDetail() throws InterruptedException {
-		given().auth().preemptive().basic("INTW1", "a").when().get("api/survey-unit/11").then().statusCode(200).and()
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/11").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("11")).and()
 		.assertThat().body("firstName", equalTo("Ted")).and()
 		.assertThat().body("lastName", equalTo("Farmer")).and()
@@ -324,7 +320,7 @@ public class TestBasicAuth {
 		.assertThat().body("comments", empty()).and()
 		.assertThat().body("states", empty()).and()
 		.assertThat().body("contactAttempts", empty());
-		assertEquals(Long.valueOf(1590504459838L), given().auth().preemptive().basic("INTW1", "a").when().get("api/survey-unit/11").then().extract().jsonPath().getLong("lastState.date"));
+		assertEquals(Long.valueOf(1590504459838L), given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/11").then().extract().jsonPath().getLong("lastState.date"));
 		
 	}
 	
@@ -336,7 +332,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(12)
 	public void testGetAllSurveyUnit() throws InterruptedException {
-		given().auth().preemptive().basic("INTW1", "a").when().get("api/survey-units").then().statusCode(200).and()
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-units").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
 		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020")).and()
@@ -352,7 +348,7 @@ public class TestBasicAuth {
 	@Test
 	@Order(13)
 	public void testGetSurveyUnitDetailNotFound() throws InterruptedException {
-		given().auth().preemptive().basic("INTW1", "a").when().get("api/survey-unit/123456789")
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/123456789")
 		.then()
 		.statusCode(404);
 	}
@@ -380,14 +376,14 @@ public class TestBasicAuth {
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.COM), new ContactAttemptDto(1589268800000L, Status.BUL)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
-		 given().auth().preemptive().basic("INTW1", "a")
+		 given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
 			.put("api/survey-unit/12")
 		.then()
 			.statusCode(200);
-		Response response = given().auth().preemptive().basic("INTW1", "a").when().get("api/survey-unit/12");
+		Response response = given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/12");
 		response.then().statusCode(200).and()
 		.assertThat().body("id", equalTo("12")).and()
 		.assertThat().body("firstName", equalTo("test")).and()
@@ -425,7 +421,7 @@ public class TestBasicAuth {
 	public void testPutSurveyUnitDetailErrorOnIds() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "12");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "a")
+		given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
@@ -444,7 +440,7 @@ public class TestBasicAuth {
 	public void testPutSurveyUnitDetailErrorOnStates() throws InterruptedException, JsonProcessingException {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
 		surveyUnitDetailDto.setStates(List.of());
-		given().auth().preemptive().basic("INTW1", "a")
+		given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
@@ -464,7 +460,7 @@ public class TestBasicAuth {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setAddress(null);
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "a")
+		given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
@@ -484,7 +480,7 @@ public class TestBasicAuth {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setFirstName("");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "a")
+		given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
@@ -504,7 +500,7 @@ public class TestBasicAuth {
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
 		surveyUnitDetailDto.setLastName("");
 		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC)));
-		given().auth().preemptive().basic("INTW1", "a")
+		given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
@@ -523,7 +519,7 @@ public class TestBasicAuth {
 	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listSu = new ArrayList<>();
 		listSu.add("12");
-		 given().auth().preemptive().basic("ABC", "a")
+		 given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
@@ -542,7 +538,7 @@ public class TestBasicAuth {
 	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listSu = new ArrayList<>();
 		listSu.add("11");
-		 given().auth().preemptive().basic("ABC", "a")
+		 given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
@@ -561,7 +557,7 @@ public class TestBasicAuth {
 	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listSu = new ArrayList<>();
 		listSu.add("");
-		 given().auth().preemptive().basic("ABC", "a")
+		 given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
@@ -580,7 +576,7 @@ public class TestBasicAuth {
 	public void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("simpsons2020x00");
-		 given().auth().preemptive().basic("ABC", "a")
+		 given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(listPreferences))
 		.when()
@@ -599,7 +595,7 @@ public class TestBasicAuth {
 	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("");
-		 given().auth().preemptive().basic("ABC", "a")
+		 given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(listPreferences))
 		.when()

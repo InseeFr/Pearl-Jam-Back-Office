@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -24,6 +25,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	
 	@Autowired
 	CampaignRepository campaignRepository;
+	
+	@Autowired
+	UserService userService;
 
 	public HttpStatus setPreferences(List<String> listPreference, String userId) {
 		if(listPreference == null || listPreference.isEmpty()) {
@@ -31,25 +35,25 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		if(user.isPresent()) {
-			List<Campaign> lstCampaign=new ArrayList<>();
-			for(String campaignId : listPreference) {
-				Optional<Campaign> campaign = campaignRepository.findById(campaignId);
-				if(campaign.isPresent()) {
-					lstCampaign.add(campaign.get());
-				} else {
-					LOGGER.error("Campaign {} not found for user {}", campaignId, userId);
-					return HttpStatus.NOT_FOUND;
-				}
-			}
-			user.get().setCampaigns(lstCampaign);
-			userRepository.save(user.get());
-			return HttpStatus.OK;
-		}else {
+		if(!user.isPresent()) {
 			LOGGER.error("User {} not found", userId);
 			return HttpStatus.NOT_FOUND;
 		}
-		
+		List<Campaign> lstCampaign=new ArrayList<>();
+		for(String campaignId : listPreference) {
+			Optional<Campaign> campaign = campaignRepository.findById(campaignId);
+			if(!campaign.isPresent()) {
+				LOGGER.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
+				return HttpStatus.NOT_FOUND;
+			}
+			if(!userService.isUserAssocitedToCampaign(campaignId, userId)  && !Constants.GUEST.equals(userId)){
+				LOGGER.error(Constants.ERR_NO_OU_FOR_CAMPAIGN, campaignId, userId);
+				return HttpStatus.BAD_REQUEST;
+			}
+			lstCampaign.add(campaign.get());
+		}
+		user.get().setCampaigns(lstCampaign);
+		userRepository.save(user.get());
+		return HttpStatus.OK;
 	}
-
 }

@@ -87,8 +87,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
 				.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
+				.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+
 		        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
-				.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(userLocalRole, userNationalRole)
 				.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
 
 				.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)

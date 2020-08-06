@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.controller;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -47,17 +46,14 @@ public class SurveyUnitController {
 	SurveyUnitService surveyUnitService;
 	
 	@Autowired
-	InterviewerService interviewerService;
-	
-	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
 	
 	@Autowired
 	UtilsService utilsService;
 	
 	/**
-	* This method is using to get the list of SurveyUnit for current user
-	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	 * This method is using to get the list of SurveyUnit for current interviewer
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units")
@@ -78,9 +74,9 @@ public class SurveyUnitController {
 	
 	
 	/**
-	* This method is using to get the list of SurveyUnit for current user
-	* @param id	the id of reporting unit
-	* @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	 * This method is using to get the detail of surveyUnit for current interviewer
+	 * @param id	the id of reporting unit
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	*/
 	@ApiOperation(value = "Get detail of specific survey unit ")
 	@GetMapping(path = "/survey-unit/{id}")
@@ -101,15 +97,13 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	* This method is using to update the comment associated to a specific reporting unit 
-	* 
-	* @param commentValue the value to update
-	* @param id	the id of reporting unit
-	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
-	* @throws ParseException 
-	* @throws SQLException 
-	* 
-	*/
+	 * This method is using to update a specific survey unit 
+	 * 
+	 * @param request
+	 * @param surveyUnitUpdated
+	 * @param id
+	 * @return {@link HttpStatus}
+	 */
 	@ApiOperation(value = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
 	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) {
@@ -124,15 +118,13 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	* This method is using to update the state of Survey Units listed in request body 
-	* 
-	* @param commentValue the value to update
-	* @param id	the id of reporting unit
-	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
-	* @throws ParseException 
-	* @throws SQLException 
-	* 
-	*/
+	 * This method is using to update the state of Survey Units listed in request body 
+	 * 
+	 * @param request
+	 * @param listSU
+	 * @param state
+	 * @return {@link HttpStatus}
+	 */
 	@ApiOperation(value = "Update the state of Survey Units listed in request body")
 	@PutMapping(path = "/survey-units/state/{state}")
 	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody List<String> listSU, @PathVariable(value = "state") StateType state) {
@@ -146,16 +138,17 @@ public class SurveyUnitController {
 		}
 	}
 	
+	
+	
+	
 	/**
-	* This method is using to update the comment associated to a specific reporting unit 
-	* 
-	* @param commentValue the value to update
-	* @param id	the id of reporting unit
-	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
-	* @throws ParseException 
-	* @throws SQLException 
-	* 
-	*/
+	 * This method is using to get survey units of a specific campaign
+	 * 
+	 * @param request
+	 * @param id
+	 * @param state
+	 * @return list of {@link SurveyUnitCampaignDto} if exists, else {@link HttpStatus} FORBIDDEN or NOT_FOUND
+	 */
 	@ApiOperation(value = "Update the Survey Unit")
 	@GetMapping(path = "/campaign/{id}/survey-units")
 	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(value = "state", required=false) String state) {
@@ -177,23 +170,27 @@ public class SurveyUnitController {
 	
 	
 	/**
-	* This method is using to update the comment associated to a specific reporting unit 
-	* 
-	* @param commentValue the value to update
-	* @param id	the id of reporting unit
-	* @return {@link HttpStatus 404} if comment is not found, else {@link HttpStatus 200}
-	* @throws ParseException 
-	* @throws SQLException 
-	* 
-	*/
+	 * This method is using to getthe list of states for a specific survey unit 
+	 * 
+	 * @param request
+	 * @param id
+	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN or NOT_FOUND
+	 */
 	@ApiOperation(value = "Get states of given survey unit")
 	@GetMapping(path = "/survey-unit/{id}/states")
 	public ResponseEntity<Object> getStatesBySurveyUnitId(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			LOGGER.info("GET states of surveyUnit {} resulting in 403", id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
-			return surveyUnitService.getListStatesBySurveyUnitId(id, userId);
+			LOGGER.info("GET states of surveyUnit {} resulting in 403", id);
+			List<StateDto> lstState = surveyUnitService.getListStatesBySurveyUnitId(id);
+			if(lstState.isEmpty()) {
+				LOGGER.info("GET states of surveyUnit {} resulting in 404", id);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<>(lstState, HttpStatus.NOT_FOUND);
 		}
 	}
 }

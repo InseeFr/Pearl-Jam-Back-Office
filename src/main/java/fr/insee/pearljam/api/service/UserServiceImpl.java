@@ -1,8 +1,10 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 
@@ -29,17 +32,19 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	CampaignRepository campaignRepository;
 
 	@Autowired
 	ApplicationProperties applicationProperties;
 
-	@Override
 	public UserDto getUser(String userId) {
 		if (applicationProperties.getMode() != Mode.NoAuth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
-			if (user.isPresent() && user.get() != null) {
+			if (user.isPresent()) {
 				organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
 				organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
 				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
@@ -65,5 +70,17 @@ public class UserServiceImpl implements UserService {
 				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 			}
 		}
+	}
+	
+	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
+		List<OrganizationUnitDto> lstUserOU = new ArrayList<>();
+		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+		if(!user.isPresent()) {
+			return false;
+		}
+		getOrganizationUnits(lstUserOU, user.get().getOrganizationUnit(), true);
+		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
+		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);		
+		return !Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
 	}
 }
