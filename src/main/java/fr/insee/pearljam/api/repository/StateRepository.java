@@ -2,6 +2,9 @@ package fr.insee.pearljam.api.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -19,6 +22,10 @@ public interface StateRepository extends JpaRepository<State, Long> {
 	 * @param SurveyUnit
 	 * @return StateDto
 	 */
-	StateDto findFirstDtoBySurveyUnitOrderByDate(SurveyUnit surveyUnit);
+	StateDto findFirstDtoBySurveyUnitOrderByDateDesc(SurveyUnit surveyUnit);
+
+	List<StateDto> findAllDtoBySurveyUnitId(String suId);
+
+	Optional<StateDto> findDtoById(Long long1);
 
 }

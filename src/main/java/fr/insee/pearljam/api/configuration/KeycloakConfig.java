@@ -27,6 +27,8 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
+import fr.insee.pearljam.api.constants.Constants;
+
 /**
  * This class defines the KeyCloak configuration
  * @author scorcaud
@@ -41,7 +43,13 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 	
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
-	private String role;
+	private String interviewerRole;
+	
+	@Value("${fr.insee.pearljam.user.local.role:#{null}}")
+	private String userLocalRole;
+	
+	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
+	private String userNationalRole;
 	
 	/**
 	 * Configure the accessible URI without any roles or permissions
@@ -78,8 +86,22 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
    				.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
    				.antMatchers("/environnement", "/healthcheck").permitAll()
                	// configuration for endpoints
-   				.antMatchers("/api/survey-unit/{id}").hasRole(role)
-				.antMatchers("/api/survey-units").hasRole(role)
+				.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
+				.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+
+		        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
+				.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
+
+				.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)
+				.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)
+				.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole, userNationalRole)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)
+		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)
+		        
+		        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
+		        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
 				.anyRequest().denyAll(); 
 	}
 	
