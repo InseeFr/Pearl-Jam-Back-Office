@@ -162,7 +162,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
 			if(organizationUnitRepository.findChildren(id).isEmpty()) {
-				stateCountList.add(new StateCountDto(id,campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse)));
+				stateCountList.add(new StateCountDto(id, organizationUnitRepository.findLabel(id), campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse)));
 			}
 		}
 		stateCountCampaignDto.setOrganizationUnits(stateCountList);

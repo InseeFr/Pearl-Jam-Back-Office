@@ -5,6 +5,7 @@ import java.util.List;
 public class StateCountDto {
 
 	private String idDem;
+	private String labelDem;
 	private Long nnsCount;
 	private Long ansCount;
 	private Long vicCount;
@@ -60,7 +61,7 @@ public class StateCountDto {
 		}
 	}
 
-	public StateCountDto(String idDem, List<Object[]> obj) {
+	public StateCountDto(String idDem, String labelDem, List<Object[]> obj) {
 		super();
 		if (obj != null && !obj.isEmpty() && obj.get(0).length > 13 && obj.get(0)[0] != null) {
 			this.nnsCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
@@ -79,6 +80,7 @@ public class StateCountDto {
 			this.total = ((java.math.BigInteger) obj.get(0)[13]).longValue();
 		}
 		this.idDem = idDem;
+		this.setLabelDem(labelDem);
 	}
 
 	public StateCountDto() {
@@ -298,6 +300,14 @@ public class StateCountDto {
 	@Override
 	public String toString() {
 		return "StateCountDto [ansCount=" + ansCount + ", prcCount=" + prcCount + "]";
+	}
+
+	public String getLabelDem() {
+		return labelDem;
+	}
+
+	public void setLabelDem(String labelDem) {
+		this.labelDem = labelDem;
 	}
 
 }

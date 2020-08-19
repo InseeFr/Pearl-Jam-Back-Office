@@ -29,5 +29,8 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
 	
 	@Query("SELECT id FROM OrganizationUnit")
 	List<String> findAllId();
+	
+	@Query("SELECT label FROM OrganizationUnit ou WHERE ou.id =?1")
+	String findLabel(String orgUnitId);
 
 }
