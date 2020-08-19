@@ -22,6 +22,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
@@ -126,14 +127,14 @@ public class SurveyUnitController {
 	 * @return {@link HttpStatus}
 	 */
 	@ApiOperation(value = "Update the state of Survey Units listed in request body")
-	@PutMapping(path = "/survey-units/state/{state}")
-	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody List<String> listSU, @PathVariable(value = "state") StateType state) {
+	@PutMapping(path = "/survey-unit/{id}/state/{state}")
+	public ResponseEntity<Object> updateSurveyUnitState(HttpServletRequest request, @PathVariable(value = "id") String surveyUnitId, @PathVariable(value = "state") StateType state) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}else {
-			HttpStatus returnCode = surveyUnitService.addStateToSurveyUnits(listSU, state);
-			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), String.join(", ", listSU) , returnCode.value());
+			HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
+			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), surveyUnitId , returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
 	}
@@ -170,7 +171,7 @@ public class SurveyUnitController {
 	
 	
 	/**
-	 * This method is using to getthe list of states for a specific survey unit 
+	 * This method is using to get the list of states for a specific survey unit 
 	 * 
 	 * @param request
 	 * @param id
@@ -190,7 +191,7 @@ public class SurveyUnitController {
 				LOGGER.info("GET states of surveyUnit {} resulting in 404", id);
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			return new ResponseEntity<>(lstState, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new SurveyUnitStatesDto(id, lstState), HttpStatus.OK);
 		}
 	}
 }

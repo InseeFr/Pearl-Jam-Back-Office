@@ -8,15 +8,15 @@ public class UserDto {
 	private String id;
 	private String firstName;
 	private String lastName;
-	private OrganizationUnitDto organizationUnits;
+	private OrganizationUnitDto organizationUnit;
 	private List<OrganizationUnitDto> localOrganizationUnits;
 
-	public UserDto(String id, String firstName, String lastName, OrganizationUnitDto organizationUnits, List<OrganizationUnitDto> localOrganizationUnits) {
+	public UserDto(String id, String firstName, String lastName, OrganizationUnitDto organizationUnit, List<OrganizationUnitDto> localOrganizationUnits) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.organizationUnits = organizationUnits;
+		this.organizationUnit = organizationUnit;
 		this.localOrganizationUnits = localOrganizationUnits;
 	}
 
@@ -69,15 +69,15 @@ public class UserDto {
 	/**
 	 * @return the organizationUnits
 	 */
-	public OrganizationUnitDto getOrganizationUnits() {
-		return organizationUnits;
+	public OrganizationUnitDto getOrganizationUnit() {
+		return organizationUnit;
 	}
 
 	/**
 	 * @param organizationUnits the organizationUnits to set
 	 */
-	public void setOrganizationUnits(OrganizationUnitDto organizationUnits) {
-		this.organizationUnits = organizationUnits;
+	public void setOrganizationUnit(OrganizationUnitDto organizationUnit) {
+		this.organizationUnit = organizationUnit;
 	}
 
 	/**

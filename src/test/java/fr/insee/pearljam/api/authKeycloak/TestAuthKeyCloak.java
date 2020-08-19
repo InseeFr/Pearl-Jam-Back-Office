@@ -155,8 +155,8 @@ public class TestAuthKeyCloak {
 		.assertThat().body("id", equalTo("ABC")).and()
 		.assertThat().body("firstName", equalTo("Melinda")).and()
 		.assertThat().body("lastName", equalTo("Webb")).and()
-		.assertThat().body("organizationUnits.id", equalTo("OU-NORTH")).and()
-		.assertThat().body("organizationUnits.label", equalTo("North region organizational unit")).and()
+		.assertThat().body("organizationUnit.id", equalTo("OU-NORTH")).and()
+		.assertThat().body("organizationUnit.label", equalTo("North region organizational unit")).and()
 		.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH")).and()
 		.assertThat().body("localOrganizationUnits[0].label", equalTo("North region organizational unit"));
 	}
@@ -244,20 +244,20 @@ public class TestAuthKeyCloak {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
     .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
-    .assertThat().body("organizationUnits[1].nnsCount", equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
-    .assertThat().body("organizationUnits[1].vicCount", equalTo(0)).and()
-    .assertThat().body("organizationUnits[1].prcCount", equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].aocCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].apsCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].insCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].wftCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].wfsCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].tbrCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].finCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].nviCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].nvmCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].total",equalTo(4));
+    .assertThat().body("organizationUnits[0].nnsCount", equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].ansCount",equalTo(4)).and()
+    .assertThat().body("organizationUnits[0].vicCount", equalTo(0)).and()
+    .assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].insCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wftCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nviCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].total",equalTo(4));
 	}
 	
 	/**
@@ -420,7 +420,7 @@ public class TestAuthKeyCloak {
 		surveyUnitDetailDto.getAddress().setL6("test");
 		surveyUnitDetailDto.getAddress().setL7("test");
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "")));
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
+		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.ANS)));
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.COM), new ContactAttemptDto(1589268800000L, Status.BUL)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
 		 given().auth().oauth2(accessToken)
@@ -562,7 +562,7 @@ public class TestAuthKeyCloak {
 	}
 	
 	/**
-	 * Test that the PUT endpoint "api/survey-unit/state/{state}"
+	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 200
  	 * @throws InterruptedException
 	 */
@@ -570,40 +570,34 @@ public class TestAuthKeyCloak {
 	@Order(20)
 	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		List<String> listSu = new ArrayList<>();
-		listSu.add("12");
 		 given().auth().oauth2(accessToken)
 		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
-			.put("api/survey-units/state/NVM")
+			.put("api/survey-unit/12/state/NVI")
 		.then()
 			.statusCode(200);
 	}
 	
 	/**
 	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with false state
+	 * return 400 with unknown state
  	 * @throws InterruptedException
 	 */
 	@Test
 	@Order(21)
 	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		List<String> listSu = new ArrayList<>();
-		listSu.add("11");
 		 given().auth().oauth2(accessToken)
 		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
-			.put("api/survey-units/state/test")
+			.put("api/survey-unit/11/state/test")
 		.then()
 			.statusCode(400);
 	}
 	
 	/**
 	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with no survey-unit
+	 * return 403 when not allowed to pass to this state
  	 * @throws InterruptedException
 	 */
 	@Test
@@ -614,11 +608,10 @@ public class TestAuthKeyCloak {
 		listSu.add("");
 		 given().auth().oauth2(accessToken)
 		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
 		.when()
-			.put("api/survey-units/state/NVM")
+			.put("api/survey-unit/11/state/AOC")
 		.then()
-			.statusCode(400);
+			.statusCode(403);
 	}
 	
 	/**

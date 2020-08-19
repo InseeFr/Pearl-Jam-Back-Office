@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.ContactOutcome;
 import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -37,6 +41,7 @@ import fr.insee.pearljam.api.repository.ContactAttemptRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
@@ -87,6 +92,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	CampaignRepository campaignRepository;
 	
 	@Autowired
+	OrganizationUnitRepository ouRepository;
+	
+	@Autowired
 	UserService userService;
 	
 	@Autowired
@@ -111,7 +119,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setStates(new ArrayList<StateDto>());
-		surveyUnitDetailDto.setLastState(stateRepository.findFirstDtoBySurveyUnitOrderByDate(surveyUnit.get()));
+		surveyUnitDetailDto.setLastState(stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(surveyUnit.get()));
 		return surveyUnitDetailDto;
 	}
 
@@ -145,6 +153,32 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			LOGGER.error("Survey Unit in parameter is not well formed");
 			return HttpStatus.BAD_REQUEST;
 		}
+		
+		List<StateDto> sortedStates = surveyUnitDetailDto.getStates();
+		Collections.sort(sortedStates, new Comparator<StateDto>() {
+		    @Override
+		    public int compare(StateDto o1, StateDto o2) {
+		        return o1.getDate().compareTo(o2.getDate());
+		    }
+		});
+		StateDto prevState = null;
+		Boolean wasAlreadyPresent = true;
+		for(StateDto state : sortedStates) {
+			if(wasAlreadyPresent) {
+				Optional<StateDto> s = stateRepository.findDtoById(state.getId());
+				if(!s.isPresent() || !s.get().getType().equals(state.getType()) 
+					|| !s.get().getDate().equals(state.getDate())) {
+					wasAlreadyPresent = false;
+				}
+			}
+			if(!wasAlreadyPresent && (prevState == null
+				|| !BussinessRules.stateCanBeModifiedByInterviewer(prevState.getType(), state.getType()))) {
+				LOGGER.error("State modifications requested are not allowed");
+				return HttpStatus.FORBIDDEN;
+			}
+			prevState = state;
+		}
+		
 		Optional<SurveyUnit> surveyUnit = null;
 		if(userId.equals(GUEST)) {
 			surveyUnit = surveyUnitRepository.findById(id);
@@ -241,46 +275,51 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
 		List<String> surveyUnitDtoIds = new ArrayList<>();
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return List.of();
-		}
-		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		if(!user.isPresent()) {
-			LOGGER.error("User {} does not exist", userId);
-			return List.of();
-		}
-		userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
+		
 		if(userId.equals(GUEST)) {
-			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
-		} else {
-			if(!organizationUnits.isEmpty()) {
-				if(state == null || state.isEmpty()) {
-					for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-						List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId());
-						for(String idSu: ids) {
-							if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null) {
-								surveyUnitDtoIds.add(idSu);
-							}
-							if(!surveyUnitDtoIds.contains(idSu)) {
-								surveyUnitDtoIds.add(idSu);
-							}
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
+			if(ouNat.isPresent()) {
+				userService.getOrganizationUnits(organizationUnits, ouNat.get(), false);
+			}
+			else {
+				return List.of();
+			}
+		}
+		else {
+			if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+				return List.of();
+			}
+			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+			if(!user.isPresent()) {
+				LOGGER.error("User {} does not exist", userId);
+				return List.of();
+			}
+			userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
+		}
+		
+		
+		if(!organizationUnits.isEmpty()) {
+			if(state == null || state.isEmpty()) {
+				for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+					List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId());
+					for(String idSu: ids) {
+						if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null || !surveyUnitDtoIds.contains(idSu)) {
+							surveyUnitDtoIds.add(idSu);
 						}
 					}
-				} else {
-					for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-						List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId());
-						for(String idSu: ids) {
-							if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null) {
-								surveyUnitDtoIds.add(idSu);
-							}
-							if(!surveyUnitDtoIds.contains(idSu)) {
-								surveyUnitDtoIds.add(idSu);
-							}
+				}
+			} else {
+				for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+					List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId());
+					for(String idSu: ids) {
+						if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null || !surveyUnitDtoIds.contains(idSu)) {
+							surveyUnitDtoIds.add(idSu);
 						}
 					}
 				}
 			}
 		}
+		
 		if(surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for the user {}", userId);
 			return List.of();
@@ -299,23 +338,21 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Transactional
-	public HttpStatus addStateToSurveyUnits(List<String> listSU, StateType state) {
-		if(listSU == null || listSU.isEmpty()) {
-			LOGGER.error("list of SU to update is empty ");
+	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
+		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
+		if(su.isPresent()) {
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
+			if(BussinessRules.stateCanBeModifiedByManager(currentState, state)) {
+				stateRepository.save(new State(new Date().getTime(), su.get(), state));
+				return HttpStatus.OK;
+			}
+			else {
+				return HttpStatus.FORBIDDEN;
+			}
+			
+		} else {
 			return HttpStatus.BAD_REQUEST;
 		}
-		List<State> lstState = new ArrayList<>();
-		for(String idSu : listSU) {
-			LOGGER.info("Add state {} to survey unit {}", state, idSu);
-			Optional<SurveyUnit> su = surveyUnitRepository.findById(idSu);
-			if(su.isPresent()) {
-				lstState.add(new State(new Date().getTime(), su.get(), state));
-			} else {
-				return HttpStatus.BAD_REQUEST;
-			}
-		}
-		stateRepository.saveAll(lstState);
-		return HttpStatus.OK;
 	}
 
 	public List<StateDto> getListStatesBySurveyUnitId(String suId) {

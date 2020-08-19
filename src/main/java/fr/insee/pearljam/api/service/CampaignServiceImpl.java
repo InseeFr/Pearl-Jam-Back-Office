@@ -161,7 +161,9 @@ public class CampaignServiceImpl implements CampaignService {
 			dateToUse = -1L;
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
-			stateCountList.add(new StateCountDto(id,campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse)));
+			if(organizationUnitRepository.findChildren(id).isEmpty()) {
+				stateCountList.add(new StateCountDto(id,campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse)));
+			}
 		}
 		stateCountCampaignDto.setOrganizationUnits(stateCountList);
 		stateCountCampaignDto.setFrance(new StateCountDto(campaignRepository.getStateCountByCampaignId(campaignId, dateToUse)));
@@ -174,6 +176,6 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	public boolean isUserPreference(String userId, String campaignId) {
-		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty());
+		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || userId == "GUEST";
 	}
 }

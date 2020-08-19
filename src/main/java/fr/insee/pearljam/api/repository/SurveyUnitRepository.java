@@ -67,6 +67,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
 			"INNER JOIN state st on st.survey_unit_id = su.id "+
 			"WHERE camp.id =?1 AND st.type = ?2 "+ 
+			"AND st.date = (SELECT MAX(date) FROM state WHERE survey_unit_id=su.id) "+ 
 			"AND ou.id ILIKE ?3 ", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndStateAndOu(String id, String state, String ouId);
 	

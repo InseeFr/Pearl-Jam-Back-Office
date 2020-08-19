@@ -35,14 +35,18 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	CampaignRepository campaignRepository;
+	
+	@Autowired
+	OrganizationUnitRepository ouRepository;
 
 	@Autowired
 	ApplicationProperties applicationProperties;
 
 	public UserDto getUser(String userId) {
+		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 		if (applicationProperties.getMode() != Mode.NoAuth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-			List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
+			
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
 			if (user.isPresent()) {
 				organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
@@ -54,7 +58,13 @@ public class UserServiceImpl implements UserService {
 				return null;
 			}
 		} else {
-			return new UserDto("", "Guest", "",  new OrganizationUnitDto(), List.of());
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
+			if(ouNat.isPresent()) {
+				getOrganizationUnits(organizationUnits, ouNat.get(), false);
+				return new UserDto("", "Guest", "",  ouRepository.findDtoByIdIgnoreCase("OU-NATIONAL").get(), organizationUnits);
+			} else {
+				return new UserDto("", "Guest", "",  new OrganizationUnitDto("OU-NORTH","Guest organizational unit"), List.of());
+			}
 		}
 	}
 

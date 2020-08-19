@@ -54,7 +54,7 @@ public interface SurveyUnitService {
 	 * @param state
 	 * @return {@link HttpStatus}
 	 */
-	HttpStatus addStateToSurveyUnits(List<String> listSU, StateType state);
+	HttpStatus addStateToSurveyUnit(String listSU, StateType state);
 
 	/**
 	 * @param suId

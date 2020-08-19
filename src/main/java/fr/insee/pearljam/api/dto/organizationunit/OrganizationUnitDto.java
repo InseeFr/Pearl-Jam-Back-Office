@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.dto.organizationunit;
 
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+
 public class OrganizationUnitDto {
 	private String id;
 	private String label;
@@ -8,6 +10,12 @@ public class OrganizationUnitDto {
 		super();
 		this.id = id;
 		this.label = label;
+	}
+	
+	public OrganizationUnitDto(OrganizationUnit ou) {
+		super();
+		this.id = ou.getId();
+		this.label = ou.getLabel();
 	}
 
 	public OrganizationUnitDto() {

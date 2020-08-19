@@ -125,9 +125,9 @@ public class TestNoAuth {
 		.assertThat().body("id", equalTo("")).and()
 		.assertThat().body("firstName", equalTo("Guest")).and()
 		.assertThat().body("lastName", equalTo("")).and()
-		.assertThat().body("organizationUnits.id", equalTo(null)).and()
-		.assertThat().body("organizationUnits.label", equalTo(null)).and()
-		.assertThat().body("localOrganisationUnits", equalTo(null));
+		.assertThat().body("organizationUnit.id", equalTo("OU-NATIONAL")).and()
+		.assertThat().body("organizationUnit.label", equalTo("National organizational unit")).and()
+		.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH"));
 	}
 	
 	
@@ -165,7 +165,7 @@ public class TestNoAuth {
 		.assertThat().body("toReview",hasItem(0)).and()
 		.assertThat().body("finalized",hasItem(0)).and()
 		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
-		.assertThat().body("preference",hasItem(false));
+		.assertThat().body("preference",hasItem(true));
 	}
 	
 	/**
@@ -207,20 +207,20 @@ public class TestNoAuth {
 	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
 		given().when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
     .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
-    .assertThat().body("organizationUnits[1].nnsCount",equalTo(0)).and()
-    .assertThat().body("organizationUnits[1].ansCount",equalTo(4)).and()
-		.assertThat().body("organizationUnits[1].vicCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].prcCount", equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].aocCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].apsCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].insCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].wftCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].wfsCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].tbrCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].finCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].nviCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].nvmCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[1].total",equalTo(4));
+    .assertThat().body("organizationUnits[0].nnsCount",equalTo(0)).and()
+    .assertThat().body("organizationUnits[0].ansCount",equalTo(4)).and()
+		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].insCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wftCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nviCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].total",equalTo(4));
 	}
 	
 	/**
@@ -371,7 +371,7 @@ public class TestNoAuth {
 		surveyUnitDetailDto.getAddress().setL6("test");
 		surveyUnitDetailDto.getAddress().setL7("test");
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "")));
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
+		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.ANS)));
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.COM), new ContactAttemptDto(1589268800000L, Status.BUL)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
 		 given()
@@ -508,60 +508,51 @@ public class TestNoAuth {
 	}
 	
 	/**
-	 * Test that the PUT endpoint "api/survey-unit/state/{state}"
+	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 200
  	 * @throws InterruptedException
 	 */
 	@Test
 	@Order(20)
-	public void testGetPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
-		List<String> listSu = new ArrayList<>();
-		listSu.add("11");
+	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
 		 given()
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
-		.when()
-			.put("api/survey-units/state/NVM")
-		.then()
-			.statusCode(200);
+     .contentType("application/json")
+     .when()
+       .put("api/survey-unit/12/state/NVI")
+     .then()
+       .statusCode(200);
 	}
 	
 	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with false state
+	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
+	 * return 400 with unknown state
  	 * @throws InterruptedException
 	 */
 	@Test
 	@Order(21)
-	public void testGetPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
-		List<String> listSu = new ArrayList<>();
-		listSu.add("11");
+	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
 		 given()
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
-		.when()
-			.put("api/survey-units/state/test")
-		.then()
-			.statusCode(400);
+      .contentType("application/json")
+      .when()
+        .put("api/survey-unit/11/state/test")
+      .then()
+        .statusCode(400);
 	}
 	
 	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with no survey-unit
+	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
+	 * return 403 when not allowed to pass to this state
  	 * @throws InterruptedException
 	 */
 	@Test
 	@Order(22)
-	public void testGetPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
-		List<String> listSu = new ArrayList<>();
-		listSu.add("");
+	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
 		 given()
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(listSu))
-		.when()
-			.put("api/survey-units/state/NVM")
-		.then()
-			.statusCode(400);
+     .contentType("application/json")
+     .when()
+       .put("api/survey-unit/11/state/AOC")
+     .then()
+       .statusCode(403);
 	}
 	
 
