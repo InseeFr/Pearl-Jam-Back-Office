@@ -125,6 +125,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
 		List<String> surveyUnitDtoIds = null;
+		List<String> surveyUnitDtoIdsToRemove = new ArrayList<>();
 		if(userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
 		} else {
@@ -133,6 +134,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
+		}
+		for(String id: surveyUnitDtoIds) {
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(id).getType();
+			if(currentState != null && !BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState)) {
+				surveyUnitDtoIdsToRemove.add(id);
+			}
+		}
+		if(!surveyUnitDtoIdsToRemove.isEmpty()) {
+			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
 		}
 		return surveyUnitDtoIds.stream().map(idSurveyUnit ->
 			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit))
@@ -235,7 +245,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		
 		//Update State
 		for(StateDto stateDto : surveyUnitDetailDto.getStates()) {
-			stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
+			Optional<StateDto> s = stateRepository.findDtoById(stateDto.getId());
+			if(!s.isPresent()) {
+				stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
+				int nbTBR = surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(userId, surveyUnit.get().getCampaign().getId(), surveyUnit.get().getId());
+				if( nbTBR<3 ) {
+					stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.TBR));
+				} else {
+					stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.FIN));
+				}
+			}
+			
 		}
 		LOGGER.info("Update states ok");
 		

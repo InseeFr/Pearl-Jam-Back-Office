@@ -71,5 +71,15 @@ public class BussinessRules {
 		}
 	}
 	
-	
+	/* Checks if a survey unit can be seen by the interviewer
+	 * via an automatic bussiness rule
+	 */
+	public static Boolean stateCanBeSeenByInterviewerBussinessRules(StateType currentState) {
+		switch(currentState) {
+			case NNS: return false;
+			case NVI: return false;			
+			case NVM: return false;
+			default: return true;
+		}
+	}
 }
