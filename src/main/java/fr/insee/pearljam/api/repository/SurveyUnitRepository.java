@@ -25,10 +25,20 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	*/
 	@Query(value="SELECT su.id as id "
 			+ "FROM survey_unit su "
-			+ "LEFT JOIN state st ON st.survey_unit_id = su.id "
 			+ "JOIN campaign camp ON camp.id = su.campaign_id "
 			+ "WHERE su.interviewer_id ILIKE ?1", nativeQuery=true)
 	List<String> findIdsByInterviewerId(String idInterviewer);
+	
+	/**
+	* This method retrieve all Id of SurveyUnits with a certain state and idInterviewer in DB 
+	* 
+	* @return List of all {@link SurveyUnit}
+	*/
+	@Query(value="SELECT COUNT(*) "
+			+ "FROM survey_unit su "
+			+ "JOIN state st ON st.survey_unit_id = su.id "
+			+ "WHERE su.interviewer_id ILIKE ?1 AND su.campaign_id ILIKE ?2 AND su.id ILIKE ?3 AND st.type='TBR'", nativeQuery=true)
+	Integer findCountUeTBRByInterviewerIdAndCampaignId(String idInterviewer, String idCampaign, String idSurveyUnit);
 
 	/**
 	 * This method retrieve the SurveyUnit in DB by Id and UserId
