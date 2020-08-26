@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
+import fr.insee.pearljam.api.constants.Constants;
 
 /**
  * SecurityConfiguration is the class using to configure security.<br>
@@ -33,9 +34,9 @@ import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
  * @author Claudel Benjamin
  * 
  */
-@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}'=='Basic' or '${fr.insee.pearljam.application.mode}'=='NoAuth'")
 @Configuration
 @EnableWebSecurity
+@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * The environment define in Spring application Generate with the application
@@ -48,7 +49,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private ApplicationProperties applicationProperties;
 
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
-	private String role;
+	private String interviewerRole;
+	
+	@Value("${fr.insee.pearljam.user.local.role:#{null}}")
+	private String userLocalRole;
+	
+	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
+	private String userNationalRole;
 
 	/**
 	 * This method check if environment is development or test
@@ -72,27 +79,45 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			// use previously declared bean
 			.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		if (this.applicationProperties.getMode() == Mode.Basic) {
+		if(this.applicationProperties.getMode() == Mode.Basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
-			http.authorizeRequests()
-				// manage routes securisation
-				.antMatchers(HttpMethod.OPTIONS).permitAll()
-				// configuration for Swagger
-				.antMatchers("/swagger-ui.html/**", "/v2/api-docs", "/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
-				.antMatchers("/environnement", "/healthcheck").permitAll()
-				// configuration for endpoints
-				.antMatchers("/api/survey-unit/{id}").hasRole(role)
-				.antMatchers("/api/survey-units").hasRole(role)
-				.anyRequest().denyAll();
-		} else {
+			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+					// configuration for endpoints
+					.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
+					.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+
+			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)
+					
+					.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
+					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
+			        
+			        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
+			        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
+					.anyRequest().denyAll();
+		}else{
 			http.httpBasic().disable();
-			http.authorizeRequests()
-				// manage routes securisation
-				.antMatchers(HttpMethod.OPTIONS).permitAll()
-				// configuration for Swagger
-				.antMatchers("/swagger-ui.html/**", "/v2/api-docs", "/csrf", "/", "/webjars/**", "/swagger-resources/**") .permitAll()
-				.antMatchers("/environnement", "/healthcheck").permitAll()
-				.antMatchers("/api/survey-units", "/api/survey-unit/{id}").permitAll();
+			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+			// configuration for endpoints
+				.antMatchers(Constants.API_SURVEYUNIT_ID, 
+						Constants.API_SURVEYUNITS, 
+				        Constants.API_SURVEYUNITS_STATE, 
+				        Constants.API_SURVEYUNIT_ID_STATES, 
+				        
+						Constants.API_CAMPAIGNS,
+						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
+						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
+						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
+						Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
+						
+						Constants.API_USER,
+				        Constants.API_PREFERENCES)
+				.permitAll();
 		}
 	}
 
@@ -104,7 +129,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case Basic:
-				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}a").roles(role).and()
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(interviewerRole)
+						.and()
+						.withUser("ABC").password("{noop}abc").roles(userLocalRole, userNationalRole)
+						.and()
+						.withUser("JKL").password("{noop}jkl").roles(userLocalRole, userNationalRole)
+						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;
 			case NoAuth:

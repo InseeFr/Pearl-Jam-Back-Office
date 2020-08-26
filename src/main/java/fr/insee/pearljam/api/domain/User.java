@@ -19,7 +19,7 @@ import javax.persistence.Table;
 * 
 */
 @Entity
-@Table
+@Table(name="user", schema="public")
 public class User {
 
 	/**
