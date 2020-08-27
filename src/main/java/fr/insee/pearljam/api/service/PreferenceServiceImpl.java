@@ -30,7 +30,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	UserService userService;
 
 	public HttpStatus setPreferences(List<String> listPreference, String userId) {
-		if(listPreference == null || listPreference.isEmpty()) {
+		if(listPreference == null) {
 			LOGGER.error("list of campaign to update is empty ");
 			return HttpStatus.BAD_REQUEST;
 		}
