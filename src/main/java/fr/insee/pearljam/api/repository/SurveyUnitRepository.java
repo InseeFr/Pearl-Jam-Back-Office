@@ -64,18 +64,18 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	
 	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
 			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
+			"INNER JOIN interviewer int on int.id = su.interviewer_id AND int.organization_unit_id = ou.id " +
 			"WHERE camp.id =?1 AND ou.id ILIKE ?2 ", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndOu(String id, String ouId);
 
 	@Query(value="SELECT su.id as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
 			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
-			"INNER JOIN state st on st.survey_unit_id = su.id "+
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
+			"INNER JOIN state st on st.survey_unit_id = su.id AND int.organization_unit_id = ou.id "+
 			"WHERE camp.id =?1 AND st.type = ?2 "+ 
 			"AND st.date = (SELECT MAX(date) FROM state WHERE survey_unit_id=su.id) "+ 
 			"AND ou.id ILIKE ?3 ", nativeQuery=true)
