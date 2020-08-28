@@ -350,8 +350,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnit.setSsech(sampleIdentifierRepository.findSsechBySurveyUnitId(idSurveyUnit));
 			surveyUnit.setInterviewer( interviewerRepository.findInterviewersDtoBySurveyUnitId(idSurveyUnit));
 			String locationAndCity = addressRepository.findLocationAndCityBySurveyUnitId(idSurveyUnit);
-			surveyUnit.setLocation(locationAndCity.split(" ")[0]);
-			surveyUnit.setCity(locationAndCity.split(" ")[1]);
+			if(locationAndCity.contains(" ")) {
+				surveyUnit.setLocation(locationAndCity.split(" ")[0]);
+				surveyUnit.setCity(locationAndCity.split(" ")[1]);
+			} else {
+				surveyUnit.setLocation(locationAndCity);
+				surveyUnit.setCity(locationAndCity);
+			}
 			surveyUnitCampaignReturned.add(surveyUnit);
 		}
 		return surveyUnitCampaignReturned;		
