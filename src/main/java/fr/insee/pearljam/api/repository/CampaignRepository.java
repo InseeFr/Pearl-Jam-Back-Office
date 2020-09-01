@@ -91,7 +91,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ ") as t", nativeQuery = true)
 	List<Object[]> getStateCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
 
-	@Query(value = "SELECT " + "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
+	@Query(value = "SELECT " 
+			+ "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
 			+ "SUM(CASE WHEN type='ANS' THEN 1 ELSE 0 END) AS ansCount, "
 			+ "SUM(CASE WHEN type='VIC' THEN 1 ELSE 0 END) AS vicCount, "
 			+ "SUM(CASE WHEN type='PRC' THEN 1 ELSE 0 END) AS prcCount, "
@@ -116,4 +117,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
 	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
+
 }

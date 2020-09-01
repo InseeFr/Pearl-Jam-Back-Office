@@ -14,6 +14,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -177,5 +178,21 @@ public class CampaignServiceImpl implements CampaignService {
 
 	public boolean isUserPreference(String userId, String campaignId) {
 		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || userId == "GUEST";
+	}
+
+	@Override
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+			return null;
+		}
+		return new CountDto(0);
+	}
+
+	@Override
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+			return null;
+		}
+		return new CountDto(0);
 	}
 }

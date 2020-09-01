@@ -384,6 +384,7 @@ public class TestAuthKeyCloak {
 		.assertThat().body("collectionEndDate", hasItem(1622035845000L));
 	}
 	
+	
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 404 when survey-unit is false
@@ -652,6 +653,68 @@ public class TestAuthKeyCloak {
 			.put("api/preferences")
 		.then()
 			.statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(25)
+	public void testGetNbSuAbandoned() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().get("api/campaign/simpsons2020x00/survey-units/abandoned")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(26)
+	public void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().get("api/campaign/test/survey-units/abandoned")
+		.then()
+		.statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(27)
+	public void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().get("api/campaign/simpsons2020x00/survey-units/not-attributed")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(28)
+	public void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().get("api/campaign/test/survey-units/not-attributed")
+		.then()
+		.statusCode(404);
 	}
 	
 }

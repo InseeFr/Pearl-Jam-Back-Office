@@ -20,6 +20,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
@@ -142,6 +143,58 @@ public class CampaignController {
 			}
 			LOGGER.info("Get campaignStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * This method is using to count survey units that are abandoned by campaign
+	 * 
+	 * @param request
+	 * @param id
+	 * @param date
+	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get numberSUAbandoned")
+	@GetMapping(path = "/campaign/{id}/survey-units/abandoned")
+	public ResponseEntity<Object> getNbSUAbandoned(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			CountDto nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
+			if (nbSUAbandoned == null) {
+				LOGGER.info("Get numberSUAbandoned resulting in 404");
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get numberSUAbandoned resulting in 200");
+			return new ResponseEntity<>(nbSUAbandoned, HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * This method is using to count survey units that are not attributed by campaign
+	 * 
+	 * @param request
+	 * @param id
+	 * @param date
+	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get numberSUNotAttributed")
+	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed")
+	public ResponseEntity<Object> getNbSUNotAttributed(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			CountDto nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
+			if (nbSUNotAttributed == null) {
+				LOGGER.info("Get numberSUAbandoned resulting in 404");
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get numberSUAbandoned resulting in 200");
+			return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
 		}
 	}
 }
