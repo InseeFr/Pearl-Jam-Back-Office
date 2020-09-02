@@ -18,7 +18,9 @@ public class Constants {
 	public static final String API_SURVEYUNITS_STATE= "/api/survey-unit/{id}/state/{state}";
 	public static final String API_SURVEYUNIT_ID_STATES = "/api/survey-unit/{id}/states";
 	
-	public static final String API_CAMPAIGNS = "/api/campaigns";
+  public static final String API_CAMPAIGNS = "/api/campaigns";
+  public static final String API_CAMPAIGNS_STATE_COUNT = "/api/campaigns/survey-units/state-count";
+  public static final String API_INTERVIEWERS_STATE_COUNT = "/api/interviewers/survey-units/state-count";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaign/{id}/interviewers";
 	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/state-count";

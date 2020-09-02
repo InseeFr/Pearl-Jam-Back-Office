@@ -2,10 +2,18 @@ package fr.insee.pearljam.api.dto.state;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StateCountDto {
 
 	private String idDem;
-	private String labelDem;
+    private String labelDem;
+    private InterviewerDto interviewer;
+    private CampaignDto campaign;
 	private Long nnsCount;
 	private Long ansCount;
 	private Long vicCount;
@@ -308,6 +316,22 @@ public class StateCountDto {
 
 	public void setLabelDem(String labelDem) {
 		this.labelDem = labelDem;
+	}
+
+	public CampaignDto getCampaign() {
+		return campaign;
+	}
+
+	public void setCampaign(CampaignDto campaign) {
+		this.campaign = campaign;
+	}
+
+	public InterviewerDto getInterviewer() {
+		return interviewer;
+	}
+
+	public void setInterviewer(InterviewerDto interviewer) {
+		this.interviewer = interviewer;
 	}
 
 }

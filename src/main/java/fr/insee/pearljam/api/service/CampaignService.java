@@ -53,4 +53,20 @@ public interface CampaignService {
 	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId);
 
 	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId);
+
+	
+	/**
+	 * @param userId
+	 * @param date
+	 * @return {@link List<StateCountDto>}
+	 */
+	List<StateCountDto> getStateCountByCampaigns(String userId, Long date);
+	
+	/**
+	 * @param userId
+	 * @param date
+	 * @return {@link List<StateCountDto>}
+	 */
+	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
+	
 }

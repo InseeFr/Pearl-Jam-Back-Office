@@ -27,6 +27,12 @@ public interface UserService {
 	void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels);
 
 	/**
+	 * @param userId
+	 * @param saveAllLevels
+	 */
+	List<OrganizationUnitDto> getUserOUs(String userId, boolean saveAllLevels);
+	
+	/**
 	 * @param campaignId
 	 * @param userId
 	 * @return {@link Boolean}

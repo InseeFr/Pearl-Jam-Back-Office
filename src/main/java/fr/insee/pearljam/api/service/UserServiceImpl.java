@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.configuration.ApplicationProperties;
 import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
@@ -38,6 +39,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	OrganizationUnitRepository ouRepository;
+	
+	@Autowired
+	UserService userService;
 
 	@Autowired
 	ApplicationProperties applicationProperties;
@@ -80,6 +84,30 @@ public class UserServiceImpl implements UserService {
 				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 			}
 		}
+	}
+	
+	public List<OrganizationUnitDto> getUserOUs(String userId, boolean saveAllLevels){
+		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
+		if (!userId.equals(Constants.GUEST)) {
+			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+			if (user.isPresent()) {
+				userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
+			}
+	  }
+		else {
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
+			if(ouNat.isPresent()) {
+				userService.getOrganizationUnits(organizationUnits, ouRepository.findByIdIgnoreCase("OU-NATIONAL").get(), saveAllLevels);
+			}
+			else {
+				List<String> natOus = ouRepository.findNationalOUs();
+				if (!natOus.isEmpty()) {
+					userService.getOrganizationUnits(organizationUnits, ouRepository.findByIdIgnoreCase(natOus.get(0)).get(), saveAllLevels);
+				}
+			}
+		}
+		
+		return organizationUnits;
 	}
 	
 	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {

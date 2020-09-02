@@ -62,7 +62,7 @@ public class UtilsServiceImpl implements UtilsService {
 			userId = keycloak.getPrincipal().toString();
 			break;
 		default:
-			userId = Constants.GUEST;
+      userId = Constants.GUEST;
 			break;
 		}
 		return userId;
