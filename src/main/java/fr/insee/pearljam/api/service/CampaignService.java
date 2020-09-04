@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service;
 import java.util.List;
 
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
@@ -48,4 +49,24 @@ public interface CampaignService {
 	 * @return {@link StateCountCampaignDto}
 	 */
 	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date);
+
+	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId);
+
+	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId);
+
+	
+	/**
+	 * @param userId
+	 * @param date
+	 * @return {@link List<StateCountDto>}
+	 */
+	List<StateCountDto> getStateCountByCampaigns(String userId, Long date);
+	
+	/**
+	 * @param userId
+	 * @param date
+	 * @return {@link List<StateCountDto>}
+	 */
+	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
+	
 }

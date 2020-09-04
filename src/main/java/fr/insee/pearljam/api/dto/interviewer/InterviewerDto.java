@@ -1,7 +1,10 @@
 package fr.insee.pearljam.api.dto.interviewer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import fr.insee.pearljam.api.domain.Interviewer;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InterviewerDto {
 	private String id;
 	private String interviewerFirstName;

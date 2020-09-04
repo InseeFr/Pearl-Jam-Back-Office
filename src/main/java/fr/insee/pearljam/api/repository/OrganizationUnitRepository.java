@@ -24,6 +24,9 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
 	@Query(value="SELECT id FROM organization_unit WHERE organization_unit_parent_id =?1", nativeQuery=true)
 	List<String> findChildrenId(String orgUnitId);
 	
+	@Query(value="SELECT id FROM organization_unit WHERE type = 'NATIONAL'", nativeQuery=true)
+	List<String> findNationalOUs();
+	
 	@Query("SELECT ou FROM OrganizationUnit ou WHERE ou.organizationUnitParent.id =?1")
 	List<OrganizationUnit> findChildren(String orgUnitId);
 	

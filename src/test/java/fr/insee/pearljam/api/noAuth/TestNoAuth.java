@@ -593,4 +593,58 @@ public class TestNoAuth {
 		.then()
 			.statusCode(404);
 	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(25)
+	public void testGetNbSuAbandoned() throws InterruptedException, JSONException {
+		get("api/campaign/simpsons2020x00/survey-units/abandoned")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(26)
+	public void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
+		get("api/campaign/test/survey-units/abandoned")
+		.then()
+		.statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(27)
+	public void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
+		get("api/campaign/simpsons2020x00/survey-units/not-attributed")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
+	
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(28)
+	public void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
+		get("api/campaign/test/survey-units/not-attributed")
+		.then()
+		.statusCode(404);
+	}
 }
