@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
@@ -216,6 +218,32 @@ public class CampaignServiceImpl implements CampaignService {
 	public boolean isUserPreference(String userId, String campaignId) {
 		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || userId == "GUEST";
 	}
+	
+	@Override
+	public HttpStatus updateDates(String userId, String id, CampaignDto campaign) {
+		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
+		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
+		if (camp.isPresent()) {
+			Campaign currentCampaign = camp.get();
+			if(campaign.getCollectionEndDate() != null) {
+				LOGGER.info("Updating collection end date for campaign {}", id);
+				currentCampaign.setCollectionEndDate(campaign.getCollectionEndDate());
+				returnStatus = HttpStatus.OK;
+			}
+			if(campaign.getCollectionStartDate() != null) {
+				LOGGER.info("Updating collection start date for campaign {}", id);
+				currentCampaign.setCollectionStartDate(campaign.getCollectionStartDate());
+				returnStatus = HttpStatus.OK;
+			}
+			campaignRepository.save(currentCampaign);
+		}
+		else {
+			LOGGER.info("Campaign {} does not exist", id);
+			returnStatus = HttpStatus.NOT_FOUND;
+		}
+		
+		return returnStatus;
+	}
 
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
@@ -232,4 +260,6 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		return new CountDto(0);
 	}
+
+
 }

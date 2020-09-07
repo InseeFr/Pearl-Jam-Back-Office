@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,7 @@ import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -243,6 +246,25 @@ public class CampaignController {
 			}
 			LOGGER.info("Get campaignStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
+		}
+	}
+	
+  /**
+  * Updates the collection start and end dates for a campaign
+  * @body CampaignDto
+  * @param id
+  * @return {@link HttpStatus}
+  */
+	@ApiOperation(value = "Put campaignCollectionDates")
+	@PutMapping(path = "/campaign/{id}/collection-dates")
+	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestBody CampaignDto campaign) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = campaignService.updateDates(userId, id, campaign);
+			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
+			return new ResponseEntity<>(returnCode);
 		}
 	}
 }
