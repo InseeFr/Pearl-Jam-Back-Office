@@ -91,6 +91,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					
           .antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
           .antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
+          .antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole,userNationalRole)
           .antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
 					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
 					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
@@ -113,6 +114,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				        
             Constants.API_CAMPAIGNS,
             Constants.API_CAMPAIGNS_STATE_COUNT,
+            Constants.API_CAMPAIGN_COLLECTION_DATES,
             Constants.API_INTERVIEWERS_STATE_COUNT,
 						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
 						Constants.API_CAMPAIGN_ID_SURVEYUNITS,

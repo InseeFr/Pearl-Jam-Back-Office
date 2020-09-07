@@ -2,7 +2,10 @@ package fr.insee.pearljam.api.service;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -68,5 +71,7 @@ public interface CampaignService {
 	 * @return {@link List<StateCountDto>}
 	 */
 	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
+
+	HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign);
 	
 }
