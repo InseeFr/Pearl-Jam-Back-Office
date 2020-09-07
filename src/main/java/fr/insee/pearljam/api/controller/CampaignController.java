@@ -22,6 +22,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -257,7 +258,7 @@ public class CampaignController {
   */
 	@ApiOperation(value = "Put campaignCollectionDates")
 	@PutMapping(path = "/campaign/{id}/collection-dates")
-	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestBody CampaignDto campaign) {
+	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestBody CollectionDatesDto campaign) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);

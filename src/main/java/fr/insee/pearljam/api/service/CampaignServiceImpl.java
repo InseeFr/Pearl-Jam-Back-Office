@@ -15,6 +15,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -220,7 +221,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 	
 	@Override
-	public HttpStatus updateDates(String userId, String id, CampaignDto campaign) {
+	public HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign) {
 		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
 		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
 		if (camp.isPresent()) {
