@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -63,35 +63,16 @@ public class CampaignServiceImpl implements CampaignService {
 	public List<CampaignDto> getListCampaign(String userId) {
 		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
 		List<String> campaignDtoIds = new ArrayList<>();
-		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (userId.equals(Constants.GUEST)) {
-			campaignDtoIds = campaignRepository.findAllIds();
-		} else {
-			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-			if (user.isPresent()) {
-				userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
-				if (!organizationUnits.isEmpty()) {
-					for (OrganizationUnitDto orgaUser : organizationUnits) {
-						List<String> ids = campaignRepository.findIdsByOuId(orgaUser.getId());
-						for (String id : ids) {
-							if (!campaignDtoIds.contains(id)) {
-								campaignDtoIds.add(id);
-							}
-						}
-					}
-				} else {
-					LOGGER.error("No campaign found for user {}", userId);
-					return List.of();
-				}
-			} else {
-				LOGGER.error("User {} does not exist", userId);
-				return List.of();
-			}
-		}
-		if (campaignDtoIds.isEmpty()) {
-			LOGGER.error("No campaign found for user {}", userId);
-			return List.of();
-		}
+		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
+	
+	    for (OrganizationUnitDto orgaUser : organizationUnits) {
+	      List<String> ids = campaignRepository.findIdsByOuId(orgaUser.getId());
+	      for (String id : ids) {
+	        if (!campaignDtoIds.contains(id)) {
+	          campaignDtoIds.add(id);
+	        }
+	      }
+	    }
 		List<String> lstOuId = new ArrayList<>();
 
 	    if(!userId.equals(Constants.GUEST)){
@@ -115,10 +96,18 @@ public class CampaignServiceImpl implements CampaignService {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
 			return List.of();
-		}
+    }
+    
+    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
+    List<String> userOrgUnitIds = organizationUnits.stream()
+      .map(dto -> dto.getId())
+      .collect(Collectors.toList());
+
 		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-			interviewersDtoReturned
-					.addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
+      if(userOrgUnitIds.contains(orgId)){
+        interviewersDtoReturned
+        .addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
+      }
 		}
 		if (interviewersDtoReturned.isEmpty()) {
 			LOGGER.error("No interviewers found for the campaign {}", campaignId);
@@ -141,7 +130,7 @@ public class CampaignServiceImpl implements CampaignService {
 		if (interv.isPresent()
 				&& (associatedOrgUnits.contains(interv.get().organizationUnit.id) || userId.equals(Constants.GUEST))) {
 			stateCountDto = new StateCountDto(campaignRepository.getStateCount(campaignId, interviewerId, dateToUse));
-		}
+    }
 		if (stateCountDto.getTotal() == null) {
 			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
 					userId, campaignId);
@@ -174,8 +163,73 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		return stateCountCampaignDto;
 	}
+	
+	public List<StateCountDto> getStateCountByCampaigns(String userId, Long date){
+		List<StateCountDto> returnList = new ArrayList<>();
+		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
+		for (OrganizationUnitDto dto : organizationUnits) {
+			LOGGER.info(dto.getId());
+		}
+		List<String> userOrgUnitIds = organizationUnits.stream()
+	      .map(dto -> dto.getId())
+	      .collect(Collectors.toList());
+		Long dateToUse = date;
+		if (dateToUse == null) {
+			dateToUse = System.currentTimeMillis();
+		}
+		List<String> campaignIds = campaignRepository.findAllIdsVisible(userOrgUnitIds, dateToUse);
+		for(String id : campaignIds) {
+			StateCountDto campaignSum = new StateCountDto(campaignRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse));
+			if(campaignSum.getTotal() != null) {
+				CampaignDto dto = campaignRepository.findDtoById(id);
+				dto.setCollectionEndDate(null);
+				dto.setCollectionStartDate(null);
+				campaignSum.setCampaign(dto);
+				returnList.add(campaignSum);
+			}
+		}
+		return returnList;
+	}
+	
+	public List<StateCountDto> getStateCountByInterviewer(String userId, Long date){
+		List<StateCountDto> returnList = new ArrayList<>();
+		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
+		List<String> userOrgUnitIds = organizationUnits.stream()
+	      .map(dto -> dto.getId())
+	      .collect(Collectors.toList());
+		Long dateToUse = date;
+		if (dateToUse == null) {
+			dateToUse = System.currentTimeMillis();
+		}
+		List<String> interviewerIds =interviewerRepository.findIdsByOrganizationUnits(userOrgUnitIds);
+		List<String> campaignIds = campaignRepository.findAllIdsVisible(userOrgUnitIds, dateToUse);
+		for(String id : interviewerIds) {
+			StateCountDto interviewerSum = new StateCountDto(campaignRepository.getStateCountSumByInterviewer(campaignIds, id, dateToUse));
+			if(interviewerSum.getTotal() != null) {
+				interviewerSum.setInterviewer(interviewerRepository.findDtoById(id));
+				returnList.add(interviewerSum);
+			}
+		}
+		return returnList;
+	}
 
 	public boolean isUserPreference(String userId, String campaignId) {
 		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || userId == "GUEST";
+	}
+
+	@Override
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+			return null;
+		}
+		return new CountDto(0);
+	}
+
+	@Override
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+			return null;
+		}
+		return new CountDto(0);
 	}
 }

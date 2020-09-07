@@ -21,11 +21,9 @@ import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.ContactOutcome;
 import fr.insee.pearljam.api.domain.InseeAddress;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
@@ -164,30 +162,31 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return HttpStatus.BAD_REQUEST;
 		}
 		
-		List<StateDto> sortedStates = surveyUnitDetailDto.getStates();
-		Collections.sort(sortedStates, new Comparator<StateDto>() {
-		    @Override
-		    public int compare(StateDto o1, StateDto o2) {
-		        return o1.getDate().compareTo(o2.getDate());
-		    }
-		});
-		StateDto prevState = null;
-		Boolean wasAlreadyPresent = true;
-		for(StateDto state : sortedStates) {
-			if(wasAlreadyPresent) {
-				Optional<StateDto> s = stateRepository.findDtoById(state.getId());
-				if(!s.isPresent() || !s.get().getType().equals(state.getType()) 
-					|| !s.get().getDate().equals(state.getDate())) {
-					wasAlreadyPresent = false;
-				}
-			}
-			if(!wasAlreadyPresent && (prevState == null
-				|| !BussinessRules.stateCanBeModifiedByInterviewer(prevState.getType(), state.getType()))) {
-				LOGGER.error("State modifications requested are not allowed");
-				return HttpStatus.FORBIDDEN;
-			}
-			prevState = state;
-		}
+		// List<StateDto> sortedStates = surveyUnitDetailDto.getStates();
+		// Collections.sort(sortedStates, new Comparator<StateDto>() {
+		//     @Override
+		//     public int compare(StateDto o1, StateDto o2) {
+		//         return o1.getDate().compareTo(o2.getDate());
+		//     }
+		// });
+		
+		//StateDto prevState = null;
+		//Boolean wasAlreadyPresent = true;
+		//for(StateDto state : sortedStates) {
+		//	if(wasAlreadyPresent) {
+		//		Optional<StateDto> s = stateRepository.findDtoById(state.getId());
+		//		if(!s.isPresent() || !s.get().getType().equals(state.getType()) 
+		//			|| !s.get().getDate().equals(state.getDate())) {
+		//			wasAlreadyPresent = false;
+		//		}
+		//	}
+		//	if(!wasAlreadyPresent && (prevState == null
+		//		|| !BussinessRules.stateCanBeModifiedByInterviewer(prevState.getType(), state.getType()))) {
+		//		LOGGER.error("State modifications requested are not allowed");
+		//		return HttpStatus.FORBIDDEN;
+		//	}
+		//	prevState = state;
+		//}
 		
 		Optional<SurveyUnit> surveyUnit = null;
 		if(userId.equals(GUEST)) {
@@ -294,29 +293,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
 		List<String> surveyUnitDtoIds = new ArrayList<>();
-		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		
-		if(userId.equals(GUEST)) {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
-			if(ouNat.isPresent()) {
-				userService.getOrganizationUnits(organizationUnits, ouNat.get(), false);
-			}
-			else {
-				return List.of();
-			}
-		}
-		else {
-			if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-				return List.of();
-			}
-			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-			if(!user.isPresent()) {
-				LOGGER.error("User {} does not exist", userId);
-				return List.of();
-			}
-			userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), true);
-		}
-		
+		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
 		
 		if(!organizationUnits.isEmpty()) {
 			if(state == null || state.isEmpty()) {

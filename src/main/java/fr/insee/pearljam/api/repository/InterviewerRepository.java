@@ -1,9 +1,11 @@
 package fr.insee.pearljam.api.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
@@ -17,6 +19,12 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 public interface InterviewerRepository extends JpaRepository<Interviewer, String> {
 
 	Optional<Interviewer> findByIdIgnoreCase(String userId);
+	
+	@Query(value = "SELECT id FROM interviewer WHERE "
+			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
+	List<String> findIdsByOrganizationUnits(@Param("OuIds") List<String> OuIds);
+	
+	InterviewerDto findDtoById(String id);
 	
 	@Query("SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName) "
 			  + "FROM SurveyUnit su "

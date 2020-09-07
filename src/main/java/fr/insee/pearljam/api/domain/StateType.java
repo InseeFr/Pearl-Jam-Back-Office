@@ -6,9 +6,9 @@ package fr.insee.pearljam.api.domain;
  *
  */
 public enum StateType {
-  NNS("Not Assigned, not started"),
-  ANS("Assigned, not started"),
-  VIC("Visible to the interviewer and clickable"),
+	NNS("Not Assigned, not started"),
+  	ANS("Assigned, not started"),
+  	VIC("Visible to the interviewer and clickable"),
 	PRC("Preparing contact"), 
 	AOC("At least one contact made"),
 	APS("Appointment scheduled"), 
