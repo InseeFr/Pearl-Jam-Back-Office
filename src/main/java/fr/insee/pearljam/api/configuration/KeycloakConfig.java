@@ -102,7 +102,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)
-		        
+		        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
 		        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
 				.anyRequest().denyAll(); 

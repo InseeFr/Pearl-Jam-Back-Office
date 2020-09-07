@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
@@ -21,6 +22,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
@@ -214,6 +216,26 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		return returnList;
+	}
+	
+	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
+		HttpStatus returnCode = HttpStatus.BAD_REQUEST;
+		if(idCampaign != null && idOu != null && (updatedVisibility.getStartDate() != null || updatedVisibility.getEndDate() != null)) {
+			Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
+			if(visibility.isPresent()) {
+				if(updatedVisibility.getEndDate() != null) {
+					LOGGER.info("Updating collection end date for campaign {} and Organizational Unit", idCampaign, idOu);
+					visibility.get().setCollectionEndDate(updatedVisibility.getEndDate());
+				}
+				if(updatedVisibility.getStartDate() != null) {
+					LOGGER.info("Updating collection start date for campaign {} and Organizational Unit", idCampaign, idOu);
+					visibility.get().setCollectionStartDate(updatedVisibility.getStartDate());
+				}
+				visibilityRepository.save(visibility.get());
+				returnCode = HttpStatus.OK;
+			}
+		}
+		return returnCode;
 	}
 
 	public boolean isUserPreference(String userId, String campaignId) {

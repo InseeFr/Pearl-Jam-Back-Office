@@ -10,6 +10,7 @@ import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 
 /**
  * Service for the Campaign entity
@@ -74,4 +75,12 @@ public interface CampaignService {
 
 	HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign);
 	
+	/**
+	 * Update the visibility for a given campaign and a Organizational Unit
+	 * @param idCampaign
+	 * @param idOu
+	 * @param updatedVisibility
+	 * @return
+	 */
+	HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility);
 }

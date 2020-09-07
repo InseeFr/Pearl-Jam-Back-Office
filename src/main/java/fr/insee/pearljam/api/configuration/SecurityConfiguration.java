@@ -99,7 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
-			        
+			        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
 			        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
 					.anyRequest().denyAll();
@@ -120,7 +120,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
 						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
 						Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
-						
+						Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
 						Constants.API_USER,
 				        Constants.API_PREFERENCES)
 				.permitAll();

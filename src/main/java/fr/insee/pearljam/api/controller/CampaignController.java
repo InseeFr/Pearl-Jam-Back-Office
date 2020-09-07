@@ -28,6 +28,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -268,4 +269,23 @@ public class CampaignController {
 			return new ResponseEntity<>(returnCode);
 		}
 	}
+	/**
+	  * Update the visibility dates for a given campaign and organizational unit
+	  * @param request
+	  * @param idCampaign
+	  * @param idOu
+	  */
+		@ApiOperation(value = "Change visibility of a campaign for an Organizational Unit")
+		@PutMapping(path = "/campaign/{idCampaign}/organizational-unit/{idOu}/visibility")
+		public ResponseEntity<Object> putVisibilityDate(HttpServletRequest request, @RequestBody VisibilityDto visibilityUpdated,
+				@PathVariable(value = "idCampaign") String idCampaign, @PathVariable(value = "idOu") String idOu) {
+			String userId = utilsService.getUserId(request);
+			if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			} else {
+				HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
+				LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign, idOu, returnCode.value());
+				return new ResponseEntity<>(returnCode);
+			}
+		}
 }

@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,8 @@ public interface VisibilityRepository extends JpaRepository<Visibility, String>{
     + "WHERE campaign_id=:campaignId AND (organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))" , nativeQuery=true)
   Long findTreatmentEndDateByCampaignId(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
 
-	
+  @Query(value="SELECT * "
+		    + "FROM visibility "
+		    + "WHERE campaign_id=?1 AND organization_unit_id=?2" , nativeQuery=true)
+  Optional<Visibility> findVisibilityByCampaignIdAndOuId(String campaignId, String organizationalUnitId);
 }
