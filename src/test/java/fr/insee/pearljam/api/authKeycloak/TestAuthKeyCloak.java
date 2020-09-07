@@ -422,7 +422,7 @@ public class TestAuthKeyCloak {
 		surveyUnitDetailDto.getAddress().setL7("test");
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "")));
 		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.ANS)));
-		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.COM), new ContactAttemptDto(1589268800000L, Status.BUL)));
+		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC), new ContactAttemptDto(1589268800000L, Status.INA)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
 		 given().auth().oauth2(accessToken)
 		 	.contentType("application/json")
@@ -450,8 +450,8 @@ public class TestAuthKeyCloak {
 		.assertThat().body("comments[0].type", equalTo(CommentType.INTERVIEWER.toString())).and()
 		.assertThat().body("comments[1].value", blankOrNullString()).and()
 		.assertThat().body("comments[1].type", equalTo(CommentType.MANAGEMENT.toString())).and()
-		.assertThat().body("contactAttempts[0].status", equalTo(Status.COM.toString())).and()
-		.assertThat().body("contactAttempts[1].status", equalTo(Status.BUL.toString()));
+		.assertThat().body("contactAttempts[0].status", equalTo(Status.NOC.toString())).and()
+		.assertThat().body("contactAttempts[1].status", equalTo(Status.INA.toString()));
 		//Tests with Junit for Long values
 		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactOutcome.date"));
 		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactAttempts[0].date"));
