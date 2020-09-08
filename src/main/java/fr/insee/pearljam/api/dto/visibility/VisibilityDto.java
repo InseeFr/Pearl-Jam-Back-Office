@@ -25,6 +25,10 @@ public class VisibilityDto {
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
+	
+	public VisibilityDto() {
+		super();
+	}
 
 	public Long getStartDate() {
 		return startDate;
