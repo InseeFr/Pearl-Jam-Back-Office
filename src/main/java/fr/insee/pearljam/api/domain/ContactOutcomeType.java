@@ -7,9 +7,11 @@ package fr.insee.pearljam.api.domain;
  */
 public enum ContactOutcomeType {
 	INA("Interview accepted"),
+	IMP("Imposssible to reach"),
 	REF("Refusal"),
 	INI("Interview impossible"),
 	ALA("Already answered (other mode)"),
+	WAM("Wish to answer in another mode"),
 	OOS("Out of scope");
 	
 	/**

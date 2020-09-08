@@ -89,10 +89,11 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 				.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
 				.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
 
-		        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
+		    .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
 				.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
 
         .antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)
+        .antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole, userNationalRole)
         .antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
         .antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
 				.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)
@@ -101,7 +102,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)
-		        
+		        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
 		        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
 		        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
 				.anyRequest().denyAll(); 

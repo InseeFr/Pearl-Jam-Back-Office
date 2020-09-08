@@ -5,11 +5,16 @@ package fr.insee.pearljam.api.domain;
  * @author scorcaud
  */
 public enum Status {
-	COM("Contact made"),
-	NIN("Number not in use"),
+
 	NOC("No contact"),
-	BUL("Busy line"),
-	ANM("Answering machine");
+	INA("Interview accepted"),
+	APT("Appointment made"),
+	REF("Refusal"),
+	ABS("Occasional absence of the interviewer"),
+	INI("Interview impossible"),
+	ALA("Already answered in another mode"),
+	WAM("Wish to answer in another mode");
+
 	
 	/**
 	 * label

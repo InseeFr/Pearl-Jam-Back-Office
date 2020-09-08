@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,8 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 * 
 */
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
+	
+	Optional<Campaign> findByIdIgnoreCase(String id);
 
 	@Query(value = "SELECT id FROM campaign ", nativeQuery = true)
 	List<String> findAllIds();
