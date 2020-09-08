@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONException;
 import org.junit.ClassRule;
@@ -38,16 +39,20 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
+import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
@@ -71,7 +76,13 @@ public class TestBasicAuth {
 	UserService userService;
 	
 	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
+  SurveyUnitRepository surveyUnitRepository;
+  
+  @Autowired
+  CampaignRepository campaignRepository;
+  
+  @Autowired
+	VisibilityRepository visibilityRepository;
 	
 	@LocalServerPort
 	int port;
@@ -655,6 +666,196 @@ public class TestBasicAuth {
 		.get("api/campaign/test/survey-units/not-attributed")
 		.then()
 		.statusCode(404);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{id}/collection-dates"
+	 * return 200 when modifying both dates
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(29)
+	public void testPutCollectionDatesModifyBothDates() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"collectionStartDate\": 162849200000, \"collectionEndDate\": 170849200000}")
+		.when()
+			.put("api/campaign/simpsons2020x00/collection-dates")
+		.then()
+      .statusCode(200);
+    Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
+    assertEquals(simpsons.isPresent(), true);
+    assertEquals(simpsons.get().getCollectionStartDate(), 162849200000L);
+    assertEquals(simpsons.get().getCollectionEndDate(), 170849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{id}/collection-dates"
+	 * return 200 when modifying start date
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(30)
+	public void testPutCollectionDatesModifyStartDate() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"collectionStartDate\": 162849200000}")
+		.when()
+			.put("api/campaign/simpsons2020x00/collection-dates")
+		.then()
+      .statusCode(200);
+    Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
+    assertEquals(simpsons.isPresent(), true);
+    assertEquals(simpsons.get().getCollectionStartDate(), 162849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{id}/collection-dates"
+	 * return 200 when modifying end date
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(31)
+	public void testPutCollectionDatesModifyEndDate() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"collectionEndDate\": 170849200000}")
+		.when()
+			.put("api/campaign/simpsons2020x00/collection-dates")
+		.then()
+      .statusCode(200);
+    Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
+    assertEquals(simpsons.isPresent(), true);
+    assertEquals(simpsons.get().getCollectionEndDate(), 170849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{id}/collection-dates"
+	 * return 400 when empty body
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(32)
+	public void testPutCollectionDatesEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{}")
+		.when()
+			.put("api/campaign/simpsons2020x00/collection-dates")
+		.then()
+      .statusCode(400);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{id}/collection-dates"
+	 * return 400 when bad format
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(33)
+	public void testPutCollectionDatesBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"collectionStartDate\": 162849200000, \"collectionEndDate\": \"23/05/2020\"}")
+		.when()
+			.put("api/campaign/simpsons2020x00/collection-dates")
+		.then()
+      .statusCode(400);
+  }
+
+  /**
+	 * Test that the PUT endpoint "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
+	 * return 200 when modifying both dates
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(34)
+	public void testPutVisibilityModifyBothDates() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"startDate\": 162849200000, \"endDate\": 170849200000}")
+		.when()
+			.put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
+		.then()
+      .statusCode(200);
+    Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
+    assertEquals(visi.isPresent(), true);
+    assertEquals(visi.get().getCollectionStartDate(), 162849200000L);
+    assertEquals(visi.get().getCollectionEndDate(), 170849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
+	 * return 200 when modifying start date
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(35)
+	public void testPutVisibilityModifyStartDate() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"startDate\": 162849200000}")
+		.when()
+    .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
+		.then()
+      .statusCode(200);
+    Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
+    assertEquals(visi.isPresent(), true);
+    assertEquals(visi.get().getCollectionStartDate(), 162849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
+	 * return 200 when modifying end date
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(36)
+	public void testPutVisibilityModifyEndDate() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"endDate\": 170849200000}")
+		.when()
+    .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
+		.then()
+      .statusCode(200);
+    Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
+    assertEquals(visi.isPresent(), true);
+    assertEquals(visi.get().getCollectionEndDate(), 170849200000L);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
+	 * return 400 when empty body
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(37)
+	public void testPutVisibilityEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{}")
+		.when()
+    .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
+		.then()
+      .statusCode(400);
+  }
+  
+  /**
+	 * Test that the PUT endpoint "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
+	 * return 400 when bad format
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(38)
+	public void testPutVisibilityBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body("{\"startDate\": 162849200000, \"endDate\": \"23/05/2020\"}")
+		.when()
+      .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
+		.then()
+      .statusCode(400);
 	}
 	
 }
