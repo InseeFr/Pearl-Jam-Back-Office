@@ -34,10 +34,10 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	* 
 	* @return List of all {@link SurveyUnit}
 	*/
-	@Query(value="SELECT COUNT(DISTINCT s.id) FROM state s " + 
+	@Query(value="SELECT COUNT(DISTINCT su.id) FROM state s " + 
 			"JOIN survey_unit su ON s.survey_unit_id=su.id " + 
 			"WHERE su.interviewer_id ILIKE ?1 " +
-			"AND su.campaign_id ILIKE ?2 AND s.type='TBR'", nativeQuery=true)
+			"AND su.campaign_id=?2 AND s.type='TBR'", nativeQuery=true)
 	Integer findCountUeTBRByInterviewerIdAndCampaignId(String idInterviewer, String idCampaign, String idSurveyUnit);
 
 	/**

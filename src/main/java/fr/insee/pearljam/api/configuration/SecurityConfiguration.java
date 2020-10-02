@@ -82,48 +82,53 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if(this.applicationProperties.getMode() == Mode.Basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
-					// configuration for endpoints
-					.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
-					.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
-
-			        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
-					.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)
-					
-          .antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
-          .antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
-          .antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole,userNationalRole)
-          .antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
-					.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
-					.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
-			        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
-					.anyRequest().denyAll();
+			// configuration for endpoints
+			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
+			.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+	        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)					
+			.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
+	        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
+            .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
+            .antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole)
+            .antMatchers(Constants.API_GET_MESSAGES).hasRole("investigator")
+            .antMatchers(Constants.API_VERIFY).hasAnyRole(userLocalRole, userNationalRole)
+            .antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
+			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
-				.antMatchers(Constants.API_SURVEYUNIT_ID, 
-						Constants.API_SURVEYUNITS, 
-				        Constants.API_SURVEYUNITS_STATE, 
-				        Constants.API_SURVEYUNIT_ID_STATES, 
-				        
-            Constants.API_CAMPAIGNS,
-            Constants.API_CAMPAIGNS_STATE_COUNT,
-            Constants.API_CAMPAIGN_COLLECTION_DATES,
-            Constants.API_INTERVIEWERS_STATE_COUNT,
-						Constants.API_CAMPAIGN_ID_INTERVIEWERS,
-						Constants.API_CAMPAIGN_ID_SURVEYUNITS,
-						Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
-						Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
-						Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
-						Constants.API_USER,
-				        Constants.API_PREFERENCES)
-				.permitAll();
+			.antMatchers(Constants.API_SURVEYUNIT_ID, 
+				Constants.API_SURVEYUNITS, 
+				Constants.API_SURVEYUNITS_STATE, 
+				Constants.API_SURVEYUNIT_ID_STATES,
+				Constants.API_CAMPAIGNS,
+				Constants.API_CAMPAIGNS_STATE_COUNT,
+				Constants.API_CAMPAIGN_COLLECTION_DATES,
+				Constants.API_INTERVIEWERS_STATE_COUNT,
+				Constants.API_CAMPAIGN_ID_INTERVIEWERS,
+				Constants.API_CAMPAIGN_ID_SURVEYUNITS,
+				Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
+				Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
+				Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
+				Constants.API_USER,
+		        Constants.API_PREFERENCES,
+		        Constants.API_MESSAGE,
+		        Constants.API_VERIFY,
+		        Constants.API_MESSAGE_HISTORY,
+		        Constants.API_GET_MESSAGES)
+			.permitAll();
 		}
 	}
 

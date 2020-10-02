@@ -31,7 +31,12 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{id}/organizational-unit/{id}/visibility";
 
 	public static final String API_USER= "/api/user";
-	public static final String API_PREFERENCES = "/api/preferences";
+  public static final String API_PREFERENCES = "/api/preferences";
+  
+  public static final String API_MESSAGE = "/api/message";
+  public static final String API_GET_MESSAGES = "/api/messages/{id}";
+  public static final String API_VERIFY = "/api/verify-name";
+  public static final String API_MESSAGE_HISTORY = "/api/message-history";
 	
 	
 	// Error messages

@@ -1,0 +1,93 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="scorcaud (generated)" id="1601546046889-1">
+        <createTable tableName="campaign_message_recipient">
+            <column name="campaign_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-2">
+        <createTable tableName="interviewer_message_recipient">
+            <column name="interviewer_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-3">
+        <createTable tableName="message">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="messagePK"/>
+            </column>
+            <column name="date" type="BIGINT"/>
+            <column name="text" type="VARCHAR(2000)"/>
+            <column name="sender_id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-4">
+        <createTable tableName="message_status">
+            <column name="interviewer_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-5">
+        <createTable tableName="oumessage_recipient">
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organization_unit_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-6">
+        <addPrimaryKey columnNames="campaign_id, message_id" constraintName="campaign_message_recipientPK" tableName="campaign_message_recipient"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-7">
+        <addPrimaryKey columnNames="interviewer_id, message_id" constraintName="interviewer_message_recipientPK" tableName="interviewer_message_recipient"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-8">
+        <addPrimaryKey columnNames="interviewer_id, message_id" constraintName="message_statusPK" tableName="message_status"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-9">
+        <addPrimaryKey columnNames="message_id, organization_unit_id" constraintName="oumessage_recipientPK" tableName="oumessage_recipient"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-10">
+        <addForeignKeyConstraint baseColumnNames="campaign_id" baseTableName="campaign_message_recipient" constraintName="FK10pg2lrk6o4ac9nygcpu3vhbe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="campaign"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-11">
+        <addForeignKeyConstraint baseColumnNames="interviewer_id" baseTableName="interviewer_message_recipient" constraintName="FK2fgc6wykn3abf7v9iiqlhjyls" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="interviewer"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-12">
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="campaign_message_recipient" constraintName="FK4fyh29qseit8hl08irs8l9man" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="message"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-13">
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="oumessage_recipient" constraintName="FK79f9ncrags86ou1hdxedkidpe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="message"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-14">
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="interviewer_message_recipient" constraintName="FK94vka8ka4beishaujl3qn9huk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="message"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-15">
+        <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="message" constraintName="FKcnj2qaf5yc36v2f90jw2ipl9b" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-16">
+        <addForeignKeyConstraint baseColumnNames="interviewer_id" baseTableName="message_status" constraintName="FKg3biwxgsik5kq87iwdsn6by2h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="interviewer"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-17">
+        <addForeignKeyConstraint baseColumnNames="organization_unit_id" baseTableName="oumessage_recipient" constraintName="FKhymq5jwajrjd1s0jm1i3ls1fe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
+    </changeSet>
+    <changeSet author="scorcaud (generated)" id="1601546046889-18">
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="message_status" constraintName="FKqboxuo620r6qmh6ds85x5bt3l" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="message"/>
+    </changeSet>
+</databaseChangeLog>
