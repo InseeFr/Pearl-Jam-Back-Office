@@ -100,23 +100,22 @@ public class CampaignServiceImpl implements CampaignService {
 	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return List.of();
-    }
+			return null;
+		}
     
-    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-    List<String> userOrgUnitIds = organizationUnits.stream()
-      .map(dto -> dto.getId())
-      .collect(Collectors.toList());
+	    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
+	    List<String> userOrgUnitIds = organizationUnits.stream()
+	      .map(dto -> dto.getId())
+	      .collect(Collectors.toList());
 
 		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-      if(userOrgUnitIds.contains(orgId)){
-        interviewersDtoReturned
-        .addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
-      }
+	      if(userOrgUnitIds.contains(orgId)){
+	        interviewersDtoReturned
+	        .addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
+	      }
 		}
 		if (interviewersDtoReturned.isEmpty()) {
 			LOGGER.error("No interviewers found for the campaign {}", campaignId);
-			return List.of();
 		}
 		return interviewersDtoReturned;
 	}

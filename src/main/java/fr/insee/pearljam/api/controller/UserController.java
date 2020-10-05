@@ -45,8 +45,8 @@ public class UserController {
 		} else {
 			UserDto user = userService.getUser(userId);
 			if (user == null) {
-				LOGGER.info("GET User resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				LOGGER.info("GET User resulting in 403");
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 			}
 			LOGGER.info("GET User resulting in 200");
 			return new ResponseEntity<>(user, HttpStatus.OK);

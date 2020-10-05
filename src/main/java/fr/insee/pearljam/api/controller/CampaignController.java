@@ -57,9 +57,9 @@ public class CampaignController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
-			if (lstCampaigns == null || lstCampaigns.isEmpty()) {
-				LOGGER.info("GET Campaign resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			if (lstCampaigns == null) {
+				LOGGER.info("GET Campaign resulting in 500");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			LOGGER.info("GET Campaign resulting in 200");
 			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
@@ -82,7 +82,7 @@ public class CampaignController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<InterviewerDto> lstInterviewer = campaignService.getListInterviewers(userId, id);
-			if (lstInterviewer == null || lstInterviewer.isEmpty()) {
+			if (lstInterviewer == null) {
 				LOGGER.info("Get interviewers resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

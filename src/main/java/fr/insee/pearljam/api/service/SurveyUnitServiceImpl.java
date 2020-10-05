@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -130,7 +131,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
-		}
+    }
 		for(String id: surveyUnitDtoIds) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(id).getType();
 			if(currentState != null && !BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState)) {
@@ -179,8 +180,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		LOGGER.info("Update survey unit ok");
 	
 		if(surveyUnitDetailDto.getAddress()!=null) {
-			InseeAddress inseeAddress;
-			Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
+      InseeAddress inseeAddress;
+      Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
 			if(!optionalInseeAddress.isPresent()) {
 				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation());
 			} else {
@@ -198,16 +199,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		LOGGER.info("Update address ok");
 		
-		//Update Comment
-		Comment comment;
+//Update Comment
 		for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {
-			Optional<Comment> optionalComment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType());
-			if(!optionalComment.isPresent()) {
-				comment = new Comment();
-			} else {
-				comment = optionalComment.get();
-			}
-			comment.setSurveyUnit(surveyUnit.get());
+			Comment comment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType()).orElseGet(() -> new Comment());
+      
+      comment.setSurveyUnit(surveyUnit.get());
 			comment.setType(commentDto.getType());
 			comment.setValue(commentDto.getValue());
 			commentRepository.save(comment);
@@ -245,13 +241,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		
 		//Update ContactOutcome
 		if(surveyUnitDetailDto.getContactOutcome()!=null){
-			ContactOutcome contactOutcome;
-			Optional<ContactOutcome> contactOutcomeOptional = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get());
-			if(contactOutcomeOptional.isPresent()) {
-				contactOutcome = contactOutcomeOptional.get();
-			} else {
-				contactOutcome = new ContactOutcome();
-			}
+      ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get()).orElseGet(() -> new ContactOutcome());
 			contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
 			contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
 			contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
@@ -266,29 +256,24 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
 		List<String> surveyUnitDtoIds = new ArrayList<>();
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
-		
-		if(!organizationUnits.isEmpty()) {
-			if(state == null || state.isEmpty()) {
-				for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-					List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId());
-					for(String idSu: ids) {
-						if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null || !surveyUnitDtoIds.contains(idSu)) {
-							surveyUnitDtoIds.add(idSu);
-						}
-					}
-				}
-			} else {
-				for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-					List<String> ids = surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId());
-					for(String idSu: ids) {
-						if(surveyUnitDtoIds.isEmpty() || surveyUnitDtoIds == null || !surveyUnitDtoIds.contains(idSu)) {
-							surveyUnitDtoIds.add(idSu);
-						}
-					}
-				}
-			}
-		}
+    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
+    
+
+    if(state == null || state.isEmpty()) {
+      for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+        surveyUnitDtoIds.addAll(
+          surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId()).stream()
+            .filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList())
+        );
+      }
+    } else {
+      for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
+        surveyUnitDtoIds.addAll(
+          surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId()).stream()
+            .filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList())
+        );
+      }
+    }
 		
 		if(surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for the user {}", userId);
