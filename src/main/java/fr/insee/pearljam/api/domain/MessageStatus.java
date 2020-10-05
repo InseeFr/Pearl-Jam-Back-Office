@@ -98,4 +98,18 @@ public class MessageStatus implements Serializable {
 	public void setInterviewer(Interviewer interviewer) {
 		this.interviewer = interviewer;
 	}
+
+	/**
+	 * @return the status
+	 */
+	public MessageStatusType getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(MessageStatusType status) {
+		this.status = status;
+	}
 }

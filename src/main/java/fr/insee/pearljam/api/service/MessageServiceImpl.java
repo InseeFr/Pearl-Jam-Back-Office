@@ -1,6 +1,10 @@
 package fr.insee.pearljam.api.service;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -9,39 +13,27 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
-
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Message;
 import fr.insee.pearljam.api.domain.MessageStatus;
 import fr.insee.pearljam.api.domain.MessageStatusType;
-import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.OUMessageRecipient;
-import fr.insee.pearljam.api.domain.OUMessageRecipientId;
-import fr.insee.pearljam.api.domain.InterviewerMessageRecipient;
-
-import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-
-
+import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.MessageRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
+import fr.insee.pearljam.api.repository.UserRepository;
 
 
 @Service
@@ -71,26 +63,24 @@ public class MessageServiceImpl implements MessageService {
 
 
   public HttpStatus markAsRead(Long id, String idep){
-    Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
-    Optional<Message> msg = messageRepository.findById(id);
-    if(interv.isPresent() && msg.isPresent()){
-      LOGGER.info("trying to save");
-      Message message = msg.get();
-      List<MessageStatus> statusList = message.getMessageStatus();
-      if (statusList == null) {
-    	  statusList = new ArrayList<>();
-      }
-	List<MessageStatus> newList = statusList.stream()
-    	.filter(c -> c.getInterviewer().getId() != interv.get().getId())
-    	.collect(Collectors.toList());
-		newList.add(new MessageStatus(message, interv.get(), MessageStatusType.REA));
-      message.setMessageStatus(newList);
-      messageRepository.save(message);
-      return HttpStatus.OK;
-    }
-
+	  Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
+	  Optional<Message> msg = messageRepository.findById(id);
+	  if(interv.isPresent() && msg.isPresent()){
+		  LOGGER.info("trying to save");
+		  Message message = msg.get();
+		  List<MessageStatus> statusList = message.getMessageStatus();
+		  if (statusList == null) {
+			  statusList = new ArrayList<>();
+		  }
+		  List<MessageStatus> newList = statusList.stream()
+				  .filter(c -> c.getInterviewer().getId() != interv.get().getId())
+				  .collect(Collectors.toList());
+		  newList.add(new MessageStatus(message, interv.get(), MessageStatusType.REA));
+		  message.setMessageStatus(newList);
+		  messageRepository.save(message);
+		  return HttpStatus.OK;
+	  }
     return HttpStatus.NOT_FOUND;
-    
   }
   
 
@@ -156,30 +146,28 @@ public class MessageServiceImpl implements MessageService {
     return HttpStatus.OK;
 	}
 
-  public List<MessageDto> getMessages(String interviewerId) {
-    List<Long> ids = messageRepository.getMessageIdsByInterviewer(interviewerId);
-    List<OrganizationUnitDto> userOUs = userService.getUserOUs(interviewerId, true);
-    List<String> ouIds = userOUs.stream().map(ou -> ou.getId()).collect(Collectors.toList());
-    List<Long> idsByOU = messageRepository.getMessageIdsByOrganizationUnit(ouIds);
-    
-
-    for(Long id : idsByOU){
-      if(!ids.contains(id)){
-        ids.add(id);
-      }
-    }
-    List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
-    for(MessageDto message : messages) {
-    	List<Integer> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
-    	if(!status.isEmpty()) {
-    		message.setStatus(status.get(0));
-    	}
-    }
-    return messages;
+	public List<MessageDto> getMessages(String interviewerId) {
+	    List<Long> ids = messageRepository.getMessageIdsByInterviewer(interviewerId);
+	    List<OrganizationUnitDto> userOUs = userService.getUserOUs(interviewerId, true);
+	    List<String> ouIds = userOUs.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+	    List<Long> idsByOU = messageRepository.getMessageIdsByOrganizationUnit(ouIds);
+	    for(Long id : idsByOU){
+	      if(!ids.contains(id)){
+	        ids.add(id);
+	      }
+	    }
+	    List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
+	    for(MessageDto message : messages) {
+	    	List<Integer> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
+	    	if(!status.isEmpty()) {
+	    		message.setStatus(status.get(0));
+	    	}
+	    }
+	    return messages;
 	}
   
   
-  public List<MessageDto> getMessageHistory(String userId) {
+  	public List<MessageDto> getMessageHistory(String userId) {
 	  List<String> userOUIds = userService.getUserOUs(userId, true)
 				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
 	  List<Long> messageIds = messageRepository.getAllOrganizationMessagesIds(userOUIds);
@@ -208,7 +196,6 @@ public class MessageServiceImpl implements MessageService {
 
 	public List<VerifyNameResponseDto> verifyName(String text, String userId) {
 		List<VerifyNameResponseDto> returnValue = new ArrayList<>();
-		
 		List<String> userOUIds = userService.getUserOUs(userId, true)
 				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
 		Pageable topFifteen = PageRequest.of(0, 15);

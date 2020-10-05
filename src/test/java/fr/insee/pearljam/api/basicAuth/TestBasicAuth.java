@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,18 +40,23 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.api.domain.Message;
+import fr.insee.pearljam.api.domain.MessageStatusType;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -76,13 +82,16 @@ public class TestBasicAuth {
 	UserService userService;
 	
 	@Autowired
-  SurveyUnitRepository surveyUnitRepository;
+	SurveyUnitRepository surveyUnitRepository;
   
-  @Autowired
-  CampaignRepository campaignRepository;
+	@Autowired
+  	CampaignRepository campaignRepository;
   
-  @Autowired
+	@Autowired
 	VisibilityRepository visibilityRepository;
+	
+	@Autowired
+	MessageRepository messageRepository;
 	
 	@LocalServerPort
 	int port;
@@ -856,6 +865,126 @@ public class TestBasicAuth {
       .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(400);
+	}
+	
+	/**
+	 * Test that the POST endpoint "api/message" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(39)
+	public void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
+		List<String> recipients = new ArrayList<String>();
+		recipients.add("INTW1");
+		MessageDto message = new MessageDto("TEST", recipients);
+		given().auth().preemptive().basic("ABC", "abc")
+				.contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
+				.post("api/message").then().statusCode(200);
+		List<MessageDto> messages = messageRepository
+				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
+		assertEquals("TEST", messages.get(0).getText());
+	}
+
+	/**
+	 * Test that the POST endpoint "api/message" return 400 when bad format
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(40)
+	public void testPostMessageBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+				.contentType("application/json").body(new ObjectMapper().writeValueAsString(null)).when()
+				.post("api/message").then().statusCode(400);
+	}
+	
+	/**
+	 * Test that the GET endpoint
+	 * "api/messages/{id}" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(41)
+	public void testGetMessage() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/messages/INTW1").then().statusCode(200).and()
+		.assertThat().body("text", hasItem("TEST"));		
+	}
+	
+	/**
+	 * Test that the GET endpoint
+	 * "api/messages/{id}" return empty body with a wrong id
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(42)
+	public void testGetMessageWrongId() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/messages/123456789").then().statusCode(200).and()
+		.assertThat().body("isEmpty()", Matchers.is(true));		
+	}
+
+	/**
+	 * Test that the put endpoint "api/message/{id}/interviewer/{idep}/read" 
+	 * return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(43)
+	public void testPutMessageAsRead() throws InterruptedException, JsonProcessingException, JSONException {
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		given().auth().preemptive().basic("ABC", "abc")
+				.contentType("application/json").when().put("api/message/" + messageId + "/interviewer/INTW1/read")
+				.then().statusCode(200);
+		Optional<Message> message = messageRepository.findById(messageId);
+		assertEquals(message.get().getMessageStatus().get(0).getStatus(), MessageStatusType.REA);
+	}
+
+	/**
+	 * Test that the PUT endpoint
+	 * "/message/{id}/interviewer/{idep}/read" return 404 with a wrong Id
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(44)
+	public void testPutMessageAsReadWrongId() throws InterruptedException, JsonProcessingException, JSONException {
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		given().auth().preemptive().basic("ABC", "abc")
+				.contentType("application/json").when().put("api/message/" + messageId + "/interviewer/Test/read").then()
+				.statusCode(404);
+	}
+
+	/**
+	 * Test that the GET endpoint
+	 * "/message-history" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(45)
+	public void testGetMessageHistory() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+				.when().get("api/message-history").then().statusCode(200).and()
+				.assertThat().body("text", hasItem("TEST"));
+	}
+
+	/**
+	 * Test that the POST endpoint
+	 * "/verify-name" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(46)
+	public void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
+		WsText message = new WsText("INTW1");
+		given().auth().preemptive().basic("ABC", "abc")
+				.contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
+				.post("api/verify-name").then().statusCode(200).and()
+				.assertThat().body("id", hasItem("INTW1"));
 	}
 	
 }

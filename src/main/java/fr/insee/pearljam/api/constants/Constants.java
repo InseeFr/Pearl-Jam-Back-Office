@@ -18,10 +18,10 @@ public class Constants {
 	public static final String API_SURVEYUNITS_STATE= "/api/survey-unit/{id}/state/{state}";
 	public static final String API_SURVEYUNIT_ID_STATES = "/api/survey-unit/{id}/states";
 	
-  public static final String API_CAMPAIGNS = "/api/campaigns";
-  public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
-  public static final String API_CAMPAIGNS_STATE_COUNT = "/api/campaigns/survey-units/state-count";
-  public static final String API_INTERVIEWERS_STATE_COUNT = "/api/interviewers/survey-units/state-count";
+	public static final String API_CAMPAIGNS = "/api/campaigns";
+  	public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
+  	public static final String API_CAMPAIGNS_STATE_COUNT = "/api/campaigns/survey-units/state-count";
+  	public static final String API_INTERVIEWERS_STATE_COUNT = "/api/interviewers/survey-units/state-count";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaign/{id}/interviewers";
 	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/state-count";
@@ -31,13 +31,13 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{id}/organizational-unit/{id}/visibility";
 
 	public static final String API_USER= "/api/user";
-  public static final String API_PREFERENCES = "/api/preferences";
+	public static final String API_PREFERENCES = "/api/preferences";
   
-  public static final String API_MESSAGE = "/api/message";
-  public static final String API_GET_MESSAGES = "/api/messages/{id}";
-  public static final String API_VERIFY = "/api/verify-name";
-  public static final String API_MESSAGE_HISTORY = "/api/message-history";
-	
+  	public static final String API_MESSAGE = "/api/message";
+  	public static final String API_GET_MESSAGES = "/api/messages/{id}";
+  	public static final String API_VERIFY = "/api/verify-name";
+  	public static final String API_MESSAGE_HISTORY = "/api/message-history";
+  	public static final String API_MESSAGE_MARK_AS_READ = "/api/message/{id}/interviewer/{idep}/read";
 	
 	// Error messages
 	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";

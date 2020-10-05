@@ -101,9 +101,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
             .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
             .antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole)
-            .antMatchers(Constants.API_GET_MESSAGES).hasRole("investigator")
+            .antMatchers(Constants.API_GET_MESSAGES).hasAnyRole(interviewerRole)
             .antMatchers(Constants.API_VERIFY).hasAnyRole(userLocalRole, userNationalRole)
             .antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
+            .antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(userLocalRole, userNationalRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
@@ -127,7 +128,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		        Constants.API_MESSAGE,
 		        Constants.API_VERIFY,
 		        Constants.API_MESSAGE_HISTORY,
-		        Constants.API_GET_MESSAGES)
+		        Constants.API_GET_MESSAGES,
+		        Constants.API_MESSAGE_MARK_AS_READ)
 			.permitAll();
 		}
 	}

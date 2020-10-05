@@ -78,7 +78,7 @@ public class MessageController {
 			if (returnCode == HttpStatus.OK){
 		        this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()), "new message");
 		      }
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(returnCode);
 		}
   }
 
@@ -89,7 +89,7 @@ public class MessageController {
 	@GetMapping(path = "/messages/{id}")
 	public ResponseEntity<Object> getMessages(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<MessageDto> messages = messageService.getMessages(id);
