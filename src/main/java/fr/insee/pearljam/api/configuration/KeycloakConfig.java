@@ -61,51 +61,51 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.csrf().disable()
 		.sessionManagement()
         // use previously declared bean
-           .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         // keycloak filters for securisation
-           .and()
-               .addFilterBefore(keycloakPreAuthActionsFilter(), LogoutFilter.class)
-               .addFilterBefore(keycloakAuthenticationProcessingFilter(), X509AuthenticationFilter.class)
-               .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-           
+        .and()
+        .addFilterBefore(keycloakPreAuthActionsFilter(), LogoutFilter.class)
+        .addFilterBefore(keycloakAuthenticationProcessingFilter(), X509AuthenticationFilter.class)
+        .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint()) 
         // delegate logout endpoint to spring security
-
-           .and()
-               .logout()
-               .addLogoutHandler(keycloakLogoutHandler())
-               .logoutUrl("/logout").logoutSuccessHandler(
-               // logout handler for API
-               (HttpServletRequest request, HttpServletResponse response, Authentication authentication) ->
-                       response.setStatus(HttpServletResponse.SC_OK)
-    		   )
-           .and()
-               	// manage routes securisation
-               	.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
-               	// configuration for Swagger
-   				.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
-   				.antMatchers("/environnement", "/healthcheck").permitAll()
-               	// configuration for endpoints
-				.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
-				.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
-
-		    .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
-				.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
-
-        .antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)
-        .antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole, userNationalRole)
-        .antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
-        .antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
-				.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)
-				.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
-		        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
-		        .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
-				.anyRequest().denyAll(); 
+        .and()
+        .logout()
+        .addLogoutHandler(keycloakLogoutHandler())
+        .logoutUrl("/logout").logoutSuccessHandler(
+         // logout handler for API
+        		(HttpServletRequest request, HttpServletResponse response, Authentication authentication) ->
+                       response.setStatus(HttpServletResponse.SC_OK))
+        .and()
+         // manage routes securisation
+        .authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+        // configuration for Swagger
+		.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
+		.antMatchers("/environnement", "/healthcheck").permitAll()
+		// configuration for endpoints
+		.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
+		.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
+		.antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
+		.antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole)
+        .antMatchers(Constants.API_GET_MESSAGES).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_VERIFY).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(userLocalRole, userNationalRole)
+		.anyRequest().denyAll(); 
 	}
 	
 	/**

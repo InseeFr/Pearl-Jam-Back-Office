@@ -220,7 +220,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if(!s.isPresent()) {
 				stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
 				if(StateType.WFS==stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.get().getId()).getType()) {
-					if(surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(userId, surveyUnit.get().getCampaign().getId(), surveyUnit.get().getId())<3){
+					if(surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.get().getInterviewer().getId(), surveyUnit.get().getCampaign().getId(), surveyUnit.get().getId())<3){
 						stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.TBR));
 					} else {
 						stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.FIN));

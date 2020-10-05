@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
-	<artifactId>pearljam</artifactId>
-	<version>1.2.0</version>
+	<artifactId>pearljam-back-office</artifactId>
+	<version>1.3.0</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>
@@ -29,6 +29,35 @@
 	</properties>
 
 	<dependencies>
+
+  	<dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>webjars-locator-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>sockjs-client</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>stomp-websocket</artifactId>
+      <version>2.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.3.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>3.1.1-1</version>
+    </dependency>
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>            
+		  <artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 		<!-- Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -321,11 +350,11 @@
 						<changeLogFile>src/main/resources/db/master.xml</changeLogFile>
 						<diffChangeLogFile>src/main/resources/db/changelog/new_changelog.xml</diffChangeLogFile>
 						<driver>org.postgresql.Driver</driver>
-						<url>jdbc:postgresql://localhost:5433/pearljam_api</url>
+						<url>jdbc:postgresql://localhost:5432/PearlJam</url>
 						<defaultSchemaName>public</defaultSchemaName>
 						<contexts>test,dev,prod</contexts>
-						<username>user_capi3g</username>
-						<password>Capi3g1234</password>
+						<username>postgres</username>
+						<password>gitstash</password>
 						<referenceUrl>hibernate:spring:fr.insee.pearljam.api.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
 						<referenceDefaultSchemaName>public</referenceDefaultSchemaName>
 						<verbose>true</verbose>
