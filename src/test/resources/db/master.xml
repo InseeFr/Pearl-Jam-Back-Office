@@ -13,6 +13,9 @@
 	<!-- Add tables to manage notifications -->
 	<include file="changelog/130_notification.xml" relativeToChangelogFile="true"/>
 	
+	<!-- Add tables to manage notifications -->
+	<include file="changelog/200_dates.xml" relativeToChangelogFile="true"/>
+	
 	<!-- Data for dev on POSTGRES DB  -->
 	<include file="changelog/data/insert_data.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

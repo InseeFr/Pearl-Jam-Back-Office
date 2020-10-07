@@ -27,32 +27,32 @@ public class User {
 	*/
 	@Id
 	@Column(length=50)
-	public String id;
+	private String id;
 	
 	/**
 	* The first name of the User 
 	*/
 	@Column(length=255)
-	public String firstName;
+	private String firstName;
 	
 	/**
 	* The last name of the User 
 	*/
 	@Column(length=255)
-	public String lastName;
+	private String lastName;
 	
 	/**
 	 * The Organization Unit of the User
 	 */
 	@ManyToOne
-	public OrganizationUnit organizationUnit;
+	private OrganizationUnit organizationUnit;
 	
 	/**
 	 * The List of campaign for the User
 	 */
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "preference", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = { @JoinColumn(name = "id_campaign") })
-	public List<Campaign> campaigns;
+	private List<Campaign> campaigns;
 	/**
 	 * @return id of the User
 	 */

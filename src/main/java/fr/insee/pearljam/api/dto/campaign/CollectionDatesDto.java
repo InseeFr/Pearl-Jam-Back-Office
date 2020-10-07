@@ -1,26 +1,24 @@
 package fr.insee.pearljam.api.dto.campaign;
 
-import fr.insee.pearljam.api.domain.Campaign;
-
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fr.insee.pearljam.api.domain.Campaign;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CollectionDatesDto {
-	private Long collectionStartDate;
-	private Long collectionEndDate;
+	private Long startDate;
+	private Long endDate;
 
-	public CollectionDatesDto(Long collectionStartDate, Long collectionEndDate) {
+	public CollectionDatesDto(Long startDate, Long endDate) {
 		super();
-		this.collectionStartDate = collectionStartDate;
-		this.collectionEndDate = collectionEndDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 	public CollectionDatesDto(Campaign campaign) {
 		super();
-		this.collectionStartDate = campaign.getCollectionStartDate();
-		this.collectionEndDate = campaign.getCollectionEndDate();
+		this.startDate = campaign.getStartDate();
+		this.endDate = campaign.getEndDate();
 	}
 
 
@@ -31,29 +29,29 @@ public class CollectionDatesDto {
 	/**
 	 * @return the collectionStartDate
 	 */
-	public Long getCollectionStartDate() {
-		return collectionStartDate;
+	public Long getStartDate() {
+		return startDate;
 	}
 
 	/**
 	 * @param collectionStartDate the collectionStartDate to set
 	 */
-	public void setCollectionStartDate(Long collectionStartDate) {
-		this.collectionStartDate = collectionStartDate;
+	public void setStartDate(Long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
 	 * @return the collectionEndDate
 	 */
-	public Long getCollectionEndDate() {
-		return collectionEndDate;
+	public Long getEndDate() {
+		return endDate;
 	}
 
 	/**
 	 * @param collectionEndDate the collectionEndDate to set
 	 */
-	public void setCollectionEndDate(Long collectionEndDate) {
-		this.collectionEndDate = collectionEndDate;
+	public void setEndDate(Long endDate) {
+		this.endDate = endDate;
 	}
 
 

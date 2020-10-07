@@ -100,23 +100,22 @@ public class CampaignServiceImpl implements CampaignService {
 	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return List.of();
-    }
+			return null;
+		}
     
-    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-    List<String> userOrgUnitIds = organizationUnits.stream()
-      .map(dto -> dto.getId())
-      .collect(Collectors.toList());
+	    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
+	    List<String> userOrgUnitIds = organizationUnits.stream()
+	      .map(dto -> dto.getId())
+	      .collect(Collectors.toList());
 
 		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-      if(userOrgUnitIds.contains(orgId)){
-        interviewersDtoReturned
-        .addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
-      }
+	      if(userOrgUnitIds.contains(orgId)){
+	        interviewersDtoReturned
+	        .addAll(campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
+	      }
 		}
 		if (interviewersDtoReturned.isEmpty()) {
 			LOGGER.error("No interviewers found for the campaign {}", campaignId);
-			return List.of();
 		}
 		return interviewersDtoReturned;
 	}
@@ -133,7 +132,7 @@ public class CampaignServiceImpl implements CampaignService {
 			dateToUse = -1L;
 		}
 		if (interv.isPresent()
-				&& (associatedOrgUnits.contains(interv.get().organizationUnit.id) || userId.equals(Constants.GUEST))) {
+				&& (associatedOrgUnits.contains(interv.get().getOrganizationUnit().getId()) || userId.equals(Constants.GUEST))) {
 			stateCountDto = new StateCountDto(campaignRepository.getStateCount(campaignId, interviewerId, dateToUse));
     }
 		if (stateCountDto.getTotal() == null) {
@@ -187,8 +186,8 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto campaignSum = new StateCountDto(campaignRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
-				dto.setCollectionEndDate(null);
-				dto.setCollectionStartDate(null);
+				dto.setEndDate(null);
+				dto.setStartDate(null);
 				campaignSum.setCampaign(dto);
 				returnList.add(campaignSum);
 			}
@@ -220,16 +219,32 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
 		HttpStatus returnCode = HttpStatus.BAD_REQUEST;
-		if(idCampaign != null && idOu != null && (updatedVisibility.getStartDate() != null || updatedVisibility.getEndDate() != null)) {
+		if(idCampaign != null && idOu != null && (updatedVisibility.isOneDateFilled())) {
 			Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
 			if(visibility.isPresent()) {
-				if(updatedVisibility.getEndDate() != null) {
-					LOGGER.info("Updating collection end date for campaign {} and Organizational Unit", idCampaign, idOu);
-					visibility.get().setCollectionEndDate(updatedVisibility.getEndDate());
+				if(updatedVisibility.getManagementStartDate() != null) {
+					LOGGER.info("Updating management start date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setManagementStartDate(updatedVisibility.getManagementStartDate());
 				}
-				if(updatedVisibility.getStartDate() != null) {
-					LOGGER.info("Updating collection start date for campaign {} and Organizational Unit", idCampaign, idOu);
-					visibility.get().setCollectionStartDate(updatedVisibility.getStartDate());
+				if(updatedVisibility.getInterviewerStartDate() != null) {
+					LOGGER.info("Updating interviewer start date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setInterviewerStartDate(updatedVisibility.getInterviewerStartDate());
+				}
+				if(updatedVisibility.getIdentificationPhaseStartDate() != null) {
+					LOGGER.info("Updating identification phase start date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setIdentificationPhaseStartDate(updatedVisibility.getIdentificationPhaseStartDate());
+				}
+				if(updatedVisibility.getCollectionStartDate() != null) {
+					LOGGER.info("Updating collection start date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setCollectionStartDate(updatedVisibility.getCollectionStartDate());
+				}
+				if(updatedVisibility.getCollectionEndDate() != null) {
+					LOGGER.info("Updating collection end date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setCollectionEndDate(updatedVisibility.getCollectionEndDate());
+				}
+				if(updatedVisibility.getEndDate() != null) {
+					LOGGER.info("Updating end date for campaign {} and Organizational Unit {}", idCampaign, idOu);
+					visibility.get().setEndDate(updatedVisibility.getEndDate());
 				}
 				visibilityRepository.save(visibility.get());
 				returnCode = HttpStatus.OK;
@@ -248,14 +263,14 @@ public class CampaignServiceImpl implements CampaignService {
 		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
 		if (camp.isPresent()) {
 			Campaign currentCampaign = camp.get();
-			if(campaign.getCollectionEndDate() != null) {
+			if(campaign.getEndDate() != null) {
 				LOGGER.info("Updating collection end date for campaign {}", id);
-				currentCampaign.setCollectionEndDate(campaign.getCollectionEndDate());
+				currentCampaign.setEndDate(campaign.getEndDate());
 				returnStatus = HttpStatus.OK;
 			}
-			if(campaign.getCollectionStartDate() != null) {
+			if(campaign.getStartDate() != null) {
 				LOGGER.info("Updating collection start date for campaign {}", id);
-				currentCampaign.setCollectionStartDate(campaign.getCollectionStartDate());
+				currentCampaign.setStartDate(campaign.getStartDate());
 				returnStatus = HttpStatus.OK;
 			}
 			campaignRepository.save(currentCampaign);

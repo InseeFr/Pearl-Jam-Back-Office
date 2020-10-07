@@ -30,23 +30,23 @@ public class Campaign implements Serializable {
 	*/
 	@Id
 	@Column(length=50)
-	public String id;
+	private String id;
 	
 	/**
 	* The label of Campaign 
 	*/
 	@Column(length=255)
-	public String label;
+	private String label;
 	
 	/**
 	 * The start date of the Campaign
 	 */
-	public Long collectionStartDate;
+	private Long startDate;
 	
 	/**
 	 * The end date of the Campaign
 	 */
-	public Long collectionEndDate;
+	private Long endDate;
 	
 	/**
 	 * The reference to visibility table
@@ -85,29 +85,29 @@ public class Campaign implements Serializable {
 	/**
 	 * @return the start date of the Campaign
 	 */
-	public Long getCollectionStartDate() {
-		return collectionStartDate;
+	public Long getStartDate() {
+		return startDate;
 	}
 
 	/**
 	 * @param start date of the Campaign
 	 */
-	public void setCollectionStartDate(Long collectionStartDate) {
-		this.collectionStartDate = collectionStartDate;
+	public void setStartDate(Long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
 	 * @return the end date of the Campaign
 	 */
-	public Long getCollectionEndDate() {
-		return collectionEndDate;
+	public Long getEndDate() {
+		return endDate;
 	}
 
 	/**
 	 * @param end date of the Campaign
 	 */
-	public void setCollectionEndDate(Long collectionEndDate) {
-		this.collectionEndDate = collectionEndDate;
+	public void setEndDate(Long endDate) {
+		this.endDate = endDate;
 	}
 
 	/**
