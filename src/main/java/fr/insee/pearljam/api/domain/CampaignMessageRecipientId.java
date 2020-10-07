@@ -6,9 +6,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class is used to defines the association between OrganizationUnit and
  * Campaign tables.
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 @Embeddable
 public class CampaignMessageRecipientId implements Serializable{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignMessageRecipientId.class);
 	
 	private static final long serialVersionUID = 1L;
   

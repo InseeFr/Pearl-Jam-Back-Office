@@ -126,7 +126,7 @@ public class SurveyUnitController {
 	 * @param state
 	 * @return {@link HttpStatus}
 	 */
-	@ApiOperation(value = "Update the state of Survey Units listed in request body")
+	/*@ApiOperation(value = "Update the state of Survey Units listed in request body")
 	@PutMapping(path = "/survey-unit/{id}/state/{state}")
 	public ResponseEntity<Object> updateSurveyUnitState(HttpServletRequest request, @PathVariable(value = "id") String surveyUnitId, @PathVariable(value = "state") StateType state) {
 		String userId = utilsService.getUserId(request);
@@ -137,7 +137,7 @@ public class SurveyUnitController {
 			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), surveyUnitId , returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
-	}
+	}*/
 	
 	
 	
@@ -150,7 +150,7 @@ public class SurveyUnitController {
 	 * @param state
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
-	@ApiOperation(value = "Update the Survey Unit")
+	/*@ApiOperation(value = "Update the Survey Unit")
 	@GetMapping(path = "/campaign/{id}/survey-units")
 	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(value = "state", required=false) String state) {
 		String userId = utilsService.getUserId(request);
@@ -166,7 +166,7 @@ public class SurveyUnitController {
 				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 			}
 		}
-	}
+	}*/
 	
 	
 	
@@ -177,7 +177,7 @@ public class SurveyUnitController {
 	 * @param id
 	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
-	@ApiOperation(value = "Get states of given survey unit")
+	/*@ApiOperation(value = "Get states of given survey unit")
 	@GetMapping(path = "/survey-unit/{id}/states")
 	public ResponseEntity<Object> getStatesBySurveyUnitId(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
@@ -193,5 +193,5 @@ public class SurveyUnitController {
 			}
 			return new ResponseEntity<>(new SurveyUnitStatesDto(id, lstState), HttpStatus.OK);
 		}
-	}
+	}*/
 }

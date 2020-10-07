@@ -35,7 +35,7 @@ public class UserController {
 	 * @param request
 	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get User")
+	/*@ApiOperation(value = "Get User")
 	@GetMapping(path = "/user")
 	public ResponseEntity<Object> getUser(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
@@ -51,5 +51,5 @@ public class UserController {
 			LOGGER.info("GET User resulting in 200");
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		}
-	}
+	}*/
 }

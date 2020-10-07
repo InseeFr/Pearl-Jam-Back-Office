@@ -41,19 +41,19 @@ public class Message {
 	*/
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Long id;
+	private Long id;
 
 	/**
 	* The first name of the Message 
 	*/
 	@Column(length=2000)
-	public String text;
+	private String text;
 	
 	/**
 	* The last name of the Message 
 	*/
 	@ManyToOne
-	public User sender;
+	private User sender;
 	
 	// /**
 	// * The email of the Message 

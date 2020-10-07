@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class CampaignDto {
 	private String id;
 	private String label;
-	private Long collectionStartDate;
-	private Long collectionEndDate;
+	private Long startDate;
+	private Long endDate;
 	private Long visibilityStartDate;
 	private Long treatmentEndDate;
 	private Long allocated;
@@ -22,30 +22,30 @@ public class CampaignDto {
 	private Long finalized;
 	private Boolean preference;
 
-	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate) {
+	public CampaignDto(String id, String label, Long startDate, Long endDate) {
 		super();
 		this.id = id;
 		this.label = label;
-		this.collectionStartDate = collectionStartDate;
-		this.collectionEndDate = collectionEndDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 	public CampaignDto(Campaign campaign) {
 		super();
 		this.id = campaign.getId();
 		this.label = campaign.getLabel();
-		this.collectionStartDate = campaign.getCollectionStartDate();
-		this.collectionEndDate = campaign.getCollectionEndDate();
+		this.startDate = campaign.getStartDate();
+		this.endDate = campaign.getEndDate();
 	}
 
-	public CampaignDto(String id, String label, Long collectionStartDate, Long collectionEndDate,
+	public CampaignDto(String id, String label, Long startDate, Long endDate,
 			Long visibilityStartDate, Long treatmentEndDate, Long allocated, Long toProcessInterviewer, Long toAffect,
 			Long toFollowUp, Long toReview, Long finalized, Boolean preference) {
 		super();
 		this.id = id;
 		this.label = label;
-		this.collectionStartDate = collectionStartDate;
-		this.collectionEndDate = collectionEndDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.visibilityStartDate = visibilityStartDate;
 		this.treatmentEndDate = treatmentEndDate;
 		this.allocated = allocated;
@@ -101,31 +101,31 @@ public class CampaignDto {
 	}
 
 	/**
-	 * @return the collectionStartDate
+	 * @return the startDate
 	 */
-	public Long getCollectionStartDate() {
-		return collectionStartDate;
+	public Long getStartDate() {
+		return startDate;
 	}
 
 	/**
-	 * @param collectionStartDate the collectionStartDate to set
+	 * @param startDate the startDate to set
 	 */
-	public void setCollectionStartDate(Long collectionStartDate) {
-		this.collectionStartDate = collectionStartDate;
+	public void setStartDate(Long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
-	 * @return the collectionEndDate
+	 * @return the endDate
 	 */
-	public Long getCollectionEndDate() {
-		return collectionEndDate;
+	public Long getEndDate() {
+		return endDate;
 	}
 
 	/**
-	 * @param collectionEndDate the collectionEndDate to set
+	 * @param endDate the endDate to set
 	 */
-	public void setCollectionEndDate(Long collectionEndDate) {
-		this.collectionEndDate = collectionEndDate;
+	public void setEndDate(Long endDate) {
+		this.endDate = endDate;
 	}
 
 	public Long getVisibilityStartDate() {

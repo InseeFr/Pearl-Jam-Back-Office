@@ -87,8 +87,8 @@ public class UtilsServiceImpl implements UtilsService {
 		if ("GUEST".equals(userId)) {
 			l.add("GUEST");
 		} else if (user.isPresent()) {
-			l.add(user.get().organizationUnit.id);
-			List<String> organizationUnitIds = organizationUnitRepository.findChildrenId(user.get().organizationUnit.id);
+			l.add(user.get().getOrganizationUnit().getId());
+			List<String> organizationUnitIds = organizationUnitRepository.findChildrenId(user.get().getOrganizationUnit().getId());
 			l.addAll(organizationUnitIds);
 			for (String idOrg : organizationUnitIds) {
 				l.addAll(organizationUnitRepository.findChildrenId(idOrg));

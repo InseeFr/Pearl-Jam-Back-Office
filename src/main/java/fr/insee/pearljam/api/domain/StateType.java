@@ -6,8 +6,11 @@ package fr.insee.pearljam.api.domain;
  *
  */
 public enum StateType {
+	
+	NVM("Not visible to management"),
 	NNS("Not Assigned, not started"),
-  	ANS("Assigned, not started"),
+	ANV("Assigned Not visible to interviewer"),
+	VIN("Visible to the interviewer and not clickable"),
   	VIC("Visible to the interviewer and clickable"),
 	PRC("Preparing contact"), 
 	AOC("At least one contact made"),
@@ -16,9 +19,10 @@ public enum StateType {
 	WFT("Waiting for transmission"),
 	WFS("Waiting for synchronization"), 
 	TBR("To be reviewed"), 
-	FIN("Finalized"), 
-	NVI("Not visible to interviewer"),
-	NVM("Not visible to management");
+	FIN("Finalized"),
+	QNA("Questionnaire Not Available to interviewer"),
+	NVA("Not Available to All");
+	
 
 	/**
 	 * label of the State type

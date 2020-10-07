@@ -7,8 +7,10 @@ public class BussinessRules {
 	// Checks if a survey unit is allowed to pass from a state to another
 	public static Boolean stateCanBeModified(StateType currentState, StateType targetState) {
 		switch(targetState) {
-			case NVI: return currentState != StateType.NVI;
-			case ANS: return currentState == StateType.NNS;
+			case NVA: return currentState != StateType.NVA;
+			case ANV: return currentState == StateType.NNS;
+			case VIN: return currentState == StateType.NNS || currentState == StateType.ANV;
+			case VIC: return currentState == StateType.VIN;
 			case FIN: return currentState == StateType.TBR || currentState == StateType.WFS;
 			case WFT: return currentState == StateType.FIN || currentState == StateType.TBR
 					|| currentState == StateType.INS;
@@ -19,8 +21,7 @@ public class BussinessRules {
 					|| currentState == StateType.FIN || currentState == StateType.TBR;
 			case WFS: return currentState == StateType.WFT;
 			case TBR: return currentState == StateType.WFS;
-			case VIC: return currentState == StateType.ANS;
-			case NVM: return currentState == StateType.NVI;
+			case NVM: return currentState == StateType.ANV;
 			default: return false;
 		}
 	}
@@ -30,8 +31,9 @@ public class BussinessRules {
 	 */
 	public static Boolean stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
 		switch(targetState) {
-			case NVI: return currentState != StateType.NVI;
-			case ANS: return currentState == StateType.NNS;
+			case NVA: return currentState != StateType.NVA;
+			case ANV: return currentState == StateType.NNS;
+			case VIN: return currentState == StateType.NNS || currentState == StateType.ANV;
 			case FIN: return currentState == StateType.TBR;
 			case WFT: return currentState == StateType.FIN || currentState == StateType.TBR;
 			default: return false;
@@ -61,12 +63,12 @@ public class BussinessRules {
 	 */
 	public static Boolean stateCanBeModifiedBussinessRules(StateType currentState, StateType targetState) {
 		switch(targetState) {
-			case VIC: return currentState == StateType.ANS;
+			case VIC: return currentState == StateType.VIN;
 			case WFT: return currentState == StateType.INS;			
 			case FIN: return currentState == StateType.WFS;
 			case TBR: return currentState == StateType.WFS;
-			case NVI: return currentState == StateType.FIN;
-			case NVM: return currentState == StateType.NVI;
+			case ANV: return currentState == StateType.FIN;
+			case NVM: return currentState == StateType.ANV;
 			default: return false;
 		}
 	}
@@ -77,8 +79,9 @@ public class BussinessRules {
 	public static Boolean stateCanBeSeenByInterviewerBussinessRules(StateType currentState) {
 		switch(currentState) {
 			case NNS: return false;
-			case NVI: return false;			
+			case ANV: return false;			
 			case NVM: return false;
+			case NVA: return false;
 			default: return true;
 		}
 	}

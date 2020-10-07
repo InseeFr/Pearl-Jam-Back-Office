@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -43,6 +42,7 @@ import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.repository.VisibilityRepository;
 
 
 /**
@@ -92,6 +92,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	OrganizationUnitRepository ouRepository;
 	
 	@Autowired
+	VisibilityRepository visibilityRepository;
+	
+	@Autowired
 	UserService userService;
 	
 	@Autowired
@@ -115,8 +118,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitDetailDto.setComments(commentRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
-		surveyUnitDetailDto.setStates(new ArrayList<StateDto>());
-		surveyUnitDetailDto.setLastState(stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(surveyUnit.get()));
+		surveyUnitDetailDto.setStates(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.get().getId()));
 		return surveyUnitDetailDto;
 	}
 
@@ -142,7 +144,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
 		}
 		return surveyUnitDtoIds.stream().map(idSurveyUnit ->
-			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit))
+			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit))
 		).collect(Collectors.toList());
 	}
 	
@@ -321,7 +323,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			LOGGER.error("SU {} not found", suId);
 			return List.of();
 		}
-		return stateRepository.findAllDtoBySurveyUnitId(suId);
+		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);
 		
 	}
 }
