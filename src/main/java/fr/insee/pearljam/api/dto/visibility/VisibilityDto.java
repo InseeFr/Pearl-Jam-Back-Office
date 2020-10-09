@@ -4,41 +4,39 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VisibilityDto {
-	
+
 	/**
 	 * Collection start date of the visibility
 	 */
 	private Long collectionStartDate;
-	
+
 	/**
 	 * Collection end date of the visibility
 	 */
 	private Long collectionEndDate;
-	
+
 	/**
 	 * Identification phase start date of the visibility
 	 */
 	private Long identificationPhaseStartDate;
-	
+
 	/**
 	 * interviewer start date of the visibility
 	 */
 	private Long interviewerStartDate;
-	
+
 	/**
 	 * Manager start date of the visibility
 	 */
 	private Long managementStartDate;
-	
+
 	/**
 	 * End date of the visibility
 	 */
 	private Long endDate;
 
-	
-	
-	public VisibilityDto(Long collectionstartDate, Long collectionEndDate, Long identificationPhaseStartDate,
-			Long interviewerStartDate, Long managerStartDate, Long endDate) {
+	public VisibilityDto(Long managerStartDate, Long interviewerStartDate, Long identificationPhaseStartDate,
+			Long collectionstartDate, Long collectionEndDate, Long endDate) {
 		super();
 		this.collectionStartDate = collectionstartDate;
 		this.collectionEndDate = collectionEndDate;
@@ -47,12 +45,7 @@ public class VisibilityDto {
 		this.managementStartDate = managerStartDate;
 		this.endDate = endDate;
 	}
-	
-	public VisibilityDto(Long collectionstartDate) {
-		super();
-		this.collectionStartDate = collectionstartDate;
-	}
-	
+
 	public VisibilityDto() {
 		super();
 	}
@@ -142,10 +135,8 @@ public class VisibilityDto {
 	}
 
 	public boolean isOneDateFilled() {
-		return collectionStartDate != null || collectionEndDate!=null || identificationPhaseStartDate!=null ||
-		interviewerStartDate!=null || managementStartDate!=null || endDate!=null;
+		return collectionStartDate != null || collectionEndDate != null || identificationPhaseStartDate != null
+				|| interviewerStartDate != null || managementStartDate != null || endDate != null;
 	}
-	
-	
-	
+
 }

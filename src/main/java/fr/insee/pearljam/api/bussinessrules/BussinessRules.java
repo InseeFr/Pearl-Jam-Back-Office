@@ -3,6 +3,9 @@ package fr.insee.pearljam.api.bussinessrules;
 import fr.insee.pearljam.api.domain.StateType;
 
 public class BussinessRules {
+	private BussinessRules() {
+		throw new IllegalStateException("BusinessRules static class");
+	}
 	
 	// Checks if a survey unit is allowed to pass from a state to another
 	public static Boolean stateCanBeModified(StateType currentState, StateType targetState) {

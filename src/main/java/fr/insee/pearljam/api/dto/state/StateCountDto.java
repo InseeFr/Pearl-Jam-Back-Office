@@ -14,8 +14,10 @@ public class StateCountDto {
     private String labelDem;
     private InterviewerDto interviewer;
     private CampaignDto campaign;
+	private Long nvmCount;
 	private Long nnsCount;
-	private Long ansCount;
+	private Long anvCount;
+	private Long vinCount;
 	private Long vicCount;
 	private Long prcCount;
 	private Long aocCount;
@@ -25,67 +27,53 @@ public class StateCountDto {
 	private Long wfsCount;
 	private Long tbrCount;
 	private Long finCount;
-	private Long nviCount;
-	private Long nvmCount;
+	private Long qnaCount;
+	private Long nvaCount;
 	private Long total;
 
-	public StateCountDto(Long nnsCount, Long ansCount, Long vicCount, Long prcCount, Long aocCount, Long apsCount,
-			Long insCount, Long wftCount, Long wfsCount, Long tbrCount, Long finCount, Long nviCount, Long nvmCount,
-			Long total) {
-		super();
-		this.nnsCount = nnsCount;
-		this.ansCount = ansCount;
-		this.vicCount = vicCount;
-		this.prcCount = prcCount;
-		this.aocCount = aocCount;
-		this.apsCount = apsCount;
-		this.insCount = insCount;
-		this.wftCount = wftCount;
-		this.wfsCount = wfsCount;
-		this.tbrCount = tbrCount;
-		this.finCount = finCount;
-		this.nviCount = nviCount;
-		this.nvmCount = nvmCount;
-		this.total = total;
-	}
+	
 
 	public StateCountDto(List<Object[]> obj) {
 		super();
 		if (obj != null && !obj.isEmpty() && obj.get(0).length > 13 && obj.get(0)[0] != null) {
-			this.nnsCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
-			this.ansCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
-			this.vicCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
-			this.prcCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
-			this.aocCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
-			this.apsCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
-			this.insCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
-			this.wftCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
-			this.wfsCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
-			this.tbrCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
-			this.finCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
-			this.nviCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
-			this.nvmCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[13]).longValue();
+			this.nvmCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
+			this.nnsCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
+			this.anvCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
+			this.vinCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.vicCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
+			this.prcCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
+			this.aocCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
+			this.apsCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
+			this.insCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
+			this.wftCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
+			this.wfsCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
+			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
+			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
+			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
+			this.nvaCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[15]).longValue();
 		}
 	}
 
 	public StateCountDto(String idDem, String labelDem, List<Object[]> obj) {
 		super();
 		if (obj != null && !obj.isEmpty() && obj.get(0).length > 13 && obj.get(0)[0] != null) {
-			this.nnsCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
-			this.ansCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
-			this.vicCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
-			this.prcCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
-			this.aocCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
-			this.apsCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
-			this.insCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
-			this.wftCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
-			this.wfsCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
-			this.tbrCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
-			this.finCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
-			this.nviCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
-			this.nvmCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[13]).longValue();
+			this.nvmCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
+			this.nnsCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
+			this.anvCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
+			this.vinCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.vicCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
+			this.prcCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
+			this.aocCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
+			this.apsCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
+			this.insCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
+			this.wftCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
+			this.wfsCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
+			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
+			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
+			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
+			this.nvaCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[15]).longValue();
 		}
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
@@ -109,57 +97,87 @@ public class StateCountDto {
 		this.idDem = idDem;
 	}
 
+	
+
 	/**
-	 * @return the id
+	 * @return the nvmCount
+	 */
+	public Long getNvmCount() {
+		return nvmCount;
+	}
+
+	/**
+	 * @param nvmCount the nvmCount to set
+	 */
+	public void setNvmCount(Long nvmCount) {
+		this.nvmCount = nvmCount;
+	}
+
+	/**
+	 * @return the nnsCount
 	 */
 	public Long getNnsCount() {
 		return nnsCount;
 	}
 
 	/**
-	 * @param nnsCount the id to set
+	 * @param nnsCount the nnsCount to set
 	 */
 	public void setNnsCount(Long nnsCount) {
 		this.nnsCount = nnsCount;
 	}
 
 	/**
-	 * @return the id
+	 * @return the anvCount
 	 */
-	public Long getAnsCount() {
-		return ansCount;
+	public Long getAnvCount() {
+		return anvCount;
 	}
 
 	/**
-	 * @param ansCount the id to set
+	 * @param anvCount the anvCount to set
 	 */
-	public void setAnsCount(Long ansCount) {
-		this.ansCount = ansCount;
+	public void setAnvCount(Long anvCount) {
+		this.anvCount = anvCount;
 	}
 
 	/**
-	 * @return the id
+	 * @return the vinCount
+	 */
+	public Long getVinCount() {
+		return vinCount;
+	}
+
+	/**
+	 * @param vinCount the vinCount to set
+	 */
+	public void setVinCount(Long vinCount) {
+		this.vinCount = vinCount;
+	}
+
+	/**
+	 * @return the vicCount
 	 */
 	public Long getVicCount() {
 		return vicCount;
 	}
 
 	/**
-	 * @param vicCount the id to set
+	 * @param vicCount the vicCount to set
 	 */
 	public void setVicCount(Long vicCount) {
 		this.vicCount = vicCount;
 	}
 
 	/**
-	 * @return the date
+	 * @return the prcCount
 	 */
 	public Long getPrcCount() {
 		return prcCount;
 	}
 
 	/**
-	 * @param prcCount the date to set
+	 * @param prcCount the prcCount to set
 	 */
 	public void setPrcCount(Long prcCount) {
 		this.prcCount = prcCount;
@@ -264,31 +282,31 @@ public class StateCountDto {
 	}
 
 	/**
-	 * @return the nviCount
+	 * @return the qnaCount
 	 */
-	public Long getNviCount() {
-		return nviCount;
+	public Long getQnaCount() {
+		return qnaCount;
 	}
 
 	/**
-	 * @param nviCount the nviCount to set
+	 * @param qnaCount the qnaCount to set
 	 */
-	public void setNviCount(Long nviCount) {
-		this.nviCount = nviCount;
+	public void setQnaCount(Long qnaCount) {
+		this.qnaCount = qnaCount;
 	}
 
 	/**
-	 * @return the nvmCount
+	 * @return the nvaCount
 	 */
-	public Long getNvmCount() {
-		return nvmCount;
+	public Long getNvaCount() {
+		return nvaCount;
 	}
 
 	/**
-	 * @param nvmCount the nvmCount to set
+	 * @param nvaCount the nvaCount to set
 	 */
-	public void setNvmCount(Long nvmCount) {
-		this.nvmCount = nvmCount;
+	public void setNvaCount(Long nvaCount) {
+		this.nvaCount = nvaCount;
 	}
 
 	/**
@@ -307,7 +325,7 @@ public class StateCountDto {
 
 	@Override
 	public String toString() {
-		return "StateCountDto [ansCount=" + ansCount + ", prcCount=" + prcCount + "]";
+		return "StateCountDto [ansCount=" + anvCount + ", prcCount=" + prcCount + "]";
 	}
 
 	public String getLabelDem() {

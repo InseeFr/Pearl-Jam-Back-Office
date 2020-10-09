@@ -24,7 +24,32 @@ public class SurveyUnitDto {
 	/**
 	 * Start Date of the Campaign
 	 */
+	private Long managementStartDate;
+	
+	/**
+	 * Start Date of the Campaign
+	 */
+	private Long interviewerStartDate;
+	
+	/**
+	 * Start Date of the Campaign
+	 */
+	private Long identificationPhaseStartDate;
+	
+	/**
+	 * Start Date of the Campaign
+	 */
 	private Long collectionStartDate;
+	
+	/**
+	 * Start Date of the Campaign
+	 */
+	private Long collectionEndDate;
+	
+	/**
+	 * Start Date of the Campaign
+	 */
+	private Long endDate;
 	
 	/**
 	 * Default constructor from SurveyUnitDto
@@ -42,14 +67,24 @@ public class SurveyUnitDto {
 		this.id=idSurveyUnit;
 		this.campaign=campaign.getId();
 		this.campaignLabel=campaign.getLabel();
-		this.collectionStartDate=campaign.getStartDate();
+		this.managementStartDate=campaign.getManagementStartDate();
+		this.interviewerStartDate=campaign.getInterviewerStartDate();
+		this.identificationPhaseStartDate=campaign.getIdentificationPhaseStartDate();
+		this.collectionStartDate=campaign.getCollectionStartDate();
+		this.collectionEndDate=campaign.getCollectionEndDate();
+		this.endDate=campaign.getEndDate();
 	}
 	
 	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, VisibilityDto visibility) {
 		this.id=idSurveyUnit;
 		this.campaign=campaign.getId();
 		this.campaignLabel=campaign.getLabel();
+		this.managementStartDate=visibility.getManagementStartDate();
+		this.interviewerStartDate=visibility.getInterviewerStartDate();
+		this.identificationPhaseStartDate=visibility.getIdentificationPhaseStartDate();
 		this.collectionStartDate=visibility.getCollectionStartDate();
+		this.collectionEndDate=visibility.getCollectionEndDate();
+		this.endDate=visibility.getEndDate();
 	}
 	/**
 	 * @return the id
@@ -92,18 +127,77 @@ public class SurveyUnitDto {
 	public void setCampaignLabel(String campaignLabel) {
 		this.campaignLabel = campaignLabel;
 	}
-
+	/**
+	 * @return the managementStartDate
+	 */
+	public Long getManagementStartDate() {
+		return managementStartDate;
+	}
+	/**
+	 * @param managementStartDate the managementStartDate to set
+	 */
+	public void setManagementStartDate(Long managementStartDate) {
+		this.managementStartDate = managementStartDate;
+	}
+	/**
+	 * @return the interviewerStartDate
+	 */
+	public Long getInterviewerStartDate() {
+		return interviewerStartDate;
+	}
+	/**
+	 * @param interviewerStartDate the interviewerStartDate to set
+	 */
+	public void setInterviewerStartDate(Long interviewerStartDate) {
+		this.interviewerStartDate = interviewerStartDate;
+	}
+	/**
+	 * @return the identificationPhaseStartDate
+	 */
+	public Long getIdentificationPhaseStartDate() {
+		return identificationPhaseStartDate;
+	}
+	/**
+	 * @param identificationPhaseStartDate the identificationPhaseStartDate to set
+	 */
+	public void setIdentificationPhaseStartDate(Long identificationPhaseStartDate) {
+		this.identificationPhaseStartDate = identificationPhaseStartDate;
+	}
 	/**
 	 * @return the collectionStartDate
 	 */
 	public Long getCollectionStartDate() {
 		return collectionStartDate;
 	}
-
 	/**
 	 * @param collectionStartDate the collectionStartDate to set
 	 */
 	public void setCollectionStartDate(Long collectionStartDate) {
 		this.collectionStartDate = collectionStartDate;
 	}
+	/**
+	 * @return the collectionEndDate
+	 */
+	public Long getCollectionEndDate() {
+		return collectionEndDate;
+	}
+	/**
+	 * @param collectionEndDate the collectionEndDate to set
+	 */
+	public void setCollectionEndDate(Long collectionEndDate) {
+		this.collectionEndDate = collectionEndDate;
+	}
+	/**
+	 * @return the endDate
+	 */
+	public Long getEndDate() {
+		return endDate;
+	}
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(Long endDate) {
+		this.endDate = endDate;
+	}
+
 }

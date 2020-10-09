@@ -58,7 +58,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	
 	
 	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.startDate,su.campaign.endDate) "
+			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label) "
 			+ "FROM SurveyUnit su WHERE su.id=?1")
 	CampaignDto findCampaignDtoById(String id);
 	
