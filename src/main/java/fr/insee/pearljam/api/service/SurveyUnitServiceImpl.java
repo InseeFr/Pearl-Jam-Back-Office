@@ -203,7 +203,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		
 //Update Comment
 		for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {
-			Comment comment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType()).orElseGet(() -> new Comment());
+			Comment comment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType()).orElseGet(Comment::new);
       
       comment.setSurveyUnit(surveyUnit.get());
 			comment.setType(commentDto.getType());
@@ -243,7 +243,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		
 		//Update ContactOutcome
 		if(surveyUnitDetailDto.getContactOutcome()!=null){
-      ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get()).orElseGet(() -> new ContactOutcome());
+      ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get()).orElseGet(ContactOutcome::new);
 			contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
 			contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
 			contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
@@ -304,7 +304,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if(su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
-			if(BussinessRules.stateCanBeModifiedByManager(currentState, state)) {
+			if(Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), state));
 				return HttpStatus.OK;
 			}

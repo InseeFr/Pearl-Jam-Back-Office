@@ -1,7 +1,5 @@
 package fr.insee.pearljam.api.dto.campaign;
 
-import fr.insee.pearljam.api.domain.Campaign;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,10 +8,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class CampaignDto {
 	private String id;
 	private String label;
-	private Long startDate;
+	private Long managementStartDate;
+	private Long interviewerStartDate;
+	private Long identificationPhaseStartDate;
+	private Long collectionStartDate;
+	private Long collectionEndDate;
 	private Long endDate;
-	private Long visibilityStartDate;
-	private Long treatmentEndDate;
 	private Long allocated;
 	private Long toProcessInterviewer;
 	private Long toAffect;
@@ -22,43 +22,16 @@ public class CampaignDto {
 	private Long finalized;
 	private Boolean preference;
 
-	public CampaignDto(String id, String label, Long startDate, Long endDate) {
-		super();
-		this.id = id;
-		this.label = label;
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
-
-	public CampaignDto(Campaign campaign) {
-		super();
-		this.id = campaign.getId();
-		this.label = campaign.getLabel();
-		this.startDate = campaign.getStartDate();
-		this.endDate = campaign.getEndDate();
-	}
-
-	public CampaignDto(String id, String label, Long startDate, Long endDate,
-			Long visibilityStartDate, Long treatmentEndDate, Long allocated, Long toProcessInterviewer, Long toAffect,
-			Long toFollowUp, Long toReview, Long finalized, Boolean preference) {
-		super();
-		this.id = id;
-		this.label = label;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.visibilityStartDate = visibilityStartDate;
-		this.treatmentEndDate = treatmentEndDate;
-		this.allocated = allocated;
-		this.toProcessInterviewer = toProcessInterviewer;
-		this.toAffect = toAffect;
-		this.toFollowUp = toFollowUp;
-		this.toReview = toReview;
-		this.finalized = finalized;
-		this.preference = preference;
-	}
-
+	
+	
 	public CampaignDto() {
 		super();
+	}
+	
+	public CampaignDto(String id, String label) {
+		super();
+		this.id = id;
+		this.label = label;
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
@@ -101,17 +74,73 @@ public class CampaignDto {
 	}
 
 	/**
-	 * @return the startDate
+	 * @return the managementStartDate
 	 */
-	public Long getStartDate() {
-		return startDate;
+	public Long getManagementStartDate() {
+		return managementStartDate;
 	}
 
 	/**
-	 * @param startDate the startDate to set
+	 * @param managementStartDate the managementStartDate to set
 	 */
-	public void setStartDate(Long startDate) {
-		this.startDate = startDate;
+	public void setManagementStartDate(Long managementStartDate) {
+		this.managementStartDate = managementStartDate;
+	}
+
+	/**
+	 * @return the interviewerStartDate
+	 */
+	public Long getInterviewerStartDate() {
+		return interviewerStartDate;
+	}
+
+	/**
+	 * @param interviewerStartDate the interviewerStartDate to set
+	 */
+	public void setInterviewerStartDate(Long interviewerStartDate) {
+		this.interviewerStartDate = interviewerStartDate;
+	}
+
+	/**
+	 * @return the identificationPhaseStartDate
+	 */
+	public Long getIdentificationPhaseStartDate() {
+		return identificationPhaseStartDate;
+	}
+
+	/**
+	 * @param identificationPhaseStartDate the identificationPhaseStartDate to set
+	 */
+	public void setIdentificationPhaseStartDate(Long identificationPhaseStartDate) {
+		this.identificationPhaseStartDate = identificationPhaseStartDate;
+	}
+
+	/**
+	 * @return the collectionStartDate
+	 */
+	public Long getCollectionStartDate() {
+		return collectionStartDate;
+	}
+
+	/**
+	 * @param collectionStartDate the collectionStartDate to set
+	 */
+	public void setCollectionStartDate(Long collectionStartDate) {
+		this.collectionStartDate = collectionStartDate;
+	}
+
+	/**
+	 * @return the collectionEndDate
+	 */
+	public Long getCollectionEndDate() {
+		return collectionEndDate;
+	}
+
+	/**
+	 * @param collectionEndDate the collectionEndDate to set
+	 */
+	public void setCollectionEndDate(Long collectionEndDate) {
+		this.collectionEndDate = collectionEndDate;
 	}
 
 	/**
@@ -126,28 +155,6 @@ public class CampaignDto {
 	 */
 	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
-	}
-
-	public Long getVisibilityStartDate() {
-		return visibilityStartDate;
-	}
-
-	public void setVisibilityStartDate(Long visibilityStartDate) {
-		this.visibilityStartDate = visibilityStartDate;
-	}
-
-	/**
-	 * @return the treatmentEndDate
-	 */
-	public Long getTreatmentEndDate() {
-		return treatmentEndDate;
-	}
-
-	/**
-	 * @param treatmentEndDate the treatmentEndDate to set
-	 */
-	public void setTreatmentEndDate(Long treatmentEndDate) {
-		this.treatmentEndDate = treatmentEndDate;
 	}
 
 	/**
@@ -165,6 +172,20 @@ public class CampaignDto {
 	}
 
 	/**
+	 * @return the toProcessInterviewer
+	 */
+	public Long getToProcessInterviewer() {
+		return toProcessInterviewer;
+	}
+
+	/**
+	 * @param toProcessInterviewer the toProcessInterviewer to set
+	 */
+	public void setToProcessInterviewer(Long toProcessInterviewer) {
+		this.toProcessInterviewer = toProcessInterviewer;
+	}
+
+	/**
 	 * @return the toAffect
 	 */
 	public Long getToAffect() {
@@ -179,17 +200,17 @@ public class CampaignDto {
 	}
 
 	/**
-	 * @return the toProcessInterviewer
+	 * @return the toFollowUp
 	 */
-	public Long getToProcessInterviewer() {
-		return toProcessInterviewer;
+	public Long getToFollowUp() {
+		return toFollowUp;
 	}
 
 	/**
-	 * @param toProcessInterviewer the inProgress to set
+	 * @param toFollowUp the toFollowUp to set
 	 */
-	public void setToProcessInterviewer(Long toProcessInterviewer) {
-		this.toProcessInterviewer = toProcessInterviewer;
+	public void setToFollowUp(Long toFollowUp) {
+		this.toFollowUp = toFollowUp;
 	}
 
 	/**
@@ -206,26 +227,30 @@ public class CampaignDto {
 		this.toReview = toReview;
 	}
 
+	/**
+	 * @return the finalized
+	 */
 	public Long getFinalized() {
 		return finalized;
 	}
 
+	/**
+	 * @param finalized the finalized to set
+	 */
 	public void setFinalized(Long finalized) {
 		this.finalized = finalized;
 	}
 
-	public Long getToFollowUp() {
-		return toFollowUp;
-	}
-
-	public void setToFollowUp(Long toFollowUp) {
-		this.toFollowUp = toFollowUp;
-	}
-
+	/**
+	 * @return the preference
+	 */
 	public Boolean getPreference() {
 		return preference;
 	}
 
+	/**
+	 * @param preference the preference to set
+	 */
 	public void setPreference(Boolean preference) {
 		this.preference = preference;
 	}
