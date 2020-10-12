@@ -67,7 +67,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
-			if (lstSurveyUnit == null || lstSurveyUnit.isEmpty()) {
+			if (lstSurveyUnit == null) {
 				LOGGER.info("GET SurveyUnit resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

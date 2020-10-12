@@ -115,7 +115,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	List<Object[]> getStateCountSumByCampaign(@Param("campaignId") String campaignId,
 			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
-	@Query(value = "SELECT " + "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
+	@Query(value = "SELECT "
 			+ "SUM(CASE WHEN type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
 			+ "SUM(CASE WHEN type='NNS' THEN 1 ELSE 0 END) AS nnsCount, "
 			+ "SUM(CASE WHEN type='ANV' THEN 1 ELSE 0 END) AS anvCount, "
