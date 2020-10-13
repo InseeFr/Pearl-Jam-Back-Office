@@ -222,7 +222,7 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
 		HttpStatus returnCode = HttpStatus.BAD_REQUEST;
-		if(idCampaign != null && idOu != null && (updatedVisibility.isOneDateFilled())) {
+		if(idCampaign != null && idOu != null && updatedVisibility.isOneDateFilled()) {
 			Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
 			if(visibility.isPresent()) {
 				if(updatedVisibility.getManagementStartDate() != null) {
@@ -249,8 +249,10 @@ public class CampaignServiceImpl implements CampaignService {
 					LOGGER.info("Updating end date for campaign {} and Organizational Unit {}", idCampaign, idOu);
 					visibility.get().setEndDate(updatedVisibility.getEndDate());
 				}
-				visibilityRepository.save(visibility.get());
-				returnCode = HttpStatus.OK;
+				if(visibility.get().checkDateConsistency()){
+					visibilityRepository.save(visibility.get());
+					returnCode = HttpStatus.OK;
+				}
 			}
 		}
 		return returnCode;
