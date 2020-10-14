@@ -26,7 +26,6 @@ public class SurveyUnitDetailDto {
 	private String campaign;
 	private List<CommentDto> comments;
 	private SampleIdentifiersDto sampleIdentifiers;
-	private StateDto lastState;
 	private List<StateDto> states;
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
@@ -184,20 +183,6 @@ public class SurveyUnitDetailDto {
 	}
 
 	/**
-	 * @return the lastState
-	 */
-	public StateDto getLastState() {
-		return lastState;
-	}
-
-	/**
-	 * @param state the lastState to set
-	 */
-	public void setLastState(StateDto state) {
-		this.lastState = state;
-	}
-
-	/**
 	 * @return the states
 	 */
 	public List<StateDto> getStates() {
@@ -244,7 +229,7 @@ public class SurveyUnitDetailDto {
 		return "SurveyUnitDetailDto [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", phoneNumbers=" + phoneNumbers + ", address=" + address + ", geographicalLocation="
 				+ geographicalLocation + ", priority=" + priority + ", campaign=" + campaign + ", comments=" + comments
-				+ ", sampleIdentifiers=" + sampleIdentifiers + ", lastState=" + lastState + ", states=" + states
+				+ ", sampleIdentifiers=" + sampleIdentifiers + ", states=" + states
 				+ ", contactAttempts=" + contactAttempts + ", contactOutcome=" + contactOutcome + "]";
 	}
 	

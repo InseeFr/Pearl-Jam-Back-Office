@@ -39,7 +39,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 			LOGGER.error("User {} not found", userId);
 			return HttpStatus.NOT_FOUND;
 		}
-		List<Campaign> lstCampaign=new ArrayList<>();
+    List<Campaign> lstCampaign = new ArrayList<>();
+
 		for(String campaignId : listPreference) {
 			Optional<Campaign> campaign = campaignRepository.findById(campaignId);
 			if(!campaign.isPresent()) {

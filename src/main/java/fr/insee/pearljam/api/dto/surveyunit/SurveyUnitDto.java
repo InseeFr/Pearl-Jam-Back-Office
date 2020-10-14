@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.dto.surveyunit;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 
 public class SurveyUnitDto {
 	
@@ -26,11 +27,6 @@ public class SurveyUnitDto {
 	private Long collectionStartDate;
 	
 	/**
-	 * End Date of the Campaign
-	 */
-	private Long collectionEndDate;
-	
-	/**
 	 * Default constructor from SurveyUnitDto
 	 * @param surveyUnit
 	 */
@@ -38,8 +34,7 @@ public class SurveyUnitDto {
 		this.id = surveyUnit.getId();
 		this.campaign = surveyUnit.getCampaign().getId();
 		this.campaignLabel = surveyUnit.getCampaign().getLabel();
-		this.collectionStartDate = surveyUnit.getCampaign().getCollectionStartDate();
-		this.collectionEndDate = surveyUnit.getCampaign().getCollectionEndDate();
+		this.collectionStartDate = surveyUnit.getCampaign().getStartDate();
 	}
 	public SurveyUnitDto() {
 	}
@@ -47,8 +42,14 @@ public class SurveyUnitDto {
 		this.id=idSurveyUnit;
 		this.campaign=campaign.getId();
 		this.campaignLabel=campaign.getLabel();
-		this.collectionStartDate=campaign.getCollectionStartDate();
-		this.collectionEndDate=campaign.getCollectionEndDate();
+		this.collectionStartDate=campaign.getStartDate();
+	}
+	
+	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, VisibilityDto visibility) {
+		this.id=idSurveyUnit;
+		this.campaign=campaign.getId();
+		this.campaignLabel=campaign.getLabel();
+		this.collectionStartDate=visibility.getCollectionStartDate();
 	}
 	/**
 	 * @return the id
@@ -104,19 +105,5 @@ public class SurveyUnitDto {
 	 */
 	public void setCollectionStartDate(Long collectionStartDate) {
 		this.collectionStartDate = collectionStartDate;
-	}
-
-	/**
-	 * @return the collectionEndDate
-	 */
-	public Long getCollectionEndDate() {
-		return collectionEndDate;
-	}
-
-	/**
-	 * @param collectionEndDate the collectionEndDate to set
-	 */
-	public void setCollectionEndDate(Long collectionEndDate) {
-		this.collectionEndDate = collectionEndDate;
 	}
 }

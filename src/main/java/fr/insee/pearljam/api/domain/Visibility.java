@@ -38,14 +38,34 @@ public class Visibility implements Serializable {
 	@MapsId("campaign_id")
     private Campaign campaign;
 	/**
-	 * The start date of Visibility
+	 * The start date of Visibility of management
 	 */
-	public Long collectionStartDate;
+	private Long managementStartDate;
 	
 	/**
-	 * The end date of Visibility
+	 * The start date of Visibility of interviewer
 	 */
-	public Long collectionEndDate;
+	private Long interviewerStartDate;
+	
+	/**
+	 * The start date of identification phase
+	 */
+	private Long identificationPhaseStartDate;
+	
+	/**
+	 * The start date of collection
+	 */
+	private Long collectionStartDate;
+	
+	/**
+	 * The end date of collection
+	 */
+	private Long collectionEndDate;
+	
+	/**
+	 * The end date
+	 */
+	private Long endDate;
 
 	/**
 	 * @return the organizationUnit
@@ -76,31 +96,101 @@ public class Visibility implements Serializable {
 	}
 
 	/**
-	 * @return the collection start date for the visibility
+	 * @return the visibilityId
+	 */
+	public VisibilityId getVisibilityId() {
+		return visibilityId;
+	}
+
+	/**
+	 * @param visibilityId the visibilityId to set
+	 */
+	public void setVisibilityId(VisibilityId visibilityId) {
+		this.visibilityId = visibilityId;
+	}
+
+	/**
+	 * @return the managementStartDate
+	 */
+	public Long getManagementStartDate() {
+		return managementStartDate;
+	}
+
+	/**
+	 * @param managementStartDate the managementStartDate to set
+	 */
+	public void setManagementStartDate(Long managementStartDate) {
+		this.managementStartDate = managementStartDate;
+	}
+
+	/**
+	 * @return the interviewerStartDate
+	 */
+	public Long getInterviewerStartDate() {
+		return interviewerStartDate;
+	}
+
+	/**
+	 * @param interviewerStartDate the interviewerStartDate to set
+	 */
+	public void setInterviewerStartDate(Long interviewerStartDate) {
+		this.interviewerStartDate = interviewerStartDate;
+	}
+
+	/**
+	 * @return the identificationPhaseStartDate
+	 */
+	public Long getIdentificationPhaseStartDate() {
+		return identificationPhaseStartDate;
+	}
+
+	/**
+	 * @param identificationPhaseStartDate the identificationPhaseStartDate to set
+	 */
+	public void setIdentificationPhaseStartDate(Long identificationPhaseStartDate) {
+		this.identificationPhaseStartDate = identificationPhaseStartDate;
+	}
+
+	/**
+	 * @return the collectionStartDate
 	 */
 	public Long getCollectionStartDate() {
 		return collectionStartDate;
 	}
 
 	/**
-	 * @param collectionStartDate for the visibility
+	 * @param collectionStartDate the collectionStartDate to set
 	 */
 	public void setCollectionStartDate(Long collectionStartDate) {
 		this.collectionStartDate = collectionStartDate;
 	}
 
 	/**
-	 * @return the collection end date for the visibility
+	 * @return the collectionEndDate
 	 */
 	public Long getCollectionEndDate() {
 		return collectionEndDate;
 	}
 
 	/**
-	 * @param collectionEndDate for the visibility
+	 * @param collectionEndDate the collectionEndDate to set
 	 */
 	public void setCollectionEndDate(Long collectionEndDate) {
 		this.collectionEndDate = collectionEndDate;
+	}
+
+	/**
+	 * @return the endDate
+	 */
+	public Long getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(Long endDate) {
+		this.endDate = endDate;
 	}
 
 }

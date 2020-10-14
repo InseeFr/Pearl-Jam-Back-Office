@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 
 /**
 * CampaignRepository is the repository using to access to  Campaign table in DB
@@ -26,9 +28,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	
 	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
 					+ "organization_unit_id IN (:OuIds) "
-					+ "AND collection_start_date <= :date "
-					+ "AND collection_end_date > :date  ", nativeQuery = true)
-	List<String> findAllIdsVisible(@Param("OuIds") List<String> OuIds, @Param("date") Long date);
+					+ "AND start_date <= :date "
+					+ "AND end_date > :date  ", nativeQuery = true)
+	List<String> findAllIdsVisible(@Param("OuIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = "SELECT camp.id " 
 			+ "FROM campaign camp " 
@@ -175,5 +177,14 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
 	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
+	
+	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
+			  + "FROM Campaign camp "
+			  + "INNER JOIN Visibility vi ON vi.campaign.id = camp.id "
+			  + "WHERE (vi.organizationUnit.id in (:OuIds) OR 'GUEST' in (:OuIds)) "
+			  + "AND LOWER(camp.id) LIKE LOWER(concat('%',:text,'%')) "
+			  + "GROUP BY camp.id ")
+	List<VerifyNameResponseDto> findMatchingCampaigns(@Param("text") String text, @Param("OuIds") List<String> OuIds, Pageable pageable);
+	
 
 }

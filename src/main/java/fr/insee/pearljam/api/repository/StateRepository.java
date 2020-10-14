@@ -24,7 +24,7 @@ public interface StateRepository extends JpaRepository<State, Long> {
 	 */
 	StateDto findFirstDtoBySurveyUnitOrderByDateDesc(SurveyUnit surveyUnit);
 
-	List<StateDto> findAllDtoBySurveyUnitId(String suId);
+	List<StateDto> findAllDtoBySurveyUnitIdOrderByDateAsc(String suId);
 
 	Optional<StateDto> findDtoById(Long long1);
 	

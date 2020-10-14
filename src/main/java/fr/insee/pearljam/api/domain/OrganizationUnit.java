@@ -33,23 +33,23 @@ public class OrganizationUnit implements Serializable {
 	 */
 	@Id
 	@Column(length=50)
-	public String id;
+	private String id;
 	
 	/**
 	 * The label OrganizationUnit
 	 */
 	@Column(length=255)
-	public String label;
+	private String label;
 	
 	/**
 	 * The OrganizationUnitType of the OrganizationUnit
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column(length=8)
-	public OrganizationUnitType type;
+	private OrganizationUnitType type;
 	
 	@ManyToOne
-	public OrganizationUnit organizationUnitParent;
+	private OrganizationUnit organizationUnitParent;
 	
 	/**
 	 * The visibilites of the OrganizationUnit

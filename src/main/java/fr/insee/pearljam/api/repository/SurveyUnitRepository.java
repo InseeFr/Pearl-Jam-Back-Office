@@ -34,10 +34,10 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	* 
 	* @return List of all {@link SurveyUnit}
 	*/
-	@Query(value="SELECT COUNT(DISTINCT s.id) FROM state s " + 
+	@Query(value="SELECT COUNT(DISTINCT su.id) FROM state s " + 
 			"JOIN survey_unit su ON s.survey_unit_id=su.id " + 
 			"WHERE su.interviewer_id ILIKE ?1 " +
-			"AND su.campaign_id ILIKE ?2 AND s.type='TBR'", nativeQuery=true)
+			"AND su.campaign_id=?2 AND s.type='TBR'", nativeQuery=true)
 	Integer findCountUeTBRByInterviewerIdAndCampaignId(String idInterviewer, String idCampaign, String idSurveyUnit);
 
 	/**
@@ -58,11 +58,11 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	
 	
 	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.collectionStartDate,su.campaign.collectionEndDate) "
+			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label,su.campaign.startDate,su.campaign.endDate) "
 			+ "FROM SurveyUnit su WHERE su.id=?1")
 	CampaignDto findCampaignDtoById(String id);
 	
-	@Query(value="SELECT su.id as id FROM survey_unit su " + 
+	@Query(value="SELECT DISTINCT(su.id) as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
 			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+

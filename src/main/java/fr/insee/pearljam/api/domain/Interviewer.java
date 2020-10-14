@@ -21,37 +21,37 @@ public class Interviewer {
 	*/
 	@Id
 	@Column(length=50)
-	public String id;
+	private String id;
 
 	/**
 	* The first name of the Interviewer 
 	*/
 	@Column(length=255)
-	public String firstName;
+	private String firstName;
 	
 	/**
 	* The last name of the Interviewer 
 	*/
 	@Column(length=255)
-	public String lastName;
+	private String lastName;
 	
 	/**
 	* The email of the Interviewer 
 	*/
 	@Column(length=255)
-	public String email;
+	private String email;
 	
 	/**
 	 * The phone number of the Interviewer
 	 */
 	@Column(length=255)
-	public String phoneNumber;
+	private String phoneNumber;
 	
 	/**
 	 * The Organization Unit of the Interviewer
 	 */
 	@ManyToOne
-	public OrganizationUnit organizationUnit;
+	private OrganizationUnit organizationUnit;
 
 	/**
 	 * @return the id of the Interviewer
