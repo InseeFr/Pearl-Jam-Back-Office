@@ -789,24 +789,24 @@ public class TestBasicAuth {
 	public void testPutVisibilityModifyAllDates() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
-			.body("{\"managementStartDate\": 1640996200000, "
-					+ "\"interviewerStartDate\": 1577837800000,"
-					+ "\"identificationPhaseStartDate\": 1641514600000,"
-					+ "\"collectionStartDate\": 1577233000000,"
-					+ "\"collectionEndDate\": 1576801000000,"
-					+ "\"endDate\": 1575937000000}")
+		 	.body("{\"managementStartDate\": 1575937000000 , "
+					+ "\"interviewerStartDate\": 1576801000000,"
+					+ "\"identificationPhaseStartDate\": 1577233000000,"
+					+ "\"collectionStartDate\": 1577837800000,"
+					+ "\"collectionEndDate\": 1640996200000,"
+					+ "\"endDate\": 1641514600000}")
 		.when()
 			.put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1640996200000L, visi.get().getManagementStartDate());
-    assertEquals(1577837800000L, visi.get().getInterviewerStartDate());
-    assertEquals(1641514600000L, visi.get().getIdentificationPhaseStartDate());
-    assertEquals(1577233000000L, visi.get().getCollectionStartDate());
-    assertEquals(1576801000000L, visi.get().getCollectionEndDate());
-    assertEquals(1575937000000L, visi.get().getEndDate());
+    assertEquals(1575937000000L, visi.get().getManagementStartDate());
+    assertEquals(1576801000000L, visi.get().getInterviewerStartDate());
+    assertEquals(1577233000000L, visi.get().getIdentificationPhaseStartDate());
+    assertEquals(1577837800000L, visi.get().getCollectionStartDate());
+    assertEquals(1640996200000L, visi.get().getCollectionEndDate());
+    assertEquals(1641514600000L, visi.get().getEndDate());
   }
   
   /**
@@ -819,14 +819,14 @@ public class TestBasicAuth {
 	public void testPutVisibilityModifyCollectionStartDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
-			.body("{\"collectionStartDate\": 1577233000000}")
+			.body("{\"collectionStartDate\": 1577847800000}")
 		.when()
     .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1577233000000L, visi.get().getCollectionStartDate());
+    assertEquals(1577847800000L, visi.get().getCollectionStartDate());
   }
   
   /**
@@ -839,14 +839,14 @@ public class TestBasicAuth {
 	public void testPutVisibilityModifyCollectionEndDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
-			.body("{\"collectionEndDate\": 1577233000000}")
+			.body("{\"collectionEndDate\": 1577857800000}")
 		.when()
 			.put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1577233000000L, visi.get().getCollectionEndDate());
+    assertEquals(1577857800000L, visi.get().getCollectionEndDate());
   }
   
   /**
