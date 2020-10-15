@@ -19,7 +19,7 @@ public class StateCountCampaignDto {
 	}
 
 	public StateCountCampaignDto() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	/**

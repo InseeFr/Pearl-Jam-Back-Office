@@ -88,8 +88,13 @@ public class CampaignServiceImpl implements CampaignService {
 	    }
 		for(String idCampaign : campaignDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-			campaign.setVisibilityStartDate(visibilityRepository.findVisibilityStartDateByCampaignId(idCampaign, lstOuId));
-			campaign.setTreatmentEndDate(visibilityRepository.findTreatmentEndDateByCampaignId(idCampaign, lstOuId));
+			VisibilityDto visibility = visibilityRepository.findVisibilityByCampaignId(idCampaign, lstOuId);
+			campaign.setManagementStartDate(visibility.getManagementStartDate());
+			campaign.setInterviewerStartDate(visibility.getInterviewerStartDate());
+			campaign.setIdentificationPhaseStartDate(visibility.getIdentificationPhaseStartDate());
+			campaign.setCollectionStartDate(visibility.getCollectionStartDate());
+			campaign.setCollectionEndDate(visibility.getCollectionEndDate());
+			campaign.setEndDate(visibility.getEndDate());
 			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(idCampaign, lstOuId));
 			campaign.setPreference(isUserPreference(userId, idCampaign));
 			campaignDtoReturned.add(campaign);
@@ -105,7 +110,7 @@ public class CampaignServiceImpl implements CampaignService {
     
 	    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
 	    List<String> userOrgUnitIds = organizationUnits.stream()
-	      .map(dto -> dto.getId())
+	      .map(OrganizationUnitDto::getId)
 	      .collect(Collectors.toList());
 
 		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
@@ -175,7 +180,7 @@ public class CampaignServiceImpl implements CampaignService {
 			LOGGER.info(dto.getId());
 		}
 		List<String> userOrgUnitIds = organizationUnits.stream()
-	      .map(dto -> dto.getId())
+	      .map(OrganizationUnitDto::getId)
 	      .collect(Collectors.toList());
 		Long dateToUse = date;
 		if (dateToUse == null) {
@@ -186,8 +191,6 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto campaignSum = new StateCountDto(campaignRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
-				dto.setEndDate(null);
-				dto.setStartDate(null);
 				campaignSum.setCampaign(dto);
 				returnList.add(campaignSum);
 			}
@@ -199,7 +202,7 @@ public class CampaignServiceImpl implements CampaignService {
 		List<StateCountDto> returnList = new ArrayList<>();
 		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
 		List<String> userOrgUnitIds = organizationUnits.stream()
-	      .map(dto -> dto.getId())
+	      .map(OrganizationUnitDto::getId)
 	      .collect(Collectors.toList());
 		Long dateToUse = date;
 		if (dateToUse == null) {
@@ -219,7 +222,7 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
 		HttpStatus returnCode = HttpStatus.BAD_REQUEST;
-		if(idCampaign != null && idOu != null && (updatedVisibility.isOneDateFilled())) {
+		if(idCampaign != null && idOu != null && updatedVisibility.isOneDateFilled()) {
 			Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
 			if(visibility.isPresent()) {
 				if(updatedVisibility.getManagementStartDate() != null) {
@@ -246,15 +249,17 @@ public class CampaignServiceImpl implements CampaignService {
 					LOGGER.info("Updating end date for campaign {} and Organizational Unit {}", idCampaign, idOu);
 					visibility.get().setEndDate(updatedVisibility.getEndDate());
 				}
-				visibilityRepository.save(visibility.get());
-				returnCode = HttpStatus.OK;
+				if(visibility.get().checkDateConsistency()){
+					visibilityRepository.save(visibility.get());
+					returnCode = HttpStatus.OK;
+				}
 			}
 		}
 		return returnCode;
 	}
 
 	public boolean isUserPreference(String userId, String campaignId) {
-		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || userId == "GUEST";
+		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 	
 	@Override
@@ -285,18 +290,20 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
+		int nbSUAbandoned = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
 			return null;
 		}
-		return new CountDto(0);
+		return new CountDto(nbSUAbandoned);
 	}
 
 	@Override
 	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
+		int nbSUNotAttributed = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
 			return null;
 		}
-		return new CountDto(0);
+		return new CountDto(nbSUNotAttributed);
 	}
 
 

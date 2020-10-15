@@ -192,5 +192,11 @@ public class Visibility implements Serializable {
 	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
 	}
+	
+	public boolean checkDateConsistency() {
+		return managementStartDate < interviewerStartDate && interviewerStartDate < identificationPhaseStartDate
+				&& identificationPhaseStartDate < collectionStartDate && collectionStartDate < collectionEndDate
+				&& collectionEndDate < endDate;
+	}
 
 }

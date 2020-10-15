@@ -138,17 +138,17 @@ public class TestNoAuth {
 	 * return 200
 	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(1)
-//	public void testGetUser() throws InterruptedException {
-//		given().when().get("api/user").then().statusCode(200).and()
-//		.assertThat().body("id", equalTo("")).and()
-//		.assertThat().body("firstName", equalTo("Guest")).and()
-//		.assertThat().body("lastName", equalTo("")).and()
-//		.assertThat().body("organizationUnit.id", equalTo("OU-NATIONAL")).and()
-//		.assertThat().body("organizationUnit.label", equalTo("National organizational unit")).and()
-//		.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH"));
-//	}
+	@Test
+	@Order(1)
+	public void testGetUser() throws InterruptedException {
+		given().when().get("api/user").then().statusCode(200).and()
+		.assertThat().body("id", equalTo("")).and()
+		.assertThat().body("firstName", equalTo("Guest")).and()
+		.assertThat().body("lastName", equalTo("")).and()
+		.assertThat().body("organizationUnit.id", equalTo("OU-NATIONAL")).and()
+		.assertThat().body("organizationUnit.label", equalTo("National organizational unit")).and()
+		.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH"));
+	}
 	
 	
 	/**
@@ -156,12 +156,12 @@ public class TestNoAuth {
 	 * return String 'Guest'.
 	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(2)
-//	public void testGetUserNotFound() throws InterruptedException {
-//		UserDto user = userService.getUser("test");
-//		assertTrue(user.getFirstName().equals("Guest"));
-//	}
+	@Test
+	@Order(2)
+	public void testGetUserNotFound() throws InterruptedException {
+		UserDto user = userService.getUser("test");
+		assertTrue(user.getFirstName().equals("Guest"));
+	}
 
 	/*CampaignController*/
 	
@@ -171,22 +171,26 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(3)
-//	public void testGetCampaign() throws InterruptedException, JSONException {
-//		given().when().get("api/campaigns").then().statusCode(200).and().assertThat().body("id", hasItem("simpsons2020x00")).and()
-//		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
-//		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
-//		.assertThat().body("collectionEndDate", hasItem(1622035845000L)).and()
-//		.assertThat().body("treatmentEndDate",hasItem(1622025045000L)).and()
-//		.assertThat().body("allocated",hasItem(4)).and()
-//		.assertThat().body("toAffect",hasItem(0)).and()
-//		.assertThat().body("toFollowUp",hasItem(0)).and()
-//		.assertThat().body("toReview",hasItem(0)).and()
-//		.assertThat().body("finalized",hasItem(0)).and()
-//		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
-//		.assertThat().body("preference",hasItem(true));
-//	}
+	@Test
+	@Order(3)
+	public void testGetCampaign() throws InterruptedException, JSONException {
+		given().when().get("api/campaigns").then().statusCode(200).and()
+		.assertThat().body("id", hasItem("simpsons2020x00")).and()
+		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
+		.assertThat().body("managementStartDate",hasItem(1575936000000L)).and()
+		.assertThat().body("interviewerStartDate",hasItem(1576800000000L)).and()
+		.assertThat().body("identificationPhaseStartDate",hasItem(1577232000000L)).and()
+		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
+		.assertThat().body("collectionEndDate", hasItem(1640995200000L)).and()
+		.assertThat().body("endDate",hasItem(1641513600000L)).and()
+		.assertThat().body("allocated",hasItem(4)).and()
+		.assertThat().body("toAffect",hasItem(0)).and()
+		.assertThat().body("toFollowUp",hasItem(0)).and()
+		.assertThat().body("toReview",hasItem(0)).and()
+		.assertThat().body("finalized",hasItem(0)).and()
+		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
+		.assertThat().body("preference",hasItem(true));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
@@ -194,15 +198,15 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(4)
-//	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
-//		.assertThat().body("id", hasItem("INTW1")).and()
-//		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
-//		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
-//		.assertThat().body("surveyUnitCount",hasItem(2));
-//	}
+	@Test
+	@Order(4)
+	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
+		.assertThat().body("id", hasItem("INTW1")).and()
+		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
+		.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
+		.assertThat().body("surveyUnitCount",hasItem(2));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
@@ -210,11 +214,11 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(5)
-//	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
-//	}
+	@Test
+	@Order(5)
+	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
@@ -222,26 +226,28 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(6)
-//	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
-//    .assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
-//    .assertThat().body("organizationUnits[0].nnsCount",equalTo(0)).and()
-//    .assertThat().body("organizationUnits[0].ansCount",equalTo(4)).and()
-//		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].insCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].wftCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].nviCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
-//		.assertThat().body("organizationUnits[0].total",equalTo(4));
-//	}
+	@Test
+	@Order(6)
+	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
+		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
+		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nnsCount",equalTo(3)).and()
+    	.assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].vinCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].insCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wftCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].qnaCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].total",equalTo(4));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
@@ -249,11 +255,11 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(7)
-//	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
-//	}
+	@Test
+	@Order(7)
+	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
@@ -261,26 +267,28 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(8)
-//	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
-//		.assertThat().body("idDem", equalTo(null)).and()
-//    .assertThat().body("nnsCount", equalTo(0)).and()
-//    .assertThat().body("ansCount", equalTo(2)).and()
-//    .assertThat().body("vicCount", equalTo(0)).and()
-//		.assertThat().body("prcCount", equalTo(0)).and()
-//		.assertThat().body("aocCount",equalTo(0)).and()
-//		.assertThat().body("apsCount",equalTo(0)).and()
-//		.assertThat().body("insCount",equalTo(0)).and()
-//		.assertThat().body("wftCount",equalTo(0)).and()
-//		.assertThat().body("wfsCount",equalTo(0)).and()
-//		.assertThat().body("tbrCount",equalTo(0)).and()
-//		.assertThat().body("finCount",equalTo(0)).and()
-//		.assertThat().body("nviCount",equalTo(0)).and()
-//		.assertThat().body("nvmCount",equalTo(0)).and()
-//		.assertThat().body("total",equalTo(2));
-//	}
+	@Test
+	@Order(8)
+	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
+		.assertThat().body("idDem", equalTo(null)).and()
+		.assertThat().body("nvmCount",equalTo(0)).and()
+		.assertThat().body("nnsCount",equalTo(1)).and()
+    	.assertThat().body("anvCount",equalTo(0)).and()
+		.assertThat().body("vinCount",equalTo(1)).and()
+		.assertThat().body("vicCount",equalTo(0)).and()
+		.assertThat().body("prcCount",equalTo(0)).and()
+		.assertThat().body("aocCount",equalTo(0)).and()
+		.assertThat().body("apsCount",equalTo(0)).and()
+		.assertThat().body("insCount",equalTo(0)).and()
+		.assertThat().body("wftCount",equalTo(0)).and()
+		.assertThat().body("wfsCount",equalTo(0)).and()
+		.assertThat().body("tbrCount",equalTo(0)).and()
+		.assertThat().body("finCount",equalTo(0)).and()
+		.assertThat().body("qnaCount",equalTo(0)).and()
+		.assertThat().body("nvaCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
@@ -288,11 +296,11 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(9)
-//	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
-//	}
+	@Test
+	@Order(9)
+	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
@@ -300,11 +308,11 @@ public class TestNoAuth {
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(10)
-//	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
-//		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
-//	}
+	@Test
+	@Order(10)
+	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
+	}
 	
 	/*SurveyUnitController*/
 	
@@ -351,7 +359,12 @@ public class TestNoAuth {
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
 		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020")).and()
-		.assertThat().body("collectionStartDate",hasItem(1577836800000L));
+		.assertThat().body("managementStartDate",hasItem(1575936000000L)).and()
+		.assertThat().body("interviewerStartDate",hasItem(1576800000000L)).and()
+		.assertThat().body("identificationPhaseStartDate",hasItem(1577232000000L)).and()
+		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
+		.assertThat().body("collectionEndDate",hasItem(1640995200000L)).and()
+		.assertThat().body("endDate",hasItem(1641513600000L));
 	}
 	
 	/**
@@ -528,48 +541,48 @@ public class TestNoAuth {
 	 * return 200
  	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(20)
-//	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
-//		 given()
-//     .contentType("application/json")
-//     .when()
-//       .put("api/survey-unit/12/state/NVI")
-//     .then()
-//       .statusCode(200);
-//	}
+	@Test
+	@Order(20)
+	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
+		 given()
+     .contentType("application/json")
+     .when()
+       .put("api/survey-unit/12/state/VIN")
+     .then()
+       .statusCode(200);
+	}
 	
 	/**
 	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 400 with unknown state
  	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(21)
-//	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
-//		 given()
-//      .contentType("application/json")
-//      .when()
-//        .put("api/survey-unit/11/state/test")
-//      .then()
-//        .statusCode(400);
-//	}
+	@Test
+	@Order(21)
+	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
+		 given()
+      .contentType("application/json")
+      .when()
+        .put("api/survey-unit/11/state/test")
+      .then()
+        .statusCode(400);
+	}
 	
 	/**
 	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 403 when not allowed to pass to this state
  	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(22)
-//	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
-//		 given()
-//     .contentType("application/json")
-//     .when()
-//       .put("api/survey-unit/11/state/AOC")
-//     .then()
-//       .statusCode(403);
-//	}
+	@Test
+	@Order(22)
+	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
+		 given()
+     .contentType("application/json")
+     .when()
+       .put("api/survey-unit/11/state/AOC")
+     .then()
+       .statusCode(403);
+	}
 	
 
 	/**
@@ -596,73 +609,73 @@ public class TestNoAuth {
 	 * return 200
  	 * @throws InterruptedException
 	 */
-//	@Test
-//	@Order(24)
-//	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
-//		List<String> listPreferences = new ArrayList<>();
-//		listPreferences.add("");
-//		 given()
-//		 	.contentType("application/json")
-//			.body(new ObjectMapper().writeValueAsString(listPreferences))
-//		.when()
-//			.put("api/preferences")
-//		.then()
-//			.statusCode(404);
-//	}
+	@Test
+	@Order(24)
+	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
+		List<String> listPreferences = new ArrayList<>();
+		listPreferences.add("");
+		 given()
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listPreferences))
+		.when()
+			.put("api/preferences")
+		.then()
+			.statusCode(404);
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(25)
-//	public void testGetNbSuAbandoned() throws InterruptedException, JSONException {
-//		get("api/campaign/simpsons2020x00/survey-units/abandoned")
-//		.then()
-//		.statusCode(200).and()
-//		.assertThat().body("count", equalTo(0));
-//	}
+	@Test
+	@Order(25)
+	public void testGetNbSuAbandoned() throws InterruptedException, JSONException {
+		get("api/campaign/simpsons2020x00/survey-units/abandoned")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(26)
-//	public void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
-//		get("api/campaign/test/survey-units/abandoned")
-//		.then()
-//		.statusCode(404);
-//	}
+	@Test
+	@Order(26)
+	public void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
+		get("api/campaign/test/survey-units/abandoned")
+		.then()
+		.statusCode(404);
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(27)
-//	public void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
-//		get("api/campaign/simpsons2020x00/survey-units/not-attributed")
-//		.then()
-//		.statusCode(200).and()
-//		.assertThat().body("count", equalTo(0));
-//	}
+	@Test
+	@Order(27)
+	public void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
+		get("api/campaign/simpsons2020x00/survey-units/not-attributed")
+		.then()
+		.statusCode(200).and()
+		.assertThat().body("count", equalTo(0));
+	}
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
-//	@Test
-//	@Order(28)
-//	public void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
-//		get("api/campaign/test/survey-units/not-attributed")
-//		.then()
-//		.statusCode(404);
-//  }
+	@Test
+	@Order(28)
+	public void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
+		get("api/campaign/test/survey-units/not-attributed")
+		.then()
+		.statusCode(404);
+  }
   
 
   /**
@@ -681,9 +694,9 @@ public class TestNoAuth {
 		.then()
       .statusCode(200);
     Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
-    assertEquals(simpsons.isPresent(), true);
-    assertEquals(simpsons.get().getStartDate(), 162849200000L);
-    assertEquals(simpsons.get().getEndDate(), 170849200000L);
+    assertEquals(true, simpsons.isPresent());
+    assertEquals(162849200000L, simpsons.get().getStartDate());
+    assertEquals(170849200000L, simpsons.get().getEndDate());
   }
   
   /**
@@ -702,8 +715,8 @@ public class TestNoAuth {
 		.then()
       .statusCode(200);
     Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
-    assertEquals(simpsons.isPresent(), true);
-    assertEquals(simpsons.get().getStartDate(), 162849200000L);
+    assertEquals(true, simpsons.isPresent());
+    assertEquals(162849200000L, simpsons.get().getStartDate());
   }
   
   /**
@@ -722,8 +735,8 @@ public class TestNoAuth {
 		.then()
       .statusCode(200);
     Optional<Campaign> simpsons = campaignRepository.findByIdIgnoreCase("simpsons2020x00");
-    assertEquals(simpsons.isPresent(), true);
-    assertEquals(simpsons.get().getEndDate(), 170849200000L);
+    assertEquals(true, simpsons.isPresent());
+    assertEquals(170849200000L, simpsons.get().getEndDate());
   }
   
   /**
@@ -770,24 +783,24 @@ public class TestNoAuth {
 	public void testPutVisibilityModifyAllDates() throws InterruptedException, JsonProcessingException, JSONException {
 		given()
 		 	.contentType("application/json")
-			.body("{\"managementStartDate\": 1640996200000, "
-					+ "\"interviewerStartDate\": 1577837800000,"
-					+ "\"identificationPhaseStartDate\": 1641514600000,"
-					+ "\"collectionStartDate\": 1577233000000,"
-					+ "\"collectionEndDate\": 1576801000000,"
-					+ "\"endDate\": 1575937000000}")
+			.body("{\"managementStartDate\": 1575937000000 , "
+					+ "\"interviewerStartDate\": 1576801000000,"
+					+ "\"identificationPhaseStartDate\": 1577233000000,"
+					+ "\"collectionStartDate\": 1577837800000,"
+					+ "\"collectionEndDate\": 1640996200000,"
+					+ "\"endDate\": 1641514600000}")
 		.when()
 			.put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1640996200000L, visi.get().getManagementStartDate());
-    assertEquals(1577837800000L, visi.get().getInterviewerStartDate());
-    assertEquals(1641514600000L, visi.get().getIdentificationPhaseStartDate());
-    assertEquals(1577233000000L, visi.get().getCollectionStartDate());
-    assertEquals(1576801000000L, visi.get().getCollectionEndDate());
-    assertEquals(1575937000000L, visi.get().getEndDate());
+    assertEquals(1575937000000L, visi.get().getManagementStartDate());
+    assertEquals(1576801000000L, visi.get().getInterviewerStartDate());
+    assertEquals(1577233000000L, visi.get().getIdentificationPhaseStartDate());
+    assertEquals(1577837800000L, visi.get().getCollectionStartDate());
+    assertEquals(1640996200000L, visi.get().getCollectionEndDate());
+    assertEquals(1641514600000L, visi.get().getEndDate());
   }
   
   /**
@@ -800,14 +813,14 @@ public class TestNoAuth {
 	public void testPutVisibilityModifyCollectionStartDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given()
 		 	.contentType("application/json")
-			.body("{\"collectionStartDate\": 1577233000000}")
+			.body("{\"collectionStartDate\": 1577847800000}")
 		.when()
     .put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1577233000000L, visi.get().getCollectionStartDate());
+    assertEquals(1577847800000L, visi.get().getCollectionStartDate());
   }
   
   /**
@@ -820,14 +833,14 @@ public class TestNoAuth {
 	public void testPutVisibilityModifyCollectionEndDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given()
 		 	.contentType("application/json")
-			.body("{\"collectionEndDate\": 1577233000000}")
+			.body("{\"collectionEndDate\": 1577857800000}")
 		.when()
 			.put("api/campaign/simpsons2020x00/organizational-unit/OU-NORTH/visibility")
 		.then()
       .statusCode(200);
     Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("simpsons2020x00", "OU-NORTH");
     assertEquals(true, visi.isPresent());
-    assertEquals(1577233000000L, visi.get().getCollectionEndDate());
+    assertEquals(1577857800000L, visi.get().getCollectionEndDate());
   }
   
   /**
@@ -939,7 +952,7 @@ public class TestNoAuth {
 		given().contentType("application/json").when()
 				.put("api/message/"+messageId+"/interviewer/INTW1/read").then().statusCode(200);
 		Optional<Message> message = messageRepository.findById(messageId);
-		assertEquals(message.get().getMessageStatus().get(0).getStatus(), MessageStatusType.REA);
+		assertEquals(MessageStatusType.REA, message.get().getMessageStatus().get(0).getStatus());
 	}
 	
 	/**
