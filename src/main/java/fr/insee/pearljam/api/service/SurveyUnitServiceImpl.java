@@ -144,7 +144,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
 		}
 		return surveyUnitDtoIds.stream().map(idSurveyUnit ->
-			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit))
+			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitIdAndUserId(idSurveyUnit, userId))
 		).collect(Collectors.toList());
 	}
 	

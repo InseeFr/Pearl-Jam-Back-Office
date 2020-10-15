@@ -20,9 +20,10 @@ public interface VisibilityRepository extends JpaRepository<Visibility, String> 
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.visibility.VisibilityDto(vi.managementStartDate, vi.interviewerStartDate, vi.identificationPhaseStartDate, vi.collectionStartDate, vi.collectionEndDate, vi.endDate) "
 			+ "FROM Visibility vi " 
 			+ "INNER JOIN SurveyUnit su ON su.campaign.id = vi.campaign.id "
-			+ "WHERE su.id=?1")
-	VisibilityDto findVisibilityBySurveyUnitId(String surveyUnitId);
-
+			+ "INNER JOIN Interviewer intw ON intw.organizationUnit.id = vi.organizationUnit.id "
+			+ "WHERE su.id=?1 AND LOWER(intw.id) LIKE LOWER(concat('%', concat(?2, '%')))")
+	VisibilityDto findVisibilityBySurveyUnitIdAndUserId(String surveyUnitId, String userId);
+	
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.visibility.VisibilityDto(MIN(vi.managementStartDate), MIN(vi.interviewerStartDate), MIN(vi.identificationPhaseStartDate), MIN(vi.collectionStartDate), MAX(vi.collectionEndDate), MAX(vi.endDate)) "
 			+ "FROM Visibility vi " 
 			+ "INNER JOIN SurveyUnit su ON su.campaign.id = vi.campaign.id "
