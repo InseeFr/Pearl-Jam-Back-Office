@@ -16,6 +16,12 @@ public interface VisibilityRepository extends JpaRepository<Visibility, String> 
 			+ "FROM visibility "
 			+ "WHERE campaign_id=?1 AND organization_unit_id=?2", nativeQuery = true)
 	Optional<Visibility> findVisibilityByCampaignIdAndOuId(String campaignId, String organizationalUnitId);
+	
+	@Query(value = "SELECT new fr.insee.pearljam.api.dto.visibility.VisibilityDto(vi.managementStartDate, vi.interviewerStartDate, vi.identificationPhaseStartDate, vi.collectionStartDate, vi.collectionEndDate, vi.endDate) "
+			+ "FROM Visibility vi " 
+			+ "INNER JOIN SurveyUnit su ON su.campaign.id = vi.campaign.id "
+			+ "WHERE su.id=?1")
+	List<VisibilityDto> findVisibilityBySurveyUnitId(String surveyUnitId);
 
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.visibility.VisibilityDto(vi.managementStartDate, vi.interviewerStartDate, vi.identificationPhaseStartDate, vi.collectionStartDate, vi.collectionEndDate, vi.endDate) "
 			+ "FROM Visibility vi " 

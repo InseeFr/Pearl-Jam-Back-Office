@@ -245,6 +245,7 @@ public class TestNoAuth {
 		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].qnaCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].total",equalTo(4));
 	}
@@ -286,6 +287,7 @@ public class TestNoAuth {
 		.assertThat().body("tbrCount",equalTo(0)).and()
 		.assertThat().body("finCount",equalTo(0)).and()
 		.assertThat().body("qnaCount",equalTo(0)).and()
+		.assertThat().body("qnaFinCount",equalTo(0)).and()
 		.assertThat().body("nvaCount",equalTo(0)).and()
 		.assertThat().body("total",equalTo(2));
 	}
