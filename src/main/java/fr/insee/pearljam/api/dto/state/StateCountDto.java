@@ -28,6 +28,7 @@ public class StateCountDto {
 	private Long tbrCount;
 	private Long finCount;
 	private Long qnaCount;
+	private Long qnaFinCount;
 	private Long nvaCount;
 	private Long total;
 
@@ -50,8 +51,9 @@ public class StateCountDto {
 			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
 			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
 			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
-			this.nvaCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[15]).longValue();
+			this.qnaFinCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
+			this.nvaCount = ((java.math.BigInteger) obj.get(0)[15]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[16]).longValue();
 		}
 	}
 
@@ -72,12 +74,15 @@ public class StateCountDto {
 			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
 			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
 			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
-			this.nvaCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[15]).longValue();
+			this.qnaFinCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
+			this.nvaCount = ((java.math.BigInteger) obj.get(0)[15]).longValue();
+			this.total = ((java.math.BigInteger) obj.get(0)[16]).longValue();
 		}
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
 	}
+	
+
 
 	public StateCountDto() {
 		super();
@@ -293,6 +298,20 @@ public class StateCountDto {
 	 */
 	public void setQnaCount(Long qnaCount) {
 		this.qnaCount = qnaCount;
+	}
+	
+	/**
+	 * @return the qnaFinCount
+	 */
+	public Long getQnaFinCount() {
+		return qnaFinCount;
+	}
+
+	/**
+	 * @param qnaCount the qnaCount to set
+	 */
+	public void setQnaFinCount(Long qnaFinCount) {
+		this.qnaFinCount = qnaFinCount;
 	}
 
 	/**

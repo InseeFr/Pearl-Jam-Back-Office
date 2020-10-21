@@ -143,8 +143,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(!surveyUnitDtoIdsToRemove.isEmpty()) {
 			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
 		}
+		if(userId.equals(GUEST)) {
+			return surveyUnitDtoIds.stream().map(idSurveyUnit ->
+				new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit).get(0))
+					).collect(Collectors.toList());
+		}
 		return surveyUnitDtoIds.stream().map(idSurveyUnit ->
-			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit))
+			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitIdAndUserId(idSurveyUnit, userId))
 		).collect(Collectors.toList());
 	}
 	
