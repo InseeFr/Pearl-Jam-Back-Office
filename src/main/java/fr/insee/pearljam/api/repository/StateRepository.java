@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -34,5 +35,9 @@ public interface StateRepository extends JpaRepository<State, Long> {
 	 * @return State type
 	 */
 	StateDto findFirstDtoBySurveyUnitIdOrderByDateDesc(String surveyUnitId);
+
+	@Query(value="SELECT MAX(s.date) as date FROM state s " + 
+			"WHERE s.type='FIN' AND s.survey_unit_id=?1 ", nativeQuery=true)
+	Long findFinDateBySurveyUnitId(String idSurveyUnit);
 
 }

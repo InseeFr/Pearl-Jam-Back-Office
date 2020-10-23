@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.repository;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -29,7 +31,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE " 
 			+ "organization_unit_id IN (:OuIds) "
 			+ "AND management_start_date <= :date " 
-			+ "AND end_date > :date  ", nativeQuery = true)
+			+ "AND collection_end_date > :date  ", nativeQuery = true)
 	List<String> findAllIdsVisible(@Param("OuIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = "SELECT camp.id " 
@@ -85,7 +87,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "AND interviewer_id=?2 ) " 
 			+ "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery = true)
-	List<Object[]> getStateCount(String campaignId, String interviewerId, Long date);
+	Map<String,BigInteger> getStateCount(String campaignId, String interviewerId, Long date);
 
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
@@ -114,7 +116,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "SELECT id FROM interviewer WHERE organization_unit_id IN (:ouIds)) " 
 			+ ") "
 			+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) " + ") as t", nativeQuery = true)
-	List<Object[]> getStateCountSumByCampaign(@Param("campaignId") String campaignId,
+	Map<String,BigInteger> getStateCountSumByCampaign(@Param("campaignId") String campaignId,
 			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = "SELECT "
@@ -143,7 +145,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "AND interviewer_id=:interviewerId ) "
 			+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) " 
 			+ ") as t", nativeQuery = true)
-	List<Object[]> getStateCountSumByInterviewer(@Param("campaignIds") List<String> campaignId,
+	Map<String,BigInteger> getStateCountSumByInterviewer(@Param("campaignIds") List<String> campaignId,
 			@Param("interviewerId") String interviewerId, @Param("date") Long date);
 
 	@Query(value = "SELECT " 
@@ -172,7 +174,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "AND interviewer_id IN (SELECT int.id FROM interviewer int WHERE int.organization_unit_id =?2 )) "
 			+ "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id) " 
 			+ ") as t", nativeQuery = true)
-	List<Object[]> getStateCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
+	Map<String,BigInteger> getStateCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
 
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
@@ -199,7 +201,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "WHERE campaign_id=?1) " 
 			+ "AND (date<=?2 OR ?2<0) GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery = true)
-	List<Object[]> getStateCountByCampaignId(String campaignId, Long date);
+	Map<String,BigInteger> getStateCountByCampaignId(String campaignId, Long date);
 
 	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
 	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
