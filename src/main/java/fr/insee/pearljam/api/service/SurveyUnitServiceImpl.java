@@ -44,7 +44,6 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 
-
 /**
  * @author scorcaud
  *
@@ -54,10 +53,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitServiceImpl.class);
 
 	private static final String GUEST = "GUEST";
-	
+
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
-	
+
 	@Autowired
 	AddressRepository addressRepository;
 
@@ -66,55 +65,57 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Autowired
 	CommentRepository commentRepository;
-	
+
 	@Autowired
 	ContactAttemptRepository contactAttemptRepository;
-	
+
 	@Autowired
 	ContactOutcomeRepository contactOutcomeRepository;
-	
+
 	@Autowired
 	StateRepository stateRepository;
-	
+
 	@Autowired
 	GeographicalLocationRepository geographicalLocationRepository;
-	
+
 	@Autowired
 	InterviewerRepository interviewerRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	CampaignRepository campaignRepository;
-	
+
 	@Autowired
 	OrganizationUnitRepository ouRepository;
-	
+
 	@Autowired
 	VisibilityRepository visibilityRepository;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	UtilsService utilsService;
-	
+
 	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
 		Optional<SurveyUnit> surveyUnit = null;
-		if(userId.equals(GUEST)) {
+		if (userId.equals(GUEST)) {
 			surveyUnit = surveyUnitRepository.findById(id);
 		} else {
 			surveyUnit = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
-		if(!surveyUnit.isPresent()) {
+		if (!surveyUnit.isPresent()) {
 			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
 			return null;
 		}
-		SurveyUnitDetailDto surveyUnitDetailDto= new SurveyUnitDetailDto(surveyUnit.get());
+		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit.get());
 		surveyUnitDetailDto.setAddress(addressRepository.findDtoById(surveyUnit.get().getAddress().getId()));
-		surveyUnitDetailDto.setGeographicalLocation(new GeographicalLocationDto(surveyUnit.get().getAddress().getGeographicalLocation()));
-		surveyUnitDetailDto.setSampleIdentifiers(sampleIdentifierRepository.findDtoById(surveyUnit.get().getSampleIdentifier().getId()));
+		surveyUnitDetailDto.setGeographicalLocation(
+				new GeographicalLocationDto(surveyUnit.get().getAddress().getGeographicalLocation()));
+		surveyUnitDetailDto.setSampleIdentifiers(
+				sampleIdentifierRepository.findDtoById(surveyUnit.get().getSampleIdentifier().getId()));
 		surveyUnitDetailDto.setComments(commentRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
 		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
@@ -125,72 +126,78 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
 		List<String> surveyUnitDtoIds = null;
 		List<String> surveyUnitDtoIdsToRemove = new ArrayList<>();
-		if(userId.equals(GUEST)) {
+		if (userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
 		} else {
 			surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
 		}
-		if(surveyUnitDtoIds.isEmpty()) {
+		if (surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
-    }
-		for(String id: surveyUnitDtoIds) {
+		}
+		for (String id : surveyUnitDtoIds) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(id).getType();
-			if(currentState != null && !BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState)) {
+			if (currentState != null && !BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState)) {
 				surveyUnitDtoIdsToRemove.add(id);
 			}
 		}
-		if(!surveyUnitDtoIdsToRemove.isEmpty()) {
+		if (!surveyUnitDtoIdsToRemove.isEmpty()) {
 			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
 		}
-		if(userId.equals(GUEST)) {
-			return surveyUnitDtoIds.stream().map(idSurveyUnit ->
-				new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit).get(0))
-					).collect(Collectors.toList());
+		if (userId.equals(GUEST)) {
+			return surveyUnitDtoIds.stream()
+					.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
+							surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
+							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit).get(0)))
+					.collect(Collectors.toList());
 		}
-		return surveyUnitDtoIds.stream().map(idSurveyUnit ->
-			new SurveyUnitDto(idSurveyUnit, surveyUnitRepository.findCampaignDtoById(idSurveyUnit), visibilityRepository.findVisibilityBySurveyUnitIdAndUserId(idSurveyUnit, userId))
-		).collect(Collectors.toList());
+		return surveyUnitDtoIds.stream()
+				.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
+						surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
+						visibilityRepository.findVisibilityBySurveyUnitIdAndUserId(idSurveyUnit, userId)))
+				.collect(Collectors.toList());
 	}
-	
+
 	@Transactional
 	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if(surveyUnitDetailDto == null) {
+		if (surveyUnitDetailDto == null) {
 			LOGGER.error("Survey Unit in parameter is null");
 			return HttpStatus.BAD_REQUEST;
 		}
-		if(!id.equals(surveyUnitDetailDto.getId())) {
+		if (!id.equals(surveyUnitDetailDto.getId())) {
 			LOGGER.error("Survey unit id and id in parameter are different");
 			return HttpStatus.BAD_REQUEST;
 		}
-		if(!surveyUnitDetailDto.isValid()) {
+		if (!surveyUnitDetailDto.isValid()) {
 			LOGGER.error("Survey Unit in parameter is not well formed");
 			return HttpStatus.BAD_REQUEST;
 		}
-		
+
 		Optional<SurveyUnit> surveyUnit = null;
-		if(userId.equals(GUEST)) {
+		if (userId.equals(GUEST)) {
 			surveyUnit = surveyUnitRepository.findById(id);
-		}else {
+		} else {
 			surveyUnit = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
-		if(!surveyUnit.isPresent()) {
+		if (!surveyUnit.isPresent()) {
 			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
 			return HttpStatus.NOT_FOUND;
 		}
-		//Update of SurveyUnit
+		// Update of SurveyUnit
 		LOGGER.info("Start update in DB");
 		surveyUnit.get().setFirstName(surveyUnitDetailDto.getFirstName());
 		surveyUnit.get().setLasttName(surveyUnitDetailDto.getLastName());
 		surveyUnit.get().setPhoneNumbers(surveyUnitDetailDto.getPhoneNumbers());
 		surveyUnitRepository.save(surveyUnit.get());
 		LOGGER.info("Update survey unit ok");
-	
-		if(surveyUnitDetailDto.getAddress()!=null) {
-      InseeAddress inseeAddress;
-      Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.get().getAddress().getId());
-			if(!optionalInseeAddress.isPresent()) {
-				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(), surveyUnit.get().getAddress().getGeographicalLocation());
+
+		if (surveyUnitDetailDto.getAddress() != null) {
+			InseeAddress inseeAddress;
+			Optional<InseeAddress> optionalInseeAddress = addressRepository
+					.findById(surveyUnit.get().getAddress().getId());
+			if (!optionalInseeAddress.isPresent()) {
+				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(),
+						surveyUnit.get().getAddress().getGeographicalLocation());
 			} else {
 				inseeAddress = optionalInseeAddress.get();
 				inseeAddress.setL1(surveyUnitDetailDto.getAddress().getL1());
@@ -201,57 +208,67 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				inseeAddress.setL6(surveyUnitDetailDto.getAddress().getL6());
 				inseeAddress.setL7(surveyUnitDetailDto.getAddress().getL7());
 			}
-			//Update Address
+			// Update Address
 			addressRepository.save(inseeAddress);
 		}
 		LOGGER.info("Update address ok");
-		
+
 //Update Comment
-		for(CommentDto commentDto : surveyUnitDetailDto.getComments()) {
-			Comment comment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType()).orElseGet(Comment::new);
-      
-      comment.setSurveyUnit(surveyUnit.get());
+		for (CommentDto commentDto : surveyUnitDetailDto.getComments()) {
+			Comment comment = commentRepository.findBySurveyUnitAndType(surveyUnit.get(), commentDto.getType())
+					.orElseGet(Comment::new);
+
+			comment.setSurveyUnit(surveyUnit.get());
 			comment.setType(commentDto.getType());
 			comment.setValue(commentDto.getValue());
 			commentRepository.save(comment);
 		}
 		LOGGER.info("Update comments ok");
-		
-		//Update State
-		for(StateDto stateDto : surveyUnitDetailDto.getStates()) {
+
+		// Update State
+		for (StateDto stateDto : surveyUnitDetailDto.getStates()) {
 			Optional<StateDto> s = stateRepository.findDtoById(stateDto.getId());
-			if(!s.isPresent()) {
+			if (!s.isPresent()) {
 				stateRepository.save(new State(stateDto.getDate(), surveyUnit.get(), stateDto.getType()));
-				if(StateType.WFS==stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.get().getId()).getType()) {
-					if(surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.get().getInterviewer().getId(), surveyUnit.get().getCampaign().getId(), surveyUnit.get().getId())<3){
+				if (StateType.WFS == stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.get().getId())
+						.getType()) {
+					if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(
+							surveyUnit.get().getInterviewer().getId(), surveyUnit.get().getCampaign().getId(),
+							surveyUnit.get().getId()) < 3) {
 						stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.TBR));
 					} else {
 						stateRepository.save(new State(new Date().getTime(), surveyUnit.get(), StateType.FIN));
 					}
 				}
 			}
-			
+
 		}
 		LOGGER.info("Update states ok");
-		
-		//Update ContactAttempt
-		for(ContactAttemptDto contactAttemptDto : surveyUnitDetailDto.getContactAttempts()) {
-			Optional<ContactAttempt> optionalContactAttempt = contactAttemptRepository.findBySurveyUnitAndStatus(surveyUnit.get(), contactAttemptDto.getStatus());
-			if(!optionalContactAttempt.isPresent()) {
-				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(), contactAttemptDto.getStatus(), surveyUnit.get()));
+
+		// Update ContactAttempt
+		for (ContactAttemptDto contactAttemptDto : surveyUnitDetailDto.getContactAttempts()) {
+			Optional<ContactAttempt> optionalContactAttempt = contactAttemptRepository
+					.findBySurveyUnitAndStatus(surveyUnit.get(), contactAttemptDto.getStatus());
+			if (!optionalContactAttempt.isPresent()) {
+				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(),
+						contactAttemptDto.getStatus(), surveyUnit.get()));
 			} else {
-				contactAttemptRepository.deleteByIdAndStatus(optionalContactAttempt.get().getId(), optionalContactAttempt.get().getStatus());
-				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(), contactAttemptDto.getStatus(), surveyUnit.get()));
+				contactAttemptRepository.deleteByIdAndStatus(optionalContactAttempt.get().getId(),
+						optionalContactAttempt.get().getStatus());
+				contactAttemptRepository.save(new ContactAttempt(contactAttemptDto.getDate(),
+						contactAttemptDto.getStatus(), surveyUnit.get()));
 			}
 		}
 		LOGGER.info("Update contact attempts ok");
-		
-		//Update ContactOutcome
-		if(surveyUnitDetailDto.getContactOutcome()!=null){
-      ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get()).orElseGet(ContactOutcome::new);
+
+		// Update ContactOutcome
+		if (surveyUnitDetailDto.getContactOutcome() != null) {
+			ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit.get())
+					.orElseGet(ContactOutcome::new);
 			contactOutcome.setDate(surveyUnitDetailDto.getContactOutcome().getDate());
 			contactOutcome.setType(surveyUnitDetailDto.getContactOutcome().getType());
-			contactOutcome.setTotalNumberOfContactAttempts(surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
+			contactOutcome.setTotalNumberOfContactAttempts(
+					surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
 			contactOutcome.setSurveyUnit(surveyUnit.get());
 			contactOutcomeRepository.save(contactOutcome);
 		}
@@ -259,40 +276,38 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		LOGGER.info("Finish update in DB");
 		return HttpStatus.OK;
 	}
-	
+
 	public List<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<SurveyUnitCampaignDto> surveyUnitCampaignReturned = new ArrayList<>();
 		List<String> surveyUnitDtoIds = new ArrayList<>();
-    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
-    
+		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
 
-    if(state == null || state.isEmpty()) {
-      for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-        surveyUnitDtoIds.addAll(
-          surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId()).stream()
-            .filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList())
-        );
-      }
-    } else {
-      for(OrganizationUnitDto organizationUnitDto : organizationUnits) {
-        surveyUnitDtoIds.addAll(
-          surveyUnitRepository.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId()).stream()
-            .filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList())
-        );
-      }
-    }
-		
-		if(surveyUnitDtoIds.isEmpty()) {
+		if (state == null || state.isEmpty()) {
+			for (OrganizationUnitDto organizationUnitDto : organizationUnits) {
+				surveyUnitDtoIds
+						.addAll(surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId())
+								.stream().filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList()));
+			}
+		} else {
+			for (OrganizationUnitDto organizationUnitDto : organizationUnits) {
+				surveyUnitDtoIds.addAll(surveyUnitRepository
+						.findIdsByCampaignIdAndStateAndOu(campaignId, state, organizationUnitDto.getId()).stream()
+						.filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList()));
+			}
+		}
+
+		if (surveyUnitDtoIds.isEmpty()) {
 			LOGGER.error("No Survey Unit found for the user {}", userId);
 			return List.of();
 		}
-		for(String idSurveyUnit : surveyUnitDtoIds) {
+		for (String idSurveyUnit : surveyUnitDtoIds) {
 			SurveyUnitCampaignDto surveyUnit = new SurveyUnitCampaignDto();
 			surveyUnit.setId(idSurveyUnit);
 			surveyUnit.setSsech(sampleIdentifierRepository.findSsechBySurveyUnitId(idSurveyUnit));
-			surveyUnit.setInterviewer( interviewerRepository.findInterviewersDtoBySurveyUnitId(idSurveyUnit));
+			surveyUnit.setInterviewer(interviewerRepository.findInterviewersDtoBySurveyUnitId(idSurveyUnit));
+			surveyUnit.setFinalizationDate(stateRepository.findFinDateBySurveyUnitId(idSurveyUnit));
 			String locationAndCity = addressRepository.findLocationAndCityBySurveyUnitId(idSurveyUnit);
-			if(locationAndCity.contains(" ")) {
+			if (locationAndCity.contains(" ")) {
 				surveyUnit.setLocation(locationAndCity.split(" ")[0]);
 				surveyUnit.setCity(locationAndCity.split(" ")[1]);
 			} else {
@@ -301,22 +316,21 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			}
 			surveyUnitCampaignReturned.add(surveyUnit);
 		}
-		return surveyUnitCampaignReturned;		
+		return surveyUnitCampaignReturned;
 	}
 
 	@Transactional
 	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
-		if(su.isPresent()) {
+		if (su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
-			if(Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
+			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), state));
 				return HttpStatus.OK;
-			}
-			else {
+			} else {
 				return HttpStatus.FORBIDDEN;
 			}
-			
+
 		} else {
 			return HttpStatus.BAD_REQUEST;
 		}
@@ -324,11 +338,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public List<StateDto> getListStatesBySurveyUnitId(String suId) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(suId);
-		if(!su.isPresent()) {
+		if (!su.isPresent()) {
 			LOGGER.error("SU {} not found", suId);
 			return List.of();
 		}
 		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);
-		
+
 	}
 }

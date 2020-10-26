@@ -13,6 +13,8 @@ public class SurveyUnitCampaignDto {
 	
 	private String city;
 	
+	private Long finalizationDate;
+	
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
 	
@@ -28,12 +30,13 @@ public class SurveyUnitCampaignDto {
 	 * @param ssech
 	 * @param interviewer
 	 */
-	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, InterviewerDto interviewer) {
+	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, InterviewerDto interviewer) {
 		super();
 		this.id = id;
 		this.ssech = ssech;
 		this.location = location;
 		this.city = city;
+		this.finalizationDate = finalizationDate;
 		this.interviewer = interviewer;
 	}
 	public SurveyUnitCampaignDto() {
@@ -80,6 +83,18 @@ public class SurveyUnitCampaignDto {
 	 */
 	public void setCity(String city) {
 		this.city = city;
+	}
+	/**
+	 * @return the finalizationDate
+	 */
+	public Long getFinalizationDate() {
+		return finalizationDate;
+	}
+	/**
+	 * @param finalizationDate the finalizationDate to set
+	 */
+	public void setFinalizationDate(Long finalizationDate) {
+		this.finalizationDate = finalizationDate;
 	}
 	/**
 	 * @return the interviewer

@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.state;
 
-import java.util.List;
+import java.math.BigInteger;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -32,52 +33,31 @@ public class StateCountDto {
 	private Long nvaCount;
 	private Long total;
 
-	
-
-	public StateCountDto(List<Object[]> obj) {
+	public StateCountDto(Map<String, BigInteger> obj) {
 		super();
-		if (obj != null && !obj.isEmpty() && obj.get(0).length > 13 && obj.get(0)[0] != null) {
-			this.nvmCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
-			this.nnsCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
-			this.anvCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
-			this.vinCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
-			this.vicCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
-			this.prcCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
-			this.aocCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
-			this.apsCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
-			this.insCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
-			this.wftCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
-			this.wfsCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
-			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
-			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
-			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
-			this.qnaFinCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
-			this.nvaCount = ((java.math.BigInteger) obj.get(0)[15]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[16]).longValue();
+		if (obj != null && !obj.isEmpty()) {
+			this.nvmCount = obj.get("nvmCount")!=null?obj.get("nvmCount").longValue():0L;
+			this.nnsCount = obj.get("nnsCount")!=null?obj.get("nnsCount").longValue():0L;
+			this.anvCount = obj.get("anvCount")!=null?obj.get("anvCount").longValue():0L;
+			this.vinCount = obj.get("vinCount")!=null?obj.get("vinCount").longValue():0L;
+			this.vicCount = obj.get("vicCount")!=null?obj.get("vicCount").longValue():0L;
+			this.prcCount = obj.get("prcCount")!=null?obj.get("prcCount").longValue():0L;
+			this.aocCount = obj.get("aocCount")!=null?obj.get("aocCount").longValue():0L;
+			this.apsCount = obj.get("apsCount")!=null?obj.get("apsCount").longValue():0L;
+			this.insCount = obj.get("insCount")!=null?obj.get("insCount").longValue():0L;
+			this.wftCount = obj.get("wftCount")!=null?obj.get("wftCount").longValue():0L;
+			this.wfsCount = obj.get("wfsCount")!=null?obj.get("wfsCount").longValue():0L;
+			this.tbrCount = obj.get("tbrCount")!=null?obj.get("tbrCount").longValue():0L;
+			this.finCount = obj.get("finCount")!=null?obj.get("finCount").longValue():0L;
+			this.qnaCount = obj.get("qnaCount")!=null?obj.get("qnaCount").longValue():0L;
+			this.qnaFinCount = obj.get("qnaFinCount")!=null?obj.get("qnaFinCount").longValue():0L;
+			this.nvaCount = obj.get("nvaCount")!=null?obj.get("nvaCount").longValue():0L;
+			this.total = obj.get("total")!=null?obj.get("total").longValue():0L;
 		}
 	}
 
-	public StateCountDto(String idDem, String labelDem, List<Object[]> obj) {
-		super();
-		if (obj != null && !obj.isEmpty() && obj.get(0).length > 13 && obj.get(0)[0] != null) {
-			this.nvmCount = ((java.math.BigInteger) obj.get(0)[0]).longValue();
-			this.nnsCount = ((java.math.BigInteger) obj.get(0)[1]).longValue();
-			this.anvCount = ((java.math.BigInteger) obj.get(0)[2]).longValue();
-			this.vinCount = ((java.math.BigInteger) obj.get(0)[3]).longValue();
-			this.vicCount = ((java.math.BigInteger) obj.get(0)[4]).longValue();
-			this.prcCount = ((java.math.BigInteger) obj.get(0)[5]).longValue();
-			this.aocCount = ((java.math.BigInteger) obj.get(0)[6]).longValue();
-			this.apsCount = ((java.math.BigInteger) obj.get(0)[7]).longValue();
-			this.insCount = ((java.math.BigInteger) obj.get(0)[8]).longValue();
-			this.wftCount = ((java.math.BigInteger) obj.get(0)[9]).longValue();
-			this.wfsCount = ((java.math.BigInteger) obj.get(0)[10]).longValue();
-			this.tbrCount = ((java.math.BigInteger) obj.get(0)[11]).longValue();
-			this.finCount = ((java.math.BigInteger) obj.get(0)[12]).longValue();
-			this.qnaCount = ((java.math.BigInteger) obj.get(0)[13]).longValue();
-			this.qnaFinCount = ((java.math.BigInteger) obj.get(0)[14]).longValue();
-			this.nvaCount = ((java.math.BigInteger) obj.get(0)[15]).longValue();
-			this.total = ((java.math.BigInteger) obj.get(0)[16]).longValue();
-		}
+	public StateCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
+		this(obj);
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
 	}
