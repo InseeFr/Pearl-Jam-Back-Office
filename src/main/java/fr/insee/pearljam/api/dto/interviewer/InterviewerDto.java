@@ -8,8 +8,8 @@ import fr.insee.pearljam.api.domain.Interviewer;
 public class InterviewerDto {
 	private String id;
 	private String interviewerFirstName;
-  private String interviewerLastName;
-  private Long surveyUnitCount;
+	private String interviewerLastName;
+	private Long surveyUnitCount;
 
 	
 	public InterviewerDto(String id, String interviewerFirstName, String interviewerLastName, Long surveyUnitCount) {
