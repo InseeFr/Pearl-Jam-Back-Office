@@ -288,6 +288,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 						.addAll(surveyUnitRepository.findIdsByCampaignIdAndOu(campaignId, organizationUnitDto.getId())
 								.stream().filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList()));
 			}
+		} else if(state.equalsIgnoreCase(StateType.FIN.toString())) {
+			for (OrganizationUnitDto organizationUnitDto : organizationUnits) {
+				surveyUnitDtoIds.addAll(surveyUnitRepository
+						.findIdsTerminatedByCampaignIdAndStateAndOu(campaignId, organizationUnitDto.getId()).stream()
+						.filter(id -> !surveyUnitDtoIds.contains(id)).collect(Collectors.toList()));
+			}
 		} else {
 			for (OrganizationUnitDto organizationUnitDto : organizationUnits) {
 				surveyUnitDtoIds.addAll(surveyUnitRepository

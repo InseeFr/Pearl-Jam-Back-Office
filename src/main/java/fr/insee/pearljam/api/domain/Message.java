@@ -54,19 +54,6 @@ public class Message {
 	*/
 	@ManyToOne
 	private User sender;
-	
-	// /**
-	// * The email of the Message 
-	// */
-	// @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
-	// private List<OUMessageRecipient> ouMessageRecipients;
-  
-	// /**
-	// * The email of the Message 
-	// */
-	// @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
-	// private List<InterviewerMessageRecipient> InterviewerMessageRecipients;
-  
   
   	/**
 	 * The List of campaign for the Interviewer
@@ -222,7 +209,7 @@ public class Message {
 	 * @param the email of the Message
 	 */
 	public void setMessageStatus(List<MessageStatus> messageStatus ) {
-		this.messageStatus = messageStatus;
+		this.messageStatus.addAll(messageStatus);
 	}
 
 	/**

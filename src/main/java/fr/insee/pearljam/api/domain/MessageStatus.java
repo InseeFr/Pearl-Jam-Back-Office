@@ -3,6 +3,8 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -46,6 +48,7 @@ public class MessageStatus implements Serializable {
 	private Interviewer interviewer;
   
 	@Column
+	@Enumerated(EnumType.STRING)
 	MessageStatusType status;
 	
 	public MessageStatus(){

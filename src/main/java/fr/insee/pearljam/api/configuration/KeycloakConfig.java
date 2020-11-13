@@ -100,11 +100,12 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole,userNationalRole)
 		.antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
-		.antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole, interviewerRole)
         .antMatchers(Constants.API_GET_MESSAGES).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_VERIFY).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
-		.antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(interviewerRole)
+        .antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole)
 		.anyRequest().denyAll(); 
 	}
 	

@@ -221,7 +221,7 @@ public class TestAuthKeyCloak {
 		.assertThat().body("toReview",hasItem(0)).and()
 		.assertThat().body("finalized",hasItem(0)).and()
 		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
-		.assertThat().body("preference",hasItem(true));
+		.assertThat().body("preference",hasItem(false));
 	}
 	
 	/**
@@ -269,8 +269,8 @@ public class TestAuthKeyCloak {
 		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].nnsCount",equalTo(3)).and()
     	.assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].vinCount",equalTo(1)).and()
-		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].vinCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].vicCount",equalTo(1)).and()
 		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
@@ -313,8 +313,8 @@ public class TestAuthKeyCloak {
 		.assertThat().body("nvmCount",equalTo(0)).and()
 		.assertThat().body("nnsCount",equalTo(1)).and()
     	.assertThat().body("anvCount",equalTo(0)).and()
-		.assertThat().body("vinCount",equalTo(1)).and()
-		.assertThat().body("vicCount",equalTo(0)).and()
+		.assertThat().body("vinCount",equalTo(0)).and()
+		.assertThat().body("vicCount",equalTo(1)).and()
 		.assertThat().body("prcCount",equalTo(0)).and()
 		.assertThat().body("aocCount",equalTo(0)).and()
 		.assertThat().body("apsCount",equalTo(0)).and()
@@ -386,7 +386,7 @@ public class TestAuthKeyCloak {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("NNS")).and()
+		.assertThat().body("states[0].type", equalTo("VIC")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
@@ -972,6 +972,7 @@ public class TestAuthKeyCloak {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("INTW1");
 		MessageDto message = new MessageDto("TEST", recipients);
+		message.setSender("abc");
 		given().auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/message").then().statusCode(200);
 		List<MessageDto> messages = messageRepository
@@ -1029,12 +1030,29 @@ public class TestAuthKeyCloak {
 	@Test
 	@Order(43)
 	public void testPutMessageAsRead() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
 		given().auth().oauth2(accessToken).contentType("application/json").when()
 				.put("api/message/" + messageId + "/interviewer/INTW1/read").then().statusCode(200);
 		Optional<Message> message = messageRepository.findById(messageId);
 		assertEquals(MessageStatusType.REA, message.get().getMessageStatus().get(0).getStatus());
+	}
+	
+	/**
+	 * Test that the put endpoint "api/message/{id}/interviewer/{idep}/delete" 
+	 * return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(44)
+	public void testPutMessageAsDelete() throws InterruptedException, JsonProcessingException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		given().auth().oauth2(accessToken).contentType("application/json").when()
+				.put("api/message/" + messageId + "/interviewer/INTW1/delete").then().statusCode(200);
+		Optional<Message> message = messageRepository.findById(messageId);
+		assertEquals(MessageStatusType.DEL, message.get().getMessageStatus().get(0).getStatus());
 	}
 
 	/**
@@ -1044,9 +1062,9 @@ public class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(44)
+	@Order(45)
 	public void testPutMessageAsReadWrongId() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
 		given().auth().oauth2(accessToken).contentType("application/json").when()
 				.put("api/message/" + messageId + "/interviewer/Test/read").then().statusCode(404);
@@ -1059,7 +1077,7 @@ public class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(45)
+	@Order(46)
 	public void testGetMessageHistory() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken).when().get("api/message-history").then().statusCode(200).and()
@@ -1073,13 +1091,32 @@ public class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(46)
+	@Order(47)
 	public void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		WsText message = new WsText("INTW1");
 		given().auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/verify-name").then()
 				.statusCode(200).and().assertThat().body("id", hasItem("INTW1"));
+	}
+	
+	/**
+	 * Test that the POST endpoint "api/message" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(48)
+	public void testPostMessageSysteme() throws InterruptedException, JsonProcessingException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
+		List<String> recipients = new ArrayList<String>();
+		recipients.add("INTW2");
+		MessageDto message = new MessageDto("Synchronisation", recipients);
+		given().auth().oauth2(accessToken).contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/message").then().statusCode(200);
+		List<MessageDto> messages = messageRepository
+				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW2"));
+		assertEquals("Synchronisation", messages.get(0).getText());
 	}
 	
 }

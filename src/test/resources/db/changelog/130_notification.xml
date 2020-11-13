@@ -38,7 +38,7 @@
             <column name="message_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="INT"/>
+            <column name="status" type="VARCHAR(3)"/>
         </createTable>
     </changeSet>
     <changeSet author="scorcaud (generated)" id="1601546046889-5">

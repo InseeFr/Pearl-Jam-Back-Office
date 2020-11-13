@@ -19,7 +19,7 @@ INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALU
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('22', '+3351231231236');
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('23', '+3351231231237');
 
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504459838, 'NNS', '11');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504459838, 'VIC', '11');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504468838, 'NNS', '12');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504472342, 'NNS', '13');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '14');
@@ -31,3 +31,4 @@ INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NN
 INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'simpsons2020x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
 INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'vqs2021x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
 INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-SOUTH', 'vqs2021x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
+
