@@ -24,7 +24,6 @@ INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(ep
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '11');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '12');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '12');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '12');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '13');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '13');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '13');

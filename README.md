@@ -82,7 +82,9 @@ keycloak.bearer-only=true
 keycloak.principal-attribute:preferred_username
 
 #Keycloak roles
-fr.insee.pearljam.interviewer.role=interviewer
+fr.insee.pearljam.interviewer.role=investigator
+fr.insee.pearljam.user.local.role=manager_local
+fr.insee.pearljam.user.national.role=manager_national
 ```
 
 #### External log file
@@ -108,12 +110,56 @@ Before committing code please ensure,
 3 - All newly implemented APIs are documented  
 4 - All newly added properties are documented  
 
-## End-Points
+## End-Points for PearlJam application
 - `GET /survey-units` : GET the list of survey unit for current user
 
 - `GET /survey-unit/{id}` : GET the detail of specific survey unit 
 
-- `PUT /survey-unit/{id}` : PUT the detail of specific survey unit  
+- `PUT /survey-unit/{id}` : PUT the detail of specific survey unit 
+
+- `PUT /campaign/{id}/collection-dates` : PUT the collection dates for a campaign
+
+- `PUT /campaign/{id}/organisational-unit/{id}/visibility` : PUT the visibility dates for a campaign and an organizational unit
+
+- `POST /message` : POST a message
+
+- `PUT /message/{id}/interviewer/{idep}/read` : Put a message to status read for an interviewer
+
+- `PUT /message/{id}/interviewer/{idep}/delete` : Put a message to status delete for an interviewer
+
+- `GET /message/{id}` : Get a message by his id
+
+- `GET /message-history` : Get the message history for the user
+
+- `POST /verify-name` : GET matching interviewers and campaigns
+
+## End-Points for Sonor application
+- `GET /api/user` : GET the current user
+
+- `GET /api/campaigns` : GET the detail of the campaign for the user 
+
+- `GET /campaign/{id}/interviewers` : GET the detail of the interviewers associated with a campaign
+
+- `GET /campaign/{id}/survey-units[?state=XXX]` : GET the detail of survey unit for a campaign (optional parameter state of the survey-unit)
+
+- `GET /campaign/{id}/survey-units/interviewer/{idep}/state-count` : GET the state-count of each survey-unit for a specific campaign and interviewer
+
+- `GET /campaign/{id}/survey-units/state-count` : GET the state-count of each survey-unit for a specific campaign
+
+- `GET /campaigns/survey-units/state-count` : GET the state-count of each survey-unit
+
+- `GET /interviewers/survey-units/state-count ` : GET the state-count of each survey-unit associated with the interviewer
+
+- `GET /campaign/{id}/survey-units/not-attributed` : GET the number of survey-unit "not attributed" for a specific campaign
+
+- `GET /campaign/{id}/survey-units/abandoned` : GET the number of survey-unit "abandoned" for a specific campaign
+
+- `GET /survey-unit/{id}/states` : GET all the states of a specific survey-unit
+
+- `PUT /survey-unit/{id}/state/{state}` : PUT a new state for a specific survey-unit
+
+- `PUT /preferences` : PUT preferences for an interviewer
+
 
 ## Libraries used
 - spring-boot-jpa
