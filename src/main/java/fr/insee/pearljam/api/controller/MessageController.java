@@ -121,7 +121,7 @@ public class MessageController {
 	/**
 	* Retreives message history
 	*/
-	@ApiOperation(value = "Update Messages with campaigns listed in request body")
+	@ApiOperation(value = "Get the message history")
 	@GetMapping(path = "/message-history")
 	public ResponseEntity<Object> getMessageHistory(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
@@ -136,7 +136,7 @@ public class MessageController {
 	/**
 	* Retreives matching interviewers and campaigns
 	*/
-	@ApiOperation(value = "Update Messages with campaigns listed in request body")
+	@ApiOperation(value = "Update Messages with campaigns or interviewers listed in request body")
 	@PostMapping(path = "/verify-name")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @RequestBody WsText name) {
 		String userId = utilsService.getUserId(request);

@@ -8,9 +8,13 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -137,6 +141,53 @@ public class TestAuthKeyCloak {
 		}
 	}
 	
+	/**
+	 * This method is use to check if the dates are correct
+	 * @param dateType
+	 * @param date
+	 * @return
+	 */
+	private boolean testingDates(String dateType, long date) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		LocalDate localDateNow = LocalDate.now();
+		boolean check = false;
+		LocalDate value = LocalDate.parse(df.format(date));
+		switch(dateType) {
+			case ("managementStartDate") :
+				if(value.equals(localDateNow.minusDays(4))) {
+					check = true;
+				}
+				break;
+			case ("interviewerStartDate") :
+				if(value.equals(localDateNow.minusDays(3))) {
+					check = true;
+				}
+				break;
+			case ("identificationPhaseStartDate") :
+				if(value.equals(localDateNow.minusDays(2))) {
+					check = true;
+				}
+				break;
+			case ("collectionStartDate") :
+				if(value.equals(localDateNow.plusDays(2))) {
+					check = true;
+				}
+				break;
+			case ("collectionEndDate") :
+				if(value.equals(localDateNow.plusMonths(1))) {
+					check = true;
+				}
+				break;
+			case ("endDate") :
+				if(value.equals(localDateNow.plusMonths(2))) {
+					check = true;
+				}
+				break;
+			default:
+				return check;
+		}
+		return check;
+	}
 	/***
 	 * This method retreive the access token of the keycloak client
 	 * @param clientId
@@ -209,12 +260,6 @@ public class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().get("api/campaigns").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("simpsons2020x00")).and()
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
-		.assertThat().body("managementStartDate",hasItem(1575936000000L)).and()
-		.assertThat().body("interviewerStartDate",hasItem(1576800000000L)).and()
-		.assertThat().body("identificationPhaseStartDate",hasItem(1577232000000L)).and()
-		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
-		.assertThat().body("collectionEndDate", hasItem(1640995200000L)).and()
-		.assertThat().body("endDate",hasItem(1641513600000L)).and()
 		.assertThat().body("allocated",hasItem(4)).and()
 		.assertThat().body("toAffect",hasItem(0)).and()
 		.assertThat().body("toFollowUp",hasItem(0)).and()
@@ -222,6 +267,15 @@ public class TestAuthKeyCloak {
 		.assertThat().body("finalized",hasItem(0)).and()
 		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
 		.assertThat().body("preference",hasItem(false));
+		
+		//Testing dates
+		assertTrue(testingDates("managementStartDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("managementStartDate[0]")));
+		assertTrue(testingDates("interviewerStartDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("interviewerStartDate[0]")));
+		assertTrue(testingDates("identificationPhaseStartDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("identificationPhaseStartDate[0]")));
+		assertTrue(testingDates("collectionStartDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("collectionStartDate[0]")));
+		assertTrue(testingDates("collectionEndDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("collectionEndDate[0]")));
+		assertTrue(testingDates("endDate", given().auth().oauth2(accessToken).when().get("api/campaigns").path("endDate[0]")));
+
 	}
 	
 	/**
@@ -267,10 +321,10 @@ public class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
 		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
 		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].nnsCount",equalTo(3)).and()
-    	.assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].vinCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].vicCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].nnsCount",equalTo(0)).and()
+    	.assertThat().body("organizationUnits[0].anvCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].vinCount",equalTo(3)).and()
+		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].apsCount",equalTo(0)).and()
@@ -311,10 +365,10 @@ public class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
 		.assertThat().body("idDem", equalTo(null)).and()
 		.assertThat().body("nvmCount",equalTo(0)).and()
-		.assertThat().body("nnsCount",equalTo(1)).and()
-    	.assertThat().body("anvCount",equalTo(0)).and()
-		.assertThat().body("vinCount",equalTo(0)).and()
-		.assertThat().body("vicCount",equalTo(1)).and()
+		.assertThat().body("nnsCount",equalTo(0)).and()
+    	.assertThat().body("anvCount",equalTo(1)).and()
+		.assertThat().body("vinCount",equalTo(1)).and()
+		.assertThat().body("vicCount",equalTo(0)).and()
 		.assertThat().body("prcCount",equalTo(0)).and()
 		.assertThat().body("aocCount",equalTo(0)).and()
 		.assertThat().body("apsCount",equalTo(0)).and()
@@ -386,7 +440,7 @@ public class TestAuthKeyCloak {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("VIC")).and()
+		.assertThat().body("states[0].type", equalTo("NNS")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
@@ -404,13 +458,16 @@ public class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().get("api/survey-units").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
-		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020")).and()
-		.assertThat().body("managementStartDate",hasItem(1575936000000L)).and()
-		.assertThat().body("interviewerStartDate",hasItem(1576800000000L)).and()
-		.assertThat().body("identificationPhaseStartDate",hasItem(1577232000000L)).and()
-		.assertThat().body("collectionStartDate",hasItem(1577836800000L)).and()
-		.assertThat().body("collectionEndDate",hasItem(1640995200000L)).and()
-		.assertThat().body("endDate",hasItem(1641513600000L));
+		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020"));
+		
+		//Testing dates
+		assertTrue(testingDates("managementStartDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("managementStartDate[0]")));
+		assertTrue(testingDates("interviewerStartDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("interviewerStartDate[0]")));
+		assertTrue(testingDates("identificationPhaseStartDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("identificationPhaseStartDate[0]")));
+		assertTrue(testingDates("collectionStartDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("collectionStartDate[0]")));
+		assertTrue(testingDates("collectionEndDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("collectionEndDate[0]")));
+		assertTrue(testingDates("endDate", given().auth().oauth2(accessToken).when().get("api/survey-units").path("endDate[0]")));
+
 	}
 	
 	

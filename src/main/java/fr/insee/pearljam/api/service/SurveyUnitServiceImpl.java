@@ -135,6 +135,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			LOGGER.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
 		}
+		if (userId.equals(GUEST)) {
+			return surveyUnitDtoIds.stream()
+					.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
+							surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
+							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit).get(0)))
+					.collect(Collectors.toList());
+		}
 		for (String id : surveyUnitDtoIds) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(id).getType();
 			if (currentState != null && !BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState)) {
@@ -143,13 +150,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		if (!surveyUnitDtoIdsToRemove.isEmpty()) {
 			surveyUnitDtoIds.removeAll(surveyUnitDtoIdsToRemove);
-		}
-		if (userId.equals(GUEST)) {
-			return surveyUnitDtoIds.stream()
-					.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
-							surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
-							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit).get(0)))
-					.collect(Collectors.toList());
 		}
 		return surveyUnitDtoIds.stream()
 				.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,

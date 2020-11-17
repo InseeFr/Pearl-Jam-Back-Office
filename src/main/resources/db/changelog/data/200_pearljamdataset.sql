@@ -1,5 +1,5 @@
-INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('simpsons2020x00', 1640995200000, 1577836800000, 'Survey on the Simpsons tv show 2020');
-INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('vqs2021x00', 1640995200000, 1577836800000, 'Everyday life and health survey 2021');
+INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('simpsons2020x00', (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '5 DAY'))*1000), 'Survey on the Simpsons tv show 2020');
+INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('vqs2021x00', (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '5 DAY'))*1000), 'Everyday life and health survey 2021');
 
 INSERT INTO public.survey_unit (id, first_name, last_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id) VALUES ('11', 'Ted', 'Farmer', TRUE, 1, 'simpsons2020x00', 'INTW1', 1);
 INSERT INTO public.survey_unit (id, first_name, last_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id) VALUES ('12', 'Cecilia', 'Ortega', TRUE, 2, 'simpsons2020x00', 'INTW1', 2);
@@ -19,15 +19,31 @@ INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALU
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('22', '+3351231231236');
 INSERT INTO public.survey_unit_phone_numbers(survey_unit_id, phone_numbers) VALUES ('23', '+3351231231237');
 
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504459838, 'NNS', '11');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504468838, 'NNS', '12');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504472342, 'NNS', '13');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '14');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '20');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '21');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '22');
-INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'NNS', '23');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '11');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '11');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '11');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '12');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '12');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '12');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '13');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '13');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '13');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '14');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '14');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '14');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '20');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '20');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '20');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '21');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '21');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '21');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '22');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '22');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '22');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 HOURS'))*1000), 'NNS', '23');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 HOURS'))*1000), 'ANV', '23');
+INSERT INTO public.state (date, type, survey_unit_id) VALUES ((SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 HOURS'))*1000), 'VIN', '23');
 
-INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'simpsons2020x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
-INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'vqs2021x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
-INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-SOUTH', 'vqs2021x00',  1640995200000, 1577836800000, 1641513600000, 1577232000000, 1576800000000, 1575936000000);
+INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'simpsons2020x00',  (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));
+INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'vqs2021x00',  (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));
+INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-SOUTH', 'vqs2021x00',  (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));
