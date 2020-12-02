@@ -81,11 +81,22 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"AND ou.id ILIKE ?3 ", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndStateAndOu(String id, String state, String ouId);
 	
+	@Query(value="SELECT su.id as id FROM survey_unit su " + 
+			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
+			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
+			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
+			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
+			"INNER JOIN state st on st.survey_unit_id = su.id AND int.organization_unit_id = ou.id "+
+			"WHERE camp.id =?1 AND EXISTS (SELECT 1 FROM state s where s.type ='FIN' AND s.survey_unit_id = su.id)" +  
+			"AND st.date = (SELECT MAX(date) FROM state WHERE survey_unit_id=su.id) "+ 
+			"AND ou.id ILIKE ?2 ", nativeQuery=true)
+	List<String> findIdsTerminatedByCampaignIdAndStateAndOu(String id, String ouId);
 	
 	@Query(value="SELECT "
 			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
 			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
-			+ "SUM(CASE WHEN type='FIN' THEN 1 ELSE 0 END) AS finalized, "
+			+ "SUM(CASE WHEN type IN ('FIN', 'QNA') AND EXISTS (SELECT 1 FROM state s where s.type ='FIN' AND s.survey_unit_id = t.survey_unit_id) THEN 1 ELSE 0 END) "
+			+ "AS finalized, "
 			+ "COUNT(DISTINCT t.survey_unit_id) AS allocated "
 			+ "FROM ( "
 			+ "SELECT survey_unit_id, type, date FROM state WHERE (survey_unit_id, date) IN ("

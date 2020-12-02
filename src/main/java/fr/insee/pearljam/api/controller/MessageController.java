@@ -50,9 +50,12 @@ public class MessageController {
 	@PostMapping(path = "/message")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @RequestBody MessageDto message) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if(StringUtils.isBlank(userId) || (!utilsService.existUser(userId, Constants.INTERVIEWER) && !utilsService.existUser(userId, Constants.USER))) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
+			if(!userId.equals(Constants.GUEST) && utilsService.existUser(userId, Constants.USER) && !userId.equalsIgnoreCase(message.getSender())) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
 			String text = message.getText();
 			List<String> recipients = message.getRecipients();
 			LOGGER.info("POST text '{}' ", text);
@@ -65,16 +68,34 @@ public class MessageController {
 	}
 
 	/**
-	* This method is used to mark a message with id: {id} as read for the interviewer {idep}
+	* This method is used to mark a message as read with id: {id} as read for the interviewer {idep}
 	*/
 	@ApiOperation(value = "Mark a message as read")
 	@PutMapping(path = "/message/{id}/interviewer/{idep}/read")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @PathVariable(value = "id") Long id, @PathVariable(value = "idep") String idep) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = messageService.markAsRead(id, idep);
+			if (returnCode == HttpStatus.OK){
+		        this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()), "new message");
+		      }
+			return new ResponseEntity<>(returnCode);
+		}
+  }
+	
+	/**
+	* This method is used to mark a message as deleted with id: {id} as read for the interviewer {idep}
+	*/
+	@ApiOperation(value = "Mark a message as deleted")
+	@PutMapping(path = "/message/{id}/interviewer/{idep}/delete")
+	public ResponseEntity<Object> postDeletedMessage(HttpServletRequest request, @PathVariable(value = "id") Long id, @PathVariable(value = "idep") String idep) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = messageService.markAsDeleted(id, idep);
 			if (returnCode == HttpStatus.OK){
 		        this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()), "new message");
 		      }
@@ -100,7 +121,7 @@ public class MessageController {
 	/**
 	* Retreives message history
 	*/
-	@ApiOperation(value = "Update Messages with campaigns listed in request body")
+	@ApiOperation(value = "Get the message history")
 	@GetMapping(path = "/message-history")
 	public ResponseEntity<Object> getMessageHistory(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
@@ -115,7 +136,7 @@ public class MessageController {
 	/**
 	* Retreives matching interviewers and campaigns
 	*/
-	@ApiOperation(value = "Update Messages with campaigns listed in request body")
+	@ApiOperation(value = "Update Messages with campaigns or interviewers listed in request body")
 	@PostMapping(path = "/verify-name")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @RequestBody WsText name) {
 		String userId = utilsService.getUserId(request);

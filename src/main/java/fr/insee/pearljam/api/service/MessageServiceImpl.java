@@ -41,25 +41,25 @@ public class MessageServiceImpl implements MessageService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
 
 	@Autowired
-  MessageRepository messageRepository;
+	MessageRepository messageRepository;
   
-  @Autowired
-  UserRepository userRepository;
-  
-  @Autowired
-  UserService userService;
-
-  @Autowired
-  InterviewerRepository interviewerRepository;
-  
-  @Autowired
-  CampaignRepository campaignRepository;
-
-  @Autowired
-  OrganizationUnitRepository organizationUnitRepository;
-  
-  @Autowired
-  private SimpMessagingTemplate brokerMessagingTemplate;
+	@Autowired
+	UserRepository userRepository;
+	  
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	InterviewerRepository interviewerRepository;
+	  
+	@Autowired
+	CampaignRepository campaignRepository;
+	
+	@Autowired
+	OrganizationUnitRepository organizationUnitRepository;
+	
+	@Autowired
+	private SimpMessagingTemplate brokerMessagingTemplate;
 
 
   public HttpStatus markAsRead(Long id, String idep){
@@ -71,11 +71,36 @@ public class MessageServiceImpl implements MessageService {
 		  List<MessageStatus> statusList = message.getMessageStatus();
 		  if (statusList == null) {
 			  statusList = new ArrayList<>();
+		  } else {
+			  message.getMessageStatus().removeAll(statusList);
 		  }
 		  List<MessageStatus> newList = statusList.stream()
 				  .filter(c -> c.getInterviewer().getId() != interv.get().getId())
 				  .collect(Collectors.toList());
 		  newList.add(new MessageStatus(message, interv.get(), MessageStatusType.REA));
+		  message.setMessageStatus(newList);
+		  messageRepository.save(message);
+		  return HttpStatus.OK;
+	  }
+    return HttpStatus.NOT_FOUND;
+  }
+  
+  public HttpStatus markAsDeleted(Long id, String idep){
+	  Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
+	  Optional<Message> msg = messageRepository.findById(id);
+	  if(interv.isPresent() && msg.isPresent()){
+		  LOGGER.info("trying to save");
+		  Message message = msg.get();
+		  List<MessageStatus> statusList = message.getMessageStatus();
+		  if (statusList == null) {
+			  statusList = new ArrayList<>();
+		  } else {
+			  message.getMessageStatus().removeAll(statusList);
+		  }
+		  List<MessageStatus> newList = statusList.stream()
+				  .filter(c -> c.getInterviewer().getId() != interv.get().getId())
+				  .collect(Collectors.toList());
+		  newList.add(new MessageStatus(message, interv.get(), MessageStatusType.DEL));
 		  message.setMessageStatus(newList);
 		  messageRepository.save(message);
 		  return HttpStatus.OK;
@@ -102,27 +127,33 @@ public class MessageServiceImpl implements MessageService {
     Message message = new Message(text, sender, System.currentTimeMillis());
     
     for(String recipient : recipients){
-      if (recipient.equals("All")) {
-    	  for (String OUId : userOUIds) {
-    		  Optional<OrganizationUnit> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
-              if (ouRecipient.isPresent()){
-                ouMessageRecipients.add(ouRecipient.get());
-              }
-    	  }
-      }
-      else {
-        Optional<Interviewer> interviewerRecipient = interviewerRepository.findByIdIgnoreCase(recipient);
-        if (interviewerRecipient.isPresent()){
-          interviewerMessageRecipients.add(interviewerRecipient.get());
-        }
-        else {
-            Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
-            if (camp.isPresent()){
-              campaignMessageRecipients.add(camp.get());
-              interviewerMessageRecipients.addAll(interviewerRepository.findInterviewersWorkingOnCampaign(camp.get().getId(), userOUIds));
-            }
-        }
-      }
+    	if(!recipient.equals(userId)){
+    		if (recipient.equals("All")) {
+	    	  for (String OUId : userOUIds) {
+	    		  Optional<OrganizationUnit> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
+	              if (ouRecipient.isPresent()){
+	                ouMessageRecipients.add(ouRecipient.get());
+	              } else {
+	            	  return HttpStatus.BAD_REQUEST;
+	              }
+	    	  }
+    		} else {
+	        Optional<Interviewer> interviewerRecipient = interviewerRepository.findByIdIgnoreCase(recipient);
+	        if (interviewerRecipient.isPresent()){
+	          interviewerMessageRecipients.add(interviewerRecipient.get());
+	        } else {
+	            Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
+	            if (camp.isPresent()){
+	              campaignMessageRecipients.add(camp.get());
+	              interviewerMessageRecipients.addAll(interviewerRepository.findInterviewersWorkingOnCampaign(camp.get().getId(), userOUIds));
+	            } else {
+	            	return HttpStatus.BAD_REQUEST;
+	            }
+	        }
+	      }
+    	} else {
+    		return HttpStatus.FORBIDDEN;
+    	}
     }
     
     List<Interviewer> uniqueInterviwerRecipients = interviewerMessageRecipients.stream()
@@ -157,11 +188,19 @@ public class MessageServiceImpl implements MessageService {
 	      }
 	    }
 	    List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
+	    List<MessageDto> messagesDeleted = new ArrayList<>();
 	    for(MessageDto message : messages) {
 	    	List<Integer> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
 	    	if(!status.isEmpty()) {
-	    		message.setStatus(status.get(0));
+	    		if(!status.get(0).equals(1)) {
+	    			message.setStatus(status.get(0));
+	    		} else {
+	    			messagesDeleted.add(message);
+	    		}
 	    	}
+	    }
+	    if(!messagesDeleted.isEmpty()) {
+	    	messages.removeAll(messagesDeleted);
 	    }
 	    return messages;
 	}

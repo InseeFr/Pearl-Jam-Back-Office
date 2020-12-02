@@ -38,6 +38,7 @@ public class Constants {
   	public static final String API_VERIFY = "/api/verify-name";
   	public static final String API_MESSAGE_HISTORY = "/api/message-history";
   	public static final String API_MESSAGE_MARK_AS_READ = "/api/message/{id}/interviewer/{idep}/read";
+  	public static final String API_MESSAGE_MARK_AS_DELETED = "/api/message/{id}/interviewer/{idep}/delete";
 	
 	// Error messages
 	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";

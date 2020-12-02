@@ -25,7 +25,7 @@ public interface MessageService {
 	
   HttpStatus addMessage(String text, List<String> recipients, String userId);
   HttpStatus markAsRead(Long id, String idep);
-  
+  HttpStatus markAsDeleted(Long id, String idep);
   List<MessageDto> getMessages(String interviewerId);
   List<VerifyNameResponseDto> verifyName(String text, String userId);
   List<MessageDto> getMessageHistory(String userId);

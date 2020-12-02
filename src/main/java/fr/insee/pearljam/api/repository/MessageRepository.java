@@ -75,6 +75,5 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 			  + "ON ou.id = oumr.organizationUnit.id "
 			  + "WHERE oumr.message.id = :messageId ")
 	List<VerifyNameResponseDto> getOuRecipients(@Param("messageId") Long messageId);
-	
 
 }
