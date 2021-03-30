@@ -97,7 +97,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	UserService userService;
 
 	@Autowired
-	UtilsService utilsService;
+  UtilsService utilsService;
+  
+  public boolean checkHabilitation(String userId, String id) {
+    return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent();
+  }
 
 	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
 		Optional<SurveyUnit> surveyUnit = null;

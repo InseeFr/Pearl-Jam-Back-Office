@@ -23,6 +23,7 @@ import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
+import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
@@ -173,6 +174,25 @@ public class SurveyUnitController {
 				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 			}
 		}
+  }
+  
+  /**
+	 * This method is used to check if a user has access to an SU
+	 */
+	@ApiOperation(value = "Check habilitation")
+	@GetMapping(path = "/check-habilitation")
+	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request,
+			@RequestParam(value = "id", required = true) String id) {
+    String userId = utilsService.getUserId(request);
+    HabilitationDto resp = new HabilitationDto();
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+      resp.setHabilitated(false);
+			return new ResponseEntity<>(resp, HttpStatus.OK);
+    } 
+    
+    boolean habilitated = surveyUnitService.checkHabilitation(userId, id);
+    resp.setHabilitated(habilitated);
+    return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	/**

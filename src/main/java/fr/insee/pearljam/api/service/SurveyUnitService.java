@@ -60,6 +60,8 @@ public interface SurveyUnitService {
 	 * @param suId
 	 * @return {@link List} of {@link StateDto}
 	 */
-	List<StateDto> getListStatesBySurveyUnitId(String suId);
+  List<StateDto> getListStatesBySurveyUnitId(String suId);
+  
+  boolean checkHabilitation(String userId, String id);
 
 }
