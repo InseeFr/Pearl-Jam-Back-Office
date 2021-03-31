@@ -42,7 +42,8 @@ jobs:
           release_name: Release ${{steps.version.outputs.prop}}
           draft: false
           prerelease: false
-  docker:
+  docker:  
+    if: "false"
     needs: build
     runs-on: ubuntu-latest
     steps:

@@ -23,8 +23,7 @@ jobs:
         with:
           name: war
           path: target/*.war
-  release:  
-    if: "false"
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
