@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -30,8 +31,13 @@ import javax.persistence.JoinColumn;
 
 @Entity
 @Table
-public class Message {
+public class Message implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1439604738865064692L;
+
 	public Message(){
 		super();
 	}
@@ -60,21 +66,21 @@ public class Message {
 	 */
 	@ManyToMany
 	@JoinTable(name = "interviewerMessageRecipient", joinColumns = { @JoinColumn(name = "message_id") }, inverseJoinColumns = { @JoinColumn(name = "interviewer_id") })
-	public List<Interviewer> interviewerMessageRecipients;
+	private List<Interviewer> interviewerMessageRecipients;
 
 	/**
 	 * The List of campaign for the Interviewer
 	 */
 	@ManyToMany
 	@JoinTable(name = "ouMessageRecipient", joinColumns = { @JoinColumn(name = "message_id") }, inverseJoinColumns = { @JoinColumn(name = "organization_unit_id") })
-	public List<OrganizationUnit> ouMessageRecipients;
+	private List<OrganizationUnit> ouMessageRecipients;
 	
 	/**
 	 * The List of campaign for the Interviewer
 	 */
 	@ManyToMany
 	@JoinTable(name = "campaignMessageRecipient", joinColumns = { @JoinColumn(name = "message_id") }, inverseJoinColumns = { @JoinColumn(name = "campaign_id") })
-	public List<Campaign> campaignMessageRecipients;
+	private List<Campaign> campaignMessageRecipients;
 
 	/**
 	 * The reference to visibility table

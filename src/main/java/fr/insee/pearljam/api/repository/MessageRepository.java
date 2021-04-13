@@ -39,7 +39,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 		    + "on m.id = imr.message_id "
 		    + "inner join interviewer interv "
 		    + "on interv.id = imr.interviewer_id "
-		    + "where interv.organization_unit_id IN (:organizationUnitIds)) "
+		    + "inner join survey_unit su "
+		    + "on su.interviewer_id = interv.id "
+		    + "where su.organization_unit_id IN (:organizationUnitIds)) "
 		    + "OR m.id in (SELECT DISTINCT(oumr.message_id) FROM oumessage_recipient oumr WHERE oumr.organization_unit_id IN (:organizationUnitIds)) "
 		    + "OR 'GUEST' IN (:organizationUnitIds) ", nativeQuery=true)
 		    List<Long> getAllOrganizationMessagesIds(@Param("organizationUnitIds") List<String> organizationUnitIds);
@@ -52,7 +54,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	@Query(value="select status from message_status "
 			+ "where message_id = ?1 "
 		    + "and interviewer_id = ?2", nativeQuery=true)
-	List<Integer> getMessageStatus(Long messageId, String interviewerId);
+	List<String> getMessageStatus(Long messageId, String interviewerId);
 	
 	
 	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(interv.id,  'interviewer', concat(interv.firstName, ' ', interv.lastName)) "
@@ -73,7 +75,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 			  + "FROM OUMessageRecipient oumr "
 			  + "INNER JOIN OrganizationUnit ou "
 			  + "ON ou.id = oumr.organizationUnit.id "
-			  + "WHERE oumr.message.id = :messageId ")
+			  + "WHERE oumr.message.id = :messageId "
+			  + "AND NOT EXISTS (SELECT 1 FROM OUMessageRecipient oumr2 "
+			  + "WHERE oumr.organizationUnit.organizationUnitParent.id = oumr2.organizationUnit.id "
+			  + "AND oumr2.message.id=:messageId )")
 	List<VerifyNameResponseDto> getOuRecipients(@Param("messageId") Long messageId);
 
 }

@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
@@ -44,6 +48,8 @@ import io.swagger.annotations.ApiOperation;
 public class SurveyUnitController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitController.class);
+
+	private static final String GUEST = "GUEST";
 
 	@Autowired
 	SurveyUnitService surveyUnitService;
@@ -90,7 +96,12 @@ public class SurveyUnitController {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
+		} 
+		Optional<SurveyUnit> su = surveyUnitService.findById(id);
+		if(su.isPresent()) {
+			if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
 			SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
 			if (surveyUnit == null) {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
@@ -99,7 +110,12 @@ public class SurveyUnitController {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
 				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 			}
+			
 		}
+		else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
 	}
 
 	/**
@@ -147,6 +163,77 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(returnCode);
 		}
 	}
+	
+	/**
+	 * This method closes the survey unit {id} with the closing cause {closingCause}
+	 * Updates the closing cause if the SU is already closed
+	 * 
+	 * @param request
+	 * @param id
+	 * @param closingCause
+	 * @return {@link HttpStatus}
+	 */
+	@ApiOperation(value = "Closes a survey unit")
+	@PutMapping(path = "/survey-unit/{id}/close/{closingCause}")
+	public ResponseEntity<Object> closeSurveyUnit(HttpServletRequest request,
+			@PathVariable(value = "id") String surveyUnitId, @PathVariable(value = "closingCause") ClosingCauseType closingCause) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = surveyUnitService.closeSurveyUnit(surveyUnitId, closingCause);
+			LOGGER.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
+					returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	/**
+	 * This method adds or updates the closing cause of the survey unit {id}
+	 * but does not modify its state
+	 * 
+	 * @param request
+	 * @param id
+	 * @param closingCause
+	 * @return {@link HttpStatus}
+	 */
+	@ApiOperation(value = "Add Closing cause")
+	@PutMapping(path = "/survey-unit/{id}/closing-cause/{closingCause}")
+	public ResponseEntity<Object> updateClosingCause(HttpServletRequest request,
+			@PathVariable(value = "id") String surveyUnitId, @PathVariable(value = "closingCause") ClosingCauseType closingCause) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
+			LOGGER.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
+					returnCode.value());  
+			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	/**
+	 * This method is used to update the comment of a Survey Unit
+	 * 
+	 * @param request
+	 * @param listSU
+	 * @param state
+	 * @return {@link HttpStatus}
+	 */
+	@ApiOperation(value = "Update the state of Survey Units listed in request body")
+	@PutMapping(path = "/survey-unit/{id}/comment")
+	public ResponseEntity<Object> updateSurveyUnitComment(HttpServletRequest request,
+			@RequestBody CommentDto comment, @PathVariable(value = "id") String surveyUnitId) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = surveyUnitService.updateSurveyUnitComment(userId, surveyUnitId, comment);
+			LOGGER.info("PUT comment on su {} resulting in {}", surveyUnitId,
+					returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
 
 	/**
 	 * This method is using to get survey units of a specific campaign
@@ -165,7 +252,7 @@ public class SurveyUnitController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
+			Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
 			if (surveyUnit == null) {
 				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -221,4 +308,42 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(new SurveyUnitStatesDto(id, lstState), HttpStatus.OK);
 		}
 	}
+	
+	/**
+	 * This method is using to get the list of states for a specific survey unit
+	 * 
+	 * @param request
+	 * @param id
+	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
+	 *         or NOT_FOUND
+	 */
+	@ApiOperation(value = "Get closable survey units")
+	@GetMapping(path = "/survey-units/closable")
+	public ResponseEntity<Object> getClosableSurveyUnits(HttpServletRequest request) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			LOGGER.info("GET closable survey units resulting in 401");
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits();
+			LOGGER.info("GET closable survey units resulting in 200");
+			return new ResponseEntity<>(lstSu, HttpStatus.OK);
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -33,6 +33,10 @@ public class ApplicationProperties {
 	 */
 	private String crosOrigin;
 	
+	private String guestOU;
+	
+
+
 	/**
 	 * @return the mode of authentication
 	 */
@@ -61,5 +65,13 @@ public class ApplicationProperties {
 	 */
 	public void setCrosOrigin(String crosOrigin) {
 		this.crosOrigin = crosOrigin;
+	}
+	
+	public String getGuestOU() {
+		return guestOU;
+	}
+
+	public void setGuestOU(String guestOU) {
+		this.guestOU = guestOU;
 	}
 }

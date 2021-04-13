@@ -1,0 +1,108 @@
+package fr.insee.pearljam.api.service.impl;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.service.DataSetInjectorService;
+
+
+@Service
+@Transactional
+public class DataSetInjectorServiceImpl implements DataSetInjectorService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetInjectorServiceImpl.class);
+	
+	@Autowired
+	private EntityManagerFactory emf;
+	
+	@Autowired
+	private CampaignRepository campaignRepository;
+
+
+	
+	
+	public HttpStatus createDataSet() {
+		LOGGER.info("Dataset creation start");
+		EntityManager em = emf.createEntityManager();
+		
+		if(campaignRepository.findById("simpsons2020x00").isPresent()){
+			return HttpStatus.NOT_MODIFIED;
+		}
+
+		try (
+			InputStream csvFileInputStream = getClass().getClassLoader()
+				.getResource("dataset//geographicallocationdataset.csv").openStream();
+			InputStream sqlFileInputStream = getClass().getClassLoader()
+	                .getResource("dataset//insert_test_data.sql").openStream()
+				){
+			
+			
+	        BufferedReader csvFileBufferedReader = new BufferedReader( new InputStreamReader(csvFileInputStream));
+	        insertFromCSV(csvFileBufferedReader, em);
+			
+	        BufferedReader sqlFileBufferedReader = new BufferedReader( new InputStreamReader(sqlFileInputStream));
+	        executeStatements(sqlFileBufferedReader, em);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return HttpStatus.NOT_MODIFIED;
+		}
+		
+		return HttpStatus.OK;
+		
+	}
+		
+	public HttpStatus deleteDataSet() {
+		LOGGER.info("Dataset creation start");
+
+		try (InputStream sqlFileInputStream = getClass().getClassLoader()
+	                .getResource("dataset//delete_data.sql").openStream()){		
+			EntityManager em = emf.createEntityManager();
+	        BufferedReader sqlFileBufferedReader = new BufferedReader( new InputStreamReader(sqlFileInputStream));
+	        executeStatements(sqlFileBufferedReader, em);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return HttpStatus.NOT_MODIFIED;
+		}
+		
+		return HttpStatus.OK;
+		
+	}
+	
+	
+	void executeStatements(BufferedReader br, EntityManager entityManager) throws IOException {
+	    String line;
+	    while( (line = br.readLine()) != null )
+	    {
+	    	entityManager.joinTransaction();
+	        entityManager.createNativeQuery(line).executeUpdate();
+	    }
+	}
+	
+	void insertFromCSV(BufferedReader br, EntityManager entityManager) throws IOException {
+	    String line;
+	    while( (line = br.readLine()) != null )
+	    {
+	    	String[] args = line.split(",");
+	    	String query = "INSERT INTO public.geographical_location (id, label) "
+	    			+ String.format("VALUES('%1$s' , '%2$s');",args[0], args[1]);
+	    	entityManager.joinTransaction();
+	        entityManager.createNativeQuery(query).executeUpdate();
+	    }
+	}
+
+	
+
+}

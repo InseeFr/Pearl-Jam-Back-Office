@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.service;
+package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +19,7 @@ import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.UserService;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -62,13 +63,15 @@ public class UserServiceImpl implements UserService {
 				return null;
 			}
 		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
 			if(ouNat.isPresent()) {
 				getOrganizationUnits(organizationUnits, ouNat.get(), false);
-				return new UserDto("", "Guest", "",  ouRepository.findDtoByIdIgnoreCase("OU-NATIONAL").get(), organizationUnits);
-			} else {
-				return new UserDto("", "Guest", "",  new OrganizationUnitDto("OU-NORTH","Guest organizational unit"), List.of());
+				Optional<OrganizationUnitDto> ou =  ouRepository.findDtoByIdIgnoreCase(applicationProperties.getGuestOU());
+				if(ou.isPresent()) {
+					return new UserDto("", "Guest", "",  ou.get(), organizationUnits);
+				}
 			}
+			return new UserDto("", "Guest", "",  new OrganizationUnitDto("OU-NORTH","Guest organizational unit"), List.of());
 		}
 	}
 
@@ -95,14 +98,16 @@ public class UserServiceImpl implements UserService {
 			}
 	  }
 		else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NATIONAL");
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
 			if(ouNat.isPresent()) {
-				userService.getOrganizationUnits(organizationUnits, ouRepository.findByIdIgnoreCase("OU-NATIONAL").get(), saveAllLevels);
-			}
-			else {
+				userService.getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
+			} else {
 				List<String> natOus = ouRepository.findNationalOUs();
 				if (!natOus.isEmpty()) {
-					userService.getOrganizationUnits(organizationUnits, ouRepository.findByIdIgnoreCase(natOus.get(0)).get(), saveAllLevels);
+					Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.get(0));
+					if(ou.isPresent()) {
+						userService.getOrganizationUnits(organizationUnits, ou.get(), saveAllLevels);
+					}
 				}
 			}
 		}
