@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.service;
+package fr.insee.pearljam.api.service.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +12,7 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 
 @Service
@@ -45,6 +48,9 @@ public class UtilsServiceImpl implements UtilsService {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	Environment environment;
 
 	public String getUserId(HttpServletRequest request) {
 		String userId = null;
@@ -112,5 +118,21 @@ public class UtilsServiceImpl implements UtilsService {
 			return false;
 		}
 		return true;
+	}
+	
+	@Override
+	public boolean isDevProfile() {
+		for (final String profileName : environment.getActiveProfiles()) {
+	        if("dev".equals(profileName)) return true;
+	    }   
+	    return false;
+	}
+	
+	@Override
+	public boolean isTestProfile() {
+		for (final String profileName : environment.getActiveProfiles()) {
+	        if("test".equals(profileName)) return true;
+	    }   
+	    return false;
 	}
 }

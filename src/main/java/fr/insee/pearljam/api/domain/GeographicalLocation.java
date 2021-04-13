@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,7 +14,12 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class GeographicalLocation {
+public class GeographicalLocation implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5032423587947124086L;
+
 	/**
 	* The id of GeographicalLocation 
 	*/

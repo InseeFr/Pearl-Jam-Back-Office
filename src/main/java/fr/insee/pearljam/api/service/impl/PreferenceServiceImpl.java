@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.service;
+package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,8 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.UserService;
 
 @Service
 public class PreferenceServiceImpl implements PreferenceService {

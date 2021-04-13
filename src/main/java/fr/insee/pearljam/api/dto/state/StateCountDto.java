@@ -1,10 +1,12 @@
 package fr.insee.pearljam.api.dto.state;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 
@@ -31,28 +33,21 @@ public class StateCountDto {
 	private Long qnaCount;
 	private Long qnaFinCount;
 	private Long nvaCount;
+	private Long npaCount;
+	private Long npiCount;
+	private Long rowCount;
 	private Long total;
 
 	public StateCountDto(Map<String, BigInteger> obj) {
 		super();
 		if (obj != null && !obj.isEmpty()) {
-			this.nvmCount = obj.get("nvmCount")!=null?obj.get("nvmCount").longValue():0L;
-			this.nnsCount = obj.get("nnsCount")!=null?obj.get("nnsCount").longValue():0L;
-			this.anvCount = obj.get("anvCount")!=null?obj.get("anvCount").longValue():0L;
-			this.vinCount = obj.get("vinCount")!=null?obj.get("vinCount").longValue():0L;
-			this.vicCount = obj.get("vicCount")!=null?obj.get("vicCount").longValue():0L;
-			this.prcCount = obj.get("prcCount")!=null?obj.get("prcCount").longValue():0L;
-			this.aocCount = obj.get("aocCount")!=null?obj.get("aocCount").longValue():0L;
-			this.apsCount = obj.get("apsCount")!=null?obj.get("apsCount").longValue():0L;
-			this.insCount = obj.get("insCount")!=null?obj.get("insCount").longValue():0L;
-			this.wftCount = obj.get("wftCount")!=null?obj.get("wftCount").longValue():0L;
-			this.wfsCount = obj.get("wfsCount")!=null?obj.get("wfsCount").longValue():0L;
-			this.tbrCount = obj.get("tbrCount")!=null?obj.get("tbrCount").longValue():0L;
-			this.finCount = obj.get("finCount")!=null?obj.get("finCount").longValue():0L;
-			this.qnaCount = obj.get("qnaCount")!=null?obj.get("qnaCount").longValue():0L;
-			this.qnaFinCount = obj.get("qnaFinCount")!=null?obj.get("qnaFinCount").longValue():0L;
-			this.nvaCount = obj.get("nvaCount")!=null?obj.get("nvaCount").longValue():0L;
-			this.total = obj.get("total")!=null?obj.get("total").longValue():0L;
+			for(String str : Constants.STATE_COUNT_FIELDS) {
+				try {
+					setLongField(str, obj.get(str)!=null ? obj.get(str).longValue() : 0L);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					e.printStackTrace();
+				} 
+			}
 		}
 	}
 
@@ -66,6 +61,18 @@ public class StateCountDto {
 
 	public StateCountDto() {
 		super();
+	}
+	
+	public void addClausingCauseCount(Map<String, BigInteger> obj) {
+		if (obj != null && !obj.isEmpty()) {
+			for(String str : Constants.CLOSING_CAUSE_FIELDS) {
+				try {
+					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					e.printStackTrace();
+				} 
+			}
+		}
 	}
 
 	/**
@@ -307,6 +314,30 @@ public class StateCountDto {
 	public void setNvaCount(Long nvaCount) {
 		this.nvaCount = nvaCount;
 	}
+	
+	public Long getNpaCount() {
+		return npaCount;
+	}
+
+	public void setNpaCount(Long npaCount) {
+		this.npaCount = npaCount;
+	}
+
+	public Long getNpiCount() {
+		return npiCount;
+	}
+
+	public void setNpiCount(Long npiCount) {
+		this.npiCount = npiCount;
+	}
+
+	public Long getRowCount() {
+		return rowCount;
+	}
+
+	public void setRowCount(Long rowCount) {
+		this.rowCount = rowCount;
+	}
 
 	/**
 	 * @return the total
@@ -349,6 +380,12 @@ public class StateCountDto {
 
 	public void setInterviewer(InterviewerDto interviewer) {
 		this.interviewer = interviewer;
+	}
+	
+	public void setLongField(String fieldName, Long value)
+	        throws NoSuchFieldException, IllegalAccessException {
+	    Field field = getClass().getDeclaredField(fieldName);
+	    field.set(this, value);
 	}
 
 }

@@ -51,21 +51,10 @@ public class CampaignMessageRecipientId implements Serializable{
 	/**
 	 * @param messageId the campaignId to set
 	 */
-	public void setCampaignId(Long messageId) {
+	public void setMessageId(Long messageId) {
 		this.messageId = messageId;
 	}
 
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        return false;
-    }
- 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMessageId(), getCampaignId());
-    }
-  
     /**
 	 * @return the campaignId
 	 */
@@ -74,10 +63,20 @@ public class CampaignMessageRecipientId implements Serializable{
 	}
 
 	/**
-	 * @param InterviewerId the campaignId to set
+	 * @param campaignId the campaignId to set
 	 */
-	public void CampaignId(String campaignId) {
+	public void setCampaignId(String campaignId) {
 		this.campaignId = campaignId;
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        return (this == o);
+    }
+ 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMessageId(), getCampaignId());
+    }
 
 }

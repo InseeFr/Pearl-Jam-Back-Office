@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.service;
+package fr.insee.pearljam.api.service.impl;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
@@ -34,6 +34,8 @@ import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.MessageService;
+import fr.insee.pearljam.api.service.UserService;
 
 
 @Service
@@ -128,7 +130,7 @@ public class MessageServiceImpl implements MessageService {
     
     for(String recipient : recipients){
     	if(!recipient.equals(userId)){
-    		if (recipient.equals("All")) {
+    		if (recipient.equalsIgnoreCase("All") || recipient.equalsIgnoreCase("Tous")) {
 	    	  for (String OUId : userOUIds) {
 	    		  Optional<OrganizationUnit> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
 	              if (ouRecipient.isPresent()){
@@ -138,18 +140,18 @@ public class MessageServiceImpl implements MessageService {
 	              }
 	    	  }
     		} else {
-	        Optional<Interviewer> interviewerRecipient = interviewerRepository.findByIdIgnoreCase(recipient);
-	        if (interviewerRecipient.isPresent()){
-	          interviewerMessageRecipients.add(interviewerRecipient.get());
-	        } else {
-	            Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
-	            if (camp.isPresent()){
-	              campaignMessageRecipients.add(camp.get());
-	              interviewerMessageRecipients.addAll(interviewerRepository.findInterviewersWorkingOnCampaign(camp.get().getId(), userOUIds));
-	            } else {
-	            	return HttpStatus.BAD_REQUEST;
-	            }
-	        }
+		        Optional<Interviewer> interviewerRecipient = interviewerRepository.findByIdIgnoreCase(recipient);
+		        if (interviewerRecipient.isPresent()){
+		          interviewerMessageRecipients.add(interviewerRecipient.get());
+		        } else {
+		            Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
+		            if (camp.isPresent()){
+		              campaignMessageRecipients.add(camp.get());
+		              interviewerMessageRecipients.addAll(interviewerRepository.findInterviewersWorkingOnCampaign(camp.get().getId(), userOUIds));
+		            } else {
+		            	return HttpStatus.BAD_REQUEST;
+		            }
+		        }
 	      }
     	} else {
     		return HttpStatus.FORBIDDEN;
@@ -190,9 +192,9 @@ public class MessageServiceImpl implements MessageService {
 	    List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
 	    List<MessageDto> messagesDeleted = new ArrayList<>();
 	    for(MessageDto message : messages) {
-	    	List<Integer> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
+	    	List<String> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
 	    	if(!status.isEmpty()) {
-	    		if(!status.get(0).equals(1)) {
+	    		if(!status.get(0).equals("REA")) {
 	    			message.setStatus(status.get(0));
 	    		} else {
 	    			messagesDeleted.add(message);
@@ -214,7 +216,7 @@ public class MessageServiceImpl implements MessageService {
 	  List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
 	    for(MessageDto message : messages) {
 	    	List<VerifyNameResponseDto> recipients = messageRepository.getCampaignRecipients(message.getId());
-	    	List<String> interviewerIds = new ArrayList<>();
+        List<String> interviewerIds = new ArrayList<>();
 	    	for(VerifyNameResponseDto recipient : recipients) {
 	    		interviewerIds.addAll(interviewerRepository.findInterviewersWorkingOnCampaign(recipient.getId(), userOUIds)
 	    				.stream().map(Interviewer::getId).collect(Collectors.toList()));
@@ -223,7 +225,10 @@ public class MessageServiceImpl implements MessageService {
 	    			.stream().filter(inter -> !interviewerIds.contains(inter.getId()))
 	    			.collect(Collectors.toList()));
 	    	
-	    	recipients.addAll(messageRepository.getOuRecipients(message.getId()));
+	    	
+	    	recipients.addAll(
+	          messageRepository.getOuRecipients(message.getId())
+	        );
 	    	
 	    	message.setTypedRecipients(recipients);
 	    	
@@ -237,10 +242,11 @@ public class MessageServiceImpl implements MessageService {
 		List<VerifyNameResponseDto> returnValue = new ArrayList<>();
 		List<String> userOUIds = userService.getUserOUs(userId, true)
 				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
-		Pageable topFifteen = PageRequest.of(0, 15);
-		returnValue.addAll(interviewerRepository.findMatchingInterviewers(text, userOUIds, topFifteen));
-		returnValue.addAll(campaignRepository.findMatchingCampaigns(text, userOUIds, topFifteen));
-		return returnValue;
+	    Pageable topFifteen = PageRequest.of(0, 15);
 
+	    	returnValue.addAll(interviewerRepository.findMatchingInterviewers(text, userOUIds, topFifteen));
+		    returnValue.addAll(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
+
+		return returnValue;
 	}
 }

@@ -5,9 +5,12 @@ import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -18,11 +21,18 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.service.impl.DataSetInjectorServiceImpl;
 
 @SpringBootApplication(scanBasePackages = "fr.insee.pearljam.api")
 @EnableJpaRepositories(basePackageClasses = SurveyUnitRepository.class)
 public class ApiApplication extends SpringBootServletInitializer{
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApiApplication.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ApiApplication.class);
+	
+	@Autowired
+    private DataSetInjectorServiceImpl injector;
+	
+	@Value("${spring.profiles.active}")
+    private String profile;
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(ApiApplication.class);
@@ -45,18 +55,25 @@ public class ApiApplication extends SpringBootServletInitializer{
     public void handleContextRefresh(ContextRefreshedEvent event) {
 
         final Environment env = event.getApplicationContext().getEnvironment();
-        LOGGER.info("================================ Properties =================================");
+        LOG.info("================================ Properties =================================");
         final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
         StreamSupport.stream(sources.spliterator(), false)
-                .filter(ps -> ps instanceof EnumerablePropertySource)
+                .filter(EnumerablePropertySource.class::isInstance)
                 .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
                 .flatMap(Arrays::stream)
                 .distinct()
                 .filter(prop -> !(prop.contains("credentials") || prop.contains("password")))
                 .filter(prop -> prop.startsWith("fr.insee") || prop.startsWith("logging") || prop.startsWith("keycloak") || prop.startsWith("spring") || prop.startsWith("application"))
                 .sorted()
-                .forEach(prop -> LOGGER.info("{}: {}", prop, env.getProperty(prop)));
-        LOGGER.info("============================================================================");
+                .forEach(prop -> LOG.info("{}: {}", prop, env.getProperty(prop)));
+        LOG.info("============================================================================");
     }
+	
+	@EventListener(ApplicationReadyEvent.class)
+	public void doSomethingAfterStartup() {
+	    if(profile.contains("dev") && !profile.contains("test")) {
+	    	injector.createDataSet();
+	    }
+	}
 
 }

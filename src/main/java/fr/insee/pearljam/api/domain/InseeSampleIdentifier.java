@@ -10,6 +10,10 @@ import javax.persistence.Entity;
 */
 @Entity
 public class InseeSampleIdentifier extends SampleIdentifier {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1044333540440142996L;
 	@Column
 	private Integer bs;
 	@Column(length=1)

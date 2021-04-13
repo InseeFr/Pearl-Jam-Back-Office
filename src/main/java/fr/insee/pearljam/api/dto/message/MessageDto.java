@@ -12,7 +12,7 @@ public class MessageDto {
 	private List<String> recipients;
 	private List<VerifyNameResponseDto> typedRecipients;
 	private Long date;
-	private Integer status;
+	private String status;
 
 	
 	public MessageDto(Long id, String text, String sender, List<String> recipients, Long date) {
@@ -112,11 +112,11 @@ public class MessageDto {
 		this.date = date;
 	}
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
