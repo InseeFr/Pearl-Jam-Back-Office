@@ -243,17 +243,20 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-		// TODO: à completer après validation de la BR
-		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
-				.getType();
+		
 		if (surveyUnitDetailDto.getStates() != null) {
 			for (StateDto stateDto : surveyUnitDetailDto.getStates()) {
 				stateRepository.save(new State(stateDto.getDate(), surveyUnit, stateDto.getType()));
-				if (currentState == StateType.WFS) {
-					addStateAuto(surveyUnit);
-				}
 			}
 		}
+		
+		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
+				.getType();
+		if (currentState == StateType.WFS) {
+			addStateAuto(surveyUnit);
+		}
+		
+		
 		currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId()).getType();
 		if (currentState != StateType.FIN && currentState != StateType.TBR) {
 			Set<State> ueStates = surveyUnit.getStates();
@@ -269,7 +272,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void addStateAuto(SurveyUnit surveyUnit) {
 		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(
 				surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(),
-				surveyUnit.getId()) < 3) {
+				surveyUnit.getId()) < 5) {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 		} else {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.FIN));
