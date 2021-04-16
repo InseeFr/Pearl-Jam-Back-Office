@@ -31,6 +31,8 @@ public class SurveyUnitCampaignDto {
 	
 	private ClosingCauseType state;
 	
+	private Boolean reading;
+	
 	private List<CommentDto> comments;
 	
 
@@ -49,7 +51,7 @@ public class SurveyUnitCampaignDto {
 	 * @param ssech
 	 * @param interviewer
 	 */
-	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, InterviewerDto interviewer) {
+	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, Boolean reading, InterviewerDto interviewer) {
 		super();
 		this.id = id;
 		this.ssech = ssech;
@@ -62,6 +64,7 @@ public class SurveyUnitCampaignDto {
 	
 	public SurveyUnitCampaignDto(SurveyUnit su) {
 		super();
+		this.reading=false;
 		this.id = su.getId();
 		if(su.getSampleIdentifier() instanceof InseeSampleIdentifier) {
 			this.ssech = ((InseeSampleIdentifier) su.getSampleIdentifier()).getSsech();
@@ -81,6 +84,9 @@ public class SurveyUnitCampaignDto {
 			if(StateType.FIN.equals(s.getType()) && (this.finalizationDate == null || this.finalizationDate < s.getDate())){
 				this.finalizationDate = s.getDate();
 			} 
+			if(StateType.TBR.equals(s.getType())) {
+				this.reading=true;
+			}
 		}
 	    if(su.getClosingCause() != null) {
 	    	this.state = su.getClosingCause().getType();
@@ -181,5 +187,17 @@ public class SurveyUnitCampaignDto {
 	}
 	public void setState(ClosingCauseType state) {
 		this.state = state;
+	}
+	/**
+	 * @return the reading
+	 */
+	public Boolean getReading() {
+		return reading;
+	}
+	/**
+	 * @param reading the reading to set
+	 */
+	public void setReading(Boolean reading) {
+		this.reading = reading;
 	}
 }
