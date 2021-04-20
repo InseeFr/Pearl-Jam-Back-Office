@@ -33,6 +33,8 @@ public class SurveyUnitCampaignDto {
 	
 	private Boolean reading;
 	
+	private Boolean viewed;
+	
 	private List<CommentDto> comments;
 	
 
@@ -51,7 +53,7 @@ public class SurveyUnitCampaignDto {
 	 * @param ssech
 	 * @param interviewer
 	 */
-	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, Boolean reading, InterviewerDto interviewer) {
+	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, Boolean reading, Boolean viewed, InterviewerDto interviewer) {
 		super();
 		this.id = id;
 		this.ssech = ssech;
@@ -59,13 +61,17 @@ public class SurveyUnitCampaignDto {
 		this.city = city;
 		this.finalizationDate = finalizationDate;
 		this.interviewer = interviewer;
+		this.reading = reading;
+		this.viewed = viewed;
 		
 	}
 	
 	public SurveyUnitCampaignDto(SurveyUnit su) {
 		super();
-		this.reading=false;
+		
 		this.id = su.getId();
+		this.reading=false;
+		this.viewed=su.isViewed();
 		if(su.getSampleIdentifier() instanceof InseeSampleIdentifier) {
 			this.ssech = ((InseeSampleIdentifier) su.getSampleIdentifier()).getSsech();
 		}
@@ -199,5 +205,17 @@ public class SurveyUnitCampaignDto {
 	 */
 	public void setReading(Boolean reading) {
 		this.reading = reading;
+	}
+	/**
+	 * @return the viewed
+	 */
+	public Boolean getViewed() {
+		return viewed;
+	}
+	/**
+	 * @param viewed the viewed to set
+	 */
+	public void setViewed(Boolean viewed) {
+		this.viewed = viewed;
 	}
 }

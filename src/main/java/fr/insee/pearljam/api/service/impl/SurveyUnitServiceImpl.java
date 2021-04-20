@@ -382,12 +382,26 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
+	
+	@Transactional
+	public HttpStatus updateSurveyUnitViewed(String userId, String suId) {
+		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
+		if (!surveyUnitOpt.isPresent()) {
+			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", suId, userId);
+			return HttpStatus.NOT_FOUND;
+		}
+		SurveyUnit surveyUnit = surveyUnitOpt.get();
+		surveyUnit.setViewed(true);
+		LOGGER.info("Viewed updated");
+		surveyUnitRepository.save(surveyUnit);
+		return HttpStatus.OK;
+	}
 
 	public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.collect(Collectors.toList());
 		Set<SurveyUnit> lstSurveyUnit = surveyUnitRepository
-				.findSurveyUnitCampaignDtoByCampaignIdAndOrganizationUnitIdIn(campaignId, lstOuId);
+				.findByCampaignIdAndOrganizationUnitIdIn(campaignId, lstOuId);
 		if (state != null && !state.isEmpty() && state.equalsIgnoreCase(StateType.FIN.toString())) {
 			// filter on SU with at least one state FIN
 			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isAtLeastState(state)).collect(Collectors.toSet());

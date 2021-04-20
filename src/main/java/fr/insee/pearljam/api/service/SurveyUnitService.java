@@ -75,6 +75,7 @@ public interface SurveyUnitService {
 	List<SurveyUnitCampaignDto> getClosableSurveyUnits();
 
 	HttpStatus updateSurveyUnitComment(String userId, String surveyUnitId, CommentDto comment);
+	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 
 	HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
 

@@ -1399,4 +1399,42 @@ class TestAuthKeyCloak {
 		.put("api/survey-unit/11111111111/comment").then().statusCode(404);
 	}
 	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 200 and viewed attribut set to true
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(56)
+	void testPutSuViewed() throws InterruptedException, JsonProcessingException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		SurveyUnit su = new SurveyUnit();
+		su.setId("24");
+		given()
+		.auth().oauth2(accessToken)
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/24/viewed").then().statusCode(200);
+		assertEquals(true, surveyUnitRepository.findById("24").get().isViewed());
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 404
+	 * when id not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(57)
+	void testPutSuViewedNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		SurveyUnit su = new SurveyUnit();
+		su.setId("11111111111");
+		given()
+		.auth().oauth2(accessToken)
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/11111111111/viewed").then().statusCode(404);
+	}
+	
 }
