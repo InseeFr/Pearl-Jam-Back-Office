@@ -68,7 +68,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units")
-	public ResponseEntity<Object> getListSurveyUnit(HttpServletRequest request) {
+	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -92,7 +92,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get detail of specific survey unit ")
 	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> getSurveyUnitById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -234,6 +234,20 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(returnCode);
 		}
 	}
+	
+	@ApiOperation(value = "Update the state of Survey Units listed in request body")
+	@PutMapping(path = "/survey-unit/{id}/viewed")
+	public ResponseEntity<Object> updateSurveyUnitViewed(HttpServletRequest request, @PathVariable(value = "id") String surveyUnitId) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = surveyUnitService.updateSurveyUnitViewed(userId, surveyUnitId);
+			LOGGER.info("PUT viewed on su {} resulting in {}", surveyUnitId,
+					returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
 
 	/**
 	 * This method is using to get survey units of a specific campaign
@@ -246,7 +260,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Update the Survey Unit")
 	@GetMapping(path = "/campaign/{id}/survey-units")
-	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request,
+	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(value = "state", required = false) String state) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
@@ -268,7 +282,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Check habilitation")
 	@GetMapping(path = "/check-habilitation")
-	public ResponseEntity<Object> getSurveyUnitByCampaignId(HttpServletRequest request,
+	public ResponseEntity<HabilitationDto> getSurveyUnitByCampaignId(HttpServletRequest request,
 			@RequestParam(value = "id", required = true) String id) {
     String userId = utilsService.getUserId(request);
     HabilitationDto resp = new HabilitationDto();
@@ -292,7 +306,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get states of given survey unit")
 	@GetMapping(path = "/survey-unit/{id}/states")
-	public ResponseEntity<Object> getStatesBySurveyUnitId(HttpServletRequest request,
+	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
@@ -319,7 +333,7 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get closable survey units")
 	@GetMapping(path = "/survey-units/closable")
-	public ResponseEntity<Object> getClosableSurveyUnits(HttpServletRequest request) {
+	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			LOGGER.info("GET closable survey units resulting in 401");

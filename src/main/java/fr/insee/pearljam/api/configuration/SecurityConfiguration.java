@@ -36,7 +36,7 @@ import fr.insee.pearljam.api.constants.Constants;
  */
 @Configuration
 @EnableWebSecurity
-@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'")
+@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'basic' or '${fr.insee.pearljam.application.mode}' == 'noauth'")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * The environment define in Spring application Generate with the application
@@ -72,29 +72,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		System.setProperty("keycloak.enabled", applicationProperties.getMode() != Mode.Keycloak ? "false" : "true");
+		System.setProperty("keycloak.enabled", applicationProperties.getMode() != Mode.keycloak ? "false" : "true");
 		http
 			// disable csrf because of API mode
 			.csrf().disable().sessionManagement()
 			// use previously declared bean
 			.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		if(this.applicationProperties.getMode() == Mode.Basic) {
+		if(this.applicationProperties.getMode() == Mode.basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
 			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
-      .antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole,userLocalRole,userNationalRole)
-      .antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_SURVEYUNIT_CLOSING_CAUSE).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole,userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_SURVEYUNIT_CLOSING_CAUSE).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES).hasAnyRole(userLocalRole, userNationalRole)
 	        .antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole,userNationalRole)
-      .antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)		
-      .antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole,userNationalRole)		
+	        .antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole,userNationalRole)		
+	        .antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole,userNationalRole)		
 			.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
 			.antMatchers(Constants.API_SURVEYUNIT_ID_COMMENT).hasAnyRole(userLocalRole,userNationalRole)					
+			.antMatchers(Constants.API_SURVEYUNIT_ID_VIEWED).hasAnyRole(userLocalRole, userNationalRole)
 			.antMatchers(Constants.API_SURVEYUNIT_CLOSABLE).hasAnyRole(userLocalRole,userNationalRole)					
 			.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole,userNationalRole)
 			.antMatchers(Constants.API_CAMPAIGNS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
@@ -126,41 +127,42 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
 			.antMatchers(Constants.API_SURVEYUNIT_ID, 
-        Constants.API_SURVEYUNITS, 
-        Constants.API_CREATE_DATASET,
-        Constants.API_DELETE_DATASET,
-        Constants.API_SURVEYUNIT_CLOSE,
-        Constants.API_SURVEYUNIT_CLOSING_CAUSE,
-        Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT,
-        Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES,
+					Constants.API_SURVEYUNITS, 
+					Constants.API_CREATE_DATASET,
+					Constants.API_DELETE_DATASET,
+					Constants.API_SURVEYUNIT_CLOSE,
+					Constants.API_SURVEYUNIT_CLOSING_CAUSE,
+					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT,
+					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES,
 
-				Constants.API_SURVEYUNITS_STATE, 
-        Constants.API_CHECK_HABILITATION,
+					Constants.API_SURVEYUNITS_STATE, 
+					Constants.API_CHECK_HABILITATION,
 
-				Constants.API_SURVEYUNIT_ID_STATES, 
-				Constants.API_SURVEYUNIT_ID_COMMENT, 
-				Constants.API_SURVEYUNIT_CLOSABLE,
-				Constants.API_CAMPAIGNS,
-				Constants.API_CAMPAIGNS_STATE_COUNT,
-				Constants.API_CAMPAIGN_COLLECTION_DATES,
-				Constants.API_INTERVIEWERS_STATE_COUNT,
-				Constants.API_INTERVIEWERS_CAMPAIGN,
-				Constants.API_INTERVIEWERS_CONTACT_OUTCOME_COUNT,
-				Constants.API_CAMPAIGN_ID_INTERVIEWERS,
-				Constants.API_CAMPAIGN_ID_SURVEYUNITS,
-				Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
-				Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
-				Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
-				Constants.API_CAMPAIGN_CONTACT_OUTCOME,
-				Constants.API_CAMPAIGN_SU_CONTACT_OUTCOME,
-				Constants.API_USER,
-		        Constants.API_PREFERENCES,
-		        Constants.API_MESSAGE,
-		        Constants.API_VERIFY,
-		        Constants.API_MESSAGE_HISTORY,
-		        Constants.API_GET_MESSAGES,
-		        Constants.API_MESSAGE_MARK_AS_READ,
-		        Constants.API_MESSAGE_MARK_AS_DELETED)
+					Constants.API_SURVEYUNIT_ID_STATES, 
+					Constants.API_SURVEYUNIT_ID_COMMENT, 
+					Constants.API_SURVEYUNIT_ID_VIEWED, 
+					Constants.API_SURVEYUNIT_CLOSABLE,
+					Constants.API_CAMPAIGNS,
+					Constants.API_CAMPAIGNS_STATE_COUNT,
+					Constants.API_CAMPAIGN_COLLECTION_DATES,
+					Constants.API_INTERVIEWERS_STATE_COUNT,
+					Constants.API_INTERVIEWERS_CAMPAIGN,
+					Constants.API_INTERVIEWERS_CONTACT_OUTCOME_COUNT,
+					Constants.API_CAMPAIGN_ID_INTERVIEWERS,
+					Constants.API_CAMPAIGN_ID_SURVEYUNITS,
+					Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT,
+					Constants.API_CAMPAIGN_ID_SU_STATECOUNT,
+					Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
+					Constants.API_CAMPAIGN_CONTACT_OUTCOME,
+					Constants.API_CAMPAIGN_SU_CONTACT_OUTCOME,
+					Constants.API_USER,
+			        Constants.API_PREFERENCES,
+			        Constants.API_MESSAGE,
+			        Constants.API_VERIFY,
+			        Constants.API_MESSAGE_HISTORY,
+			        Constants.API_GET_MESSAGES,
+			        Constants.API_MESSAGE_MARK_AS_READ,
+			        Constants.API_MESSAGE_MARK_AS_DELETED)
 			.permitAll();
 		}
 	}
@@ -172,7 +174,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
-			case Basic:
+			case basic:
 				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(interviewerRole)
 						.and()
 						.withUser("ABC").password("{noop}abc").roles(userLocalRole, userNationalRole)
@@ -181,7 +183,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;
-			case NoAuth:
+			case noauth:
 				break;
 			default:
 				break;

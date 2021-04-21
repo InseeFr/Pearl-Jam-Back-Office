@@ -78,7 +78,7 @@ import liquibase.exception.LiquibaseException;
 @ContextConfiguration(initializers = { TestBasicAuth.Initializer.class })
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = Basic"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = basic"})
 class TestBasicAuth {
 	
 	@Autowired
@@ -1299,6 +1299,42 @@ class TestBasicAuth {
 		.body(new ObjectMapper().writeValueAsString(new CommentDto(comment)))
 		.when()
 		.put("api/survey-unit/11111111111/comment").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 200 and viewed attribut set to true
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(56)
+	void testPutSuViewed() throws InterruptedException, JsonProcessingException, JSONException {
+		SurveyUnit su = new SurveyUnit();
+		su.setId("24");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/24/viewed").then().statusCode(200);
+		assertEquals(true, surveyUnitRepository.findById("24").get().isViewed());
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 404
+	 * when id not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(57)
+	void testPutSuViewedNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		SurveyUnit su = new SurveyUnit();
+		su.setId("11111111111");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/11111111111/viewed").then().statusCode(404);
 	}
 	
 }

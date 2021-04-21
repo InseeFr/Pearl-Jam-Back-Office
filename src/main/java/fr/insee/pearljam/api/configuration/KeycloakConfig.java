@@ -35,7 +35,7 @@ import fr.insee.pearljam.api.constants.Constants;
  *
  */
 @Configuration
-@ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+@ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
 @ComponentScan(
         basePackageClasses = KeycloakSecurityComponents.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
@@ -84,17 +84,17 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers("/environnement", "/healthcheck").permitAll()
 		// configuration for endpoints
 		.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
-    .antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_SURVEYUNIT_CLOSING_CAUSE).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
-    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES).hasAnyRole(userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_SURVEYUNIT_CLOSING_CAUSE).hasAnyRole(userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)
+	    .antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_SURVEYUNITS_STATE).hasAnyRole(userLocalRole, userNationalRole)
-.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole,userNationalRole)		
-
+		.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole,userNationalRole)		
 		.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_SURVEYUNIT_ID_COMMENT).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_SURVEYUNIT_ID_VIEWED).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_SURVEYUNIT_CLOSABLE).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)
 		.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)
@@ -139,7 +139,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
      * Required to handle spring boot configurations
      * @return
      */
-    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
     @Bean
     public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
@@ -149,7 +149,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
      * Defines the session authentication strategy.
      */
     @Bean
-    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
 	@Override
 	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
         // required for bearer-only applications.

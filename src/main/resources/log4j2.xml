@@ -3,7 +3,7 @@
 
 	<Properties>
 		<property name="logRepo">/var/log</property>
-		<property name="logFileName">pearljam-bo</property>
+		<property name="logFileName">pearljambo</property>
 	</Properties>
 
 	<Appenders>

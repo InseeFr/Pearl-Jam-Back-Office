@@ -50,7 +50,7 @@ INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_
 -- INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-SOUTH', 'simpsons2020x00',  (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));
 
 
-INSERT INTO public.survey_unit (id,priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES ('11', TRUE, 1, 'simpsons2020x00', 'INTW1', 1, 'OU-NORTH');
+INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES ('11', TRUE, 1, 'simpsons2020x00', 'INTW1', 1, 'OU-NORTH');
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES ('12', TRUE, 2, 'simpsons2020x00', 'INTW1', 2, 'OU-NORTH');
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES ('13', FALSE, 3, 'simpsons2020x00', 'INTW2', 3, 'OU-NORTH');
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES ('14', FALSE, 4, 'simpsons2020x00', 'INTW3', 4, 'OU-NORTH');

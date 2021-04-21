@@ -51,7 +51,7 @@ Copy your WAR file from target/ to the tomcat/webapps/ folder
 Before to startup the tomcat server, some configurations are needed : 
  
 #### External Properties file
-Create pearljam-bo.properties near war file and complete the following properties:  
+Create pearljambo.properties near war file and complete the following properties:  
 ```shell  
 #Profile configuration
 spring.profiles.active=prod
@@ -61,7 +61,7 @@ fr.insee.pearljam.logging.path=${catalina.base}/webapps/log4j2.xml
 fr.insee.pearljam.logging.level=DEBUG
 
 #Application configuration
-fr.insee.pearljam.application.mode=KeyCloak
+fr.insee.pearljam.application.mode=keycloak
 fr.insee.pearljam.application.crosOrigin=*
 
 #Database configuration
@@ -110,56 +110,99 @@ Before committing code please ensure,
 3 - All newly implemented APIs are documented  
 4 - All newly added properties are documented  
 
-## End-Points for PearlJam application
-- `GET /survey-units` : GET the list of survey unit for current user
+## End-Points
 
-- `GET /survey-unit/{id}` : GET the detail of specific survey unit 
+Campaign :
 
-- `PUT /survey-unit/{id}` : PUT the detail of specific survey unit 
+- `GET /campaign/{id}/interviewers` : Get interviewers
 
-- `PUT /campaign/{id}/collection-dates` : PUT the collection dates for a campaign
+- `GET /campaign/{id}/survey-units/abandoned` : Get numberSUAbandoned
 
-- `PUT /campaign/{id}/organisational-unit/{id}/visibility` : PUT the visibility dates for a campaign and an organizational unit
+- `GET /campaign/{id}/survey-units/contact-outcomes` : Get campaignStateCount
 
-- `POST /message` : POST a message
+- `GET /campaign/{id}/survey-units/interviewer/{idep}/state-count` : Get interviewerStateCount
 
-- `PUT /message/{id}/interviewer/{idep}/read` : Put a message to status read for an interviewer
+- `GET /campaign/{id}/survey-units/not-attributed` : Get numberSUNotAttributed
 
-- `PUT /message/{id}/interviewer/{idep}/delete` : Put a message to status delete for an interviewer
+- `GET /campaign/{id}/survey-units/not-attributed/contact-outcomes` : Get Contact-outcomes count for non attributted SUs
 
-- `GET /message/{id}` : Get a message by his id
+- `GET /campaign/{id}/survey-units/not-attributed/state-count` : Get state count for non attributted SUs
 
-- `GET /message-history` : Get the message history for the user
+- `GET /campaign/{id}/survey-units/state-count` : Get campaignStateCount
 
-- `POST /verify-name` : GET matching interviewers and campaigns
+- `GET /campaigns` : Get Campaigns
 
-## End-Points for Sonor application
-- `GET /api/user` : GET the current user
+- `GET /campaigns/survey-units/contact-outcomes` : Get campaignStateCount
 
-- `GET /api/campaigns` : GET the detail of the campaign for the user 
+- `GET /campaigns/survey-units/state-count` : Get campaignStateCount
 
-- `GET /campaign/{id}/interviewers` : GET the detail of the interviewers associated with a campaign
+- `GET /interviewers/survey-units/state-count` : Get interviewersStateCount
 
-- `GET /campaign/{id}/survey-units[?state=XXX]` : GET the detail of survey unit for a campaign (optional parameter state of the survey-unit)
+- `PUT /campaign/{id}/collection-dates` : Put campaignCollectionDates
 
-- `GET /campaign/{id}/survey-units/interviewer/{idep}/state-count` : GET the state-count of each survey-unit for a specific campaign and interviewer
+- `PUT /campaign/{idCampaign}/organizational-unit/{idOu}/visibility` : Change visibility of a campaign for an Organizational Unit
 
-- `GET /campaign/{id}/survey-units/state-count` : GET the state-count of each survey-unit for a specific campaign
+Dataset :
 
-- `GET /campaigns/survey-units/state-count` : GET the state-count of each survey-unit
+- `POST /create-dataset` : Create dataset
 
-- `GET /interviewers/survey-units/state-count ` : GET the state-count of each survey-unit associated with the interviewer
+- `DELETE /delete-dataset` : Delete dataset
 
-- `GET /campaign/{id}/survey-units/not-attributed` : GET the number of survey-unit "not attributed" for a specific campaign
+Interviewer :
 
-- `GET /campaign/{id}/survey-units/abandoned` : GET the number of survey-unit "abandoned" for a specific campaign
+- `GET /campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes` : Get contact-outcome type for an interviewer on a specific campaign
 
-- `GET /survey-unit/{id}/states` : GET all the states of a specific survey-unit
+- `GET /interviewer/{id}/campaigns` : Get interviewer campaigns
 
-- `PUT /survey-unit/{id}/state/{state}` : PUT a new state for a specific survey-unit
+- `GET /interviewers` : Get interviewers
 
-- `PUT /preferences` : PUT preferences for an interviewer
+Message :
 
+- `GET /message-history` : Get the message history
+
+- `GET /messages/{id}` : Get a message
+
+- `PUT /message/{id}/interviewer/{idep}/delete` : Mark a message as deleted
+
+- `PUT /message/{id}/interviewer/{idep}/read` : Mark a message as read
+
+- `POST /message` : Post a message
+
+- `POST /verify-name` : Update Messages with campaigns or interviewers listed in request body
+
+Preference :
+
+- `PUT /preferences` : Update preferences with campaigns listed in request body
+
+SurveyUnit :
+
+- `GET /campaign/{id}/survey-units` : Update the Survey Unit
+
+- `GET /check-habilitation` : Check habilitation
+
+- `GET /survey-unit/{id}` : Get detail of specific survey unit
+
+- `GET /survey-unit/{id}/states` : Get states of given survey unit
+
+- `GET /survey-units` : Get SurveyUnits
+
+- `GET /survey-units/closable` : Get closable survey units
+
+- `PUT /survey-unit/{id}` : Update the Survey Unit
+
+- `PUT /survey-unit/{id}/close/{closingCause}` : Closes a survey unit
+
+- `PUT /survey-unit/{id}/closing-cause/{closingCause}` : Add Closing cause
+
+- `PUT /survey-unit/{id}/comment` : Update the state of Survey Units listed in request body
+
+- `PUT /survey-unit/{id}/state/{state}` : Update the state of Survey Units listed in request body
+
+- `PUT /survey-unit/{id}/viewed` : Update the state of Survey Units listed in request body
+
+User :
+
+- `GET /user` : Get User
 
 ## Libraries used
 - spring-boot-jpa

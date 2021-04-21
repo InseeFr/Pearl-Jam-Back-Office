@@ -20,6 +20,7 @@ public class Constants {
 	public static final String API_SURVEYUNITS_STATE= "/api/survey-unit/{id}/state/{state}";
 	public static final String API_SURVEYUNIT_ID_STATES = "/api/survey-unit/{id}/states";
 	public static final String API_SURVEYUNIT_ID_COMMENT = "/api/survey-unit/{id}/comment";
+	public static final String API_SURVEYUNIT_ID_VIEWED = "/api/survey-unit/{id}/viewed";
 	public static final String API_SURVEYUNIT_CLOSABLE = "/api/survey-units/closable";
 	
 	public static final String API_CAMPAIGNS = "/api/campaigns";
@@ -27,9 +28,9 @@ public class Constants {
   	public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaign/{id}/interviewers";
 	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";
-  public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/state-count";
-  public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT = "/api/campaign/{id}/survey-units/not-attributed/state-count";
-  public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
+	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/state-count";
+	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT = "/api/campaign/{id}/survey-units/not-attributed/state-count";
+	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
 
 	public static final String API_CAMPAIGN_ID_SU_STATECOUNT = "/api/campaign/{id}/survey-units/state-count";
 	public static final String API_CAMPAIGN_ID_SU_NOTATTRIBUTED = "/api/campaign/{id}/survey-units/not-attributed";

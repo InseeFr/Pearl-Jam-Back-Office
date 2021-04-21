@@ -41,6 +41,13 @@ public class SurveyUnit implements Serializable {
 	 */
 	@Column
 	private boolean priority;
+	
+	/**
+	 * The priority of SurveyUnit
+	 */
+	@Column
+	private Boolean viewed;
+	
 	/**
 	 * The address of SurveyUnit
 	 */
@@ -52,11 +59,13 @@ public class SurveyUnit implements Serializable {
 	 */
 	@OneToOne
 	private SampleIdentifier sampleIdentifier;
+	
 	/**
 	 * The Campaign of SurveyUnit
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
+	
 	/**
 	 * The Interviewer of SurveyUnit
 	 */
@@ -81,16 +90,15 @@ public class SurveyUnit implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<ClosingCause> closingCause;
 
-
-
 	public SurveyUnit() {
 	}
 
-	public SurveyUnit(String id, boolean priority, Address address, SampleIdentifier sampleIdentifier,
+	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 			Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit, Set<Person> persons) {
 		super();
 		this.id = id;
 		this.priority = priority;
+		this.viewed = viewed;
 		this.address = address;
 		this.sampleIdentifier = sampleIdentifier;
 		this.campaign = campaign;
@@ -99,11 +107,12 @@ public class SurveyUnit implements Serializable {
 		this.persons = persons;
 	}
 
-	public SurveyUnit(String id, boolean priority, Address address, SampleIdentifier sampleIdentifier,
+	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 			Campaign campaign, Interviewer interviewer) {
 		super();
 		this.id = id;
 		this.priority = priority;
+		this.viewed = viewed;
 		this.address = address;
 		this.sampleIdentifier = sampleIdentifier;
 		this.campaign = campaign;
@@ -140,6 +149,21 @@ public class SurveyUnit implements Serializable {
 	 */
 	public void setPriority(boolean priority) {
 		this.priority = priority;
+	}
+
+
+	/**
+	 * @return the viewed
+	 */
+	public Boolean isViewed() {
+		return viewed;
+	}
+
+	/**
+	 * @param viewed the viewed to set
+	 */
+	public void setViewed(Boolean viewed) {
+		this.viewed = viewed;
 	}
 
 	/**

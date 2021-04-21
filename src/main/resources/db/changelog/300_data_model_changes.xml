@@ -75,4 +75,9 @@
     <changeSet author="paulguillemet (generated)" id="1617984548467-14">
         <dropColumn columnName="organization_unit_id" tableName="interviewer"/>
     </changeSet>
+    <changeSet author="bclaudel" id="1617984548467-15">
+        <addColumn tableName="survey_unit">
+            <column name="viewed" type="BOOLEAN" defaultValue="FALSE"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

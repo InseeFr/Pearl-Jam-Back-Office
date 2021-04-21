@@ -21,7 +21,7 @@ public class ApplicationProperties {
 	 * @author scorcaud
 	 *
 	 */
-	public enum Mode {Basic, Keycloak, NoAuth};
+	public enum Mode {basic, keycloak, noauth};
 	
 	/**
 	 * THe mode of authentication in the application
