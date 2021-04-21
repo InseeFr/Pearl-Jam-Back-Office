@@ -80,7 +80,7 @@ import liquibase.exception.LiquibaseException;
 @ContextConfiguration(initializers = { TestAuthKeyCloak.Initializer.class })
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = KeyCloak"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = keycloak"})
 class TestAuthKeyCloak {
 	
 	@Autowired

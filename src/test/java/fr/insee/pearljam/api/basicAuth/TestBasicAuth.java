@@ -78,7 +78,7 @@ import liquibase.exception.LiquibaseException;
 @ContextConfiguration(initializers = { TestBasicAuth.Initializer.class })
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = Basic"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = basic"})
 class TestBasicAuth {
 	
 	@Autowired

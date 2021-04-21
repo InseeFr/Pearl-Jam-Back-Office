@@ -36,7 +36,7 @@ import fr.insee.pearljam.api.constants.Constants;
  */
 @Configuration
 @EnableWebSecurity
-@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'Basic' or '${fr.insee.pearljam.application.mode}' == 'NoAuth'")
+@ConditionalOnExpression("'${fr.insee.pearljam.application.mode}' == 'basic' or '${fr.insee.pearljam.application.mode}' == 'noauth'")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * The environment define in Spring application Generate with the application
@@ -72,14 +72,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		System.setProperty("keycloak.enabled", applicationProperties.getMode() != Mode.Keycloak ? "false" : "true");
+		System.setProperty("keycloak.enabled", applicationProperties.getMode() != Mode.keycloak ? "false" : "true");
 		http
 			// disable csrf because of API mode
 			.csrf().disable().sessionManagement()
 			// use previously declared bean
 			.sessionAuthenticationStrategy(sessionAuthenticationStrategy())
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		if(this.applicationProperties.getMode() == Mode.Basic) {
+		if(this.applicationProperties.getMode() == Mode.basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
@@ -174,7 +174,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
-			case Basic:
+			case basic:
 				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(interviewerRole)
 						.and()
 						.withUser("ABC").password("{noop}abc").roles(userLocalRole, userNationalRole)
@@ -183,7 +183,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;
-			case NoAuth:
+			case noauth:
 				break;
 			default:
 				break;

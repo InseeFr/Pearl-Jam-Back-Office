@@ -48,7 +48,12 @@ public class ApiApplication extends SpringBootServletInitializer{
 	public static void setProperties() {
 		System.setProperty("spring.config.location",
 				"classpath:/,"
-				+ "file:///${catalina.base}/webapps/pearljam-bo.properties");
+        + "file:///${catalina.base}/webapps/pearljambo.properties");
+
+    System.setProperty("spring.config.additional-location",
+				"classpath:/,"
+        + "file:///${catalina.base}/webapps/sabcolbo.properties");
+
 	}
 	
 	@EventListener

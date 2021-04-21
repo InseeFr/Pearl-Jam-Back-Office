@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
 	public UserDto getUser(String userId) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (applicationProperties.getMode() != Mode.NoAuth) {
+		if (applicationProperties.getMode() != Mode.noauth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();

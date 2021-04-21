@@ -118,9 +118,9 @@ public class SwaggerConfiguration {
 	
 	private List<? extends SecurityScheme> securitySchema() {
 		switch (this.applicationProperties.getMode()) {
-		case Basic:
+		case basic:
 			return List.of(new BasicAuth(name));
-		case Keycloak:
+		case keycloak:
 			final String AUTH_SERVER = authUrl + "/realms/" + realm + "/protocol/openid-connect/auth";
 			final String AUTH_SERVER_TOKEN_ENDPOINT = authUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 			final GrantType grantType = new AuthorizationCodeGrant(
@@ -136,11 +136,11 @@ public class SwaggerConfiguration {
 
 	private List<SecurityContext> securityContext() {
 		switch (this.applicationProperties.getMode()) {
-		case Basic:
+		case basic:
 			return List.of(SecurityContext.builder()
 					.securityReferences(List.of(new SecurityReference(name, new AuthorizationScope[0])))
 					.forPaths(PathSelectors.any()).build());
-		case Keycloak:
+		case keycloak:
 			return List.of(SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build());
 		default:
 			return List.of();
@@ -156,7 +156,7 @@ public class SwaggerConfiguration {
 
 	@Bean
 	public SecurityConfiguration security() {
-		if(this.applicationProperties.getMode()==Mode.Keycloak)
+		if(this.applicationProperties.getMode()==Mode.keycloak)
 			return SecurityConfigurationBuilder.builder().clientId(resource).realm(realm).scopeSeparator(",").build();
 		else
 			return null;

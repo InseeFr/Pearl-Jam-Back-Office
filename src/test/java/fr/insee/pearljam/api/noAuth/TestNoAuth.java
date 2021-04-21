@@ -82,7 +82,7 @@ import liquibase.exception.LiquibaseException;
 @ContextConfiguration(initializers = { TestNoAuth.Initializer.class })
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = NoAuth"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = noauth"})
 class TestNoAuth {
 
 	@Autowired

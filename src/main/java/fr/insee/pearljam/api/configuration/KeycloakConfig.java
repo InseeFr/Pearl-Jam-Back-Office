@@ -35,7 +35,7 @@ import fr.insee.pearljam.api.constants.Constants;
  *
  */
 @Configuration
-@ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+@ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
 @ComponentScan(
         basePackageClasses = KeycloakSecurityComponents.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
@@ -139,7 +139,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
      * Required to handle spring boot configurations
      * @return
      */
-    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
     @Bean
     public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
@@ -149,7 +149,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
      * Defines the session authentication strategy.
      */
     @Bean
-    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'KeyCloak'")
+    @ConditionalOnExpression( "'${fr.insee.pearljam.application.mode}' == 'keycloak'")
 	@Override
 	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
         // required for bearer-only applications.
