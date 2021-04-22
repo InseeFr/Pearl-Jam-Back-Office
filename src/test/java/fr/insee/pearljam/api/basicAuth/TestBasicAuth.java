@@ -1,13 +1,12 @@
 package fr.insee.pearljam.api.basicAuth;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.oneOf;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,6 +21,7 @@ import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -46,12 +46,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.Message;
 import fr.insee.pearljam.api.domain.MessageStatusType;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
@@ -76,8 +78,8 @@ import liquibase.exception.LiquibaseException;
 @ContextConfiguration(initializers = { TestBasicAuth.Initializer.class })
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = Basic"})
-public class TestBasicAuth {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = basic"})
+class TestBasicAuth {
 	
 	@Autowired
 	SurveyUnitService surveyUnitService;
@@ -110,6 +112,17 @@ public class TestBasicAuth {
 	@BeforeEach
 	public void setUp() throws SQLException, LiquibaseException {
 		RestAssured.port = port;
+		given().auth().preemptive().basic("ABC", "abc").when().post("api/create-dataset");
+	}
+	
+	/**
+	 * This method is used to kill the container
+	 */
+	@AfterAll
+	public static void  cleanUp() {
+		if(postgreSQLContainer!=null) {
+			postgreSQLContainer.close();
+		}
 	}
 
 	/**
@@ -118,7 +131,7 @@ public class TestBasicAuth {
 	@SuppressWarnings("rawtypes")
 	@Container
 	@ClassRule
-	public static PostgreSQLContainer postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
+	static PostgreSQLContainer postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
 			.withDatabaseName("pearljam").withUsername("pearljam").withPassword("pearljam");
 
 	
@@ -160,7 +173,7 @@ public class TestBasicAuth {
 				}
 				break;
 			case ("collectionStartDate") :
-				if(value.equals(localDateNow.plusDays(2))) {
+				if(value.equals(localDateNow.minusDays(2))) {
 					check = true;
 				}
 				break;
@@ -190,7 +203,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(1)
-	public void testGetUser() throws InterruptedException {
+	void testGetUser() throws InterruptedException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/user").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("ABC")).and()
 		.assertThat().body("firstName", equalTo("Melinda")).and()
@@ -201,6 +214,47 @@ public class TestBasicAuth {
 		.assertThat().body("localOrganizationUnits[0].label", equalTo("North region organizational unit"));
 	}
 	
+	@Test
+	@Order(1)
+	void testGetContactOutcomeCountNotattributed() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when()
+		.get("api/campaign/simpsons2020x00/survey-units/not-attributed/contact-outcomes").then().statusCode(200)
+		.and().assertThat().body("inaCount", equalTo(0))
+		.and().assertThat().body("refCount", equalTo(0))
+		.and().assertThat().body("impCount", equalTo(0))
+		.and().assertThat().body("iniCount", equalTo(0))
+		.and().assertThat().body("alaCount", equalTo(0))
+		.and().assertThat().body("wamCount", equalTo(1))
+		.and().assertThat().body("oosCount", equalTo(0));
+	}
+	
+	@Test
+	@Order(1)
+	void testGetCampaignInterviewerStateCountNotAttributed() throws InterruptedException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/not-attributed/state-count").then().statusCode(200).and()
+		.assertThat().body("idDem", equalTo(null)).and()
+		.assertThat().body("nvmCount",equalTo(0)).and()
+		.assertThat().body("nnsCount",equalTo(0)).and()
+    .assertThat().body("anvCount",equalTo(0)).and()
+		.assertThat().body("vinCount",equalTo(0)).and()
+		.assertThat().body("vicCount",equalTo(0)).and()
+		.assertThat().body("prcCount",equalTo(0)).and()
+		.assertThat().body("aocCount",equalTo(0)).and()
+		.assertThat().body("apsCount",equalTo(0)).and()
+		.assertThat().body("insCount",equalTo(0)).and()
+		.assertThat().body("wftCount",equalTo(0)).and()
+		.assertThat().body("wfsCount",equalTo(0)).and()
+    .assertThat().body("tbrCount",equalTo(1)).and()
+		.assertThat().body("finCount",equalTo(0)).and()
+		.assertThat().body("qnaCount",equalTo(0)).and()
+		.assertThat().body("qnaFinCount",equalTo(0)).and()
+    .assertThat().body("nvaCount",equalTo(0)).and()
+    .assertThat().body("npaCount",equalTo(0)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(1));
+	}
+	
 	/**
 	 * Test that the GET endpoint "api/user"
 	 * return null
@@ -209,7 +263,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(2)
-	public void testGetUserNotFound() throws InterruptedException {
+	void testGetUserNotFound() throws InterruptedException {
 		assertEquals(null, userService.getUser("test"));
 	}
 	
@@ -224,7 +278,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(3)
-	public void testGetCampaign() throws InterruptedException, JSONException {
+	void testGetCampaign() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaigns").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("simpsons2020x00")).and()
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
@@ -234,7 +288,7 @@ public class TestBasicAuth {
 		.assertThat().body("toReview",hasItem(0)).and()
 		.assertThat().body("finalized",hasItem(0)).and()
 		.assertThat().body("toProcessInterviewer",hasItem(0)).and()
-		.assertThat().body("preference",hasItem(false));
+		.assertThat().body("preference",hasItem(true));
 		
 		//Testing dates
 		assertTrue(testingDates("managementStartDate", given().auth().preemptive().basic("ABC", "abc").get("api/campaigns").path("managementStartDate[0]")));
@@ -253,7 +307,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(4)
-	public void testGetCampaignInterviewer() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewer() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/interviewers").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("INTW1")).and()
 		.assertThat().body("interviewerFirstName",hasItem("Margie")).and()
@@ -269,7 +323,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(5)
-	public void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/interviewers").then().statusCode(404);
 	}
 	
@@ -281,13 +335,13 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(6)
-	public void testGetCampaignStateCount() throws InterruptedException, JSONException {
+	void testGetCampaignStateCount() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count").then().statusCode(200).and()
 		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
 		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].nnsCount",equalTo(0)).and()
-    	.assertThat().body("organizationUnits[0].anvCount",equalTo(1)).and()
-		.assertThat().body("organizationUnits[0].vinCount",equalTo(3)).and()
+    .assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].vinCount",equalTo(1)).and()
 		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].prcCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].aocCount",equalTo(0)).and()
@@ -295,12 +349,26 @@ public class TestBasicAuth {
 		.assertThat().body("organizationUnits[0].insCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].wftCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].tbrCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].tbrCount",equalTo(4)).and()
 		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].qnaCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].total",equalTo(4));
+    .assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
+    .assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].npiCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].rowCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].total",equalTo(5));
+	}
+	
+	@Test
+	@Order(7)
+	void testPutClosingCauseNoPreviousClosingCause() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().put("api/survey-unit/11/closing-cause/NPI")
+		.then().statusCode(200);
+		
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count")
+		.then().statusCode(200).and()
+		.assertThat().body("organizationUnits[0].npiCount",equalTo(1));
 	}
 	
 	/**
@@ -311,8 +379,33 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(7)
-	public void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
+	void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/test/survey-units/state-count").then().statusCode(404);
+	}
+	
+	
+	@Test
+	@Order(8)
+	void testPutClosingCausePreviousClosingCause() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().put("api/survey-unit/11/closing-cause/NPA")
+		.then().statusCode(200);
+		
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count")
+		.then().statusCode(200).and()
+		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].npaCount",equalTo(1));
+	}
+	
+	@Test
+	@Order(9)
+	void testPutCloseSU() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().put("api/survey-unit/14/close/ROW")
+		.then().statusCode(200);
+		
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count")
+		.then().statusCode(200).and()
+		.assertThat().body("organizationUnits[0].tbrCount",equalTo(3)).and()
+		.assertThat().body("organizationUnits[0].rowCount",equalTo(1));
 	}
 	
 	/**
@@ -323,12 +416,12 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(8)
-	public void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/state-count").then().statusCode(200).and()
 		.assertThat().body("idDem", equalTo(null)).and()
 		.assertThat().body("nvmCount",equalTo(0)).and()
 		.assertThat().body("nnsCount",equalTo(0)).and()
-    	.assertThat().body("anvCount",equalTo(1)).and()
+    .assertThat().body("anvCount",equalTo(0)).and()
 		.assertThat().body("vinCount",equalTo(1)).and()
 		.assertThat().body("vicCount",equalTo(0)).and()
 		.assertThat().body("prcCount",equalTo(0)).and()
@@ -337,13 +430,17 @@ public class TestBasicAuth {
 		.assertThat().body("insCount",equalTo(0)).and()
 		.assertThat().body("wftCount",equalTo(0)).and()
 		.assertThat().body("wfsCount",equalTo(0)).and()
-		.assertThat().body("tbrCount",equalTo(0)).and()
+    .assertThat().body("tbrCount",equalTo(1)).and()
 		.assertThat().body("finCount",equalTo(0)).and()
 		.assertThat().body("qnaCount",equalTo(0)).and()
 		.assertThat().body("qnaFinCount",equalTo(0)).and()
-		.assertThat().body("nvaCount",equalTo(0)).and()
+    .assertThat().body("nvaCount",equalTo(0)).and()
+    .assertThat().body("npaCount",equalTo(0)).and()
+		.assertThat().body("npiCount",equalTo(1)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
 		.assertThat().body("total",equalTo(2));
 	}
+	
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
@@ -353,7 +450,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(9)
-	public void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/state-count").then().statusCode(404);
 	}
 	
@@ -365,7 +462,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(10)
-	public void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/test/state-count").then().statusCode(404);
 	}
 	
@@ -379,13 +476,12 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(11)
-	public void testGetSurveyUnitDetail() throws InterruptedException {
+	void testGetSurveyUnitDetail() throws InterruptedException {
 		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/11").then().statusCode(200).and()
 		.assertThat().body("id", equalTo("11")).and()
-		.assertThat().body("firstName", equalTo("Ted")).and()
-		.assertThat().body("lastName", equalTo("Farmer")).and()
+		.assertThat().body("persons[2].firstName", is(oneOf("Christine", "Ted", "Louise"))).and()
+		.assertThat().body("persons[2].phoneNumbers[0].number", equalTo("+33677542802")).and()
 		.assertThat().body("priority", is(true)).and()
-		.assertThat().body("phoneNumbers", hasItems("+3351231231230")).and()
 		.assertThat().body("address.l1", equalTo("Ted Farmer")).and()
 		.assertThat().body("address.l2", equalTo("")).and()
 		.assertThat().body("address.l3", equalTo("")).and()
@@ -398,7 +494,7 @@ public class TestBasicAuth {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("NNS")).and()
+		.assertThat().body("states[0].type", equalTo("TBR")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
@@ -410,18 +506,20 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(12)
-	public void testGetAllSurveyUnit() throws InterruptedException {
+	void testGetAllSurveyUnit() throws InterruptedException {
 		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-units").then().statusCode(200).and()
 		.assertThat().body("id", hasItem("11")).and()
 		.assertThat().body("campaign", hasItem("simpsons2020x00")).and()
-		.assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020"));
+    .assertThat().body("campaignLabel",  hasItem("Survey on the Simpsons tv show 2020"));
+    
+    Response resp = given().auth().preemptive().basic("ABC", "abc").get("api/campaigns");
 		//Testing dates
-		assertTrue(testingDates("managementStartDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("managementStartDate[0]")));
-		assertTrue(testingDates("interviewerStartDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("interviewerStartDate[0]")));
-		assertTrue(testingDates("identificationPhaseStartDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("identificationPhaseStartDate[0]")));
-		assertTrue(testingDates("collectionStartDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("collectionStartDate[0]")));
-		assertTrue(testingDates("collectionEndDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("collectionEndDate[0]")));
-		assertTrue(testingDates("endDate", given().auth().preemptive().basic("INTW1", "intw1").get("api/survey-units").path("endDate[0]")));
+		assertTrue(testingDates("managementStartDate", resp.path("managementStartDate[0]")));
+		assertTrue(testingDates("interviewerStartDate", resp.path("interviewerStartDate[0]")));
+		assertTrue(testingDates("identificationPhaseStartDate", resp.path("identificationPhaseStartDate[0]")));
+		assertTrue(testingDates("collectionStartDate", resp.path("collectionStartDate[0]")));
+		assertTrue(testingDates("collectionEndDate", resp.path("collectionEndDate[0]")));
+		assertTrue(testingDates("endDate", resp.path("endDate[0]")));
 
 	}
 	
@@ -432,7 +530,7 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(13)
-	public void testGetSurveyUnitDetailNotFound() throws InterruptedException {
+	void testGetSurveyUnitDetailNotFound() throws InterruptedException {
 		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/123456789")
 		.then()
 		.statusCode(404);
@@ -445,11 +543,9 @@ public class TestBasicAuth {
 	 */
 	@Test
 	@Order(14)
-	public void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "12");
-		surveyUnitDetailDto.setFirstName("test");
-		surveyUnitDetailDto.setLastName("test");
-		surveyUnitDetailDto.setPhoneNumbers(List.of("+33555555555","+33666666666"));
+	void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException {
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
+		surveyUnitDetailDto.getPersons().get(0).getPhoneNumbers().get(0).setNumber("test");
 		surveyUnitDetailDto.getAddress().setL1("test");
 		surveyUnitDetailDto.getAddress().setL2("test");
 		surveyUnitDetailDto.getAddress().setL3("test");
@@ -457,141 +553,37 @@ public class TestBasicAuth {
 		surveyUnitDetailDto.getAddress().setL5("test");
 		surveyUnitDetailDto.getAddress().setL6("test");
 		surveyUnitDetailDto.getAddress().setL7("test");
-		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "")));
+		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "test")));
 		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.NNS)));
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC), new ContactAttemptDto(1589268800000L, Status.INA)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
-		 given().auth().preemptive().basic("INTW1", "intw1")
+    
+     given().auth().preemptive().basic("INTW1", "intw1")
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 		.when()
-			.put("api/survey-unit/12")
+			.put("api/survey-unit/20")
 		.then()
 			.statusCode(200);
-		Response response = given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/12");
-		response.then().statusCode(200).and()
-		.assertThat().body("id", equalTo("12")).and()
-		.assertThat().body("firstName", equalTo("test")).and()
-		.assertThat().body("lastName", equalTo("test")).and()
-		.assertThat().body("phoneNumbers", hasItems("+33555555555", "+33666666666")).and()
-		.assertThat().body("address.l1", equalTo("test")).and()
-		.assertThat().body("address.l2", equalTo("test")).and()
-		.assertThat().body("address.l3", equalTo("test")).and()
-		.assertThat().body("address.l4", equalTo("test")).and()
-		.assertThat().body("address.l5", equalTo("test")).and()
-		.assertThat().body("address.l6", equalTo("test")).and()
-		.assertThat().body("address.l7", equalTo("test")).and()
-		.assertThat().body("contactOutcome.type", equalTo(ContactOutcomeType.INI.toString())).and()
-		.assertThat().body("contactOutcome.totalNumberOfContactAttempts", is(2)).and()
-		.assertThat().body("comments[0].value", equalTo("test")).and()
-		.assertThat().body("comments[0].type", equalTo(CommentType.INTERVIEWER.toString())).and()
-		.assertThat().body("comments[1].value", blankOrNullString()).and()
-		.assertThat().body("comments[1].type", equalTo(CommentType.MANAGEMENT.toString())).and()
-		.assertThat().body("contactAttempts[0].status", equalTo(Status.NOC.toString())).and()
-		.assertThat().body("contactAttempts[1].status", equalTo(Status.INA.toString()));
-		//Tests with Junit for Long values
-		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactOutcome.date"));
-		assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactAttempts[0].date"));
-		assertEquals(Long.valueOf(1589268800000L), response.then().extract().jsonPath().getLong("contactAttempts[1].date"));
+      Response response = given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/20");
+      response.then().statusCode(200).and()
+      .assertThat().body("id", equalTo("20")).and()
+      .assertThat().body("persons[0].phoneNumbers[0].number", equalTo("test")).and()
+      .assertThat().body("address.l1", equalTo("test")).and()
+      .assertThat().body("address.l2", equalTo("test")).and()
+      .assertThat().body("address.l3", equalTo("test")).and()
+      .assertThat().body("address.l4", equalTo("test")).and()
+      .assertThat().body("address.l5", equalTo("test")).and()
+      .assertThat().body("address.l6", equalTo("test")).and()
+      .assertThat().body("address.l7", equalTo("test")).and()
+      .assertThat().body("contactOutcome.type", equalTo(ContactOutcomeType.INI.toString())).and()
+      .assertThat().body("contactOutcome.totalNumberOfContactAttempts", is(2)).and()
+      .assertThat().body("comments[1].value", equalTo("test")).and()
+      .assertThat().body("comments[1].type", is(oneOf(CommentType.MANAGEMENT.toString(),CommentType.INTERVIEWER.toString()))).and()
+      .assertThat().body("contactAttempts[1].status", is(oneOf(Status.NOC.toString(),Status.INA.toString())));
+      //Tests with Junit for Long values
+      assertEquals(Long.valueOf(1589268626000L), response.then().extract().jsonPath().getLong("contactOutcome.date"));
 
-	}
-	
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with false survey-unit Id
- 	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(15)
-	public void testPutSurveyUnitDetailErrorOnIds() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "12");
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "intw1")
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
-		.when()
-			.put("api/survey-unit/test")
-		.then()
-			.statusCode(400);
-	}
-	
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with state null
- 	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(16)
-	public void testPutSurveyUnitDetailErrorOnStates() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "11");
-		surveyUnitDetailDto.setStates(List.of());
-		given().auth().preemptive().basic("INTW1", "intw1")
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
-		.when()
-			.put("api/survey-unit/11")
-		.then()
-			.statusCode(400);
-	}
-	
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with address null
- 	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(17)
-	public void testPutSurveyUnitDetailErrorOnAddress() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
-		surveyUnitDetailDto.setAddress(null);
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "intw1")
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
-		.when()
-			.put("api/survey-unit/11")
-		.then()
-			.statusCode(400);
-	}
-	
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with first name empty
- 	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(18)
-	public void testPutSurveyUnitDetailErrorOnFirstName() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
-		surveyUnitDetailDto.setFirstName("");
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC),new StateDto(null, 1589268800L, StateType.APS)));
-		given().auth().preemptive().basic("INTW1", "intw1")
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
-		.when()
-			.put("api/survey-unit/11")
-		.then()
-			.statusCode(400);
-	}
-	
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 404 with last name empty
- 	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(19)
-	public void testPutSurveyUnitDetailErrorOnLastName() throws InterruptedException, JsonProcessingException {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("INTW1", "11");
-		surveyUnitDetailDto.setLastName("");
-		surveyUnitDetailDto.setStates(List.of(new StateDto(null, 1589268626L, StateType.AOC)));
-		given().auth().preemptive().basic("INTW1", "intw1")
-		 	.contentType("application/json")
-			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
-		.when()
-			.put("api/survey-unit/11")
-		.then()
-			.statusCode(400);
 	}
 	
 	/**
@@ -600,12 +592,12 @@ public class TestBasicAuth {
  	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(20)
-	public void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
+	@Order(15)
+	void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
 		 given().auth().preemptive().basic("ABC", "abc")
      .contentType("application/json")
      .when()
-     	.put("api/survey-unit/12/state/VIN")
+     	.put("api/survey-unit/12/state/WFT")
      .then()
        .statusCode(200);
 	}
@@ -616,8 +608,8 @@ public class TestBasicAuth {
  	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(21)
-	public void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
+	@Order(16)
+	void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
 		 given().auth().preemptive().basic("ABC", "abc")
       .contentType("application/json")
       .when()
@@ -632,8 +624,8 @@ public class TestBasicAuth {
  	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(22)
-	public void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
+	@Order(17)
+	void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
 		 given().auth().preemptive().basic("ABC", "abc")
      .contentType("application/json")
      .when()
@@ -648,8 +640,8 @@ public class TestBasicAuth {
  	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(23)
-	public void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
+	@Order(18)
+	void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("simpsons2020x00");
 		 given().auth().preemptive().basic("ABC", "abc")
@@ -667,8 +659,8 @@ public class TestBasicAuth {
  	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(24)
-	public void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
+	@Order(19)
+	void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("");
 		 given().auth().preemptive().basic("ABC", "abc")
@@ -686,8 +678,8 @@ public class TestBasicAuth {
 	 * @throws JSONException 
 	 */
 	@Test
-	@Order(25)
-	public void testGetNbSuAbandoned() throws InterruptedException, JSONException {
+	@Order(20)
+	void testGetNbSuAbandoned() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		.when()
 		.get("api/campaign/simpsons2020x00/survey-units/abandoned")
@@ -697,13 +689,55 @@ public class TestBasicAuth {
 	}
 	
 	/**
+	 * Test that the Get endpoint
+	 * "/campaign/survey-units/contact-outcomes[?date={date}]" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(20)
+	void testGetContactOutcomeCountAllCampaign() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaigns/survey-units/contact-outcomes").then().statusCode(200)
+		.and().assertThat().body("[0].campaign.id", equalTo("simpsons2020x00"))
+		.and().assertThat().body("[0].campaign.label", equalTo("Survey on the Simpsons tv show 2020"))
+		.and().assertThat().body("[0].inaCount", equalTo(0))
+		.and().assertThat().body("[0].refCount", equalTo(0))
+		.and().assertThat().body("[0].impCount", equalTo(0))
+		.and().assertThat().body("[0].iniCount", equalTo(0))
+		.and().assertThat().body("[0].alaCount", equalTo(0))
+		.and().assertThat().body("[0].wamCount", equalTo(1))
+		.and().assertThat().body("[0].oosCount", equalTo(0));
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(20)
+	void testGetContactOutcomeCountByCampaign() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/contact-outcomes").then().statusCode(200)
+		.and().assertThat().body("organizationUnits[0].idDem", equalTo("OU-NORTH"))
+		.and().assertThat().body("organizationUnits[0].labelDem", equalTo("North region organizational unit"))
+		.and().assertThat().body("organizationUnits[0].inaCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].refCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].impCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].iniCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].alaCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].wamCount", equalTo(1))
+		.and().assertThat().body("organizationUnits[0].oosCount", equalTo(0));
+	}
+	
+	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
 	 */
 	@Test
-	@Order(26)
-	public void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
+	@Order(21)
+	void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		.when()
 		.get("api/campaign/test/survey-units/abandoned")
@@ -717,8 +751,8 @@ public class TestBasicAuth {
 	 * @throws JSONException 
 	 */
 	@Test
-	@Order(27)
-	public void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
+	@Order(22)
+	void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		.when()
 		.get("api/campaign/simpsons2020x00/survey-units/not-attributed")
@@ -733,8 +767,8 @@ public class TestBasicAuth {
 	 * @throws JSONException 
 	 */
 	@Test
-	@Order(28)
-	public void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
+	@Order(23)
+	void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		.when()
 		.get("api/campaign/test/survey-units/not-attributed")
@@ -748,8 +782,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(29)
-	public void testPutCollectionDatesModifyBothDates() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(24)
+	void testPutCollectionDatesModifyBothDates() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"startDate\": 162849200000, \"endDate\": 170849200000}")
@@ -769,8 +803,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(30)
-	public void testPutCollectionDatesModifyStartDate() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(25)
+	void testPutCollectionDatesModifyStartDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"startDate\": 162849200000}")
@@ -789,8 +823,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(31)
-	public void testPutCollectionDatesModifyEndDate() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(26)
+	void testPutCollectionDatesModifyEndDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"endDate\": 170849200000}")
@@ -809,8 +843,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(32)
-	public void testPutCollectionDatesEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(27)
+	void testPutCollectionDatesEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{}")
@@ -826,8 +860,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(33)
-	public void testPutCollectionDatesBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(28)
+	void testPutCollectionDatesBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"startDate\": 162849200000, \"endDate\": \"23/05/2020\"}")
@@ -843,8 +877,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(34)
-	public void testPutVisibilityModifyAllDates() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(29)
+	void testPutVisibilityModifyAllDates() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 		 	.body("{\"managementStartDate\": 1575937000000 , "
@@ -873,8 +907,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(35)
-	public void testPutVisibilityModifyCollectionStartDate() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(30)
+	void testPutVisibilityModifyCollectionStartDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"collectionStartDate\": 1577847800000}")
@@ -893,8 +927,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(36)
-	public void testPutVisibilityModifyCollectionEndDate() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(31)
+	void testPutVisibilityModifyCollectionEndDate() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{\"collectionEndDate\": 1577857800000}")
@@ -913,8 +947,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(37)
-	public void testPutVisibilityEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(32)
+	void testPutVisibilityEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 		 	.contentType("application/json")
 			.body("{}")
@@ -930,8 +964,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(38)
-	public void testPutVisibilityBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(33)
+	void testPutVisibilityBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 	 	.contentType("application/json")
 		.body("{\"managementStartDate\": 1640996200000, "
@@ -952,8 +986,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(39)
-	public void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(34)
+	void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("INTW1");
 		MessageDto message = new MessageDto("TEST", recipients);
@@ -972,8 +1006,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(40)
-	public void testPostMessageBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(35)
+	void testPostMessageBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 				.contentType("application/json").body(new ObjectMapper().writeValueAsString(null)).when()
 				.post("api/message").then().statusCode(400);
@@ -986,8 +1020,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(41)
-	public void testGetMessage() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(36)
+	void testGetMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/messages/INTW1").then().statusCode(200).and()
 		.assertThat().body("text", hasItem("TEST"));		
 	}
@@ -999,8 +1033,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(42)
-	public void testGetMessageWrongId() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(37)
+	void testGetMessageWrongId() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/messages/123456789").then().statusCode(200).and()
 		.assertThat().body("isEmpty()", Matchers.is(true));		
 	}
@@ -1012,8 +1046,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(43)
-	public void testPutMessageAsRead() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(38)
+	void testPutMessageAsRead() throws InterruptedException, JsonProcessingException, JSONException {
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
 		given().auth().preemptive().basic("INTW1", "intw1")
 				.contentType("application/json").when().put("api/message/" + messageId + "/interviewer/INTW1/read")
@@ -1029,8 +1063,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(44)
-	public void testPutMessageAsDelete() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(39)
+	void testPutMessageAsDelete() throws InterruptedException, JsonProcessingException, JSONException {
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
 		given().auth().preemptive().basic("INTW1", "intw1")
 				.contentType("application/json").when().put("api/message/" + messageId + "/interviewer/INTW1/delete")
@@ -1046,8 +1080,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(45)
-	public void testPutMessageAsReadWrongId() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(40)
+	void testPutMessageAsReadWrongId() throws InterruptedException, JsonProcessingException, JSONException {
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
 		given().auth().preemptive().basic("INTW1", "intw1")
 				.contentType("application/json").when().put("api/message/" + messageId + "/interviewer/Test/read").then()
@@ -1061,8 +1095,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(46)
-	public void testGetMessageHistory() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(41)
+	void testGetMessageHistory() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc")
 				.when().get("api/message-history").then().statusCode(200).and()
 				.assertThat().body("text", hasItem("TEST"));
@@ -1075,8 +1109,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(47)
-	public void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(42)
+	void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
 		WsText message = new WsText("INTW1");
 		given().auth().preemptive().basic("ABC", "abc")
 				.contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
@@ -1090,8 +1124,8 @@ public class TestBasicAuth {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(48)
-	public void testPostMessageSystem() throws InterruptedException, JsonProcessingException, JSONException {
+	@Order(43)
+	void testPostMessageSystem() throws InterruptedException, JsonProcessingException, JSONException {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("INTW2");
 		MessageDto message = new MessageDto("Synchronisation", recipients);
@@ -1102,6 +1136,205 @@ public class TestBasicAuth {
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW2"));
 		assertEquals("Synchronisation", messages.get(0).getText());
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/interviewers" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(44)
+	void testGetInterviewer() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/interviewers").then().statusCode(200)
+		.and().assertThat().body("id", hasItem("INTW1"))
+		.and().assertThat().body("interviewerFirstName", hasItem("Margie"))
+		.and().assertThat().body("interviewerLastName", hasItem("Lucas"));
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/interviewer/{id}/campaigns" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(45)
+	void testGetInterviewerForCampaign() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/interviewer/INTW1/campaigns").then().statusCode(200)
+		.and().assertThat().body("id", hasItem("simpsons2020x00"))
+		.and().assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020"));
+		assertTrue(testingDates("managementStartDate", given().auth().preemptive().basic("ABC", "abc").when().get("api/interviewer/INTW1/campaigns").path("managementStartDate[0]")));
+		assertTrue(testingDates("endDate", given().auth().preemptive().basic("ABC", "abc").when().get("api/interviewer/INTW1/campaigns").path("endDate[0]")));
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/interviewer/{id}/campaigns" return 404
+	 * when interviewer not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(46)
+	void testGetInterviewerNotExistForCampaign() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/interviewer/INTW123/campaigns").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/survey-units/closable" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(47)
+	void testGetSUCloasable() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/survey-units/closable").then().statusCode(200)
+		.and().assertThat().body("id", hasItem("11"))
+		.and().assertThat().body("ssech", hasItem(1))
+		.and().assertThat().body("location", hasItem("29270"))
+		.and().assertThat().body("city", hasItem("Carhaix"))
+		.and().assertThat().body("interviewer.id", hasItem("INTW1"))
+		.and().assertThat().body("interviewer.interviewerFirstName", hasItem("Margie"))
+		.and().assertThat().body("interviewer.interviewerLastName", hasItem("Lucas"))
+		.and().assertThat().body("comments[0]", empty());
+	}
+	
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(48)
+	void testGetContactOutcomeCountByCampaignAndInterviewer() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/contact-outcomes").then().statusCode(200)
+		.and().assertThat().body("inaCount", equalTo(0))
+		.and().assertThat().body("refCount", equalTo(0))
+		.and().assertThat().body("impCount", equalTo(0))
+		.and().assertThat().body("iniCount", equalTo(0))
+		.and().assertThat().body("alaCount", equalTo(0))
+		.and().assertThat().body("wamCount", equalTo(0))
+		.and().assertThat().body("oosCount", equalTo(0));
+	}
+	
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]" return 404
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(49)
+	void testGetContactOutcomeCountByCampaignNotExistAndInterviewer() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/survey-units/interviewer/INTW1/contact-outcomes").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]" return 404
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(50)
+	void testGetContactOutcomeCountByCampaignAndInterviewerNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW123/contact-outcomes").then().statusCode(404);
+	}
+	
+	
+	/**
+	 * Test that the Get endpoint
+	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 404
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(52)
+	void testGetContactOutcomeCountByCampaignNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x000000/survey-units/contact-outcomes").then().statusCode(404);
+	}
+	
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/comment" return 200
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(54)
+	void testPutCommentOnSu() throws InterruptedException, JsonProcessingException, JSONException {
+		Comment comment = new Comment(111L, CommentType.MANAGEMENT, "Test of comment", new SurveyUnit());
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+	 	.contentType("application/json")
+		.body(new ObjectMapper().writeValueAsString(new CommentDto(comment)))
+		.when()
+		.put("api/survey-unit/11/comment").then().statusCode(200);
+		given().auth().preemptive().basic("INTW1", "intw1").when().get("api/survey-unit/11").then().statusCode(200)
+		.and().assertThat().body("comments[0].type", equalTo(CommentType.MANAGEMENT.toString()))
+		.and().assertThat().body("comments[0].value", equalTo("Test of comment"));
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/comment" return 404
+	 * when id not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(55)
+	void testPutCommentSuNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		SurveyUnit su = new SurveyUnit();
+		su.setId("11111111111");
+		Comment comment = new Comment(111L, CommentType.MANAGEMENT, "Test of comment", su);
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+	 	.contentType("application/json")
+		.body(new ObjectMapper().writeValueAsString(new CommentDto(comment)))
+		.when()
+		.put("api/survey-unit/11111111111/comment").then().statusCode(404);
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 200 and viewed attribut set to true
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(56)
+	void testPutSuViewed() throws InterruptedException, JsonProcessingException, JSONException {
+		SurveyUnit su = new SurveyUnit();
+		su.setId("24");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/24/viewed").then().statusCode(200);
+		assertEquals(true, surveyUnitRepository.findById("24").get().isViewed());
+	}
+	
+	/**
+	 * Test that the Put endpoint
+	 * "/survey-unit/{id}/viewed" return 404
+	 * when id not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(57)
+	void testPutSuViewedNotExist() throws InterruptedException, JsonProcessingException, JSONException {
+		SurveyUnit su = new SurveyUnit();
+		su.setId("11111111111");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType("application/json")
+		.when()
+		.put("api/survey-unit/11111111111/viewed").then().statusCode(404);
 	}
 	
 }

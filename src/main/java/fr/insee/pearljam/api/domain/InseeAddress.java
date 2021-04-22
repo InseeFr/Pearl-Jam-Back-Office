@@ -13,6 +13,10 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
 @Entity
 public class InseeAddress extends Address {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4901950808854835782L;
+	/**
 	* The line 1 of INSEE address
 	*/
 	@Column(length=255)

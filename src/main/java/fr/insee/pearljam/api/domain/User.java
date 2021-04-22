@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,7 +21,12 @@ import javax.persistence.Table;
 */
 @Entity
 @Table(name="user", schema="public")
-public class User {
+public class User implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3490006766811003946L;
 
 	/**
 	* The id of User 

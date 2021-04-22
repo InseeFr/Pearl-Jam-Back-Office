@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import fr.insee.pearljam.api.domain.Campaign;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CampaignDto {
 	private String id;
@@ -32,6 +34,20 @@ public class CampaignDto {
 		super();
 		this.id = id;
 		this.label = label;
+	}
+	
+	public CampaignDto(Campaign camp) {
+		super();
+		this.id = camp.getId();
+		this.label = camp.getLabel();
+	}
+
+	public CampaignDto(String id, String label, Long managementStartDate, Long endDate) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.managementStartDate = managementStartDate;
+		this.endDate = endDate;
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {

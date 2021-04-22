@@ -1,10 +1,12 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -12,14 +14,14 @@ import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitDetailDto {
 	private String id;
-	private String firstName;
-	private String lastName;
-	private List<String> phoneNumbers;
+	private List<PersonDto> persons;
 	private AddressDto address;
 	private GeographicalLocationDto geographicalLocation;
 	private Boolean priority;
@@ -35,9 +37,9 @@ public class SurveyUnitDetailDto {
 
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
 		this.id=surveyUnit.getId();
-		this.firstName=surveyUnit.getFirstName();
-		this.lastName=surveyUnit.getLasttName();
-		this.phoneNumbers=surveyUnit.getPhoneNumbers();
+		this.setPersons(surveyUnit.getPersons().stream()
+				.map(person -> new PersonDto(person))
+				.collect(Collectors.toList()));
 		this.priority=surveyUnit.isPriority();
 		this.campaign=surveyUnit.getCampaign().getId();
 	}
@@ -56,47 +58,7 @@ public class SurveyUnitDetailDto {
 		this.id = id;
 	}
 
-	/**
-	 * @return the firstName
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
 
-	/**
-	 * @param firstName the firstName to set
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * @return the lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @param lastName the lastName to set
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * @return the phoneNumbers
-	 */
-	public List<String> getPhoneNumbers() {
-		return phoneNumbers;
-	}
-
-	/**
-	 * @param phoneNumbers the phoneNumbers to set
-	 */
-	public void setPhoneNumbers(List<String> phoneNumbers) {
-		this.phoneNumbers = phoneNumbers;
-	}
 
 	/**
 	 * @return the address
@@ -224,10 +186,19 @@ public class SurveyUnitDetailDto {
 		this.contactOutcome = contactOutcome;
 	}
 	
+	public List<PersonDto> getPersons() {
+		return persons;
+	}
+
+	public void setPersons(List<PersonDto> persons) {
+		this.persons = persons;
+	}
+	
+	
 	@Override
 	public String toString() {
-		return "SurveyUnitDetailDto [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", phoneNumbers=" + phoneNumbers + ", address=" + address + ", geographicalLocation="
+		return "SurveyUnitDetailDto [id=" + id
+				+ ", address=" + address + ", geographicalLocation="
 				+ geographicalLocation + ", priority=" + priority + ", campaign=" + campaign + ", comments=" + comments
 				+ ", sampleIdentifiers=" + sampleIdentifiers + ", states=" + states
 				+ ", contactAttempts=" + contactAttempts + ", contactOutcome=" + contactOutcome + "]";
@@ -239,11 +210,12 @@ public class SurveyUnitDetailDto {
 	 */
 	@JsonIgnore
 	public boolean isValid() {
-		return (StringUtils.isNotBlank(this.id) && StringUtils.isNotBlank(this.firstName) && StringUtils.isNotBlank(this.lastName) 
-				&& StringUtils.isNotBlank(this.campaign) && (this.phoneNumbers != null && !this.phoneNumbers.isEmpty()) 
+		return (StringUtils.isNotBlank(this.id) 
+				&& StringUtils.isNotBlank(this.campaign) 
 				&& (this.states != null && !this.states.isEmpty()) && this.address != null && this.geographicalLocation != null 
 				&& this.sampleIdentifiers != null && this.priority != null);
 	}
-	
+
+
 	
 }

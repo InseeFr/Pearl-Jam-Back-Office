@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -83,4 +85,12 @@ public interface CampaignService {
 	 * @return
 	 */
 	HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility);
+	
+	List<ContactOutcomeTypeCountDto> getContactOutcomeTypeCountByCampaign(String userId, Long date);
+	
+	ContactOutcomeTypeCountCampaignDto getContactOutcomeCountTypeByCampaign(String userId, String campaignId, Long date);
+
+	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date);
+
+	ContactOutcomeTypeCountDto getNbSUNotAttributedContactOutcomes(String userId, String id, Long date);
 }

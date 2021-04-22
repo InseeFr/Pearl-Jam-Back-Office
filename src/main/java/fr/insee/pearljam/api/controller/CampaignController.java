@@ -23,6 +23,8 @@ import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -115,7 +117,7 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			StateCountDto stateCountDto = campaignService.getStateCount(userId, id, idep, date, associatedOrgUnits);
+      StateCountDto stateCountDto = campaignService.getStateCount(userId, id, idep, date, associatedOrgUnits);
 			if (stateCountDto == null) {
 				LOGGER.info("Get interviewerStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -125,6 +127,60 @@ public class CampaignController {
 		}
 
 	}
+  
+  	/**
+	 * This method is used to count survey units not attributed by states
+	 * 
+	 * @param request
+	 * @param id
+	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get state count for non attributted SUs")
+	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed/state-count")
+	public ResponseEntity<Object> getNbSUNotAttributedStateCount(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			StateCountDto stateCountDto = campaignService.getNbSUNotAttributedStateCount(userId, id, date);
+			if (stateCountDto == null) {
+				LOGGER.info("Get state count for non attributted SUs resulting in 404");
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get state count for non attributted SUs resulting in 200");
+			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
+		}
+	}
+  
+  /**
+	 * This method is used to count survey units not attributed by contact-outcomes
+	 * 
+	 * @param request
+	 * @param id
+	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get Contact-outcomes count for non attributted SUs")
+	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed/contact-outcomes")
+	public ResponseEntity<Object> getNbSUNotAttributedContactOutcomes(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
+			String userId = utilsService.getUserId(request);
+			if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			} else {
+				ContactOutcomeTypeCountDto contactOutcomes = campaignService.getNbSUNotAttributedContactOutcomes(userId, id, date);
+				if (contactOutcomes == null) {
+					LOGGER.info("Get Contact-outcomes count for non attributted SUs resulting in 404");
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+				LOGGER.info("Get Contact-outcomes count for non attributted SUs resulting in 200");
+				return new ResponseEntity<>(contactOutcomes, HttpStatus.OK);
+			}
+		}
+
+	 
 
 	/**
 	 * This method is used to count survey units by states, organizational units and
@@ -145,7 +201,7 @@ public class CampaignController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			StateCountCampaignDto stateCountCampaignDto = campaignService.getStateCountByCampaign(userId, id, date);
-			if (stateCountCampaignDto == null) {
+      if (stateCountCampaignDto == null) {
 				LOGGER.info("Get campaignStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -303,4 +359,58 @@ public class CampaignController {
 			return new ResponseEntity<>(returnCode);
 		}
 	}
+	
+	/**
+	 * Return the contact-outcome type count
+	 * for each campaign
+	 * @param request
+	 * @param date
+	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get campaignStateCount")
+	@GetMapping(path = "/campaigns/survey-units/contact-outcomes")
+	public ResponseEntity<Object> getCampaignsContactOutcomeTypeCount(HttpServletRequest request,
+			@RequestParam(required = false, name = "date") Long date) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			List<ContactOutcomeTypeCountDto> listContactOutcomeTypeCountDto = campaignService.getContactOutcomeTypeCountByCampaign(userId, date);
+			if (listContactOutcomeTypeCountDto == null) {
+				LOGGER.info("Get contactOutcomeTypeCount resulting in 404");
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get contactOutcomeTypeCount resulting in 200");
+			return new ResponseEntity<>(listContactOutcomeTypeCountDto, HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * This method is used to count the contact-outcome types 
+	 * by organizational units and campaign
+	 * @param request
+	 * @param id
+	 * @param date
+	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get campaignStateCount")
+	@GetMapping(path = "/campaign/{id}/survey-units/contact-outcomes")
+	public ResponseEntity<Object> getContactOutcomeTypeCountByCampaign(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			ContactOutcomeTypeCountCampaignDto stateCountCampaignDto = campaignService.getContactOutcomeCountTypeByCampaign(userId, id, date);
+			if (stateCountCampaignDto == null) {
+				LOGGER.info("Get contact-outcome type count resulting in 404");
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			LOGGER.info("Get contact-outcome type count resulting in 200");
+			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
+		}
+	}
+	
 }

@@ -1,9 +1,15 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -14,8 +20,13 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class Interviewer {
+public class Interviewer implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5488798660579904552L;
+
 	/**
 	* The id of Interviewer 
 	*/
@@ -47,11 +58,9 @@ public class Interviewer {
 	@Column(length=255)
 	private String phoneNumber;
 	
-	/**
-	 * The Organization Unit of the Interviewer
-	 */
-	@ManyToOne
-	private OrganizationUnit organizationUnit;
+	@OneToMany(fetch = FetchType.LAZY, targetEntity=SurveyUnit.class, cascade = CascadeType.ALL, mappedBy="interviewer", orphanRemoval=true)
+	private Set<SurveyUnit> surveyUnits = new HashSet<>();
+
 
 	/**
 	 * @return the id of the Interviewer
@@ -123,18 +132,8 @@ public class Interviewer {
 		this.phoneNumber = phoneNumber;
 	}
 	
-	/**
-	 * @return the Organization Unit associated with the Interviewer
-	 */
-	public OrganizationUnit getOrganizationUnit() {
-		return organizationUnit;
-	}
-
-	/**
-	 * @param Organization Unit of the Interviewer
-	 */
-	public void setOrganizationUnit(OrganizationUnit organizationUnit) {
-		this.organizationUnit = organizationUnit;
+	public Set<SurveyUnit> getSurveyUnits() {
+		return surveyUnits;
 	}
 	
 }

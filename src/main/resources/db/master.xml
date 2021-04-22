@@ -10,9 +10,6 @@
 	</changeSet>
 	<include file="changelog/000_init.xml" relativeToChangelogFile="true"/>
 	
-	<!-- Data for dev on POSTGRES DB  -->
-	<include file="changelog/data/insert_data.xml" relativeToChangelogFile="true"/>
-	
 	<!-- Add tables to manage notifications -->
 	<include file="changelog/130_notification.xml" relativeToChangelogFile="true"/>
 	<!--Changing data type from INT to VARCHAR for status column in message_status table -->
@@ -20,7 +17,9 @@
 	
 	<!-- Add tables to manage notifications -->
 	<include file="changelog/200_dates.xml" relativeToChangelogFile="true"/>
-	
-	<!-- Data for dev on POSTGRES DB  -->
-	<include file="changelog/data/update_data.xml" relativeToChangelogFile="true"/>
+
+	<!-- Rework of data model -->
+	<include file="changelog/300_data_model_changes.xml" relativeToChangelogFile="true"/>
+
+
 </databaseChangeLog>

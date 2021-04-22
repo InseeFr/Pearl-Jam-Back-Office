@@ -33,4 +33,8 @@ public interface UtilsService {
 	 * @return {@link List} of {@link String}
 	 */
 	List<String> getRelatedOrganizationUnits(String userId);
+
+	boolean isDevProfile();
+	
+	boolean isTestProfile();
 }

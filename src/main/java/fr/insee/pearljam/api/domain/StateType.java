@@ -11,7 +11,7 @@ public enum StateType {
 	NNS("Not Assigned, not started"),
 	ANV("Assigned Not visible to interviewer"),
 	VIN("Visible to the interviewer and not clickable"),
-  	VIC("Visible to the interviewer and clickable"),
+	VIC("Visible to the interviewer and clickable"),
 	PRC("Preparing contact"), 
 	AOC("At least one contact made"),
 	APS("Appointment scheduled"), 
@@ -21,9 +21,9 @@ public enum StateType {
 	TBR("To be reviewed"), 
 	FIN("Finalized"),
 	QNA("Questionnaire Not Available to interviewer"),
+	CLO("Closed"),
 	NVA("Not Available to All");
 	
-
 	/**
 	 * label of the State type
 	 */

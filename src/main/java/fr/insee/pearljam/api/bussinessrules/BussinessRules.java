@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.bussinessrules;
 
+import java.util.Arrays;
+
 import fr.insee.pearljam.api.domain.StateType;
 
 public class BussinessRules {
@@ -39,6 +41,7 @@ public class BussinessRules {
 			case VIN: return currentState == StateType.NNS || currentState == StateType.ANV;
 			case FIN: return currentState == StateType.TBR;
 			case WFT: return currentState == StateType.FIN || currentState == StateType.TBR;
+			case CLO: return true;
 			default: return false;
 		}
 	}
@@ -80,12 +83,20 @@ public class BussinessRules {
 	 * via an automatic bussiness rule
 	 */
 	public static Boolean stateCanBeSeenByInterviewerBussinessRules(StateType currentState) {
-		switch(currentState) {
-			case NNS: return false;
-			case ANV: return false;			
-			case NVM: return false;
-			case NVA: return false;
-			default: return true;
-		}
+		//return new StateType[] {NNS,ANV, NVM}.includes(currentState)
+		StateType[] possibleTypes = {
+				StateType.VIN,
+				StateType.VIC,
+				StateType.PRC,
+				StateType.AOC,
+				StateType.APS,
+				StateType.INS,
+				StateType.WFT,
+				StateType.WFS,
+				StateType.TBR,
+				StateType.FIN,
+				StateType.CLO,
+				};
+		return Arrays.stream(possibleTypes).anyMatch(currentState::equals);
 	}
 }

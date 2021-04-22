@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +26,6 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	*/
 	@Query(value="SELECT su.id as id "
 			+ "FROM survey_unit su "
-			+ "JOIN campaign camp ON camp.id = su.campaign_id "
 			+ "WHERE su.interviewer_id ILIKE ?1", nativeQuery=true)
 	List<String> findIdsByInterviewerId(String idInterviewer);
 	
@@ -66,31 +66,19 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
 			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
-			"INNER JOIN interviewer int on int.id = su.interviewer_id AND int.organization_unit_id = ou.id " +
-			"WHERE camp.id =?1 AND ou.id ILIKE ?2", nativeQuery=true)
+			"WHERE ou.id=su.organization_unit_id AND camp.id =?1 AND ou.id ILIKE ?2", nativeQuery=true)
 	List<String> findIdsByCampaignIdAndOu(String id, String ouId);
-
-	@Query(value="SELECT su.id as id FROM survey_unit su " + 
-			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
-			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
-			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
-			"INNER JOIN state st on st.survey_unit_id = su.id AND int.organization_unit_id = ou.id "+
-			"WHERE camp.id =?1 AND st.type = ?2 "+ 
-			"AND st.date = (SELECT MAX(date) FROM state WHERE survey_unit_id=su.id) "+ 
-			"AND ou.id ILIKE ?3 ", nativeQuery=true)
-	List<String> findIdsByCampaignIdAndStateAndOu(String id, String state, String ouId);
 	
-	@Query(value="SELECT su.id as id FROM survey_unit su " + 
-			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
-			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
-			"INNER JOIN interviewer int on int.id = su.interviewer_id " +
-			"INNER JOIN state st on st.survey_unit_id = su.id AND int.organization_unit_id = ou.id "+
-			"WHERE camp.id =?1 AND EXISTS (SELECT 1 FROM state s where s.type ='FIN' AND s.survey_unit_id = su.id)" +  
-			"AND st.date = (SELECT MAX(date) FROM state WHERE survey_unit_id=su.id) "+ 
-			"AND ou.id ILIKE ?2 ", nativeQuery=true)
-	List<String> findIdsTerminatedByCampaignIdAndStateAndOu(String id, String ouId);
+	
+	@Query(value="SELECT su FROM SurveyUnit su " + 
+			"WHERE EXISTS (SELECT vi FROM Visibility vi " +
+			"WHERE vi.campaign.id = su.campaign.id " +
+			"AND vi.organizationUnit.id = su.organizationUnit.id " +
+			"AND vi.collectionEndDate < ?1 " +
+			"AND vi.endDate > ?1)")
+	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
+	
+	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
 	
 	@Query(value="SELECT "
 			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
@@ -103,8 +91,13 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN ("
 			+ "SELECT id FROM survey_unit "
 			+	"WHERE campaign_id=:campaignId "
-			+	"AND interviewer_id IN (SELECT int.id FROM interviewer int WHERE int.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
+			+	"AND interviewer_id IN (SELECT int.id FROM interviewer int INNER JOIN survey_unit su ON su.interviewer_id=int.id "
+				+ "WHERE su.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
 			+ "GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery=true)
 	  List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
+
+
+	  List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId);
+	  
 }
