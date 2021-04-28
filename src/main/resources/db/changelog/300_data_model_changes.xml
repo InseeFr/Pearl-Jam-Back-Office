@@ -80,4 +80,11 @@
             <column name="viewed" type="BOOLEAN" defaultValue="FALSE"/>
         </addColumn>
     </changeSet>
+    <changeSet author="admin (generated)" id="1619539158981-1">
+        <addColumn tableName="person">
+            <column name="privileged" type="boolean" defaultValue="FALSE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -331,6 +331,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (person.isFavoriteEmail() != null) {
 			pers.setFavoriteEmail(person.isFavoriteEmail());
 		}
+		if (person.isPrivileged() != null) {
+			pers.setPrivileged(person.isPrivileged());
+		}
 		if (person.getPhoneNumbers() != null) {
 			Set<PhoneNumber> phoneNumbers = person.getPhoneNumbers().stream()
 					.map(pn -> new PhoneNumber(pn, pers)).collect(Collectors.toSet());

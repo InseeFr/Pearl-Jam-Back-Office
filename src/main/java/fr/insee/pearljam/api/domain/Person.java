@@ -66,6 +66,11 @@ public class Person implements Serializable {
 	private boolean favoriteEmail;
 	
 	/**
+	 * Is the person privileged
+	 */
+	private boolean privileged;
+	
+	/**
 	 * SurveyUnit associated to the person
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -86,12 +91,13 @@ public class Person implements Serializable {
 	/**
 	 * Constructor with all args
 	 */
-	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail) {
+	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.favoriteEmail = favoriteEmail;
+		this.privileged = privileged;
 	}
 	
 	/**
@@ -177,6 +183,20 @@ public class Person implements Serializable {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	/**
+	 * @return the privileged
+	 */
+	public boolean isPrivileged() {
+		return privileged;
+	}
+
+	/**
+	 * @param privileged the privileged to set
+	 */
+	public void setPrivileged(boolean privileged) {
+		this.privileged = privileged;
 	}
 
 	/**
