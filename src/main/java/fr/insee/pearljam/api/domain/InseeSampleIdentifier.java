@@ -2,6 +2,8 @@ package fr.insee.pearljam.api.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 /**
 * Entity InseeSampleIdentifier : represent the entity table in DB
 * 
@@ -37,6 +39,40 @@ public class InseeSampleIdentifier extends SampleIdentifier {
 	@Column(length=50)
 	private String nograp;
 	
+	public InseeSampleIdentifier(Integer bs, String ec, Integer le, Integer noi, Integer numfa, Integer rges,
+			Integer ssech, Integer nolog, Integer nole, String autre, String nograp) {
+		super();
+		this.bs = bs;
+		this.ec = ec;
+		this.le = le;
+		this.noi = noi;
+		this.numfa = numfa;
+		this.rges = rges;
+		this.ssech = ssech;
+		this.nolog = nolog;
+		this.nole = nole;
+		this.autre = autre;
+		this.nograp = nograp;
+	}
+	
+	public InseeSampleIdentifier() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public InseeSampleIdentifier(SampleIdentifiersDto sampleIdentifiers) {
+		this.bs = sampleIdentifiers.getBs();
+		this.ec = sampleIdentifiers.getEc();
+		this.le = sampleIdentifiers.getLe();
+		this.noi = sampleIdentifiers.getNoi();
+		this.numfa = sampleIdentifiers.getNumfa();
+		this.rges = sampleIdentifiers.getRges();
+		this.ssech = sampleIdentifiers.getSsech();
+		this.nolog = sampleIdentifiers.getNolog();
+		this.nole = sampleIdentifiers.getNole();
+		this.autre = sampleIdentifiers.getAutre();
+		this.nograp = sampleIdentifiers.getNograp();
+	}
 	/**
 	 * @return the bs
 	 */

@@ -142,11 +142,17 @@ Campaign :
 
 - `PUT /campaign/{idCampaign}/organizational-unit/{idOu}/visibility` : Change visibility of a campaign for an Organizational Unit
 
+- `POST /campaign` :  Post Campaign
+
 Dataset :
 
 - `POST /create-dataset` : Create dataset
 
 - `DELETE /delete-dataset` : Delete dataset
+
+GeographicalLocation :
+
+- `POST /geographical-locations` : Create Context with Organizational Unit and users associated
 
 Interviewer :
 
@@ -155,6 +161,9 @@ Interviewer :
 - `GET /interviewer/{id}/campaigns` : Get interviewer campaigns
 
 - `GET /interviewers` : Get interviewers
+
+- `POST /interviewers` : Post interviewers
+
 
 Message :
 
@@ -169,6 +178,10 @@ Message :
 - `POST /message` : Post a message
 
 - `POST /verify-name` : Update Messages with campaigns or interviewers listed in request body
+
+OrganizationUnit :
+
+- `POST /organization-units` : Create Context with Organizational Unit and users associated
 
 Preference :
 
@@ -199,6 +212,10 @@ SurveyUnit :
 - `PUT /survey-unit/{id}/state/{state}` : Update the state of Survey Units listed in request body
 
 - `PUT /survey-unit/{id}/viewed` : Update the state of Survey Units listed in request body
+
+- `POST /survey-units` : POST SurveyUnits
+
+- `POST /survey-units/interviewers` : POST SurveyUnit assignations to interviewer
 
 User :
 

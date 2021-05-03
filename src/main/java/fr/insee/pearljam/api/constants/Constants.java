@@ -14,6 +14,7 @@ public class Constants {
 
 	// API for interviewers
 	public static final String API_SURVEYUNITS = "/api/survey-units";
+	public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
 	public static final String API_SURVEYUNIT_ID = "/api/survey-unit/{id}";
 
 	// API for users
@@ -23,9 +24,9 @@ public class Constants {
 	public static final String API_SURVEYUNIT_ID_VIEWED = "/api/survey-unit/{id}/viewed";
 	public static final String API_SURVEYUNIT_CLOSABLE = "/api/survey-units/closable";
 	
-	public static final String API_CAMPAIGNS = "/api/campaigns";
-  	public static final String API_CAMPAIGNS_STATE_COUNT = "/api/campaigns/survey-units/state-count";
-  	public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
+  public static final String API_CAMPAIGNS = "/api/campaigns";
+  public static final String API_CAMPAIGNS_STATE_COUNT = "/api/campaigns/survey-units/state-count";
+  public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
 	public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaign/{id}/interviewers";
 	public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/state-count";
@@ -45,6 +46,7 @@ public class Constants {
 	public static final String API_INTERVIEWERS_CONTACT_OUTCOME_COUNT = "/api/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes";	
 
 	public static final String API_USER= "/api/user";
+	public static final String API_GEOGRAPHICALLOCATIONS= "/api/geographical-locations";
 	public static final String API_PREFERENCES = "/api/preferences";
   
   	public static final String API_MESSAGE = "/api/message";
@@ -59,6 +61,10 @@ public class Constants {
     
     public static final String API_SURVEYUNIT_CLOSE = "/api/survey-unit/{id}/close/{closingCause}";
     public static final String API_SURVEYUNIT_CLOSING_CAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
+
+    public static final String API_CAMPAIGN = "/api/campaign";
+    public static final String API_OU_CONTEXT = "/api/organization-units";
+
   	
 	// Error messages
 	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";

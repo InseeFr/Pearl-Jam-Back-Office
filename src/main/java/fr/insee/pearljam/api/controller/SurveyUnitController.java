@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
@@ -29,9 +31,10 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -55,11 +58,42 @@ public class SurveyUnitController {
 	SurveyUnitService surveyUnitService;
 
 	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-
-	@Autowired
 	UtilsService utilsService;
 
+	/**
+	 * This method is using to post the list of SurveyUnit defined in request body
+	 * 
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "POST SurveyUnit assignations to interviewer")
+	@PostMapping(path = "/survey-units")
+	public ResponseEntity<Object> postSurveyUnits(HttpServletRequest request, @RequestBody List<SurveyUnitContextDto> surveyUnits) {
+		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
+		LOGGER.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+	
+	/**
+	 * This method is using to post the list of links between suvey-unit and intervewer defined in request body
+	 * 
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Post SurveyUnits")
+	@PostMapping(path = "/survey-units/interviewers")
+	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(HttpServletRequest request, @RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
+		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
+		LOGGER.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+	
 	/**
 	 * This method is using to get the list of SurveyUnit for current interviewer
 	 * 
