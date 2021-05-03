@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+
 /**
 * Entity Interviewer : represent the entity table in DB
 * 
@@ -61,6 +63,32 @@ public class Interviewer implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, targetEntity=SurveyUnit.class, cascade = CascadeType.ALL, mappedBy="interviewer", orphanRemoval=true)
 	private Set<SurveyUnit> surveyUnits = new HashSet<>();
 
+	
+
+	public Interviewer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Interviewer(String id, String firstName, String lastName, String email, String phoneNumber,
+			Set<SurveyUnit> surveyUnits) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.surveyUnits = surveyUnits;
+	}
+	
+	public Interviewer(InterviewerContextDto interviewerDto) {
+		super();
+		this.id = interviewerDto.getId();
+		this.firstName = interviewerDto.getFirstName();
+		this.lastName = interviewerDto.getLastName();
+		this.email = interviewerDto.getEmail();
+		this.phoneNumber = interviewerDto.getPhoneNumer();
+	}
 
 	/**
 	 * @return the id of the Interviewer

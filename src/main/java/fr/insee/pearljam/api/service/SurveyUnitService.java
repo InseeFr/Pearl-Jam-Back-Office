@@ -7,13 +7,16 @@ import java.util.Set;
 import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.domain.ClosingCauseType;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 
 /**
  * Service for the SurveyUnit entity
@@ -83,4 +86,8 @@ public interface SurveyUnitService {
 
 
 	List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId);
+
+	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
+
+	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
 }

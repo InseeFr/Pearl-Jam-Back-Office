@@ -59,6 +59,20 @@ public class User implements Serializable {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "preference", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = { @JoinColumn(name = "id_campaign") })
 	private List<Campaign> campaigns;
+	
+	public User() {
+		super();
+	}
+	
+	public User(String id, String firstName, String lastName, OrganizationUnit organizationUnit) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.organizationUnit = organizationUnit;
+	}
+	
+	
 	/**
 	 * @return id of the User
 	 */

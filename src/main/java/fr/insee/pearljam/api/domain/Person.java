@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -13,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.person.PersonDto;
 
 /**
 * Entity Person : represent the entity table in DB
@@ -66,6 +69,11 @@ public class Person implements Serializable {
 	private boolean favoriteEmail;
 	
 	/**
+	 * Is the person privileged
+	 */
+	private boolean privileged;
+	
+	/**
 	 * SurveyUnit associated to the person
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -86,14 +94,26 @@ public class Person implements Serializable {
 	/**
 	 * Constructor with all args
 	 */
-	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail) {
+	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.favoriteEmail = favoriteEmail;
+		this.privileged = privileged;
 	}
 	
+	public Person(PersonDto p, SurveyUnit su) {
+		this.title = p.getTitle();
+		this.firstName = p.getFirstName();
+		this.lastName = p.getLastName();
+		this.email = p.getEmail();
+		this.favoriteEmail = p.isFavoriteEmail();
+		this.privileged = p.isPrivileged();
+		this.phoneNumbers = p.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, this)).collect(Collectors.toSet());
+		this.surveyUnit = su;
+	}
+
 	/**
 	 * @return the id
 	 */
@@ -177,6 +197,20 @@ public class Person implements Serializable {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	/**
+	 * @return the privileged
+	 */
+	public boolean isPrivileged() {
+		return privileged;
+	}
+
+	/**
+	 * @param privileged the privileged to set
+	 */
+	public void setPrivileged(boolean privileged) {
+		this.privileged = privileged;
 	}
 
 	/**

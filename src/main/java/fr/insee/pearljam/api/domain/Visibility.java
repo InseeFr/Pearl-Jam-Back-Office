@@ -66,6 +66,10 @@ public class Visibility implements Serializable {
 	 * The end date
 	 */
 	private Long endDate;
+	
+	public Visibility() {
+		super();
+	}
 
 	/**
 	 * @return the organizationUnit

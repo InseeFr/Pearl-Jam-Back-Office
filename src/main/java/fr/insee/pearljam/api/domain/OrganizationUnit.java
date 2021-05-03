@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Entity
 @Table
 public class OrganizationUnit implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -48,7 +48,7 @@ public class OrganizationUnit implements Serializable {
 	@Column(length=8)
 	private OrganizationUnitType type;
 	
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	private OrganizationUnit organizationUnitParent;
 	
 	/**
@@ -56,6 +56,18 @@ public class OrganizationUnit implements Serializable {
 	 */
 	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visibility> visibilities;
+	
+	public OrganizationUnit() {
+		super();
+	}
+	
+	public OrganizationUnit(String id, String label, OrganizationUnitType type) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.type = type;
+	}
+
 
 	/**
 	 * @return the id

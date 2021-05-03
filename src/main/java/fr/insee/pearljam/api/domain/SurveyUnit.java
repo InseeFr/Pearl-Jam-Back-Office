@@ -1,8 +1,10 @@
 package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 
 /**
  * Entity SurveyUnit : represent the entity table in DB
@@ -51,13 +55,13 @@ public class SurveyUnit implements Serializable {
 	/**
 	 * The address of SurveyUnit
 	 */
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	private Address address;
 
 	/**
 	 * The sampleIdentifier of SurveyUnit
 	 */
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	private SampleIdentifier sampleIdentifier;
 	
 	/**
@@ -91,6 +95,7 @@ public class SurveyUnit implements Serializable {
 	private Set<ClosingCause> closingCause;
 
 	public SurveyUnit() {
+		super();
 	}
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
@@ -117,6 +122,22 @@ public class SurveyUnit implements Serializable {
 		this.sampleIdentifier = sampleIdentifier;
 		this.campaign = campaign;
 		this.interviewer = interviewer;
+	}
+
+	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign, GeographicalLocation gl) {
+		this.id = su.getId();
+		this.priority = su.getPriority();
+		this.viewed = false;
+		this.address = new InseeAddress(su.getAddress(), gl);
+		this.sampleIdentifier = new InseeSampleIdentifier(su.getSampleIdentifiers());
+		this.campaign = campaign;
+		this.interviewer = null;
+		this.organizationUnit = organizationUnit;
+		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
+		this.contactAttempts = new HashSet<>();
+		this.comments = new HashSet<>();
+		this.states = Set.of(new State(new Date().getTime(), this, StateType.NVM));
+		this.closingCause = new HashSet<>();
 	}
 
 	/**

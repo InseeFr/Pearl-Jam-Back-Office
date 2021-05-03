@@ -20,6 +20,15 @@ public class GeographicalLocation implements Serializable {
 	 */
 	private static final long serialVersionUID = -5032423587947124086L;
 
+	public GeographicalLocation(String id, String label) {
+		this.id = id;
+		this.label = label;
+	}
+	
+	public GeographicalLocation() {
+		super();
+	}
+	
 	/**
 	* The id of GeographicalLocation 
 	*/

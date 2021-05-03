@@ -15,15 +15,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.service.InterviewerService;
@@ -50,6 +54,25 @@ public class InterviewerController {
 	@Autowired
 	UtilsService utilsService;
 
+	/**
+	 * This method is used to post the list of interviewers defined in request body
+	 * 
+	 * @param request
+	 * @param id
+	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Post interviewers")
+	@PostMapping(path = "/interviewers")
+	public ResponseEntity<String> postInterviewers(HttpServletRequest request, @RequestBody List<InterviewerContextDto> interviewers) {
+		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Response response = interviewerService.createInterviewers(interviewers);
+		LOGGER.info("POST /interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+	
 	/**
 	 * This method is used to get the list of interviewers associated with the
 	 * campaign {id} for current user

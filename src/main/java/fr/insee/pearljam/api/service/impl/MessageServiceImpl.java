@@ -244,9 +244,14 @@ public class MessageServiceImpl implements MessageService {
 				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
 	    Pageable topFifteen = PageRequest.of(0, 15);
 
-	    	returnValue.addAll(interviewerRepository.findMatchingInterviewers(text, userOUIds, topFifteen));
-		    returnValue.addAll(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
-
-		return returnValue;
+    	returnValue.addAll(interviewerRepository.findMatchingInterviewers(text, userOUIds, topFifteen));
+	    returnValue.addAll(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
+	    
+	    
+	    
+		return returnValue.stream()
+                .collect(
+                		collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
+                        ArrayList::new));
 	}
 }

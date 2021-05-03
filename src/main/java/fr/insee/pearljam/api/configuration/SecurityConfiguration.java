@@ -83,7 +83,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
-			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)	
+			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole,userLocalRole,userNationalRole)	
+			.antMatchers(Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(userLocalRole,userNationalRole)	
 			.antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole,userLocalRole,userNationalRole)
 			.antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
 			.antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
@@ -113,6 +114,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(Constants.API_INTERVIEWERS_CAMPAIGN).hasAnyRole(userLocalRole,userNationalRole)
 			.antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole,userNationalRole)
 			.antMatchers(Constants.API_INTERVIEWERS_CONTACT_OUTCOME_COUNT).hasAnyRole(userLocalRole,userNationalRole)
+			.antMatchers(Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(userLocalRole,userNationalRole)
 	        .antMatchers(Constants.API_USER).hasAnyRole(userLocalRole,userNationalRole)
             .antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole,userNationalRole)
             .antMatchers(Constants.API_MESSAGE).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
@@ -121,6 +123,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
             .antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(interviewerRole, userNationalRole)
             .antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole, userNationalRole)
+            .antMatchers(Constants.API_CAMPAIGN).hasAnyRole(userLocalRole, userNationalRole)
+            .antMatchers(Constants.API_OU_CONTEXT).hasAnyRole(userLocalRole, userNationalRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
@@ -128,16 +132,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			// configuration for endpoints
 			.antMatchers(Constants.API_SURVEYUNIT_ID, 
 					Constants.API_SURVEYUNITS, 
+					Constants.API_SURVEYUNITS_INTERVIEWERS,
 					Constants.API_CREATE_DATASET,
 					Constants.API_DELETE_DATASET,
 					Constants.API_SURVEYUNIT_CLOSE,
 					Constants.API_SURVEYUNIT_CLOSING_CAUSE,
 					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT,
 					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACT_OUTCOMES,
-
 					Constants.API_SURVEYUNITS_STATE, 
 					Constants.API_CHECK_HABILITATION,
-
 					Constants.API_SURVEYUNIT_ID_STATES, 
 					Constants.API_SURVEYUNIT_ID_COMMENT, 
 					Constants.API_SURVEYUNIT_ID_VIEWED, 
@@ -155,6 +158,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
 					Constants.API_CAMPAIGN_CONTACT_OUTCOME,
 					Constants.API_CAMPAIGN_SU_CONTACT_OUTCOME,
+					Constants.API_GEOGRAPHICALLOCATIONS,
 					Constants.API_USER,
 			        Constants.API_PREFERENCES,
 			        Constants.API_MESSAGE,
@@ -162,7 +166,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			        Constants.API_MESSAGE_HISTORY,
 			        Constants.API_GET_MESSAGES,
 			        Constants.API_MESSAGE_MARK_AS_READ,
-			        Constants.API_MESSAGE_MARK_AS_DELETED)
+              Constants.API_MESSAGE_MARK_AS_DELETED,
+              Constants.API_CAMPAIGN,
+              Constants.API_OU_CONTEXT)
 			.permitAll();
 		}
 	}
