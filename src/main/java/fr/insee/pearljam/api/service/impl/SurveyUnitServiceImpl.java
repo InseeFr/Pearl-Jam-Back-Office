@@ -580,22 +580,28 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Override
+	@Transactional
 	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink) {
-		// Check duplicate line in interviewers to create
+		
+		// Delete All Assignments
+		surveyUnitRepository.updateAllinterviewersToNull();
+		
+		// Get SurveyUnits and Interviewers to create
 		Map<String, SurveyUnit> mapSurveyUnit = surveyUnitRepository
 				.findAllById(surveyUnitInterviewerLink.stream()
 						.map(SurveyUnitInterviewerLinkDto::getSurveyUnitId)
 						.collect(Collectors.toList()))
-        .stream().collect(Collectors.toMap(SurveyUnit::getId, su -> su));
+				.stream().collect(Collectors.toMap(SurveyUnit::getId, su -> su));
 		Map<String, Interviewer> mapInterviewer = interviewerRepository
 				.findAllById(surveyUnitInterviewerLink.stream()
 						.map(SurveyUnitInterviewerLinkDto::getInterviewerId)
 						.collect(Collectors.toList()))
-        .stream().collect(Collectors.toMap(Interviewer::getId, itw -> itw));
+				.stream().collect(Collectors.toMap(Interviewer::getId, itw -> itw));
+		
+		// Create new assignment
 		List<String> errors = surveyUnitInterviewerLink.stream()
 				.filter(link -> !link.isValid()
 						|| !mapSurveyUnit.containsKey(link.getSurveyUnitId())
-						|| mapSurveyUnit.get(link.getSurveyUnitId()).getInterviewer() != null
 						|| !mapInterviewer.containsKey(link.getInterviewerId()))
 				.map(SurveyUnitInterviewerLinkDto::getLink).collect(Collectors.toList());
 		if (!errors.isEmpty()) {

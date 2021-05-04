@@ -136,7 +136,7 @@ public class SurveyUnit implements Serializable {
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 		this.contactAttempts = new HashSet<>();
 		this.comments = new HashSet<>();
-		this.states = Set.of(new State(new Date().getTime(), this, StateType.NVM));
+		this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
 		this.closingCause = new HashSet<>();
 	}
 
