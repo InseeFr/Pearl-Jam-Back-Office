@@ -165,7 +165,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(Constants.GUEST)) {
 			stateCountDto = new StateCountDto(campaignRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
-			stateCountDto.addClausingCauseCount(campaignRepository.getClausingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
+			stateCountDto.addClosingCauseCount(campaignRepository.getClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (stateCountDto.getTotal() == null) {
 			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
@@ -190,14 +190,14 @@ public class CampaignServiceImpl implements CampaignService {
 					&& visibilityRepository.findVisibilityInCollectionPeriod(campaignId, id, dateToUse).isPresent()) {
 		        StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id),
 		          campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
-				dto.addClausingCauseCount(campaignRepository.getClausingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
+				dto.addClosingCauseCount(campaignRepository.getClosingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
 				stateCountList.add(dto);
 			}
 		}
 		stateCountCampaignDto.setOrganizationUnits(stateCountList);
 		
 		StateCountDto dtoFrance = new StateCountDto(campaignRepository.getStateCountByCampaignId(campaignId, dateToUse));
-		dtoFrance.addClausingCauseCount(campaignRepository.getClausingCauseCountByCampaignId(campaignId, dateToUse));
+		dtoFrance.addClosingCauseCount(campaignRepository.getClosingCauseCountByCampaignId(campaignId, dateToUse));
 		stateCountCampaignDto.setFrance(dtoFrance);
 		if (stateCountCampaignDto.getFrance() == null || stateCountCampaignDto.getOrganizationUnits() == null
 				) {
@@ -271,7 +271,7 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto campaignSum = new StateCountDto(
         campaignRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse)
       );
-			campaignSum.addClausingCauseCount(campaignRepository.getClausingCauseCountSumByCampaign(id, userOrgUnitIds, dateToUse));
+			campaignSum.addClosingCauseCount(campaignRepository.getClosingCauseCountSumByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
 				campaignSum.setCampaign(dto);
@@ -296,7 +296,7 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto interviewerSum = new StateCountDto(
 		        campaignRepository.getStateCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse)
 		      );
-			interviewerSum.addClausingCauseCount(campaignRepository.getClausingCauseCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse));
+			interviewerSum.addClosingCauseCount(campaignRepository.getClosingCauseCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse));
 			if(interviewerSum.getTotal() != null) {
 				interviewerSum.setInterviewer(interviewerRepository.findDtoById(id));
 				returnList.add(interviewerSum);
@@ -322,7 +322,7 @@ public class CampaignServiceImpl implements CampaignService {
 		StateCountDto interviewerSum = new StateCountDto(
 	        campaignRepository.getStateCountNotAttributed(id, organizationUnits, dateToUse)
 	      );
-		interviewerSum.addClausingCauseCount(campaignRepository.getClausingCauseCountNotAttributed(id, organizationUnits, dateToUse));
+		interviewerSum.addClosingCauseCount(campaignRepository.getClosingCauseCountNotAttributed(id, organizationUnits, dateToUse));
 		
 		return interviewerSum;
 	}

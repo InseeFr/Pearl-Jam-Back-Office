@@ -50,6 +50,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.ClosingCause;
+import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
@@ -84,6 +86,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
@@ -136,7 +139,10 @@ class TestAuthKeyCloak {
 	OrganizationUnitRepository organizationUnitRepository;
 
 	@Autowired
-	InterviewerRepository interviewerRepository;
+    InterviewerRepository interviewerRepository;
+  
+    @Autowired
+	ClosingCauseRepository closingCauseRepository;
 	
 	
 	@Container
@@ -440,7 +446,7 @@ class TestAuthKeyCloak {
 		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].rowCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].total",equalTo(5));
 	}
@@ -452,9 +458,9 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().put("api/survey-unit/11/closing-cause/NPI")
 		.then().statusCode(200);
 		
-		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/state-count")
-		.then().statusCode(200).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(1));
+    List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+    Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+    
 	}
 	
 	/**
@@ -478,10 +484,9 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken).when().put("api/survey-unit/11/closing-cause/NPA")
 		.then().statusCode(200);
 		
-		given().auth().oauth2(accessToken).when().get("api/campaign/simpsons2020x00/survey-units/state-count")
-		.then().statusCode(200).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].npaCount",equalTo(1));
+    List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+    Assert.assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
+
 	}
 	
 	@Test
@@ -528,7 +533,7 @@ class TestAuthKeyCloak {
 		.assertThat().body("qnaFinCount",equalTo(0)).and()
     .assertThat().body("nvaCount",equalTo(0)).and()
     .assertThat().body("npaCount",equalTo(0)).and()
-		.assertThat().body("npiCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
 		.assertThat().body("rowCount",equalTo(0)).and()
 		.assertThat().body("total",equalTo(2));
 	}

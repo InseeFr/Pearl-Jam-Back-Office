@@ -63,7 +63,7 @@ public class StateCountDto {
 		super();
 	}
 	
-	public void addClausingCauseCount(Map<String, BigInteger> obj) {
+	public void addClosingCauseCount(Map<String, BigInteger> obj) {
 		if (obj != null && !obj.isEmpty()) {
 			for(String str : Constants.CLOSING_CAUSE_FIELDS) {
 				try {
