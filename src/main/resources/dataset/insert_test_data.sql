@@ -70,7 +70,11 @@ INSERT INTO public.person (email, favorite_email, first_name, last_name, birthda
 INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Louise', 'Walker', 11111111, 1, '11');
 INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Anthony', 'Bennett', 11111111, 0, '12');
 INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Christopher', 'Lewis', 11111111, 0, '14');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, '20');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Harriette', 'Raymond', 11111111, 0, '20');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Aimée', 'Lamothe', 11111111, 0, '21');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Perrin', 'Blanchard', 11111111, 0, '22');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Artus', 'Arnoux', 11111111, 0, '23');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Laurent', 'Neville', 11111111, 0, '24');
 
 
 
@@ -83,7 +87,11 @@ INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRU
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Louise' and p.last_name='Walker' and p.survey_unit_id='11';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Anthony' and p.last_name='Bennett' and p.survey_unit_id='12';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Christopher' and p.last_name='Lewis' and p.survey_unit_id='14';
-INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Claude' and p.last_name='Watkins' and p.survey_unit_id='20';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Harriette' and p.last_name='Raymond' and p.survey_unit_id='20';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Aimée' and p.last_name='Lamothe' and p.survey_unit_id='21';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Perrin' and p.last_name='Blanchard' and p.survey_unit_id='22';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Artus' and p.last_name='Arnoux' and p.survey_unit_id='23';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Laurent' and p.last_name='Neville' and p.survey_unit_id='24';
 
 
 

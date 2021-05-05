@@ -73,6 +73,11 @@ fr.insee.pearljam.persistence.database.password = pearljam
 fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.defaultSchema=public
 
+#Datacollection Api
+fr.insee.pearljam.datacollection.service.url.scheme=http
+fr.insee.pearljam.datacollection.service.url.host=localhost
+fr.insee.pearljam.datacollection.service.url.port=8081
+
 #Keycloak configuration
 keycloak.realm=insee-realm
 keycloak.resource=pearljam-web
