@@ -254,13 +254,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-
 		if (surveyUnitDetailDto.getStates() != null) {
-			for (StateDto stateDto : surveyUnitDetailDto.getStates()) {
-				stateRepository.save(new State(stateDto.getDate(), surveyUnit, stateDto.getType()));
-			}
+			surveyUnitDetailDto.getStates().stream()
+					.filter(s-> s.getId()==null || stateRepository.existsById(s.getId()))
+					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
 		}
-
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
 				.getType();
 		if (currentState == StateType.WFS) {
@@ -283,8 +281,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5) {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.TBR));
+			surveyUnit.setClosingCause(null);
 		} else {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.FIN));
+			surveyUnit.setClosingCause(null);
 		}
 	}
 
@@ -448,12 +448,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
 			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
+				if(StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
+					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
+				}
 				stateRepository.save(new State(new Date().getTime(), su.get(), state));
 				return HttpStatus.OK;
 			} else {
 				return HttpStatus.FORBIDDEN;
 			}
-
 		} else {
 			return HttpStatus.BAD_REQUEST;
 		}

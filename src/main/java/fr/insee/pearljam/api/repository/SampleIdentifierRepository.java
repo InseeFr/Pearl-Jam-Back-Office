@@ -13,7 +13,6 @@ import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 * 
 */
 public interface SampleIdentifierRepository extends JpaRepository<InseeSampleIdentifier, Long> {
-	
 	/**
 	 * This method retrieve the SampleIdentifiers in db by Id
 	 * @param id

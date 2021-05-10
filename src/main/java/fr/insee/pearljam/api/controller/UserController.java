@@ -38,7 +38,7 @@ public class UserController {
 	 */
 	@ApiOperation(value = "Get User")
 	@GetMapping(path = "/user")
-	public ResponseEntity<Object> getUser(HttpServletRequest request) {
+	public ResponseEntity<UserDto> getUser(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			LOGGER.info("GET User resulting in 403");
