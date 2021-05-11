@@ -36,23 +36,10 @@ public class SurveyUnitCampaignDto {
 	private Boolean viewed;
 	
 	private List<CommentDto> comments;
-	
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
 	
-	
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-	/**
-	 * @param id
-	 * @param ssech
-	 * @param interviewer
-	 */
 	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate, Boolean reading, Boolean viewed, InterviewerDto interviewer) {
 		super();
 		this.id = id;
@@ -109,6 +96,14 @@ public class SurveyUnitCampaignDto {
 	public SurveyUnitCampaignDto() {
 		super();
 	}
+	
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+	
 	/**
 	 * @param id the id to set
 	 */

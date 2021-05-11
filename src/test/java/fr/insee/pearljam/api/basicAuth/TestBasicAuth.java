@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.basicAuth;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,28 +48,54 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.ClosingCause;
+import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.CommentType;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Message;
 import fr.insee.pearljam.api.domain.MessageStatusType;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.OrganizationUnitType;
+import fr.insee.pearljam.api.domain.Source;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.domain.Title;
+import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.domain.Visibility;
+import fr.insee.pearljam.api.dto.address.AddressDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
+import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
+import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.dto.user.UserContextDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.repository.ClosingCauseRepository;
+import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
+import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import liquibase.Liquibase;
 import liquibase.exception.LiquibaseException;
@@ -83,21 +111,36 @@ class TestBasicAuth {
 	
 	@Autowired
 	SurveyUnitService surveyUnitService;
-
+	
 	@Autowired
 	UserService userService;
 	
 	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-  
+	UserRepository userRepository;
+	
 	@Autowired
-  	CampaignRepository campaignRepository;
+	SurveyUnitRepository surveyUnitRepository;
+	
+	@Autowired
+	CampaignRepository campaignRepository;
+
+	@Autowired
+	GeographicalLocationRepository geographicalLocationRepository;
   
 	@Autowired
 	VisibilityRepository visibilityRepository;
 	
 	@Autowired
 	MessageRepository messageRepository;
+	
+	@Autowired
+	OrganizationUnitRepository organizationUnitRepository;
+
+	@Autowired
+	InterviewerRepository interviewerRepository;
+
+	@Autowired
+	ClosingCauseRepository closingCauseRepository;
 	
 	@LocalServerPort
 	int port;
@@ -355,7 +398,7 @@ class TestBasicAuth {
 		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(1)).and()
+		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].rowCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].total",equalTo(5));
 	}
@@ -366,10 +409,10 @@ class TestBasicAuth {
 		given().auth().preemptive().basic("ABC", "abc").when().put("api/survey-unit/11/closing-cause/NPI")
 		.then().statusCode(200);
 		
-		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count")
-		.then().statusCode(200).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(1));
-	}
+    List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+    Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+    
+  }
 	
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
@@ -390,10 +433,9 @@ class TestBasicAuth {
 		given().auth().preemptive().basic("ABC", "abc").when().put("api/survey-unit/11/closing-cause/NPA")
 		.then().statusCode(200);
 		
-		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaign/simpsons2020x00/survey-units/state-count")
-		.then().statusCode(200).and()
-		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].npaCount",equalTo(1));
+    List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+    Assert.assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
+
 	}
 	
 	@Test
@@ -436,7 +478,7 @@ class TestBasicAuth {
 		.assertThat().body("qnaFinCount",equalTo(0)).and()
     .assertThat().body("nvaCount",equalTo(0)).and()
     .assertThat().body("npaCount",equalTo(0)).and()
-		.assertThat().body("npiCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
 		.assertThat().body("rowCount",equalTo(0)).and()
 		.assertThat().body("total",equalTo(2));
 	}
@@ -1337,4 +1379,997 @@ class TestBasicAuth {
 		.put("api/survey-unit/11111111111/viewed").then().statusCode(404);
 	}
 	
+	/**
+	 * Test that the Post endpoint
+	 * "/campaign" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(58)
+	void testPostCampaignContext() throws InterruptedException, JsonProcessingException, JSONException {
+		CampaignContextDto campDto = new CampaignContextDto();
+		campDto.setCampaign("campId");
+		campDto.setCampaignLabel("An other campaign");
+		campDto.setVisibilities(new ArrayList<>());
+		
+		VisibilityContextDto visi1 = new VisibilityContextDto();
+		visi1.setOrganizationalUnit("OU-NORTH");
+		visi1.setCollectionStartDate(1111L);
+		visi1.setCollectionEndDate(2222L);
+		visi1.setIdentificationPhaseStartDate(3333L);
+		visi1.setInterviewerStartDate(4444L);
+		visi1.setManagementStartDate(5555L);
+		visi1.setEndDate(6666L);
+		
+		VisibilityContextDto visi2 = new VisibilityContextDto();
+		visi2.setOrganizationalUnit("OU-SOUTH");
+		visi2.setCollectionStartDate(1111L);
+		visi2.setCollectionEndDate(2222L);
+		visi2.setIdentificationPhaseStartDate(3333L);
+		visi2.setInterviewerStartDate(4444L);
+		visi2.setManagementStartDate(5555L);
+		visi2.setEndDate(6666L);
+		
+		campDto.getVisibilities().add(visi1);
+		campDto.getVisibilities().add(visi2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(campDto))
+			.when()
+			.post("api/campaign")
+			.then()
+			.statusCode(200);
+		
+		Optional<Campaign> campOpt = campaignRepository.findById("campId");
+		assertTrue(campOpt.isPresent());
+		assertEquals("An other campaign", campOpt.get().getLabel());
+		
+		Optional<Visibility> visi1Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("campId", "OU-NORTH");
+		Optional<Visibility> visi2Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("campId", "OU-SOUTH");
+
+		assertTrue(visi1Opt.isPresent());
+		assertTrue(visi2Opt.isPresent());
+		
+		Visibility visi = visi1Opt.get();
+	    assertEquals(1111L, visi.getCollectionStartDate());
+	    assertEquals(2222L, visi.getCollectionEndDate());
+	    assertEquals(3333L, visi.getIdentificationPhaseStartDate());
+	    assertEquals(4444L, visi.getInterviewerStartDate());
+	    assertEquals(5555L, visi.getManagementStartDate());
+	    assertEquals(6666L, visi.getEndDate());
+		
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/campaign" returns 400
+	 * when an attribute is missing
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(59)
+	void testPostCampaignContextNoLabel() throws InterruptedException, JsonProcessingException, JSONException {
+		CampaignContextDto campDto = new CampaignContextDto();
+		campDto.setCampaign("campId2");
+		// Campaign label unset
+		campDto.setVisibilities(new ArrayList<>());
+		
+		VisibilityContextDto visi1 = new VisibilityContextDto();
+		visi1.setOrganizationalUnit("OU-NORTH");
+		visi1.setCollectionStartDate(1111L);
+		visi1.setCollectionEndDate(2222L);
+		visi1.setIdentificationPhaseStartDate(3333L);
+		visi1.setInterviewerStartDate(4444L);
+		visi1.setManagementStartDate(5555L);
+		visi1.setEndDate(6666L);
+		
+		VisibilityContextDto visi2 = new VisibilityContextDto();
+		visi2.setOrganizationalUnit("OU-SOUTH");
+		visi2.setCollectionStartDate(1111L);
+		visi2.setCollectionEndDate(2222L);
+		visi2.setIdentificationPhaseStartDate(3333L);
+		visi2.setInterviewerStartDate(4444L);
+		visi2.setManagementStartDate(5555L);
+		visi2.setEndDate(6666L);
+		
+		campDto.getVisibilities().add(visi1);
+		campDto.getVisibilities().add(visi2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(campDto))
+			.when()
+			.post("api/campaign")
+			.then()
+			.statusCode(400);
+		
+		// Campaign should not have been created
+		Optional<Campaign> campOpt = campaignRepository.findById("campId2");
+		assertTrue(!campOpt.isPresent());
+
+		
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/campaign" returns 400
+	 * when an an organizational unit does not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(60)
+	void testPostCampaignContextMissingOU() throws InterruptedException, JsonProcessingException, JSONException {
+		CampaignContextDto campDto = new CampaignContextDto();
+		campDto.setCampaign("campId3");
+		// Campaign label unset
+		campDto.setVisibilities(new ArrayList<>());
+		
+		VisibilityContextDto visi1 = new VisibilityContextDto();
+		visi1.setOrganizationalUnit("OU-NORTH");
+		visi1.setCollectionStartDate(1111L);
+		visi1.setCollectionEndDate(2222L);
+		visi1.setIdentificationPhaseStartDate(3333L);
+		visi1.setInterviewerStartDate(4444L);
+		visi1.setManagementStartDate(5555L);
+		visi1.setEndDate(6666L);
+		
+		VisibilityContextDto visi2 = new VisibilityContextDto();
+		visi2.setOrganizationalUnit("AN-OU-THAT-DOESNT-EXIST");
+		visi2.setCollectionStartDate(1111L);
+		visi2.setCollectionEndDate(2222L);
+		visi2.setIdentificationPhaseStartDate(3333L);
+		visi2.setInterviewerStartDate(4444L);
+		visi2.setManagementStartDate(5555L);
+		visi2.setEndDate(6666L);
+		
+		campDto.getVisibilities().add(visi1);
+		campDto.getVisibilities().add(visi2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(campDto))
+			.when()
+			.post("api/campaign")
+			.then()
+			.statusCode(400);
+		
+		// Campaign should not have been created
+		Optional<Campaign> campOpt = campaignRepository.findById("campId3");
+		assertTrue(!campOpt.isPresent());
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(61)
+	void testPostOrganizationUnitContext() throws InterruptedException, JsonProcessingException, JSONException {
+		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
+		
+		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
+		ou1.setOrganisationUnit("OU-NORTH2");
+		ou1.setOrganisationUnitLabel("North region OU 2");
+		ou1.setType(OrganizationUnitType.LOCAL);
+		ou1.setUsers(new ArrayList<UserContextDto>());
+		
+		UserContextDto user1 = new UserContextDto();
+		user1.setFirstName("Jacques");
+		user1.setLastName("Boulanger");
+		user1.setId("JBOULANGER1");
+		ou1.getUsers().add(user1);
+		
+		UserContextDto user2 = new UserContextDto();
+		user2.setFirstName("Chloé");
+		user2.setLastName("Berlin");
+		user2.setId("CBERLIN1");
+		ou1.getUsers().add(user2);
+		
+		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
+		ou2.setOrganisationUnit("OU-NATIONAL2");
+		ou2.setOrganisationUnitLabel("National OU 2");
+		ou2.setType(OrganizationUnitType.LOCAL);
+		ou2.setUsers(new ArrayList<UserContextDto>());
+		ou2.setOrganisationUnitRef(new ArrayList<String>());
+		ou2.getOrganisationUnitRef().add("OU-NORTH2");
+		
+		UserContextDto user3 = new UserContextDto();
+		user3.setFirstName("Thierry");
+		user3.setLastName("Fabres");
+		user3.setId("TFABRES1");
+		ou2.getUsers().add(user3);
+		
+		UserContextDto user4 = new UserContextDto();
+		user4.setFirstName("Fabrice");
+		user4.setLastName("Dupont");
+		user4.setId("FDUPONT1");
+		ou2.getUsers().add(user4);
+		
+		listOU.add(ou1);
+		listOU.add(ou2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listOU))
+			.when()
+			.post("api/organization-units")
+			.then()
+			.statusCode(200);
+		
+		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH2");
+		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL2");
+		assertTrue(ou1Opt.isPresent());
+		assertTrue(ou2Opt.isPresent());
+		assertEquals("North region OU 2", ou1Opt.get().getLabel());
+		assertEquals("OU-NATIONAL2", ou1Opt.get().getOrganizationUnitParent().getId());
+		assertEquals("National OU 2", ou2Opt.get().getLabel());
+		
+		Optional<User> user1Opt = userRepository.findById("JBOULANGER1");
+		Optional<User> user2Opt = userRepository.findById("CBERLIN1");
+		Optional<User> user3Opt = userRepository.findById("TFABRES1");
+		Optional<User> user4Opt = userRepository.findById("FDUPONT1");
+
+		assertTrue(user1Opt.isPresent());
+		assertEquals("Jacques", user1Opt.get().getFirstName());
+		assertEquals("Boulanger", user1Opt.get().getLastName());
+
+		assertTrue(user2Opt.isPresent());
+		assertEquals("Chloé", user2Opt.get().getFirstName());
+		assertEquals("Berlin", user2Opt.get().getLastName());
+		
+		assertTrue(user3Opt.isPresent());
+		assertEquals("Thierry", user3Opt.get().getFirstName());
+		assertEquals("Fabres", user3Opt.get().getLastName());
+		
+		assertTrue(user4Opt.isPresent());
+		assertEquals("Fabrice", user4Opt.get().getFirstName());
+		assertEquals("Dupont", user4Opt.get().getLastName());
+		
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 400
+	 * when there is a duplicate user
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(62)
+	void testPostOrganizationUnitContextDuplicateUser() throws InterruptedException, JsonProcessingException, JSONException {
+		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
+		
+		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
+		ou1.setOrganisationUnit("OU-NORTH3");
+		ou1.setOrganisationUnitLabel("North region OU 3");
+		ou1.setType(OrganizationUnitType.LOCAL);
+		ou1.setUsers(new ArrayList<UserContextDto>());
+		
+		UserContextDto user1 = new UserContextDto();
+		user1.setFirstName("Jacques");
+		user1.setLastName("Boulanger");
+		user1.setId("JBOULANGER2");
+		ou1.getUsers().add(user1);
+		
+		UserContextDto user2 = new UserContextDto();
+		user2.setFirstName("Chloé");
+		user2.setLastName("Berlin");
+		user2.setId("CBERLIN2");
+		ou1.getUsers().add(user2);
+		
+		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
+		ou2.setOrganisationUnit("OU-NATIONAL3");
+		ou2.setOrganisationUnitLabel("National OU 3");
+		ou2.setType(OrganizationUnitType.LOCAL);
+		ou2.setUsers(new ArrayList<UserContextDto>());
+		
+		UserContextDto user3 = new UserContextDto();
+		user3.setFirstName("Thierry");
+		user3.setLastName("Fabres");
+		user3.setId("TFABRES2");
+		ou2.getUsers().add(user3);
+		
+		// Adding user2 on this OU as well
+		ou2.getUsers().add(user2);
+		
+
+		
+		listOU.add(ou1);
+		listOU.add(ou2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listOU))
+			.when()
+			.post("api/organization-units")
+			.then()
+			.statusCode(400);
+		
+		// No OU should have been added
+		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
+		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
+		assertTrue(!ou1Opt.isPresent());
+		assertTrue(!ou2Opt.isPresent());
+
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 400
+	 * when a child organization unit does not exist
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(63)
+	void testPostOrganizationUnitContextNoOU() throws InterruptedException, JsonProcessingException, JSONException {
+		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
+		
+		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
+		ou1.setOrganisationUnit("OU-NORTH3");
+		ou1.setOrganisationUnitLabel("North region OU 3");
+		ou1.setType(OrganizationUnitType.LOCAL);
+		ou1.setUsers(new ArrayList<UserContextDto>());
+		ou1.setOrganisationUnitRef(new ArrayList<String>());
+		ou1.getOrganisationUnitRef().add("AN-OU-THAT-DOESNT-EXIST");
+		
+		UserContextDto user1 = new UserContextDto();
+		user1.setFirstName("Jacques");
+		user1.setLastName("Boulanger");
+		user1.setId("JBOULANGER2");
+		ou1.getUsers().add(user1);
+		
+		UserContextDto user2 = new UserContextDto();
+		user2.setFirstName("Chloé");
+		user2.setLastName("Berlin");
+		user2.setId("CBERLIN2");
+		ou1.getUsers().add(user2);
+		
+		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
+		ou2.setOrganisationUnit("OU-NATIONAL3");
+		ou2.setOrganisationUnitLabel("National OU 3");
+		ou2.setType(OrganizationUnitType.LOCAL);
+		ou2.setUsers(new ArrayList<UserContextDto>());
+		
+		UserContextDto user3 = new UserContextDto();
+		user3.setFirstName("Thierry");
+		user3.setLastName("Fabres");
+		user3.setId("TFABRES2");
+		ou2.getUsers().add(user3);
+		
+		// Adding user2 on this OU as well
+		ou2.getUsers().add(user2);
+		
+		listOU.add(ou1);
+		listOU.add(ou2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listOU))
+			.when()
+			.post("api/organization-units")
+			.then()
+			.statusCode(400);
+		
+		// No OU should have been added
+		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
+		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
+		assertTrue(!ou1Opt.isPresent());
+		assertTrue(!ou2Opt.isPresent());
+
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(64)
+	void testPostInterviewers() throws InterruptedException, JsonProcessingException, JSONException {
+		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
+		
+		InterviewerContextDto interv1 = new InterviewerContextDto(
+				"INTERV1",
+				"Pierre", 
+				"Legrand", 
+				"pierre.legrand@insee.fr", 
+				"06 XX XX XX XX"
+			);
+		
+		InterviewerContextDto interv2 = new InterviewerContextDto(
+				"INTERV2",
+				"Clara", 
+				"Legouanec", 
+				"clara.legouanec@insee.fr", 
+				"06 XX XX XX XX"
+			);
+		
+		listInterviewers.add(interv1);
+		listInterviewers.add(interv2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listInterviewers))
+			.when()
+			.post("api/interviewers")
+			.then()
+			.statusCode(200);
+		
+		// Interviewers should have been added
+		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV1");
+		Optional<Interviewer> interv2Opt = interviewerRepository.findById("INTERV2");
+		assertTrue(interv1Opt.isPresent());
+		assertTrue(interv2Opt.isPresent());
+		
+		assertEquals("Pierre", interv1Opt.get().getFirstName());
+		assertEquals("Legrand", interv1Opt.get().getLastName());
+		assertEquals("pierre.legrand@insee.fr", interv1Opt.get().getEmail());
+		assertEquals("06 XX XX XX XX", interv1Opt.get().getPhoneNumber());
+		
+		assertEquals("Clara", interv2Opt.get().getFirstName());
+		assertEquals("Legouanec", interv2Opt.get().getLastName());
+		assertEquals("clara.legouanec@insee.fr", interv2Opt.get().getEmail());
+		assertEquals("06 XX XX XX XX", interv2Opt.get().getPhoneNumber());
+
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 400
+	 * when an email is missing
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(65)
+	void testPostInterviewersMissingEmail() throws InterruptedException, JsonProcessingException, JSONException {
+		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
+		
+		InterviewerContextDto interv1 = new InterviewerContextDto(
+				"INTERV4",
+				"Pierre", 
+				"Legrand", 
+				"pierre.legrand@insee.fr", 
+				"06 XX XX XX XX"
+			);
+		
+		InterviewerContextDto interv2 = new InterviewerContextDto(
+				"INTERV5",
+				"Clara", 
+				"Legouanec", 
+				null, 
+				"06 XX XX XX XX"
+			);
+		
+		listInterviewers.add(interv1);
+		listInterviewers.add(interv2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+	 		.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listInterviewers))
+			.when()
+			.post("api/interviewers")
+			.then()
+			.statusCode(400);
+		
+		// Interviewers should not have been added
+		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV4");
+		Optional<Interviewer> interv2Opt = interviewerRepository.findById("INTERV5");
+		assertTrue(!interv1Opt.isPresent());
+		assertTrue(!interv2Opt.isPresent());
+
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/organization-unit/context" returns 400
+	 * when an iterviewer id is present twice
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(66)
+	void testPostInterviewersDuplicateId() throws InterruptedException, JsonProcessingException, JSONException {
+		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
+		
+		InterviewerContextDto interv1 = new InterviewerContextDto(
+				"INTERV3",
+				"Pierre", 
+				"Legrand", 
+				"pierre.legrand@insee.fr", 
+				"06 XX XX XX XX"
+			);
+		
+		InterviewerContextDto interv2 = new InterviewerContextDto(
+				"INTERV3",
+				"Clara", 
+				"Legouanec", 
+				"clara.legouanec@insee.fr", 
+				"06 XX XX XX XX"
+			);
+		
+		listInterviewers.add(interv1);
+		listInterviewers.add(interv2);
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+			.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(listInterviewers))
+			.when()
+			.post("api/interviewers")
+			.then()
+			.statusCode(400);
+		
+		// Interviewers should not have been added
+		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV3");
+		assertTrue(!interv1Opt.isPresent());
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/geographical-locations returns 200
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(67)
+	void testPostGeographicalLocations() throws JsonProcessingException {
+		GeographicalLocationDto gl = new GeographicalLocationDto();
+		gl.setId("test");
+		gl.setLabel("test");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(gl)))
+		.post("api/geographical-locations")
+		.then().statusCode(200);
+		Assert.assertTrue(geographicalLocationRepository.findById("test").isPresent());
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/geographical-locations with error returns 400
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(68)
+	void testPostGeographicalLocationsError() throws JsonProcessingException {
+		GeographicalLocationDto gl = new GeographicalLocationDto();
+		gl.setId("");
+		gl.setLabel("test");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(gl)))
+		.post("api/geographical-locations")
+		.then().statusCode(400);
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 200
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(69)
+	void testPostSurveyUnits() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("8");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(200);
+		Assert.assertTrue(surveyUnitRepository.findById("8").isPresent());
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when id dupliate in DB
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(70)
+	void testPostSurveyUnitsDuplcateInDB() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("8");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when id dupliate in body
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(71)
+	void testPostSurveyUnitsDuplicateInBody() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("9");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su, su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when OrganizationUnitId does not exist
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(72)
+	void testPostSurveyUnitsOUNotExist() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("9");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-TEST");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when campaignId does not exist
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(73)
+	void testPostSurveyUnitsCampaignNotExist() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("9");
+		su.setCampaign("campaignTest");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when GeographicalLocationId does not exist
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(74)
+	void testPostSurveyUnitsGeogrphicalLocationNotExist() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("9");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("testtest");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	
+	/**
+	 * Test that the POST endpoint
+	 * "/survey-units returns 400 when surveyUnit body is not valid
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(75)
+	void testPostSurveyUnitsSUNotValid() throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId("");
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("test");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		// ID null
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+		// Campaign null
+		su.setId("9");
+		su.setCampaign("");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+		// Persons Null
+		su.setPersons(List.of());
+		su.setCampaign("simpsons2020x00");
+		given()
+		.auth().preemptive().basic("ABC", "abc")
+		.contentType(ContentType.JSON)
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units")
+		.then().statusCode(400);
+	}
+	
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/survey-units/interviewers" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(76)
+	void testPostAssignements() throws InterruptedException, JsonProcessingException, JSONException {
+		List<SurveyUnitInterviewerLinkDto> list = new ArrayList<>();
+		addUnattributedSU("101");
+		addUnattributedSU("102");
+		SurveyUnitInterviewerLinkDto assign1 = new SurveyUnitInterviewerLinkDto("101", "INTW4");
+		SurveyUnitInterviewerLinkDto assign2 = new SurveyUnitInterviewerLinkDto("102", "INTW3");
+		
+		list.add(assign1);
+		list.add(assign2);
+		
+		
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(list))
+			.when()
+			.post("api/survey-units/interviewers")
+			.then()
+			.statusCode(200);
+		
+		// SU should have been attributted to interviewers
+		Optional<SurveyUnit> su1 = surveyUnitRepository.findById("101");
+		Optional<SurveyUnit> su2 = surveyUnitRepository.findById("102");
+		assertEquals("INTW4", su1.get().getInterviewer().getId());
+		assertEquals("INTW3", su2.get().getInterviewer().getId());
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/survey-units/interviewers" returns 400
+	 * when an iterviewer is not present
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(77)
+	void testPostAssignementsNoInterviewerDoesntExist() throws InterruptedException, JsonProcessingException, JSONException {
+		List<SurveyUnitInterviewerLinkDto> list = new ArrayList<>();
+		addUnattributedSU("103");
+		addUnattributedSU("104");
+		SurveyUnitInterviewerLinkDto assign1 = new SurveyUnitInterviewerLinkDto("103", "INTW4");
+		SurveyUnitInterviewerLinkDto assign2 = new SurveyUnitInterviewerLinkDto("104", "INTWDOESNTEXIST");
+		
+		list.add(assign1);
+		list.add(assign2);
+		
+		given()
+			.auth().preemptive().basic("ABC", "abc")
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(list))
+			.when()
+			.post("api/survey-units/interviewers")
+			.then()
+			.statusCode(400);
+		
+		// SU should have been attributted to interviewers
+		Optional<SurveyUnit> su1 = surveyUnitRepository.findById("103");
+		Optional<SurveyUnit> su2 = surveyUnitRepository.findById("104");
+		assertEquals(null, su1.get().getInterviewer());
+		assertEquals(null, su2.get().getInterviewer());
+	}
+
+	
+	private void addUnattributedSU(String suId) throws JsonProcessingException {
+		SurveyUnitContextDto su = new SurveyUnitContextDto();
+		su.setId(suId);
+		su.setCampaign("simpsons2020x00");
+		su.setGeographicalLocationId("32221");
+		su.setOrganizationUnitId("OU-NORTH");
+		su.setPriority(true);
+		AddressDto addr = new AddressDto();
+		addr.setL1("Test test");
+		addr.setL2("1 rue test");
+		addr.setL3("TEST");
+		su.setAddress(addr);
+		List<PersonDto> lstPerson = new ArrayList<>();
+		PersonDto p = new PersonDto();
+		p.setFirstName("test");
+		p.setLastName("test");
+		p.setEmail("test@test.com");
+		p.setFavoriteEmail(true);
+		p.setBirthdate(1564656540L);
+		p.setPrivileged(true);
+		p.setTitle(Title.MISTER);
+		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		lstPerson.add(p);
+		su.setPersons(lstPerson);
+		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));
+		with().contentType(ContentType.JSON)
+		.auth().preemptive().basic("ABC", "abc")
+		.body(new ObjectMapper().writeValueAsString(List.of(su)))
+		.post("api/survey-units");
+	}
 }

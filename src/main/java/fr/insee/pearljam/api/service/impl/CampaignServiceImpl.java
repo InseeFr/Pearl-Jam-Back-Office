@@ -11,10 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.Visibility;
+import fr.insee.pearljam.api.domain.VisibilityId;
+import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
@@ -24,7 +29,10 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
@@ -43,6 +51,7 @@ import fr.insee.pearljam.api.service.UtilsService;
  *
  */
 @Service
+@Transactional
 public class CampaignServiceImpl implements CampaignService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignServiceImpl.class);
@@ -156,7 +165,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(Constants.GUEST)) {
 			stateCountDto = new StateCountDto(campaignRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
-			stateCountDto.addClausingCauseCount(campaignRepository.getClausingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
+			stateCountDto.addClosingCauseCount(campaignRepository.getClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (stateCountDto.getTotal() == null) {
 			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
@@ -181,14 +190,14 @@ public class CampaignServiceImpl implements CampaignService {
 					&& visibilityRepository.findVisibilityInCollectionPeriod(campaignId, id, dateToUse).isPresent()) {
 		        StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id),
 		          campaignRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
-				dto.addClausingCauseCount(campaignRepository.getClausingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
+				dto.addClosingCauseCount(campaignRepository.getClosingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
 				stateCountList.add(dto);
 			}
 		}
 		stateCountCampaignDto.setOrganizationUnits(stateCountList);
 		
 		StateCountDto dtoFrance = new StateCountDto(campaignRepository.getStateCountByCampaignId(campaignId, dateToUse));
-		dtoFrance.addClausingCauseCount(campaignRepository.getClausingCauseCountByCampaignId(campaignId, dateToUse));
+		dtoFrance.addClosingCauseCount(campaignRepository.getClosingCauseCountByCampaignId(campaignId, dateToUse));
 		stateCountCampaignDto.setFrance(dtoFrance);
 		if (stateCountCampaignDto.getFrance() == null || stateCountCampaignDto.getOrganizationUnits() == null
 				) {
@@ -262,7 +271,7 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto campaignSum = new StateCountDto(
         campaignRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse)
       );
-			campaignSum.addClausingCauseCount(campaignRepository.getClausingCauseCountSumByCampaign(id, userOrgUnitIds, dateToUse));
+			campaignSum.addClosingCauseCount(campaignRepository.getClosingCauseCountSumByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
 				campaignSum.setCampaign(dto);
@@ -287,7 +296,7 @@ public class CampaignServiceImpl implements CampaignService {
 			StateCountDto interviewerSum = new StateCountDto(
 		        campaignRepository.getStateCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse)
 		      );
-			interviewerSum.addClausingCauseCount(campaignRepository.getClausingCauseCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse));
+			interviewerSum.addClosingCauseCount(campaignRepository.getClosingCauseCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse));
 			if(interviewerSum.getTotal() != null) {
 				interviewerSum.setInterviewer(interviewerRepository.findDtoById(id));
 				returnList.add(interviewerSum);
@@ -313,7 +322,7 @@ public class CampaignServiceImpl implements CampaignService {
 		StateCountDto interviewerSum = new StateCountDto(
 	        campaignRepository.getStateCountNotAttributed(id, organizationUnits, dateToUse)
 	      );
-		interviewerSum.addClausingCauseCount(campaignRepository.getClausingCauseCountNotAttributed(id, organizationUnits, dateToUse));
+		interviewerSum.addClosingCauseCount(campaignRepository.getClosingCauseCountNotAttributed(id, organizationUnits, dateToUse));
 		
 		return interviewerSum;
 	}
@@ -431,6 +440,59 @@ public class CampaignServiceImpl implements CampaignService {
 			return null;
 		}
 		return new CountDto(nbSUNotAttributed);
+	}
+
+	@Transactional(rollbackFor=Exception.class)
+	public Response postCampaign(CampaignContextDto campaignDto) throws NoOrganizationUnitException, VisibilityException {
+		if(campaignDto.getCampaign() == null) {
+			return new Response("Campaign id is missing in request", HttpStatus.BAD_REQUEST);
+		}
+		if(campaignDto.getCampaignLabel() == null) {
+			return new Response("Campaign label is missing in request", HttpStatus.BAD_REQUEST);
+		}
+		if(campaignDto.getVisibilities() == null) {
+			return new Response("Campaign visibilities are missing in request", HttpStatus.BAD_REQUEST);
+		}
+		Optional<Campaign> campOpt = campaignRepository.findById(campaignDto.getCampaign());
+		if(campOpt.isPresent()) {
+			return  new Response("Campaign with id '" + campaignDto.getCampaign() + "' already exists", HttpStatus.BAD_REQUEST);
+		}
+		// Creating campaign
+		Campaign campaign = new Campaign(campaignDto.getCampaign(), campaignDto.getCampaignLabel());
+		campaignRepository.save(campaign);
+		
+		for(VisibilityContextDto dto : campaignDto.getVisibilities()) {
+			if(!verifyVisibilityContextDto(dto)) {
+				throw new VisibilityException("Some of the fields of a visibility are missing");
+			}
+			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(dto.getOrganizationalUnit());
+			if(ouOpt.isPresent()) {
+				Visibility visi = new Visibility();
+				visi.setVisibilityId(new VisibilityId(dto.getOrganizationalUnit(), campaign.getId()));
+				visi.setCampaign(campaign);
+				visi.setOrganizationUnit(ouOpt.get());
+				visi.setCollectionStartDate(dto.getCollectionStartDate());
+				visi.setCollectionEndDate(dto.getCollectionEndDate());
+				visi.setIdentificationPhaseStartDate(dto.getIdentificationPhaseStartDate());
+				visi.setInterviewerStartDate(dto.getInterviewerStartDate());
+				visi.setManagementStartDate(dto.getManagementStartDate());
+				visi.setEndDate(dto.getEndDate());
+				
+				visibilityRepository.save(visi);
+			}
+			else {
+				throw new NoOrganizationUnitException("Organizational unit '" + dto.getOrganizationalUnit()+ "' does not exist");
+			}
+		}
+		
+		return new Response("", HttpStatus.OK);
+	}
+	
+	public boolean verifyVisibilityContextDto(VisibilityContextDto dto) {		
+		return dto.getOrganizationalUnit() != null && dto.getCollectionStartDate() != null
+				&& dto.getCollectionEndDate() != null && dto.getIdentificationPhaseStartDate() != null
+				&& dto.getInterviewerStartDate() != null && dto.getManagementStartDate() != null
+				&& dto.getEndDate() != null;
 	}
 
 

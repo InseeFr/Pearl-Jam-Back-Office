@@ -1,7 +1,10 @@
 package fr.insee.pearljam.api.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,14 +17,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ClosingCause;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.domain.Comment;
 import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.ContactOutcome;
+import fr.insee.pearljam.api.domain.GeographicalLocation;
 import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Person;
 import fr.insee.pearljam.api.domain.PhoneNumber;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -31,8 +39,10 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -98,14 +108,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	CampaignRepository campaignRepository;
 
 	@Autowired
-	OrganizationUnitRepository ouRepository;
+	OrganizationUnitRepository organizationUnitRepository;
 
 	@Autowired
 	VisibilityRepository visibilityRepository;
 
 	@Autowired
 	PersonRepository personRepository;
-	
+
 	@Autowired
 	ClosingCauseRepository closingCauseRepository;
 
@@ -114,10 +124,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Autowired
 	UtilsService utilsService;
-  
-  public boolean checkHabilitation(String userId, String id) {
-    return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent();
-  }
+
+	public boolean checkHabilitation(String userId, String id) {
+		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent();
+	}
+
 	public Optional<SurveyUnit> findById(String id) {
 		return surveyUnitRepository.findById(id);
 	}
@@ -243,20 +254,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-		
+
 		if (surveyUnitDetailDto.getStates() != null) {
 			for (StateDto stateDto : surveyUnitDetailDto.getStates()) {
 				stateRepository.save(new State(stateDto.getDate(), surveyUnit, stateDto.getType()));
 			}
 		}
-		
+
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
 				.getType();
 		if (currentState == StateType.WFS) {
 			addStateAuto(surveyUnit);
 		}
-		
-		
+
 		currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId()).getType();
 		if (currentState != StateType.FIN && currentState != StateType.TBR) {
 			Set<State> ueStates = surveyUnit.getStates();
@@ -270,9 +280,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
-		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(
-				surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(),
-				surveyUnit.getId()) < 5) {
+		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
+				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5) {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 		} else {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -331,9 +340,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (person.isFavoriteEmail() != null) {
 			pers.setFavoriteEmail(person.isFavoriteEmail());
 		}
+		if (person.isPrivileged() != null) {
+			pers.setPrivileged(person.isPrivileged());
+		}
 		if (person.getPhoneNumbers() != null) {
-			Set<PhoneNumber> phoneNumbers = person.getPhoneNumbers().stream()
-					.map(pn -> new PhoneNumber(pn, pers)).collect(Collectors.toSet());
+			Set<PhoneNumber> phoneNumbers = person.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, pers))
+					.collect(Collectors.toSet());
 			pers.getPhoneNumbers().clear();
 			pers.getPhoneNumbers().addAll(phoneNumbers);
 		}
@@ -382,7 +394,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
-	
+
 	@Transactional
 	public HttpStatus updateSurveyUnitViewed(String userId, String suId) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
@@ -400,8 +412,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.collect(Collectors.toList());
-		Set<SurveyUnit> lstSurveyUnit = surveyUnitRepository
-				.findByCampaignIdAndOrganizationUnitIdIn(campaignId, lstOuId);
+		Set<SurveyUnit> lstSurveyUnit = surveyUnitRepository.findByCampaignIdAndOrganizationUnitIdIn(campaignId,
+				lstOuId);
 		if (state != null && !state.isEmpty() && state.equalsIgnoreCase(StateType.FIN.toString())) {
 			// filter on SU with at least one state FIN
 			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isAtLeastState(state)).collect(Collectors.toSet());
@@ -446,14 +458,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
-	
+
 	@Transactional
 	public HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType type) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
 			SurveyUnit surveyUnit = su.get();
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
-			if(currentState.equals(StateType.CLO)) {
+			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
@@ -468,7 +480,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
-	
+
 	@Transactional
 	public HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType type) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
@@ -480,20 +492,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return HttpStatus.NOT_FOUND;
 		}
 	}
-	
+
 	@Transactional
 	public void addOrModifyClosingCause(SurveyUnit surveyUnit, ClosingCauseType type) {
 		ClosingCause cc;
-		if(surveyUnit.getClosingCause()!=null) {
+		if (surveyUnit.getClosingCause() != null) {
 			cc = surveyUnit.getClosingCause();
-		}
-		else {
+		} else {
 			cc = new ClosingCause();
 			cc.setSurveyUnit(surveyUnit);
 		}
 		cc.setDate(System.currentTimeMillis());
 		cc.setType(type);
-		
+
 		surveyUnit.setClosingCause(cc);
 		surveyUnitRepository.save(surveyUnit);
 	}
@@ -511,5 +522,98 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId) {
 		return surveyUnitRepository.findByOrganizationUnitIdIn(lstOuId);
+	}
+
+	@Override
+	public Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits) {
+		// Check duplicate line in interviewers to create
+		Map<String, Integer> duplicates = new HashMap<>();
+		List<String> surveyUnitErrors = new ArrayList<>();
+		List<SurveyUnit> listSurveyUnits = new ArrayList<>();
+		List<String> surveyUnitsDb = surveyUnitRepository.findAllIds();
+		Map<String, Campaign> mapCampaigns = campaignRepository.findAllById(
+				surveyUnits.stream()
+				.map(SurveyUnitContextDto::getCampaign)
+				.collect(Collectors.toList())
+			).stream().collect(Collectors.toMap(Campaign::getId, c -> c));
+		Map<String, GeographicalLocation> mapGeographicalLocations = geographicalLocationRepository.findAllById(
+				surveyUnits.stream()
+				.map(SurveyUnitContextDto::getGeographicalLocationId)
+				.collect(Collectors.toList())
+			).stream().collect(Collectors.toMap(GeographicalLocation::getId, gl -> gl));
+		Map<String, OrganizationUnit> mapOrganizationUnits = organizationUnitRepository.findAllById(
+				surveyUnits.stream()
+				.map(SurveyUnitContextDto::getOrganizationUnitId)
+				.collect(Collectors.toList())
+			).stream().collect(Collectors.toMap(OrganizationUnit::getId, gl -> gl));
+		surveyUnits.stream().forEach(su -> {
+			if (!duplicates.containsKey(su.getId())) {
+				duplicates.put(su.getId(), 0);
+			}
+			duplicates.put(su.getId(), duplicates.get(su.getId()) + 1);
+			if (surveyUnitsDb.contains(su.getId())) {
+				duplicates.put(su.getId(), duplicates.get(su.getId()) + 1);
+			}
+			if (!su.isValid() 
+					|| !mapOrganizationUnits.containsKey(su.getOrganizationUnitId())
+					|| !mapCampaigns.containsKey(su.getCampaign())
+					|| !mapGeographicalLocations.containsKey(su.getGeographicalLocationId())) {
+				surveyUnitErrors.add(su.getId());
+			}
+			listSurveyUnits.add(new SurveyUnit(su, mapOrganizationUnits.get(su.getOrganizationUnitId()), mapCampaigns.get(su.getCampaign()), mapGeographicalLocations.get(su.getGeographicalLocationId())));
+		});
+		// Check attributes are not null
+		if (!surveyUnitErrors.isEmpty()) {
+			LOGGER.error("Invalid format : [{}]", String.join(", ", surveyUnitErrors));
+			return new Response(String.format("Invalid format : [%s]", String.join(", ", surveyUnitErrors)),
+					HttpStatus.BAD_REQUEST);
+		}
+		// Check duplicate lines
+
+		if (!duplicates.keySet().stream().filter(id -> duplicates.get(id) > 1).collect(Collectors.toSet()).isEmpty()) {
+			LOGGER.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
+			return new Response(String.format("Duplicate entries : [%s]", String.join(", ", duplicates.keySet())),
+					HttpStatus.BAD_REQUEST);
+		}
+		surveyUnitRepository.saveAll(listSurveyUnits);
+		return new Response(String.format("%s surveyUnits created", listSurveyUnits.size()), HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional
+	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink) {
+		
+		// Delete All Assignments
+		surveyUnitRepository.updateAllinterviewersToNull();
+		
+		// Get SurveyUnits and Interviewers to create
+		Map<String, SurveyUnit> mapSurveyUnit = surveyUnitRepository
+				.findAllById(surveyUnitInterviewerLink.stream()
+						.map(SurveyUnitInterviewerLinkDto::getSurveyUnitId)
+						.collect(Collectors.toList()))
+				.stream().collect(Collectors.toMap(SurveyUnit::getId, su -> su));
+		Map<String, Interviewer> mapInterviewer = interviewerRepository
+				.findAllById(surveyUnitInterviewerLink.stream()
+						.map(SurveyUnitInterviewerLinkDto::getInterviewerId)
+						.collect(Collectors.toList()))
+				.stream().collect(Collectors.toMap(Interviewer::getId, itw -> itw));
+		
+		// Create new assignment
+		List<String> errors = surveyUnitInterviewerLink.stream()
+				.filter(link -> !link.isValid()
+						|| !mapSurveyUnit.containsKey(link.getSurveyUnitId())
+						|| !mapInterviewer.containsKey(link.getInterviewerId()))
+				.map(SurveyUnitInterviewerLinkDto::getLink).collect(Collectors.toList());
+		if (!errors.isEmpty()) {
+			LOGGER.error("Invalid value : [{}]", String.join(", ", errors));
+			return new Response(String.format("Invalid value : [%s]", String.join(", ", errors)),
+					HttpStatus.BAD_REQUEST);
+		}
+		surveyUnitInterviewerLink.stream().forEach(link -> {
+			mapSurveyUnit.get(link.getSurveyUnitId()).setInterviewer(mapInterviewer.get(link.getInterviewerId()));
+			surveyUnitRepository.save(mapSurveyUnit.get(link.getSurveyUnitId()));
+		});
+		LOGGER.info("{} links Survey-unit/Interviewer created", surveyUnitInterviewerLink.size());
+		return new Response(String.format("%s surveyUnits created", surveyUnitInterviewerLink.size()), HttpStatus.OK);
 	}
 }

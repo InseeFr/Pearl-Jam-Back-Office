@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VisibilityDto {
-
+	
 	/**
 	 * Collection start date of the visibility
 	 */

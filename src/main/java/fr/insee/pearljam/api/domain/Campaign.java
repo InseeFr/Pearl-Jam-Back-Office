@@ -54,6 +54,16 @@ public class Campaign implements Serializable {
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visibility> visibilities;
 	
+	public Campaign() {
+		super();
+	}
+	
+	public Campaign(String id, String label) {
+		super();
+		this.id = id;
+		this.label = label;
+	}
+
 	/**
 	 * @return the id of the Campaign
 	 */

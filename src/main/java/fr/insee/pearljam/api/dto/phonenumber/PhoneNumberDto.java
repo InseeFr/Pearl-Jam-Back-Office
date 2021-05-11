@@ -8,9 +8,9 @@ import fr.insee.pearljam.api.domain.Source;
 
 public class PhoneNumberDto {
 	
-	public Source source;
-	public boolean favorite;
-	public String number;
+	private Source source;
+	private boolean favorite;
+	private String number;
 	
 	/**
 	 * Default constructor

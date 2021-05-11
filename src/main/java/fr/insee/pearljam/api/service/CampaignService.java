@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import fr.insee.pearljam.api.domain.Response;
+import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
@@ -13,6 +15,8 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.VisibilityException;
 
 /**
  * Service for the Campaign entity
@@ -93,4 +97,6 @@ public interface CampaignService {
 	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date);
 
 	ContactOutcomeTypeCountDto getNbSUNotAttributedContactOutcomes(String userId, String id, Long date);
+
+	Response postCampaign(CampaignContextDto campaignDto) throws NoOrganizationUnitException, VisibilityException;
 }

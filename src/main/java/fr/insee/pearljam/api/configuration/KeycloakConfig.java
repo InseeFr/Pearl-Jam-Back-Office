@@ -83,7 +83,8 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
 		.antMatchers("/environnement", "/healthcheck").permitAll()
 		// configuration for endpoints
-		.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole)
+		.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole,userLocalRole,userNationalRole)
+		.antMatchers(Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)		
 	    .antMatchers(Constants.API_CREATE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
 	    .antMatchers(Constants.API_DELETE_DATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
 	    .antMatchers(Constants.API_SURVEYUNIT_CLOSE).hasAnyRole(userLocalRole, userNationalRole)
@@ -114,6 +115,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(Constants.API_INTERVIEWERS_STATE_COUNT).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_INTERVIEWERS_CONTACT_OUTCOME_COUNT).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_MESSAGE).hasAnyRole(userLocalRole, userNationalRole, interviewerRole)
         .antMatchers(Constants.API_GET_MESSAGES).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)
@@ -121,6 +123,8 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(Constants.API_MESSAGE_HISTORY).hasAnyRole(userLocalRole, userNationalRole)
 		.antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(interviewerRole)
         .antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole)
+        .antMatchers(Constants.API_CAMPAIGN).hasAnyRole(userLocalRole, userNationalRole)
+        .antMatchers(Constants.API_OU_CONTEXT).hasAnyRole(userLocalRole, userNationalRole)
 		.anyRequest().denyAll(); 
 	}
 	

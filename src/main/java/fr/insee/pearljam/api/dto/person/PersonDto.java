@@ -11,15 +11,16 @@ import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonDto {
-	public Long id;
-	public Title title;
-	public String firstName;
-	public String lastName;
-	public String email;
-	public Long birthdate;
+	private Long id;
+	private Title title;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private Long birthdate;
 
-	public Boolean favoriteEmail;
-	public List<PhoneNumberDto> phoneNumbers;
+	private Boolean favoriteEmail;
+	private Boolean privileged;
+	private List<PhoneNumberDto> phoneNumbers;
 
 	/**
 	 * Default constructor
@@ -36,6 +37,7 @@ public class PersonDto {
 		this.email = person.getEmail();
 		this.favoriteEmail = person.isFavoriteEmail();
 		this.birthdate = person.getBirthdate();
+		this.privileged = person.isPrivileged();
 		this.phoneNumbers = person.getPhoneNumbers().stream()
 				.map(phoneNum -> new PhoneNumberDto(phoneNum))
 				.collect(Collectors.toList());
@@ -44,48 +46,34 @@ public class PersonDto {
 	/**
 	 * Constructor with all args
 	 */
-	public PersonDto(Title title, String firstName, String lastName, String email, boolean favoriteEmail) {
+	public PersonDto(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.favoriteEmail = favoriteEmail;
+		this.privileged = privileged;
 	}
 
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	/**
 	 * @return the title
 	 */
 	public Title getTitle() {
 		return title;
-	}
-
-	/**
-	 * @return the firstName
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * @return the lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @return the favoriteEmail
-	 */
-	public Boolean isFavoriteEmail() {
-		return favoriteEmail;
 	}
 
 	/**
@@ -96,10 +84,24 @@ public class PersonDto {
 	}
 
 	/**
+	 * @return the firstName
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+
+	/**
 	 * @param firstName the firstName to set
 	 */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+	}
+
+	/**
+	 * @return the lastName
+	 */
+	public String getLastName() {
+		return lastName;
 	}
 
 	/**
@@ -108,13 +110,12 @@ public class PersonDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
-	public Long getBirthdate() {
-		return birthdate;
-	}
 
-	public void setBirthdate(Long birthdate) {
-		this.birthdate = birthdate;
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
 	}
 
 	/**
@@ -124,6 +125,26 @@ public class PersonDto {
 		this.email = email;
 	}
 
+	/**
+	 * @return the birthdate
+	 */
+	public Long getBirthdate() {
+		return birthdate;
+	}
+
+	/**
+	 * @param birthdate the birthdate to set
+	 */
+	public void setBirthdate(Long birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	/**
+	 * @return the favoriteEmail
+	 */
+	public Boolean isFavoriteEmail() {
+		return favoriteEmail;
+	}
 
 	/**
 	 * @param favoriteEmail the favoriteEmail to set
@@ -131,18 +152,31 @@ public class PersonDto {
 	public void setFavoriteEmail(Boolean favoriteEmail) {
 		this.favoriteEmail = favoriteEmail;
 	}
-	public Long getId() {
-		return id;
+
+	/**
+	 * @return the privileged
+	 */
+	public Boolean isPrivileged() {
+		return privileged;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	/**
+	 * @param privileged the privileged to set
+	 */
+	public void setPrivileged(Boolean privileged) {
+		this.privileged = privileged;
 	}
-	
+
+	/**
+	 * @return the phoneNumbers
+	 */
 	public List<PhoneNumberDto> getPhoneNumbers() {
 		return phoneNumbers;
 	}
 
+	/**
+	 * @param phoneNumbers the phoneNumbers to set
+	 */
 	public void setPhoneNumbers(List<PhoneNumberDto> phoneNumbers) {
 		this.phoneNumbers = phoneNumbers;
 	}

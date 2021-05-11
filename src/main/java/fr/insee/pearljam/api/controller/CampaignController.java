@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
@@ -30,6 +33,8 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +51,29 @@ public class CampaignController {
 	@Autowired
 	UtilsService utilsService;
 
+	/**
+	 * This method is used to post the campaign defined in request body
+	 * 
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Post Campaign")
+	@PostMapping(path = "/campaign")
+	public ResponseEntity<Object> postCampaign(HttpServletRequest request,
+			@RequestBody CampaignContextDto campaignDto) {
+		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Response response;
+		try {
+			response = campaignService.postCampaign(campaignDto);
+		} catch (NoOrganizationUnitException | VisibilityException e) {
+			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} 
+		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+	
 	/**
 	 * This method is used to get the list of Campaigns for current user
 	 * 

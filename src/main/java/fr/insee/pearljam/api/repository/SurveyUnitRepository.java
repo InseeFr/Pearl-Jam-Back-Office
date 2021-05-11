@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -95,9 +96,13 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 				+ "WHERE su.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
 			+ "GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery=true)
-	  List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
+	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
 
 
-	  List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId);
+	List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId);
+
+	@Modifying
+	@Query(value="UPDATE survey_unit SET interviewer_id=NULL", nativeQuery=true)
+	void updateAllinterviewersToNull();
 	  
 }
