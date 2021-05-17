@@ -583,10 +583,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Override
 	@Transactional
-	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink) {
-		
-		// Delete All Assignments
-		surveyUnitRepository.updateAllinterviewersToNull();
+	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink, Boolean diff) {
+		if(Boolean.FALSE.equals(diff)) {
+			// Delete All Assignments
+			LOGGER.info("Delete all links between survey-units and interviewers");
+			surveyUnitRepository.updateAllinterviewersToNull();
+		}
 		
 		// Get SurveyUnits and Interviewers to create
 		Map<String, SurveyUnit> mapSurveyUnit = surveyUnitRepository
@@ -615,7 +617,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			mapSurveyUnit.get(link.getSurveyUnitId()).setInterviewer(mapInterviewer.get(link.getInterviewerId()));
 			surveyUnitRepository.save(mapSurveyUnit.get(link.getSurveyUnitId()));
 		});
-		LOGGER.info("{} links Survey-unit/Interviewer created", surveyUnitInterviewerLink.size());
-		return new Response(String.format("%s surveyUnits created", surveyUnitInterviewerLink.size()), HttpStatus.OK);
+		LOGGER.info("{} links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size());
+		return new Response(String.format("%s links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size()), HttpStatus.OK);
 	}
 }

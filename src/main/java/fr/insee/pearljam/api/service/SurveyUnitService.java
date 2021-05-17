@@ -89,5 +89,5 @@ public interface SurveyUnitService {
 
 	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
 
-	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
+	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink, Boolean diff);
 }
