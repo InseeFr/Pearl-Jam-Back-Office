@@ -14,13 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
@@ -58,25 +56,6 @@ public class InterviewerServiceImpl implements InterviewerService {
 	
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
-	
-	@Override
-	public ContactOutcomeTypeCountDto getContactOutcomeByInterviewerAndCampaign(String userId, String campaignId, String interviewerId, Long date) {
-		if(!interviewerRepository.findById(interviewerId).isPresent() || !campaignRepository.findById(campaignId).isPresent()) {
-			return null;
-		}
-		List<String> userOuIds;
-		if(!userId.equals(Constants.GUEST)) {
-			userOuIds = utilsService.getRelatedOrganizationUnits(userId);
-		} else {
-			userOuIds = organizationUnitRepository.findAllId();
-		}
-		Long dateToUse = date;
-		if (dateToUse == null) {
-			dateToUse = System.currentTimeMillis();
-		}
-		return new ContactOutcomeTypeCountDto(
-				contactOutcomeRepository.findContactOutcomeTypeByInterviewerAndCampaign(campaignId, interviewerId, userOuIds, dateToUse));
-	}
 	
 	public List<CampaignDto> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);

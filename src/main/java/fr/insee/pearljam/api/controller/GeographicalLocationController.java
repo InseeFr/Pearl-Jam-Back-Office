@@ -39,7 +39,7 @@ public class GeographicalLocationController {
 	 */
 	 @ApiOperation(value = "Create Context with Organizational Unit and users associated")
 	 @PostMapping(path = "/geographical-locations")
-	 public ResponseEntity<Object> postContext(HttpServletRequest request, @RequestBody List<GeographicalLocationDto> geographicalLocations){
+	 public ResponseEntity<Object> postGeographicalLocations(HttpServletRequest request, @RequestBody List<GeographicalLocationDto> geographicalLocations){
 		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
