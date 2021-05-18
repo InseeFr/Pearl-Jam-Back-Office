@@ -8,12 +8,8 @@ import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
-import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.VisibilityException;
@@ -41,43 +37,9 @@ public interface CampaignService {
 
 	boolean isUserPreference(String userId, String campaignId);
 
-	/**
-	 * @param userId
-	 * @param campaignId
-	 * @param interviewerId
-	 * @param date
-	 * @param associatedOrgUnits
-	 * @return {@link StateCountDto}
-	 */
-	StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits);
-	
-	/**
-	 * @param userId
-	 * @param campaignId
-	 * @param date
-	 * @return {@link StateCountCampaignDto}
-	 */
-	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date);
-
 	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId);
 
 	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId);
-
-	
-	/**
-	 * @param userId
-	 * @param date
-	 * @return {@link List<StateCountDto>}
-	 */
-	List<StateCountDto> getStateCountByCampaigns(String userId, Long date);
-	
-	/**
-	 * @param userId
-	 * @param date
-	 * @return {@link List<StateCountDto>}
-	 */
-	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
 
 	HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign);
 	
@@ -89,14 +51,6 @@ public interface CampaignService {
 	 * @return
 	 */
 	HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility);
-	
-	List<ContactOutcomeTypeCountDto> getContactOutcomeTypeCountByCampaign(String userId, Long date);
-	
-	ContactOutcomeTypeCountCampaignDto getContactOutcomeCountTypeByCampaign(String userId, String campaignId, Long date);
-
-	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date);
-
-	ContactOutcomeTypeCountDto getNbSUNotAttributedContactOutcomes(String userId, String id, Long date);
 
 	Response postCampaign(CampaignContextDto campaignDto) throws NoOrganizationUnitException, VisibilityException;
 }

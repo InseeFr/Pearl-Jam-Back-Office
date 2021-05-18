@@ -108,7 +108,7 @@ public class MessageController {
 	*/
 	@ApiOperation(value = "Get a message")
 	@GetMapping(path = "/messages/{id}")
-	public ResponseEntity<Object> getMessages(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<List<MessageDto>> getMessages(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -123,7 +123,7 @@ public class MessageController {
 	*/
 	@ApiOperation(value = "Get the message history")
 	@GetMapping(path = "/message-history")
-	public ResponseEntity<Object> getMessageHistory(HttpServletRequest request) {
+	public ResponseEntity<List<MessageDto>> getMessageHistory(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);

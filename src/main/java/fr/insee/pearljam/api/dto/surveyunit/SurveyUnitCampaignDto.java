@@ -29,7 +29,9 @@ public class SurveyUnitCampaignDto {
 	
 	private String campaign;
 	
-	private ClosingCauseType state;
+	private ClosingCauseType closingCause;
+	
+	private StateType state;
 	
 	private Boolean reading;
 	
@@ -73,6 +75,7 @@ public class SurveyUnitCampaignDto {
 			if(su.getInterviewer() !=  null) {
 				this.interviewer = new InterviewerDto(su.getInterviewer());
 	    }
+		State currentState = null;
 	    for(State s : su.getStates()) {
 			if(StateType.FIN.equals(s.getType()) && (this.finalizationDate == null || this.finalizationDate < s.getDate())){
 				this.finalizationDate = s.getDate();
@@ -80,14 +83,16 @@ public class SurveyUnitCampaignDto {
 			if(StateType.TBR.equals(s.getType())) {
 				this.reading=true;
 			}
+			if(currentState == null || currentState.getDate() < s.getDate()) {
+				currentState = s;
+			}
 		}
 	    if(su.getClosingCause() != null) {
-	    	this.state = su.getClosingCause().getType();
+	    	this.closingCause = su.getClosingCause().getType();
 	    }
-
+	    this.state = currentState.getType();
 	    this.campaign = su.getCampaign().getLabel();
 		this.interviewer = su.getInterviewer() != null ? new InterviewerDto(su.getInterviewer()) : null;
-		
 		this.comments = su.getComments().stream()
 					.map(c -> new CommentDto(c))
 					.collect(Collectors.toList());
@@ -183,10 +188,10 @@ public class SurveyUnitCampaignDto {
 	public void setCampaign(String campaign) {
 		this.campaign = campaign;
 	}
-	public ClosingCauseType getState() {
+	public StateType getState() {
 		return state;
 	}
-	public void setState(ClosingCauseType state) {
+	public void setState(StateType state) {
 		this.state = state;
 	}
 	/**
@@ -212,5 +217,13 @@ public class SurveyUnitCampaignDto {
 	 */
 	public void setViewed(Boolean viewed) {
 		this.viewed = viewed;
+	}
+
+	public ClosingCauseType getClosingCause() {
+		return closingCause;
+	}
+
+	public void setClosingCause(ClosingCauseType closingCause) {
+		this.closingCause = closingCause;
 	}
 }

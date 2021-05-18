@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.visibility;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -134,6 +135,7 @@ public class VisibilityDto {
 		this.endDate = endDate;
 	}
 
+	@JsonIgnore
 	public boolean isOneDateFilled() {
 		return collectionStartDate != null || collectionEndDate != null || identificationPhaseStartDate != null
 				|| interviewerStartDate != null || managementStartDate != null || endDate != null;

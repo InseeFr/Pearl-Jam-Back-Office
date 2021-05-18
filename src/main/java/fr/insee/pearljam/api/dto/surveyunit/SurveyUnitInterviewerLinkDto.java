@@ -57,6 +57,8 @@ public class SurveyUnitInterviewerLinkDto {
 		}
 		
 	}
+	
+	@JsonIgnore
 	public boolean isValid() {
 		return this.surveyUnitId!=null && !this.surveyUnitId.isBlank() && this.interviewerId!=null && !this.interviewerId.isBlank();
 	}

@@ -20,7 +20,6 @@ public enum StateType {
 	WFS("Waiting for synchronization"), 
 	TBR("To be reviewed"), 
 	FIN("Finalized"),
-	QNA("Questionnaire Not Available to interviewer"),
 	CLO("Closed"),
 	NVA("Not Available to All");
 	
