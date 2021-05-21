@@ -48,7 +48,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 					+ ") " 
 					+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCount(@Param("campaignId") String campaignId, 
+	Map<String,BigInteger> getStateClosedByClosingCauseCount(@Param("campaignId") String campaignId, 
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 	
@@ -82,7 +82,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCountSumByCampaign(@Param("campaignId") String campaignId,
+	Map<String,BigInteger> getgetStateClosedByClosingCauseCountByCampaign(@Param("campaignId") String campaignId,
 			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = "SELECT " 
@@ -250,4 +250,33 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 			+ ") "
 		+ ") as t", nativeQuery = true)
 	Map<String, BigInteger> getClosingCauseCountByCampaignId(String campaignId, Long date);
+
+	@Query(value = "SELECT " 
+			+ "SUM(CASE WHEN type='NPA' THEN 1 ELSE 0 END) AS npaCount, "
+			+ "SUM(CASE WHEN type='NPI' THEN 1 ELSE 0 END) AS npiCount, "
+			+ "SUM(CASE WHEN type='ROW' THEN 1 ELSE 0 END) AS rowCount "
+		+ "FROM ( "
+			+ "SELECT DISTINCT(survey_unit_id), type, date "
+			+ "FROM closing_cause "
+			+ "WHERE (survey_unit_id, date) IN ("
+				+ "SELECT survey_unit_id, MAX(date) FROM closing_cause WHERE survey_unit_id IN (" 
+					+ "SELECT id FROM survey_unit su "
+					+ "WHERE campaign_id=:campaignId " 
+					+ "AND organization_unit_id IN (:ouIds) "
+					// SU needs to be visible at the given date for the OU its in
+					+ "AND (:date<0 OR EXISTS ("
+						+ "SELECT 1 FROM visibility "
+						+ "WHERE campaign_id=:campaignId "
+						+ "AND organization_unit_id = su.organization_unit_id "
+						+ "AND management_start_date<=:date " 
+						+ "AND collection_start_date<=:date " 
+						+ "AND collection_end_date>:date )"
+					+ ") "
+					+ "AND interviewer_id=:interviewerId "
+				+ ") " 
+				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) "
+		+ ") as t", nativeQuery = true)
+	Map<String, BigInteger> getClosingCauseCount(@Param("campaignId") String campaignId, 
+			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
+			@Param("date") Long date);
 }

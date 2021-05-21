@@ -719,6 +719,21 @@ class TestNoAuth {
 	}
 	
 	/**
+	 * Test that the GET endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(19)
+	void testGetCampaignInterviewerClosingCauseCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/closing-causes").then().statusCode(200).and()
+		.assertThat().body("npaCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
+	}
+	
+	/**
 	 * Test that the Get endpoint
 	 * "/campaign/survey-units/contact-outcomes[?date={date}]" return 200
 	 * 
@@ -1290,7 +1305,6 @@ class TestNoAuth {
 	void testGetContactOutcomeCountByCampaignNotExist() throws InterruptedException, JsonProcessingException, JSONException {
 		given().when().get("api/campaign/simpsons2020x000000/survey-units/contact-outcomes").then().statusCode(404);
 	}
-	
 
 	
 	/**
@@ -2252,7 +2266,6 @@ class TestNoAuth {
 		assertEquals(null, su1.get().getInterviewer());
 		assertEquals(null, su2.get().getInterviewer());
 	}
-
 	
 	private void addUnattributedSU(String suId) throws JsonProcessingException {
 		SurveyUnitContextDto su = new SurveyUnitContextDto();

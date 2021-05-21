@@ -65,7 +65,7 @@ public class StateCountDto {
 	
 	public void addClosingCauseCount(Map<String, BigInteger> obj) {
 		if (obj != null && !obj.isEmpty()) {
-			for(String str : Constants.CLOSING_CAUSE_FIELDS) {
+			for(String str : Constants.STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS) {
 				try {
 					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
