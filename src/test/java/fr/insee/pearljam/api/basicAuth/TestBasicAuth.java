@@ -715,6 +715,22 @@ class TestBasicAuth {
 	}
 	
 	/**
+	 * Test that the GET endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(19)
+	void testGetCampaignInterviewerClosingCauseCount() throws InterruptedException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		.when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/closing-causes").then().statusCode(200).and()
+		.assertThat().body("npaCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
+	}
+	
+	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
