@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.domain.ClosingCauseType;
@@ -75,7 +77,7 @@ public interface SurveyUnitService {
 	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id);
 	public Optional<SurveyUnit> findById(String id);
 
-	List<SurveyUnitCampaignDto> getClosableSurveyUnits();
+	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request);
 
 	HttpStatus updateSurveyUnitComment(String userId, String surveyUnitId, CommentDto comment);
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);

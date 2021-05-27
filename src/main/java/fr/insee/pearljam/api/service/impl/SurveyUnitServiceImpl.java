@@ -9,10 +9,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +46,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -427,19 +432,33 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toSet());
 	}
 
-	public List<SurveyUnitCampaignDto> getClosableSurveyUnits() {
+	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request) {
 		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsInProcessingPhase(System.currentTimeMillis());
-		return suList.stream().filter(su -> {
-			if (su.getInterviewer() == null) {
-				return false;
-			}
-			StateDto lastState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(su.getId());
-			if (lastState == null) {
-				return false;
-			}
-			StateType currentState = lastState.getType();
-			return currentState != StateType.CLO;
-		}).map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toList());
+		List<SurveyUnitCampaignDto> lstResult = new ArrayList<>();
+		lstResult = suList.stream().filter(su -> {
+			Set<StateType> lstState = su.getStates().stream().map(State::getType).collect(Collectors.toSet());
+			return !lstState.contains(StateType.CLO) && !lstState.contains(StateType.FIN) && !lstState.contains(StateType.TBR);
+		}).map(su -> new SurveyUnitCampaignDto(su))
+		.collect(Collectors.toList());
+		
+		Map<String, String> mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
+		lstResult.forEach(su -> su.setQuestionnaireState(mapQuestionnaireStateBySu.get(su.getId())));
+		
+		return lstResult;
+	}
+
+	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request, List<String> lstSu) {
+		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request, lstSu);
+		LOGGER.info("GET state from data collection service resulting in {}", result.getStatusCode());
+		SurveyUnitOkNokDto object = result.getBody();
+		if(object == null) {
+			LOGGER.info("GET questionnaire states for survey-units [{}] resulting in 404", String.join(",", lstSu));
+			throw new BadRequestException(404, "bad request");
+		}
+		Map<String, String> mapResult = new HashMap<>();	
+		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), null));
+		object.getSurveyUnitOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
+		return mapResult;
 	}
 
 	@Transactional

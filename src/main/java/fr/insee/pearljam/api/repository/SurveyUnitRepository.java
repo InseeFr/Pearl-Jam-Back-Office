@@ -74,9 +74,9 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT su FROM SurveyUnit su " + 
 			"WHERE EXISTS (SELECT vi FROM Visibility vi " +
 			"WHERE vi.campaign.id = su.campaign.id " +
-			"AND vi.organizationUnit.id = su.organizationUnit.id " +
-			"AND vi.collectionEndDate < ?1 " +
-			"AND vi.endDate > ?1)")
+			"AND vi.organizationUnit.id = su.organizationUnit.id) " )
+//			"AND vi.collectionEndDate < ?1 " +
+//			"AND vi.endDate > ?1)")
 	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
 	
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
