@@ -375,7 +375,7 @@ public class SurveyUnitController {
 			LOGGER.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {
-			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits();
+			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request);
 			LOGGER.info("GET closable survey units resulting in 200");
 			return new ResponseEntity<>(lstSu, HttpStatus.OK);
 		}

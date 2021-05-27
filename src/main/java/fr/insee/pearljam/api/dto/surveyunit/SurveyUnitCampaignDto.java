@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.domain.ClosingCauseType;
+import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.InseeAddress;
 import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
 import fr.insee.pearljam.api.domain.State;
@@ -37,6 +38,10 @@ public class SurveyUnitCampaignDto {
 	
 	private Boolean viewed;
 	
+	private String questionnaireState;
+	
+	private ContactOutcomeType contactOutcome;
+	
 	private List<CommentDto> comments;
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
@@ -60,7 +65,7 @@ public class SurveyUnitCampaignDto {
 		
 		this.id = su.getId();
 		this.reading=false;
-		this.viewed=su.isViewed();
+		this.viewed=su.getViewed();
 		if(su.getSampleIdentifier() instanceof InseeSampleIdentifier) {
 			this.ssech = ((InseeSampleIdentifier) su.getSampleIdentifier()).getSsech();
 		}
@@ -96,8 +101,11 @@ public class SurveyUnitCampaignDto {
 		this.comments = su.getComments().stream()
 					.map(c -> new CommentDto(c))
 					.collect(Collectors.toList());
+		if(su.getContactOucome() != null) {
+			this.contactOutcome = su.getContactOucome().getType(); 
+		}
 	}
-
+	
 	public SurveyUnitCampaignDto() {
 		super();
 	}
@@ -225,5 +233,37 @@ public class SurveyUnitCampaignDto {
 
 	public void setClosingCause(ClosingCauseType closingCause) {
 		this.closingCause = closingCause;
+	}
+
+	/**
+	 * @return the questionnaireState
+	 */
+	public String getQuestionnaireState() {
+		return questionnaireState;
+	}
+
+	/**
+	 * @param questionnaireState the questionnaireState to set
+	 */
+	public void setQuestionnaireState(String questionnaireState) {
+		if(questionnaireState==null) {
+			this.questionnaireState="NULL";
+		}else{
+			this.questionnaireState = questionnaireState;	
+		}
+	}
+
+	/**
+	 * @return the contatctOutcome
+	 */
+	public ContactOutcomeType getContactOutcome() {
+		return contactOutcome;
+	}
+
+	/**
+	 * @param contatctOutcome the contatctOutcome to set
+	 */
+	public void setContactOutcome(ContactOutcomeType contactOutcome) {
+		this.contactOutcome = contactOutcome;
 	}
 }

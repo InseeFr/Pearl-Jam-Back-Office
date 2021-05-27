@@ -8,7 +8,10 @@ public class Constants {
 	
 	public static final String INTERVIEWER = "interviewer";
 	public static final String USER = "user";
-  public static final String GUEST = "GUEST";
+	public static final String GUEST = "GUEST";
+	public static final String AUTHORIZATION = "Authorization";
+
+	public static final String API_QUEEN_SURVEYUNITS_STATEDATA = "/api/survey-units/state-data";
   
 
 
