@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.comment.CommentDto;
 /**
 * Entity Comment : represent the entity table in DB
 * 
@@ -17,7 +21,11 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class Comment {
+public class Comment implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6363481673399032153L;
 	/**
 	* The id of Address 
 	*/
@@ -52,6 +60,13 @@ public class Comment {
 	}
 	public Comment() {
 		super();
+	}
+	
+	public Comment(CommentDto dto, SurveyUnit surveyUnit) {
+		super();
+		this.type = dto.getType();
+		this.value = dto.getValue();
+		this.surveyUnit = surveyUnit;
 	}
 	/**
 	 * @return the id

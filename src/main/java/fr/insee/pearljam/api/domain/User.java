@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,7 +21,12 @@ import javax.persistence.Table;
 */
 @Entity
 @Table(name="user", schema="public")
-public class User {
+public class User implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3490006766811003946L;
 
 	/**
 	* The id of User 
@@ -53,6 +59,20 @@ public class User {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "preference", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = { @JoinColumn(name = "id_campaign") })
 	private List<Campaign> campaigns;
+	
+	public User() {
+		super();
+	}
+	
+	public User(String id, String firstName, String lastName, OrganizationUnit organizationUnit) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.organizationUnit = organizationUnit;
+	}
+	
+	
 	/**
 	 * @return id of the User
 	 */

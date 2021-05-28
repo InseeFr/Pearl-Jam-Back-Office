@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
+
 /**
 * Entity ContactAttempt : represent the entity table in DB
 * 
@@ -18,7 +22,11 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class ContactAttempt {
+public class ContactAttempt implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2015739722235846385L;
 	/**
 	 * the id of ContactAttempt
 	 */
@@ -44,6 +52,13 @@ public class ContactAttempt {
 	
 	public ContactAttempt() {
 		
+	}
+	
+	public ContactAttempt(ContactAttemptDto dto, SurveyUnit surveyUnit) {
+		super();
+		this.date = dto.getDate();
+		this.status = dto.getStatus();
+		this.surveyUnit = surveyUnit;
 	}
 	
 	/**

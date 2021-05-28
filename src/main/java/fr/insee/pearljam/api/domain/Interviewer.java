@@ -1,10 +1,18 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 
 /**
 * Entity Interviewer : represent the entity table in DB
@@ -14,8 +22,13 @@ import javax.persistence.Table;
 */
 @Entity
 @Table
-public class Interviewer {
+public class Interviewer implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5488798660579904552L;
+
 	/**
 	* The id of Interviewer 
 	*/
@@ -47,11 +60,35 @@ public class Interviewer {
 	@Column(length=255)
 	private String phoneNumber;
 	
-	/**
-	 * The Organization Unit of the Interviewer
-	 */
-	@ManyToOne
-	private OrganizationUnit organizationUnit;
+	@OneToMany(fetch = FetchType.LAZY, targetEntity=SurveyUnit.class, cascade = CascadeType.ALL, mappedBy="interviewer", orphanRemoval=true)
+	private Set<SurveyUnit> surveyUnits = new HashSet<>();
+
+	
+
+	public Interviewer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Interviewer(String id, String firstName, String lastName, String email, String phoneNumber,
+			Set<SurveyUnit> surveyUnits) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.surveyUnits = surveyUnits;
+	}
+	
+	public Interviewer(InterviewerContextDto interviewerDto) {
+		super();
+		this.id = interviewerDto.getId();
+		this.firstName = interviewerDto.getFirstName();
+		this.lastName = interviewerDto.getLastName();
+		this.email = interviewerDto.getEmail();
+		this.phoneNumber = interviewerDto.getPhoneNumer();
+	}
 
 	/**
 	 * @return the id of the Interviewer
@@ -123,18 +160,8 @@ public class Interviewer {
 		this.phoneNumber = phoneNumber;
 	}
 	
-	/**
-	 * @return the Organization Unit associated with the Interviewer
-	 */
-	public OrganizationUnit getOrganizationUnit() {
-		return organizationUnit;
-	}
-
-	/**
-	 * @param Organization Unit of the Interviewer
-	 */
-	public void setOrganizationUnit(OrganizationUnit organizationUnit) {
-		this.organizationUnit = organizationUnit;
+	public Set<SurveyUnit> getSurveyUnits() {
+		return surveyUnits;
 	}
 	
 }

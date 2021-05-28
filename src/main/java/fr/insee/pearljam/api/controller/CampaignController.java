@@ -12,22 +12,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
-import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +48,29 @@ public class CampaignController {
 	UtilsService utilsService;
 
 	/**
+	 * This method is used to post the campaign defined in request body
+	 * 
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Post Campaign")
+	@PostMapping(path = "/campaign")
+	public ResponseEntity<Object> postCampaign(HttpServletRequest request,
+			@RequestBody CampaignContextDto campaignDto) {
+		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Response response;
+		try {
+			response = campaignService.postCampaign(campaignDto);
+		} catch (NoOrganizationUnitException | VisibilityException e) {
+			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} 
+		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+	
+	/**
 	 * This method is used to get the list of Campaigns for current user
 	 * 
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
@@ -52,7 +78,7 @@ public class CampaignController {
 	 */
 	@ApiOperation(value = "Get Campaigns")
 	@GetMapping(path = "/campaigns")
-	public ResponseEntity<Object> getListCampaign(HttpServletRequest request) {
+	public ResponseEntity<List<CampaignDto>> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -78,7 +104,7 @@ public class CampaignController {
 	 */
 	@ApiOperation(value = "Get interviewers")
 	@GetMapping(path = "/campaign/{id}/interviewers")
-	public ResponseEntity<Object> getListInterviewers(HttpServletRequest request,
+	public ResponseEntity<List<InterviewerDto>> getListInterviewers(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
@@ -95,66 +121,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * This method is used to count survey units by states, interviewer and campaign
-	 * 
-	 * @param request
-	 * @param id
-	 * @param idep
-	 * @param date
-	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
-	 *         {@link HttpStatus} FORBIDDEN
-	 */
-	@ApiOperation(value = "Get interviewerStateCount")
-	@GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/state-count")
-	public ResponseEntity<Object> getInterviewerStateCount(HttpServletRequest request,
-			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
-			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
-		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
-
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			StateCountDto stateCountDto = campaignService.getStateCount(userId, id, idep, date, associatedOrgUnits);
-			if (stateCountDto == null) {
-				LOGGER.info("Get interviewerStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get interviewerStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
-		}
-
-	}
-
-	/**
-	 * This method is used to count survey units by states, organizational units and
-	 * campaign
-	 * 
-	 * @param request
-	 * @param id
-	 * @param date
-	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
-	 *         or {@link HttpStatus} FORBIDDEN
-	 */
-	@ApiOperation(value = "Get campaignStateCount")
-	@GetMapping(path = "/campaign/{id}/survey-units/state-count")
-	public ResponseEntity<Object> getCampaignStateCount(HttpServletRequest request,
-			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			StateCountCampaignDto stateCountCampaignDto = campaignService.getStateCountByCampaign(userId, id, date);
-			if (stateCountCampaignDto == null) {
-				LOGGER.info("Get campaignStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get campaignStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
-		}
-	}
-
-	/**
 	 * This method is used to count survey units that are abandoned by campaign
 	 * Return the sum of survey units states by campaign as a list
 	 * 
@@ -166,7 +132,7 @@ public class CampaignController {
 	 */
 	@ApiOperation(value = "Get numberSUAbandoned")
 	@GetMapping(path = "/campaign/{id}/survey-units/abandoned")
-	public ResponseEntity<Object> getNbSUAbandoned(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<CountDto> getNbSUAbandoned(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -192,7 +158,7 @@ public class CampaignController {
 	 */
 	@ApiOperation(value = "Get numberSUNotAttributed")
 	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed")
-	public ResponseEntity<Object> getNbSUNotAttributed(HttpServletRequest request,
+	public ResponseEntity<CountDto> getNbSUNotAttributed(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
@@ -205,58 +171,6 @@ public class CampaignController {
 			}
 			LOGGER.info("Get numberSUAbandoned resulting in 200");
 			return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
-		}
-	}
-
-	/**
-	 * Return the sum of survey units states by interviewer as a list
-	 * 
-	 * @param request
-	 * @param date
-	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
-	 *         or {@link HttpStatus} FORBIDDEN
-	 */
-	@ApiOperation(value = "Get interviewersStateCount")
-	@GetMapping(path = "/interviewers/survey-units/state-count")
-	public ResponseEntity<Object> getInterviewersStateCount(HttpServletRequest request,
-			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<StateCountDto> stateCountCampaignsDto = campaignService.getStateCountByInterviewer(userId, date);
-			if (stateCountCampaignsDto == null) {
-				LOGGER.info("Get interviewersStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get interviewersStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
-		}
-	}
-
-	/**
-	 * Return the sum of survey units states by campaign as a list
-	 * 
-	 * @param request
-	 * @param date
-	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
-	 *         or {@link HttpStatus} FORBIDDEN
-	 */
-	@ApiOperation(value = "Get campaignStateCount")
-	@GetMapping(path = "/campaigns/survey-units/state-count")
-	public ResponseEntity<Object> getCampaignsStateCount(HttpServletRequest request,
-			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<StateCountDto> stateCountCampaignsDto = campaignService.getStateCountByCampaigns(userId, date);
-			if (stateCountCampaignsDto == null) {
-				LOGGER.info("Get campaignStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get campaignStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
 		}
 	}
 

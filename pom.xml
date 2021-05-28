@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>2.1.1</version>
+	<version>3.3.1</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>
@@ -25,7 +25,7 @@
 		<java.version>1.11</java.version>
 		<log4j.version>2.12.1</log4j.version>
 		<maven.compiler.release>11</maven.compiler.release>
-		<testcontainers.version>1.14.3</testcontainers.version>
+		<testcontainers.version>1.15.2</testcontainers.version>
 	</properties>
 
 	<dependencies>
@@ -249,31 +249,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.8</version>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-						<configuration>
-							<backend>html</backend>
-							<doctype>book</doctype>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework.restdocs</groupId>
-						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>${spring-restdocs.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>
@@ -350,18 +325,18 @@
 						<changeLogFile>src/main/resources/db/master.xml</changeLogFile>
 						<diffChangeLogFile>src/main/resources/db/changelog/new_changelog.xml</diffChangeLogFile>
 						<driver>org.postgresql.Driver</driver>
-						<url>jdbc:postgresql://localhost:5433/pearljam_api</url>
+						<url>jdbc:postgresql://localhost:5432/pearljam_api</url>
 						<defaultSchemaName>public</defaultSchemaName>
 						<contexts>test,dev,prod</contexts>
-						<username>user_capi3g</username>
-						<password>Capi3g1234</password>
+						<username>pearljam_api</username>
+						<password>pearljam_api</password>
 						<referenceUrl>hibernate:spring:fr.insee.pearljam.api.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
 						<referenceDefaultSchemaName>public</referenceDefaultSchemaName>
 						<verbose>true</verbose>
 						<logging>debug</logging>
 					</configuration>
 				</plugin>
-				<plugin>
+        		<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.0.0-M4</version>
@@ -376,6 +351,9 @@
 						<forkCount>3</forkCount>
 						<reuseForks>true</reuseForks>
 						<argLine>-Xmx2048m -Xmx1G -XX:PermSize=1024m</argLine>
+						<environmentVariables>
+							<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+						</environmentVariables>
 						<argLine>--illegal-access=permit</argLine>
 					</configuration>
 				</plugin>

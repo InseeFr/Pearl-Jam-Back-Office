@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.dto.geographicallocation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.insee.pearljam.api.domain.GeographicalLocation;
 
 public class GeographicalLocationDto {
@@ -54,5 +56,9 @@ public class GeographicalLocationDto {
 		return "GeographicalLocationDto [id=" + id + ", label=" + label + "]";
 	}
 	
+	@JsonIgnore
+	public boolean isValid() {
+		return this.label!=null && !this.label.isBlank() && this.id!=null && !this.id.isBlank();  
+	}
 	
 }

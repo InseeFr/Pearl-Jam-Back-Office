@@ -1,9 +1,15 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitDto {
 	
 	/**
@@ -51,6 +57,8 @@ public class SurveyUnitDto {
 	 */
 	private Long endDate;
 	
+	private List<PersonDto> persons;
+	
 	/**
 	 * Default constructor from SurveyUnitDto
 	 * @param surveyUnit
@@ -62,17 +70,6 @@ public class SurveyUnitDto {
 		this.collectionStartDate = surveyUnit.getCampaign().getStartDate();
 	}
 	public SurveyUnitDto() {
-	}
-	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign) {
-		this.id=idSurveyUnit;
-		this.campaign=campaign.getId();
-		this.campaignLabel=campaign.getLabel();
-		this.managementStartDate=campaign.getManagementStartDate();
-		this.interviewerStartDate=campaign.getInterviewerStartDate();
-		this.identificationPhaseStartDate=campaign.getIdentificationPhaseStartDate();
-		this.collectionStartDate=campaign.getCollectionStartDate();
-		this.collectionEndDate=campaign.getCollectionEndDate();
-		this.endDate=campaign.getEndDate();
 	}
 	
 	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, VisibilityDto visibility) {
@@ -198,6 +195,12 @@ public class SurveyUnitDto {
 	 */
 	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
+	}
+	public List<PersonDto> getPersons() {
+		return persons;
+	}
+	public void setPersons(List<PersonDto> persons) {
+		this.persons = persons;
 	}
 
 }

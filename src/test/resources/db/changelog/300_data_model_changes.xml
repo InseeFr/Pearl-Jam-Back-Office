@@ -1,0 +1,90 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="paulguillemet (generated)" id="1617984548467-1">
+        <createTable tableName="closing_cause">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="closing_causePK"/>
+            </column>
+            <column name="date" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="survey_unit_id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-2">
+        <createTable tableName="person">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="personPK"/>
+            </column>
+            <column name="birthdate" type="BIGINT"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="favorite_email" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="title" type="INT"/>
+            <column name="survey_unit_id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-3">
+        <createTable tableName="phone_number">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="phone_numberPK"/>
+            </column>
+            <column name="favorite" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="VARCHAR(255)"/>
+            <column name="source" type="INT"/>
+            <column name="person_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-4">
+        <addColumn tableName="survey_unit">
+            <column name="organization_unit_id" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-5">
+        <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="phone_number" constraintName="FK4sjbpst35alcsan1qwbdb2nyu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="person"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-6">
+        <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="person" constraintName="FKcoaxmn8mw9jopsxsebh23o2og" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-7">
+        <addForeignKeyConstraint baseColumnNames="organization_unit_id" baseTableName="survey_unit" constraintName="FKsiyt8278r47luhcof6e7j8n7d" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organization_unit"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-8">
+        <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="closing_cause" constraintName="FKsomysy42j51u7ckiiuxxagx6c" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-9">
+        <dropForeignKeyConstraint baseTableName="survey_unit_phone_numbers" constraintName="FK4ytqabrh31vpuqu7725qgvv0k"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-10">
+        <dropForeignKeyConstraint baseTableName="interviewer" constraintName="FKkja2mrmqcmteo44fq53m5ktst"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-11">
+        <dropTable tableName="survey_unit_phone_numbers"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-12">
+        <dropColumn columnName="first_name" tableName="survey_unit"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-13">
+        <dropColumn columnName="last_name" tableName="survey_unit"/>
+    </changeSet>
+    <changeSet author="paulguillemet (generated)" id="1617984548467-14">
+        <dropColumn columnName="organization_unit_id" tableName="interviewer"/>
+    </changeSet>
+    <changeSet author="bclaudel" id="1617984548467-15">
+        <addColumn tableName="survey_unit">
+            <column name="viewed" type="BOOLEAN" defaultValue="FALSE"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="admin (generated)" id="1619539158981-1">
+        <addColumn tableName="person">
+            <column name="privileged" type="boolean" defaultValue="FALSE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
