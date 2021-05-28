@@ -43,7 +43,6 @@ jobs:
           draft: false
           prerelease: false
   docker:  
-    if: "false"
     needs: build
     runs-on: ubuntu-latest
     steps:
