@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pearljam-bo
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - pearljam-bo.demo.dev.insee.io
+  rules:
+    - host: pearljam-bo.demo.dev.insee.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: pearljam-bo
+              servicePort: http
