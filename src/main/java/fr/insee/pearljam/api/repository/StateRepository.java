@@ -287,4 +287,32 @@ public interface StateRepository extends JpaRepository<State, Long> {
 			+ ") "
 		+ ") as t", nativeQuery = true)
 	Map<String,BigInteger> getStateCountByCampaignId(String campaignId, Long date);
+
+	@Query(value = "SELECT "
+			+ "COUNT(1) AS total " 
+			+ "FROM ( "
+				+ "SELECT DISTINCT(survey_unit_id), type, date "
+				+ "FROM state "
+				+ "WHERE (survey_unit_id, date) IN ("
+					+ "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN (" 
+						+ "SELECT id FROM survey_unit su "
+						+ "WHERE campaign_id=:campaignId " 
+						+ "AND organization_unit_id IN (:ouIds) "
+						// SU needs to be visible at the given date for the OU its in
+						+ "AND (:date<0 OR EXISTS ("
+							+ "SELECT 1 FROM visibility "
+							+ "WHERE campaign_id=:campaignId "
+							+ "AND organization_unit_id = su.organization_unit_id "
+							+ "AND management_start_date<=:date " 
+							+ "AND collection_start_date<=:date " 
+							+ "AND collection_end_date>:date )"
+						+ ") "
+						+ "AND interviewer_id=:interviewerId "
+					+ ") " 
+					+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
+				+ ") "
+			+ ") as t", nativeQuery = true)
+	Long getTotalStateCount(@Param("campaignId") String campaignId, 
+				@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
+				@Param("date") Long date);
 }

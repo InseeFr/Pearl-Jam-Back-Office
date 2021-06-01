@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.oneOf;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -24,12 +26,16 @@ import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -46,6 +52,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ClosingCause;
@@ -145,6 +152,9 @@ class TestBasicAuth {
 	@LocalServerPort
 	int port;
 
+	public static ClientAndServer clientAndServer;
+	public static MockServerClient mockServerClient;
+	
 	public Liquibase liquibase;
 
 	/**
@@ -158,6 +168,42 @@ class TestBasicAuth {
 		given().auth().preemptive().basic("ABC", "abc").when().post("api/create-dataset");
 	}
 	
+	@BeforeAll
+	static void init() throws JSONException {
+		clientAndServer = ClientAndServer.startClientAndServer(8081);
+		mockServerClient = new MockServerClient("127.0.0.1", 8081);
+		String expectedBody = "{"
+				+ "  \"surveyUnitOK\": ["
+				+ "    {"
+				+ "      \"id\": \"23\","
+				+ "      \"stateData\": {"
+				+ "        \"state\": null,"
+				+ "        \"date\": null,"
+				+ "        \"currentPage\": null"
+				+ "      }"
+				+ "    },"
+				+ "    {"
+				+ "      \"id\": \"20\","
+				+ "      \"stateData\": {"
+				+ "        \"state\": \"INIT\","
+				+ "        \"date\": 0,"
+				+ "        \"currentPage\": \"1\""
+				+ "      }"
+				+ "    }"
+				+ "  ],"
+				+ "  \"surveyUnitNOK\": ["
+				+ "    {"
+				+ "      \"id\": \"21\""
+				+ "    }"
+				+ "  ]"
+				+ "}";
+		mockServerClient.when(request().withPath(Constants.API_QUEEN_SURVEYUNITS_STATEDATA).withBody("[\"20\",\"21\",\"23\"]"))
+				.respond(response().withStatusCode(200)
+						.withHeaders(new Header("Content-Type", "application/json; charset=utf-8"),
+								new Header("Cache-Control", "public, max-age=86400"))
+						.withBody(expectedBody));
+	}
+	
 	/**
 	 * This method is used to kill the container
 	 */
@@ -165,6 +211,12 @@ class TestBasicAuth {
 	public static void  cleanUp() {
 		if(postgreSQLContainer!=null) {
 			postgreSQLContainer.close();
+		}
+		if(mockServerClient!=null) {
+			mockServerClient.close();
+		}
+		if(clientAndServer!=null) {
+			clientAndServer.close();
 		}
 	}
 
@@ -715,6 +767,22 @@ class TestBasicAuth {
 	}
 	
 	/**
+	 * Test that the GET endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(19)
+	void testGetCampaignInterviewerClosingCauseCount() throws InterruptedException, JSONException {
+		given().auth().preemptive().basic("ABC", "abc")
+		.when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/closing-causes").then().statusCode(200).and()
+		.assertThat().body("npaCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
+	}
+	
+	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * @throws InterruptedException
 	 * @throws JSONException 
@@ -1233,14 +1301,8 @@ class TestBasicAuth {
 	@Order(47)
 	void testGetSUCloasable() throws InterruptedException, JsonProcessingException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/survey-units/closable").then().statusCode(200)
-		.and().assertThat().body("id", hasItem("11"))
-		.and().assertThat().body("ssech", hasItem(1))
-		.and().assertThat().body("location", hasItem("29270"))
-		.and().assertThat().body("city", hasItem("Carhaix"))
-		.and().assertThat().body("interviewer.id", hasItem("INTW1"))
-		.and().assertThat().body("interviewer.interviewerFirstName", hasItem("Margie"))
-		.and().assertThat().body("interviewer.interviewerLastName", hasItem("Lucas"))
-		.and().assertThat().body("comments[0]", empty());
+		.and().assertThat().body("id", hasItem("21"))
+		.and().assertThat().body("ssech", hasItem(1));
 	}
 	
 	
@@ -1358,7 +1420,7 @@ class TestBasicAuth {
 		.contentType("application/json")
 		.when()
 		.put("api/survey-unit/24/viewed").then().statusCode(200);
-		assertEquals(true, surveyUnitRepository.findById("24").get().isViewed());
+		assertEquals(true, surveyUnitRepository.findById("24").get().getViewed());
 	}
 	
 	/**

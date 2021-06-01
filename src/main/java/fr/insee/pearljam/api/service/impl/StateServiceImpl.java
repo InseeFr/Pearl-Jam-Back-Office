@@ -99,7 +99,7 @@ public class StateServiceImpl implements StateService {
 		}
 		if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(Constants.GUEST)) {
 			stateCountDto = new StateCountDto(stateRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
-			stateCountDto.addClosingCauseCount(closingCauseRepository.getClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
+			stateCountDto.addClosingCauseCount(closingCauseRepository.getStateClosedByClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (stateCountDto.getTotal() == null) {
 			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
@@ -159,7 +159,7 @@ public class StateServiceImpl implements StateService {
 			StateCountDto campaignSum = new StateCountDto(
 					stateRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse)
       );
-			campaignSum.addClosingCauseCount(closingCauseRepository.getClosingCauseCountSumByCampaign(id, userOrgUnitIds, dateToUse));
+			campaignSum.addClosingCauseCount(closingCauseRepository.getgetStateClosedByClosingCauseCountByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
 				campaignSum.setCampaign(dto);

@@ -116,115 +116,75 @@ Before committing code please ensure,
 4 - All newly added properties are documented  
 
 ## End-Points
+### Campaign-Controller
+- `POST /api/campaign` : Post Campaign
+- `PUT /api/campaign/{id}/collection-dates` : Put campaignCollectionDates
+- `GET /api/campaign/{id}/interviewers` : Get interviewers
+- `GET /api/campaign/{id}/survey-units/abandoned` : Get numberSUAbandoned
+- `GET /api/campaign/{id}/survey-units/not-attributed` : Get numberSUNotAttributed
+- `PUT /api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility` : Change visibility of a campaign for an Organizational Unit
+- `GET /api/campaigns` : Get Campaigns
 
-Campaign :
+### Closing-Cause-Controller
+- `GET /api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes` : Get interviewerStateCount
 
-- `GET /campaign/{id}/interviewers` : Get interviewers
+### Contact-Outcome-Controller
+- `GET /api/campaign/{id}/survey-units/contact-outcomes` : Get campaignStateCount
+- `GET /api/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes` : Get contact-outcome type for an interviewer on a specific campaign
+- `GET /api/campaign/{id}/survey-units/not-attributed/contact-outcomes` : Get Contact-outcomes count for non attributted SUs
+- `GET /api/campaigns/survey-units/contact-outcomes` : Get campaignStateCount
 
-- `GET /campaign/{id}/survey-units/abandoned` : Get numberSUAbandoned
+### Data-Set-Controller
+- `POST /api/create-dataset` : Create dataset
+- `DELETE /api/delete-dataset` : Delete dataset
 
-- `GET /campaign/{id}/survey-units/contact-outcomes` : Get campaignStateCount
+### Geographical-Location-Controller
+- `POST /api/geographical-locations` : Create Context with Organizational Unit and users associated
 
-- `GET /campaign/{id}/survey-units/interviewer/{idep}/state-count` : Get interviewerStateCount
+### Interviewer-Controller
+- `GET /api/interviewer/{id}/campaigns` : Get interviewer campaigns
+- `GET /api/interviewers` : Get interviewers
+- `POST /api/interviewers` : Post interviewers
 
-- `GET /campaign/{id}/survey-units/not-attributed` : Get numberSUNotAttributed
+### Message-Controller
+- `POST /api/message` : Post a message
+- `GET /api/message-history` : Get the message history
+- `PUT /api/message/{id}/interviewer/{idep}/delete` : Mark a message as deleted
+- `PUT /api/message/{id}/interviewer/{idep}/read` : Mark a message as read
+- `GET /api/messages/{id}` : Get a message
+- `POST /api/verify-name` : Update Messages with campaigns or interviewers listed in request body
 
-- `GET /campaign/{id}/survey-units/not-attributed/contact-outcomes` : Get Contact-outcomes count for non attributted SUs
+### Organization-Unit-Controller
+- `POST /api/organization-units` : Create Context with Organizational Unit and users associated
 
-- `GET /campaign/{id}/survey-units/not-attributed/state-count` : Get state count for non attributted SUs
+### Preference-Controller
+- `PUT /api/preferences` : Update preferences with campaigns listed in request body
 
-- `GET /campaign/{id}/survey-units/state-count` : Get campaignStateCount
+### State-Controller
+- `GET /api/campaign/{id}/survey-units/interviewer/{idep}/state-count` : Get interviewerStateCount
+- `GET /api/campaign/{id}/survey-units/not-attributed/state-count` : Get state count for non attributted SUs
+- `GET /api/campaign/{id}/survey-units/state-count` : Get campaignStateCount
+- `GET /api/campaigns/survey-units/state-count` : Get campaignStateCount
+- `GET /api/interviewers/survey-units/state-count` : Get interviewersStateCount
 
-- `GET /campaigns` : Get Campaigns
+### Survey-Unit-Controller
+- `GET /api/campaign/{id}/survey-units` : Update the Survey Unit
+- `GET /api/check-habilitation` : Check habilitation
+- `GET /api/survey-unit/{id}` : Get detail of specific survey unit
+- `PUT /api/survey-unit/{id}` : Update the Survey Unit
+- `PUT /api/survey-unit/{id}/close/{closingCause}` : Closes a survey unit
+- `PUT /api/survey-unit/{id}/closing-cause/{closingCause}` : Add Closing cause
+- `PUT /api/survey-unit/{id}/comment` : Update the state of Survey Units listed in request body
+- `PUT /api/survey-unit/{id}/state/{state}` : Update the state of Survey Units listed in request body
+- `GET /api/survey-unit/{id}/states` : Get states of given survey unit
+- `PUT /api/survey-unit/{id}/viewed` : Update the state of Survey Units listed in request body
+- `GET /api/survey-units` : Get SurveyUnits
+- `POST /api/survey-units` : POST SurveyUnit assignations to interviewer
+- `GET /api/survey-units/closable` : Get closable survey units
+- `POST /api/survey-units/interviewers` : Post SurveyUnits
 
-- `GET /campaigns/survey-units/contact-outcomes` : Get campaignStateCount
-
-- `GET /campaigns/survey-units/state-count` : Get campaignStateCount
-
-- `GET /interviewers/survey-units/state-count` : Get interviewersStateCount
-
-- `PUT /campaign/{id}/collection-dates` : Put campaignCollectionDates
-
-- `PUT /campaign/{idCampaign}/organizational-unit/{idOu}/visibility` : Change visibility of a campaign for an Organizational Unit
-
-- `POST /campaign` :  Post Campaign
-
-Dataset :
-
-- `POST /create-dataset` : Create dataset
-
-- `DELETE /delete-dataset` : Delete dataset
-
-GeographicalLocation :
-
-- `POST /geographical-locations` : Create Context with Organizational Unit and users associated
-
-Interviewer :
-
-- `GET /campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes` : Get contact-outcome type for an interviewer on a specific campaign
-
-- `GET /interviewer/{id}/campaigns` : Get interviewer campaigns
-
-- `GET /interviewers` : Get interviewers
-
-- `POST /interviewers` : Post interviewers
-
-
-Message :
-
-- `GET /message-history` : Get the message history
-
-- `GET /messages/{id}` : Get a message
-
-- `PUT /message/{id}/interviewer/{idep}/delete` : Mark a message as deleted
-
-- `PUT /message/{id}/interviewer/{idep}/read` : Mark a message as read
-
-- `POST /message` : Post a message
-
-- `POST /verify-name` : Update Messages with campaigns or interviewers listed in request body
-
-OrganizationUnit :
-
-- `POST /organization-units` : Create Context with Organizational Unit and users associated
-
-Preference :
-
-- `PUT /preferences` : Update preferences with campaigns listed in request body
-
-SurveyUnit :
-
-- `GET /campaign/{id}/survey-units` : Update the Survey Unit
-
-- `GET /check-habilitation` : Check habilitation
-
-- `GET /survey-unit/{id}` : Get detail of specific survey unit
-
-- `GET /survey-unit/{id}/states` : Get states of given survey unit
-
-- `GET /survey-units` : Get SurveyUnits
-
-- `GET /survey-units/closable` : Get closable survey units
-
-- `PUT /survey-unit/{id}` : Update the Survey Unit
-
-- `PUT /survey-unit/{id}/close/{closingCause}` : Closes a survey unit
-
-- `PUT /survey-unit/{id}/closing-cause/{closingCause}` : Add Closing cause
-
-- `PUT /survey-unit/{id}/comment` : Update the state of Survey Units listed in request body
-
-- `PUT /survey-unit/{id}/state/{state}` : Update the state of Survey Units listed in request body
-
-- `PUT /survey-unit/{id}/viewed` : Update the state of Survey Units listed in request body
-
-- `POST /survey-units` : POST SurveyUnits
-
-- `POST /survey-units/interviewers` : POST SurveyUnit assignations to interviewer
-
-User :
-
-- `GET /user` : Get User
+### User-Controller
+- `GET /api/user` : Get User
 
 ## Libraries used
 - spring-boot-jpa

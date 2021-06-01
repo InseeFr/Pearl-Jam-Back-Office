@@ -55,22 +55,32 @@ public class SurveyUnit implements Serializable {
 	/**
 	 * The address of SurveyUnit
 	 */
-	@OneToOne(cascade = {CascadeType.ALL})
+	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
 
 	/**
 	 * The sampleIdentifier of SurveyUnit
 	 */
-	@OneToOne(cascade = {CascadeType.ALL})
+	@OneToOne(cascade = CascadeType.ALL)
 	private SampleIdentifier sampleIdentifier;
 	
+	/**
+	 * The sampleIdentifier of SurveyUnit
+	 */
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = ContactOutcome.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private ContactOutcome contactOucome;
+	
+	
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private ClosingCause closingCause;
+
 	/**
 	 * The Campaign of SurveyUnit
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
 	
-	/**
+	/*
 	 * The Interviewer of SurveyUnit
 	 */
 	@ManyToOne
@@ -90,9 +100,6 @@ public class SurveyUnit implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<State> states = new HashSet<>();
-	
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
-	private Set<ClosingCause> closingCause;
 
 	public SurveyUnit() {
 		super();
@@ -137,7 +144,7 @@ public class SurveyUnit implements Serializable {
 		this.contactAttempts = new HashSet<>();
 		this.comments = new HashSet<>();
 		this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
-		this.closingCause = new HashSet<>();
+		this.closingCause = null;
 	}
 
 	/**
@@ -155,10 +162,6 @@ public class SurveyUnit implements Serializable {
 	}
 
 	/**
-	 * @return the firstName
-	 */
-
-	/**
 	 * @return the priority
 	 */
 	public boolean isPriority() {
@@ -172,11 +175,10 @@ public class SurveyUnit implements Serializable {
 		this.priority = priority;
 	}
 
-
 	/**
 	 * @return the viewed
 	 */
-	public Boolean isViewed() {
+	public Boolean getViewed() {
 		return viewed;
 	}
 
@@ -200,15 +202,6 @@ public class SurveyUnit implements Serializable {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
-	public ClosingCause getClosingCause() {
-		return !closingCause.isEmpty() ? closingCause.iterator().next() : null;
-	}
-
-	public void setClosingCause(ClosingCause closingCause) {
-		this.closingCause.clear();
-		this.closingCause.add(closingCause);
-	}
 
 	/**
 	 * @return the sampleIdentifier
@@ -222,6 +215,20 @@ public class SurveyUnit implements Serializable {
 	 */
 	public void setSampleIdentifier(SampleIdentifier sampleIdentifier) {
 		this.sampleIdentifier = sampleIdentifier;
+	}
+
+	/**
+	 * @return the contactOucome
+	 */
+	public ContactOutcome getContactOucome() {
+		return contactOucome;
+	}
+
+	/**
+	 * @param contactOucome the contactOucome to set
+	 */
+	public void setContactOucome(ContactOutcome contactOucome) {
+		this.contactOucome = contactOucome;
 	}
 
 	/**
@@ -252,28 +259,88 @@ public class SurveyUnit implements Serializable {
 		this.interviewer = interviewer;
 	}
 
+	/**
+	 * @return the organizationUnit
+	 */
 	public OrganizationUnit getOrganizationUnit() {
 		return organizationUnit;
 	}
 
+	/**
+	 * @param organizationUnit the organizationUnit to set
+	 */
 	public void setOrganizationUnit(OrganizationUnit organizationUnit) {
 		this.organizationUnit = organizationUnit;
 	}
 
+	/**
+	 * @return the persons
+	 */
 	public Set<Person> getPersons() {
 		return persons;
 	}
 
+	/**
+	 * @param persons the persons to set
+	 */
+	public void setPersons(Set<Person> persons) {
+		this.persons = persons;
+	}
+
+	/**
+	 * @return the contactAttempts
+	 */
 	public Set<ContactAttempt> getContactAttempts() {
 		return contactAttempts;
 	}
 
+	/**
+	 * @param contactAttempts the contactAttempts to set
+	 */
+	public void setContactAttempts(Set<ContactAttempt> contactAttempts) {
+		this.contactAttempts = contactAttempts;
+	}
+
+	/**
+	 * @return the comments
+	 */
 	public Set<Comment> getComments() {
 		return comments;
 	}
 
+	/**
+	 * @param comments the comments to set
+	 */
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
+	}
+
+	/**
+	 * @return the states
+	 */
 	public Set<State> getStates() {
 		return states;
+	}
+
+	/**
+	 * @param states the states to set
+	 */
+	public void setStates(Set<State> states) {
+		this.states = states;
+	}
+
+	/**
+	 * @return the closingCause
+	 */
+	public ClosingCause getClosingCause() {
+		return closingCause;
+	}
+
+	/**
+	 * @param closingCause the closingCause to set
+	 */
+	public void setClosingCause(ClosingCause closingCause) {
+		this.closingCause = closingCause;
 	}
 
 	public Boolean isAtLeastState(String state) {

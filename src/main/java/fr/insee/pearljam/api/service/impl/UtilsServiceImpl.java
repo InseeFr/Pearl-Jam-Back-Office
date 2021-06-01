@@ -1,30 +1,37 @@
 package fr.insee.pearljam.api.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.api.domain.User;
+import javax.servlet.http.HttpServletRequest;
 
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import fr.insee.pearljam.api.configuration.ApplicationProperties;
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.User;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 
 @Service
 public class UtilsServiceImpl implements UtilsService {
@@ -51,6 +58,15 @@ public class UtilsServiceImpl implements UtilsService {
 	
 	@Autowired
 	Environment environment;
+	
+	@Value("${fr.insee.pearljam.datacollection.service.url.scheme:#{null}}")
+	private String dataCollectionScheme;
+	
+	@Value("${fr.insee.pearljam.datacollection.service.url.host:#{null}}")
+	private String dataCollectionHost;
+	
+	@Value("${fr.insee.pearljam.datacollection.service.url.port:#{null}}")
+	private String dataCollectionPort;
 
 	public String getUserId(HttpServletRequest request) {
 		String userId = null;
@@ -134,5 +150,21 @@ public class UtilsServiceImpl implements UtilsService {
 	        if("test".equals(profileName)) return true;
 	    }   
 	    return false;
+	}
+	
+	@Override
+	public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> ids){
+		final StringBuilder uriPilotageFilter = new StringBuilder(dataCollectionScheme)
+				.append("://")
+				.append(dataCollectionHost)
+				.append(":")
+				.append(dataCollectionPort)
+				.append(Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set(Constants.AUTHORIZATION, authTokenHeader);
+		return restTemplate.exchange(uriPilotageFilter.toString(), HttpMethod.POST, new HttpEntity<>(ids, headers), SurveyUnitOkNokDto.class);
 	}
 }

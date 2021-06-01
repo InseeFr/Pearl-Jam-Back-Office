@@ -4,6 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.ResponseEntity;
+
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+
 public interface UtilsService {
 	
 	/**
@@ -37,4 +41,6 @@ public interface UtilsService {
 	boolean isDevProfile();
 	
 	boolean isTestProfile();
+	
+	ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
 }
