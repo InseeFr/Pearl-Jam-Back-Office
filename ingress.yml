@@ -7,9 +7,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - pearljam-bo.demo.dev.insee.io
+        - pearljam-bo-demo.dev.insee.io
   rules:
-    - host: pearljam-bo.demo.dev.insee.io
+    - host: pearljam-bo-demo.dev.insee.io
       http:
         paths:
           - path: /
