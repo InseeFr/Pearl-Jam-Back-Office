@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.sampleidentifier;
 
 import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
+import fr.insee.pearljam.api.domain.SampleIdentifier;
 
 public class SampleIdentifiersDto {
 	private Integer bs;
@@ -31,19 +32,21 @@ public class SampleIdentifiersDto {
 		this.nograp = nograp;
 	}
 	
-	public SampleIdentifiersDto(InseeSampleIdentifier si) {
+	public SampleIdentifiersDto(SampleIdentifier si) {
 		super();
-		this.bs = si.getBs();
-		this.ec = si.getEc();
-		this.le = si.getLe();
-		this.noi = si.getNoi();
-		this.numfa = si.getNumfa();
-		this.rges = si.getRges();
-		this.ssech = si.getSsech();
-		this.nolog = si.getNolog();
-		this.nole = si.getNole();
-		this.autre = si.getAutre();
-		this.nograp = si.getNograp();
+		if(si != null) {
+			this.bs = ((InseeSampleIdentifier) si).getBs();
+			this.ec = ((InseeSampleIdentifier) si).getEc();
+			this.le = ((InseeSampleIdentifier) si).getLe();
+			this.noi = ((InseeSampleIdentifier) si).getNoi();
+			this.numfa = ((InseeSampleIdentifier) si).getNumfa();
+			this.rges = ((InseeSampleIdentifier) si).getRges();
+			this.ssech = ((InseeSampleIdentifier) si).getSsech();
+			this.nolog = ((InseeSampleIdentifier) si).getNolog();
+			this.nole = ((InseeSampleIdentifier) si).getNole();
+			this.autre = ((InseeSampleIdentifier) si).getAutre();
+			this.nograp = ((InseeSampleIdentifier) si).getNograp();
+		}
 	}
 
 

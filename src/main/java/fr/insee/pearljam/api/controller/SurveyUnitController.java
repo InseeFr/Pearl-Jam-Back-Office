@@ -134,23 +134,19 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} 
 		Optional<SurveyUnit> su = surveyUnitService.findById(id);
-		if(su.isPresent()) {
-			if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			}
-			SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
-			if (surveyUnit == null) {
-				LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			} else {
-				LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
-				return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
-			}
-			
+		if(!su.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);			
 		}
-		else {
+		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
+		if (surveyUnit == null) {
+			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
+		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 		
 	}
 

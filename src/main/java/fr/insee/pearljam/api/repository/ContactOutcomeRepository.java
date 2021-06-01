@@ -49,15 +49,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 					+ "SELECT id FROM survey_unit su "
 					+ "WHERE campaign_id=:campaignId " 
 					+ "AND organization_unit_id IN (:ouIds) "
-					// SU needs to be visible at the given date for the OU its in
-					+ "AND (:date<0 OR EXISTS ("
-						+ "SELECT 1 FROM visibility "
-						+ "WHERE campaign_id=:campaignId "
-						+ "AND organization_unit_id = su.organization_unit_id "
-						+ "AND management_start_date<=:date " 
-						+ "AND collection_start_date<=:date " 
-						+ "AND collection_end_date>:date )"
-					+ ") "
 					// Last state is TBR or FIN or CLO
 					+ "AND EXISTS ("
 						+ "SELECT 1 FROM state "
@@ -92,15 +83,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 					+ "SELECT id FROM survey_unit su "
 					+ "WHERE campaign_id=:campaignId " 
 					+ "AND organization_unit_id IN (:ouIds) "
-					// SU needs to be visible at the given date for the OU its in
-					+ "AND (:date<0 OR EXISTS ("
-						+ "SELECT 1 FROM visibility "
-						+ "WHERE campaign_id=:campaignId "
-						+ "AND organization_unit_id = su.organization_unit_id "
-						+ "AND management_start_date<=:date " 
-						+ "AND collection_start_date<=:date " 
-						+ "AND collection_end_date>:date )"
-					+ ") "
 					// Last state is TBR or FIN or CLO
 					+ "AND EXISTS ("
 						+ "SELECT 1 FROM state "
@@ -134,15 +116,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "SELECT survey_unit_id, MAX(date) FROM contact_outcome WHERE survey_unit_id IN (" 
 					+ "SELECT id FROM survey_unit su "
 					+ "WHERE campaign_id=?1 "
-					// SU needs to be visible at the given date for the OU its in
-					+ "AND (?2<0 OR EXISTS ("
-						+ "SELECT 1 FROM visibility "
-						+ "WHERE campaign_id=?1 "
-						+ "AND organization_unit_id = su.organization_unit_id "
-						+ "AND management_start_date<=?2 " 
-						+ "AND collection_start_date<=?2 " 
-						+ "AND collection_end_date>?2 )"
-					+ ") "
 					// Last state is TBR or FIN or CLO
 					+ "AND EXISTS ("
 						+ "SELECT 1 FROM state "
@@ -173,15 +146,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "SELECT survey_unit_id, MAX(date) FROM contact_outcome WHERE survey_unit_id IN (" 
 					+ "SELECT id FROM survey_unit su "
 					+ "WHERE campaign_id=?1 "
-					// SU needs to be visible at the given date for the OU its in
-					+ "AND (?3<0 OR EXISTS ("
-						+ "SELECT 1 FROM visibility "
-						+ "WHERE campaign_id=?1 "
-						+ "AND organization_unit_id = su.organization_unit_id "
-						+ "AND management_start_date<=?3 " 
-						+ "AND collection_start_date<=?3 " 
-						+ "AND collection_end_date>?3 )"
-					+ ") "
 					// Last state is TBR or FIN or CLO
 					+ "AND EXISTS ("
 						+ "SELECT 1 FROM state "

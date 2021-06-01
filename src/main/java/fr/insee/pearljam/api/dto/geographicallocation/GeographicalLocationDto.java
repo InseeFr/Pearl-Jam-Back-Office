@@ -17,8 +17,10 @@ public class GeographicalLocationDto {
 
 	public GeographicalLocationDto(GeographicalLocation geographicalLocation) {
 		super();
-		this.id = geographicalLocation.getId();
-		this.label = geographicalLocation.getLabel();
+		if(geographicalLocation!=null) {
+			this.id = geographicalLocation.getId();
+			this.label = geographicalLocation.getLabel();
+		}
 	}
 	
 	

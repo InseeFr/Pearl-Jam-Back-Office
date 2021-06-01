@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.address;
 
+import fr.insee.pearljam.api.domain.Address;
 import fr.insee.pearljam.api.domain.InseeAddress;
 
 public class AddressDto {
@@ -50,15 +51,17 @@ public class AddressDto {
 		this.l7 = l7;
 	}
 	
-	public AddressDto(InseeAddress address) {
+	public AddressDto(Address address) {
 		super();
-		this.l1 = address.getL1();
-		this.l2 = address.getL2();
-		this.l3 = address.getL3();
-		this.l4 = address.getL4();
-		this.l5 = address.getL5();
-		this.l6 = address.getL6();
-		this.l7 = address.getL7();
+		if(address!=null) {
+			this.l1 = ((InseeAddress) address).getL1();
+			this.l2 = ((InseeAddress) address).getL2();
+			this.l3 = ((InseeAddress) address).getL3();
+			this.l4 = ((InseeAddress) address).getL4();
+			this.l5 = ((InseeAddress) address).getL5();
+			this.l6 = ((InseeAddress) address).getL6();
+			this.l7 = ((InseeAddress) address).getL7();
+		}
 	}
 
 	public AddressDto() {
