@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: pearl-bo
-          image: inseefr/pearl-jam-back-office:latest
+          image: ddecrulle/pearl-jam-back-office:latest
           env:
-           - name: JAVA_OPTS
-             value: '-Dspring.profiles.active=prod -Dspring.config.location=classpath:/,${CATALINA_BASE}/webapps/pearljambo.properties -Dlogging.config=classpath:log4j2.xml'
+            - name: JAVA_OPTS
+              value: "-Dspring.profiles.active=prod -Dspring.config.location=classpath:/,${CATALINA_BASE}/webapps/pearljambo.properties -Dlogging.config=classpath:log4j2.xml"
