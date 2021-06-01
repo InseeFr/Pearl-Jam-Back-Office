@@ -31,9 +31,11 @@ public class ContactOutcomeDto {
 	
 	public ContactOutcomeDto(ContactOutcome contactOutcome) {
 		super();
-		this.date = contactOutcome.getDate();
-		this.type = contactOutcome.getType();
-		this.totalNumberOfContactAttempts = contactOutcome.getTotalNumberOfContactAttempts();
+		if(contactOutcome!=null) {
+			this.date = contactOutcome.getDate();
+			this.type = contactOutcome.getType();
+			this.totalNumberOfContactAttempts = contactOutcome.getTotalNumberOfContactAttempts();
+		}
 	}
 
 

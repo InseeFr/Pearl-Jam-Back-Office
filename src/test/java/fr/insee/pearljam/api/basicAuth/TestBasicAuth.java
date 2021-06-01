@@ -588,7 +588,7 @@ class TestBasicAuth {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("TBR")).and()
+		.assertThat().body("states[0].type", equalTo("VIN")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
