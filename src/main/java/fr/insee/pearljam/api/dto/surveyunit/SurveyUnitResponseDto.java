@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.dto.surveyunit;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.queen.api.dto.statedata.StateDataDto;
+import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitResponseDto {

@@ -646,7 +646,7 @@ class TestAuthKeyCloak {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("TBR")).and()
+		.assertThat().body("states[0].type", equalTo("VIN")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
@@ -703,7 +703,7 @@ class TestAuthKeyCloak {
 	@Order(14)
 	void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
-    SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
+		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
 		surveyUnitDetailDto.getPersons().get(0).getPhoneNumbers().get(0).setNumber("test");
 		surveyUnitDetailDto.getAddress().setL1("test");
 		surveyUnitDetailDto.getAddress().setL2("test");

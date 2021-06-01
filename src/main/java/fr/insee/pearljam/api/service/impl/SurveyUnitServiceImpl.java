@@ -37,7 +37,6 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
-import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -142,29 +141,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(userId, id);
 	}
 
-	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String suId) {
-		Optional<SurveyUnit> surveyUnit = findById(suId);
-		if (!surveyUnit.isPresent()) {
+	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
+		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
+		if(!surveyUnit.isPresent()) {
 			return null;
 		}
 		if (!canBeSeenByInterviewer(surveyUnit.get().getId())) {
 			return null;
 		}
-		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit.get());
-
-		surveyUnitDetailDto.setAddress(addressRepository.findDtoById(surveyUnit.get().getAddress().getId()));
-		surveyUnitDetailDto.setGeographicalLocation(
-				new GeographicalLocationDto(surveyUnit.get().getAddress().getGeographicalLocation()));
-		surveyUnitDetailDto.setSampleIdentifiers(
-				sampleIdentifierRepository.findDtoById(surveyUnit.get().getSampleIdentifier().getId()));
-		surveyUnitDetailDto.setComments(commentRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
-		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
-		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
-		List<StateDto> states = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.get().getId());
-		states = states.stream().filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
-				.collect(Collectors.toList());
-		surveyUnitDetailDto.setStates(states);
-		return surveyUnitDetailDto;
+		return new SurveyUnitDetailDto(surveyUnit.get());
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
@@ -261,7 +246,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if (surveyUnitDetailDto.getStates() != null) {
 			surveyUnitDetailDto.getStates().stream()
-					.filter(s-> s.getId()==null || stateRepository.existsById(s.getId()))
+					.filter(s-> s.getId()==null || !stateRepository.existsById(s.getId()))
 					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())

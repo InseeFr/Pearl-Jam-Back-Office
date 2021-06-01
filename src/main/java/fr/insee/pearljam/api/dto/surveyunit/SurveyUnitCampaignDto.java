@@ -82,9 +82,10 @@ public class SurveyUnitCampaignDto {
 	    }
 		State currentState = null;
 	    for(State s : su.getStates()) {
-			if(StateType.FIN.equals(s.getType()) && (this.finalizationDate == null || this.finalizationDate < s.getDate())){
+	    	if((StateType.FIN.equals(s.getType()) || StateType.CLO.equals(s.getType())) 
+	    			&& (this.finalizationDate == null || this.finalizationDate < s.getDate())){
 				this.finalizationDate = s.getDate();
-			} 
+			}
 			if(StateType.TBR.equals(s.getType())) {
 				this.reading=true;
 			}
