@@ -29,6 +29,15 @@ public class ClosingCauseCountDto {
 				} 
 			}
 		}
+    	else {
+    		for(String str : Constants.CLOSING_CAUSE_FIELDS) {
+				try {
+					setLongField(str, 0L);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					e.printStackTrace();
+				} 
+			}
+    	}
     	
     }
 
