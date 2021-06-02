@@ -121,7 +121,7 @@ public class StateServiceImpl implements StateService {
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
 			if(organizationUnitRepository.findChildren(id).isEmpty()
-					&& visibilityRepository.findVisibilityInCollectionPeriod(campaignId, id, dateToUse).isPresent()) {
+					&& visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, id).isPresent()) {
 		        StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id),
 		        		stateRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
 				dto.addClosingCauseCount(closingCauseRepository.getClosingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
@@ -154,7 +154,8 @@ public class StateServiceImpl implements StateService {
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();
 		}
-		List<String> campaignIds = campaignRepository.findAllIdsVisible(userOrgUnitIds, dateToUse);
+		List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
+		
 		for(String id : campaignIds) {
 			StateCountDto campaignSum = new StateCountDto(
 					stateRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse)
@@ -179,7 +180,7 @@ public class StateServiceImpl implements StateService {
 			dateToUse = System.currentTimeMillis();
 		}
 		Set<String> interviewerIds = interviewerRepository.findIdsByOrganizationUnits(userOrgUnitIds);
-		List<String> campaignIds = campaignRepository.findAllIdsVisible(userOrgUnitIds, dateToUse);
+		List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
 		for(String id : interviewerIds) {
 			StateCountDto interviewerSum = new StateCountDto(
 					stateRepository.getStateCountSumByInterviewer(campaignIds, id, userOrgUnitIds, dateToUse)
@@ -201,10 +202,6 @@ public class StateServiceImpl implements StateService {
 		Long dateToUse = date;
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();
-		}
-		
-		if(visibilityRepository.findVisibilityInCollectionPeriodForOUs(id, organizationUnits, dateToUse).isEmpty()) {
-			return null;
 		}
 		
 		StateCountDto interviewerSum = new StateCountDto(

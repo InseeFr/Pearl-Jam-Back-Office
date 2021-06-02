@@ -32,6 +32,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "AND collection_start_date <= :date " 
 			+ "AND collection_end_date > :date  ", nativeQuery = true)
 	List<String> findAllIdsVisible(@Param("OuIds") List<String> ouIds, @Param("date") Long date);
+	
+	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE " 
+			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
+	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
 	@Query(value = "SELECT camp.id " 
 			+ "FROM campaign camp " 

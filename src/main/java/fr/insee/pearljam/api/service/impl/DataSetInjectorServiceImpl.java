@@ -37,7 +37,7 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		LOGGER.info("Dataset creation start");
 		EntityManager em = emf.createEntityManager();
 		
-		if(campaignRepository.findById("simpsons2020x00").isPresent()){
+		if(!campaignRepository.findAllIds().isEmpty()){
 			return HttpStatus.NOT_MODIFIED;
 		}
 
