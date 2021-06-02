@@ -419,13 +419,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request) {
 		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsInProcessingPhase(System.currentTimeMillis());
-		List<SurveyUnitCampaignDto> lstResult = new ArrayList<>();
-		lstResult = suList.stream().filter(su -> {
-			Set<StateType> lstState = su.getStates().stream().map(State::getType).collect(Collectors.toSet());
-			return !lstState.contains(StateType.CLO) && !lstState.contains(StateType.FIN) && !lstState.contains(StateType.TBR);
-		}).map(su -> new SurveyUnitCampaignDto(su))
-		.collect(Collectors.toList());
-		
+		List<SurveyUnitCampaignDto> lstResult = suList.stream().map(su -> new SurveyUnitCampaignDto(su))
+					.collect(Collectors.toList());
 		Map<String, String> mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
 		lstResult.forEach(su -> su.setQuestionnaireState(mapQuestionnaireStateBySu.get(su.getId())));
 		
