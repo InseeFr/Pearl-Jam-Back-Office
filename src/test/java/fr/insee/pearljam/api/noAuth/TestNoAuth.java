@@ -12,6 +12,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.oneOf;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -27,12 +29,16 @@ import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -49,6 +55,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ClosingCause;
@@ -73,8 +80,8 @@ import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -89,8 +96,8 @@ import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
+import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
@@ -148,6 +155,9 @@ class TestNoAuth {
 	
 	@LocalServerPort
 	int port;
+	
+	public static ClientAndServer clientAndServer;
+	public static MockServerClient mockServerClient;
 
 	public Liquibase liquibase;
 
@@ -162,6 +172,42 @@ class TestNoAuth {
 		post("api/create-dataset");
 	}
 	
+	@BeforeAll
+	static void init() throws JSONException {
+		clientAndServer = ClientAndServer.startClientAndServer(8081);
+		mockServerClient = new MockServerClient("127.0.0.1", 8081);
+		String expectedBody = "{"
+				+ "  \"surveyUnitOK\": ["
+				+ "    {"
+				+ "      \"id\": \"23\","
+				+ "      \"stateData\": {"
+				+ "        \"state\": null,"
+				+ "        \"date\": null,"
+				+ "        \"currentPage\": null"
+				+ "      }"
+				+ "    },"
+				+ "    {"
+				+ "      \"id\": \"20\","
+				+ "      \"stateData\": {"
+				+ "        \"state\": \"INIT\","
+				+ "        \"date\": 0,"
+				+ "        \"currentPage\": \"1\""
+				+ "      }"
+				+ "    }"
+				+ "  ],"
+				+ "  \"surveyUnitNOK\": ["
+				+ "    {"
+				+ "      \"id\": \"21\""
+				+ "    }"
+				+ "  ]"
+				+ "}";
+		mockServerClient.when(request().withPath(Constants.API_QUEEN_SURVEYUNITS_STATEDATA).withBody(""))
+				.respond(response().withStatusCode(200)
+						.withHeaders(new Header("Content-Type", "application/json; charset=utf-8"),
+								new Header("Cache-Control", "public, max-age=86400"))
+						.withBody(expectedBody));
+	}
+	
 	/**
 	 * This method is used to kill the container
 	 */
@@ -170,6 +216,12 @@ class TestNoAuth {
 		if(postgreSQLContainer!=null) {
 			postgreSQLContainer.close();
 		}
+		if(mockServerClient!=null) {
+			mockServerClient.close();
+		}
+		if(clientAndServer!=null) {
+			clientAndServer.close();
+		}		
 	}
 
 	/**
@@ -540,7 +592,7 @@ class TestNoAuth {
 		.assertThat().body("campaign", equalTo("simpsons2020x00")).and()
 		.assertThat().body("contactOutcome", nullValue()).and()
 		.assertThat().body("comments", empty()).and()
-		.assertThat().body("states[0].type", equalTo("TBR")).and()
+		.assertThat().body("states[0].type", equalTo("VIN")).and()
 		.assertThat().body("contactAttempts", empty());
 		
 	}
@@ -716,6 +768,21 @@ class TestNoAuth {
 			.put("api/preferences")
 		.then()
 			.statusCode(404);
+	}
+	
+	/**
+	 * Test that the GET endpoint
+	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(19)
+	void testGetCampaignInterviewerClosingCauseCount() throws InterruptedException, JSONException {
+		given().when().get("api/campaign/simpsons2020x00/survey-units/interviewer/INTW1/closing-causes").then().statusCode(200).and()
+		.assertThat().body("npaCount",equalTo(1)).and()
+		.assertThat().body("npiCount",equalTo(0)).and()
+		.assertThat().body("rowCount",equalTo(0)).and()
+		.assertThat().body("total",equalTo(2));
 	}
 	
 	/**
@@ -1221,16 +1288,8 @@ class TestNoAuth {
 	 */
 	@Test
 	@Order(47)
-	void testGetSUCloasable() throws InterruptedException, JsonProcessingException, JSONException {
-		given().when().get("api/survey-units/closable").then().statusCode(200)
-		.and().assertThat().body("id", hasItem("11"))
-		.and().assertThat().body("ssech", hasItem(1))
-		.and().assertThat().body("location", hasItem("29270"))
-		.and().assertThat().body("city", hasItem("Carhaix"))
-		.and().assertThat().body("interviewer.id", hasItem("INTW1"))
-		.and().assertThat().body("interviewer.interviewerFirstName", hasItem("Margie"))
-		.and().assertThat().body("interviewer.interviewerLastName", hasItem("Lucas"))
-		.and().assertThat().body("comments[0]", empty());
+	void testGetSUClosable() throws InterruptedException, JsonProcessingException, JSONException {
+		given().when().get("api/survey-units/closable").then().statusCode(200);
 	}
 	
 	
@@ -1290,7 +1349,6 @@ class TestNoAuth {
 	void testGetContactOutcomeCountByCampaignNotExist() throws InterruptedException, JsonProcessingException, JSONException {
 		given().when().get("api/campaign/simpsons2020x000000/survey-units/contact-outcomes").then().statusCode(404);
 	}
-	
 
 	
 	/**
@@ -1348,7 +1406,7 @@ class TestNoAuth {
 	 	.contentType("application/json")
 		.when()
 		.put("api/survey-unit/24/viewed").then().statusCode(200);
-		assertEquals(true, surveyUnitRepository.findById("24").get().isViewed());
+		assertEquals(true, surveyUnitRepository.findById("24").get().getViewed());
 	}
 	
 	/**
@@ -2252,7 +2310,6 @@ class TestNoAuth {
 		assertEquals(null, su1.get().getInterviewer());
 		assertEquals(null, su2.get().getInterviewer());
 	}
-
 	
 	private void addUnattributedSU(String suId) throws JsonProcessingException {
 		SurveyUnitContextDto su = new SurveyUnitContextDto();

@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
@@ -42,6 +45,23 @@ public class SurveyUnitDetailDto {
 				.collect(Collectors.toList()));
 		this.priority=surveyUnit.isPriority();
 		this.campaign=surveyUnit.getCampaign().getId();
+		this.address = new AddressDto(surveyUnit.getAddress());
+		if(surveyUnit.getAddress().getGeographicalLocation()!=null) {
+			this.geographicalLocation = new GeographicalLocationDto(surveyUnit.getAddress().getGeographicalLocation());
+		}
+		if(surveyUnit.getSampleIdentifier()!=null) {
+			this.sampleIdentifiers = new SampleIdentifiersDto(surveyUnit.getSampleIdentifier());
+		}
+		this.comments = surveyUnit.getComments().stream().map(c -> new CommentDto(c)).collect(Collectors.toList());
+		this.contactAttempts = surveyUnit.getContactAttempts().stream().map(c -> new ContactAttemptDto(c)).collect(Collectors.toList());
+		if(surveyUnit.getContactOucome()!=null) {
+			this.contactOutcome = new ContactOutcomeDto(surveyUnit.getContactOucome());
+		}
+		this.states = surveyUnit.getStates().stream()
+				.sorted(Comparator.comparing(State::getDate, Comparator.nullsLast(Comparator.reverseOrder())))
+				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
+				.map(s -> new StateDto(s))
+				.collect(Collectors.toList());
 	}
 
 	/**

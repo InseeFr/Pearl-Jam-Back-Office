@@ -86,7 +86,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
 			if (organizationUnitRepository.findChildren(id).isEmpty()
-					&& visibilityRepository.findVisibilityInCollectionPeriod(campaignId, id, dateToUse).isPresent()) {
+					&& visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, id).isPresent()) {
 				stateCountList.add(new ContactOutcomeTypeCountDto(id, organizationUnitRepository.findLabel(id),
 						contactOutcomeRepository.getContactOutcomeTypeCountByCampaignAndOU(campaignId, id, dateToUse)));
 			}
@@ -112,7 +112,8 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 			userOuIds = organizationUnitRepository.findAllId();
 		}
 		final Long dateToUse = date==null?System.currentTimeMillis():date;
-		List<String> lstCampaignUser = campaignRepository.findAllIdsVisible(userOuIds, dateToUse);
+		List<String> lstCampaignUser = campaignRepository.findAllCampaignIdsByOuIds(userOuIds);
+
 		return lstCampaignUser.stream()
 				.map(idCampaign -> new ContactOutcomeTypeCountDto(
 						contactOutcomeRepository.getContactOutcomeTypeCountByCampaignId(idCampaign, dateToUse),
@@ -128,10 +129,6 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 		Long dateToUse = date;
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();
-		}
-		
-		if(visibilityRepository.findVisibilityInCollectionPeriodForOUs(id, organizationUnits, dateToUse).isEmpty()) {
-			return null;
 		}
 		
 		return new ContactOutcomeTypeCountDto(

@@ -9,10 +9,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +37,6 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
-import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -43,6 +45,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -137,29 +141,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(userId, id);
 	}
 
-	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String suId) {
-		Optional<SurveyUnit> surveyUnit = findById(suId);
-		if (!surveyUnit.isPresent()) {
+	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
+		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
+		if(!surveyUnit.isPresent()) {
 			return null;
 		}
 		if (!canBeSeenByInterviewer(surveyUnit.get().getId())) {
 			return null;
 		}
-		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit.get());
-
-		surveyUnitDetailDto.setAddress(addressRepository.findDtoById(surveyUnit.get().getAddress().getId()));
-		surveyUnitDetailDto.setGeographicalLocation(
-				new GeographicalLocationDto(surveyUnit.get().getAddress().getGeographicalLocation()));
-		surveyUnitDetailDto.setSampleIdentifiers(
-				sampleIdentifierRepository.findDtoById(surveyUnit.get().getSampleIdentifier().getId()));
-		surveyUnitDetailDto.setComments(commentRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
-		surveyUnitDetailDto.setContactAttempts(contactAttemptRepository.findAllDtoBySurveyUnit(surveyUnit.get()));
-		surveyUnitDetailDto.setContactOutcome(contactOutcomeRepository.findDtoBySurveyUnit(surveyUnit.get()));
-		List<StateDto> states = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.get().getId());
-		states = states.stream().filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
-				.collect(Collectors.toList());
-		surveyUnitDetailDto.setStates(states);
-		return surveyUnitDetailDto;
+		return new SurveyUnitDetailDto(surveyUnit.get());
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
@@ -256,7 +246,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if (surveyUnitDetailDto.getStates() != null) {
 			surveyUnitDetailDto.getStates().stream()
-					.filter(s-> s.getId()==null || stateRepository.existsById(s.getId()))
+					.filter(s-> s.getId()==null || !stateRepository.existsById(s.getId()))
 					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
@@ -427,19 +417,28 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toSet());
 	}
 
-	public List<SurveyUnitCampaignDto> getClosableSurveyUnits() {
+	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request) {
 		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsInProcessingPhase(System.currentTimeMillis());
-		return suList.stream().filter(su -> {
-			if (su.getInterviewer() == null) {
-				return false;
-			}
-			StateDto lastState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(su.getId());
-			if (lastState == null) {
-				return false;
-			}
-			StateType currentState = lastState.getType();
-			return currentState != StateType.CLO;
-		}).map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toList());
+		List<SurveyUnitCampaignDto> lstResult = suList.stream().map(su -> new SurveyUnitCampaignDto(su))
+					.collect(Collectors.toList());
+		Map<String, String> mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
+		lstResult.forEach(su -> su.setQuestionnaireState(mapQuestionnaireStateBySu.get(su.getId())));
+		
+		return lstResult;
+	}
+
+	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request, List<String> lstSu) {
+		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request, lstSu);
+		LOGGER.info("GET state from data collection service resulting in {}", result.getStatusCode());
+		SurveyUnitOkNokDto object = result.getBody();
+		if(object == null) {
+			LOGGER.info("GET questionnaire states for survey-units [{}] resulting in 404", String.join(",", lstSu));
+			throw new BadRequestException(404, "bad request");
+		}
+		Map<String, String> mapResult = new HashMap<>();	
+		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), null));
+		object.getSurveyUnitOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
+		return mapResult;
 	}
 
 	@Transactional
