@@ -62,12 +62,6 @@ public class SurveyUnitController {
 
 	@Autowired
 	UtilsService utilsService;
-	
-	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
-	private String interviewerRole;
-	
-	@Value("${fr.insee.pearljam.reviewer.role:#{null}}")
-	private String reviewerRole;
 
 	/**
 	 * This method is using to post the list of SurveyUnit defined in request body
@@ -337,15 +331,10 @@ public class SurveyUnitController {
 	    
 	    if(role != null && !role.isBlank()) {
 	    	if(role.equals(Constants.REVIEWER)) {
-	        	if (!Constants.GUEST.equals(userId) && !request.isUserInRole(reviewerRole)) {
-	        		resp.setHabilitated(false);
-	        		LOGGER.info("User does not have role {}", reviewerRole);
-	        		return new ResponseEntity<>(resp, HttpStatus.OK);
-	        	}
 	            if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-	        		resp.setHabilitated(false);
-	        		LOGGER.info("No user with id {} found in database", userId);
-	        		return new ResponseEntity<>(resp, HttpStatus.OK);
+                resp.setHabilitated(false);
+                LOGGER.info("No user with id {} found in database", userId);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
 	            } 
 	            boolean habilitated = surveyUnitService.checkHabilitationReviewer(userId, id);
 	            resp.setHabilitated(habilitated);
@@ -356,16 +345,12 @@ public class SurveyUnitController {
 	        }
 	    }
 	    else {
-	    	if (!Constants.GUEST.equals(userId) && !request.isUserInRole(interviewerRole)) {
-        		resp.setHabilitated(false);
-        		LOGGER.info("User does not have role {}", interviewerRole);
-        		return new ResponseEntity<>(resp, HttpStatus.OK);
-        	}
+
 	    	if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 	    		LOGGER.info("No interviewer with id {} found in database", userId);
 	    		resp.setHabilitated(false);
 	    		return new ResponseEntity<>(resp, HttpStatus.OK);
-	        } 
+	      } 
 	        boolean habilitated = surveyUnitService.checkHabilitationInterviewer(userId, id);
 	        resp.setHabilitated(habilitated);
 	    }
