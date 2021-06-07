@@ -89,7 +89,6 @@ keycloak.principal-attribute:preferred_username
 
 #Keycloak roles
 fr.insee.pearljam.interviewer.role=investigator
-fr.insee.pearljam.reviewer.role=reviewer
 fr.insee.pearljam.user.local.role=manager_local
 fr.insee.pearljam.user.national.role=manager_national
 ```
