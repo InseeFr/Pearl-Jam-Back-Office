@@ -27,6 +27,7 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
@@ -52,6 +53,7 @@ import fr.insee.pearljam.api.service.UtilsService;
 public class CampaignServiceImpl implements CampaignService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignServiceImpl.class);
+	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
 
 	@Autowired
 	CampaignRepository campaignRepository;
@@ -124,10 +126,10 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
+	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 
 		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
@@ -141,7 +143,7 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		if (interviewersDtoReturned.isEmpty()) {
-			LOGGER.error("No interviewers found for the campaign {}", campaignId);
+			LOGGER.warn("No interviewers found for the campaign {}", campaignId);
 		}
 		return interviewersDtoReturned;
 	}
@@ -158,9 +160,11 @@ public class CampaignServiceImpl implements CampaignService {
 					returnCode = HttpStatus.OK;
 				}
 			} else {
+				LOGGER.error("Campaign {} does not exist in database", idCampaign);
 				returnCode = HttpStatus.NOT_FOUND;
 			}
 		}
+		LOGGER.error("Required fields missing in input body");
 		return returnCode;
 	}
 
@@ -218,27 +222,31 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 			campaignRepository.save(currentCampaign);
 		} else {
-			LOGGER.info("Campaign {} does not exist", id);
+			LOGGER.error("Campaign {} does not exist in db", id);
 			returnStatus = HttpStatus.NOT_FOUND;
+		}
+		
+		if (returnStatus == HttpStatus.BAD_REQUEST) {
+			LOGGER.error("No field endate or start date found in body");
 		}
 
 		return returnStatus;
 	}
 
 	@Override
-	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUAbandoned = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		return new CountDto(nbSUAbandoned);
 	}
 
 	@Override
-	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUNotAttributed = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		return new CountDto(nbSUNotAttributed);
 	}

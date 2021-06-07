@@ -5,6 +5,7 @@ import java.util.List;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 
 /**
  * Service for the Interviewer entity
@@ -16,8 +17,9 @@ public interface UserService {
 	/**
 	 * @param userId
 	 * @return {@link UserDto}
+	 * @throws NotFoundException 
 	 */
-	UserDto getUser(String userId);
+	UserDto getUser(String userId) throws NotFoundException;
 	
 	/**
 	 * @param organizationUnits

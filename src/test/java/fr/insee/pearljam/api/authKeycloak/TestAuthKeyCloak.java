@@ -92,6 +92,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
@@ -209,7 +211,7 @@ class TestAuthKeyCloak {
 				+ "    }"
 				+ "  ]"
 				+ "}";
-		mockServerClient.when(request().withPath(Constants.API_QUEEN_SURVEYUNITS_STATEDATA).withBody(""))
+		mockServerClient.when(request().withPath(Constants.API_QUEEN_SURVEYUNITS_STATEDATA).withBody("[\"20\",\"21\",\"23\"]"))
 				.respond(response().withStatusCode(200)
 						.withHeaders(new Header("Content-Type", "application/json; charset=utf-8"),
 								new Header("Cache-Control", "public, max-age=86400"))
@@ -397,12 +399,18 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/user"
 	 * return null
 	 * @throws InterruptedException
+	 * @throws NotFoundException 
 	 * @throws JSONException 
 	 */
 	@Test
 	@Order(2)
-	void testGetUserNotFound() throws InterruptedException {
-		assertEquals(null, userService.getUser("test"));
+	void testGetUserNotFound() throws InterruptedException, NotFoundException {
+		try {
+			assertEquals(null, userService.getUser("test"));
+			Assert.fail("Should have triggered NotFoundException");
+		} catch (Exception e) {
+			assertTrue(e instanceof NotFoundException);
+		}
 	}
 	
 	
@@ -698,10 +706,12 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/survey-unit/{id}"
 	 * return 200
 	 * @throws InterruptedException
+	 * @throws NotFoundException 
+	 * @throws SurveyUnitException 
 	 */
 	@Test
 	@Order(14)
-	void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException, JSONException {
+	void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException, JSONException, SurveyUnitException, NotFoundException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
 		surveyUnitDetailDto.getPersons().get(0).getPhoneNumbers().get(0).setNumber("test");
@@ -1187,7 +1197,7 @@ class TestAuthKeyCloak {
 	void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> recipients = new ArrayList<String>();
-		recipients.add("INTW1");
+		recipients.add("simpsons2020x00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("abc");
 		given().auth().oauth2(accessToken).contentType("application/json")
@@ -1311,10 +1321,10 @@ class TestAuthKeyCloak {
 	@Order(42)
 	void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		WsText message = new WsText("INTW1");
+		WsText message = new WsText("simps");
 		given().auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/verify-name").then()
-				.statusCode(200).and().assertThat().body("id", hasItem("INTW1"));
+				.statusCode(200).and().assertThat().body("id", hasItem("simpsons2020x00"));
 	}
 	
 	/**
@@ -1327,13 +1337,13 @@ class TestAuthKeyCloak {
 	void testPostMessageSysteme() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		List<String> recipients = new ArrayList<String>();
-		recipients.add("INTW2");
+		recipients.add("simpsons2020x00");
 		MessageDto message = new MessageDto("Synchronisation", recipients);
 		given().auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/message").then().statusCode(200);
 		List<MessageDto> messages = messageRepository
-				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW2"));
-		assertEquals("Synchronisation", messages.get(0).getText());
+				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
+		assertEquals("TEST", messages.get(0).getText());
 	}
 	
 	/**
@@ -1392,7 +1402,30 @@ class TestAuthKeyCloak {
 	@Order(47)
 	void testGetSUCloasable() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/survey-units/closable").then().statusCode(200);
+		
+		Optional<Visibility> visiOpt = visibilityRepository.findVisibilityByCampaignIdAndOuId("vqs2021x00", "OU-NORTH");
+		if(visiOpt.isPresent()) {
+			Visibility visi = visiOpt.get();
+			Long collectionEndDate = visi.getCollectionEndDate();
+			Long endDate = visi.getEndDate();
+			
+			visi.setCollectionEndDate(System.currentTimeMillis() - 86400000);
+			visi.setEndDate(System.currentTimeMillis() + 86400000);
+			visibilityRepository.save(visi);
+			
+			given().auth().oauth2(accessToken).when()
+				.get("api/survey-units/closable").then().statusCode(200)
+				.and().assertThat().body("id", hasItem("21"))
+				.and().assertThat().body("ssech", hasItem(1));
+			
+			visi.setCollectionEndDate(collectionEndDate);
+			visi.setEndDate(endDate);
+			visibilityRepository.save(visi);
+			
+		}
+		else {
+			Assert.fail("No visibility found for vqs2021x00  and OU-NORTH");
+		}
 	}
 	
 	

@@ -56,6 +56,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
 	private String userNationalRole;
+	
+	@Value("${fr.insee.pearljam.reviewer.role:#{null}}")
+	private String reviewerRole;
 
 	/**
 	 * This method check if environment is development or test
@@ -83,7 +86,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
-			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole,userLocalRole, userNationalRole)	
+			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
 			.antMatchers(Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)	
 			.antMatchers(Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(userLocalRole, userNationalRole)	
 			.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)	
@@ -125,7 +128,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
 			.antMatchers(Constants.API_CREATEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
 			.antMatchers(Constants.API_DELETEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(interviewerRole, userLocalRole, userNationalRole, reviewerRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
