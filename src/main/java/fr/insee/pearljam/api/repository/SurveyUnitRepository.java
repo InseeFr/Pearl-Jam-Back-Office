@@ -109,5 +109,11 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Modifying
 	@Query(value="UPDATE survey_unit SET interviewer_id=NULL", nativeQuery=true)
 	void updateAllinterviewersToNull();
+
+	@Query(value="SELECT su FROM SurveyUnit su WHERE "
+			+ "su.id=:id AND su.organizationUnit.id IN (:OUids)")
+	List<SurveyUnit> findByIdInOrganizationalUnit(@Param("id") String id, @Param("OUids") List<String> organizationalUnitIds);
+
+
 	  
 }

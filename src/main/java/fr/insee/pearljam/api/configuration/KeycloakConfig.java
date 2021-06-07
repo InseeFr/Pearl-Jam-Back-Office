@@ -51,6 +51,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
 	private String userNationalRole;
 	
+	@Value("${fr.insee.pearljam.reviewer.role:#{null}}")
+	private String reviewerRole;
+	
 	/**
 	 * Configure the accessible URI without any roles or permissions
 	 */
@@ -125,7 +128,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
 		.antMatchers(Constants.API_CREATEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
 		.antMatchers(Constants.API_DELETEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-		.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole, userNationalRole)
+		.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole, userNationalRole, reviewerRole)
 		.anyRequest().denyAll(); 
 	}
 	

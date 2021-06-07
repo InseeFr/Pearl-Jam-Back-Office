@@ -30,6 +30,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -64,6 +65,8 @@ public class CampaignController {
 		try {
 			response = campaignService.postCampaign(campaignDto);
 		} catch (NoOrganizationUnitException | VisibilityException e) {
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} 
 		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
@@ -110,11 +113,16 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<InterviewerDto> lstInterviewer = campaignService.getListInterviewers(userId, id);
-			if (lstInterviewer == null) {
+			List<InterviewerDto> lstInterviewer;
+			try {
+				lstInterviewer = campaignService.getListInterviewers(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get interviewers resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
+			
 			LOGGER.info("Get interviewers resulting in 200");
 			return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 		}
@@ -137,8 +145,12 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			CountDto nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
-			if (nbSUAbandoned == null) {
+			CountDto nbSUAbandoned;
+			try {
+				nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get numberSUAbandoned resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -164,8 +176,12 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			CountDto nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
-			if (nbSUNotAttributed == null) {
+			CountDto nbSUNotAttributed;
+			try {
+				nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get numberSUAbandoned resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

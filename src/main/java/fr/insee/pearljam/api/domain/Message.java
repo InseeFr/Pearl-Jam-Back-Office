@@ -61,13 +61,6 @@ public class Message implements Serializable {
 	@ManyToOne
 	private User sender;
   
-  	/**
-	 * The List of campaign for the Interviewer
-	 */
-	@ManyToMany
-	@JoinTable(name = "interviewerMessageRecipient", joinColumns = { @JoinColumn(name = "message_id") }, inverseJoinColumns = { @JoinColumn(name = "interviewer_id") })
-	private List<Interviewer> interviewerMessageRecipients;
-
 	/**
 	 * The List of campaign for the Interviewer
 	 */
@@ -116,7 +109,6 @@ public class Message implements Serializable {
 		this.text = text;
 	    this.sender = sender;
 	    this.ouMessageRecipients = ouMessageRecipients;
-	    this.interviewerMessageRecipients = interviewerMessageRecipients;
 		this.date = date;
 	}
 
@@ -162,20 +154,7 @@ public class Message implements Serializable {
 		this.sender = sender;
 	}
 
-	/**
-	 * @return the email of the Message
-	 */
-	public List<Interviewer> getInterviewerMessageRecipients() {
-		return interviewerMessageRecipients;
-	}
 
-	/**
-	 * @param the email of the Message
-	 */
-	public void setInterviewerMessageRecipients(List<Interviewer> interviewerMessageRecipients ) {
-		this.interviewerMessageRecipients = interviewerMessageRecipients;
-  }
-  
   	/**
 	 * @return the email of the Message
 	 */

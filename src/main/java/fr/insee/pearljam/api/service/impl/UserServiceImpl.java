@@ -16,6 +16,7 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	ApplicationProperties applicationProperties;
 
-	public UserDto getUser(String userId) {
+	public UserDto getUser(String userId) throws NotFoundException {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 		if (applicationProperties.getMode() != Mode.noauth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
 					return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
 							organizationUnitsParent, organizationUnits);
 			} else {
-				return null;
+				throw new NotFoundException(String.format("User %s does not exist in database", userId));
 			}
 		} else {
 			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());

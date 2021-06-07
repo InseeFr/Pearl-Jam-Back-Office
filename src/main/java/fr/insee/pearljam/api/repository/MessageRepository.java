@@ -22,9 +22,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   Optional<Message> findById(Long id);
   
   @Query(value="select distinct(id) from message m "
-    + "inner join interviewer_message_recipient imr "
-    + "on m.id = imr.message_id "
-    + "where imr.interviewer_id = ?1", nativeQuery=true)
+    + "inner join campaign_message_recipient cmr "
+    + "on m.id = cmr.message_id "
+    + "where exists ( select 1 from survey_unit su "
+    + "where su.campaign_id = cmr.campaign_id "
+    + "and su.interviewer_id = ?1) ", nativeQuery=true)
     List<Long> getMessageIdsByInterviewer(String interviewerId);
   
   @Query(value="select distinct(id) from message m "
@@ -35,12 +37,12 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   
   @Query(value="select distinct(m.id) from message m "
 		    + "WHERE m.id IN (select distinct(m.id) from message m "
-		    + "inner join interviewer_message_recipient imr "
-		    + "on m.id = imr.message_id "
-		    + "inner join interviewer interv "
-		    + "on interv.id = imr.interviewer_id "
+		    + "inner join campaign_message_recipient cmr "
+		    + "on m.id = cmr.message_id "
+		    + "inner join campaign camp "
+		    + "on camp.id = cmr.campaign_id "
 		    + "inner join survey_unit su "
-		    + "on su.interviewer_id = interv.id "
+		    + "on su.campaign_id = camp.id "
 		    + "where su.organization_unit_id IN (:organizationUnitIds)) "
 		    + "OR m.id in (SELECT DISTINCT(oumr.message_id) FROM oumessage_recipient oumr WHERE oumr.organization_unit_id IN (:organizationUnitIds)) "
 		    + "OR 'GUEST' IN (:organizationUnitIds) ", nativeQuery=true)
@@ -56,13 +58,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 		    + "and interviewer_id = ?2", nativeQuery=true)
 	List<String> getMessageStatus(Long messageId, String interviewerId);
 	
-	
-	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(interv.id,  'interviewer', concat(interv.firstName, ' ', interv.lastName)) "
-			  + "FROM InterviewerMessageRecipient imr "
-			  + "INNER JOIN Interviewer interv "
-			  + "ON interv.id = imr.interviewer.id "
-			  + "WHERE imr.message.id = :messageId ")
-	List<VerifyNameResponseDto> getInterviewerRecipients(@Param("messageId") Long messageId);
 	
 	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
 			  + "FROM CampaignMessageRecipient cmr "

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -20,12 +22,17 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
+import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 
 /**
@@ -57,10 +64,16 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
 	
-	public List<CampaignDto> findCampaignsOfInterviewer(String interviewerId) {
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	SurveyUnitService surveyUnitService;
+	
+	public List<CampaignDto> findCampaignsOfInterviewer(String interviewerId) throws NotFoundException {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
 		if(!intwOpt.isPresent()) {
-			return null;
+			throw new NotFoundException(String.format("Interviewer with id %s was not found in database", interviewerId));
 		}
 		Interviewer intw = intwOpt.get();
 		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).collect(Collectors.toList());
@@ -124,5 +137,18 @@ public class InterviewerServiceImpl implements InterviewerService {
 		interviewerRepository.saveAll(listInterviewers);
 		LOGGER.info("{} interviewers created", listInterviewers.size());
 		return new Response(String.format("%s interviewers created", listInterviewers.size()), HttpStatus.OK);
+	}
+	
+	@Override
+	public Set<InterviewerDto> getListInterviewers(String userId) {
+		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
+				.collect(Collectors.toList());
+		return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
+				.map(SurveyUnit::getInterviewer)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet())
+				.stream()
+				.map(intw -> new InterviewerDto(intw))
+				.collect(Collectors.toSet());
 	}
 }

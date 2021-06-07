@@ -44,7 +44,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	@Override
 	@Transactional(rollbackFor=Exception.class)
 	public Response createOrganizationUnits(List<OrganizationUnitContextDto> organizationUnitDtos) throws NoOrganizationUnitException, UserAlreadyExistsException {
-		// Verifying all attributes are valorised
+		// Verifying all attributes are set
 		if(organizationUnitDtos.stream().anyMatch(dto -> !allAttributesHaveValue(dto))) {
 			LOGGER.error("At least one organizational unit has an attribute missing");
 			return new Response("At least one organizational unit has an attribute missing", HttpStatus.BAD_REQUEST);

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ClosingCauseService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -56,8 +57,12 @@ public class ClosingCauseController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			ClosingCauseCountDto closingCountDto = closingCauseService.getClosingCauseCount(userId, id, idep, date, associatedOrgUnits);
-			if (closingCountDto == null) {
+			ClosingCauseCountDto closingCountDto;
+			try {
+				closingCountDto = closingCauseService.getClosingCauseCount(userId, id, idep, date, associatedOrgUnits);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get ClosingCauseCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

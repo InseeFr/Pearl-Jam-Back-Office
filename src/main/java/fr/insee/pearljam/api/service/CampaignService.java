@@ -12,6 +12,7 @@ import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.VisibilityException;
 
 /**
@@ -32,14 +33,15 @@ public interface CampaignService {
 	 * @param userId
 	 * @param campaignId
 	 * @return {@link List} of {@link InterviewerDto}
+	 * @throws NotFoundException 
 	 */
-	List<InterviewerDto> getListInterviewers(String userId, String campaignId);
+	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
 
 	boolean isUserPreference(String userId, String campaignId);
 
-	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId);
+	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException;
 
-	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId);
+	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException;
 
 	HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign);
 	

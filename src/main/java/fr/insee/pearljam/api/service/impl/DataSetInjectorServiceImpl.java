@@ -38,6 +38,7 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		EntityManager em = emf.createEntityManager();
 		
 		if(!campaignRepository.findAllIds().isEmpty()){
+			LOGGER.info("The database already contains a campaign, the dataset was not imported");
 			return HttpStatus.NOT_MODIFIED;
 		}
 

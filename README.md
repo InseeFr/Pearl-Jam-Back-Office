@@ -63,6 +63,7 @@ fr.insee.pearljam.logging.level=DEBUG
 #Application configuration
 fr.insee.pearljam.application.mode=keycloak
 fr.insee.pearljam.application.crosOrigin=*
+fr.insee.pearljam.application.guestOU=OU-POLE
 
 #Database configuration
 fr.insee.pearljam.persistence.database.host = pearljam-db
@@ -88,6 +89,7 @@ keycloak.principal-attribute:preferred_username
 
 #Keycloak roles
 fr.insee.pearljam.interviewer.role=investigator
+fr.insee.pearljam.reviewer.role=reviewer
 fr.insee.pearljam.user.local.role=manager_local
 fr.insee.pearljam.user.national.role=manager_national
 ```

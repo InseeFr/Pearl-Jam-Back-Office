@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +62,12 @@ public class SurveyUnitController {
 
 	@Autowired
 	UtilsService utilsService;
+	
+	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
+	private String interviewerRole;
+	
+	@Value("${fr.insee.pearljam.reviewer.role:#{null}}")
+	private String reviewerRole;
 
 	/**
 	 * This method is using to post the list of SurveyUnit defined in request body
@@ -135,13 +144,19 @@ public class SurveyUnitController {
 		} 
 		Optional<SurveyUnit> su = surveyUnitService.findById(id);
 		if(!su.isPresent()) {
+			LOGGER.error("Survey unit with id {} was not found in database", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);			
 		}
 		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
+			LOGGER.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
-		if (surveyUnit == null) {
+		SurveyUnitDetailDto surveyUnit;
+		try {
+			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
+		}
+		catch(NotFoundException | SurveyUnitException e) {
+			LOGGER.error(e.getMessage());
 			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -190,7 +205,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
-			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), surveyUnitId,
+			LOGGER.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
 					returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
@@ -314,18 +329,48 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Check habilitation")
 	@GetMapping(path = "/check-habilitation")
-	public ResponseEntity<HabilitationDto> getSurveyUnitByCampaignId(HttpServletRequest request,
-			@RequestParam(value = "id", required = true) String id) {
-    String userId = utilsService.getUserId(request);
-    HabilitationDto resp = new HabilitationDto();
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-      resp.setHabilitated(false);
-			return new ResponseEntity<>(resp, HttpStatus.OK);
-    } 
-    
-    boolean habilitated = surveyUnitService.checkHabilitation(userId, id);
-    resp.setHabilitated(habilitated);
-    return new ResponseEntity<>(resp, HttpStatus.OK);
+	public ResponseEntity<HabilitationDto> checkHabilitation(HttpServletRequest request,
+			@RequestParam(value = "id", required = true) String id,
+			@RequestParam(value = "role", required = false) String role) {
+	    String userId = utilsService.getUserId(request);
+	    HabilitationDto resp = new HabilitationDto();
+	    
+	    if(role != null && !role.isBlank()) {
+	    	if(role.equals(Constants.REVIEWER)) {
+	        	if (!Constants.GUEST.equals(userId) && !request.isUserInRole(reviewerRole)) {
+	        		resp.setHabilitated(false);
+	        		LOGGER.info("User does not have role {}", reviewerRole);
+	        		return new ResponseEntity<>(resp, HttpStatus.OK);
+	        	}
+	            if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+	        		resp.setHabilitated(false);
+	        		LOGGER.info("No user with id {} found in database", userId);
+	        		return new ResponseEntity<>(resp, HttpStatus.OK);
+	            } 
+	            boolean habilitated = surveyUnitService.checkHabilitationReviewer(userId, id);
+	            resp.setHabilitated(habilitated);
+	        } else {
+	        	resp.setHabilitated(false);
+	    		LOGGER.warn("Only '{}' is accepted as a role in query argument", Constants.REVIEWER);
+	    		return new ResponseEntity<>(resp, HttpStatus.OK);
+	        }
+	    }
+	    else {
+	    	if (!Constants.GUEST.equals(userId) && !request.isUserInRole(interviewerRole)) {
+        		resp.setHabilitated(false);
+        		LOGGER.info("User does not have role {}", interviewerRole);
+        		return new ResponseEntity<>(resp, HttpStatus.OK);
+        	}
+	    	if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+	    		LOGGER.info("No interviewer with id {} found in database", userId);
+	    		resp.setHabilitated(false);
+	    		return new ResponseEntity<>(resp, HttpStatus.OK);
+	        } 
+	        boolean habilitated = surveyUnitService.checkHabilitationInterviewer(userId, id);
+	        resp.setHabilitated(habilitated);
+	    }
+	    
+	    return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	/**
