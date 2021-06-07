@@ -19,6 +19,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.SurveyUnitException;
 
 /**
  * Service for the SurveyUnit entity
@@ -32,8 +34,10 @@ public interface SurveyUnitService {
 	 * @param userId
 	 * @param id
 	 * @return {@link SurveyUnitDetailDto}
+	 * @throws SurveyUnitException 
+	 * @throws NotFoundException 
 	 */
-	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id);
+	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException;
 	
 	/**
 	 * Retrieve all the SurveyUnit entity by userId
@@ -71,9 +75,7 @@ public interface SurveyUnitService {
 	 * @return {@link List} of {@link StateDto}
 	 */
   List<StateDto> getListStatesBySurveyUnitId(String suId);
-  
-  boolean checkHabilitation(String userId, String id);
-	
+  	
 	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id);
 	public Optional<SurveyUnit> findById(String id);
 
@@ -92,4 +94,8 @@ public interface SurveyUnitService {
 	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
 
 	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink, Boolean diff);
+
+	boolean checkHabilitationInterviewer(String userId, String id);
+
+	boolean checkHabilitationReviewer(String userId, String id);
 }

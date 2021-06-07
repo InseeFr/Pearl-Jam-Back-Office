@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -44,8 +45,12 @@ public class UserController {
 			LOGGER.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			UserDto user = userService.getUser(userId);
-			if (user == null) {
+			UserDto user;
+			try {
+				user = userService.getUser(userId);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("GET User resulting in 403");
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 			}

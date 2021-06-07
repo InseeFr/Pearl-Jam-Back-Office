@@ -16,6 +16,7 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
@@ -40,6 +41,9 @@ import fr.insee.pearljam.api.service.UtilsService;
 public class StateServiceImpl implements StateService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StateServiceImpl.class);
+	
+	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
+
 
 	@Autowired
 	CampaignRepository campaignRepository;
@@ -76,14 +80,15 @@ public class StateServiceImpl implements StateService {
 
 
 	public StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits) {
+			List<String> associatedOrgUnits) throws NotFoundException {
 		StateCountDto stateCountDto = new StateCountDto();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		if (!interviewerRepository.findById(interviewerId).isPresent()) {
 			LOGGER.error("No interviewer found for the id {}", interviewerId);
-			return null;
+			throw new NotFoundException(String.format("No interviewers found for the id %s", interviewerId));
+
 		}
 		List<String> userOuIds;
 		if(!userId.equals(Constants.GUEST)) {
@@ -102,17 +107,16 @@ public class StateServiceImpl implements StateService {
 			stateCountDto.addClosingCauseCount(closingCauseRepository.getStateClosedByClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (stateCountDto.getTotal() == null) {
-			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
-					userId, campaignId);
-			return null;
+			throw new NotFoundException(String.format("No matching interviewers %s were found for the user % and the campaign %s", interviewerId,
+					userId, campaignId));
 		}
 		return stateCountDto;
 	}
 
-	public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) {
+	public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) throws NotFoundException {
 		StateCountCampaignDto stateCountCampaignDto = new StateCountCampaignDto();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		List<StateCountDto> stateCountList = new ArrayList<>();
 		Long dateToUse = date;
@@ -135,9 +139,8 @@ public class StateServiceImpl implements StateService {
 		stateCountCampaignDto.setFrance(dtoFrance);
 		if (stateCountCampaignDto.getFrance() == null || stateCountCampaignDto.getOrganizationUnits() == null
 				) {
-			LOGGER.error("No matching survey units states were found for the user {} and the campaign {}", userId,
-					campaignId);
-			return null;
+			throw new NotFoundException(String.format("No matching survey units states were found for the user %s and the campaign %s", userId,
+					campaignId));
 		}
 		return stateCountCampaignDto;
 	}
@@ -159,7 +162,7 @@ public class StateServiceImpl implements StateService {
 		for(String id : campaignIds) {
 			StateCountDto campaignSum = new StateCountDto(
 					stateRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse)
-      );
+					);
 			campaignSum.addClosingCauseCount(closingCauseRepository.getgetStateClosedByClosingCauseCountByCampaign(id, userOrgUnitIds, dateToUse));
 			if(campaignSum.getTotal() != null) {
 				CampaignDto dto = campaignRepository.findDtoById(id);
@@ -195,7 +198,11 @@ public class StateServiceImpl implements StateService {
 	}
 	
 	@Override
-	public StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) {
+	public StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) throws NotFoundException {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, id)) {
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, id, userId));
+		}
+		
 		List<String> organizationUnits = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId)
 				.collect(Collectors.toList());

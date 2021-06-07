@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -56,8 +57,11 @@ public class StateController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-      StateCountDto stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
-			if (stateCountDto == null) {
+			StateCountDto stateCountDto;
+			try {
+				stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
+			} catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get interviewerStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -83,8 +87,11 @@ public class StateController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			StateCountDto stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
-			if (stateCountDto == null) {
+			StateCountDto stateCountDto;
+			try {
+				stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
+			} catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get state count for non attributted SUs resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -111,8 +118,11 @@ public class StateController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			StateCountCampaignDto stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
-			if (stateCountCampaignDto == null) {
+			StateCountCampaignDto stateCountCampaignDto;
+			try {
+				stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
+			} catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get campaignStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

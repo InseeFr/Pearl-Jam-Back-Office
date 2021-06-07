@@ -47,6 +47,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -129,8 +130,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Autowired
 	UtilsService utilsService;
 
-	public boolean checkHabilitation(String userId, String id) {
+	@Override
+	public boolean checkHabilitationInterviewer(String userId, String id) {
 		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent();
+	}
+	
+	@Override
+	public boolean checkHabilitationReviewer(String userId, String id) {
+		List<String> userOUs = userService.getUserOUs(userId, true)
+				.stream().map(OrganizationUnitDto::getId)
+				.collect(Collectors.toList());
+		
+		return !surveyUnitRepository.findByIdInOrganizationalUnit(id, userOUs).isEmpty();
 	}
 
 	public Optional<SurveyUnit> findById(String id) {
@@ -141,13 +152,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(userId, id);
 	}
 
-	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) {
+	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException {
 		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
 		if(!surveyUnit.isPresent()) {
-			return null;
+			throw new NotFoundException(String.format("Survey unit with id %s was not found in database", id));
 		}
 		if (!canBeSeenByInterviewer(surveyUnit.get().getId())) {
-			return null;
+			throw new SurveyUnitException(String.format("Survey unit with id %s is not associated to the interviewer %s", id, userId));
 		}
 		return new SurveyUnitDetailDto(surveyUnit.get());
 	}
@@ -207,6 +218,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		try {
 			updatePersons(surveyUnitDetailDto);
 		} catch (SurveyUnitException e) {
+			LOGGER.error(e.getMessage());
 			return HttpStatus.BAD_REQUEST;
 		}
 		updateComment(surveyUnit, surveyUnitDetailDto);
@@ -300,10 +312,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					if (persOpt.isPresent()) {
 						updatePerson(person, persOpt.get());
 					} else {
-						throw new SurveyUnitException();
+						throw new SurveyUnitException(String.format("Person with id %s was not found in database", person.getId()));
 					}
 				} else {
-					throw new SurveyUnitException();
+					throw new SurveyUnitException("One of the persons in argument has a null id");
 				}
 
 			}
@@ -372,6 +384,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return HttpStatus.NOT_FOUND;
 		}
 		if (comment.getType() == null || comment.getValue() == null) {
+			LOGGER.error("Some of the required fields (type, value) are missing in request body");
 			return HttpStatus.BAD_REQUEST;
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
@@ -412,7 +425,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isLastState(state)).collect(Collectors.toSet());
 		}
 		if (lstSurveyUnit.isEmpty()) {
-			LOGGER.error("No Survey Unit found for the user {}", userId);
+			LOGGER.warn("No Survey Unit found for the user {}", userId);
 		}
 		return lstSurveyUnit.stream().map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toSet());
 	}
@@ -429,11 +442,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request, List<String> lstSu) {
 		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request, lstSu);
-		LOGGER.info("GET state from data collection service resulting in {}", result.getStatusCode());
+		LOGGER.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 		SurveyUnitOkNokDto object = result.getBody();
 		if(object == null) {
-			LOGGER.info("GET questionnaire states for survey-units [{}] resulting in 404", String.join(",", lstSu));
-			throw new BadRequestException(404, "bad request");
+			LOGGER.error("Could not get response from data collection API");
+			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();	
 		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), null));
@@ -448,14 +461,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
 			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				if(StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
+					LOGGER.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
 				}
 				stateRepository.save(new State(new Date().getTime(), su.get(), state));
 				return HttpStatus.OK;
 			} else {
+				LOGGER.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState, state);
 				return HttpStatus.FORBIDDEN;
 			}
 		} else {
+			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -474,10 +490,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else {
+				LOGGER.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState, StateType.CLO);
 				return HttpStatus.FORBIDDEN;
 			}
 
 		} else {
+			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -490,6 +508,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addOrModifyClosingCause(surveyUnit, type);
 			return HttpStatus.OK;
 		} else {
+			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
 			return HttpStatus.NOT_FOUND;
 		}
 	}
@@ -513,7 +532,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public List<StateDto> getListStatesBySurveyUnitId(String suId) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(suId);
 		if (!su.isPresent()) {
-			LOGGER.error("SU {} not found", suId);
+			LOGGER.error("SU {} not found in database", suId);
 			return List.of();
 		}
 		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);

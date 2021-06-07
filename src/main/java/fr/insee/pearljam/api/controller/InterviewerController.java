@@ -1,9 +1,7 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,11 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
@@ -87,16 +84,7 @@ public class InterviewerController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
-					.collect(Collectors.toList());
-			Set<InterviewerDto> lstInterviewer = surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
-					.map(SurveyUnit::getInterviewer)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet())
-					.stream()
-					.map(intw -> new InterviewerDto(intw))
-					.collect(Collectors.toSet());
-
+			Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
 			if (lstInterviewer == null) {
 				LOGGER.info("Get interviewers resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -114,8 +102,12 @@ public class InterviewerController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<CampaignDto> list = interviewerService.findCampaignsOfInterviewer(id);
-			if (list == null) {
+			List<CampaignDto> list;
+			try {
+				list = interviewerService.findCampaignsOfInterviewer(id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get interviewer campaigns resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}

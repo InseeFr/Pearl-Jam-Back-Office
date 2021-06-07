@@ -117,6 +117,7 @@ public class Constants {
 			"wamCount",
 			"oosCount"
 	};
+	public static final String REVIEWER = "reviewer";
 	
 	
 	
