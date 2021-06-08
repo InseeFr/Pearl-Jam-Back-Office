@@ -89,7 +89,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT "
 			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
 			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
-			+ "SUM(CASE WHEN type IN ('FIN', 'QNA') AND EXISTS (SELECT 1 FROM state s where s.type ='FIN' AND s.survey_unit_id = t.survey_unit_id) THEN 1 ELSE 0 END) "
+			+ "SUM(CASE WHEN type IN ('FIN', 'CLO') THEN 1 ELSE 0 END) "
 			+ "AS finalized, "
 			+ "COUNT(DISTINCT t.survey_unit_id) AS allocated "
 			+ "FROM ( "
