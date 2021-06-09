@@ -201,7 +201,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public boolean isUserPreference(String userId, String campaignId) {
-		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
+		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
 	@Override
