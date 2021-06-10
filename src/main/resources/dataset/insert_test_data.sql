@@ -34,11 +34,14 @@ INSERT INTO public."user" (id, first_name, last_name, organization_unit_id) VALU
 INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('simpsons2020x00', (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '5 DAY'))*1000), 'Survey on the Simpsons tv show 2020');
 INSERT INTO public.campaign (id, end_date, start_date, label) VALUES ('vqs2021x00', (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '5 DAY'))*1000), 'Everyday life and health survey 2021');
 
-INSERT INTO public.preference (id_user, id_campaign) VALUES ('ABC', 'simpsons2020x00');
-INSERT INTO public.preference (id_user, id_campaign) VALUES ('ABC', 'vqs2021x00');
-INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'simpsons2020x00');
-INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'vqs2021x00');
-INSERT INTO public.preference (id_user, id_campaign) VALUES ('GHI', 'vqs2021x00');
+-- INSERT INTO public.preference (id_user, id_campaign) VALUES ('ABC', 'simpsons2020x00');
+-- INSERT INTO public.preference (id_user, id_campaign) VALUES ('ABC', 'vqs2021x00');
+-- INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'simpsons2020x00');
+-- INSERT INTO public.preference (id_user, id_campaign) VALUES ('DEF', 'vqs2021x00');
+INSERT INTO public.preference (id_user, id_campaign) VALUES ('GHI', 'simpsons2020x00');
+INSERT INTO public.preference (id_user, id_campaign) VALUES ('JKL', 'simpsons2020x00');
+INSERT INTO public.preference (id_user, id_campaign) VALUES ('JKL', 'vqs2021x00');
+
 
 INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'simpsons2020x00',  (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));
 INSERT INTO public.visibility(organization_unit_id, campaign_id, collection_end_date, collection_start_date, end_date, identification_phase_start_date, interviewer_start_date, management_start_date) VALUES ('OU-NORTH', 'vqs2021x00',   (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '1 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP + INTERVAL '2 MONTH'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '2 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '3 DAY'))*1000), (SELECT extract(epoch from (LOCALTIMESTAMP - INTERVAL '4 DAY'))*1000));

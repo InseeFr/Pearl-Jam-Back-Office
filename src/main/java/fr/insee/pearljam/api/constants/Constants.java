@@ -55,20 +55,20 @@ public class Constants {
 
 	public static final String API_USER= "/api/user";
 	public static final String API_GEOGRAPHICALLOCATIONS= "/api/geographical-locations";
-    public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
+  public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
 	public static final String API_PREFERENCES = "/api/preferences";
   
-  	public static final String API_MESSAGE = "/api/message";
-  	public static final String API_MESSAGES_ID = "/api/messages/{id}";
-  	public static final String API_VERIFYNAME = "/api/verify-name";
-  	public static final String API_MESSAGEHISTORY = "/api/message-history";
-  	public static final String API_MESSAGE_MARK_AS_READ = "/api/message/{id}/interviewer/{idep}/read";
-  	public static final String API_MESSAGE_MARK_AS_DELETED = "/api/message/{id}/interviewer/{idep}/delete";
+  public static final String API_MESSAGE = "/api/message";
+  public static final String API_MESSAGES_ID = "/api/messages/{id}";
+  public static final String API_VERIFYNAME = "/api/verify-name";
+  public static final String API_MESSAGEHISTORY = "/api/message-history";
+  public static final String API_MESSAGE_MARK_AS_READ = "/api/message/{id}/interviewer/{idep}/read";
+  public static final String API_MESSAGE_MARK_AS_DELETED = "/api/message/{id}/interviewer/{idep}/delete";
+
+  public static final String API_CREATEDATASET = "/api/create-dataset";
+  public static final String API_DELETEDATASET = "/api/delete-dataset";
   
-    public static final String API_CREATEDATASET = "/api/create-dataset";
-    public static final String API_DELETEDATASET = "/api/delete-dataset";
-    
-    public static final String API_CHECK_HABILITATION = "/api/check-habilitation";
+  public static final String API_CHECK_HABILITATION = "/api/check-habilitation";
   	
 	// Error messages
 	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";
