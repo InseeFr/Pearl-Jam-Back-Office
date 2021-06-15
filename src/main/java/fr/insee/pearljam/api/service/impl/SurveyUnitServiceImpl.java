@@ -434,8 +434,21 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsInProcessingPhase(System.currentTimeMillis());
 		List<SurveyUnitCampaignDto> lstResult = suList.stream().map(su -> new SurveyUnitCampaignDto(su))
 					.collect(Collectors.toList());
-		Map<String, String> mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
-		lstResult.forEach(su -> su.setQuestionnaireState(mapQuestionnaireStateBySu.get(su.getId())));
+		Map<String, String> mapQuestionnaireStateBySu = null;
+		try {
+			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
+		}
+		catch (Exception e) {
+			LOGGER.error("Could not reach data collection API");
+			LOGGER.error("All questionnaire states will be considered null");
+		}
+		
+		Map<String, String> map = mapQuestionnaireStateBySu;
+		if(map != null) {
+			lstResult.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
+		} else {
+			lstResult.forEach(su -> su.setQuestionnaireState(null));
+		}
 		
 		return lstResult;
 	}
