@@ -79,7 +79,7 @@ public interface SurveyUnitService {
 	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id);
 	public Optional<SurveyUnit> findById(String id);
 
-	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request);
+	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
 
 	HttpStatus updateSurveyUnitComment(String userId, String surveyUnitId, CommentDto comment);
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);

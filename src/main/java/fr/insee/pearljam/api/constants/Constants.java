@@ -119,6 +119,7 @@ public class Constants {
 			"oosCount"
 	};
 	
+	public static final String UNAVAILABLE = "UNAVAILABLE";
 	
 	
 
