@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ClosingCause;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
@@ -430,8 +431,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toSet());
 	}
 
-	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request) {
-		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsInProcessingPhase(System.currentTimeMillis());
+	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
+		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
+				.collect(Collectors.toList());
+		List<SurveyUnit> suList = surveyUnitRepository.findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(System.currentTimeMillis(), lstOuId);
+
 		List<SurveyUnitCampaignDto> lstResult = suList.stream().map(su -> new SurveyUnitCampaignDto(su))
 					.collect(Collectors.toList());
 		Map<String, String> mapQuestionnaireStateBySu = null;
@@ -439,7 +443,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request, lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
 		}
 		catch (Exception e) {
-			LOGGER.error("Could not reach data collection API");
+			LOGGER.error("Could not get data collection API");
 			LOGGER.error("All questionnaire states will be considered null");
 		}
 		
@@ -447,7 +451,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if(map != null) {
 			lstResult.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
 		} else {
-			lstResult.forEach(su -> su.setQuestionnaireState(null));
+			lstResult.forEach(su -> su.setQuestionnaireState(Constants.UNAVAILABLE));
 		}
 		
 		return lstResult;
@@ -457,12 +461,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request, lstSu);
 		LOGGER.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 		SurveyUnitOkNokDto object = result.getBody();
+		HttpStatus responseCode = result.getStatusCode();
+		
+		if(!responseCode.equals(HttpStatus.OK)) {
+			String code = responseCode.toString();
+			LOGGER.error("Data collection API responded with error code {}", code);
+		}
 		if(object == null) {
 			LOGGER.error("Could not get response from data collection API");
 			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();	
-		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), null));
+		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), Constants.UNAVAILABLE));
 		object.getSurveyUnitOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
 		return mapResult;
 	}
@@ -601,8 +611,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return new Response(String.format("Invalid format : [%s]", String.join(", ", surveyUnitErrors)),
 					HttpStatus.BAD_REQUEST);
 		}
+		
 		// Check duplicate lines
-
 		if (!duplicates.keySet().stream().filter(id -> duplicates.get(id) > 1).collect(Collectors.toSet()).isEmpty()) {
 			LOGGER.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
 			return new Response(String.format("Duplicate entries : [%s]", String.join(", ", duplicates.keySet())),

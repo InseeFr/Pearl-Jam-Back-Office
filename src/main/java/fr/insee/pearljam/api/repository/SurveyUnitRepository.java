@@ -83,6 +83,29 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"AND st.type IN ('CLO', 'FIN', 'TBR') " +
 			")")
 	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
+	 
+	@Query(value="SELECT su FROM SurveyUnit su " + 
+			 	"WHERE su.organizationUnit.id IN (:lstOuId) " +
+			
+				// Last contact outcome must be null or INA
+				"AND NOT EXISTS ( " +
+				"SELECT 1 FROM ContactOutcome co WHERE (co.surveyUnit.id, co.date) IN ( " +
+				"SELECT surveyUnit.id, MAX(date) " +
+				"FROM ContactOutcome " +
+				"WHERE surveyUnit.id = su.id GROUP BY surveyUnit.id)" +
+				"AND co.type NOT IN (NULL, 'INA') ) " +
+
+				"AND EXISTS (SELECT vi FROM Visibility vi " +
+				"WHERE vi.campaign.id = su.campaign.id " +
+				"AND vi.organizationUnit.id = su.organizationUnit.id " +
+				"AND vi.collectionEndDate < :date " +
+				"AND vi.endDate > :date) " +
+				"AND NOT EXISTS (" +
+				"SELECT st FROM State st WHERE " +
+				"st.surveyUnit.id = su.id " +
+				"AND st.type IN ('CLO', 'FIN', 'TBR') " +
+				")")
+	List<SurveyUnit> findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId);
 	
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
 	

@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -401,7 +400,7 @@ public class SurveyUnitController {
 			LOGGER.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {
-			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request);
+			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
 			LOGGER.info("GET closable survey units resulting in 200");
 			return new ResponseEntity<>(lstSu, HttpStatus.OK);
 		}
