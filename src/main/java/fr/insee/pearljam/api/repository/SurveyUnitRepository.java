@@ -87,13 +87,10 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT su FROM SurveyUnit su " + 
 			 	"WHERE su.organizationUnit.id IN (:lstOuId) " +
 			
-				// Last contact outcome must be null or INA
+				// Contact outcome must be null or INA
 				"AND NOT EXISTS ( " +
-				"SELECT 1 FROM ContactOutcome co WHERE (co.surveyUnit.id, co.date) IN ( " +
-				"SELECT surveyUnit.id, MAX(date) " +
-				"FROM ContactOutcome " +
-				"WHERE surveyUnit.id = su.id GROUP BY surveyUnit.id)" +
-				"AND co.type NOT IN (NULL, 'INA') ) " +
+				"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+				"AND co.type <> 'INA' ) " +
 
 				"AND EXISTS (SELECT vi FROM Visibility vi " +
 				"WHERE vi.campaign.id = su.campaign.id " +
