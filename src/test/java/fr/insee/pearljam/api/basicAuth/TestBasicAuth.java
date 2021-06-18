@@ -211,7 +211,7 @@ class TestBasicAuth {
 	@Order(1)
 	void testGetCampaign() throws InterruptedException, JSONException {
 		given().auth().preemptive().basic("ABC", "abc").when().get("api/campaigns").then().statusCode(200).and()
-		.assertThat().body("id", hasItem("simpsons2020x00")).and()
+		.assertThat().body("id", hasItem("SIMPSONS2020X00")).and()
 		.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 		.assertThat().body("allocated",hasItem(4)).and()
 		.assertThat().body("toAffect",hasItem(0)).and()
@@ -251,7 +251,7 @@ class TestBasicAuth {
 	@Order(3)
 	void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		List<String> recipients = new ArrayList<String>();
-		recipients.add("simpsons2020x00");
+		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("ABC");
 		given().auth().preemptive().basic("ABC", "abc")

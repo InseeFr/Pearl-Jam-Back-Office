@@ -263,12 +263,13 @@ public class CampaignServiceImpl implements CampaignService {
 		if(campaignDto.getVisibilities() == null) {
 			return new Response("Campaign visibilities are missing in request", HttpStatus.BAD_REQUEST);
 		}
-		Optional<Campaign> campOpt = campaignRepository.findById(campaignDto.getCampaign());
+		String campaignId = campaignDto.getCampaign().toUpperCase();
+		Optional<Campaign> campOpt = campaignRepository.findById(campaignId);
 		if(campOpt.isPresent()) {
-			return  new Response("Campaign with id '" + campaignDto.getCampaign() + "' already exists", HttpStatus.BAD_REQUEST);
+			return  new Response("Campaign with id '" + campaignId + "' already exists", HttpStatus.BAD_REQUEST);
 		}
 		// Creating campaign
-		Campaign campaign = new Campaign(campaignDto.getCampaign(), campaignDto.getCampaignLabel());
+		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel());
 		campaignRepository.save(campaign);
 		
 		for(VisibilityContextDto dto : campaignDto.getVisibilities()) {
