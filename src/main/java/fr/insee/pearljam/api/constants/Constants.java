@@ -113,10 +113,13 @@ public class Constants {
 			"inaCount",
 			"refCount",
 			"impCount",
-			"iniCount",
+			"ucdCount",
+			"utrCount",
 			"alaCount",
-			"wamCount",
-			"oosCount"
+			"acpCount",
+			"dcdCount",
+			"nuhCount",
+			"nerCount"
 	};
 	
 	public static final String UNAVAILABLE = "UNAVAILABLE";

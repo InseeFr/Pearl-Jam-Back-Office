@@ -6,15 +6,14 @@ package fr.insee.pearljam.api.domain;
  */
 public enum Status {
 
-	NOC("No contact"),
 	INA("Interview accepted"),
 	APT("Appointment made"),
 	REF("Refusal"),
-	ABS("Occasional absence of the interviewer"),
-	INI("Interview impossible"),
-	ALA("Already answered in another mode"),
-	WAM("Wish to answer in another mode");
-
+	TUN("Temporary UNavailable"),
+	NOC("No contact"),
+	MES("Message Sent"),
+	UCD("Unusable Contact Data"),
+	PUN("Permanently UNavailable");
 	
 	/**
 	 * label

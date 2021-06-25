@@ -110,7 +110,7 @@ INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'VI
 INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'FIN', '22');
 INSERT INTO public.state (date, type, survey_unit_id) VALUES (1590504478334, 'VIC', '23');
 
-INSERT INTO public.contact_outcome (date, type, survey_unit_id) VALUES (1590504478334, 'WAM', '24');
+INSERT INTO public.contact_outcome (date, type, survey_unit_id) VALUES (1590504478334, 'ACP', '24');
 
 
 
