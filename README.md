@@ -22,7 +22,7 @@ mvn spring-boot:run
 ```  
 
 ## Application Accesses locally
-To access to swagger-ui, use this url : [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)  
+To access to swagger-ui, use this url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
 
 ## Keycloak Configuration 
 1. To start the server on port 8180 execute in the bin folder of your keycloak :
@@ -89,6 +89,7 @@ keycloak.principal-attribute:preferred_username
 
 #Keycloak roles
 fr.insee.pearljam.interviewer.role=investigator
+fr.insee.pearljam.admin.role=admin
 fr.insee.pearljam.user.local.role=manager_local
 fr.insee.pearljam.user.national.role=manager_national
 ```
@@ -106,7 +107,7 @@ catalina.sh run (on Unix-based systems)
 ```  
 
 ### 5. Application Access
-To access to swagger-ui, use this url : [http://localhost:8080/pearljam-1.1.0/swagger-ui.html](http://localhost:8080/pearljam-1.1.0/swagger-ui.html)  
+To access to swagger-ui, use this url : [http://localhost:8080/pearljam/swagger-ui.html](http://localhost:8080/pearljam/swagger-ui.html)  
 To access to keycloak, use this url : [http://localhost:8180](http://localhost:8180)  
 
 ## Before you commit
@@ -204,6 +205,7 @@ Before committing code please ensure,
 ## Developers
 - Benjamin Claudel (benjamin.claudel@keyconsulting.fr)
 - Samuel Corcaud (samuel.corcaud@keyconsulting.fr)
+- Paul Guillemet (paul.guillemet@keyconsulting.fr)
 
 ## License
 Please check [LICENSE](https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE) file

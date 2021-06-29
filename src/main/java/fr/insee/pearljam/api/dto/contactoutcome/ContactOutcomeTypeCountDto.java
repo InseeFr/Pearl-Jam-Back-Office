@@ -24,13 +24,19 @@ public class ContactOutcomeTypeCountDto {
     
     private Long impCount;
     
-    private Long iniCount;
+    private Long ucdCount;
+    
+    private Long utrCount;
     
     private Long alaCount;
     
-    private Long wamCount;
-    
-    private Long oosCount;
+    private Long acpCount;
+
+    private Long dcdCount;
+
+    private Long nuhCount;
+
+    private Long nerCount;
     
     private Long total;
        
@@ -72,7 +78,9 @@ public class ContactOutcomeTypeCountDto {
 	}
     
     
-    /**
+    
+	
+	/**
 	 * @return the idDem
 	 */
 	public String getIdDem() {
@@ -101,14 +109,14 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @return the campaignDto
+	 * @return the campaign
 	 */
 	public CampaignDto getCampaign() {
 		return campaign;
 	}
 
 	/**
-	 * @param campaignDto the campaignDto to set
+	 * @param campaign the campaign to set
 	 */
 	public void setCampaign(CampaignDto campaign) {
 		this.campaign = campaign;
@@ -122,52 +130,17 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @return the refCount
-	 */
-	public Long getRefCount() {
-		return refCount;
-	}
-
-	/**
-	 * @return the impCount
-	 */
-	public Long getImpCount() {
-		return impCount;
-	}
-
-	/**
-	 * @return the iniCount
-	 */
-	public Long getIniCount() {
-		return iniCount;
-	}
-
-	/**
-	 * @return the alaCount
-	 */
-	public Long getAlaCount() {
-		return alaCount;
-	}
-
-	/**
-	 * @return the wamCount
-	 */
-	public Long getWamCount() {
-		return wamCount;
-	}
-
-	/**
-	 * @return the oosCount
-	 */
-	public Long getOosCount() {
-		return oosCount;
-	}
-
-	/**
 	 * @param inaCount the inaCount to set
 	 */
 	public void setInaCount(Long inaCount) {
 		this.inaCount = inaCount;
+	}
+
+	/**
+	 * @return the refCount
+	 */
+	public Long getRefCount() {
+		return refCount;
 	}
 
 	/**
@@ -178,6 +151,13 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
+	 * @return the impCount
+	 */
+	public Long getImpCount() {
+		return impCount;
+	}
+
+	/**
 	 * @param impCount the impCount to set
 	 */
 	public void setImpCount(Long impCount) {
@@ -185,10 +165,38 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @param iniCount the iniCount to set
+	 * @return the ucdCount
 	 */
-	public void setIniCount(Long iniCount) {
-		this.iniCount = iniCount;
+	public Long getUcdCount() {
+		return ucdCount;
+	}
+
+	/**
+	 * @param ucdCount the ucdCount to set
+	 */
+	public void setUcdCount(Long ucdCount) {
+		this.ucdCount = ucdCount;
+	}
+
+	/**
+	 * @return the utrCount
+	 */
+	public Long getUtrCount() {
+		return utrCount;
+	}
+
+	/**
+	 * @param utrCount the utrCount to set
+	 */
+	public void setUtrCount(Long utrCount) {
+		this.utrCount = utrCount;
+	}
+
+	/**
+	 * @return the alaCount
+	 */
+	public Long getAlaCount() {
+		return alaCount;
 	}
 
 	/**
@@ -199,17 +207,59 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @param wamCount the wamCount to set
+	 * @return the acpCount
 	 */
-	public void setWamCount(Long wamCount) {
-		this.wamCount = wamCount;
+	public Long getAcpCount() {
+		return acpCount;
 	}
 
 	/**
-	 * @param oosCount the oosCount to set
+	 * @param acpCount the acpCount to set
 	 */
-	public void setOosCount(Long oosCount) {
-		this.oosCount = oosCount;
+	public void setAcpCount(Long acpCount) {
+		this.acpCount = acpCount;
+	}
+
+	/**
+	 * @return the dcdCount
+	 */
+	public Long getDcdCount() {
+		return dcdCount;
+	}
+
+	/**
+	 * @param dcdCount the dcdCount to set
+	 */
+	public void setDcdCount(Long dcdCount) {
+		this.dcdCount = dcdCount;
+	}
+
+	/**
+	 * @return the nuhCount
+	 */
+	public Long getNuhCount() {
+		return nuhCount;
+	}
+
+	/**
+	 * @param nuhCount the nuhCount to set
+	 */
+	public void setNuhCount(Long nuhCount) {
+		this.nuhCount = nuhCount;
+	}
+
+	/**
+	 * @return the nerCount
+	 */
+	public Long getNerCount() {
+		return nerCount;
+	}
+
+	/**
+	 * @param nerCount the nerCount to set
+	 */
+	public void setNerCount(Long nerCount) {
+		this.nerCount = nerCount;
 	}
 
 	/**
@@ -225,7 +275,7 @@ public class ContactOutcomeTypeCountDto {
 	public void setTotal(Long total) {
 		this.total = total;
 	}
-	
+
 	public void setLongField(String fieldName, Long value)
 	        throws NoSuchFieldException, IllegalAccessException {
 	    Field field = getClass().getDeclaredField(fieldName);

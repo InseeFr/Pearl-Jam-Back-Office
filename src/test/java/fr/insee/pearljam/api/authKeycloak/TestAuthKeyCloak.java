@@ -389,10 +389,13 @@ class TestAuthKeyCloak {
 		.and().assertThat().body("inaCount", equalTo(0))
 		.and().assertThat().body("refCount", equalTo(0))
 		.and().assertThat().body("impCount", equalTo(0))
-		.and().assertThat().body("iniCount", equalTo(0))
+		.and().assertThat().body("ucdCount", equalTo(0))
+		.and().assertThat().body("utrCount", equalTo(0))
 		.and().assertThat().body("alaCount", equalTo(0))
-		.and().assertThat().body("wamCount", equalTo(1))
-		.and().assertThat().body("oosCount", equalTo(0));
+		.and().assertThat().body("acpCount", equalTo(1))
+		.and().assertThat().body("dcdCount", equalTo(0))
+		.and().assertThat().body("nuhCount", equalTo(0))
+		.and().assertThat().body("nerCount", equalTo(0));
 	}
 	
 	/**
@@ -725,7 +728,7 @@ class TestAuthKeyCloak {
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),new CommentDto(CommentType.MANAGEMENT, "test")));
 		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.NNS)));
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC), new ContactAttemptDto(1589268800000L, Status.INA)));
-		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.INI, 2));
+		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.IMP, 2));
 		 given().auth().oauth2(accessToken)
 		 	.contentType("application/json")
 			.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
@@ -744,7 +747,7 @@ class TestAuthKeyCloak {
       .assertThat().body("address.l5", equalTo("test")).and()
       .assertThat().body("address.l6", equalTo("test")).and()
       .assertThat().body("address.l7", equalTo("test")).and()
-      .assertThat().body("contactOutcome.type", equalTo(ContactOutcomeType.INI.toString())).and()
+      .assertThat().body("contactOutcome.type", equalTo(ContactOutcomeType.IMP.toString())).and()
       .assertThat().body("contactOutcome.totalNumberOfContactAttempts", is(2)).and()
       .assertThat().body("comments[1].value", equalTo("test")).and()
       .assertThat().body("comments[1].type", is(oneOf(CommentType.MANAGEMENT.toString(),CommentType.INTERVIEWER.toString()))).and()
@@ -899,10 +902,13 @@ class TestAuthKeyCloak {
 		.and().assertThat().body("organizationUnits[0].inaCount", equalTo(0))
 		.and().assertThat().body("organizationUnits[0].refCount", equalTo(0))
 		.and().assertThat().body("organizationUnits[0].impCount", equalTo(0))
-		.and().assertThat().body("organizationUnits[0].iniCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].ucdCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].utrCount", equalTo(0))
 		.and().assertThat().body("organizationUnits[0].alaCount", equalTo(0))
-		.and().assertThat().body("organizationUnits[0].wamCount", equalTo(1))
-		.and().assertThat().body("organizationUnits[0].oosCount", equalTo(0));
+		.and().assertThat().body("organizationUnits[0].acpCount", equalTo(1))
+		.and().assertThat().body("organizationUnits[0].dcdCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].nuhCount", equalTo(0))
+		.and().assertThat().body("organizationUnits[0].nerCount", equalTo(0));
 	}
 	
 	/**
@@ -921,10 +927,13 @@ class TestAuthKeyCloak {
 		.and().assertThat().body("[0].inaCount", equalTo(0))
 		.and().assertThat().body("[0].refCount", equalTo(0))
 		.and().assertThat().body("[0].impCount", equalTo(0))
-		.and().assertThat().body("[0].iniCount", equalTo(0))
+		.and().assertThat().body("[0].ucdCount", equalTo(0))
+		.and().assertThat().body("[0].utrCount", equalTo(0))
 		.and().assertThat().body("[0].alaCount", equalTo(0))
-		.and().assertThat().body("[0].wamCount", equalTo(1))
-		.and().assertThat().body("[0].oosCount", equalTo(0));
+		.and().assertThat().body("[0].acpCount", equalTo(1))
+		.and().assertThat().body("[0].dcdCount", equalTo(0))
+		.and().assertThat().body("[0].nuhCount", equalTo(0))
+		.and().assertThat().body("[0].nerCount", equalTo(0));
 	}
 	
 	/**
@@ -1443,10 +1452,13 @@ class TestAuthKeyCloak {
 		.and().assertThat().body("inaCount", equalTo(0))
 		.and().assertThat().body("refCount", equalTo(0))
 		.and().assertThat().body("impCount", equalTo(0))
-		.and().assertThat().body("iniCount", equalTo(0))
+		.and().assertThat().body("ucdCount", equalTo(0))
+		.and().assertThat().body("utrCount", equalTo(0))
 		.and().assertThat().body("alaCount", equalTo(0))
-		.and().assertThat().body("wamCount", equalTo(0))
-		.and().assertThat().body("oosCount", equalTo(0));
+		.and().assertThat().body("acpCount", equalTo(0))
+		.and().assertThat().body("dcdCount", equalTo(0))
+		.and().assertThat().body("nuhCount", equalTo(0))
+		.and().assertThat().body("nerCount", equalTo(0));
 	}
 
 	
