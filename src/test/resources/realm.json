@@ -326,7 +326,7 @@
     } ],
     "disableableCredentialTypes" : [ "password" ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "manager_local", "offline_access", "uma_authorization" ],
+    "realmRoles" : [ "investigator", "manager_local", "manager_national", "offline_access", "uma_authorization" ],
     "clientRoles" : {
       "account" : [ "manage-account", "view-profile" ]
     },

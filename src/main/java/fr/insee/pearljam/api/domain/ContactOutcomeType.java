@@ -7,12 +7,15 @@ package fr.insee.pearljam.api.domain;
  */
 public enum ContactOutcomeType {
 	INA("Interview accepted"),
-	IMP("Imposssible to reach"),
 	REF("Refusal"),
-	INI("Interview impossible"),
-	ALA("Already answered (other mode)"),
-	WAM("Wish to answer in another mode"),
-	OOS("Out of scope");
+	IMP("Imposssible to reach"),
+	UCD("Unusable Contact Data"),
+	UTR("Unable To Respond"),
+	ALA("Already answered"),
+	ACP("Absence during Colletion Period"),
+	DCD("Deceased"),
+	NUH("No longer Used for Habitation"),
+	NER("No interview for Exceptional");
 	
 	/**
 	 * label of the ContactOutcomeType
