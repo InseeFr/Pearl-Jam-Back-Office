@@ -44,7 +44,7 @@ public interface SurveyUnitService {
 	 * @param userId
 	 * @return {@link List} of {@link SurveyUnitDto}
 	 */
-	List<SurveyUnitDto> getSurveyUnitDto(String userId);
+	List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended);
 
 	/**
 	 * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in parameter

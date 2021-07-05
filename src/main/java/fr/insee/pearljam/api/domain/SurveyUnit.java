@@ -141,10 +141,27 @@ public class SurveyUnit implements Serializable {
 		this.interviewer = null;
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
-		this.contactAttempts = new HashSet<>();
+		
+		
 		this.comments = new HashSet<>();
-		this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
-		this.closingCause = null;
+		if (su.getContactOutcome()!=null) {
+			this.contactOucome = new ContactOutcome(su.getContactOutcome(), this);
+		}
+		if (su.getContactAttempts()!=null && !su.getContactAttempts().isEmpty()) {
+			this.contactAttempts =  su.getContactAttempts().stream().map(c -> new ContactAttempt(c, this)).collect(Collectors.toSet());
+		}else {
+			this.contactAttempts = new HashSet<>();
+		}
+		if (su.getStates()!=null && !su.getStates().isEmpty()) {
+			this.states =  su.getStates().stream().map(s -> new State(s, this)).collect(Collectors.toSet());
+		} else {
+			this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
+		}
+		if (su.getClosingCause() != null) {
+			this.closingCause = new ClosingCause(su.getClosingCause(), this);
+		} else {
+			this.closingCause = null;
+		}
 	}
 
 	/**

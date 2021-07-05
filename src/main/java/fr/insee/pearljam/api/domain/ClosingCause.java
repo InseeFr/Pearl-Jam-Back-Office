@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import fr.insee.pearljam.api.dto.closingcause.ClosingCauseDto;
+
 /**
 * Entity ClosingCause : represent the entity table in DB
 * 
@@ -48,6 +50,23 @@ public class ClosingCause implements Serializable {
 	@OneToOne
 	private SurveyUnit surveyUnit;
 
+		public ClosingCause() {
+		super();
+	}
+		
+	public ClosingCause(Long id, Long date, ClosingCauseType type, SurveyUnit surveyUnit) {
+		super();
+		this.id = id;
+		this.date = date;
+		this.type = type;
+		this.surveyUnit = surveyUnit;
+	}
+	
+	public ClosingCause(ClosingCauseDto closingCause, SurveyUnit surveyUnit) {
+		this.date = closingCause.getDate();
+		this.type = closingCause.getType();
+		this.surveyUnit = surveyUnit;
+	}
 	/**
 	 * @return the id
 	 */

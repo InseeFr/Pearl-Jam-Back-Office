@@ -6,8 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.dto.address.AddressDto;
+import fr.insee.pearljam.api.dto.closingcause.ClosingCauseDto;
+import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
+import fr.insee.pearljam.api.dto.state.StateDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitContextDto {
@@ -19,13 +23,17 @@ public class SurveyUnitContextDto {
 	private Boolean priority;
 	private String campaign;
 	private SampleIdentifiersDto sampleIdentifiers;
+	private List<StateDto> states;
+	private List<ContactAttemptDto> contactAttempts;
+	private ContactOutcomeDto contactOutcome;
+	private ClosingCauseDto closingCause;
 
 	public SurveyUnitContextDto() {
 	}
 	
-	
 	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address, String geographicalLocationId,
-			String organizationUnitId, Boolean priority, String campaign, SampleIdentifiersDto sampleIdentifiers) {
+			String organizationUnitId, Boolean priority, String campaign, SampleIdentifiersDto sampleIdentifiers,
+			List<StateDto> states, List<ContactAttemptDto> contactAttempts, ContactOutcomeDto contactOutcome, ClosingCauseDto closingCause) {
 		super();
 		this.id = id;
 		this.persons = persons;
@@ -35,6 +43,11 @@ public class SurveyUnitContextDto {
 		this.priority = priority;
 		this.campaign = campaign;
 		this.sampleIdentifiers = sampleIdentifiers;
+		this.states = states;
+		this.contactAttempts = contactAttempts;
+		this.contactOutcome = contactOutcome;
+		this.closingCause = closingCause;
+		
 	}
 
 
@@ -148,6 +161,62 @@ public class SurveyUnitContextDto {
 	 */
 	public void setSampleIdentifiers(SampleIdentifiersDto sampleIdentifiers) {
 		this.sampleIdentifiers = sampleIdentifiers;
+	}
+	
+	/**
+	 * @return the states
+	 */
+	public List<StateDto> getStates() {
+		return states;
+	}
+
+	/**
+	 * @param states the states to set
+	 */
+	public void setStates(List<StateDto> states) {
+		this.states = states;
+	}
+
+	/**
+	 * @return the contactAttempts
+	 */
+	public List<ContactAttemptDto> getContactAttempts() {
+		return contactAttempts;
+	}
+
+	/**
+	 * @param contactAttempts the contactAttempts to set
+	 */
+	public void setContactAttempts(List<ContactAttemptDto> contactAttempts) {
+		this.contactAttempts = contactAttempts;
+	}
+
+	/**
+	 * @return the contactOutcome
+	 */
+	public ContactOutcomeDto getContactOutcome() {
+		return contactOutcome;
+	}
+
+	/**
+	 * @param contactOutcome the contactOutcome to set
+	 */
+	public void setContactOutcome(ContactOutcomeDto contactOutcome) {
+		this.contactOutcome = contactOutcome;
+	}
+
+	/**
+	 * @return the closingCause
+	 */
+	public ClosingCauseDto getClosingCause() {
+		return closingCause;
+	}
+
+	/**
+	 * @param closingCause the closingCause to set
+	 */
+	public void setClosingCause(ClosingCauseDto closingCause) {
+		this.closingCause = closingCause;
 	}
 
 	/**
