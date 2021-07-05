@@ -106,12 +106,12 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units")
-	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(HttpServletRequest request) {
+	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(HttpServletRequest request, @RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
+			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
 			if (lstSurveyUnit == null) {
 				LOGGER.info("GET SurveyUnit resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);

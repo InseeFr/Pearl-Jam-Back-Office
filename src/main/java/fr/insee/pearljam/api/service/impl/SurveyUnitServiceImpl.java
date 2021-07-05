@@ -164,7 +164,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return new SurveyUnitDetailDto(surveyUnit.get());
 	}
 
-	public List<SurveyUnitDto> getSurveyUnitDto(String userId) {
+	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
 		List<String> surveyUnitDtoIds = null;
 		if (userId.equals(GUEST)) {
 			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
@@ -177,9 +177,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		if (userId.equals(GUEST)) {
 			return surveyUnitDtoIds.stream()
-					.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
-							surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
-							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit)))
+					.map(idSurveyUnit -> new SurveyUnitDto(surveyUnitRepository.findById(idSurveyUnit),
+							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit), extended))
 					.collect(Collectors.toList());
 		}
 		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(id -> canBeSeenByInterviewer(id))
