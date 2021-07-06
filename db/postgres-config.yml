@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: pearljam-db
+data:
+  postgres_user: pearljam
+  postgres_password: pearljam
+  postgres_host : pearljam-db
