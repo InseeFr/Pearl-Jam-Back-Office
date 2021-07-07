@@ -65,19 +65,19 @@ INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interview
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '24', TRUE, a.id, 'SIMPSONS2020X00', NULL, s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Christopher Lewis' AND s.bs='24';
 
 
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com',TRUE, 'Ted', 'Farmer', 11111111, 0, '11');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Cecilia', 'Ortega', 11111111, 1, '12');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, '13');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Veronica', 'Baker', 11111111, 1, '14');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Christine', 'Aguilar', 11111111, 1, '11');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Louise', 'Walker', 11111111, 1, '11');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Anthony', 'Bennett', 11111111, 0, '12');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Christopher', 'Lewis', 11111111, 0, '14');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Harriette', 'Raymond', 11111111, 0, '20');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Aimée', 'Lamothe', 11111111, 0, '21');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Perrin', 'Blanchard', 11111111, 0, '22');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Artus', 'Arnoux', 11111111, 0, '23');
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, survey_unit_id) VALUES ('test@test.com', TRUE,'Laurent', 'Neville', 11111111, 0, '24');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com',TRUE, 'Ted', 'Farmer', 11111111, 0, TRUE, '11');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Cecilia', 'Ortega', 11111111, 1, TRUE, '12');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, TRUE, '13');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Veronica', 'Baker', 11111111, 1, TRUE, '14');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Christine', 'Aguilar', 11111111, 1, FALSE, '11');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Louise', 'Walker', 11111111, 1, FALSE, '11');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Anthony', 'Bennett', 11111111, 0, FALSE, '12');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Christopher', 'Lewis', 11111111, 0, FALSE, '14');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Harriette', 'Raymond', 11111111, 0, TRUE, '20');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Aimée', 'Lamothe', 11111111, 0, TRUE, '21');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Perrin', 'Blanchard', 11111111, 0, TRUE, '22');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Artus', 'Arnoux', 11111111, 0, TRUE, '23');
+INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES ('test@test.com', TRUE,'Laurent', 'Neville', 11111111, 0, TRUE, '24');
 
 
 

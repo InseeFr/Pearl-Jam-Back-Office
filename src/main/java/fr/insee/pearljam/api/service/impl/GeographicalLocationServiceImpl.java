@@ -33,7 +33,7 @@ public class GeographicalLocationServiceImpl implements GeographicalLocationServ
 	public Response createGeographicalLocations(List<GeographicalLocationDto> geographicalLocations) {
 		List<String> errors = new ArrayList<>();
 		List<GeographicalLocation> lstGeographicalLocation = new ArrayList<>();
-		// Check duplicate line in interviewers to create
+		// Check duplicate line in geographicalLocations to create
 		geographicalLocations.stream().forEach(gl -> {
 			if(!gl.isValid()) {
 				errors.add(gl.getLabel());

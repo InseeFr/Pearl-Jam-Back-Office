@@ -1,10 +1,13 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
@@ -59,6 +62,8 @@ public class SurveyUnitDto {
 	
 	private List<PersonDto> persons;
 	
+	private AddressDto address;
+	
 	/**
 	 * Default constructor from SurveyUnitDto
 	 * @param surveyUnit
@@ -70,6 +75,27 @@ public class SurveyUnitDto {
 		this.collectionStartDate = surveyUnit.getCampaign().getStartDate();
 	}
 	public SurveyUnitDto() {
+	}
+	
+	public SurveyUnitDto(Optional<SurveyUnit> su, VisibilityDto visibility, Boolean extended) {
+		if(su.isPresent()) {
+			this.id = su.get().getId();
+			this.campaign = su.get().getCampaign().getId();
+			this.campaignLabel = su.get().getCampaign().getLabel();
+			this.collectionStartDate = su.get().getCampaign().getStartDate();
+			this.managementStartDate=visibility.getManagementStartDate();
+			this.interviewerStartDate=visibility.getInterviewerStartDate();
+			this.identificationPhaseStartDate=visibility.getIdentificationPhaseStartDate();
+			this.collectionStartDate=visibility.getCollectionStartDate();
+			this.collectionEndDate=visibility.getCollectionEndDate();
+			this.endDate=visibility.getEndDate();
+			if(Boolean.TRUE.equals(extended)) {
+				this.persons = su.get().getPersons().stream()
+						.map(person -> new PersonDto(person))
+						.collect(Collectors.toList());
+				this.address = new AddressDto(su.get().getAddress());
+			}
+		}
 	}
 	
 	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, VisibilityDto visibility) {
@@ -202,5 +228,17 @@ public class SurveyUnitDto {
 	public void setPersons(List<PersonDto> persons) {
 		this.persons = persons;
 	}
-
+	/**
+	 * @return the address
+	 */
+	public AddressDto getAddress() {
+		return address;
+	}
+	/**
+	 * @param address the address to set
+	 */
+	public void setAddress(AddressDto address) {
+		this.address = address;
+	}
+	
 }
