@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -230,6 +233,49 @@ public class CampaignController {
 			HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
 			LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
 					idOu, returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	
+	/**
+	* This method is using to delete a campaign
+	* 
+	* @param campaign the value to delete
+	* @return {@link HttpStatus}
+	* 
+	*/
+	@ApiOperation(value = "Delete a campaign")
+	@DeleteMapping(path = "/campaign/{id}")
+	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		Optional<Campaign> campaignOptional = campaignService.findById(id);
+		if (!campaignOptional.isPresent()) {
+			LOGGER.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		campaignService.delete(campaignOptional.get());
+		LOGGER.info("DELETE campaign with id {} resulting in 200", id);
+		return ResponseEntity.ok().build();
+	}
+	
+	
+	/**
+	 * Updates the collection start and end dates for a campaign
+	 * 
+	 * @body CampaignDto
+	 * @param id
+	 * @return {@link HttpStatus}
+	 */
+	@ApiOperation(value = "Put campaignCollectionDates")
+	@PutMapping(path = "/campaign/{id}")
+	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = campaignService.updateCampaign(userId, id, campaign);
+			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
 	}

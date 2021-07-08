@@ -2576,6 +2576,42 @@ class TestAuthKeyCloak {
 		assertEquals(null, su1.get().getInterviewer());
 		assertEquals(null, su2.get().getInterviewer());
 	}
+	
+	@Test
+	@Order(78)
+	void testDeleteSurveyUnit() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().delete("api/survey-unit/11")
+				.then().statusCode(200);
+	}
+	
+	@Test
+	@Order(79)
+	void testDeleteSurveyUnitNotExist() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().delete("api/survey-unit/toto")
+				.then().statusCode(404);
+	}
+	
+	@Test
+	@Order(80)
+	void testDeleteCampaign() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().delete("api/campaign/SIMPSONS2020X00")
+				.then().statusCode(200);
+	}
+	
+	@Test
+	@Order(81)
+	void testDeleteCampaignNotExist() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().delete("api/campaign/SIMPSONS2020XTT")
+				.then().statusCode(404);
+	}
 
 	
 	private void addUnattributedSU(String suId) throws JsonProcessingException, JSONException {

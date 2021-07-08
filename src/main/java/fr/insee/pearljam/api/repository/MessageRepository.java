@@ -76,4 +76,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 			  + "AND oumr2.message.id=:messageId )")
 	List<VerifyNameResponseDto> getOuRecipients(@Param("messageId") Long messageId);
 
+	
+	@Query(value="DELETE FROM campaign_message_recipient as cmr "
+			+ " WHERE cmr.campaign_id = ?1 ", nativeQuery=true)
+	void deleteCampaignMessageRecipient(String campaignId);
+
 }

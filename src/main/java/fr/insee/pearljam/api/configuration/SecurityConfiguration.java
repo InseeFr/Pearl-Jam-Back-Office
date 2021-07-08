@@ -93,6 +93,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_STATE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_COMMENT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -104,6 +105,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_CAMPAIGN).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_CAMPAIGN_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -152,6 +154,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CAMPAIGNS_SU_STATECOUNT,
 					Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES,
 					Constants.API_CAMPAIGN,
+					Constants.API_CAMPAIGN_ID,
 					Constants.API_CAMPAIGN_COLLECTION_DATES,
 					Constants.API_CAMPAIGN_ID_INTERVIEWERS,
 					Constants.API_CAMPAIGN_ID_SURVEYUNITS,
