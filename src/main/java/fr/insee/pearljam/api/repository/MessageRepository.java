@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -75,5 +76,33 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 			  + "WHERE oumr.organizationUnit.organizationUnitParent.id = oumr2.organizationUnit.id "
 			  + "AND oumr2.message.id=:messageId )")
 	List<VerifyNameResponseDto> getOuRecipients(@Param("messageId") Long messageId);
+
+	@Modifying
+	@Query(value="DELETE FROM campaign_message_recipient as cmr "
+			+ " WHERE cmr.campaign_id = ?1 ", nativeQuery=true)
+	void deleteCampaignMessageRecipientByCampaignId(String campaignId);
+	
+	@Modifying
+	@Query(value="DELETE FROM campaign_message_recipient as cmr "
+			+ " WHERE cmr.message_id = ?1 ", nativeQuery=true)
+	void deleteCampaignMessageRecipientByMessageId(Long messageId);
+	
+	@Modifying
+	@Query(value="DELETE FROM oumessage_recipient as oumr "
+			+ " WHERE oumr.organization_unit_id = ?1 ", nativeQuery=true)
+	void deleteOUMessageRecipientByOrganizationUnitId(String organizationUnitId);
+	
+	@Modifying
+	@Query(value="DELETE FROM oumessage_recipient as oumr "
+			+ " WHERE oumr.message_id = ?1 ", nativeQuery=true)
+	void deleteOUMessageRecipientByMessageId(Long messageId);
+	
+	@Modifying
+	@Query(value="DELETE FROM message_status as ms "
+			+ " WHERE ms.message_id = ?1 ", nativeQuery=true)
+	void deleteMessageStatusByMessageId(Long messageId);
+
+	
+	List<Message> findAllBySenderId(String userId);
 
 }

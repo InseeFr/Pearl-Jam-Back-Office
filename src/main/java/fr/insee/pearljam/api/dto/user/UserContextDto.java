@@ -2,8 +2,11 @@ package fr.insee.pearljam.api.dto.user;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContextDto {
 	private String id;
 	private String firstName;

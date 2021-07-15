@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -133,6 +134,8 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT su FROM SurveyUnit su WHERE "
 			+ "su.id=:id AND su.organizationUnit.id IN (:OUids)")
 	List<SurveyUnit> findByIdInOrganizationalUnit(@Param("id") String id, @Param("OUids") List<String> organizationalUnitIds);
+
+	Collection<SurveyUnit> findByCampaignId(String id);
 
 
 	  

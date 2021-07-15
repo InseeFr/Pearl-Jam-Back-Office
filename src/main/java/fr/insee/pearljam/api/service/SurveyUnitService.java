@@ -98,4 +98,6 @@ public interface SurveyUnitService {
 	boolean checkHabilitationInterviewer(String userId, String id);
 
 	boolean checkHabilitationReviewer(String userId, String id);
+
+	void delete(SurveyUnit surveyUnit);
 }

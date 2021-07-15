@@ -33,12 +33,15 @@ import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 
@@ -81,12 +84,21 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
-
+	
+	@Autowired
+	MessageRepository messageRepository;
+	
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	UtilsService utilsService;
+	
+	@Autowired
+	SurveyUnitService surveyUnitService;
+	
+	@Autowired
+	PreferenceService preferenceService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -306,6 +318,56 @@ public class CampaignServiceImpl implements CampaignService {
 				&& dto.getEndDate() != null;
 	}
 
+	@Override
+	public Optional<Campaign> findById(String id) {
+		return campaignRepository.findById(id);
+	}
 
+	@Override
+	public void delete(Campaign campaign) {
+		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitRepository.delete(su));
+		userRepository.findAll().stream()
+				.forEach(user -> {
+					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId).collect(Collectors.toList());
+					if(lstCampaignId.contains(campaign.getId())) {
+						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
+						preferenceService.setPreferences(lstCampaignId, user.getId());
+					}
+				});
+		messageRepository.deleteCampaignMessageRecipientByCampaignId(campaign.getId());
+		campaignRepository.delete(campaign);
+	}
+
+	@Override
+	public HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign) {
+		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
+		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
+		if (camp.isPresent()) {
+			Campaign currentCampaign = camp.get();
+			currentCampaign.setLabel(campaign.getCampaignLabel());
+			campaignRepository.save(currentCampaign);
+			campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
+						campaign.getCampaign(), 
+						v.getOrganizationalUnit(), 
+						new VisibilityDto(
+								v.getManagementStartDate(), 
+								v.getInterviewerStartDate(), 
+								v.getIdentificationPhaseStartDate(), 
+								v.getCollectionStartDate(), 
+								v.getCollectionEndDate(), 
+								v.getEndDate()))	
+			);
+			returnStatus = HttpStatus.OK;
+		} else {
+			LOGGER.error("Campaign {} does not exist in db", id);
+			returnStatus = HttpStatus.NOT_FOUND;
+		}
+		
+		if (returnStatus == HttpStatus.BAD_REQUEST) {
+			LOGGER.error("Wrong input format");
+		}
+
+		return returnStatus;
+	}
 
 }

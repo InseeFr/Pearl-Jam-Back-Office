@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
+import fr.insee.pearljam.api.repository.MessageStatusRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.MessageService;
@@ -42,8 +45,13 @@ import fr.insee.pearljam.api.service.UserService;
 public class MessageServiceImpl implements MessageService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
 
+	
+
 	@Autowired
 	MessageRepository messageRepository;
+	
+	@Autowired
+	MessageStatusRepository messageStatusRepository;
   
 	@Autowired
 	UserRepository userRepository;
@@ -239,5 +247,17 @@ public class MessageServiceImpl implements MessageService {
                 .collect(
                 		collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
                         ArrayList::new));
+	}
+
+	@Override
+	@Transactional
+	public void deleteMessageByUserId(String userId) {
+		List<Message> lstMessage = messageRepository.findAllBySenderId(userId);
+		lstMessage.stream().forEach(msg -> {
+			messageRepository.deleteCampaignMessageRecipientByMessageId(msg.getId());
+			messageRepository.deleteOUMessageRecipientByMessageId(msg.getId());
+			msg.getMessageStatus().stream().forEach(ms -> messageStatusRepository.delete(ms));
+		});
+		messageRepository.deleteAll(lstMessage);	
 	}
 }

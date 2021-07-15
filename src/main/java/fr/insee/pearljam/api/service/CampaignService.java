@@ -1,9 +1,11 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
@@ -55,4 +57,10 @@ public interface CampaignService {
 	HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility);
 
 	Response postCampaign(CampaignContextDto campaignDto) throws NoOrganizationUnitException, VisibilityException;
+
+	Optional<Campaign> findById(String id);
+
+	void delete(Campaign campaign);
+
+	HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign);
 }

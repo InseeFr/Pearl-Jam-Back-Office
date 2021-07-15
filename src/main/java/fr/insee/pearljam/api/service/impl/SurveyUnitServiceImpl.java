@@ -660,4 +660,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		LOGGER.info("{} links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size());
 		return new Response(String.format("%s links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size()), HttpStatus.OK);
 	}
+
+	@Override
+	public void delete(SurveyUnit surveyUnit) {
+		surveyUnitRepository.delete(surveyUnit);
+	}
 }
