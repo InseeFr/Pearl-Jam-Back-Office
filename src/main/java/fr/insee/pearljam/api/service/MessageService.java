@@ -29,5 +29,6 @@ public interface MessageService {
   List<MessageDto> getMessages(String interviewerId);
   List<VerifyNameResponseDto> verifyName(String text, String userId);
   List<MessageDto> getMessageHistory(String userId);
+  void deleteMessageByUserId(String userId);
 
 }

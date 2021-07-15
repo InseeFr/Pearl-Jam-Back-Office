@@ -123,9 +123,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWER_ID_CAMPAIGNS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_USER).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_USER_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)	
-			.antMatchers(HttpMethod.PUT, Constants.API_PREFERENCES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)			
+			.antMatchers(HttpMethod.DELETE, Constants.API_ORGANIZATIONUNIT_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNIT_ID_USERS).hasAnyRole(adminRole)			.antMatchers(HttpMethod.PUT, Constants.API_PREFERENCES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_MESSAGE).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_MESSAGES_ID).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_VERIFYNAME).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -172,8 +175,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_INTERVIEWERS_SU_STATECOUNT,
 					Constants.API_INTERVIEWER_ID_CAMPAIGNS,
 					Constants.API_USER,
+					Constants.API_USER_ID,
 					Constants.API_GEOGRAPHICALLOCATIONS,
 					Constants.API_ORGANIZATIONUNITS,
+					Constants.API_ORGANIZATIONUNIT_ID,
+					Constants.API_ORGANIZATIONUNIT_ID_USERS,
 					Constants.API_PREFERENCES,
 					Constants.API_MESSAGE,
 					Constants.API_MESSAGES_ID,

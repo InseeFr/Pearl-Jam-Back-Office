@@ -359,7 +359,7 @@ class TestAuthKeyCloak {
 		.assertThat().body("idDem", equalTo(null)).and()
 		.assertThat().body("nvmCount",equalTo(0)).and()
 		.assertThat().body("nnsCount",equalTo(0)).and()
-    .assertThat().body("anvCount",equalTo(0)).and()
+		.assertThat().body("anvCount",equalTo(0)).and()
 		.assertThat().body("vinCount",equalTo(0)).and()
 		.assertThat().body("vicCount",equalTo(0)).and()
 		.assertThat().body("prcCount",equalTo(0)).and()
@@ -368,12 +368,12 @@ class TestAuthKeyCloak {
 		.assertThat().body("insCount",equalTo(0)).and()
 		.assertThat().body("wftCount",equalTo(0)).and()
 		.assertThat().body("wfsCount",equalTo(0)).and()
-    .assertThat().body("tbrCount",equalTo(1)).and()
+		.assertThat().body("tbrCount",equalTo(1)).and()
 		.assertThat().body("finCount",equalTo(0)).and()
 		.assertThat().body("qnaCount",equalTo(0)).and()
 		.assertThat().body("qnaFinCount",equalTo(0)).and()
-    .assertThat().body("nvaCount",equalTo(0)).and()
-    .assertThat().body("npaCount",equalTo(0)).and()
+	    .assertThat().body("nvaCount",equalTo(0)).and()
+	    .assertThat().body("npaCount",equalTo(0)).and()
 		.assertThat().body("npiCount",equalTo(0)).and()
 		.assertThat().body("rowCount",equalTo(0)).and()
 		.assertThat().body("total",equalTo(1));
@@ -1588,12 +1588,33 @@ class TestAuthKeyCloak {
 	}
 	
 	/**
+	 * Test that the GET endpoint "api/campaigns"
+	 * return 200
+	 * @throws InterruptedException
+	 * @throws JSONException 
+	 */
+	@Test
+	@Order(58)
+	void testGetOrganizationUnits() throws InterruptedException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken).when().get("api/organization-units").then().statusCode(200).and()
+		.assertThat().body("organisationUnit", hasItem("OU-NORTH")).and()
+		.assertThat().body("organisationUnitLabel", hasItem("North region organizational unit")).and()
+		.assertThat().body("organisationUnit", hasItem("OU-SOUTH")).and()
+		.assertThat().body("organisationUnitLabel", hasItem("South region organizational unit")).and()
+		.assertThat().body("organisationUnit", hasItem("OU-NATIONAL")).and()
+		.assertThat().body("organisationUnitLabel", hasItem("National organizational unit"));
+	}
+	
+	
+	
+	/**
 	 * Test that the Post endpoint
 	 * "/campaign" returns 200
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(58)
+	@Order(100)
 	void testPostCampaignContext() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		CampaignContextDto campDto = new CampaignContextDto();
@@ -1659,7 +1680,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(59)
+	@Order(101)
 	void testPostCampaignContextNoLabel() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		CampaignContextDto campDto = new CampaignContextDto();
@@ -1712,7 +1733,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(60)
+	@Order(102)
 	void testPostCampaignContextMissingOU() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		CampaignContextDto campDto = new CampaignContextDto();
@@ -1762,7 +1783,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(61)
+	@Order(103)
 	void testPostOrganizationUnitContext() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
@@ -1856,7 +1877,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(62)
+	@Order(104)
 	void testPostOrganizationUnitContextDuplicateUser() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
@@ -1924,7 +1945,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(63)
+	@Order(105)
 	void testPostOrganizationUnitContextNoOU() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
@@ -1991,7 +2012,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(64)
+	@Order(106)
 	void testPostInterviewers() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
@@ -2050,7 +2071,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(65)
+	@Order(107)
 	void testPostInterviewersMissingEmail() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
@@ -2099,7 +2120,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(66)
+	@Order(108)
 	void testPostInterviewersDuplicateId() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
@@ -2146,7 +2167,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(67)
+	@Order(109)
 	void testPostGeographicalLocations() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		GeographicalLocationDto gl = new GeographicalLocationDto();
@@ -2169,7 +2190,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(68)
+	@Order(110)
 	void testPostGeographicalLocationsError() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		GeographicalLocationDto gl = new GeographicalLocationDto();
@@ -2191,7 +2212,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(69)
+	@Order(111)
 	void testPostSurveyUnits() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2235,7 +2256,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(70)
+	@Order(112)
 	void testPostSurveyUnitsDuplcateInDB() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2279,7 +2300,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(71)
+	@Order(113)
 	void testPostSurveyUnitsDuplicateInBody() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2322,7 +2343,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(72)
+	@Order(114)
 	void testPostSurveyUnitsOUNotExist() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2365,7 +2386,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(73)
+	@Order(115)
 	void testPostSurveyUnitsCampaignNotExist() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2408,7 +2429,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(74)
+	@Order(116)
 	void testPostSurveyUnitsGeogrphicalLocationNotExist() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2452,7 +2473,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(75)
+	@Order(117)
 	void testPostSurveyUnitsSUNotValid() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();
@@ -2512,7 +2533,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(76)
+	@Order(118)
 	void testPostAssignements() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<SurveyUnitInterviewerLinkDto> list = new ArrayList<>();
@@ -2549,7 +2570,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Order(77)
+	@Order(119)
 	void testPostAssignementsNoInterviewerDoesntExist() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<SurveyUnitInterviewerLinkDto> list = new ArrayList<>();
@@ -2577,8 +2598,58 @@ class TestAuthKeyCloak {
 		assertEquals(null, su2.get().getInterviewer());
 	}
 	
+	/**
+	 * Test that the Post endpoint
+	 * "/orgaization-unit/id/users" returns 200
+	 * @throws JSONException 
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
 	@Test
-	@Order(78)
+	@Order(120)
+	void testPostUsersByOU() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given()
+			.auth().oauth2(accessToken)
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(List.of(new UserContextDto("TEST", "test", "test", null, null), new UserContextDto("TEST2", "test2", "test2", null, null))))
+			.when()
+			.post("api/organization-unit/OU-NORTH/users")
+			.then()
+			.statusCode(200);
+		
+		// SU should have been attributted to interviewers
+		Optional<User> user = userRepository.findById("TEST");
+		assertEquals("OU-NORTH", user.get().getOrganizationUnit().getId());
+	}
+	
+	/**
+	 * Test that the Post endpoint
+	 * "/orgaization-unit/id/users" returns 200
+	 * @throws JSONException 
+	 * @throws JsonProcessingException 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(121)
+	void testPostUsersByOUThatDoesNotExist() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given()
+			.auth().oauth2(accessToken)
+		 	.contentType("application/json")
+			.body(new ObjectMapper().writeValueAsString(List.of(new UserContextDto("TEST2", "test2", "test2", null, null), new UserContextDto("TEST2", "test2", "test2", null, null))))
+			.when()
+			.post("api/organization-unit/OU-TEST/users")
+			.then()
+			.statusCode(400);
+		
+		// SU should have been attributted to interviewers
+		Optional<User> user = userRepository.findById("TEST");
+		assertEquals("OU-NORTH", user.get().getOrganizationUnit().getId());
+	}
+	
+	@Test
+	@Order(200)
 	void testDeleteSurveyUnit() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken)
@@ -2587,7 +2658,7 @@ class TestAuthKeyCloak {
 	}
 	
 	@Test
-	@Order(79)
+	@Order(201)
 	void testDeleteSurveyUnitNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken)
@@ -2596,7 +2667,7 @@ class TestAuthKeyCloak {
 	}
 	
 	@Test
-	@Order(80)
+	@Order(202)
 	void testDeleteCampaign() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken)
@@ -2605,11 +2676,63 @@ class TestAuthKeyCloak {
 	}
 	
 	@Test
-	@Order(81)
+	@Order(203)
 	void testDeleteCampaignNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken)
-		.when().delete("api/campaign/SIMPSONS2020XTT")
+				.when().delete("api/campaign/SIMPSONS2020XTT")
+				.then().statusCode(404);
+	}
+	
+	@Test
+	@Order(204)
+	void testDeleteUser() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().delete("api/user/JKL")
+				.then().statusCode(200);
+	}
+	
+	@Test
+	@Order(205)
+	void testDeleteUserNotExist() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().delete("api/user/USER")
+				.then().statusCode(404);
+	}
+	
+	@Test
+	@Order(206)
+	void testDeleteOrganizationUnit() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		// delete all SU before delete OU
+		surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"))
+				.stream().forEach(su -> surveyUnitRepository.delete(su));
+		// delete all Users before delete OU
+		userRepository.findAllByOrganizationUnitId("OU-NORTH")
+				.stream().forEach(u -> userService.delete(u.getId()));
+						
+		given().auth().oauth2(accessToken)
+		.when().delete("api/organization-unit/OU-NORTH")
+				.then().statusCode(200);
+	}
+	
+	@Test
+	@Order(207)
+	void testDeleteOrganizationUnitWithUsersOrSurveyUnits() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().delete("api/organization-unit/OU-SOUTH")
+				.then().statusCode(400);
+	}
+	
+	@Test
+	@Order(208)
+	void testDeleteOrganizationUnitNotExist() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+		.when().delete("api/organization-unit/TEST")
 				.then().statusCode(404);
 	}
 

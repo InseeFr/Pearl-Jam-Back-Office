@@ -334,7 +334,7 @@ public class CampaignServiceImpl implements CampaignService {
 						preferenceService.setPreferences(lstCampaignId, user.getId());
 					}
 				});
-		messageRepository.deleteCampaignMessageRecipient(campaign.getId());
+		messageRepository.deleteCampaignMessageRecipientByCampaignId(campaign.getId());
 		campaignRepository.delete(campaign);
 	}
 
