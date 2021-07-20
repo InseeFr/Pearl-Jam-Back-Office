@@ -77,8 +77,8 @@ public class Constants {
 	public static final String ERR_NO_OU_FOR_CAMPAIGN = "There is no Organisation Unit for Campaign {} affiliated to user {}";
 
 	public static final String[] STATE_COUNT_FIELDS = { "nvmCount", "nnsCount", "anvCount", "vinCount", "vicCount",
-			"prcCount", "aocCount", "apsCount", "insCount", "wftCount", "wfsCount", "tbrCount", "finCount", "qnaCount",
-			"qnaFinCount", "nvaCount", "total" };
+			"prcCount", "aocCount", "apsCount", "insCount", "wftCount", "wfsCount", "tbrCount", "finCount", "cloCount",
+			"nvaCount", "total" };
 
 	public static final String[] STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "rowCount" };
 

@@ -370,8 +370,8 @@ class TestAuthKeyCloak {
 		.assertThat().body("wfsCount",equalTo(0)).and()
 		.assertThat().body("tbrCount",equalTo(1)).and()
 		.assertThat().body("finCount",equalTo(0)).and()
-		.assertThat().body("qnaCount",equalTo(0)).and()
-		.assertThat().body("qnaFinCount",equalTo(0)).and()
+		.assertThat().body("cloCount",equalTo(0)).and()
+//		.assertThat().body("qnaFinCount",equalTo(0)).and()
 	    .assertThat().body("nvaCount",equalTo(0)).and()
 	    .assertThat().body("npaCount",equalTo(0)).and()
 		.assertThat().body("npiCount",equalTo(0)).and()
@@ -505,8 +505,8 @@ class TestAuthKeyCloak {
 		.assertThat().body("organizationUnits[0].wfsCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].tbrCount",equalTo(4)).and()
 		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].qnaCount",equalTo(0)).and()
-		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
+		.assertThat().body("organizationUnits[0].cloCount",equalTo(0)).and()
+//		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
     .assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
@@ -592,8 +592,8 @@ class TestAuthKeyCloak {
 		.assertThat().body("wfsCount",equalTo(0)).and()
     .assertThat().body("tbrCount",equalTo(1)).and()
 		.assertThat().body("finCount",equalTo(0)).and()
-		.assertThat().body("qnaCount",equalTo(0)).and()
-		.assertThat().body("qnaFinCount",equalTo(0)).and()
+		.assertThat().body("cloCount",equalTo(0)).and()
+//		.assertThat().body("qnaFinCount",equalTo(0)).and()
     .assertThat().body("nvaCount",equalTo(0)).and()
     .assertThat().body("npaCount",equalTo(0)).and()
 		.assertThat().body("npiCount",equalTo(0)).and()
@@ -2655,6 +2655,7 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 				.when().delete("api/survey-unit/11")
 				.then().statusCode(200);
+		assertTrue(surveyUnitRepository.findById("11").isEmpty());
 	}
 	
 	@Test
@@ -2673,6 +2674,7 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00")
 				.then().statusCode(200);
+		assertTrue(campaignRepository.findById("SIMPSONS2020X00").isEmpty());
 	}
 	
 	@Test
@@ -2691,6 +2693,7 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 				.when().delete("api/user/JKL")
 				.then().statusCode(200);
+		assertTrue(userRepository.findById("JKL").isEmpty());
 	}
 	
 	@Test
@@ -2716,6 +2719,7 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 		.when().delete("api/organization-unit/OU-NORTH")
 				.then().statusCode(200);
+		assertTrue(organizationUnitRepository.findById("OU-NORTH").isEmpty());
 	}
 	
 	@Test
