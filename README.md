@@ -128,6 +128,7 @@ Before committing code please ensure,
 ## End-Points
 ### Campaign-Controller
 - `POST /api/campaign` : Post Campaign
+- `DELETE /api/campaign/{id}` : Delete Campaign
 - `PUT /api/campaign/{id}/collection-dates` : Put campaignCollectionDates
 - `GET /api/campaign/{id}/interviewers` : Get interviewers
 - `GET /api/campaign/{id}/survey-units/abandoned` : Get numberSUAbandoned
@@ -157,6 +158,7 @@ Before committing code please ensure,
 - `POST /api/interviewers` : Post interviewers
 
 ### Message-Controller
+- `POST /api/mail` : Send mail to admins defined in properties
 - `POST /api/message` : Post a message
 - `GET /api/message-history` : Get the message history
 - `PUT /api/message/{id}/interviewer/{idep}/delete` : Mark a message as deleted
@@ -165,6 +167,9 @@ Before committing code please ensure,
 - `POST /api/verify-name` : Update Messages with campaigns or interviewers listed in request body
 
 ### Organization-Unit-Controller
+- `DELETE /api/organization-unit/{id}` : Delete an Organization-unit
+- `POST /api/organization-unit/{id}/users` : add users to an organization-unit
+- `GET /api/organization-units` : Get all organization-units
 - `POST /api/organization-units` : Create Context with Organizational Unit and users associated
 
 ### Preference-Controller
@@ -192,9 +197,12 @@ Before committing code please ensure,
 - `POST /api/survey-units` : POST SurveyUnit assignations to interviewer
 - `GET /api/survey-units/closable` : Get closable survey units
 - `POST /api/survey-units/interviewers` : Post SurveyUnits
+- `DELETE /api/survey-unit/{id}` : Delete SurveyUnit
+
 
 ### User-Controller
 - `GET /api/user` : Get User
+- `DELETE /api/user/{id}` : Delete User
 
 ## Libraries used
 - spring-boot-jpa
