@@ -30,8 +30,7 @@ public class StateCountDto {
 	private Long wfsCount;
 	private Long tbrCount;
 	private Long finCount;
-	private Long qnaCount;
-	private Long qnaFinCount;
+	private Long cloCount;
 	private Long nvaCount;
 	private Long npaCount;
 	private Long npiCount;
@@ -274,31 +273,17 @@ public class StateCountDto {
 	}
 
 	/**
-	 * @return the qnaCount
+	 * @return the cloCount
 	 */
-	public Long getQnaCount() {
-		return qnaCount;
+	public Long getCloCount() {
+		return cloCount;
 	}
 
 	/**
-	 * @param qnaCount the qnaCount to set
+	 * @param cloCount the cloCount to set
 	 */
-	public void setQnaCount(Long qnaCount) {
-		this.qnaCount = qnaCount;
-	}
-	
-	/**
-	 * @return the qnaFinCount
-	 */
-	public Long getQnaFinCount() {
-		return qnaFinCount;
-	}
-
-	/**
-	 * @param qnaCount the qnaCount to set
-	 */
-	public void setQnaFinCount(Long qnaFinCount) {
-		this.qnaFinCount = qnaFinCount;
+	public void setCloCount(Long cloCount) {
+		this.cloCount = cloCount;
 	}
 
 	/**

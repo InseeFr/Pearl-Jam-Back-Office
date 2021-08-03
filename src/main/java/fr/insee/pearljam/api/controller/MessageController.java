@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.dto.message.MailDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.service.MessageService;
@@ -150,5 +151,20 @@ public class MessageController {
 			}
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	
+	/**
+	* This method is used to post a message
+	*/
+	@ApiOperation(value = "Post a mail to admins")
+	@PostMapping(path = "/mail")
+	public ResponseEntity<Object> postMailMessage(HttpServletRequest request, @RequestBody MailDto mail) {
+		String userId = utilsService.getUserId(request);
+		if(StringUtils.isBlank(userId) || (!utilsService.existUser(userId, Constants.INTERVIEWER) && !utilsService.existUser(userId, Constants.USER))) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		HttpStatus returnCode = messageService.sendMail(mail, userId);
+		return new ResponseEntity<>(returnCode);
 	}
 }
