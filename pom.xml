@@ -273,6 +273,10 @@
 			<artifactId>hibernate-types-52</artifactId>
 			<version>2.9.11</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
