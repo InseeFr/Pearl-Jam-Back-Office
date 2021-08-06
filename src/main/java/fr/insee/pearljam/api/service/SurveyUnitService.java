@@ -6,12 +6,10 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.domain.*;
 import org.springframework.http.HttpStatus;
 
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
@@ -100,4 +98,8 @@ public interface SurveyUnitService {
 	boolean checkHabilitationReviewer(String userId, String id);
 
 	void delete(SurveyUnit surveyUnit);
+
+	void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit);
+
+	List<SurveyUnitTempZone> getAllSurveyUnitTempZone();
 }

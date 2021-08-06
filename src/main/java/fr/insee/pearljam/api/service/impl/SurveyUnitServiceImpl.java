@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.ClosingCause;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.Comment;
-import fr.insee.pearljam.api.domain.ContactAttempt;
-import fr.insee.pearljam.api.domain.ContactOutcome;
-import fr.insee.pearljam.api.domain.GeographicalLocation;
-import fr.insee.pearljam.api.domain.InseeAddress;
-import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.Person;
-import fr.insee.pearljam.api.domain.PhoneNumber;
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.State;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -50,21 +37,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
-import fr.insee.pearljam.api.repository.AddressRepository;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.CommentRepository;
-import fr.insee.pearljam.api.repository.ContactAttemptRepository;
-import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
-import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.PersonRepository;
-import fr.insee.pearljam.api.repository.SampleIdentifierRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -82,6 +54,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
+
+	@Autowired
+	SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
 
 	@Autowired
 	AddressRepository addressRepository;
@@ -664,5 +639,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public void delete(SurveyUnit surveyUnit) {
 		surveyUnitRepository.delete(surveyUnit);
+	}
+
+	@Override
+	public void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit) {
+		Long date = new Date().getTime();
+		SurveyUnitTempZone surveyUnitTempZoneToSave = new SurveyUnitTempZone(id,userId,date,surveyUnit);
+		surveyUnitTempZoneRepository.save(surveyUnitTempZoneToSave);
+	}
+
+	@Override
+	public List<SurveyUnitTempZone> getAllSurveyUnitTempZone() {
+		return surveyUnitTempZoneRepository.findAll();
 	}
 }
