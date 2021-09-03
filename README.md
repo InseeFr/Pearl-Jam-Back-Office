@@ -22,7 +22,7 @@ mvn spring-boot:run
 ```  
 
 ## Application Accesses locally
-To access to swagger-ui, use this url : [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)  
+To access to swagger-ui, use this url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
 
 ## Keycloak Configuration 
 1. To start the server on port 8180 execute in the bin folder of your keycloak :
@@ -63,6 +63,7 @@ fr.insee.pearljam.logging.level=DEBUG
 #Application configuration
 fr.insee.pearljam.application.mode=keycloak
 fr.insee.pearljam.application.crosOrigin=*
+fr.insee.pearljam.application.guestOU=OU-POLE
 
 #Database configuration
 fr.insee.pearljam.persistence.database.host = pearljam-db
@@ -73,10 +74,18 @@ fr.insee.pearljam.persistence.database.password = pearljam
 fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.defaultSchema=public
 
-#Datacollection Api
+#Datacollection service config
 fr.insee.pearljam.datacollection.service.url.scheme=http
 fr.insee.pearljam.datacollection.service.url.host=localhost
 fr.insee.pearljam.datacollection.service.url.port=8081
+
+#Mail service config
+fr.insee.pearljam.mail.service.url.scheme=http
+fr.insee.pearljam.mail.service.url.host=localhost
+fr.insee.pearljam.mail.service.url.port=8082
+fr.insee.pearljam.mail.service.recipients.list=pearl@pearljam.fr,jam@pearljam.fr
+fr.insee.pearljam.mail.service.url.login=pearljam
+fr.insee.pearljam.mail.service.url.password=pearljam
 
 #Keycloak configuration
 keycloak.realm=insee-realm
@@ -88,6 +97,7 @@ keycloak.principal-attribute:preferred_username
 
 #Keycloak roles
 fr.insee.pearljam.interviewer.role=investigator
+fr.insee.pearljam.admin.role=admin
 fr.insee.pearljam.user.local.role=manager_local
 fr.insee.pearljam.user.national.role=manager_national
 ```
@@ -105,7 +115,7 @@ catalina.sh run (on Unix-based systems)
 ```  
 
 ### 5. Application Access
-To access to swagger-ui, use this url : [http://localhost:8080/pearljam-1.1.0/swagger-ui.html](http://localhost:8080/pearljam-1.1.0/swagger-ui.html)  
+To access to swagger-ui, use this url : [http://localhost:8080/pearljam/swagger-ui.html](http://localhost:8080/pearljam/swagger-ui.html)  
 To access to keycloak, use this url : [http://localhost:8180](http://localhost:8180)  
 
 ## Before you commit
@@ -118,6 +128,7 @@ Before committing code please ensure,
 ## End-Points
 ### Campaign-Controller
 - `POST /api/campaign` : Post Campaign
+- `DELETE /api/campaign/{id}` : Delete Campaign
 - `PUT /api/campaign/{id}/collection-dates` : Put campaignCollectionDates
 - `GET /api/campaign/{id}/interviewers` : Get interviewers
 - `GET /api/campaign/{id}/survey-units/abandoned` : Get numberSUAbandoned
@@ -147,6 +158,7 @@ Before committing code please ensure,
 - `POST /api/interviewers` : Post interviewers
 
 ### Message-Controller
+- `POST /api/mail` : Send mail to admins defined in properties
 - `POST /api/message` : Post a message
 - `GET /api/message-history` : Get the message history
 - `PUT /api/message/{id}/interviewer/{idep}/delete` : Mark a message as deleted
@@ -155,6 +167,9 @@ Before committing code please ensure,
 - `POST /api/verify-name` : Update Messages with campaigns or interviewers listed in request body
 
 ### Organization-Unit-Controller
+- `DELETE /api/organization-unit/{id}` : Delete an Organization-unit
+- `POST /api/organization-unit/{id}/users` : add users to an organization-unit
+- `GET /api/organization-units` : Get all organization-units
 - `POST /api/organization-units` : Create Context with Organizational Unit and users associated
 
 ### Preference-Controller
@@ -182,9 +197,12 @@ Before committing code please ensure,
 - `POST /api/survey-units` : POST SurveyUnit assignations to interviewer
 - `GET /api/survey-units/closable` : Get closable survey units
 - `POST /api/survey-units/interviewers` : Post SurveyUnits
+- `DELETE /api/survey-unit/{id}` : Delete SurveyUnit
+
 
 ### User-Controller
 - `GET /api/user` : Get User
+- `DELETE /api/user/{id}` : Delete User
 
 ## Libraries used
 - spring-boot-jpa
@@ -203,6 +221,7 @@ Before committing code please ensure,
 ## Developers
 - Benjamin Claudel (benjamin.claudel@keyconsulting.fr)
 - Samuel Corcaud (samuel.corcaud@keyconsulting.fr)
+- Paul Guillemet (paul.guillemet@keyconsulting.fr)
 
 ## License
 Please check [LICENSE](https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE) file

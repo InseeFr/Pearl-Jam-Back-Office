@@ -93,7 +93,7 @@ public class SurveyUnitCampaignDto {
 				currentState = s;
 			}
 		}
-	    if(su.getClosingCause() != null) {
+	    if(su.getClosingCause() != null && currentState != null && !currentState.getType().equals(StateType.CLO)) {
 	    	this.closingCause = su.getClosingCause().getType();
 	    }
 	    this.state = currentState.getType();

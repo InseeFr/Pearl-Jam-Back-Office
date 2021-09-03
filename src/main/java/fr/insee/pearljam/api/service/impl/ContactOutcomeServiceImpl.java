@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +12,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
@@ -36,8 +35,6 @@ import fr.insee.pearljam.api.service.UtilsService;
 @Service
 @Transactional
 public class ContactOutcomeServiceImpl implements ContactOutcomeService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ContactOutcomeServiceImpl.class);
 
 	@Autowired
 	CampaignRepository campaignRepository;
@@ -74,10 +71,10 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 	@Override
 	public ContactOutcomeTypeCountCampaignDto getContactOutcomeCountTypeByCampaign(String userId, String campaignId,
-			Long date) {
+			Long date) throws NotFoundException {
 		ContactOutcomeTypeCountCampaignDto stateCountCampaignDto = new ContactOutcomeTypeCountCampaignDto();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
 		}
 		List<ContactOutcomeTypeCountDto> stateCountList = new ArrayList<>();
 		Long dateToUse = date;
@@ -96,9 +93,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 				contactOutcomeRepository.getContactOutcomeTypeCountByCampaignId(campaignId, dateToUse)));
 		if (stateCountCampaignDto.getFrance() == null || stateCountCampaignDto.getOrganizationUnits() == null
 				) {
-			LOGGER.error("No matching survey units states were found for the user {} and the campaign {}", userId,
-					campaignId);
-			return null;
+			throw new NotFoundException("No matching survey units states were found for the user " + userId + " and the campaign " + campaignId);
 		}
 		return stateCountCampaignDto;
 	}
@@ -122,7 +117,11 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 	}
 	
 	@Override
-	public ContactOutcomeTypeCountDto getNbSUNotAttributedContactOutcomes(String userId, String id, Long date) {
+	public ContactOutcomeTypeCountDto getNbSUNotAttributedContactOutcomes(String userId, String id, Long date) throws NotFoundException {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, id)) {
+			throw new NotFoundException(String.format("No campaign with id %s associated to the user %s", id, userId));
+		}
+		
 		List<String> organizationUnits = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId)
 				.collect(Collectors.toList());
@@ -137,9 +136,12 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 	}
 	
 	@Override
-	public ContactOutcomeTypeCountDto getContactOutcomeByInterviewerAndCampaign(String userId, String campaignId, String interviewerId, Long date) {
+	public ContactOutcomeTypeCountDto getContactOutcomeByInterviewerAndCampaign(String userId, String campaignId, String interviewerId, Long date) throws NotFoundException {
+		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+			throw new NotFoundException(String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
+		}
 		if(!interviewerRepository.findById(interviewerId).isPresent() || !campaignRepository.findById(campaignId).isPresent()) {
-			return null;
+			throw new NotFoundException(String.format("The interviewer %s or the campaign %s was not found in database", interviewerId, campaignId));
 		}
 		List<String> userOuIds;
 		if(!userId.equals(Constants.GUEST)) {

@@ -51,11 +51,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
 	private String interviewerRole;
 	
+	@Value("${fr.insee.pearljam.admin.role:#{null}}")
+	private String adminRole;
+	
 	@Value("${fr.insee.pearljam.user.local.role:#{null}}")
 	private String userLocalRole;
 	
 	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
 	private String userNationalRole;
+	
 
 	/**
 	 * This method check if environment is development or test
@@ -82,59 +86,73 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if(this.applicationProperties.getMode() == Mode.basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+			// healtcheck
+			.antMatchers(HttpMethod.GET, Constants.API_HEALTH_CHECK).permitAll()
 			// configuration for endpoints
-			.antMatchers(Constants.API_SURVEYUNITS).hasAnyRole(interviewerRole,userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID).hasAnyRole(interviewerRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_STATE).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_COMMENT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_VIEWED).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_CLOSE).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_SURVEYUNIT_ID_CLOSINGCAUSE).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGNS_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_CONTACTOUTCOMES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CONTACTOUTCOMES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES	).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_INTERVIEWERS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_INTERVIEWERS_SU_STATECOUNT).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_INTERVIEWER_ID_CAMPAIGNS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_USER).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_ORGANIZATIONUNITS).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_PREFERENCES).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_MESSAGE).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_MESSAGES_ID).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_VERIFYNAME).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_MESSAGEHISTORY).hasAnyRole(userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CREATEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_DELETEDATASET).hasAnyRole(interviewerRole, userLocalRole, userNationalRole)	
-			.antMatchers(Constants.API_CHECK_HABILITATION).hasAnyRole(userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)
+			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNIT_ID_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole)
+			.antMatchers(HttpMethod.DELETE, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_STATE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_COMMENT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_VIEWED).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_CLOSE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_CLOSINGCAUSE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_CAMPAIGN).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_CAMPAIGN_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES	).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_INTERVIEWERS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWER_ID_CAMPAIGNS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_USER).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_USER_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)			
+			.antMatchers(HttpMethod.DELETE, Constants.API_ORGANIZATIONUNIT_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNIT_ID_USERS).hasAnyRole(adminRole)			.antMatchers(HttpMethod.PUT, Constants.API_PREFERENCES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_MESSAGE).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_MESSAGES_ID).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_VERIFYNAME).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_MESSAGEHISTORY).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_MESSAGE_MARK_AS_READ).hasAnyRole(adminRole,interviewerRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_CREATEDATASET).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.DELETE, Constants.API_DELETEDATASET).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CHECK_HABILITATION).hasAnyRole(adminRole, userLocalRole, userNationalRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
 			.antMatchers(Constants.API_SURVEYUNITS,
+					Constants.API_SURVEYUNITS_TEMP_ZONE,
 					Constants.API_SURVEYUNITS_INTERVIEWERS,
 					Constants.API_SURVEYUNITS_CLOSABLE,
 					Constants.API_SURVEYUNIT_ID,
+					Constants.API_SURVEYUNIT_ID_TEMP_ZONE,
 					Constants.API_SURVEYUNIT_ID_STATE,
 					Constants.API_SURVEYUNIT_ID_STATES,
 					Constants.API_SURVEYUNIT_ID_COMMENT,
@@ -145,6 +163,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CAMPAIGNS_SU_STATECOUNT,
 					Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES,
 					Constants.API_CAMPAIGN,
+					Constants.API_CAMPAIGN_ID,
 					Constants.API_CAMPAIGN_COLLECTION_DATES,
 					Constants.API_CAMPAIGN_ID_INTERVIEWERS,
 					Constants.API_CAMPAIGN_ID_SURVEYUNITS,
@@ -162,8 +181,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_INTERVIEWERS_SU_STATECOUNT,
 					Constants.API_INTERVIEWER_ID_CAMPAIGNS,
 					Constants.API_USER,
+					Constants.API_USER_ID,
 					Constants.API_GEOGRAPHICALLOCATIONS,
 					Constants.API_ORGANIZATIONUNITS,
+					Constants.API_ORGANIZATIONUNIT_ID,
+					Constants.API_ORGANIZATIONUNIT_ID_USERS,
 					Constants.API_PREFERENCES,
 					Constants.API_MESSAGE,
 					Constants.API_MESSAGES_ID,
@@ -173,7 +195,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_MESSAGE_MARK_AS_DELETED,
 					Constants.API_CREATEDATASET,
 					Constants.API_DELETEDATASET,
-					Constants.API_CHECK_HABILITATION)
+					Constants.API_CHECK_HABILITATION,
+					Constants.API_HEALTH_CHECK)
 			.permitAll();
 		}
 	}
@@ -186,11 +209,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (isDevelopment()) {
 			switch (this.applicationProperties.getMode()) {
 			case basic:
-				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(interviewerRole)
+				auth.inMemoryAuthentication().withUser("INTW1").password("{noop}intw1").roles(adminRole, interviewerRole)
 						.and()
-						.withUser("ABC").password("{noop}abc").roles(userLocalRole, userNationalRole)
+						.withUser("ABC").password("{noop}abc").roles(adminRole, userLocalRole, userNationalRole)
 						.and()
-						.withUser("JKL").password("{noop}jkl").roles(userLocalRole, userNationalRole)
+						.withUser("JKL").password("{noop}jkl").roles(adminRole, userLocalRole, userNationalRole)
 						.and()
 						.withUser("noWrite").password("{noop}a").roles();
 				break;

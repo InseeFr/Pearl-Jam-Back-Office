@@ -20,25 +20,17 @@ public class CampaignContextDto {
 		return campaign;
 	}
 
-
-
 	public void setCampaign(String campaign) {
 		this.campaign = campaign;
 	}
-
-
 
 	public String getCampaignLabel() {
 		return campaignLabel;
 	}
 
-
-
 	public void setCampaignLabel(String campaignLabel) {
 		this.campaignLabel = campaignLabel;
 	}
-
-
 
 	public List<VisibilityContextDto> getVisibilities() {
 		return visibilities;

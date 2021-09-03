@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -83,13 +84,33 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			"AND st.type IN ('CLO', 'FIN', 'TBR') " +
 			")")
 	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
+	 
+	@Query(value="SELECT su FROM SurveyUnit su " + 
+			 	"WHERE su.organizationUnit.id IN (:lstOuId) " +
+			
+				// Contact outcome must be null or INA
+				"AND NOT EXISTS ( " +
+				"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+				"AND co.type <> 'INA' ) " +
+
+				"AND EXISTS (SELECT vi FROM Visibility vi " +
+				"WHERE vi.campaign.id = su.campaign.id " +
+				"AND vi.organizationUnit.id = su.organizationUnit.id " +
+				"AND vi.collectionEndDate < :date " +
+				"AND vi.endDate > :date) " +
+				"AND NOT EXISTS (" +
+				"SELECT st FROM State st WHERE " +
+				"st.surveyUnit.id = su.id " +
+				"AND st.type IN ('CLO', 'FIN', 'TBR') " +
+				")")
+	List<SurveyUnit> findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId);
 	
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
 	
 	@Query(value="SELECT "
 			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
 			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
-			+ "SUM(CASE WHEN type IN ('FIN', 'QNA') AND EXISTS (SELECT 1 FROM state s where s.type ='FIN' AND s.survey_unit_id = t.survey_unit_id) THEN 1 ELSE 0 END) "
+			+ "SUM(CASE WHEN type IN ('FIN', 'CLO') THEN 1 ELSE 0 END) "
 			+ "AS finalized, "
 			+ "COUNT(DISTINCT t.survey_unit_id) AS allocated "
 			+ "FROM ( "
@@ -109,5 +130,13 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Modifying
 	@Query(value="UPDATE survey_unit SET interviewer_id=NULL", nativeQuery=true)
 	void updateAllinterviewersToNull();
+
+	@Query(value="SELECT su FROM SurveyUnit su WHERE "
+			+ "su.id=:id AND su.organizationUnit.id IN (:OUids)")
+	List<SurveyUnit> findByIdInOrganizationalUnit(@Param("id") String id, @Param("OUids") List<String> organizationalUnitIds);
+
+	Collection<SurveyUnit> findByCampaignId(String id);
+
+
 	  
 }

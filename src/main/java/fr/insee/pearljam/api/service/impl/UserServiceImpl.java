@@ -6,19 +6,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.configuration.ApplicationProperties;
 import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.MessageService;
+import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
 
 /**
@@ -42,12 +52,19 @@ public class UserServiceImpl implements UserService {
 	OrganizationUnitRepository ouRepository;
 	
 	@Autowired
+	MessageService messageService;
+	
+	@Autowired
 	UserService userService;
+	
+	@Autowired
+	PreferenceService preferenceService;
+	
 
 	@Autowired
 	ApplicationProperties applicationProperties;
 
-	public UserDto getUser(String userId) {
+	public UserDto getUser(String userId) throws NotFoundException {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 		if (applicationProperties.getMode() != Mode.noauth) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
@@ -60,7 +77,7 @@ public class UserServiceImpl implements UserService {
 					return new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
 							organizationUnitsParent, organizationUnits);
 			} else {
-				return null;
+				throw new NotFoundException(String.format("User %s does not exist in database", userId));
 			}
 		} else {
 			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
@@ -125,5 +142,36 @@ public class UserServiceImpl implements UserService {
 		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);		
 		return !Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
+	}
+
+	@Override
+	public Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId) throws UserAlreadyExistsException, NoOrganizationUnitException {
+		for (UserContextDto user : users) {
+			Optional<User> userOpt = userRepository.findById(user.getId());
+			if (userOpt.isPresent()) {
+				throw new UserAlreadyExistsException("Found duplicate user with id: " + user.getId());
+			}
+			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(organisationUnitId);
+			if (!ouOpt.isPresent()) {
+				throw new NoOrganizationUnitException("Organization Unit does not exist : " + organisationUnitId);
+			}
+			userRepository.save(new User(user.getId(), user.getFirstName(), user.getLastName(), ouOpt.get()));
+
+		}
+		return new Response("", HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional
+	public HttpStatus delete(String id) {
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent()) {
+			return HttpStatus.NOT_FOUND;
+		}
+		// delete preference
+		preferenceService.setPreferences(new ArrayList<>(), user.get().getId());
+		messageService.deleteMessageByUserId(user.get().getId());
+		userRepository.delete(user.get());
+		return HttpStatus.OK;
 	}
 }

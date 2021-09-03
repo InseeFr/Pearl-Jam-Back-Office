@@ -2,14 +2,13 @@ package fr.insee.pearljam.api.service.impl;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseCountDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
@@ -46,19 +45,16 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 	@Autowired
 	UtilsService utilsService;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClosingCauseServiceImpl.class);
-
 	
 	@Override
 	public ClosingCauseCountDto getClosingCauseCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits) {
+			List<String> associatedOrgUnits) throws NotFoundException {
 		ClosingCauseCountDto closingCauseCountDto = new ClosingCauseCountDto();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
 		}
 		if (!interviewerRepository.findById(interviewerId).isPresent()) {
-			LOGGER.error("No interviewer found for the id {}", interviewerId);
-			return null;
+			throw new NotFoundException("No interviewer found for the id "+ interviewerId);
 		}
 		List<String> userOuIds;
 		if(!userId.equals(Constants.GUEST)) {
@@ -77,9 +73,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 			closingCauseCountDto.setTotal(stateRepository.getTotalStateCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (closingCauseCountDto.getTotal() == null) {
-			LOGGER.error("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId,
-					userId, campaignId);
-			return null;
+			throw new NotFoundException("No matching interviewers " + interviewerId + " were found for the user " + userId + " and the campaign " + interviewerId);
 		}
 		return closingCauseCountDto;
 	}

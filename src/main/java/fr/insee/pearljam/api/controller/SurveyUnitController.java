@@ -6,12 +6,15 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
@@ -35,6 +34,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -104,12 +105,12 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units")
-	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(HttpServletRequest request) {
+	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(HttpServletRequest request, @RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId);
+			List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
 			if (lstSurveyUnit == null) {
 				LOGGER.info("GET SurveyUnit resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -135,13 +136,19 @@ public class SurveyUnitController {
 		} 
 		Optional<SurveyUnit> su = surveyUnitService.findById(id);
 		if(!su.isPresent()) {
+			LOGGER.error("Survey unit with id {} was not found in database", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);			
 		}
 		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
+			LOGGER.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		SurveyUnitDetailDto surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
-		if (surveyUnit == null) {
+		SurveyUnitDetailDto surveyUnit;
+		try {
+			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
+		}
+		catch(NotFoundException | SurveyUnitException e) {
+			LOGGER.error(e.getMessage());
 			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -173,6 +180,29 @@ public class SurveyUnitController {
 	}
 
 	/**
+	 * This method is used to post a survey-unit by id to a temp-zone
+	 */
+	@ApiOperation(value = "Post survey-unit to temp-zone")
+	@PostMapping(path = "/survey-unit/{id}/temp-zone")
+	public ResponseEntity<Object> postSurveyUnitByIdInTempZone(@RequestBody JsonNode surveyUnit, HttpServletRequest request, @PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		surveyUnitService.saveSurveyUnitToTempZone(id, userId, surveyUnit);
+		LOGGER.info("POST survey-unit to temp-zone resulting in 201");
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	/**
+	 * This method is used to retrieve survey-units in temp-zone
+	 */
+	@ApiOperation(value = "GET all survey-units in temp-zone")
+	@GetMapping(path = "/survey-units/temp-zone")
+	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
+		List<SurveyUnitTempZone> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
+		LOGGER.info("GET survey-units in temp-zone resulting in 200");
+		return new ResponseEntity<>(surveyUnitTempZones,HttpStatus.OK);
+	}
+
+	/**
 	 * This method is using to update the state of Survey Units listed in request
 	 * body
 	 * 
@@ -190,7 +220,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
-			LOGGER.info("PUT state '{}' on following su {} resulting in {}", state.getLabel(), surveyUnitId,
+			LOGGER.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
 					returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
@@ -314,18 +344,39 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Check habilitation")
 	@GetMapping(path = "/check-habilitation")
-	public ResponseEntity<HabilitationDto> getSurveyUnitByCampaignId(HttpServletRequest request,
-			@RequestParam(value = "id", required = true) String id) {
-    String userId = utilsService.getUserId(request);
-    HabilitationDto resp = new HabilitationDto();
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
-      resp.setHabilitated(false);
-			return new ResponseEntity<>(resp, HttpStatus.OK);
-    } 
-    
-    boolean habilitated = surveyUnitService.checkHabilitation(userId, id);
-    resp.setHabilitated(habilitated);
-    return new ResponseEntity<>(resp, HttpStatus.OK);
+	public ResponseEntity<HabilitationDto> checkHabilitation(HttpServletRequest request,
+			@RequestParam(value = "id", required = true) String id,
+			@RequestParam(value = "role", required = false) String role) {
+	    String userId = utilsService.getUserId(request);
+	    HabilitationDto resp = new HabilitationDto();
+	    
+	    if(role != null && !role.isBlank()) {
+	    	if(role.equals(Constants.REVIEWER)) {
+	            if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+                resp.setHabilitated(false);
+                LOGGER.info("No user with id {} found in database", userId);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+	            } 
+	            boolean habilitated = surveyUnitService.checkHabilitationReviewer(userId, id);
+	            resp.setHabilitated(habilitated);
+	        } else {
+	        	resp.setHabilitated(false);
+	    		LOGGER.warn("Only '{}' is accepted as a role in query argument", Constants.REVIEWER);
+	    		return new ResponseEntity<>(resp, HttpStatus.OK);
+	        }
+	    }
+	    else {
+
+	    	if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+	    		LOGGER.info("No interviewer with id {} found in database", userId);
+	    		resp.setHabilitated(false);
+	    		return new ResponseEntity<>(resp, HttpStatus.OK);
+	      } 
+	        boolean habilitated = surveyUnitService.checkHabilitationInterviewer(userId, id);
+	        resp.setHabilitated(habilitated);
+	    }
+	    
+	    return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	/**
@@ -371,9 +422,28 @@ public class SurveyUnitController {
 			LOGGER.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {
-			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request);
+			List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
 			LOGGER.info("GET closable survey units resulting in 200");
 			return new ResponseEntity<>(lstSu, HttpStatus.OK);
 		}
+	}
+	
+	/**
+	* This method is using to delete a survey-unit
+	* 
+	* @param id the id of survey-unit
+	* @return {@link HttpStatus}
+	*/
+	@ApiOperation(value = "Delete survey-unit")
+	@DeleteMapping(path = "/survey-unit/{id}")
+	public ResponseEntity<Object> deleteSurveyUnit(HttpServletRequest request, @PathVariable(value = "id") String id){
+		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
+		if (!surveyUnitOptional.isPresent()) {
+			LOGGER.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		surveyUnitService.delete(surveyUnitOptional.get());
+		LOGGER.info("DELETE survey-unit with id {} resulting in 200", id);
+		return ResponseEntity.ok().build();
 	}
 }

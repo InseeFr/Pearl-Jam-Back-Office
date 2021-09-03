@@ -27,17 +27,21 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
+import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 
@@ -52,6 +56,7 @@ import fr.insee.pearljam.api.service.UtilsService;
 public class CampaignServiceImpl implements CampaignService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignServiceImpl.class);
+	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
 
 	@Autowired
 	CampaignRepository campaignRepository;
@@ -79,12 +84,21 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
-
+	
+	@Autowired
+	MessageRepository messageRepository;
+	
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	UtilsService utilsService;
+	
+	@Autowired
+	SurveyUnitService surveyUnitService;
+	
+	@Autowired
+	PreferenceService preferenceService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -124,10 +138,10 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
+	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
 		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 
 		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
@@ -141,7 +155,7 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		if (interviewersDtoReturned.isEmpty()) {
-			LOGGER.error("No interviewers found for the campaign {}", campaignId);
+			LOGGER.warn("No interviewers found for the campaign {}", campaignId);
 		}
 		return interviewersDtoReturned;
 	}
@@ -158,9 +172,11 @@ public class CampaignServiceImpl implements CampaignService {
 					returnCode = HttpStatus.OK;
 				}
 			} else {
+				LOGGER.error("Campaign {} does not exist in database", idCampaign);
 				returnCode = HttpStatus.NOT_FOUND;
 			}
 		}
+		LOGGER.error("Required fields missing in input body");
 		return returnCode;
 	}
 
@@ -197,7 +213,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public boolean isUserPreference(String userId, String campaignId) {
-		return !(campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
+		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
 	@Override
@@ -218,27 +234,31 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 			campaignRepository.save(currentCampaign);
 		} else {
-			LOGGER.info("Campaign {} does not exist", id);
+			LOGGER.error("Campaign {} does not exist in db", id);
 			returnStatus = HttpStatus.NOT_FOUND;
+		}
+		
+		if (returnStatus == HttpStatus.BAD_REQUEST) {
+			LOGGER.error("No field endate or start date found in body");
 		}
 
 		return returnStatus;
 	}
 
 	@Override
-	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUAbandoned = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		return new CountDto(nbSUAbandoned);
 	}
 
 	@Override
-	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUNotAttributed = 0;
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			return null;
+			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 		return new CountDto(nbSUNotAttributed);
 	}
@@ -255,12 +275,13 @@ public class CampaignServiceImpl implements CampaignService {
 		if(campaignDto.getVisibilities() == null) {
 			return new Response("Campaign visibilities are missing in request", HttpStatus.BAD_REQUEST);
 		}
-		Optional<Campaign> campOpt = campaignRepository.findById(campaignDto.getCampaign());
+		String campaignId = campaignDto.getCampaign().toUpperCase();
+		Optional<Campaign> campOpt = campaignRepository.findById(campaignId);
 		if(campOpt.isPresent()) {
-			return  new Response("Campaign with id '" + campaignDto.getCampaign() + "' already exists", HttpStatus.BAD_REQUEST);
+			return  new Response("Campaign with id '" + campaignId + "' already exists", HttpStatus.BAD_REQUEST);
 		}
 		// Creating campaign
-		Campaign campaign = new Campaign(campaignDto.getCampaign(), campaignDto.getCampaignLabel());
+		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel());
 		campaignRepository.save(campaign);
 		
 		for(VisibilityContextDto dto : campaignDto.getVisibilities()) {
@@ -297,6 +318,56 @@ public class CampaignServiceImpl implements CampaignService {
 				&& dto.getEndDate() != null;
 	}
 
+	@Override
+	public Optional<Campaign> findById(String id) {
+		return campaignRepository.findById(id);
+	}
 
+	@Override
+	public void delete(Campaign campaign) {
+		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitRepository.delete(su));
+		userRepository.findAll().stream()
+				.forEach(user -> {
+					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId).collect(Collectors.toList());
+					if(lstCampaignId.contains(campaign.getId())) {
+						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
+						preferenceService.setPreferences(lstCampaignId, user.getId());
+					}
+				});
+		messageRepository.deleteCampaignMessageRecipientByCampaignId(campaign.getId());
+		campaignRepository.delete(campaign);
+	}
+
+	@Override
+	public HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign) {
+		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
+		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
+		if (camp.isPresent()) {
+			Campaign currentCampaign = camp.get();
+			currentCampaign.setLabel(campaign.getCampaignLabel());
+			campaignRepository.save(currentCampaign);
+			campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
+						campaign.getCampaign(), 
+						v.getOrganizationalUnit(), 
+						new VisibilityDto(
+								v.getManagementStartDate(), 
+								v.getInterviewerStartDate(), 
+								v.getIdentificationPhaseStartDate(), 
+								v.getCollectionStartDate(), 
+								v.getCollectionEndDate(), 
+								v.getEndDate()))	
+			);
+			returnStatus = HttpStatus.OK;
+		} else {
+			LOGGER.error("Campaign {} does not exist in db", id);
+			returnStatus = HttpStatus.NOT_FOUND;
+		}
+		
+		if (returnStatus == HttpStatus.BAD_REQUEST) {
+			LOGGER.error("Wrong input format");
+		}
+
+		return returnStatus;
+	}
 
 }

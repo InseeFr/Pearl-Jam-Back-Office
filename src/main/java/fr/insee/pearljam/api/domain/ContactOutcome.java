@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+
 /**
 * Entity ContactOutcome : represent the entity table in DB
 * 
@@ -52,6 +54,30 @@ public class ContactOutcome implements Serializable {
 	*/
 	@OneToOne
 	private SurveyUnit surveyUnit;
+	
+	
+	
+	public ContactOutcome(Long id, Long date, ContactOutcomeType type, Integer totalNumberOfContactAttempts,
+			SurveyUnit surveyUnit) {
+		super();
+		this.id = id;
+		this.date = date;
+		this.type = type;
+		this.totalNumberOfContactAttempts = totalNumberOfContactAttempts;
+		this.surveyUnit = surveyUnit;
+	}
+
+	public ContactOutcome() {
+		super();
+	}
+
+	public ContactOutcome(ContactOutcomeDto contactOutcome, SurveyUnit surveyUnit) {
+		this.date = contactOutcome.getDate();
+		this.type = contactOutcome.getType();
+		this.totalNumberOfContactAttempts = contactOutcome.getTotalNumberOfContactAttempts();
+		this.surveyUnit = surveyUnit;
+	}
+	
 	/**
 	 * @return the id
 	 */

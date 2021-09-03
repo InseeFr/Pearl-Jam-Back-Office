@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import fr.insee.pearljam.api.dto.state.StateDto;
 /**
 * Entity State : represent the entity table in DB
 * 
@@ -64,6 +66,13 @@ public class State implements Serializable{
 		this.surveyUnit = surveyUnit;
 		this.type = type;
 	}
+	public State(StateDto s, SurveyUnit surveyUnit) {
+		super();
+		this.date = s.getDate();
+		this.surveyUnit = surveyUnit;
+		this.type = s.getType();
+	}
+
 	/**
 	 * @return id of comment
 	 */

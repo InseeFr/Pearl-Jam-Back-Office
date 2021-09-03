@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -30,6 +33,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -64,6 +68,8 @@ public class CampaignController {
 		try {
 			response = campaignService.postCampaign(campaignDto);
 		} catch (NoOrganizationUnitException | VisibilityException e) {
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} 
 		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
@@ -110,11 +116,16 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<InterviewerDto> lstInterviewer = campaignService.getListInterviewers(userId, id);
-			if (lstInterviewer == null) {
+			List<InterviewerDto> lstInterviewer;
+			try {
+				lstInterviewer = campaignService.getListInterviewers(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get interviewers resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
+			
 			LOGGER.info("Get interviewers resulting in 200");
 			return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 		}
@@ -137,8 +148,12 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			CountDto nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
-			if (nbSUAbandoned == null) {
+			CountDto nbSUAbandoned;
+			try {
+				nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get numberSUAbandoned resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -164,8 +179,12 @@ public class CampaignController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			CountDto nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
-			if (nbSUNotAttributed == null) {
+			CountDto nbSUNotAttributed;
+			try {
+				nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get numberSUAbandoned resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -214,6 +233,49 @@ public class CampaignController {
 			HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
 			LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
 					idOu, returnCode.value());
+			return new ResponseEntity<>(returnCode);
+		}
+	}
+	
+	
+	/**
+	* This method is using to delete a campaign
+	* 
+	* @param campaign the value to delete
+	* @return {@link HttpStatus}
+	* 
+	*/
+	@ApiOperation(value = "Delete a campaign")
+	@DeleteMapping(path = "/campaign/{id}")
+	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		Optional<Campaign> campaignOptional = campaignService.findById(id);
+		if (!campaignOptional.isPresent()) {
+			LOGGER.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		campaignService.delete(campaignOptional.get());
+		LOGGER.info("DELETE campaign with id {} resulting in 200", id);
+		return ResponseEntity.ok().build();
+	}
+	
+	
+	/**
+	 * Updates the collection start and end dates for a campaign
+	 * 
+	 * @body CampaignDto
+	 * @param id
+	 * @return {@link HttpStatus}
+	 */
+	@ApiOperation(value = "Put campaignCollectionDates")
+	@PutMapping(path = "/campaign/{id}")
+	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			HttpStatus returnCode = campaignService.updateCampaign(userId, id, campaign);
+			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
 	}

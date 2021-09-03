@@ -31,10 +31,7 @@ public class DataSetController {
 		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		
 		HttpStatus status = injector.createDataSet();
-		
-		LOGGER.info("Dataset creation end");	
 		return new ResponseEntity<>(status);
 	}
 	

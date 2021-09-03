@@ -8,12 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -44,13 +47,30 @@ public class UserController {
 			LOGGER.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			UserDto user = userService.getUser(userId);
-			if (user == null) {
+			UserDto user;
+			try {
+				user = userService.getUser(userId);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("GET User resulting in 403");
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 			}
 			LOGGER.info("GET User resulting in 200");
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		}
+	}
+	
+	/**
+	 * This method is using to delete an user
+	 * 
+	 * @param request
+	 */
+	@ApiOperation(value = "Delete User")
+	@DeleteMapping(path = "/user/{id}")
+	public ResponseEntity<Object> deleteUser(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		HttpStatus response = userService.delete(id);
+		LOGGER.info("DELETE User resulting in {}", response);
+		return new ResponseEntity<>(response);
 	}
 }

@@ -22,6 +22,7 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignD
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
@@ -54,8 +55,11 @@ public class ContactOutcomeController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			ContactOutcomeTypeCountDto contactOutcomes = contactOutcomeService.getNbSUNotAttributedContactOutcomes(userId, id, date);
-			if (contactOutcomes == null) {
+			ContactOutcomeTypeCountDto contactOutcomes;
+			try {
+				contactOutcomes = contactOutcomeService.getNbSUNotAttributedContactOutcomes(userId, id, date);
+			} catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get Contact-outcomes count for non attributted SUs resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -107,8 +111,12 @@ public class ContactOutcomeController {
 		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			ContactOutcomeTypeCountCampaignDto stateCountCampaignDto = contactOutcomeService.getContactOutcomeCountTypeByCampaign(userId, id, date);
-			if (stateCountCampaignDto == null) {
+			ContactOutcomeTypeCountCampaignDto stateCountCampaignDto;
+			try {
+				stateCountCampaignDto = contactOutcomeService.getContactOutcomeCountTypeByCampaign(userId, id, date);
+			}
+			catch(NotFoundException e) {
+				LOGGER.error(e.getMessage());
 				LOGGER.info("Get contact-outcome type count resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -133,15 +141,19 @@ public class ContactOutcomeController {
         String userId = utilsService.getUserId(request);
         if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
           return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } else {
-        ContactOutcomeTypeCountDto cotd = contactOutcomeService.getContactOutcomeByInterviewerAndCampaign(userId, id, idep, date);
-        if (cotd == null) {
-          LOGGER.info("Get contactOutcomeTypeCount resulting in 404");
-          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    	ContactOutcomeTypeCountDto cotd;
+    	try {
+    		cotd = contactOutcomeService.getContactOutcomeByInterviewerAndCampaign(userId, id, idep, date);
+    	}
+		catch(NotFoundException e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.info("Get contactOutcomeTypeCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         LOGGER.info("Get contactOutcomeTypeCount resulting in 200");
         return new ResponseEntity<>(cotd, HttpStatus.OK);
-      }
+      
     }
 	
 }
