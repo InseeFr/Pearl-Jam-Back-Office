@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>3.8.0</version>
+	<version>3.8.1</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>
@@ -265,6 +265,17 @@
 			<groupId>org.jacoco</groupId>
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.1</version>
+		</dependency>
+
+		<!-- Manage JSON OBJECT -->
+		<dependency>
+			<groupId>com.vladmihalcea</groupId>
+			<artifactId>hibernate-types-52</artifactId>
+			<version>2.9.11</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -83,16 +83,20 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
         .and()
          // manage routes securisation
         .authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
-        // configuration for Swagger
+		// healtcheck
+		.antMatchers(HttpMethod.GET, Constants.API_HEALTH_CHECK).permitAll()
+		// configuration for Swagger
 		.antMatchers("/swagger-ui.html/**", "/v2/api-docs","/csrf", "/", "/webjars/**", "/swagger-resources/**").permitAll()
 		.antMatchers("/environnement", "/healthcheck").permitAll()
 		// configuration for endpoints
-		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)	
+		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
+		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
 		.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
-		.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
+		.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)
+		.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNIT_ID_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole)
 		.antMatchers(HttpMethod.DELETE, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_STATE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 		.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	

@@ -23,5 +23,7 @@
 
 	<include file="changelog/301_removing_interviewer_msg_recipent.xml" relativeToChangelogFile="true"/>
 
+	<!-- Add new table (tempzone) in db -->
+	<include file="changelog/400_add_new_temp_zone.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

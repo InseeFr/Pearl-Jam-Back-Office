@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
@@ -179,6 +177,29 @@ public class SurveyUnitController {
 			LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
+	}
+
+	/**
+	 * This method is used to post a survey-unit by id to a temp-zone
+	 */
+	@ApiOperation(value = "Post survey-unit to temp-zone")
+	@PostMapping(path = "/survey-unit/{id}/temp-zone")
+	public ResponseEntity<Object> postSurveyUnitByIdInTempZone(@RequestBody JsonNode surveyUnit, HttpServletRequest request, @PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		surveyUnitService.saveSurveyUnitToTempZone(id, userId, surveyUnit);
+		LOGGER.info("POST survey-unit to temp-zone resulting in 201");
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	/**
+	 * This method is used to retrieve survey-units in temp-zone
+	 */
+	@ApiOperation(value = "GET all survey-units in temp-zone")
+	@GetMapping(path = "/survey-units/temp-zone")
+	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
+		List<SurveyUnitTempZone> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
+		LOGGER.info("GET survey-units in temp-zone resulting in 200");
+		return new ResponseEntity<>(surveyUnitTempZones,HttpStatus.OK);
 	}
 
 	/**

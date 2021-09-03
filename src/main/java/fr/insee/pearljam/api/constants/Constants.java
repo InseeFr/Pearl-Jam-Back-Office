@@ -26,6 +26,9 @@ public class Constants {
 	public static final String API_SURVEYUNIT_ID_CLOSE = "/api/survey-unit/{id}/close/{closingCause}";
 	public static final String API_SURVEYUNIT_ID_CLOSINGCAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
 
+	public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
+	public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
+
 	public static final String API_CAMPAIGNS = "/api/campaigns";
 	public static final String API_CAMPAIGNS_SU_STATECOUNT = "/api/campaigns/survey-units/state-count";
 	public static final String API_CAMPAIGNS_SU_CONTACTOUTCOMES = "/api/campaigns/survey-units/contact-outcomes";
@@ -70,6 +73,8 @@ public class Constants {
 	public static final String API_DELETEDATASET = "/api/delete-dataset";
 
 	public static final String API_CHECK_HABILITATION = "/api/check-habilitation";
+
+	public static final String API_HEALTH_CHECK = "/api/healthcheck";
 
 	// Error messages
 	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";

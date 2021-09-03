@@ -86,13 +86,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if(this.applicationProperties.getMode() == Mode.basic) {
 			http.httpBasic().authenticationEntryPoint(unauthorizedEntryPoint());
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+			// healtcheck
+			.antMatchers(HttpMethod.GET, Constants.API_HEALTH_CHECK).permitAll()
 			// configuration for endpoints
-			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole,userLocalRole, userNationalRole)
 			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS_INTERVIEWERS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_CLOSABLE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
-			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole, interviewerRole)
+			.antMatchers(HttpMethod.POST, Constants.API_SURVEYUNIT_ID_TEMP_ZONE).hasAnyRole(adminRole, interviewerRole)
 			.antMatchers(HttpMethod.DELETE, Constants.API_SURVEYUNIT_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_SURVEYUNIT_ID_STATE).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_ID_STATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -144,9 +148,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
 			// configuration for endpoints
 			.antMatchers(Constants.API_SURVEYUNITS,
+					Constants.API_SURVEYUNITS_TEMP_ZONE,
 					Constants.API_SURVEYUNITS_INTERVIEWERS,
 					Constants.API_SURVEYUNITS_CLOSABLE,
 					Constants.API_SURVEYUNIT_ID,
+					Constants.API_SURVEYUNIT_ID_TEMP_ZONE,
 					Constants.API_SURVEYUNIT_ID_STATE,
 					Constants.API_SURVEYUNIT_ID_STATES,
 					Constants.API_SURVEYUNIT_ID_COMMENT,
@@ -189,7 +195,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_MESSAGE_MARK_AS_DELETED,
 					Constants.API_CREATEDATASET,
 					Constants.API_DELETEDATASET,
-					Constants.API_CHECK_HABILITATION)
+					Constants.API_CHECK_HABILITATION,
+					Constants.API_HEALTH_CHECK)
 			.permitAll();
 		}
 	}
