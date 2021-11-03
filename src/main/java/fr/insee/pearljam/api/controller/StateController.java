@@ -54,7 +54,7 @@ public class StateController {
 		String userId = utilsService.getUserId(request);
 		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			StateCountDto stateCountDto;
@@ -84,7 +84,7 @@ public class StateController {
 	public ResponseEntity<StateCountDto> getNbSUNotAttributedStateCount(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			StateCountDto stateCountDto;
@@ -115,7 +115,7 @@ public class StateController {
 	public ResponseEntity<StateCountCampaignDto> getCampaignStateCount(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			StateCountCampaignDto stateCountCampaignDto;
@@ -144,7 +144,7 @@ public class StateController {
 	public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(HttpServletRequest request,
 			@RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByInterviewer(userId, date);
@@ -170,7 +170,7 @@ public class StateController {
 	public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(HttpServletRequest request,
 			@RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByCampaigns(userId, date);

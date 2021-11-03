@@ -54,7 +54,7 @@ public class ClosingCauseController {
 		String userId = utilsService.getUserId(request);
 		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			ClosingCauseCountDto closingCountDto;

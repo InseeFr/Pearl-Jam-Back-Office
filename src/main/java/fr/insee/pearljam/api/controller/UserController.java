@@ -43,7 +43,7 @@ public class UserController {
 	@GetMapping(path = "/user")
 	public ResponseEntity<UserDto> getUser(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			LOGGER.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
