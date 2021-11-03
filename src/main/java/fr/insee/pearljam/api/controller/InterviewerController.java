@@ -81,7 +81,7 @@ public class InterviewerController {
 	@GetMapping(path = "/interviewers")
 	public ResponseEntity<Set<InterviewerDto>> getListInterviewers(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
@@ -99,7 +99,7 @@ public class InterviewerController {
 	@GetMapping(path = "/interviewer/{id}/campaigns")
 	public ResponseEntity<List<CampaignDto>> getListCampaigns(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> list;

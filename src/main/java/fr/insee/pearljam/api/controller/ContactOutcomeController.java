@@ -52,7 +52,7 @@ public class ContactOutcomeController {
 	public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			ContactOutcomeTypeCountDto contactOutcomes;
@@ -81,7 +81,7 @@ public class ContactOutcomeController {
 	public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(HttpServletRequest request,
 			@RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<ContactOutcomeTypeCountDto> listContactOutcomeTypeCountDto = contactOutcomeService.getContactOutcomeTypeCountByCampaign(userId, date);
@@ -108,7 +108,7 @@ public class ContactOutcomeController {
 	public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			ContactOutcomeTypeCountCampaignDto stateCountCampaignDto;
@@ -139,7 +139,7 @@ public class ContactOutcomeController {
 			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
 			@RequestParam(required = false, name = "date") Long date) {
         String userId = utilsService.getUserId(request);
-        if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
           return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     	ContactOutcomeTypeCountDto cotd;

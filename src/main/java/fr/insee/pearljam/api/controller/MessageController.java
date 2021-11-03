@@ -51,7 +51,7 @@ public class MessageController {
 	@PostMapping(path = "/message")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @RequestBody MessageDto message) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || (!utilsService.existUser(userId, Constants.INTERVIEWER) && !utilsService.existUser(userId, Constants.USER))) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			if(!userId.equals(Constants.GUEST) && utilsService.existUser(userId, Constants.USER) && !userId.equalsIgnoreCase(message.getSender())) {
@@ -75,7 +75,7 @@ public class MessageController {
 	@PutMapping(path = "/message/{id}/interviewer/{idep}/read")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @PathVariable(value = "id") Long id, @PathVariable(value = "idep") String idep) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = messageService.markAsRead(id, idep);
@@ -93,7 +93,7 @@ public class MessageController {
 	@PutMapping(path = "/message/{id}/interviewer/{idep}/delete")
 	public ResponseEntity<Object> postDeletedMessage(HttpServletRequest request, @PathVariable(value = "id") Long id, @PathVariable(value = "idep") String idep) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = messageService.markAsDeleted(id, idep);
@@ -111,7 +111,7 @@ public class MessageController {
 	@GetMapping(path = "/messages/{id}")
 	public ResponseEntity<List<MessageDto>> getMessages(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.INTERVIEWER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<MessageDto> messages = messageService.getMessages(id);
@@ -126,7 +126,7 @@ public class MessageController {
 	@GetMapping(path = "/message-history")
 	public ResponseEntity<List<MessageDto>> getMessageHistory(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<MessageDto> messages = messageService.getMessageHistory(userId);
@@ -141,7 +141,7 @@ public class MessageController {
 	@PostMapping(path = "/verify-name")
 	public ResponseEntity<Object> postMessage(HttpServletRequest request, @RequestBody WsText name) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			String text = name.getText();
@@ -161,7 +161,7 @@ public class MessageController {
 	@PostMapping(path = "/mail")
 	public ResponseEntity<Object> postMailMessage(HttpServletRequest request, @RequestBody MailDto mail) {
 		String userId = utilsService.getUserId(request);
-		if(StringUtils.isBlank(userId) || (!utilsService.existUser(userId, Constants.INTERVIEWER) && !utilsService.existUser(userId, Constants.USER))) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = messageService.sendMail(mail, userId);
