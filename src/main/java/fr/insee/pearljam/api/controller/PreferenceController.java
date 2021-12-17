@@ -43,7 +43,7 @@ public class PreferenceController {
 	@PutMapping(path = "/preferences")
 	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request, @RequestBody List<String> listPreference) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);

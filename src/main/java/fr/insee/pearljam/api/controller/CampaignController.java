@@ -86,7 +86,7 @@ public class CampaignController {
 	@GetMapping(path = "/campaigns")
 	public ResponseEntity<List<CampaignDto>> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
@@ -113,7 +113,7 @@ public class CampaignController {
 	public ResponseEntity<List<InterviewerDto>> getListInterviewers(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<InterviewerDto> lstInterviewer;
@@ -145,7 +145,7 @@ public class CampaignController {
 	@GetMapping(path = "/campaign/{id}/survey-units/abandoned")
 	public ResponseEntity<CountDto> getNbSUAbandoned(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			CountDto nbSUAbandoned;
@@ -176,7 +176,7 @@ public class CampaignController {
 	public ResponseEntity<CountDto> getNbSUNotAttributed(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			CountDto nbSUNotAttributed;
@@ -205,7 +205,7 @@ public class CampaignController {
 	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CollectionDatesDto campaign) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = campaignService.updateDates(userId, id, campaign);
@@ -227,7 +227,7 @@ public class CampaignController {
 			@RequestBody VisibilityDto visibilityUpdated, @PathVariable(value = "idCampaign") String idCampaign,
 			@PathVariable(value = "idOu") String idOu) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
@@ -271,7 +271,7 @@ public class CampaignController {
 	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
 		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId) || !utilsService.existUser(userId, Constants.USER)) {
+		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = campaignService.updateCampaign(userId, id, campaign);
