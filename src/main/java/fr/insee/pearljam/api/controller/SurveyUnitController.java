@@ -70,9 +70,7 @@ public class SurveyUnitController {
 	@ApiOperation(value = "POST SurveyUnit assignations to interviewer")
 	@PostMapping(path = "/survey-units")
 	public ResponseEntity<Object> postSurveyUnits(HttpServletRequest request, @RequestBody List<SurveyUnitContextDto> surveyUnits) {
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		LOGGER.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
@@ -89,9 +87,7 @@ public class SurveyUnitController {
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(HttpServletRequest request,
 			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits,
 			@RequestParam(value = "diff", defaultValue = "true", required = false) Boolean diff) {
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+
 		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits, diff);
 		LOGGER.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
