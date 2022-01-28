@@ -51,9 +51,7 @@ public class OrganizationUnitController {
 	@ApiOperation(value = "Create Context with Organizational Unit and users associated")
 	@PostMapping(path = "/organization-units")
 	public ResponseEntity<Object> postContext(HttpServletRequest request, @RequestBody List<OrganizationUnitContextDto> organizationUnits){
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+
 		Response response;
 		try {
 			response = organizationUnitService.createOrganizationUnits(organizationUnits);
@@ -74,9 +72,7 @@ public class OrganizationUnitController {
 	@ApiOperation(value = "Create users by organization-unit")
 	@PostMapping(path = "/organization-unit/{id}/users")
 	public ResponseEntity<Object> postUsersByOrganizationUnit(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestBody List<UserContextDto> users){
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+
 		Response response;
 		try {
 			response = userService.createUsersByOrganizationUnit(users, id);
