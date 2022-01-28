@@ -61,9 +61,6 @@ public class CampaignController {
 	@PostMapping(path = "/campaign")
 	public ResponseEntity<Object> postCampaign(HttpServletRequest request,
 			@RequestBody CampaignContextDto campaignDto) {
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Response response;
 		try {
 			response = campaignService.postCampaign(campaignDto);

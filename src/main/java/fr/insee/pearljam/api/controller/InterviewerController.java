@@ -60,9 +60,6 @@ public class InterviewerController {
 	@ApiOperation(value = "Post interviewers")
 	@PostMapping(path = "/interviewers")
 	public ResponseEntity<String> postInterviewers(HttpServletRequest request, @RequestBody List<InterviewerContextDto> interviewers) {
-		if(!utilsService.isDevProfile() && !utilsService.isTestProfile()) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Response response = interviewerService.createInterviewers(interviewers);
 		LOGGER.info("POST /interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
