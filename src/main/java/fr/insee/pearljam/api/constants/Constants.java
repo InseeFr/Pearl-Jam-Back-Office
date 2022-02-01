@@ -93,4 +93,7 @@ public class Constants {
 			"alaCount", "acpCount", "dcdCount", "nuhCount", "nerCount" };
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
+	
+	public static final String API_MAIL = "/api/mail";
+
 }

@@ -142,7 +142,8 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.PUT, Constants.API_MESSAGE_MARK_AS_DELETED).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)	
 		.antMatchers(HttpMethod.POST, Constants.API_CREATEDATASET).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.DELETE, Constants.API_DELETEDATASET).hasAnyRole(adminRole)	
-		.antMatchers(HttpMethod.GET, Constants.API_CHECK_HABILITATION).hasAnyRole(adminRole, userLocalRole, userNationalRole)
+		.antMatchers(HttpMethod.GET, Constants.API_CHECK_HABILITATION).hasAnyRole(adminRole, userLocalRole, userNationalRole,interviewerRole)
+		.antMatchers(HttpMethod.POST, Constants.API_MAIL).hasAnyRole(adminRole, interviewerRole)	
 		.anyRequest().denyAll(); 
 	}
 	
