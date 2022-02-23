@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +37,9 @@ public class MessageController {
 	@Autowired
 	MessageService messageService;
 	
+	@Autowired
+	BiFunction<String, String, HttpStatus> sendMail;
+
 	@Autowired
 	UtilsService utilsService;
 
@@ -120,7 +124,7 @@ public class MessageController {
 	}
   
 	/**
-	* Retreives message history
+	* Retrieves message history
 	*/
 	@ApiOperation(value = "Get the message history")
 	@GetMapping(path = "/message-history")
@@ -135,7 +139,7 @@ public class MessageController {
 	}
   
 	/**
-	* Retreives matching interviewers and campaigns
+	* Retrieves matching interviewers and campaigns
 	*/
 	@ApiOperation(value = "Update Messages with campaigns or interviewers listed in request body")
 	@PostMapping(path = "/verify-name")
@@ -155,7 +159,7 @@ public class MessageController {
 	
 	
 	/**
-	* This method is used to post a message
+	* This method is used to post a mail
 	*/
 	@ApiOperation(value = "Post a mail to admins")
 	@PostMapping(path = "/mail")
@@ -164,7 +168,8 @@ public class MessageController {
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		HttpStatus returnCode = messageService.sendMail(mail, userId);
+		LOGGER.info("User {} send a mail", userId);
+		HttpStatus returnCode = sendMail.apply(mail.getContent(), mail.getSubject());
 		return new ResponseEntity<>(returnCode);
 	}
 }
