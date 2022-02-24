@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import fr.insee.pearljam.api.dto.message.MailDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 
@@ -31,6 +30,5 @@ public interface MessageService {
   List<VerifyNameResponseDto> verifyName(String text, String userId);
   List<MessageDto> getMessageHistory(String userId);
   void deleteMessageByUserId(String userId);
-  HttpStatus sendMail(MailDto mail, String userId);
 
 }
