@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
