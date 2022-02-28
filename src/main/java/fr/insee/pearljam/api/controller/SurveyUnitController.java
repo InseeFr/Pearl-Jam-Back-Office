@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,6 +61,18 @@ public class SurveyUnitController {
 
 	@Autowired
 	UtilsService utilsService;
+
+	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
+	String interviewerRole;
+	
+	@Value("${fr.insee.pearljam.user.local.role:#{null}}")
+	String userLocalRole;
+	
+	@Value("${fr.insee.pearljam.user.national.role:#{null}}")
+	String userNationalRole;
+
+	@Value("${fr.insee.pearljam.admin.role:#{null}}")
+	String adminRole;
 
 	/**
 	 * This method is using to post the list of SurveyUnit defined in request body
@@ -343,36 +356,38 @@ public class SurveyUnitController {
 	public ResponseEntity<HabilitationDto> checkHabilitation(HttpServletRequest request,
 			@RequestParam(value = "id", required = true) String id,
 			@RequestParam(value = "role", required = false) String role) {
-	    String userId = utilsService.getUserId(request);
-	    HabilitationDto resp = new HabilitationDto();
-	    
-	    if(role != null && !role.isBlank()) {
-	    	if(role.equals(Constants.REVIEWER)) {
-				if (StringUtils.isBlank(userId)) {
-                resp.setHabilitated(false);
-                LOGGER.info("No user with id {} found in database", userId);
-                return new ResponseEntity<>(resp, HttpStatus.OK);
-	            } 
-	            boolean habilitated = surveyUnitService.checkHabilitationReviewer(userId, id);
-	            resp.setHabilitated(habilitated);
-	        } else {
-	        	resp.setHabilitated(false);
-	    		LOGGER.warn("Only '{}' is accepted as a role in query argument", Constants.REVIEWER);
-	    		return new ResponseEntity<>(resp, HttpStatus.OK);
-	        }
-	    }
-	    else {
+		String userId = utilsService.getUserId(request);
+		HabilitationDto resp = new HabilitationDto();
+		resp.setHabilitated(false);
 
-			if (StringUtils.isBlank(userId)) {
-	    		LOGGER.info("No interviewer with id {} found in database", userId);
-	    		resp.setHabilitated(false);
-	    		return new ResponseEntity<>(resp, HttpStatus.OK);
-	      } 
-	        boolean habilitated = surveyUnitService.checkHabilitationInterviewer(userId, id);
-	        resp.setHabilitated(habilitated);
-	    }
-	    
-	    return new ResponseEntity<>(resp, HttpStatus.OK);
+		if (role == null) {
+			LOGGER.info(
+					"Check habilitation of {} without role for accessing survey-unit {} is denied. Please provide a role in request.",
+					userId, id);
+			return new ResponseEntity<>(resp, HttpStatus.OK);
+		}
+		if (request.isUserInRole(adminRole)) {
+			resp.setHabilitated(true);
+			LOGGER.info(
+					"Check habilitation of {} as {} for accessing survey-unit {} resulted in {} : Admin habilitation override",
+					userId,
+					role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
+			return new ResponseEntity<>(resp, HttpStatus.OK);
+		}
+		if (role.isBlank()) {
+			// interviewer
+			boolean checkdataBase = surveyUnitService.checkHabilitationInterviewer(userId, id);
+			boolean checkToken = request.isUserInRole(interviewerRole);
+			resp.setHabilitated(checkdataBase && checkToken);
+		} else if (role.equals(Constants.REVIEWER)) {
+			// local or national user
+			boolean checkdataBase = surveyUnitService.checkHabilitationReviewer(userId, id);
+			boolean checkToken = request.isUserInRole(userLocalRole) || request.isUserInRole(userNationalRole);
+			resp.setHabilitated(checkdataBase && checkToken);
+		}
+		LOGGER.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
+				role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
+		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	/**
