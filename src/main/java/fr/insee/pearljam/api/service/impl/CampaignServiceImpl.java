@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.domain.VisibilityId;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
@@ -368,6 +370,29 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		return returnStatus;
+	}
+	
+	@Override
+	public List<CampaignDto> getAllCampaigns() {
+		List<String> lstOuId = organizationUnitRepository.findAllId();
+		return campaignRepository.findAllDto().stream().map(camp -> {
+			camp.setCampaignStats(surveyUnitRepository.getCampaignStats(camp.getId(), lstOuId));
+			return camp;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CampaignDto> getInterviewerCampaigns(String userId) {
+
+		Map<String, String> map = surveyUnitRepository.findByInterviewerIdIgnoreCase(userId).stream()
+				.collect(Collectors.toMap(su -> su.getCampaign().getId(), SurveyUnit::getId,
+						(existing, replacement) -> existing));
+
+		List<CampaignDto> foundCampaigns = map.entrySet().stream()
+				.filter(entry -> surveyUnitService.canBeSeenByInterviewer(entry.getValue()))
+				.map(entry -> campaignRepository.findDtoById(entry.getKey())).collect((Collectors.toList()));
+
+		return foundCampaigns;
 	}
 
 }

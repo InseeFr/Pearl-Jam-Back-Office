@@ -166,6 +166,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public boolean canBeSeenByInterviewer(String suId) {
 		StateDto dto = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(suId);
 		StateType currentState = dto != null ? dto.getType() : null;

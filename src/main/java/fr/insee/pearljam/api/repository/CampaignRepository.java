@@ -49,6 +49,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "WHERE camp.id=?1")
 	CampaignDto findDtoById(String id);
 
+	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label) " 
+			+ "FROM Campaign camp")
+	List<CampaignDto> findAllDto();
+
 	@Query(value = "SELECT 1 " 
 			+ "FROM preference pref " 
 			+ "WHERE pref.id_user ILIKE ?1 "

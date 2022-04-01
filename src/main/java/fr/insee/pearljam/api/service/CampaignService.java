@@ -32,6 +32,15 @@ public interface CampaignService {
 	List<CampaignDto> getListCampaign(String userId);
 
 	/**
+	 * @return {@link List} of {@link CampaignDto} 
+	 */
+	List<CampaignDto> getAllCampaigns();
+
+	/**
+	 * @return {@link List} of {@link CampaignDto} 
+	 */
+	List<CampaignDto> getInterviewerCampaigns(String userId);
+	/**
 	 * @param userId
 	 * @param campaignId
 	 * @return {@link List} of {@link InterviewerDto}
