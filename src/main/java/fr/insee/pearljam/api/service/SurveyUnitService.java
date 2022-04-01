@@ -102,4 +102,6 @@ public interface SurveyUnitService {
 	void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit);
 
 	List<SurveyUnitTempZone> getAllSurveyUnitTempZone();
+
+	boolean canBeSeenByInterviewer(String suId);
 }

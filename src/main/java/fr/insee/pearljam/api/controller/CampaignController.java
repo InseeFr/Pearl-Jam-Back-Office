@@ -75,25 +75,66 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of Campaigns for current user
 	 * 
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get Campaigns")
+	@ApiOperation(value = "Get user related Campaigns")
 	@GetMapping(path = "/campaigns")
 	public ResponseEntity<List<CampaignDto>> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
+		LOGGER.info("User {} : GET related campaigns",userId);
 		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("No userId : access denied.");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
-			if (lstCampaigns == null) {
-				LOGGER.info("GET Campaign resulting in 500");
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-			LOGGER.info("GET Campaign resulting in 200");
+			LOGGER.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
 			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 		}
 	}
+	/**
+	 * This method return the list of all Campaigns
+	 * 
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get Campaigns")
+	@GetMapping(path = "/admin/campaigns")
+	public ResponseEntity<List<CampaignDto>> getAllCampaigns(HttpServletRequest request) {
+		String userId = utilsService.getUserId(request);
+		LOGGER.info("User {} : GET all campaigns", userId);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("No userId : access denied.");
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
+			LOGGER.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
+					lstCampaigns.size());
+			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
+		}
+	}
+
+	/**
+	 * This method return the list of Campaigns for current interviewer
+	 * 
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get interviewer related Campaigns")
+	@GetMapping(path = "/interviewer/campaigns")
+	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns(HttpServletRequest request) {
+		String userId = utilsService.getUserId(request);
+		LOGGER.info("Interviewer {} : GET related campaigns",userId);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("No userId : access denied.");
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
+			LOGGER.info("Interviewer {} : returned {} campaigns, resulting in 200",userId,lstCampaigns.size());
+			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
+		}
+	}
+
 
 	/**
 	 * This method is used to get the list of interviewers associated with the
