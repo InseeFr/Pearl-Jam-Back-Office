@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -49,9 +50,9 @@ public interface SurveyUnitService {
 	 * @param userId
 	 * @param id
 	 * @param surveyUnitDetailDto
-	 * @return {@link HttpStatus}
+	 * @return {@link ResponseEntity}<{@link SurveyUnitDetailDto}>
 	 */
-	HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
+	ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
 	
 	/**
 	 * @param userId
