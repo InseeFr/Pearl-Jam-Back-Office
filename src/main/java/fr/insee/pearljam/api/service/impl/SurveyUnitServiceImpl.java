@@ -174,10 +174,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Transactional
-	public HttpStatus updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) {
+	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id,
+			SurveyUnitDetailDto surveyUnitDetailDto) {
+		LOGGER.info("Update Survey Unit {}",id);
 		if (surveyUnitDetailDto == null) {
 			LOGGER.error("Survey Unit in parameter is null");
-			return HttpStatus.BAD_REQUEST;
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		Optional<SurveyUnit> surveyUnitOpt;
 		if (userId.equals(GUEST)) {
@@ -187,23 +189,24 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		if (!surveyUnitOpt.isPresent()) {
 			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
-			return HttpStatus.NOT_FOUND;
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
 		updateAddress(surveyUnit, surveyUnitDetailDto);
 		try {
 			updatePersons(surveyUnitDetailDto);
 		} catch (SurveyUnitException e) {
-			LOGGER.error(e.getMessage());
-			return HttpStatus.BAD_REQUEST;
+			LOGGER.error("Error when updating persons related to survey Unit {} - {}", id, e.getMessage());
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		updateComment(surveyUnit, surveyUnitDetailDto);
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
-		LOGGER.info("Finish update in DB");
-		return HttpStatus.OK;
+		LOGGER.info("Survey Unit {} updated",id);
+		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
+		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {

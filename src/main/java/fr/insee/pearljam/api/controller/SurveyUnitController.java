@@ -42,7 +42,7 @@ import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * SurveyUnitController is the Controller using to manage {@link SurveyUnit}
+ * SurveyUnitController is the Controller managing {@link SurveyUnit}
  * entity
  * 
  * @author Claudel Benjamin
@@ -75,7 +75,7 @@ public class SurveyUnitController {
 	String adminRole;
 
 	/**
-	 * This method is using to post the list of SurveyUnit defined in request body
+	 * This method is used to post the list of SurveyUnit defined in request body
 	 * 
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
@@ -90,7 +90,7 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	 * This method is using to post the list of links between suvey-unit and intervewer defined in request body
+	 * This method is used to post the list of links between suvey-unit and intervewer defined in request body
 	 * 
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
@@ -107,7 +107,7 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	 * This method is using to get the list of SurveyUnit for current interviewer
+	 * This method is used to get the list of SurveyUnit for current interviewer
 	 * 
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
@@ -130,7 +130,7 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is using to get the detail of surveyUnit for current interviewer
+	 * This method is used to get the detail of surveyUnit for current interviewer
 	 * 
 	 * @param id the id of reporting unit
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
@@ -167,7 +167,7 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is using to update a specific survey unit
+	 * This method is used to update a specific survey unit
 	 * 
 	 * @param request
 	 * @param surveyUnitUpdated
@@ -176,15 +176,16 @@ public class SurveyUnitController {
 	 */
 	@ApiOperation(value = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request,
+	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnit(HttpServletRequest request,
 			@RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			HttpStatus returnCode = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
+			ResponseEntity<SurveyUnitDetailDto> updatedSurveyUnitResponse = surveyUnitService.updateSurveyUnitDetail(userId, id, surveyUnitUpdated);
+			HttpStatus returnCode = updatedSurveyUnitResponse.getStatusCode();
 			LOGGER.info("PUT SurveyUnit with id {} resulting in {}", id, returnCode.value());
-			return new ResponseEntity<>(returnCode);
+			return updatedSurveyUnitResponse;
 		}
 	}
 
@@ -212,7 +213,7 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is using to update the state of Survey Units listed in request
+	 * This method is used to update the state of Survey Units listed in request
 	 * body
 	 * 
 	 * @param request
@@ -321,7 +322,7 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is using to get survey units of a specific campaign
+	 * This method is used to get survey units of a specific campaign
 	 * 
 	 * @param request
 	 * @param id
@@ -391,7 +392,7 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is using to get the list of states for a specific survey unit
+	 * This method is used to get the list of states for a specific survey unit
 	 * 
 	 * @param request
 	 * @param id
@@ -418,7 +419,7 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	 * This method is using to get the list of states for a specific survey unit
+	 * This method returns the list of states for a specific survey unit
 	 * 
 	 * @param request
 	 * @param id
@@ -440,7 +441,7 @@ public class SurveyUnitController {
 	}
 	
 	/**
-	* This method is using to delete a survey-unit
+	* This method is used to delete a survey-unit
 	* 
 	* @param id the id of survey-unit
 	* @return {@link HttpStatus}
