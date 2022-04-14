@@ -237,7 +237,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if (surveyUnitDetailDto.getStates() != null) {
 			surveyUnitDetailDto.getStates().stream()
-					.filter(s-> s.getId()==null || !stateRepository.existsById(s.getId()))
+					.filter(s -> s.getId() == null || !stateRepository.existsById(s.getId()))
 					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
@@ -245,9 +245,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (currentState == StateType.WFS) {
 			addStateAuto(surveyUnit);
 		}
-
 		currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId()).getType();
-		if (currentState != StateType.FIN && currentState != StateType.TBR) {
+		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
+		if (BussinessRules.shouldFallBackToTbrOrFin(dbStates)) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -255,7 +255,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			}
 		}
-		LOGGER.info("States");
+		LOGGER.info("States updated");
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
