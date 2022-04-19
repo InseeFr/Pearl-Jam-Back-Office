@@ -106,6 +106,8 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	List<SurveyUnit> findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId);
 	
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
+
+	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
 	
 	@Query(value="SELECT "
 			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "

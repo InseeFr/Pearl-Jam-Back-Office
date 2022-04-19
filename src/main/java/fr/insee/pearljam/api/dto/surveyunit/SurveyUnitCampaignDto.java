@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +74,9 @@ public class SurveyUnitCampaignDto {
 	        && ((InseeAddress)su.getAddress()).getL6() != null
 	        && ((InseeAddress)su.getAddress()).getL6().contains(" ")) {
 			      String locationAndCity = ((InseeAddress)su.getAddress()).getL6();
-			      this.location = locationAndCity.split(" ")[0];
-				  this.city = locationAndCity.split(" ")[1];
+				  String[] splittedCityName=locationAndCity.split(" ");
+			      this.location = splittedCityName[0];
+				  this.city = Arrays.stream(splittedCityName).skip(1).collect(Collectors.joining(" "));
 			}
 			
 			if(su.getInterviewer() !=  null) {

@@ -1,8 +1,13 @@
 package fr.insee.pearljam.api.bussinessrules;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import fr.insee.pearljam.api.domain.StateType;
+import fr.insee.pearljam.api.dto.state.StateDto;
 
 public class BussinessRules {
 	private BussinessRules() {
@@ -99,4 +104,16 @@ public class BussinessRules {
 				};
 		return Arrays.stream(possibleTypes).anyMatch(currentState::equals);
 	}
+
+	public static Boolean shouldFallBackToTbrOrFin(List<StateDto> states) {
+		// If survey-unit has NVA 'Not Visible to All' => no fall-back
+		Set<StateType> presentTypes = states.stream().map(StateDto::getType).collect(Collectors.toSet());
+		if (presentTypes.contains(StateType.NVA))
+			return false;
+		// Survey-unit should not already be in TBR or FIN state
+		StateType currentState = states.stream().max(Comparator.comparingLong(StateDto::getDate)).get().getType();
+		StateType[] fallBackTypes = { StateType.FIN, StateType.TBR };
+		return ! Arrays.stream(fallBackTypes).anyMatch(currentState::equals);
+	}
+
 }

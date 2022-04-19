@@ -30,6 +30,8 @@ public class Constants {
 	public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
 
 	public static final String API_CAMPAIGNS = "/api/campaigns";
+	public static final String API_ADMIN_CAMPAIGNS = "/api/admin/campaigns";
+	public static final String API_INTERVIEWER_CAMPAIGNS = "/api/interviewer/campaigns";
 	public static final String API_CAMPAIGNS_SU_STATECOUNT = "/api/campaigns/survey-units/state-count";
 	public static final String API_CAMPAIGNS_SU_CONTACTOUTCOMES = "/api/campaigns/survey-units/contact-outcomes";
 
