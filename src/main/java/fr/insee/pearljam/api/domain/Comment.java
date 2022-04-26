@@ -65,7 +65,8 @@ public class Comment implements Serializable {
 	public Comment(CommentDto dto, SurveyUnit surveyUnit) {
 		super();
 		this.type = dto.getType();
-		this.value = dto.getValue();
+		String commentValue = dto.getValue();
+		this.value = commentValue.length()>255? commentValue.substring(0, 255):commentValue;
 		this.surveyUnit = surveyUnit;
 	}
 	/**
