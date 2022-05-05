@@ -56,4 +56,6 @@ public interface VisibilityRepository extends JpaRepository<Visibility, String> 
 			+ "WHERE vi.campaign.id=:campaignId AND (vi.organizationUnit.id IN (:OUids) OR 'GUEST' IN (:OUids))")
 	VisibilityDto findVisibilityByCampaignId(@Param("campaignId") String campaignId,
 			@Param("OUids") List<String> organizationalUnitIds);
+
+	List<Visibility> findByCampaignId(String campaignId);
 }

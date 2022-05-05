@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.domain.Campaign;
@@ -27,6 +26,7 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
+import fr.insee.pearljam.api.dto.campaign.OngoingDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
@@ -39,7 +39,6 @@ import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(path = "/api")
 public class CampaignController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignController.class);
@@ -57,7 +56,7 @@ public class CampaignController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Post Campaign")
-	@PostMapping(path = "/campaign")
+	@PostMapping(path = "/api/campaign")
 	public ResponseEntity<Object> postCampaign(HttpServletRequest request,
 			@RequestBody CampaignContextDto campaignDto) {
 		Response response;
@@ -79,7 +78,7 @@ public class CampaignController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get user related Campaigns")
-	@GetMapping(path = "/campaigns")
+	@GetMapping(path = "/api/campaigns")
 	public ResponseEntity<List<CampaignDto>> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		LOGGER.info("User {} : GET related campaigns",userId);
@@ -99,7 +98,7 @@ public class CampaignController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get Campaigns")
-	@GetMapping(path = "/admin/campaigns")
+	@GetMapping(path = "/api/admin/campaigns")
 	public ResponseEntity<List<CampaignDto>> getAllCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		LOGGER.info("User {} : GET all campaigns", userId);
@@ -121,7 +120,7 @@ public class CampaignController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get interviewer related Campaigns")
-	@GetMapping(path = "/interviewer/campaigns")
+	@GetMapping(path = "/api/interviewer/campaigns")
 	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		LOGGER.info("Interviewer {} : GET related campaigns",userId);
@@ -146,7 +145,7 @@ public class CampaignController {
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get interviewers")
-	@GetMapping(path = "/campaign/{id}/interviewers")
+	@GetMapping(path = "/api/campaign/{id}/interviewers")
 	public ResponseEntity<List<InterviewerDto>> getListInterviewers(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
@@ -179,7 +178,7 @@ public class CampaignController {
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get numberSUAbandoned")
-	@GetMapping(path = "/campaign/{id}/survey-units/abandoned")
+	@GetMapping(path = "/api/campaign/{id}/survey-units/abandoned")
 	public ResponseEntity<CountDto> getNbSUAbandoned(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
@@ -209,7 +208,7 @@ public class CampaignController {
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
 	@ApiOperation(value = "Get numberSUNotAttributed")
-	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed")
+	@GetMapping(path = "/api/campaign/{id}/survey-units/not-attributed")
 	public ResponseEntity<CountDto> getNbSUNotAttributed(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
@@ -238,7 +237,7 @@ public class CampaignController {
 	 * @return {@link HttpStatus}
 	 */
 	@ApiOperation(value = "Put campaignCollectionDates")
-	@PutMapping(path = "/campaign/{id}/collection-dates")
+	@PutMapping(path = "/api/campaign/{id}/collection-dates")
 	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CollectionDatesDto campaign) {
 		String userId = utilsService.getUserId(request);
@@ -259,7 +258,7 @@ public class CampaignController {
 	 * @param idOu
 	 */
 	@ApiOperation(value = "Change visibility of a campaign for an Organizational Unit")
-	@PutMapping(path = "/campaign/{idCampaign}/organizational-unit/{idOu}/visibility")
+	@PutMapping(path = "/api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility")
 	public ResponseEntity<Object> putVisibilityDate(HttpServletRequest request,
 			@RequestBody VisibilityDto visibilityUpdated, @PathVariable(value = "idCampaign") String idCampaign,
 			@PathVariable(value = "idOu") String idOu) {
@@ -283,7 +282,7 @@ public class CampaignController {
 	* 
 	*/
 	@ApiOperation(value = "Delete a campaign")
-	@DeleteMapping(path = "/campaign/{id}")
+	@DeleteMapping(path = "/api/campaign/{id}")
 	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		Optional<Campaign> campaignOptional = campaignService.findById(id);
 		if (!campaignOptional.isPresent()) {
@@ -304,7 +303,7 @@ public class CampaignController {
 	 * @return {@link HttpStatus}
 	 */
 	@ApiOperation(value = "Put campaignCollectionDates")
-	@PutMapping(path = "/campaign/{id}")
+	@PutMapping(path = "/api/campaign/{id}")
 	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
 		String userId = utilsService.getUserId(request);
@@ -315,5 +314,31 @@ public class CampaignController {
 			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
+	}
+
+	/**
+	 * This method returns campaign ongoing status
+	 * 
+	 * @param request
+	 * @param id
+	 * @return {@link OngoingDto} , {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Check if campaign is on-going")
+	@GetMapping(path = "/campaigns/{id}/ongoing")
+	public ResponseEntity<OngoingDto> isOngoing(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} check if {} is on-going", callerId, id);
+
+		if (!campaignService.findById(id).isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		OngoingDto campaignOngoing = new OngoingDto();
+		campaignOngoing.setOngoing(campaignService.isCampaignOngoing(id));
+
+		LOGGER.info("{} checked if campaign {} is on-going : {}", callerId, id, campaignOngoing.isOngoing());
+		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
 }

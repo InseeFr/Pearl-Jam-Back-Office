@@ -50,4 +50,7 @@ public class OrganizationUnitDto {
 		this.label = label;
 	}
 
+	public String toString() {
+		return String.format("Id : %s - label : %s", id, label);
+	}
 }

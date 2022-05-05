@@ -83,6 +83,7 @@ import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
@@ -91,6 +92,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
+import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
@@ -494,7 +496,7 @@ class TestAuthKeyCloak {
 		.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
 		.assertThat().body("organizationUnits[0].nvmCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].nnsCount",equalTo(0)).and()
-    .assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
+    	.assertThat().body("organizationUnits[0].anvCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].vinCount",equalTo(1)).and()
 		.assertThat().body("organizationUnits[0].vicCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
@@ -507,8 +509,8 @@ class TestAuthKeyCloak {
 		.assertThat().body("organizationUnits[0].finCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].cloCount",equalTo(0)).and()
 //		.assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
-    .assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
-    .assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
+    	.assertThat().body("organizationUnits[0].nvaCount",equalTo(0)).and()
+    	.assertThat().body("organizationUnits[0].npaCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].npiCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].rowCount",equalTo(0)).and()
 		.assertThat().body("organizationUnits[0].total",equalTo(5));
@@ -2740,7 +2742,177 @@ class TestAuthKeyCloak {
 				.then().statusCode(404);
 	}
 
+	@Test
+	@Order(209)
+	void testCreateValidUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		UserDto user = generateValidUser();
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(201);
+	}
+
+	@Test
+	@Order(210)
+	void testCreateAreadyPresentUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		UserDto user = generateValidUser();
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(409);
+	}
+
+	@Test
+	@Order(211)
+	void testCreateInvalidUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(null))
+				.when().post("api/user")
+				.then().statusCode(400);
+
+		UserDto user = generateValidUser();
+		user.setFirstName(null);
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(400);
+
+		user = generateValidUser();
+		user.setLastName(null);
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(400);
+
+		user = generateValidUser();
+		user.setId(null);
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(400);
+
+		user = generateValidUser();
+		OrganizationUnitDto missingOU = user.getOrganizationUnit();
+		missingOU.setId("WHERE_IS_CHARLIE");
+		user.setOrganizationUnit(missingOU);
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().post("api/user")
+				.then().statusCode(400);
+	}
+
+	@Test
+	@Order(212)
+	void testUpdateMissingUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		UserDto user = generateValidUser();
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().put("api/user/TEST")
+				.then().statusCode(404);
+	}
+
+	@Test
+	@Order(213)
+	void testUpdateWrongUser() throws JSONException, JsonProcessingException{
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		UserDto user = generateValidUser();
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().put("api/user/GHI")
+				.then().statusCode(409);
+	}
+
+	@Test
+	@Order(214)
+	void testUpdateUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		UserDto user = generateValidUser();
+		user.setId("GHI");
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(user))
+				.when().put("api/user/GHI")
+				.then().statusCode(200).and()
+				.assertThat().body("id", equalTo("GHI")).and()
+				.assertThat().body("firstName", equalTo("Bob")).and()
+				.assertThat().body("lastName", equalTo("Lennon")).and()
+				.assertThat().body("organizationUnit.id", equalTo("OU-SOUTH")).and()
+				.assertThat().body("organizationUnit.label", equalTo("South region organizational unit"));
+	}
 	
+	@Test
+	@Order(215)
+	void testAssignUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().put("api/user/GHI/organization-unit/OU-SOUTH")
+				.then().statusCode(200).and()
+				.assertThat().body("id", equalTo("GHI")).and()
+				.assertThat().body("organizationUnit.id", equalTo("OU-SOUTH")).and()
+				.assertThat().body("organizationUnit.label", equalTo("South region organizational unit"));
+	}
+
+	@Test
+	@Order(216)
+	void testAssignUserMissingUser() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().put("api/user/MISSING/organization-unit/OU-SOUTH")
+				.then().statusCode(404);
+	}
+
+	@Test
+	@Order(217)
+	void testAssignUserMissingOu() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().put("api/user/GHI/organization-unit/MISSING")
+				.then().statusCode(404);
+	}
+
+	@Test
+	@Order(218)
+	void testOngoing() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().get("/campaigns/ZCLOSEDX00/ongoing")
+				.then().statusCode(200).and()
+				.assertThat().body("ongoing", equalTo(false));
+		given().auth().oauth2(accessToken)
+				.when().get("/campaigns/VQS2021X00/ongoing")
+				.then().statusCode(200).and()
+				.assertThat().body("ongoing", equalTo(true));
+	}
+
+	@Test
+	@Order(219)
+	void testOngoingNotFound() throws JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		given().auth().oauth2(accessToken)
+				.when().get("/campaigns/MISSING/ongoing")
+				.then().statusCode(404);
+	}
+
+	private UserDto generateValidUser(){
+		OrganizationUnitDto ou = organizationUnitRepository.findDtoByIdIgnoreCase("OU-SOUTH").get();
+		UserDto user = new UserDto("XYZ", "Bob", "Lennon", ou, null);
+		return user;
+	}
+
 	private void addUnattributedSU(String suId) throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		SurveyUnitContextDto su = new SurveyUnitContextDto();

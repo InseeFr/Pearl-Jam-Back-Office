@@ -94,4 +94,8 @@ public class UserDto {
 		this.localOrganizationUnits = localOrganizationUnits;
 	}
 
+	public String toString() {
+		String ou = organizationUnit != null ? organizationUnit.toString() : "null";
+		return String.format("Id :%s - FirstName :%s - LastName :%s - Ou : %s", id, firstName, lastName, ou);
+	}
 }
