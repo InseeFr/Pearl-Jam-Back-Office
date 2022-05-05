@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ public class OrganizationUnitController {
 	UtilsService utilsService;
 	
 	/**
-	 * This method is using to post the list of SurveyUnit defined in request body
+	 * This method is used to post the list of Organizational Units defined in request body
 	 * 
 	 * @param request
 	 * @param idCampaign
@@ -61,9 +62,34 @@ public class OrganizationUnitController {
 		LOGGER.info("POST /organization-units resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
-	
+
 	/**
-	 * This method is using to post the list of SurveyUnit defined in request body
+	 * This method is used to post the Organization Unit defined in request body
+	 * 
+	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Create Organizational Unit and users associated")
+	@PostMapping(path = "/organization-unit")
+	public ResponseEntity<Object> postOrganizationUnit(HttpServletRequest request,
+			@RequestBody OrganizationUnitContextDto organizationUnit) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to create a new OU", callerId);
+		Response response;
+		try {
+			response = organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
+		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
+			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		LOGGER.info("{} POST /organization-unit resulting in {} with response [{}]", callerId, response.getHttpStatus(),
+				response.getMessage());
+		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	}
+
+	/**
+	 * This method add Users to target Organization Unit
 	 * 
 	 * @param request
 	 * @param idCampaign
@@ -79,12 +105,12 @@ public class OrganizationUnitController {
 		} catch (UserAlreadyExistsException | NoOrganizationUnitException e) {
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} 
-		LOGGER.info("POST /organization-unit/{id}/users resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		LOGGER.info("POST /organization-unit/{}/users resulting in {} with response [{}]", id, response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
 	
 	/**
-	 * This method is using to post the list of SurveyUnit defined in request body
+	 * This method return a list of all Organization Units
 	 * 
 	 * @param request
 	 * @param idCampaign
@@ -97,7 +123,7 @@ public class OrganizationUnitController {
 	}
 	
 	/**
-	 * This method is using to post the list of SurveyUnit defined in request body
+	 * This method try to delete target Organization Unit
 	 * 
 	 * @param request
 	 * @param idCampaign

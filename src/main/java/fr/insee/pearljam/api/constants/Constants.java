@@ -50,6 +50,7 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES = "/api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes";
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{id}/organizational-unit/{id}/visibility";
+	public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
 
 	public static final String API_INTERVIEWERS = "/api/interviewers";
 	public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";
@@ -57,7 +58,9 @@ public class Constants {
 
 	public static final String API_USER = "/api/user";
 	public static final String API_USER_ID = "/api/user/{id}";
+	public static final String API_USER_ID_ORGANIZATIONUNIT_ID = "/api/user/{id}/organization-unit/{id2}";
 	public static final String API_GEOGRAPHICALLOCATIONS = "/api/geographical-locations";
+	public static final String API_ORGANIZATIONUNIT = "/api/organization-unit";
 	public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
 	public static final String API_ORGANIZATIONUNIT_ID = "/api/organization-unit/{id}";
 	public static final String API_ORGANIZATIONUNIT_ID_USERS = "/api/organization-unit/{id}/users";

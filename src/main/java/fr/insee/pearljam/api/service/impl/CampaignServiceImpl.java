@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -395,4 +396,12 @@ public class CampaignServiceImpl implements CampaignService {
 		return foundCampaigns;
 	}
 
+	@Override
+	public boolean isCampaignOngoing(String campaignId) {
+		List<Visibility> visibilities = visibilityRepository.findByCampaignId(campaignId);
+		return visibilities.stream().anyMatch(visibility -> visibility.getEndDate()>Instant.now().toEpochMilli());
+	}
+
+
 }
+ 

@@ -28,6 +28,12 @@ public interface UserService {
 	UserDto getUser(String userId) throws NotFoundException;
 	
 	/**
+	 * @param userId
+	 * @return true if user is present
+	 */
+	boolean userIsPresent(String userId);
+
+	/**
 	 * @param organizationUnits
 	 * @param currentOu
 	 * @param saveAllLevels
@@ -50,4 +56,10 @@ public interface UserService {
 	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId) throws UserAlreadyExistsException, NoOrganizationUnitException;
 
 	HttpStatus delete(String id);
+
+    boolean checkValidity(UserDto user);
+
+	UserDto createUser(UserDto user) throws NotFoundException;
+
+	UserDto updateUser(UserDto user);
 }

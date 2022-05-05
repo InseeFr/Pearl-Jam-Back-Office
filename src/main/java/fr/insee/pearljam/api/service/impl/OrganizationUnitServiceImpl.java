@@ -17,6 +17,7 @@ import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.MessageRepository;
@@ -152,6 +153,16 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 		}
 		organizationUnitRepository.delete(ou.get());
 		return HttpStatus.OK;
+	}
+
+	@Override
+	public Optional<OrganizationUnitDto> findById(String ouId) {
+		return organizationUnitRepository.findDtoByIdIgnoreCase(ouId);
+	}
+
+	@Override
+	public boolean isPresent(String ouId) {
+		return organizationUnitRepository.findDtoByIdIgnoreCase(ouId).isPresent();
 	}
 
 }

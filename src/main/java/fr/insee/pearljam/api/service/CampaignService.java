@@ -72,4 +72,6 @@ public interface CampaignService {
 	void delete(Campaign campaign);
 
 	HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign);
+
+    boolean isCampaignOngoing(String id);
 }
