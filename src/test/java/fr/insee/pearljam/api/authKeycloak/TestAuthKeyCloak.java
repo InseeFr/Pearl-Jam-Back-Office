@@ -2689,7 +2689,7 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00?force=true")
 				.then().statusCode(200);
-		assertTrue(campaignRepository.findById("XCLOSEDX00").isEmpty());
+		assertTrue(campaignRepository.findById("SIMPSONS2020X00").isEmpty());
 
 	}
 	
