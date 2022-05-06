@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.domain.Campaign;
@@ -283,12 +284,19 @@ public class CampaignController {
 	*/
 	@ApiOperation(value = "Delete a campaign")
 	@DeleteMapping(path = "/api/campaign/{id}")
-	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id,
+			@RequestParam(required = false) boolean force) {
 		Optional<Campaign> campaignOptional = campaignService.findById(id);
 		if (!campaignOptional.isPresent()) {
 			LOGGER.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		if (!force && campaignService.isCampaignOngoing(id)) {
+			String errorMessage = String.format("Campaign %s is on-going and can't be deleted", id);
+			LOGGER.info(errorMessage);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+		}
+
 		campaignService.delete(campaignOptional.get());
 		LOGGER.info("DELETE campaign with id {} resulting in 200", id);
 		return ResponseEntity.ok().build();

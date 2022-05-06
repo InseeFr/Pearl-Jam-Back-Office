@@ -2674,7 +2674,20 @@ class TestAuthKeyCloak {
 	void testDeleteCampaign() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken)
+				.when().delete("api/campaign/XCLOSEDX00")
+				.then().statusCode(200);
+		assertTrue(campaignRepository.findById("XCLOSEDX00").isEmpty());
+
+		given().auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00")
+				.then().statusCode(409);
+
+		given().auth().oauth2(accessToken)
+				.when().delete("api/campaign/SIMPSONS2020X00?force=false")
+				.then().statusCode(409);
+
+		given().auth().oauth2(accessToken)
+				.when().delete("api/campaign/SIMPSONS2020X00?force=true")
 				.then().statusCode(200);
 		assertTrue(campaignRepository.findById("SIMPSONS2020X00").isEmpty());
 	}
