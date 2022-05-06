@@ -2690,7 +2690,6 @@ class TestAuthKeyCloak {
 				.when().delete("api/campaign/SIMPSONS2020X00?force=true")
 				.then().statusCode(200);
 		assertTrue(campaignRepository.findById("SIMPSONS2020X00").isEmpty());
-
 	}
 	
 	@Test
