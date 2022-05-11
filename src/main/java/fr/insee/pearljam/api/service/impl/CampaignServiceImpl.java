@@ -328,7 +328,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public void delete(Campaign campaign) {
-		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitRepository.delete(su));
+		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitService.delete(su));
 		userRepository.findAll().stream()
 				.forEach(user -> {
 					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId).collect(Collectors.toList());

@@ -642,6 +642,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Override
 	public void delete(SurveyUnit surveyUnit) {
+		surveyUnitTempZoneRepository.deleteBySurveyUnitId(surveyUnit.getId());
 		surveyUnitRepository.delete(surveyUnit);
 	}
 
