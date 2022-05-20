@@ -55,13 +55,13 @@ public class SurveyUnit implements Serializable {
 	/**
 	 * The address of SurveyUnit
 	 */
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Address address;
 
 	/**
 	 * The sampleIdentifier of SurveyUnit
 	 */
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private SampleIdentifier sampleIdentifier;
 	
 	/**
