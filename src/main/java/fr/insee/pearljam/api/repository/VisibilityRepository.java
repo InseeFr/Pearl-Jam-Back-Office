@@ -58,4 +58,6 @@ public interface VisibilityRepository extends JpaRepository<Visibility, String> 
 			@Param("OUids") List<String> organizationalUnitIds);
 
 	List<Visibility> findByCampaignId(String campaignId);
+
+	Optional<Visibility> findByCampaignIdIgnoreCaseAndOrganizationUnitIdIgnoreCase(String campaignId, String organizationalUnitId);
 }

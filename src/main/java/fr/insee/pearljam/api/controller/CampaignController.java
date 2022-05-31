@@ -31,6 +31,7 @@ import fr.insee.pearljam.api.dto.campaign.OngoingDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.NotFoundException;
@@ -65,7 +66,6 @@ public class CampaignController {
 			response = campaignService.postCampaign(campaignDto);
 		} catch (NoOrganizationUnitException | VisibilityException e) {
 			LOGGER.error(e.getMessage());
-			e.printStackTrace();
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} 
 		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
@@ -124,17 +124,16 @@ public class CampaignController {
 	@GetMapping(path = "/api/interviewer/campaigns")
 	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		LOGGER.info("Interviewer {} : GET related campaigns",userId);
 		if (StringUtils.isBlank(userId)) {
 			LOGGER.warn("No userId : access denied.");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
-			LOGGER.info("Interviewer {} : returned {} campaigns, resulting in 200",userId,lstCampaigns.size());
-			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 		}
-	}
+		LOGGER.info("Interviewer {} : GET related campaigns", userId);
+		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
+		LOGGER.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
+		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 
+	}
 
 	/**
 	 * This method is used to get the list of interviewers associated with the
@@ -151,22 +150,56 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("Can't find caller ID");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<InterviewerDto> lstInterviewer;
-			try {
-				lstInterviewer = campaignService.getListInterviewers(userId, id);
-			}
-			catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get interviewers resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			
-			LOGGER.info("Get interviewers resulting in 200");
-			return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 		}
+		LOGGER.info("{} try to get campaign[{}] interviewers ", userId, id);
+		List<InterviewerDto> lstInterviewer;
+		try {
+			lstInterviewer = campaignService.getListInterviewers(userId, id);
+		} catch (NotFoundException e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.info("Get interviewers resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		LOGGER.info("Get interviewers resulting in 200");
+		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
+
 	}
+
+	/**
+	 * This method returns the list of visibilities associated with the
+	 * campaign {id}
+	 * 
+	 * @param request
+	 * @param id
+	 * @return List of {@link VisibilityContextDto} if exist, {@link HttpStatus}
+	 *         NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get campaign visibilities")
+	@GetMapping(path = "/api/campaign/{id}/visibilities")
+	public ResponseEntity<List<VisibilityContextDto>> getVisibilities(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("Can't find caller ID");
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		LOGGER.info("{} try to get campaign[{}] visibilities ", userId, id);
+		if (!campaignService.findById(id).isPresent()) {
+			LOGGER.warn("Can't find visibilities : campaign {} is missing", id);
+			return ResponseEntity.notFound().build();
+		}
+
+		List<VisibilityContextDto> visibilities = campaignService.findAllVisiblitiesByCampaign(id);
+
+		LOGGER.info("Get visibilities resulting in 200");
+		return new ResponseEntity<>(visibilities, HttpStatus.OK);
+
+	}
+
 
 	/**
 	 * This method is used to count survey units that are abandoned by campaign
@@ -180,23 +213,24 @@ public class CampaignController {
 	 */
 	@ApiOperation(value = "Get numberSUAbandoned")
 	@GetMapping(path = "/api/campaign/{id}/survey-units/abandoned")
-	public ResponseEntity<CountDto> getNbSUAbandoned(HttpServletRequest request, @PathVariable(value = "id") String id) {
+	public ResponseEntity<CountDto> getNbSUAbandoned(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
+			LOGGER.warn("Can't find caller ID");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			CountDto nbSUAbandoned;
-			try {
-				nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
-			}
-			catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get numberSUAbandoned resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get numberSUAbandoned resulting in 200");
-			return new ResponseEntity<>(nbSUAbandoned, HttpStatus.OK);
 		}
+		LOGGER.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
+		CountDto nbSUAbandoned;
+		try {
+			nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
+		} catch (NotFoundException e) {
+			LOGGER.info("Get numberSUAbandoned resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		LOGGER.info("Get numberSUAbandoned resulting in 200");
+		return new ResponseEntity<>(nbSUAbandoned, HttpStatus.OK);
+
 	}
 
 	/**
@@ -212,22 +246,22 @@ public class CampaignController {
 	@GetMapping(path = "/api/campaign/{id}/survey-units/not-attributed")
 	public ResponseEntity<CountDto> getNbSUNotAttributed(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
+		String callerId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(callerId)) {
+			LOGGER.warn("Can't find caller ID");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			CountDto nbSUNotAttributed;
-			try {
-				nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, id);
-			}
-			catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get numberSUAbandoned resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			LOGGER.info("Get numberSUAbandoned resulting in 200");
-			return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
 		}
+		LOGGER.info("{} try to get campaign[{}] not attributed survey-units ", callerId, id);
+		CountDto nbSUNotAttributed;
+		try {
+			nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(callerId, id);
+		} catch (NotFoundException e) {
+			LOGGER.info("Get numberSUAbandoned resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		LOGGER.info("Get numberSUAbandoned resulting in 200");
+		return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
+
 	}
 
 	/**
@@ -243,7 +277,8 @@ public class CampaignController {
 			@PathVariable(value = "id") String id, @RequestBody CollectionDatesDto campaign) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			LOGGER.info("Can't find caller Id");
+			return new ResponseEntity<>("Can't find caller Id", HttpStatus.FORBIDDEN);
 		} else {
 			HttpStatus returnCode = campaignService.updateDates(userId, id, campaign);
 			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
@@ -263,15 +298,17 @@ public class CampaignController {
 	public ResponseEntity<Object> putVisibilityDate(HttpServletRequest request,
 			@RequestBody VisibilityDto visibilityUpdated, @PathVariable(value = "idCampaign") String idCampaign,
 			@PathVariable(value = "idOu") String idOu) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
-			LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
-					idOu, returnCode.value());
-			return new ResponseEntity<>(returnCode);
+		String callerId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(callerId)) {
+			LOGGER.info("Can't find caller Id");
+			return new ResponseEntity<>("Can't find caller Id", HttpStatus.FORBIDDEN);
 		}
+		LOGGER.info("{} try to change OU[{}] visibility on campaign[{}] ", callerId, idOu, idCampaign);
+		HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
+		LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
+				idOu, returnCode.value());
+		return new ResponseEntity<>(returnCode);
+
 	}
 	
 	
@@ -286,6 +323,9 @@ public class CampaignController {
 	@DeleteMapping(path = "/api/campaign/{id}")
 	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id,
 			@RequestParam(required = false) boolean force) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to delete campaign {}", callerId, id);
+
 		Optional<Campaign> campaignOptional = campaignService.findById(id);
 		if (!campaignOptional.isPresent()) {
 			LOGGER.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
@@ -314,11 +354,13 @@ public class CampaignController {
 	@PutMapping(path = "/api/campaign/{id}")
 	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to update campaign {} collection dates", callerId, id);
+
+		if (StringUtils.isBlank(callerId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			HttpStatus returnCode = campaignService.updateCampaign(userId, id, campaign);
+			HttpStatus returnCode = campaignService.updateCampaign(id, campaign);
 			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
 			return new ResponseEntity<>(returnCode);
 		}
