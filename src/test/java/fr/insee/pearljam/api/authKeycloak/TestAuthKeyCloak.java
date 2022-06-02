@@ -94,6 +94,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -2918,6 +2919,162 @@ class TestAuthKeyCloak {
 		given().auth().oauth2(accessToken)
 				.when().get("/campaigns/MISSING/ongoing")
 				.then().statusCode(404);
+	}
+
+
+	@Test
+	@Order(220)
+	void testPutCampaign() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+
+		CampaignContextDto campaignContext = new CampaignContextDto();
+		campaignContext.setCampaign("ZCLOSEDX00");
+		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
+
+		VisibilityContextDto wvcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
+		wvcd.setOrganizationalUnit("OU-WEST");
+		wvcd.setEndDate(wvcd.getEndDate() + 1);
+		VisibilityContextDto svcd = generateVisibilityContextDto("OU-SOUTH", "ZCLOSEDX00");
+		svcd.setOrganizationalUnit("OU-SOUTH");
+		VisibilityContextDto emptyVcd = new VisibilityContextDto();
+		emptyVcd.setOrganizationalUnit("OU-WEST");
+
+		VisibilityContextDto missingVcd = generateVisibilityContextDto("OU-SOUTH", "ZCLOSEDX00");
+		missingVcd.setOrganizationalUnit("OU-TEAPOT");
+
+		VisibilityContextDto invalidVcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
+		invalidVcd.setOrganizationalUnit("OU-WEST");
+		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
+
+		// path variable campaignId not found in DB
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/MISSING")
+				.then().statusCode(404);
+
+		// BAD REQUESTS
+		campaignContext.setCampaignLabel(null);
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(400);
+
+		campaignContext.setCampaignLabel("  ");
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(400);
+
+		campaignContext.setCampaignLabel("");
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(400);
+
+		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
+		campaignContext.setVisibilities(List.of(emptyVcd));
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(400);
+
+		// NOT FOUND VISIBILITY
+		campaignContext.setVisibilities(List.of(missingVcd));
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(404);
+
+		// CONFLICT due to visibilities
+		campaignContext.setVisibilities(List.of(invalidVcd));
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(409);
+
+		// 200
+		campaignContext.setVisibilities(List.of(wvcd, svcd));
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(campaignContext))
+				.when().put("api/campaign/ZCLOSEDX00")
+				.then().statusCode(200);
+		assertEquals(wvcd.getEndDate(),
+				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
+	}
+
+	@Test
+	@Order(221)
+	void testUpdateVisibilityByOu() throws JSONException, JsonProcessingException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		VisibilityDto visibility = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
+		visibility.setEndDate(visibility.getEndDate() + 1);
+		VisibilityDto emptyVisibility = new VisibilityDto();
+		VisibilityDto invalidVcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
+		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
+
+		// BAD REQUEST
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(visibility))
+				.when().put("api/campaign//organizational-unit/OU-WEST/visibility")
+				.then().statusCode(400);
+
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(visibility))
+				.when().put("api/campaign/ZCLOSEDX00/organizational-unit//visibility")
+				.then().statusCode(400);
+
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(emptyVisibility))
+				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
+				.then().statusCode(400);
+
+		// NOT FOUND
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(visibility))
+				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/MISSING/visibility")
+				.then().statusCode(404);
+
+		// CONFLICT
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(invalidVcd))
+				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
+				.then().statusCode(409);
+
+		// OK
+		given().auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(visibility))
+				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
+				.then().statusCode(200);
+		assertEquals(visibility.getEndDate(),
+				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
+
+	}
+
+	private VisibilityContextDto generateVisibilityContextDto(String OuId, String campaignId) {
+		Visibility vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, OuId).get();
+		VisibilityContextDto vcd = new VisibilityContextDto();
+		vcd.setOrganizationalUnit(vis.getCampaign().getId());
+		vcd.setCollectionEndDate(vis.getCollectionEndDate());
+		vcd.setCollectionStartDate(vis.getCollectionStartDate());
+		vcd.setEndDate(vis.getEndDate());
+		vcd.setIdentificationPhaseStartDate(vis.getIdentificationPhaseStartDate());
+		vcd.setInterviewerStartDate(vis.getInterviewerStartDate());
+		vcd.setManagementStartDate(vis.getManagementStartDate());
+		return vcd;
 	}
 
 	private UserDto generateValidUser(){

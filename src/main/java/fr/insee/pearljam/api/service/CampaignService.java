@@ -12,6 +12,7 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.NotFoundException;
@@ -71,7 +72,9 @@ public interface CampaignService {
 
 	void delete(Campaign campaign);
 
-	HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign);
+	HttpStatus updateCampaign(String id, CampaignContextDto campaign);
 
     boolean isCampaignOngoing(String id);
+
+	List<VisibilityContextDto> findAllVisiblitiesByCampaign(String campaignId);
 }
