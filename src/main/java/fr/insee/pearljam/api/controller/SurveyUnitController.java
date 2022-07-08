@@ -458,4 +458,43 @@ public class SurveyUnitController {
 		LOGGER.info("DELETE survey-unit with id {} resulting in 200", id);
 		return ResponseEntity.ok().build();
 	}
+
+	/**
+	 * This method returns the list of all survey-unit ids
+	 * @param request
+	 * @return List of {@link String}
+	 */
+	@ApiOperation(value = "Get survey units id")
+	@GetMapping(path = "/admin/survey-units")
+	public ResponseEntity<List<String>> getAllSurveyUnitsId(HttpServletRequest request) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.info("GET closable survey units resulting in 401");
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			List<String> suIds = surveyUnitService.getAllIds();
+			LOGGER.info("GET admin survey units resulting in 200");
+			return new ResponseEntity<>(suIds, HttpStatus.OK);
+		}
+	}
+
+	/**
+	 * This method returns the list of all survey-unit ids for specified campaign
+	 * @param request
+	 * @param id the id of campaign
+	 * @return List of {@link String}
+	 */
+	@ApiOperation(value = "Get survey units id by campaign")
+	@GetMapping(path = "/admin/campaign/{id}/survey-units")
+	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(HttpServletRequest request,  @PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.info("GET closable survey units resulting in 401");
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			List<String> suIds = surveyUnitService.getAllIdsByCampaignId(id);
+			LOGGER.info("GET admin survey units for campaign {} resulting in 200",id);
+			return new ResponseEntity<>(suIds, HttpStatus.OK);
+		}
+	}
 }

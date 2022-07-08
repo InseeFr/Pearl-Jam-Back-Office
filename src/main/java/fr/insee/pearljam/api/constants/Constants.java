@@ -14,6 +14,8 @@ public class Constants {
 	public static final String API_QUEEN_SURVEYUNITS_STATEDATA = "/api/survey-units/state-data";
 
 	// API
+	public static final String API_ADMIN_SURVEYUNITS = "/api/admin/survey-units";
+	public static final String API_ADMIN_CAMPAIGN_ID_SURVEYUNITS = "/api/admin/campaign/{id}/survey-units";
 	public static final String API_SURVEYUNITS = "/api/survey-units";
 	public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
 	public static final String API_SURVEYUNITS_CLOSABLE = "/api/survey-units/closable";
@@ -99,7 +101,10 @@ public class Constants {
 			"alaCount", "acpCount", "dcdCount", "nuhCount", "nerCount" };
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
-	
+
 	public static final String API_MAIL = "/api/mail";
 
+	public static final String API_ENUM_STATE = "/api/enum/state";
+	public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
+	public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
 }

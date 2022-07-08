@@ -152,6 +152,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.POST, Constants.API_CREATEDATASET).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.DELETE, Constants.API_DELETEDATASET).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CHECK_HABILITATION).hasAnyRole(adminRole, userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_STATE).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_CONTACT_ATTEMPT).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_CONTACT_OUTCOME).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ADMIN_SURVEYUNITS).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(adminRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
@@ -209,7 +214,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CREATEDATASET,
 					Constants.API_DELETEDATASET,
 					Constants.API_CHECK_HABILITATION,
-					Constants.API_HEALTH_CHECK)
+					Constants.API_HEALTH_CHECK,
+					Constants.API_ENUM_CONTACT_ATTEMPT,
+					Constants.API_ENUM_CONTACT_OUTCOME,
+					Constants.API_ENUM_STATE,
+					Constants.API_ADMIN_SURVEYUNITS,
+					Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS,
+					Constants.API_MAIL
+					)
 			.permitAll();
 		}
 	}
