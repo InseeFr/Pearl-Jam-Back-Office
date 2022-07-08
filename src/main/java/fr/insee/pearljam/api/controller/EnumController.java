@@ -17,26 +17,26 @@ public class EnumController {
 
     @ApiOperation(value = "Get enum")
     @GetMapping(path = "/enum/state")
-    public ResponseEntity<Object> getStateEnum() {
+    public ResponseEntity<StateType[]> getStateEnum() {
 
         StateType[] enumValues = StateType.values();
-        return new ResponseEntity<Object>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<StateType[]>(enumValues, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get enum")
     @GetMapping(path = "/enum/contact-attempt")
-    public ResponseEntity<Object> getContactAttemptEnum() {
+    public ResponseEntity<Status[]> getContactAttemptEnum() {
 
         Status[] enumValues = Status.values();
-        return new ResponseEntity<Object>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<Status[]>(enumValues, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get enum")
     @GetMapping(path = "/enum/contact-outcome")
-    public ResponseEntity<Object> getContactOutcomeEnum() {
+    public ResponseEntity<ContactOutcomeType[]> getContactOutcomeEnum() {
 
         ContactOutcomeType[] enumValues = ContactOutcomeType.values();
-        return new ResponseEntity<Object>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<ContactOutcomeType[]>(enumValues, HttpStatus.OK);
     }
 
 }
