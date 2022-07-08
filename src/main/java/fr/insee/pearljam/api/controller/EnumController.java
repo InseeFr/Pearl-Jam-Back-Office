@@ -24,7 +24,7 @@ public class EnumController {
     }
 
     @ApiOperation(value = "Get enum")
-    @GetMapping(path = "/enum/contactAttempt")
+    @GetMapping(path = "/enum/contact-attempt")
     public ResponseEntity<Object> getContactAttemptEnum() {
 
         Status[] enumValues = Status.values();
@@ -32,7 +32,7 @@ public class EnumController {
     }
 
     @ApiOperation(value = "Get enum")
-    @GetMapping(path = "/enum/contactOutcome")
+    @GetMapping(path = "/enum/contact-outcome")
     public ResponseEntity<Object> getContactOutcomeEnum() {
 
         ContactOutcomeType[] enumValues = ContactOutcomeType.values();
