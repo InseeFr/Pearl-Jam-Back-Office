@@ -456,7 +456,7 @@ public class CampaignServiceImpl implements CampaignService {
 		return visibilityRepository.findByCampaignId(campaignId).stream().map(v -> {
 			VisibilityContextDto vcd = new VisibilityContextDto();
 			vcd.setCollectionEndDate(v.getCollectionEndDate());
-			vcd.setCollectionStartDate(v.getCollectionEndDate());
+			vcd.setCollectionStartDate(v.getCollectionStartDate());
 			vcd.setEndDate(v.getEndDate());
 			vcd.setInterviewerStartDate(v.getInterviewerStartDate());
 			vcd.setIdentificationPhaseStartDate(v.getIdentificationPhaseStartDate());

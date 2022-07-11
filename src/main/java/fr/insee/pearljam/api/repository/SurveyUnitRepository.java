@@ -139,6 +139,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 
 	Collection<SurveyUnit> findByCampaignId(String id);
 
-
-	  
+	@Query(value="SELECT id FROM survey_unit "
+			+ "WHERE campaign_id=:campaignId", nativeQuery=true)
+	List<String> findAllIdsByCampaignId(@Param("campaignId") String campaignId);
 }

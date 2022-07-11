@@ -23,6 +23,7 @@ import fr.insee.pearljam.api.exception.SurveyUnitException;
 
 /**
  * Service for the SurveyUnit entity
+ * 
  * @author scorcaud
  *
  */
@@ -30,30 +31,35 @@ public interface SurveyUnitService {
 
 	/**
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
+	 * 
 	 * @param userId
 	 * @param id
 	 * @return {@link SurveyUnitDetailDto}
-	 * @throws SurveyUnitException 
-	 * @throws NotFoundException 
+	 * @throws SurveyUnitException
+	 * @throws NotFoundException
 	 */
 	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException;
-	
+
 	/**
 	 * Retrieve all the SurveyUnit entity by userId
+	 * 
 	 * @param userId
 	 * @return {@link List} of {@link SurveyUnitDto}
 	 */
 	List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended);
 
 	/**
-	 * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in parameter
+	 * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in
+	 * parameter
+	 * 
 	 * @param userId
 	 * @param id
 	 * @param surveyUnitDetailDto
 	 * @return {@link ResponseEntity}<{@link SurveyUnitDetailDto}>
 	 */
-	ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto);
-	
+	ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id,
+			SurveyUnitDetailDto surveyUnitDetailDto);
+
 	/**
 	 * @param userId
 	 * @param id
@@ -73,26 +79,28 @@ public interface SurveyUnitService {
 	 * @param suId
 	 * @return {@link List} of {@link StateDto}
 	 */
-  List<StateDto> getListStatesBySurveyUnitId(String suId);
-  	
+	List<StateDto> getListStatesBySurveyUnitId(String suId);
+
 	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id);
+
 	public Optional<SurveyUnit> findById(String id);
 
 	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
 
 	HttpStatus updateSurveyUnitComment(String userId, String surveyUnitId, CommentDto comment);
+
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 
 	HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
 
 	HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
 
-
 	List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId);
 
 	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
 
-	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink, Boolean diff);
+	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink,
+			Boolean diff);
 
 	boolean checkHabilitationInterviewer(String userId, String id);
 
@@ -105,4 +113,8 @@ public interface SurveyUnitService {
 	List<SurveyUnitTempZone> getAllSurveyUnitTempZone();
 
 	boolean canBeSeenByInterviewer(String suId);
+
+	List<String> getAllIds();
+
+	List<String> getAllIdsByCampaignId(String campaignId);
 }
