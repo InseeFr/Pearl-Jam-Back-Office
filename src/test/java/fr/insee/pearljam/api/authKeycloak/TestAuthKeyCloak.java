@@ -67,6 +67,7 @@ import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.Medium;
 import fr.insee.pearljam.api.domain.Message;
 import fr.insee.pearljam.api.domain.MessageStatusType;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
@@ -782,8 +783,8 @@ class TestAuthKeyCloak {
 		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),
 				new CommentDto(CommentType.MANAGEMENT, "test")));
 		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.NNS)));
-		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC, "TEL"),
-				new ContactAttemptDto(1589268800000L, Status.INA, "TEL")));
+		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC, Medium.TEL),
+				new ContactAttemptDto(1589268800000L, Status.INA, Medium.TEL)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.IMP, 2));
 		given().auth().oauth2(accessToken)
 				.contentType("application/json")

@@ -44,9 +44,10 @@ public class ContactAttempt implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column
 	private Status status;
-
+	
+	@Enumerated(EnumType.STRING)
 	@Column
-	private String medium;
+	private Medium medium;
 
 	/**
 	* The SurveyUnit associated to Contact attempt 
@@ -72,7 +73,7 @@ public class ContactAttempt implements Serializable {
 	 * @param status
 	 * @param surveyUnit
 	 */
-	public ContactAttempt(Long date, Status status, String medium, SurveyUnit surveyUnit) {
+	public ContactAttempt(Long date, Status status, Medium medium, SurveyUnit surveyUnit) {
 		super();
 		this.date = date;
 		this.status = status;
@@ -129,11 +130,11 @@ public class ContactAttempt implements Serializable {
 		this.surveyUnit = surveyUnit;
 	}
 
-	public String getMedium() {
+	public Medium getMedium() {
 		return this.medium;
 	}
 
-	public void setMedium(String medium) {
+	public void setMedium(Medium medium) {
 		this.medium = medium;
 	}
 }
