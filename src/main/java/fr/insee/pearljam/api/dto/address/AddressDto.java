@@ -11,37 +11,44 @@ public class AddressDto {
 	private String l1;
 
 	/**
-	 * First line of the AdressDto
+	 * Second line of the AdressDto
 	 */
 	private String l2;
 
 	/**
-	 * First line of the AdressDto
+	 * Third line of the AdressDto
 	 */
 	private String l3;
 
 	/**
-	 * First line of the AdressDto
+	 * Fourth line of the AdressDto
 	 */
 	private String l4;
 
 	/**
-	 * First line of the AdressDto
+	 * Fifth line of the AdressDto
 	 */
 	private String l5;
 
 	/**
-	 * First line of the AdressDto
+	 * Sixtth line of the AdressDto
 	 */
 	private String l6;
 
 	/**
-	 * First line of the AdressDto
+	 * Seventh line of the AdressDto
 	 */
 	private String l7;
 
-	public AddressDto(String l1, String l2, String l3, String l4, String l5, String l6, String l7) {
-		super();
+	private boolean elevator;
+	private String building;
+	private String floor;
+	private String door;
+	private String staircase;
+	private boolean cityPriorityDistrict;
+
+	public AddressDto(String l1, String l2, String l3, String l4, String l5, String l6, String l7, boolean elevator,
+			String building, String floor, String door, String staircase, boolean cityPriorityDistrict) {
 		this.l1 = l1;
 		this.l2 = l2;
 		this.l3 = l3;
@@ -49,11 +56,17 @@ public class AddressDto {
 		this.l5 = l5;
 		this.l6 = l6;
 		this.l7 = l7;
+		this.elevator = elevator;
+		this.building = building;
+		this.floor = floor;
+		this.door = door;
+		this.staircase = staircase;
+		this.cityPriorityDistrict = cityPriorityDistrict;
 	}
-	
+
 	public AddressDto(Address address) {
 		super();
-		if(address!=null) {
+		if (address != null) {
 			this.l1 = ((InseeAddress) address).getL1();
 			this.l2 = ((InseeAddress) address).getL2();
 			this.l3 = ((InseeAddress) address).getL3();
@@ -61,14 +74,18 @@ public class AddressDto {
 			this.l5 = ((InseeAddress) address).getL5();
 			this.l6 = ((InseeAddress) address).getL6();
 			this.l7 = ((InseeAddress) address).getL7();
+			this.elevator = ((InseeAddress) address).isElevator();
+			this.building = ((InseeAddress) address).getBuilding();
+			this.floor = ((InseeAddress) address).getFloor();
+			this.door = ((InseeAddress) address).getDoor();
+			this.staircase = ((InseeAddress) address).getStaircase();
+			this.cityPriorityDistrict = ((InseeAddress) address).isCityPriorityDistrict();
 		}
 	}
 
 	public AddressDto() {
 		super();
 	}
-
-
 
 	/**
 	 * @return the l1
@@ -168,6 +185,62 @@ public class AddressDto {
 		this.l7 = l7;
 	}
 
+	public boolean isElevator() {
+		return this.elevator;
+	}
+
+	public boolean getElevator() {
+		return this.elevator;
+	}
+
+	public void setElevator(boolean elevator) {
+		this.elevator = elevator;
+	}
+
+	public String getBuilding() {
+		return this.building;
+	}
+
+	public void setBuilding(String building) {
+		this.building = building;
+	}
+
+	public String getFloor() {
+		return this.floor;
+	}
+
+	public void setFloor(String floor) {
+		this.floor = floor;
+	}
+
+	public String getDoor() {
+		return this.door;
+	}
+
+	public void setDoor(String door) {
+		this.door = door;
+	}
+
+	public String getStaircase() {
+		return this.staircase;
+	}
+
+	public void setStaircase(String staircase) {
+		this.staircase = staircase;
+	}
+
+	public boolean isCityPriorityDistrict() {
+		return this.cityPriorityDistrict;
+	}
+
+	public boolean getCityPriorityDistrict() {
+		return this.cityPriorityDistrict;
+	}
+
+	public void setCityPriorityDistrict(boolean cityPriorityDistrict) {
+		this.cityPriorityDistrict = cityPriorityDistrict;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -179,6 +252,12 @@ public class AddressDto {
 		result = prime * result + ((l5 == null) ? 0 : l5.hashCode());
 		result = prime * result + ((l6 == null) ? 0 : l6.hashCode());
 		result = prime * result + ((l7 == null) ? 0 : l7.hashCode());
+		result = prime * result + Boolean.hashCode(elevator);
+		result = prime * result + ((building == null) ? 0 : building.hashCode());
+		result = prime * result + ((floor == null) ? 0 : floor.hashCode());
+		result = prime * result + ((door == null) ? 0 : door.hashCode());
+		result = prime * result + ((staircase == null) ? 0 : staircase.hashCode());
+		result = prime * result + Boolean.hashCode(cityPriorityDistrict);
 		return result;
 	}
 
@@ -226,13 +305,40 @@ public class AddressDto {
 				return false;
 		} else if (!l7.equals(other.l7))
 			return false;
+		if (building == null) {
+			if (other.building != null)
+				return false;
+		} else if (!building.equals(other.building))
+			return false;
+		if (floor == null) {
+			if (other.floor != null)
+				return false;
+		} else if (!floor.equals(other.floor))
+			return false;
+		if (door == null) {
+			if (other.door != null)
+				return false;
+		} else if (!door.equals(other.door))
+			return false;
+		if (staircase == null) {
+			if (other.staircase != null)
+				return false;
+		} else if (!staircase.equals(other.staircase))
+			return false;
+		if (elevator != other.elevator)
+			return false;
+		if (cityPriorityDistrict != other.cityPriorityDistrict)
+			return false;
+
 		return true;
 	}
 
 	@Override
 	public String toString() {
 		return "AddressDto [l1=" + l1 + ", l2=" + l2 + ", l3=" + l3 + ", l4=" + l4 + ", l5=" + l5 + ", l6=" + l6
-				+ ", l7=" + l7 + "]";
+				+ ", l7=" + l7 +
+				", building=" + building + ", floor=" + floor + ", door=" + door + ", staircase=" + staircase
+				+ ", elevator=" + elevator + ", cityPriorityDistrict=" + cityPriorityDistrict + "]";
 	}
 
 }

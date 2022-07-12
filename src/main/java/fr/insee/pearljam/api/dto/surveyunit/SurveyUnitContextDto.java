@@ -18,7 +18,6 @@ public class SurveyUnitContextDto {
 	private String id;
 	private List<PersonDto> persons;
 	private AddressDto address;
-	private String geographicalLocationId;
 	private String organizationUnitId;
 	private Boolean priority;
 	private String campaign;
@@ -31,14 +30,13 @@ public class SurveyUnitContextDto {
 	public SurveyUnitContextDto() {
 	}
 	
-	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address, String geographicalLocationId,
+	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address, 
 			String organizationUnitId, Boolean priority, String campaign, SampleIdentifiersDto sampleIdentifiers,
 			List<StateDto> states, List<ContactAttemptDto> contactAttempts, ContactOutcomeDto contactOutcome, ClosingCauseDto closingCause) {
 		super();
 		this.id = id;
 		this.persons = persons;
 		this.address = address;
-		this.geographicalLocationId = geographicalLocationId;
 		this.organizationUnitId = organizationUnitId;
 		this.priority = priority;
 		this.campaign = campaign;
@@ -47,10 +45,7 @@ public class SurveyUnitContextDto {
 		this.contactAttempts = contactAttempts;
 		this.contactOutcome = contactOutcome;
 		this.closingCause = closingCause;
-		
 	}
-
-
 
 	/**
 	 * @return the id
@@ -92,20 +87,6 @@ public class SurveyUnitContextDto {
 	 */
 	public void setAddress(AddressDto address) {
 		this.address = address;
-	}
-
-	/**
-	 * @return the geographicalLocationId
-	 */
-	public String getGeographicalLocationId() {
-		return geographicalLocationId;
-	}
-
-	/**
-	 * @param geographicalLocationId the geographicalLocationId to set
-	 */
-	public void setGeographicalLocationId(String geographicalLocationId) {
-		this.geographicalLocationId = geographicalLocationId;
 	}
 
 	/**

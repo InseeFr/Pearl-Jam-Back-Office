@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 
 /**
 * SurveyUnitRepository is the repository using to access to SurveyUnit table in DB
@@ -57,13 +56,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT id "
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
-	
-	
-	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(su.campaign.id, su.campaign.label) "
-			+ "FROM SurveyUnit su WHERE su.id=?1")
-	CampaignDto findCampaignDtoById(String id);
-	
+
 	@Query(value="SELECT DISTINCT(su.id) as id FROM survey_unit su " + 
 			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
 			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+

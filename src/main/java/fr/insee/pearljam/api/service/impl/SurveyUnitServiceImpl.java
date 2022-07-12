@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -37,6 +38,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
+import fr.insee.pearljam.api.service.IdentificationService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -77,9 +79,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	StateRepository stateRepository;
 
 	@Autowired
-	GeographicalLocationRepository geographicalLocationRepository;
-
-	@Autowired
 	InterviewerRepository interviewerRepository;
 
 	@Autowired
@@ -99,6 +98,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Autowired
 	ClosingCauseRepository closingCauseRepository;
+
+	@Autowired
+	IdentificationRepository identificationRepository;
+
+	@Autowired
+	IdentificationService identificationService;
 
 	@Autowired
 	UserService userService;
@@ -154,7 +159,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		if (userId.equals(GUEST)) {
 			return surveyUnitDtoIds.stream()
-					.map(idSurveyUnit -> new SurveyUnitDto(surveyUnitRepository.findById(idSurveyUnit),
+					.map(idSurveyUnit -> new SurveyUnitDto(surveyUnitRepository.findById(idSurveyUnit).get(),
 							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit), extended))
 					.collect(Collectors.toList());
 		}
@@ -163,8 +168,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return surveyUnitDtoIds.stream()
 				.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
-						surveyUnitRepository.findCampaignDtoById(idSurveyUnit),
+						campaignRepository.findDtoBySurveyUnitId(idSurveyUnit),
 						visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit)))
+
 				.collect(Collectors.toList());
 	}
 
@@ -194,6 +200,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
+		surveyUnit.setMove(surveyUnitDetailDto.isMove());
 		updateAddress(surveyUnit, surveyUnitDetailDto);
 		try {
 			updatePersons(surveyUnitDetailDto);
@@ -205,10 +212,28 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
+		updateIdentification(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
-		LOGGER.info("Survey Unit {} updated", id);
+		LOGGER.info("Survey Unit {} - update complete", id);
 		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
 		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
+	}
+
+	private void updateIdentification(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
+		if (surveyUnitDetailDto.getIdentification() != null) {
+			Identification identification = identificationService.findBySurveyUnitId(surveyUnit.getId());
+			if (identification == null)
+				identification = new Identification();
+			IdentificationDto identDto = surveyUnitDetailDto.getIdentification();
+			identification.setIdentification(identDto.getIdentification());
+			identification.setAccess(identDto.getAccess());
+			identification.setSituation(identDto.getSituation());
+			identification.setCategory(identDto.getCategory());
+			identification.setOccupant(identDto.getOccupant());
+			identification.setSurveyUnit(surveyUnit);
+			identificationRepository.save(identification);
+		}
+		LOGGER.info("Survey-unit {} - Identification updated", surveyUnit.getId());
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -222,7 +247,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			contactOutcome.setSurveyUnit(surveyUnit);
 			contactOutcomeRepository.save(contactOutcome);
 		}
-		LOGGER.info("Contact outcome updated");
+		LOGGER.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
 	}
 
 	private void updateContactAttempt(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -232,7 +257,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<ContactAttempt> newContactAttempts = surveyUnitDetailDto.getContactAttempts().stream()
 					.map(dto -> new ContactAttempt(dto, surveyUnit)).collect(Collectors.toSet());
 			contactAttemps.addAll(newContactAttempts);
-			LOGGER.info("Contact attempts updated");
+			LOGGER.info("Survey-unit {} - Contact attempts updated", surveyUnit.getId());
 		}
 	}
 
@@ -257,7 +282,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			}
 		}
-		LOGGER.info("States updated");
+		LOGGER.info("Survey-unit {} - States updated", surveyUnit.getId());
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
@@ -281,7 +306,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<Comment> newComments = surveyUnitDetailDto.getComments().stream().filter(dto -> dto.getType() != null)
 					.map(dto -> new Comment(dto, surveyUnit)).collect(Collectors.toSet());
 			comments.addAll(newComments);
-			LOGGER.info("Comments updated");
+			LOGGER.info("Survey-unit {} - Comments updated", surveyUnit.getId());
 		}
 	}
 
@@ -301,7 +326,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				}
 
 			}
-			LOGGER.info("Persons updated");
+			LOGGER.info("Survey-unit {} - Persons updated", surveyUnitDetailDto.getId());
 		}
 	}
 
@@ -340,8 +365,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			InseeAddress inseeAddress;
 			Optional<InseeAddress> optionalInseeAddress = addressRepository.findById(surveyUnit.getAddress().getId());
 			if (!optionalInseeAddress.isPresent()) {
-				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress(),
-						surveyUnit.getAddress().getGeographicalLocation());
+				inseeAddress = new InseeAddress(surveyUnitDetailDto.getAddress());
 			} else {
 				inseeAddress = optionalInseeAddress.get();
 				inseeAddress.setL1(surveyUnitDetailDto.getAddress().getL1());
@@ -351,11 +375,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				inseeAddress.setL5(surveyUnitDetailDto.getAddress().getL5());
 				inseeAddress.setL6(surveyUnitDetailDto.getAddress().getL6());
 				inseeAddress.setL7(surveyUnitDetailDto.getAddress().getL7());
+				inseeAddress.setBuilding(surveyUnitDetailDto.getAddress().getBuilding());
+				inseeAddress.setFloor(surveyUnitDetailDto.getAddress().getFloor());
+				inseeAddress.setDoor(surveyUnitDetailDto.getAddress().getDoor());
+				inseeAddress.setStaircase(surveyUnitDetailDto.getAddress().getStaircase());
+				inseeAddress.setElevator(surveyUnitDetailDto.getAddress().isElevator());
+				inseeAddress.setCityPriorityDistrict(surveyUnitDetailDto.getAddress().isCityPriorityDistrict());
 			}
 			// Update Address
 			addressRepository.save(inseeAddress);
 		}
-		LOGGER.info("Address updated");
+		LOGGER.info("Survey-unit {} - Address updated", surveyUnit.getId());
 	}
 
 	@Transactional
@@ -565,11 +595,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 						.map(SurveyUnitContextDto::getCampaign)
 						.collect(Collectors.toList()))
 				.stream().collect(Collectors.toMap(Campaign::getId, c -> c));
-		Map<String, GeographicalLocation> mapGeographicalLocations = geographicalLocationRepository.findAllById(
-				surveyUnits.stream()
-						.map(SurveyUnitContextDto::getGeographicalLocationId)
-						.collect(Collectors.toList()))
-				.stream().collect(Collectors.toMap(GeographicalLocation::getId, gl -> gl));
 		Map<String, OrganizationUnit> mapOrganizationUnits = organizationUnitRepository.findAllById(
 				surveyUnits.stream()
 						.map(SurveyUnitContextDto::getOrganizationUnitId)
@@ -585,12 +610,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			}
 			if (!su.isValid()
 					|| !mapOrganizationUnits.containsKey(su.getOrganizationUnitId())
-					|| !mapCampaigns.containsKey(su.getCampaign())
-					|| !mapGeographicalLocations.containsKey(su.getGeographicalLocationId())) {
+					|| !mapCampaigns.containsKey(su.getCampaign())) {
 				surveyUnitErrors.add(su.getId());
 			}
 			listSurveyUnits.add(new SurveyUnit(su, mapOrganizationUnits.get(su.getOrganizationUnitId()),
-					mapCampaigns.get(su.getCampaign()), mapGeographicalLocations.get(su.getGeographicalLocationId())));
+					mapCampaigns.get(su.getCampaign())));
 		});
 		// Check attributes are not null
 		if (!surveyUnitErrors.isEmpty()) {

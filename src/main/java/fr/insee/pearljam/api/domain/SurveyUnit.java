@@ -45,13 +45,19 @@ public class SurveyUnit implements Serializable {
 	 */
 	@Column
 	private boolean priority;
-	
+
 	/**
 	 * The priority of SurveyUnit
 	 */
 	@Column
 	private Boolean viewed;
-	
+
+	/**
+	 * The priority of SurveyUnit
+	 */
+	@Column
+	private Boolean move = false;
+
 	/**
 	 * The address of SurveyUnit
 	 */
@@ -63,23 +69,25 @@ public class SurveyUnit implements Serializable {
 	 */
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private SampleIdentifier sampleIdentifier;
-	
+
 	/**
-	 * The sampleIdentifier of SurveyUnit
+	 * The contactOutcome of SurveyUnit
 	 */
 	@OneToOne(fetch = FetchType.LAZY, targetEntity = ContactOutcome.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private ContactOutcome contactOucome;
-	
-	
+
 	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private ClosingCause closingCause;
+
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = Identification.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Identification identification;
 
 	/**
 	 * The Campaign of SurveyUnit
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
-	
+
 	/*
 	 * The Interviewer of SurveyUnit
 	 */
@@ -131,29 +139,29 @@ public class SurveyUnit implements Serializable {
 		this.interviewer = interviewer;
 	}
 
-	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign, GeographicalLocation gl) {
+	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign) {
 		this.id = su.getId();
 		this.priority = su.getPriority();
 		this.viewed = false;
-		this.address = new InseeAddress(su.getAddress(), gl);
+		this.address = new InseeAddress(su.getAddress());
 		this.sampleIdentifier = new InseeSampleIdentifier(su.getSampleIdentifiers());
 		this.campaign = campaign;
 		this.interviewer = null;
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
-		
-		
+
 		this.comments = new HashSet<>();
-		if (su.getContactOutcome()!=null) {
+		if (su.getContactOutcome() != null) {
 			this.contactOucome = new ContactOutcome(su.getContactOutcome(), this);
 		}
-		if (su.getContactAttempts()!=null && !su.getContactAttempts().isEmpty()) {
-			this.contactAttempts =  su.getContactAttempts().stream().map(c -> new ContactAttempt(c, this)).collect(Collectors.toSet());
-		}else {
+		if (su.getContactAttempts() != null && !su.getContactAttempts().isEmpty()) {
+			this.contactAttempts = su.getContactAttempts().stream().map(c -> new ContactAttempt(c, this))
+					.collect(Collectors.toSet());
+		} else {
 			this.contactAttempts = new HashSet<>();
 		}
-		if (su.getStates()!=null && !su.getStates().isEmpty()) {
-			this.states =  su.getStates().stream().map(s -> new State(s, this)).collect(Collectors.toSet());
+		if (su.getStates() != null && !su.getStates().isEmpty()) {
+			this.states = su.getStates().stream().map(s -> new State(s, this)).collect(Collectors.toSet());
 		} else {
 			this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
 		}
@@ -367,6 +375,34 @@ public class SurveyUnit implements Serializable {
 			}
 		}
 		return false;
+	}
+
+	public boolean getPriority() {
+		return this.priority;
+	}
+
+	public Boolean isViewed() {
+		return this.viewed;
+	}
+
+	public Identification getIdentification() {
+		return this.identification;
+	}
+
+	public void setIdentification(Identification identification) {
+		this.identification = identification;
+	}
+
+	public Boolean isMove() {
+		return this.move;
+	}
+
+	public Boolean getMove() {
+		return this.move;
+	}
+
+	public void setMove(Boolean move) {
+		this.move = move;
 	}
 
 	public Boolean isLastState(String state) {

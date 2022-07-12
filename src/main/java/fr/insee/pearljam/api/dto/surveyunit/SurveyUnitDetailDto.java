@@ -16,7 +16,7 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.geographicallocation.GeographicalLocationDto;
+import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -26,14 +26,15 @@ public class SurveyUnitDetailDto {
 	private String id;
 	private List<PersonDto> persons;
 	private AddressDto address;
-	private GeographicalLocationDto geographicalLocation;
 	private Boolean priority;
+	private Boolean move;
 	private String campaign;
 	private List<CommentDto> comments;
 	private SampleIdentifiersDto sampleIdentifiers;
 	private List<StateDto> states;
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
+	private IdentificationDto identification;
 
 	public SurveyUnitDetailDto() {
 	}
@@ -46,9 +47,6 @@ public class SurveyUnitDetailDto {
 		this.priority=surveyUnit.isPriority();
 		this.campaign=surveyUnit.getCampaign().getId();
 		this.address = new AddressDto(surveyUnit.getAddress());
-		if(surveyUnit.getAddress().getGeographicalLocation()!=null) {
-			this.geographicalLocation = new GeographicalLocationDto(surveyUnit.getAddress().getGeographicalLocation());
-		}
 		if(surveyUnit.getSampleIdentifier()!=null) {
 			this.sampleIdentifiers = new SampleIdentifiersDto(surveyUnit.getSampleIdentifier());
 		}
@@ -62,6 +60,10 @@ public class SurveyUnitDetailDto {
 				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
 				.map(s -> new StateDto(s))
 				.collect(Collectors.toList());
+		if (surveyUnit.getIdentification() != null) {
+			this.identification = new IdentificationDto(surveyUnit.getIdentification());
+		}
+		this.move=surveyUnit.isMove();
 	}
 
 	/**
@@ -92,20 +94,6 @@ public class SurveyUnitDetailDto {
 	 */
 	public void setAddress(AddressDto address) {
 		this.address = address;
-	}
-
-	/**
-	 * @return the geographicalLocation
-	 */
-	public GeographicalLocationDto getGeographicalLocation() {
-		return geographicalLocation;
-	}
-
-	/**
-	 * @param geographicalLocation the geographicalLocation to set
-	 */
-	public void setGeographicalLocation(GeographicalLocationDto geographicalLocation) {
-		this.geographicalLocation = geographicalLocation;
 	}
 
 	/**
@@ -213,15 +201,47 @@ public class SurveyUnitDetailDto {
 	public void setPersons(List<PersonDto> persons) {
 		this.persons = persons;
 	}
+
+
+	public Boolean isPriority() {
+		return this.priority;
+	}
+
+	public IdentificationDto getIdentification() {
+		return this.identification;
+	}
+
+	public void setIdentification(IdentificationDto identification) {
+		this.identification = identification;
+	}
+
+
+	public Boolean isMove() {
+		return this.move;
+	}
+
+	public Boolean getMove() {
+		return this.move;
+	}
+
+	public void setMove(Boolean move) {
+		this.move = move;
+	}
 	
 	
 	@Override
 	public String toString() {
 		return "SurveyUnitDetailDto [id=" + id
-				+ ", address=" + address + ", geographicalLocation="
-				+ geographicalLocation + ", priority=" + priority + ", campaign=" + campaign + ", comments=" + comments
-				+ ", sampleIdentifiers=" + sampleIdentifiers + ", states=" + states
-				+ ", contactAttempts=" + contactAttempts + ", contactOutcome=" + contactOutcome + "]";
+				+ ", address=" + address
+				+ ", priority=" + priority 
+				+ ", campaign=" + campaign 
+				+ ", comments=" + comments
+				+ ", sampleIdentifiers=" + sampleIdentifiers 
+				+ ", states=" + states
+				+ ", identification=" + identification
+				+ ", contactAttempts=" + contactAttempts 
+				+ ", contactOutcome=" + contactOutcome 
+				+ ", move=" + move + "]";
 	}
 	
 	/**
@@ -232,7 +252,7 @@ public class SurveyUnitDetailDto {
 	public boolean isValid() {
 		return (StringUtils.isNotBlank(this.id) 
 				&& StringUtils.isNotBlank(this.campaign) 
-				&& (this.states != null && !this.states.isEmpty()) && this.address != null && this.geographicalLocation != null 
+				&& (this.states != null && !this.states.isEmpty()) && this.address != null
 				&& this.sampleIdentifiers != null && this.priority != null);
 	}
 

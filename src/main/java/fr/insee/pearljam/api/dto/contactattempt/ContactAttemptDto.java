@@ -14,17 +14,21 @@ public class ContactAttemptDto {
 	 * The status of the ContactAttemptDto
 	 */
 	private Status status;
+
+	private String medium;
     
-	public ContactAttemptDto(Long date, Status status) {
+	public ContactAttemptDto(Long date, Status status, String medium) {
 		super();
 		this.date = date;
 		this.status = status;
+		this.medium = medium;
 	}
 	
 	public ContactAttemptDto(ContactAttempt contactAttempt) {
 		super();
 		this.date = contactAttempt.getDate();
 		this.status = contactAttempt.getStatus();
+		this.medium = contactAttempt.getMedium();
 	}
 	
 
@@ -60,9 +64,19 @@ public class ContactAttemptDto {
 		this.status = status;
 	}
 
+
+	public String getMedium() {
+		return this.medium;
+	}
+
+	public void setMedium(String medium) {
+		this.medium = medium;
+	}
+
+
 	@Override
 	public String toString() {
-		return "ContactAttemptDto [date=" + date + ", status=" + status + "]";
+		return "ContactAttemptDto [date=" + date + ", status=" + status + ", medium=" + medium + "]";
 	}
 	
 }

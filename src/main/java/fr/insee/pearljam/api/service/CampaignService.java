@@ -9,7 +9,6 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
@@ -55,7 +54,6 @@ public interface CampaignService {
 
 	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException;
 
-	HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign);
 	
 	/**
 	 * Update the visibility for a given campaign and a Organizational Unit
@@ -77,4 +75,6 @@ public interface CampaignService {
     boolean isCampaignOngoing(String id);
 
 	List<VisibilityContextDto> findAllVisiblitiesByCampaign(String campaignId);
+
+	void persistReferents(CampaignContextDto campaignDto, Campaign campaign);
 }

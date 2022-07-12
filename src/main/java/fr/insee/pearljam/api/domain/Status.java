@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 /**
  * Define the possible Status of a SurveyUnit
+ * 
  * @author scorcaud
  */
 public enum Status {
@@ -13,8 +14,10 @@ public enum Status {
 	NOC("No contact"),
 	MES("Message Sent"),
 	UCD("Unusable Contact Data"),
+	NLH("Notification Letter Hand-delivered"),
+	NPS("Notice of Passage Sent"),
 	PUN("Permanently UNavailable");
-	
+
 	/**
 	 * label
 	 */

@@ -43,17 +43,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.pearljam.api.domain.ClosingCause;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
 import liquibase.Liquibase;
 import liquibase.exception.LiquibaseException;
@@ -66,46 +57,19 @@ import liquibase.exception.LiquibaseException;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties= {"fr.insee.pearljam.application.mode = basic"})
 class TestBasicAuth {
-	
-	@Autowired
-	SurveyUnitService surveyUnitService;
-	
-	@Autowired
-	UserService userService;
-	
-	@Autowired
-	UserRepository userRepository;
-	
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-	
-	@Autowired
-	CampaignRepository campaignRepository;
 
-	@Autowired
-	GeographicalLocationRepository geographicalLocationRepository;
-  
-	@Autowired
-	VisibilityRepository visibilityRepository;
-	
 	@Autowired
 	MessageRepository messageRepository;
-	
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
 
 	@Autowired
 	ClosingCauseRepository closingCauseRepository;
-	
+
 	@LocalServerPort
 	int port;
 
 	public static ClientAndServer clientAndServer;
 	public static MockServerClient mockServerClient;
-	
+
 	public Liquibase liquibase;
 
 	/**
