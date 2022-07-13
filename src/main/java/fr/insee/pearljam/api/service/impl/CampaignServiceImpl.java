@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -164,22 +165,59 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
-		HttpStatus returnCode = HttpStatus.BAD_REQUEST;
-		if (idCampaign != null && idOu != null && updatedVisibility.isOneDateFilled()) {
-			Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
-			if (visibility.isPresent()) {
-				setVisibilityDates(visibility.get(), updatedVisibility, idOu, idCampaign);
-				if (visibility.get().checkDateConsistency()) {
-					visibilityRepository.save(visibility.get());
-					returnCode = HttpStatus.OK;
-				}
-			} else {
-				LOGGER.error("Campaign {} does not exist in database", idCampaign);
-				returnCode = HttpStatus.NOT_FOUND;
-			}
+		if (idCampaign == null || idOu == null || !updatedVisibility.isOneDateFilled()) {
+			LOGGER.error("Required fields missing in input body");
+			return HttpStatus.BAD_REQUEST;
 		}
-		LOGGER.error("Required fields missing in input body");
-		return returnCode;
+		Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
+		if (!visibility.isPresent()) {
+			LOGGER.error("No visibility found for campaign {}", idCampaign);
+			return HttpStatus.NOT_FOUND;
+		}
+		VisibilityDto expectedVisibility = mergeVisibilities(visibility.get(), updatedVisibility);
+		if (!checkDateConsistency(expectedVisibility)) {
+			LOGGER.warn("Invalid Visibility dates : should be strictly increasing");
+			return HttpStatus.CONFLICT;
+		}
+		setVisibilityDates(visibility.get(), updatedVisibility, idOu, idCampaign);
+		return HttpStatus.OK;
+	}
+
+	private VisibilityDto mergeVisibilities(Visibility initialVisibility, VisibilityDto updatedVisibility) {
+		VisibilityDto expectedVisibility = new VisibilityDto(initialVisibility.getManagementStartDate(),
+				initialVisibility.getInterviewerStartDate(),
+				initialVisibility.getIdentificationPhaseStartDate(),
+				initialVisibility.getCollectionStartDate(),
+				initialVisibility.getCollectionEndDate(),
+				initialVisibility.getEndDate());
+
+		if (updatedVisibility.getManagementStartDate() != null) {
+			expectedVisibility.setManagementStartDate(updatedVisibility.getManagementStartDate());
+		}
+		if (updatedVisibility.getInterviewerStartDate() != null) {
+			expectedVisibility.setInterviewerStartDate(updatedVisibility.getInterviewerStartDate());
+		}
+		if (updatedVisibility.getIdentificationPhaseStartDate() != null) {
+			expectedVisibility.setIdentificationPhaseStartDate(updatedVisibility.getIdentificationPhaseStartDate());
+		}
+		if (updatedVisibility.getCollectionStartDate() != null) {
+			expectedVisibility.setCollectionStartDate(updatedVisibility.getCollectionStartDate());
+		}
+		if (updatedVisibility.getCollectionEndDate() != null) {
+			expectedVisibility.setCollectionEndDate(updatedVisibility.getCollectionEndDate());
+		}
+		if (updatedVisibility.getEndDate() != null) {
+			expectedVisibility.setEndDate(updatedVisibility.getEndDate());
+		}
+		return expectedVisibility;
+	}
+
+	private boolean checkDateConsistency(VisibilityDto visibility) {
+		return visibility.getManagementStartDate() < visibility.getInterviewerStartDate()
+				&& visibility.getInterviewerStartDate() < visibility.getIdentificationPhaseStartDate()
+				&& visibility.getIdentificationPhaseStartDate() < visibility.getCollectionStartDate()
+				&& visibility.getCollectionStartDate() < visibility.getCollectionEndDate()
+				&& visibility.getCollectionEndDate() < visibility.getEndDate();
 	}
 
 	private void setVisibilityDates(Visibility visibility, VisibilityDto updatedVisibility, String idOu, String idCampaign) {
@@ -327,7 +365,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public void delete(Campaign campaign) {
-		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitRepository.delete(su));
+		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitService.delete(su));
 		userRepository.findAll().stream()
 				.forEach(user -> {
 					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId).collect(Collectors.toList());
@@ -341,35 +379,47 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public HttpStatus updateCampaign(String userId, String id, CampaignContextDto campaign) {
-		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
+	public HttpStatus updateCampaign(String id, CampaignContextDto campaign) {
 		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
-		if (camp.isPresent()) {
-			Campaign currentCampaign = camp.get();
-			currentCampaign.setLabel(campaign.getCampaignLabel());
-			campaignRepository.save(currentCampaign);
-			campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
-						campaign.getCampaign(), 
-						v.getOrganizationalUnit(), 
-						new VisibilityDto(
-								v.getManagementStartDate(), 
-								v.getInterviewerStartDate(), 
-								v.getIdentificationPhaseStartDate(), 
-								v.getCollectionStartDate(), 
-								v.getCollectionEndDate(), 
-								v.getEndDate()))	
-			);
-			returnStatus = HttpStatus.OK;
-		} else {
+		if (!camp.isPresent()) {
 			LOGGER.error("Campaign {} does not exist in db", id);
-			returnStatus = HttpStatus.NOT_FOUND;
-		}
-		
-		if (returnStatus == HttpStatus.BAD_REQUEST) {
-			LOGGER.error("Wrong input format");
+			return HttpStatus.NOT_FOUND;
 		}
 
-		return returnStatus;
+		if (campaign.getCampaignLabel() == null || campaign.getCampaignLabel().isEmpty()
+				|| campaign.getCampaignLabel().isBlank()
+				|| !campaign.getVisibilities().stream().allMatch(VisibilityDto::isOneDateFilled)) {
+			LOGGER.warn("Can't update campaign {} : invalid input", id);
+			return HttpStatus.BAD_REQUEST;
+		}
+
+		boolean visibilitiesArePresent = campaign.getVisibilities().stream()
+				.map(VisibilityContextDto::getOrganizationalUnit)
+				.allMatch(ouId -> visibilityRepository.findByCampaignIdIgnoreCaseAndOrganizationUnitIdIgnoreCase(id, ouId).isPresent());
+		if (!visibilitiesArePresent) {
+			LOGGER.warn("Can't update missing visibility for campaign {}", id);
+			return HttpStatus.NOT_FOUND;
+		}
+
+		boolean visibilitiesAreValid = campaign.getVisibilities().stream().allMatch(v -> checkDateConsistency(v));
+		if (!visibilitiesAreValid) {
+			LOGGER.warn("Invalid Visibility dates : should be strictly increasing");
+			return HttpStatus.CONFLICT;
+		}
+
+		Campaign currentCampaign = camp.get();
+		currentCampaign.setLabel(campaign.getCampaignLabel());
+		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
+				campaign.getCampaign(),
+				v.getOrganizationalUnit(),
+				new VisibilityDto(
+						v.getManagementStartDate(),
+						v.getInterviewerStartDate(),
+						v.getIdentificationPhaseStartDate(),
+						v.getCollectionStartDate(),
+						v.getCollectionEndDate(),
+						v.getEndDate())));
+		return HttpStatus.OK;
 	}
 	
 	@Override
@@ -395,4 +445,28 @@ public class CampaignServiceImpl implements CampaignService {
 		return foundCampaigns;
 	}
 
+	@Override
+	public boolean isCampaignOngoing(String campaignId) {
+		List<Visibility> visibilities = visibilityRepository.findByCampaignId(campaignId);
+		return visibilities.stream().anyMatch(visibility -> visibility.getEndDate()>Instant.now().toEpochMilli());
+	}
+
+	@Override
+	public List<VisibilityContextDto> findAllVisiblitiesByCampaign(String campaignId) {
+		return visibilityRepository.findByCampaignId(campaignId).stream().map(v -> {
+			VisibilityContextDto vcd = new VisibilityContextDto();
+			vcd.setCollectionEndDate(v.getCollectionEndDate());
+			vcd.setCollectionStartDate(v.getCollectionStartDate());
+			vcd.setEndDate(v.getEndDate());
+			vcd.setInterviewerStartDate(v.getInterviewerStartDate());
+			vcd.setIdentificationPhaseStartDate(v.getIdentificationPhaseStartDate());
+			vcd.setManagementStartDate(v.getManagementStartDate());
+			vcd.setOrganizationalUnit(v.getOrganizationUnit().getId());
+
+			return vcd;
+		}).collect(Collectors.toList());
+	}
+
+
 }
+ 

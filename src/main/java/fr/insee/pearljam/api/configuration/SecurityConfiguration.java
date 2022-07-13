@@ -112,6 +112,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.POST, Constants.API_CAMPAIGN).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_COLLECTION_DATES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.DELETE, Constants.API_CAMPAIGN_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_ID).hasAnyRole(adminRole)
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_ABANDONED).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -124,14 +125,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES	).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_VISIBILITIES).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_INTERVIEWERS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWER_ID_CAMPAIGNS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_USER).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_USER).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_USER_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_USER_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.DELETE, Constants.API_USER_ID).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.PUT, Constants.API_USER_ID_ORGANIZATIONUNIT_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNIT).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)			
 			.antMatchers(HttpMethod.DELETE, Constants.API_ORGANIZATIONUNIT_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNIT_ID_USERS).hasAnyRole(adminRole)			.antMatchers(HttpMethod.PUT, Constants.API_PREFERENCES).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
@@ -144,6 +152,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.POST, Constants.API_CREATEDATASET).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.DELETE, Constants.API_DELETEDATASET).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CHECK_HABILITATION).hasAnyRole(adminRole, userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_STATE).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_CONTACT_ATTEMPT).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ENUM_CONTACT_OUTCOME).hasAnyRole(adminRole, interviewerRole, userLocalRole, userNationalRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ADMIN_SURVEYUNITS).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET,Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS).hasAnyRole(adminRole)
 			.anyRequest().denyAll();
 		}else{
 			http.httpBasic().disable();
@@ -179,12 +192,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES,
 					Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES,	
 					Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
+					Constants.API_CAMPAIGNS_ID_ON_GOING,
 					Constants.API_INTERVIEWERS,
 					Constants.API_INTERVIEWERS_SU_STATECOUNT,
 					Constants.API_INTERVIEWER_ID_CAMPAIGNS,
 					Constants.API_USER,
 					Constants.API_USER_ID,
+					Constants.API_USER_ID_ORGANIZATIONUNIT_ID,
 					Constants.API_GEOGRAPHICALLOCATIONS,
+					Constants.API_ORGANIZATIONUNIT,
 					Constants.API_ORGANIZATIONUNITS,
 					Constants.API_ORGANIZATIONUNIT_ID,
 					Constants.API_ORGANIZATIONUNIT_ID_USERS,
@@ -198,7 +214,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CREATEDATASET,
 					Constants.API_DELETEDATASET,
 					Constants.API_CHECK_HABILITATION,
-					Constants.API_HEALTH_CHECK)
+					Constants.API_HEALTH_CHECK,
+					Constants.API_ENUM_CONTACT_ATTEMPT,
+					Constants.API_ENUM_CONTACT_OUTCOME,
+					Constants.API_ENUM_STATE,
+					Constants.API_ADMIN_SURVEYUNITS,
+					Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS,
+					Constants.API_MAIL
+					)
 			.permitAll();
 		}
 	}

@@ -14,6 +14,8 @@ public class Constants {
 	public static final String API_QUEEN_SURVEYUNITS_STATEDATA = "/api/survey-units/state-data";
 
 	// API
+	public static final String API_ADMIN_SURVEYUNITS = "/api/admin/survey-units";
+	public static final String API_ADMIN_CAMPAIGN_ID_SURVEYUNITS = "/api/admin/campaign/{id}/survey-units";
 	public static final String API_SURVEYUNITS = "/api/survey-units";
 	public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
 	public static final String API_SURVEYUNITS_CLOSABLE = "/api/survey-units/closable";
@@ -50,6 +52,8 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES = "/api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes";
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{id}/organizational-unit/{id}/visibility";
+	public static final String API_CAMPAIGN_ID_VISIBILITIES = "/api/campaign/{id}/visibilities";
+	public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
 
 	public static final String API_INTERVIEWERS = "/api/interviewers";
 	public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";
@@ -57,7 +61,9 @@ public class Constants {
 
 	public static final String API_USER = "/api/user";
 	public static final String API_USER_ID = "/api/user/{id}";
+	public static final String API_USER_ID_ORGANIZATIONUNIT_ID = "/api/user/{id}/organization-unit/{id2}";
 	public static final String API_GEOGRAPHICALLOCATIONS = "/api/geographical-locations";
+	public static final String API_ORGANIZATIONUNIT = "/api/organization-unit";
 	public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
 	public static final String API_ORGANIZATIONUNIT_ID = "/api/organization-unit/{id}";
 	public static final String API_ORGANIZATIONUNIT_ID_USERS = "/api/organization-unit/{id}/users";
@@ -95,7 +101,10 @@ public class Constants {
 			"alaCount", "acpCount", "dcdCount", "nuhCount", "nerCount" };
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
-	
+
 	public static final String API_MAIL = "/api/mail";
 
+	public static final String API_ENUM_STATE = "/api/enum/state";
+	public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
+	public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
 }

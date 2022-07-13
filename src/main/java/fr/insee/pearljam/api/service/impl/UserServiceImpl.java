@@ -92,6 +92,10 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	public boolean userIsPresent(String userId){
+		return userRepository.findByIdIgnoreCase(userId).isPresent();
+	}
+
 	public void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
 		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
 		if(lstOu.isEmpty()) {
@@ -173,5 +177,41 @@ public class UserServiceImpl implements UserService {
 		messageService.deleteMessageByUserId(user.get().getId());
 		userRepository.delete(user.get());
 		return HttpStatus.OK;
+	}
+
+	@Override
+	public boolean checkValidity(UserDto user) {
+		if (user == null || user.getOrganizationUnit() == null)
+			return false;
+		String ouId = user.getOrganizationUnit().getId();
+		boolean attributesValidity = user.getFirstName() != null && user.getLastName() != null && user.getId() != null;
+		boolean ouValidity = ouId != null && organizationUnitRepository.findById(ouId).isPresent();
+
+		return ouValidity && attributesValidity;
+	}
+
+	@Override
+	public UserDto createUser(UserDto userToCreate) throws NotFoundException {
+		OrganizationUnit ou = organizationUnitRepository.getOne(userToCreate.getOrganizationUnit().getId());
+		User user = new User(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
+		userRepository.save(user);
+		return getUser(userToCreate.getId());
+	}
+
+	@Override
+	public UserDto updateUser(UserDto user) {
+		User dbUser = userRepository.findByIdIgnoreCase(user.getId()).get();
+		dbUser.setFirstName(user.getFirstName());
+		dbUser.setLastName(user.getLastName());
+		OrganizationUnit dbOu = organizationUnitRepository.findByIdIgnoreCase(user.getOrganizationUnit().getId()).get();
+
+		dbUser.setOrganizationUnit(dbOu);
+		User updatedUser = userRepository.save(dbUser);
+		OrganizationUnitDto ou = organizationUnitRepository
+				.findDtoByIdIgnoreCase(updatedUser.getOrganizationUnit().getId()).get();
+		UserDto updatedDto = new UserDto(updatedUser.getId(), updatedUser.getFirstName(), updatedUser.getLastName(), ou,
+				null);
+
+		return updatedDto;
 	}
 }
