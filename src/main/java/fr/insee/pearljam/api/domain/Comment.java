@@ -42,7 +42,7 @@ public class Comment implements Serializable {
 	/**
 	* The value of Comment 
 	*/
-	@Column(length=255)
+	@Column(length=999)
 	private String value;
 	
 	/**

@@ -62,7 +62,6 @@ public class Constants {
 	public static final String API_USER = "/api/user";
 	public static final String API_USER_ID = "/api/user/{id}";
 	public static final String API_USER_ID_ORGANIZATIONUNIT_ID = "/api/user/{id}/organization-unit/{id2}";
-	public static final String API_GEOGRAPHICALLOCATIONS = "/api/geographical-locations";
 	public static final String API_ORGANIZATIONUNIT = "/api/organization-unit";
 	public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
 	public static final String API_ORGANIZATIONUNIT_ID = "/api/organization-unit/{id}";

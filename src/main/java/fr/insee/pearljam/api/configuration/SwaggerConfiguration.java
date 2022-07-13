@@ -85,11 +85,11 @@ public class SwaggerConfiguration {
 				new ResponseMessageBuilder().code(403).message("Forbidden!").build(),
 				new ResponseMessageBuilder().code(404).message("Not found!").build(),
 				new ResponseMessageBuilder().code(400)
-				.message("Bad request! Please check the feilds of your survey unit to update"
+				.message("Bad request! Please check the fields of your survey unit to update"
 						+ "\n- ID must be fielded and must be the same as parameter ID"
 						+ "\n- FirstName must be fielded" + "\n- LastName must be fielded"
 						+ "\n- PhoneNumbers must be fielded" + "\n- Campaign must be fielded"
-						+ "\n- Address must be fielded" + "\n- GeographicalLocation must be fielded"
+						+ "\n- Address must be fielded" 
 						+ "\n- Priority must be fielded" + "\n- SampleIdentifiers must be fielded"
 						+ "\n- States must be fielded")
 				.build());
@@ -106,7 +106,7 @@ public class SwaggerConfiguration {
 	private ApiInfo apiInfo() {
 		return new ApiInfo(
 				buildProperties.getName(), 
-				"Back-office services for for PearlJam",
+				"Back-office services for PearlJam",
 				buildProperties.getVersion(), 
 				"",
 				new Contact("Metallica", "https://github.com/InseeFr/Pearl-Jam-Back-Office", ""), 

@@ -46,17 +46,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.pearljam.api.domain.ClosingCause;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.GeographicalLocationRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
 import io.restassured.RestAssured;
 import liquibase.Liquibase;
 import liquibase.exception.LiquibaseException;
@@ -71,41 +62,14 @@ import liquibase.exception.LiquibaseException;
 class TestNoAuth {
 
 	@Autowired
-	SurveyUnitService surveyUnitService;
+	MessageRepository messageRepository;
 
 	@Autowired
-	UserService userService;
-	
-	@Autowired
-	UserRepository userRepository;
-	
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-  
-	@Autowired
-	CampaignRepository campaignRepository;
-	
-	@Autowired
-	GeographicalLocationRepository geographicalLocationRepository;
-  
-	@Autowired
-	VisibilityRepository visibilityRepository;
-	
-	@Autowired
-	MessageRepository messageRepository;
-	
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-	
-	@Autowired
-	InterviewerRepository interviewerRepository;
-	
-	@Autowired
 	ClosingCauseRepository closingCauseRepository;
-	
+
 	@LocalServerPort
 	int port;
-	
+
 	public static ClientAndServer clientAndServer;
 	public static MockServerClient mockServerClient;
 
@@ -237,19 +201,18 @@ class TestNoAuth {
 		assertTrue(testingDates("endDate", get("api/campaigns").path("endDate[0]")));
 
 	}
-	
-	
+
 	@Test
 	@Order(2)
-	void testPutClosingCauseNoPreviousClosingCause() throws InterruptedException, JsonProcessingException, JSONException {
+	void testPutClosingCauseNoPreviousClosingCause()
+			throws InterruptedException, JsonProcessingException, JSONException {
 		given().when().put("api/survey-unit/11/closing-cause/NPI")
-    .then().statusCode(200);
+				.then().statusCode(200);
 
-    List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-    Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
-    
+		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+		Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+
 	}
-	
 	
 	/**
 	 * Test that the POST endpoint

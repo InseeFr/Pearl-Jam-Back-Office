@@ -23,29 +23,25 @@ import fr.insee.pearljam.api.service.DataSetInjectorService;
 @Transactional
 public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetInjectorServiceImpl.class);
-	
+
 	@Autowired
 	private EntityManagerFactory emf;
-	
+
 	@Autowired
 	private CampaignRepository campaignRepository;
 
 	public HttpStatus createDataSet() {
 		EntityManager em = emf.createEntityManager();
-		
+
 		if(!campaignRepository.findAllIds().isEmpty()){
 			LOGGER.info("The database already contains a campaign, the dataset was not imported");
 			return HttpStatus.NOT_MODIFIED;
 		}
 		LOGGER.info("Dataset creation start");
 		try (
-			InputStream csvFileInputStream = getClass().getClassLoader()
-				.getResource("dataset//geographicallocationdataset.csv").openStream();
 			InputStream sqlFileInputStream = getClass().getClassLoader()
 	                .getResource("dataset//insert_test_data.sql").openStream()
 				){
-	        BufferedReader csvFileBufferedReader = new BufferedReader( new InputStreamReader(csvFileInputStream));
-	        insertFromCSV(csvFileBufferedReader, em);
 	        BufferedReader sqlFileBufferedReader = new BufferedReader( new InputStreamReader(sqlFileInputStream));
 	        executeStatements(sqlFileBufferedReader, em);
 		} catch (Exception e) {
@@ -54,9 +50,9 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		}
 		LOGGER.info("Dataset creation end");	
 		return HttpStatus.OK;
-		
+
 	}
-		
+
 	public HttpStatus deleteDataSet() {
 		try (InputStream sqlFileInputStream = getClass().getClassLoader()
 	                .getResource("dataset//delete_data.sql").openStream()){		
@@ -68,10 +64,10 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 			return HttpStatus.NOT_MODIFIED;
 		}
 		return HttpStatus.OK;
-		
+
 	}
-	
-	
+
+
 	void executeStatements(BufferedReader br, EntityManager entityManager) throws IOException {
 	    String line;
 	    while( (line = br.readLine()) != null ){
@@ -79,18 +75,4 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 	        entityManager.createNativeQuery(line).executeUpdate();
 	    }
 	}
-	
-	void insertFromCSV(BufferedReader br, EntityManager entityManager) throws IOException {
-	    String line;
-	    while( (line = br.readLine()) != null ){
-	    	String[] args = line.split(",");
-	    	String query = "INSERT INTO public.geographical_location (id, label) "
-	    			+ String.format("VALUES('%1$s' , '%2$s');",args[0], args[1]);
-	    	entityManager.joinTransaction();
-	        entityManager.createNativeQuery(query).executeUpdate();
-	    }
-	}
-
-	
-
 }

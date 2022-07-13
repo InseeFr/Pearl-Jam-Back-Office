@@ -5,11 +5,15 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
+import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CampaignDto {
 	private String id;
 	private String label;
+	private String email;
 	private Long managementStartDate;
 	private Long interviewerStartDate;
 	private Long identificationPhaseStartDate;
@@ -23,6 +27,9 @@ public class CampaignDto {
 	private Long toReview;
 	private Long finalized;
 	private Boolean preference;
+	private IdentificationConfiguration identificationConfiguration;
+	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 
 	
 	
@@ -48,6 +55,17 @@ public class CampaignDto {
 		this.label = label;
 		this.managementStartDate = managementStartDate;
 		this.endDate = endDate;
+	}
+
+	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.email = email;
+		this.identificationConfiguration = identConfig;
+		this.contactOutcomeConfiguration = contOutConfig;
+		this.contactAttemptConfiguration = contAttConfig;
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
@@ -269,6 +287,43 @@ public class CampaignDto {
 	 */
 	public void setPreference(Boolean preference) {
 		this.preference = preference;
+	}
+
+	public Boolean isPreference() {
+		return this.preference;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+	public IdentificationConfiguration getIdentificationConfiguration() {
+		return this.identificationConfiguration;
+	}
+
+	public void setIdentificationConfiguration(IdentificationConfiguration identificationConfiguration) {
+		this.identificationConfiguration = identificationConfiguration;
+	}
+
+	public ContactAttemptConfiguration getContactAttemptConfiguration() {
+		return this.contactAttemptConfiguration;
+	}
+
+	public void setContactAttemptConfiguration(ContactAttemptConfiguration contactAttemptConfiguration) {
+		this.contactAttemptConfiguration = contactAttemptConfiguration;
+	}
+
+	public ContactOutcomeConfiguration getContactOutcomeConfiguration() {
+		return this.contactOutcomeConfiguration;
+	}
+
+	public void setContactOutcomeConfiguration(ContactOutcomeConfiguration contactOutcomeConfiguration) {
+		this.contactOutcomeConfiguration = contactOutcomeConfiguration;
 	}
 
 }

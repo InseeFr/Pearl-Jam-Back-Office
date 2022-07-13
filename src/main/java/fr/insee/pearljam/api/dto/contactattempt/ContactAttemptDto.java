@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.contactattempt;
 
 import fr.insee.pearljam.api.domain.ContactAttempt;
+import fr.insee.pearljam.api.domain.Medium;
 import fr.insee.pearljam.api.domain.Status;
 
 public class ContactAttemptDto {
@@ -14,17 +15,21 @@ public class ContactAttemptDto {
 	 * The status of the ContactAttemptDto
 	 */
 	private Status status;
+
+	private Medium medium;
     
-	public ContactAttemptDto(Long date, Status status) {
+	public ContactAttemptDto(Long date, Status status, Medium medium) {
 		super();
 		this.date = date;
 		this.status = status;
+		this.medium = medium;
 	}
 	
 	public ContactAttemptDto(ContactAttempt contactAttempt) {
 		super();
 		this.date = contactAttempt.getDate();
 		this.status = contactAttempt.getStatus();
+		this.medium = contactAttempt.getMedium();
 	}
 	
 
@@ -60,9 +65,19 @@ public class ContactAttemptDto {
 		this.status = status;
 	}
 
+
+	public Medium getMedium() {
+		return this.medium;
+	}
+
+	public void setMedium(Medium medium) {
+		this.medium = medium;
+	}
+
+
 	@Override
 	public String toString() {
-		return "ContactAttemptDto [date=" + date + ", status=" + status + "]";
+		return "ContactAttemptDto [date=" + date + ", status=" + status + ", medium=" + medium + "]";
 	}
 	
 }

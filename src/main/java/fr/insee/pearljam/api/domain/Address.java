@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 @Entity
 public abstract class Address implements Serializable {
 	/**
@@ -20,12 +19,6 @@ public abstract class Address implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Long id;
-	
-	/**
-	* The GeographicalLocation associated to Address 
-	*/
-	@ManyToOne
-	protected GeographicalLocation geographicalLocation;
 
 	protected Address(){
 		
@@ -42,16 +35,5 @@ public abstract class Address implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	/**
-	 * @return the geographicalLocation
-	 */
-	public GeographicalLocation getGeographicalLocation() {
-		return geographicalLocation;
-	}
-	/**
-	 * @param geographicalLocation the geographicalLocation to set
-	 */
-	public void setGeographicalLocation(GeographicalLocation geographicalLocation) {
-		this.geographicalLocation = geographicalLocation;
-	}
+
 }

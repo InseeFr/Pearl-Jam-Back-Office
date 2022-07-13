@@ -17,7 +17,7 @@ import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 /**
 * Entity ContactAttempt : represent the entity table in DB
 * 
-* @author Claudel Benjamin
+* @author Claudel Benjamin, SimonDmz
 * 
 */
 @Entity
@@ -44,21 +44,27 @@ public class ContactAttempt implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column
 	private Status status;
+	
+	@Enumerated(EnumType.STRING)
+	@Column
+	private Medium medium;
+
 	/**
 	* The SurveyUnit associated to Contact attempt 
 	*/
 	@ManyToOne
 	private SurveyUnit surveyUnit;
-	
+
 	public ContactAttempt() {
-		
+
 	}
-	
+
 	public ContactAttempt(ContactAttemptDto dto, SurveyUnit surveyUnit) {
 		super();
 		this.date = dto.getDate();
 		this.status = dto.getStatus();
 		this.surveyUnit = surveyUnit;
+		this.medium = dto.getMedium();
 	}
 	
 	/**
@@ -67,10 +73,11 @@ public class ContactAttempt implements Serializable {
 	 * @param status
 	 * @param surveyUnit
 	 */
-	public ContactAttempt(Long date, Status status, SurveyUnit surveyUnit) {
+	public ContactAttempt(Long date, Status status, Medium medium, SurveyUnit surveyUnit) {
 		super();
 		this.date = date;
 		this.status = status;
+		this.medium = medium;
 		this.surveyUnit = surveyUnit;
 	}
 	/**
@@ -122,5 +129,12 @@ public class ContactAttempt implements Serializable {
 	public void setSurveyUnit(SurveyUnit surveyUnit) {
 		this.surveyUnit = surveyUnit;
 	}
-	
+
+	public Medium getMedium() {
+		return this.medium;
+	}
+
+	public void setMedium(Medium medium) {
+		this.medium = medium;
+	}
 }

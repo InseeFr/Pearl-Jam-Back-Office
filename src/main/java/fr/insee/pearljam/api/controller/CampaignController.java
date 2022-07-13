@@ -26,10 +26,10 @@ import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.campaign.OngoingDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
@@ -265,28 +265,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * Updates the collection start and end dates for a campaign
-	 * 
-	 * @body CampaignDto
-	 * @param id
-	 * @return {@link HttpStatus}
-	 */
-	@ApiOperation(value = "Put campaignCollectionDates")
-	@PutMapping(path = "/api/campaign/{id}/collection-dates")
-	public ResponseEntity<Object> putCampaignsCollectionDates(HttpServletRequest request,
-			@PathVariable(value = "id") String id, @RequestBody CollectionDatesDto campaign) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("Can't find caller Id");
-			return new ResponseEntity<>("Can't find caller Id", HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = campaignService.updateDates(userId, id, campaign);
-			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
-			return new ResponseEntity<>(returnCode);
-		}
-	}
-
-	/**
 	 * Update the visibility dates for a given campaign and organizational unit
 	 * 
 	 * @param request
@@ -359,11 +337,11 @@ public class CampaignController {
 
 		if (StringUtils.isBlank(callerId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = campaignService.updateCampaign(id, campaign);
-			LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
-			return new ResponseEntity<>(returnCode);
 		}
+		HttpStatus returnCode = campaignService.updateCampaign(id, campaign);
+		LOGGER.info("PUT campaignCollectionDates with id {} resulting in {}", id, returnCode.value());
+		return new ResponseEntity<>(returnCode);
+
 	}
 
 	/**
@@ -391,4 +369,22 @@ public class CampaignController {
 		LOGGER.info("{} checked if campaign {} is on-going : {}", callerId, id, campaignOngoing.isOngoing());
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
+
+	// API for REFERENT entity
+
+	@ApiOperation(value = "Get referents of targeted campaign")
+	@GetMapping(path = "/campaigns/{id}/referents")
+	public ResponseEntity<List<ReferentDto>> getReferents(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to GET {} referents", callerId, id);
+		if (!campaignService.findById(id).isPresent()) {
+			LOGGER.warn("Campaign {} is not present, can't get referents", id);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		return null;
+	}
+
+
 }
