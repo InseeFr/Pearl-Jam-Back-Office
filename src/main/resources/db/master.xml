@@ -26,6 +26,8 @@
 	<include file="changelog/500_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 	<!-- Data model v4 : address extension -->
 	<include file="changelog/501_data_model_v4_changes.xml" relativeToChangelogFile="true" />
+	<!-- Data model v4 : comment size extension -->
+	<include file="changelog/502_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 
 
 </databaseChangeLog>
