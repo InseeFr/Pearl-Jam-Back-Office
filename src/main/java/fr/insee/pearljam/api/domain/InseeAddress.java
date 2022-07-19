@@ -241,7 +241,7 @@ public class InseeAddress extends Address {
 		this.l7 = l7;
 	}
 
-	public boolean isElevator() {
+	public Boolean isElevator() {
 		return this.elevator;
 	}
 
@@ -281,7 +281,7 @@ public class InseeAddress extends Address {
 		this.staircase = staircase;
 	}
 
-	public boolean isCityPriorityDistrict() {
+	public Boolean isCityPriorityDistrict() {
 		return this.cityPriorityDistrict;
 	}
 
