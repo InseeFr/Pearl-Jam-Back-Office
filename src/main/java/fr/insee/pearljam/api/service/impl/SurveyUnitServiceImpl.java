@@ -635,13 +635,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Override
 	@Transactional
-	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink,
-			Boolean diff) {
-		if (Boolean.FALSE.equals(diff)) {
-			// Delete All Assignments
-			LOGGER.info("Delete all links between survey-units and interviewers");
-			surveyUnitRepository.updateAllinterviewersToNull();
-		}
+	public Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink) {
 
 		// Get SurveyUnits and Interviewers to create
 		Map<String, SurveyUnit> mapSurveyUnit = surveyUnitRepository

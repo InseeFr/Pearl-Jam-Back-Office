@@ -98,10 +98,9 @@ public class SurveyUnitController {
 	@ApiOperation(value = "Post SurveyUnits")
 	@PostMapping(path = "/survey-units/interviewers")
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(HttpServletRequest request,
-			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits,
-			@RequestParam(value = "diff", defaultValue = "true", required = false) Boolean diff) {
+			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
 
-		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits, diff);
+		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
 		LOGGER.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
