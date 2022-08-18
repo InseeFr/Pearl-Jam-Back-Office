@@ -111,8 +111,8 @@ public class InseeAddress extends Address {
 	 * @param staircase
 	 * @param cityPriorityDistrict
 	 */
-	public InseeAddress(String l1, String l2, String l3, String l4, String l5, String l6, String l7, boolean elevator,
-			String building, String floor, String door, String staircase, boolean cityPriorityDistrict) {
+	public InseeAddress(String l1, String l2, String l3, String l4, String l5, String l6, String l7, Boolean elevator,
+			String building, String floor, String door, String staircase, Boolean cityPriorityDistrict) {
 		this.l1 = l1;
 		this.l2 = l2;
 		this.l3 = l3;
