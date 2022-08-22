@@ -40,15 +40,15 @@ public class AddressDto {
 	 */
 	private String l7;
 
-	private boolean elevator;
+	private Boolean elevator;
 	private String building;
 	private String floor;
 	private String door;
 	private String staircase;
-	private boolean cityPriorityDistrict;
+	private Boolean cityPriorityDistrict;
 
-	public AddressDto(String l1, String l2, String l3, String l4, String l5, String l6, String l7, boolean elevator,
-			String building, String floor, String door, String staircase, boolean cityPriorityDistrict) {
+	public AddressDto(String l1, String l2, String l3, String l4, String l5, String l6, String l7, Boolean elevator,
+			String building, String floor, String door, String staircase, Boolean cityPriorityDistrict) {
 		this.l1 = l1;
 		this.l2 = l2;
 		this.l3 = l3;
@@ -185,15 +185,15 @@ public class AddressDto {
 		this.l7 = l7;
 	}
 
-	public boolean isElevator() {
+	public Boolean isElevator() {
 		return this.elevator;
 	}
 
-	public boolean getElevator() {
+	public Boolean getElevator() {
 		return this.elevator;
 	}
 
-	public void setElevator(boolean elevator) {
+	public void setElevator(Boolean elevator) {
 		this.elevator = elevator;
 	}
 
@@ -229,15 +229,15 @@ public class AddressDto {
 		this.staircase = staircase;
 	}
 
-	public boolean isCityPriorityDistrict() {
+	public Boolean isCityPriorityDistrict() {
 		return this.cityPriorityDistrict;
 	}
 
-	public boolean getCityPriorityDistrict() {
+	public Boolean getCityPriorityDistrict() {
 		return this.cityPriorityDistrict;
 	}
 
-	public void setCityPriorityDistrict(boolean cityPriorityDistrict) {
+	public void setCityPriorityDistrict(Boolean cityPriorityDistrict) {
 		this.cityPriorityDistrict = cityPriorityDistrict;
 	}
 
