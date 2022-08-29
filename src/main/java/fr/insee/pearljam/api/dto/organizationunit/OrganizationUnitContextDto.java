@@ -12,17 +12,17 @@ import fr.insee.pearljam.api.dto.user.UserContextDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganizationUnitContextDto {
-	private String organisationUnit;
-	private String organisationUnitLabel;
+	private String id;
+	private String label;
 	private OrganizationUnitType type;
 	private List<UserContextDto> users;
 	private List<String> organisationUnitRef;
 	
-	public OrganizationUnitContextDto(String organisationUnit, String organisationUnitLabel, OrganizationUnitType type,
+	public OrganizationUnitContextDto(String id, String label, OrganizationUnitType type,
 			List<UserContextDto> users) {
 		super();
-		this.organisationUnit = organisationUnit;
-		this.organisationUnitLabel = organisationUnitLabel;
+		this.id = id;
+		this.label = label;
 		this.type = type;
 		this.users = users;
 	}
@@ -31,8 +31,8 @@ public class OrganizationUnitContextDto {
 	}
 	
 	public OrganizationUnitContextDto(OrganizationUnit ou, List<User> lstUser, List<String> lstOURef) {
-		this.organisationUnit = ou.getId();
-		this.organisationUnitLabel = ou.getLabel();
+		this.id = ou.getId();
+		this.label = ou.getLabel();
 		this.type = ou.getType();
 		this.users = lstUser.stream().map(u -> new UserContextDto(u.getId(), u.getFirstName(), u.getLastName(), null, null)).collect(Collectors.toList());
 		if(lstOURef.isEmpty()) {
@@ -44,26 +44,26 @@ public class OrganizationUnitContextDto {
 	/**
 	 * @return the organisationUnit
 	 */
-	public String getOrganisationUnit() {
-		return organisationUnit;
+	public String getId() {
+		return id;
 	}
 	/**
-	 * @param organisationUnit the organisationUnit to set
+	 * @param id the organisationUnit id to set
 	 */
-	public void setOrganisationUnit(String organisationUnit) {
-		this.organisationUnit = organisationUnit;
+	public void setId(String id) {
+		this.id = id;
 	}
 	/**
 	 * @return the organisationUnitLabel
 	 */
-	public String getOrganisationUnitLabel() {
-		return organisationUnitLabel;
+	public String getLabel() {
+		return label;
 	}
 	/**
-	 * @param organisationUnitLabel the organisationUnitLabel to set
+	 * @param label the organisationUnit label to set
 	 */
-	public void setOrganisationUnitLabel(String organisationUnitLabel) {
-		this.organisationUnitLabel = organisationUnitLabel;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	/**
 	 * @return the type

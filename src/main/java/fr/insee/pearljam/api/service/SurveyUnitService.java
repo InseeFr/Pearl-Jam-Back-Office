@@ -99,8 +99,7 @@ public interface SurveyUnitService {
 
 	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
 
-	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink,
-			Boolean diff);
+	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
 
 	boolean checkHabilitationInterviewer(String userId, String id);
 

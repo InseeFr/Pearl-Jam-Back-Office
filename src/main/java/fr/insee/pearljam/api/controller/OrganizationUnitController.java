@@ -119,6 +119,8 @@ public class OrganizationUnitController {
 	@ApiOperation(value = "Get all organization-units")
 	@GetMapping(path = "/organization-units")
 	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits(HttpServletRequest request){
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to get all OUs", callerId);
 		return new ResponseEntity<>(organizationUnitService.findAllOrganizationUnits(), HttpStatus.OK);
 	}
 	

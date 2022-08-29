@@ -1608,12 +1608,12 @@ class TestAuthKeyCloak {
 	void testGetOrganizationUnits() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		given().auth().oauth2(accessToken).when().get("api/organization-units").then().statusCode(200).and()
-				.assertThat().body("organisationUnit", hasItem("OU-NORTH")).and()
-				.assertThat().body("organisationUnitLabel", hasItem("North region organizational unit")).and()
-				.assertThat().body("organisationUnit", hasItem("OU-SOUTH")).and()
-				.assertThat().body("organisationUnitLabel", hasItem("South region organizational unit")).and()
-				.assertThat().body("organisationUnit", hasItem("OU-NATIONAL")).and()
-				.assertThat().body("organisationUnitLabel", hasItem("National organizational unit"));
+				.assertThat().body("id", hasItem("OU-NORTH")).and()
+				.assertThat().body("label", hasItem("North region organizational unit")).and()
+				.assertThat().body("id", hasItem("OU-SOUTH")).and()
+				.assertThat().body("label", hasItem("South region organizational unit")).and()
+				.assertThat().body("id", hasItem("OU-NATIONAL")).and()
+				.assertThat().body("label", hasItem("National organizational unit"));
 	}
 
 	/**
@@ -1812,8 +1812,8 @@ class TestAuthKeyCloak {
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
 
 		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
-		ou1.setOrganisationUnit("OU-NORTH2");
-		ou1.setOrganisationUnitLabel("North region OU 2");
+		ou1.setId("OU-NORTH2");
+		ou1.setLabel("North region OU 2");
 		ou1.setType(OrganizationUnitType.LOCAL);
 		ou1.setUsers(new ArrayList<UserContextDto>());
 
@@ -1830,8 +1830,8 @@ class TestAuthKeyCloak {
 		ou1.getUsers().add(user2);
 
 		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
-		ou2.setOrganisationUnit("OU-NATIONAL2");
-		ou2.setOrganisationUnitLabel("National OU 2");
+		ou2.setId("OU-NATIONAL2");
+		ou2.setLabel("National OU 2");
 		ou2.setType(OrganizationUnitType.LOCAL);
 		ou2.setUsers(new ArrayList<UserContextDto>());
 		ou2.setOrganisationUnitRef(new ArrayList<String>());
@@ -1907,8 +1907,8 @@ class TestAuthKeyCloak {
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
 
 		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
-		ou1.setOrganisationUnit("OU-NORTH3");
-		ou1.setOrganisationUnitLabel("North region OU 3");
+		ou1.setId("OU-NORTH3");
+		ou1.setLabel("North region OU 3");
 		ou1.setType(OrganizationUnitType.LOCAL);
 		ou1.setUsers(new ArrayList<UserContextDto>());
 
@@ -1925,8 +1925,8 @@ class TestAuthKeyCloak {
 		ou1.getUsers().add(user2);
 
 		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
-		ou2.setOrganisationUnit("OU-NATIONAL3");
-		ou2.setOrganisationUnitLabel("National OU 3");
+		ou2.setId("OU-NATIONAL3");
+		ou2.setLabel("National OU 3");
 		ou2.setType(OrganizationUnitType.LOCAL);
 		ou2.setUsers(new ArrayList<UserContextDto>());
 
@@ -1973,8 +1973,8 @@ class TestAuthKeyCloak {
 		ArrayList<OrganizationUnitContextDto> listOU = new ArrayList<>();
 
 		OrganizationUnitContextDto ou1 = new OrganizationUnitContextDto();
-		ou1.setOrganisationUnit("OU-NORTH3");
-		ou1.setOrganisationUnitLabel("North region OU 3");
+		ou1.setId("OU-NORTH3");
+		ou1.setLabel("North region OU 3");
 		ou1.setType(OrganizationUnitType.LOCAL);
 		ou1.setUsers(new ArrayList<UserContextDto>());
 		ou1.setOrganisationUnitRef(new ArrayList<String>());
@@ -1993,8 +1993,8 @@ class TestAuthKeyCloak {
 		ou1.getUsers().add(user2);
 
 		OrganizationUnitContextDto ou2 = new OrganizationUnitContextDto();
-		ou2.setOrganisationUnit("OU-NATIONAL3");
-		ou2.setOrganisationUnitLabel("National OU 3");
+		ou2.setId("OU-NATIONAL3");
+		ou2.setLabel("National OU 3");
 		ou2.setType(OrganizationUnitType.LOCAL);
 		ou2.setUsers(new ArrayList<UserContextDto>());
 
