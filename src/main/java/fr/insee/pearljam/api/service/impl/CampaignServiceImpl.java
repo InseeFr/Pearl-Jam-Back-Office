@@ -395,7 +395,7 @@ public class CampaignServiceImpl implements CampaignService {
 		updateConfiguration(currentCampaign,campaign);
 		updateReferents(currentCampaign,campaign);
 		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
-				campaign.getCampaign(),
+				id,
 				v.getOrganizationalUnit(),
 				new VisibilityDto(
 						v.getManagementStartDate(),
