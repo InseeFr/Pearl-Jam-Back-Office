@@ -46,13 +46,14 @@ public class PersonDto {
 	/**
 	 * Constructor with all args
 	 */
-	public PersonDto(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged) {
+	public PersonDto(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged, Long birthdate) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.favoriteEmail = favoriteEmail;
 		this.privileged = privileged;
+		this.birthdate = birthdate;
 	}
 
 	/**
