@@ -444,7 +444,7 @@ class TestAuthKeyCloak {
 	@Order(3)
 	void testGetCampaign() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaigns").then().statusCode(200).and()
+		given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).then().statusCode(200).and()
 				.assertThat().body("id", hasItem("SIMPSONS2020X00")).and()
 				.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 				.assertThat().body("allocated", hasItem(4)).and()
@@ -461,17 +461,18 @@ class TestAuthKeyCloak {
 
 		// Testing dates
 		assertTrue(testingDates("managementStartDate",
-				given().auth().oauth2(accessToken).when().get("api/campaigns").path("managementStartDate[0]")));
+				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("managementStartDate[0]")));
 		assertTrue(testingDates("interviewerStartDate",
-				given().auth().oauth2(accessToken).when().get("api/campaigns").path("interviewerStartDate[0]")));
+				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
+						.path("interviewerStartDate[0]")));
 		assertTrue(testingDates("identificationPhaseStartDate", given().auth().oauth2(accessToken).when()
-				.get("api/campaigns").path("identificationPhaseStartDate[0]")));
+				.get(Constants.API_CAMPAIGNS).path("identificationPhaseStartDate[0]")));
 		assertTrue(testingDates("collectionStartDate",
-				given().auth().oauth2(accessToken).when().get("api/campaigns").path("collectionStartDate[0]")));
+				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("collectionStartDate[0]")));
 		assertTrue(testingDates("collectionEndDate",
-				given().auth().oauth2(accessToken).when().get("api/campaigns").path("collectionEndDate[0]")));
+				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("collectionEndDate[0]")));
 		assertTrue(testingDates("endDate",
-				given().auth().oauth2(accessToken).when().get("api/campaigns").path("endDate[0]")));
+				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("endDate[0]")));
 
 	}
 
@@ -725,7 +726,7 @@ class TestAuthKeyCloak {
 				.assertThat().body("campaign", hasItem("SIMPSONS2020X00")).and()
 				.assertThat().body("campaignLabel", hasItem("Survey on the Simpsons tv show 2020"));
 
-		Response resp = given().auth().oauth2(accessToken2).when().get("api/campaigns");
+		Response resp = given().auth().oauth2(accessToken2).when().get(Constants.API_CAMPAIGNS);
 		// Testing dates
 		assertTrue(testingDates("managementStartDate", resp.path("managementStartDate[0]")));
 		assertTrue(testingDates("interviewerStartDate", resp.path("interviewerStartDate[0]")));
@@ -1661,7 +1662,7 @@ class TestAuthKeyCloak {
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campDto))
 				.when()
-				.post("api/campaign")
+				.post(Constants.API_CAMPAIGN)
 				.then()
 				.statusCode(200);
 
@@ -1738,7 +1739,7 @@ class TestAuthKeyCloak {
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campDto))
 				.when()
-				.post("api/campaign")
+				.post(Constants.API_CAMPAIGN)
 				.then()
 				.statusCode(400);
 
@@ -1790,7 +1791,7 @@ class TestAuthKeyCloak {
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campDto))
 				.when()
-				.post("api/campaign")
+				.post(Constants.API_CAMPAIGN)
 				.then()
 				.statusCode(400);
 
