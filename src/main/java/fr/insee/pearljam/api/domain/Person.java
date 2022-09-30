@@ -94,13 +94,14 @@ public class Person implements Serializable {
 	/**
 	 * Constructor with all args
 	 */
-	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged) {
+	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged, Long birthdate) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.favoriteEmail = favoriteEmail;
 		this.privileged = privileged;
+		this.birthdate = birthdate;
 	}
 	
 	public Person(PersonDto p, SurveyUnit su) {
@@ -110,6 +111,7 @@ public class Person implements Serializable {
 		this.email = p.getEmail();
 		this.favoriteEmail = p.isFavoriteEmail();
 		this.privileged = p.isPrivileged();
+		this.birthdate = p.getBirthdate();
 		this.phoneNumbers = p.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, this)).collect(Collectors.toSet());
 		this.surveyUnit = su;
 	}
