@@ -141,6 +141,12 @@ public class InseeAddress extends Address {
 		this.l5 = address.getL5();
 		this.l6 = address.getL6();
 		this.l7 = address.getL7();
+		this.elevator = address.isElevator();
+		this.building = address.getBuilding();
+		this.floor = address.getFloor();
+		this.door = address.getDoor();
+		this.staircase = address.getStaircase();
+		this.cityPriorityDistrict = address.isCityPriorityDistrict();
 	}
 
 	/**

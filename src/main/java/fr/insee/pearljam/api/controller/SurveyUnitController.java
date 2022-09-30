@@ -159,6 +159,10 @@ public class SurveyUnitController {
 			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
 		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 		
