@@ -34,6 +34,7 @@ public class StateCountDto {
 	private Long nvaCount;
 	private Long npaCount;
 	private Long npiCount;
+	private Long npxCount;
 	private Long rowCount;
 	private Long total;
 
@@ -314,6 +315,14 @@ public class StateCountDto {
 
 	public void setNpiCount(Long npiCount) {
 		this.npiCount = npiCount;
+	}
+
+	public Long getNpxCount() {
+		return npxCount;
+	}
+
+	public void setNpxCount(Long npxCount) {
+		this.npxCount = npxCount;
 	}
 
 	public Long getRowCount() {

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 
 /**
@@ -78,26 +79,71 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			")")
 	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
 	 
-	@Query(value="SELECT su FROM SurveyUnit su " + 
-			 	"WHERE su.organizationUnit.id IN (:lstOuId) " +
-			
-				// Contact outcome must be null or INA
-				"AND NOT EXISTS ( " +
-				"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
-				"AND co.type <> 'INA' ) " +
+	@Query(value="SELECT su.id FROM SurveyUnit su " + 
+	"WHERE su.organizationUnit.id IN (:lstOuId) " +
+	// in campaign with expected IdentificationConfiguration
+	"AND su.campaign.identificationConfiguration = :config " +
+	// in processing phase
+	"AND EXISTS (SELECT vi FROM Visibility vi " +
+		"WHERE vi.campaign.id = su.campaign.id " +
+		"AND vi.organizationUnit.id = su.organizationUnit.id " +
+		"AND vi.collectionEndDate < :date " +
+		"AND vi.endDate > :date) " +
+	"AND NOT EXISTS (" +
+		"SELECT st FROM State st WHERE " +
+		"st.surveyUnit.id = su.id " +
+		"AND st.type IN ('CLO', 'FIN', 'TBR') " +
+	")")
+	List<String> findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId, @Param("config") IdentificationConfiguration config);
 
-				"AND EXISTS (SELECT vi FROM Visibility vi " +
-				"WHERE vi.campaign.id = su.campaign.id " +
-				"AND vi.organizationUnit.id = su.organizationUnit.id " +
-				"AND vi.collectionEndDate < :date " +
-				"AND vi.endDate > :date) " +
-				"AND NOT EXISTS (" +
-				"SELECT st FROM State st WHERE " +
-				"st.surveyUnit.id = su.id " +
-				"AND st.type IN ('CLO', 'FIN', 'TBR') " +
-				")")
-	List<SurveyUnit> findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId);
-	
+	@Query(value="SELECT su FROM SurveyUnit su " + 
+	"WHERE su.id IN (:ids) " +
+	// Contact outcome must be null or INA
+	"AND NOT EXISTS ( " +
+		"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+		"AND co.type <> 'INA' " +
+	")")
+	List<SurveyUnit> findClosableNoIdentSurveyUnitId(@Param("ids") List<String> ids);
+
+	@Query(value="SELECT su FROM SurveyUnit su " + 
+	"WHERE su.id IN (:ids) " +
+	"AND ( "+
+		// First case : Contact outcome is IMP and identification not finished
+		"( " +
+		"EXISTS ( " +
+			"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+			"AND co.type = 'IMP' " +
+			") "+
+			// and missing/incomplete identification
+		"AND  ( "+
+			"su.identification IS NULL  " +
+			"OR (su.identification.identification IS NULL ) " +
+			"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NULL ) " +
+			"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation IS NULL ) " +
+			"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation = 'ORDINARY' AND su.identification.category IS NULL ) " +
+			"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation = 'ORDINARY' AND su.identification.category IN ('PRIMARY', 'OCCASIONAL', 'UNKNOWN') AND su.identification.occupant IS NULL ) " +
+			") "+
+		") " +
+		"OR "+
+		"( " +
+		// Second case : contact outcome must be null or INA or NOA
+			"NOT EXISTS ( "+
+				"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+				"AND co.type NOT IN('INA','NOA')"+
+				" ) " +
+			// and identification is not started / incomplete / and doesn't lead to Out_of_scope (business rule here, not an enum)
+			"AND  ( "+
+				"su.identification IS NULL  " +
+				"OR su.identification.identification IS NULL " +
+				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NULL ) " +
+				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation IS NULL ) " +
+				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation = 'ORDINARY' AND su.identification.category NOT IN ('SECONDARY', 'VACANT') ) " +
+				") " +
+		") " +
+	" )"
+	)
+	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
+
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
