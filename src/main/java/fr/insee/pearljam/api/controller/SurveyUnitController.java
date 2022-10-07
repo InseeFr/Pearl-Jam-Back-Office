@@ -418,6 +418,7 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-units/closable")
 	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
+		LOGGER.info("{} try to GET closable units",userId);
 		if (StringUtils.isBlank(userId)) {
 			LOGGER.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -436,6 +437,8 @@ public class SurveyUnitController {
 	@ApiOperation(value = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")
 	public ResponseEntity<Object> deleteSurveyUnit(HttpServletRequest request, @PathVariable(value = "id") String id){
+		String userId = utilsService.getUserId(request);
+		LOGGER.info("{} try to DELETE survey-unit {}",userId, id);
 		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
 		if (!surveyUnitOptional.isPresent()) {
 			LOGGER.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);

@@ -386,7 +386,6 @@ class TestAuthKeyCloak {
 				.assertThat().body("tbrCount", equalTo(1)).and()
 				.assertThat().body("finCount", equalTo(0)).and()
 				.assertThat().body("cloCount", equalTo(0)).and()
-				// .assertThat().body("qnaFinCount",equalTo(0)).and()
 				.assertThat().body("nvaCount", equalTo(0)).and()
 				.assertThat().body("npaCount", equalTo(0)).and()
 				.assertThat().body("npiCount", equalTo(0)).and()
@@ -406,10 +405,11 @@ class TestAuthKeyCloak {
 				.and().assertThat().body("ucdCount", equalTo(0))
 				.and().assertThat().body("utrCount", equalTo(0))
 				.and().assertThat().body("alaCount", equalTo(0))
-				.and().assertThat().body("acpCount", equalTo(1))
 				.and().assertThat().body("dcdCount", equalTo(0))
 				.and().assertThat().body("nuhCount", equalTo(0))
-				.and().assertThat().body("nerCount", equalTo(0));
+				.and().assertThat().body("dukCount", equalTo(1))
+				.and().assertThat().body("duuCount", equalTo(0))
+				.and().assertThat().body("noaCount", equalTo(0));
 	}
 
 	/**
@@ -981,10 +981,11 @@ class TestAuthKeyCloak {
 				.and().assertThat().body("organizationUnits[0].ucdCount", equalTo(0))
 				.and().assertThat().body("organizationUnits[0].utrCount", equalTo(0))
 				.and().assertThat().body("organizationUnits[0].alaCount", equalTo(0))
-				.and().assertThat().body("organizationUnits[0].acpCount", equalTo(1))
 				.and().assertThat().body("organizationUnits[0].dcdCount", equalTo(0))
 				.and().assertThat().body("organizationUnits[0].nuhCount", equalTo(0))
-				.and().assertThat().body("organizationUnits[0].nerCount", equalTo(0));
+				.and().assertThat().body("organizationUnits[0].dukCount", equalTo(1))
+				.and().assertThat().body("organizationUnits[0].duuCount", equalTo(0))
+				.and().assertThat().body("organizationUnits[0].noaCount", equalTo(0));
 	}
 
 	/**
@@ -1007,10 +1008,12 @@ class TestAuthKeyCloak {
 				.and().assertThat().body("[0].ucdCount", equalTo(0))
 				.and().assertThat().body("[0].utrCount", equalTo(0))
 				.and().assertThat().body("[0].alaCount", equalTo(0))
-				.and().assertThat().body("[0].acpCount", equalTo(1))
 				.and().assertThat().body("[0].dcdCount", equalTo(0))
 				.and().assertThat().body("[0].nuhCount", equalTo(0))
-				.and().assertThat().body("[0].nerCount", equalTo(0));
+				.and().assertThat().body("[0].nuhCount", equalTo(0))
+				.and().assertThat().body("[0].dukCount", equalTo(1))
+				.and().assertThat().body("[0].duuCount", equalTo(0))
+				.and().assertThat().body("[0].noaCount", equalTo(0));
 	}
 
 	/**
@@ -1455,10 +1458,11 @@ class TestAuthKeyCloak {
 				.and().assertThat().body("ucdCount", equalTo(0))
 				.and().assertThat().body("utrCount", equalTo(0))
 				.and().assertThat().body("alaCount", equalTo(0))
-				.and().assertThat().body("acpCount", equalTo(0))
 				.and().assertThat().body("dcdCount", equalTo(0))
 				.and().assertThat().body("nuhCount", equalTo(0))
-				.and().assertThat().body("nerCount", equalTo(0));
+				.and().assertThat().body("dukCount", equalTo(0))
+				.and().assertThat().body("duuCount", equalTo(0))
+				.and().assertThat().body("noaCount", equalTo(0));
 	}
 
 	/**

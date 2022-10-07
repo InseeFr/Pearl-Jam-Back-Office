@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -439,25 +441,39 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (lstSurveyUnit.isEmpty()) {
 			LOGGER.warn("No Survey Unit found for the user {}", userId);
 		}
-		return lstSurveyUnit.stream().map(su -> new SurveyUnitCampaignDto(su)).collect(Collectors.toSet());
+		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.collect(Collectors.toList());
-		List<SurveyUnit> suList = surveyUnitRepository
-				.findAllSurveyUnitsOfOrganizationUnitsInProcessingPhase(System.currentTimeMillis(), lstOuId);
 
-		List<SurveyUnitCampaignDto> lstResult = suList.stream().map(su -> new SurveyUnitCampaignDto(su))
+		List<String> noIdentSurveyUnitIds = surveyUnitRepository
+				.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.NOIDENT);
+		List<String> iascoSurveyUnitIds = surveyUnitRepository
+				.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.IASCO);
+
+		// apply different business rules to select SU
+		List<SurveyUnit> noIdentSurveyUnitsToCheck=surveyUnitRepository.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
+		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+		// merge lists
+		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
 				.collect(Collectors.toList());
+
 		Map<String, String> mapQuestionnaireStateBySu = null;
+		
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
-					lstResult.stream().map(SurveyUnitCampaignDto::getId).collect(Collectors.toList()));
+			suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
 		} catch (Exception e) {
-			LOGGER.error("Could not get data collection API");
+			LOGGER.error("Could not get data collection API : " + e.getMessage());
 			LOGGER.error("All questionnaire states will be considered null");
 		}
+
+		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(SurveyUnitCampaignDto::new)
+				.collect(Collectors.toList());
 
 		Map<String, String> map = mapQuestionnaireStateBySu;
 		if (map != null) {

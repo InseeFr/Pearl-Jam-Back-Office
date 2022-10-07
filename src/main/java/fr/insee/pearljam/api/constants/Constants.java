@@ -98,7 +98,7 @@ public class Constants {
 	public static final String[] CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "rowCount", "total" };
 
 	public static final String[] CONTACT_OUTCOME_FIELDS = { "inaCount", "refCount", "impCount", "ucdCount", "utrCount",
-			"alaCount", "acpCount", "dcdCount", "nuhCount", "nerCount" };
+			"alaCount", "dcdCount", "nuhCount", "dukCount", "duuCount", "noaCount" };
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
 

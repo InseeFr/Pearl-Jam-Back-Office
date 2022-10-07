@@ -116,3 +116,4 @@ INSERT INTO public.closing_cause (date, type, survey_unit_id) VALUES ((SELECT ex
 
 
 INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');

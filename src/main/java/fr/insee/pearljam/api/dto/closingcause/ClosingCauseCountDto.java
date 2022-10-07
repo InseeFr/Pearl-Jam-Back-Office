@@ -12,6 +12,7 @@ import fr.insee.pearljam.api.constants.Constants;
 public class ClosingCauseCountDto {
 	private Long npiCount;
 	private Long npaCount;
+	private Long npxCount;
 	private Long rowCount;
 	private Long total;
        
@@ -67,6 +68,20 @@ public class ClosingCauseCountDto {
 	 */
 	public void setNpaCount(Long npaCount) {
 		this.npaCount = npaCount;
+	}
+
+	/**
+	 * @return the npxCount
+	 */
+	public Long getNpxCount() {
+		return npxCount;
+	}
+
+	/**
+	 * @param npxCount the npxCount to set
+	 */
+	public void setNpxCount(Long npxCount) {
+		this.npxCount = npxCount;
 	}
 
 	/**
