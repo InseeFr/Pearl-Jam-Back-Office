@@ -149,9 +149,6 @@ Before committing code please ensure,
 - `POST /api/create-dataset` : Create dataset
 - `DELETE /api/delete-dataset` : Delete dataset
 
-### Geographical-Location-Controller
-- `POST /api/geographical-locations` : Create Context with Organizational Unit and users associated
-
 ### Interviewer-Controller
 - `GET /api/interviewer/{id}/campaigns` : Get interviewer campaigns
 - `GET /api/interviewers` : Get interviewers

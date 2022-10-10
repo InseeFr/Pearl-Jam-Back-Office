@@ -98,10 +98,9 @@ public class SurveyUnitController {
 	@ApiOperation(value = "Post SurveyUnits")
 	@PostMapping(path = "/survey-units/interviewers")
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(HttpServletRequest request,
-			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits,
-			@RequestParam(value = "diff", defaultValue = "true", required = false) Boolean diff) {
+			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
 
-		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits, diff);
+		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
 		LOGGER.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -159,6 +158,10 @@ public class SurveyUnitController {
 			LOGGER.error(e.getMessage());
 			LOGGER.info("GET SurveyUnit with id {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		LOGGER.info("GET SurveyUnit with id {} resulting in 200", id);
 		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
@@ -415,6 +418,7 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-units/closable")
 	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
+		LOGGER.info("{} try to GET closable units",userId);
 		if (StringUtils.isBlank(userId)) {
 			LOGGER.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -433,6 +437,8 @@ public class SurveyUnitController {
 	@ApiOperation(value = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")
 	public ResponseEntity<Object> deleteSurveyUnit(HttpServletRequest request, @PathVariable(value = "id") String id){
+		String userId = utilsService.getUserId(request);
+		LOGGER.info("{} try to DELETE survey-unit {}",userId, id);
 		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
 		if (!surveyUnitOptional.isPresent()) {
 			LOGGER.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);

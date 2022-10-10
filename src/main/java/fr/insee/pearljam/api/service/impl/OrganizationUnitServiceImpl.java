@@ -63,7 +63,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 			LOGGER.error("At least one organizational unit has an attribute missing");
 			return new Response("At least one organizational unit has an attribute missing", HttpStatus.BAD_REQUEST);
 		}
-		String alreadyPresentIds = organizationUnitDtos.stream().map(OrganizationUnitContextDto::getOrganisationUnit).filter(id -> organizationUnitRepository.findById(id).isPresent()).collect(Collectors.joining(", "));
+		String alreadyPresentIds = organizationUnitDtos.stream().map(OrganizationUnitContextDto::getId).filter(id -> organizationUnitRepository.findById(id).isPresent()).collect(Collectors.joining(", "));
 		if (alreadyPresentIds != null && !alreadyPresentIds.isEmpty()) {
 			LOGGER.error("The following Organizational units were already present: [{}]", alreadyPresentIds);
 			return new Response("The following Organizational units were already present: " + alreadyPresentIds, HttpStatus.BAD_REQUEST);
@@ -76,15 +76,15 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	}
 
 	private boolean allAttributesHaveValue(OrganizationUnitContextDto dto) {
-		return dto.getOrganisationUnit() != null && !dto.getOrganisationUnit().isBlank()
-				&& dto.getOrganisationUnitLabel() != null && !dto.getOrganisationUnitLabel().isBlank()
+		return dto.getId() != null && !dto.getId().isBlank()
+				&& dto.getLabel() != null && !dto.getLabel().isBlank()
 				&& dto.getType() != null;
 	}
 
 	private void addUsers(List<OrganizationUnitContextDto> organizationUnitDtos) throws UserAlreadyExistsException, NoOrganizationUnitException {
 		for (OrganizationUnitContextDto ouDto : organizationUnitDtos) {
 			if (ouDto.getUsers() != null) {
-				userService.createUsersByOrganizationUnit(ouDto.getUsers(), ouDto.getOrganisationUnit());	
+				userService.createUsersByOrganizationUnit(ouDto.getUsers(), ouDto.getId());	
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 			List<OrganizationUnitContextDto> added = new ArrayList<>();
 			for (OrganizationUnitContextDto ouDto : remainingToAdd) {
 				if (ouDto.getOrganisationUnitRef() == null || ouDto.getOrganisationUnitRef().stream().noneMatch(ouId -> !organizationUnitRepository.findById(ouId).isPresent())) {
-					OrganizationUnit orgUnit = new OrganizationUnit(ouDto.getOrganisationUnit(), ouDto.getOrganisationUnitLabel(), ouDto.getType());
+					OrganizationUnit orgUnit = new OrganizationUnit(ouDto.getId(), ouDto.getLabel(), ouDto.getType());
 					organizationUnitRepository.save(orgUnit);
 					added.add(ouDto);
 					setParentInChildOU(ouDto, orgUnit);
@@ -110,7 +110,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
 		}
 		if (!remainingToAdd.isEmpty()) {
-			String remainingIds = remainingToAdd.stream().map(OrganizationUnitContextDto::getOrganisationUnit).collect(Collectors.joining(", "));
+			String remainingIds = remainingToAdd.stream().map(OrganizationUnitContextDto::getId).collect(Collectors.joining(", "));
 			throw new NoOrganizationUnitException("One of the organizationUnitRef of the following organizational units could not be found: " + remainingIds);
 		}
 	}

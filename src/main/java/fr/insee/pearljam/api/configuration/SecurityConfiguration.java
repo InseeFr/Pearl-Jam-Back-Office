@@ -126,6 +126,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES	).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_VISIBILITIES).hasAnyRole(adminRole)
+			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_REFERENTS).hasAnyRole(adminRole, userLocalRole, userNationalRole)
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_INTERVIEWERS).hasAnyRole(adminRole)	
@@ -137,7 +138,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.PUT, Constants.API_USER_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.DELETE, Constants.API_USER_ID).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_USER_ID_ORGANIZATIONUNIT_ID).hasAnyRole(adminRole)	
-			.antMatchers(HttpMethod.POST, Constants.API_GEOGRAPHICALLOCATIONS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_ORGANIZATIONUNIT).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.GET, Constants.API_ORGANIZATIONUNITS).hasAnyRole(adminRole)			
@@ -192,6 +192,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES,
 					Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES,	
 					Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY,
+					Constants.API_CAMPAIGN_ID_VISIBILITIES,
+					Constants.API_CAMPAIGN_ID_REFERENTS,
 					Constants.API_CAMPAIGNS_ID_ON_GOING,
 					Constants.API_INTERVIEWERS,
 					Constants.API_INTERVIEWERS_SU_STATECOUNT,
@@ -199,7 +201,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					Constants.API_USER,
 					Constants.API_USER_ID,
 					Constants.API_USER_ID_ORGANIZATIONUNIT_ID,
-					Constants.API_GEOGRAPHICALLOCATIONS,
 					Constants.API_ORGANIZATIONUNIT,
 					Constants.API_ORGANIZATIONUNITS,
 					Constants.API_ORGANIZATIONUNIT_ID,

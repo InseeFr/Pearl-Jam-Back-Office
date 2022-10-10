@@ -42,7 +42,7 @@ public class Comment implements Serializable {
 	/**
 	* The value of Comment 
 	*/
-	@Column(length=255)
+	@Column(length=999)
 	private String value;
 	
 	/**
@@ -66,7 +66,7 @@ public class Comment implements Serializable {
 		super();
 		this.type = dto.getType();
 		String commentValue = dto.getValue();
-		this.value = commentValue.length()>255? commentValue.substring(0, 255):commentValue;
+		this.value = commentValue.length()>999? commentValue.substring(0, 999):commentValue;
 		this.surveyUnit = surveyUnit;
 	}
 	/**

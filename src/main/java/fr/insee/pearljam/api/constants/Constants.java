@@ -51,8 +51,9 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CONTACTOUTCOMES = "/api/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes";
 	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES = "/api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes";
-	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{id}/organizational-unit/{id}/visibility";
+	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility";
 	public static final String API_CAMPAIGN_ID_VISIBILITIES = "/api/campaign/{id}/visibilities";
+	public static final String API_CAMPAIGN_ID_REFERENTS = "/api/campaigns/{id}/referents";
 	public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
 
 	public static final String API_INTERVIEWERS = "/api/interviewers";
@@ -62,7 +63,6 @@ public class Constants {
 	public static final String API_USER = "/api/user";
 	public static final String API_USER_ID = "/api/user/{id}";
 	public static final String API_USER_ID_ORGANIZATIONUNIT_ID = "/api/user/{id}/organization-unit/{id2}";
-	public static final String API_GEOGRAPHICALLOCATIONS = "/api/geographical-locations";
 	public static final String API_ORGANIZATIONUNIT = "/api/organization-unit";
 	public static final String API_ORGANIZATIONUNITS = "/api/organization-units";
 	public static final String API_ORGANIZATIONUNIT_ID = "/api/organization-unit/{id}";
@@ -98,7 +98,7 @@ public class Constants {
 	public static final String[] CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "rowCount", "total" };
 
 	public static final String[] CONTACT_OUTCOME_FIELDS = { "inaCount", "refCount", "impCount", "ucdCount", "utrCount",
-			"alaCount", "acpCount", "dcdCount", "nuhCount", "nerCount" };
+			"alaCount", "dcdCount", "nuhCount", "dukCount", "duuCount", "noaCount" };
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
 

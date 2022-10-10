@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="SimonDmz" id="1654257284987-1">
+        <createTable tableName="identification">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="identificationPK" />
+            </column>
+            <column name="survey_unit_id" type="VARCHAR(255)" />
+            <column name="identification" type="VARCHAR(255)" />
+            <column name="access" type="VARCHAR(255)" />
+            <column name="situation" type="VARCHAR(255)" />
+            <column name="category" type="VARCHAR(255)" />
+            <column name="occupant" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-2">
+        <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="identification" constraintName="FKidentificationToSurveyunit" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="survey_unit" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-3">
+        <createTable tableName="referent">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="referentPK" />
+            </column>
+            <column name="campaign_id" type="VARCHAR(255)" />
+            <column name="first_name" type="VARCHAR(255)" />
+            <column name="last_name" type="VARCHAR(255)" />
+            <column name="role" type="VARCHAR(255)" />
+            <column name="phone_number" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-4">
+        <addForeignKeyConstraint baseColumnNames="campaign_id" baseTableName="referent" constraintName="FKreferentToCampaign" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="campaign" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-5">
+        <addColumn tableName="contact_attempt">
+            <column name="medium" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-6">
+        <addColumn tableName="campaign">
+            <column name="email" type="varchar(50)" />
+            <column name="identification_configuration" type="varchar(50)" />
+            <column name="contact_attempt_configuration" type="varchar(50)" />
+            <column name="contact_outcome_configuration" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-7">
+        <dropColumn columnName="end_date" tableName="campaign" />
+        <dropColumn columnName="start_date" tableName="campaign" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-8">
+        <dropForeignKeyConstraint baseTableName="address" constraintName="FKkde8gpc211k0js7ski77m4q7h" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-9">
+        <dropColumn columnName="geographical_location_id" tableName="address" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-10">
+        <dropTable tableName="geographical_location" />
+    </changeSet>
+    <changeSet author="SimonDmz" id="1654257284987-11">
+        <addColumn tableName="survey_unit">
+            <column name="move" type="BOOLEAN" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

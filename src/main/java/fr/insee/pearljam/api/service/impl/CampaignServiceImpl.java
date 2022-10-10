@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.Referent;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.domain.VisibilityId;
 import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.campaign.CollectionDatesDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -38,6 +39,7 @@ import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
+import fr.insee.pearljam.api.repository.ReferentRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
@@ -90,6 +92,9 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	@Autowired
 	MessageRepository messageRepository;
+
+	@Autowired
+	ReferentRepository referentRepository;
 	
 	@Autowired
 	UserService userService;
@@ -256,34 +261,6 @@ public class CampaignServiceImpl implements CampaignService {
 		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
-	@Override
-	public HttpStatus updateDates(String userId, String id, CollectionDatesDto campaign) {
-		HttpStatus returnStatus = HttpStatus.BAD_REQUEST;
-		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
-		if (camp.isPresent()) {
-			Campaign currentCampaign = camp.get();
-			if (campaign.getEndDate() != null) {
-				LOGGER.info("Updating collection end date for campaign {}", id);
-				currentCampaign.setEndDate(campaign.getEndDate());
-				returnStatus = HttpStatus.OK;
-			}
-			if (campaign.getStartDate() != null) {
-				LOGGER.info("Updating collection start date for campaign {}", id);
-				currentCampaign.setStartDate(campaign.getStartDate());
-				returnStatus = HttpStatus.OK;
-			}
-			campaignRepository.save(currentCampaign);
-		} else {
-			LOGGER.error("Campaign {} does not exist in db", id);
-			returnStatus = HttpStatus.NOT_FOUND;
-		}
-		
-		if (returnStatus == HttpStatus.BAD_REQUEST) {
-			LOGGER.error("No field endate or start date found in body");
-		}
-
-		return returnStatus;
-	}
 
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
@@ -321,9 +298,11 @@ public class CampaignServiceImpl implements CampaignService {
 			return  new Response("Campaign with id '" + campaignId + "' already exists", HttpStatus.BAD_REQUEST);
 		}
 		// Creating campaign
-		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel());
+		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
+				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
+				campaignDto.getContactAttemptConfiguration(),campaignDto.getEmail());
 		campaignRepository.save(campaign);
-		
+
 		for(VisibilityContextDto dto : campaignDto.getVisibilities()) {
 			if(!verifyVisibilityContextDto(dto)) {
 				throw new VisibilityException("Some of the fields of a visibility are missing");
@@ -347,7 +326,8 @@ public class CampaignServiceImpl implements CampaignService {
 				throw new NoOrganizationUnitException("Organizational unit '" + dto.getOrganizationalUnit()+ "' does not exist");
 			}
 		}
-		
+		persistReferents(campaignDto, campaign);
+
 		return new Response("", HttpStatus.OK);
 	}
 	
@@ -409,8 +389,13 @@ public class CampaignServiceImpl implements CampaignService {
 
 		Campaign currentCampaign = camp.get();
 		currentCampaign.setLabel(campaign.getCampaignLabel());
+		if (!StringUtils.isBlank(campaign.getEmail())) {
+			currentCampaign.setEmail(campaign.getEmail());
+		}
+		updateConfiguration(currentCampaign,campaign);
+		updateReferents(currentCampaign,campaign);
 		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
-				campaign.getCampaign(),
+				id,
 				v.getOrganizationalUnit(),
 				new VisibilityDto(
 						v.getManagementStartDate(),
@@ -421,7 +406,27 @@ public class CampaignServiceImpl implements CampaignService {
 						v.getEndDate())));
 		return HttpStatus.OK;
 	}
-	
+
+	private void updateReferents(Campaign currentCampaign, CampaignContextDto campDto) {
+		if (campDto.getReferents() != null) {
+			referentRepository.deleteAll(currentCampaign.getReferents());
+			persistReferents(campDto, currentCampaign);
+		}
+	}
+
+	private void updateConfiguration(Campaign currentCampaign, CampaignContextDto campDto) {
+
+		if (campDto.getIdentificationConfiguration() != null) {
+			currentCampaign.setIdentificationConfiguration(campDto.getIdentificationConfiguration());
+		}
+		if (campDto.getContactOutcomeConfiguration() != null) {
+			currentCampaign.setContactOutcomeConfiguration(campDto.getContactOutcomeConfiguration());
+		}
+		if (campDto.getContactAttemptConfiguration() != null) {
+			currentCampaign.setContactAttemptConfiguration(campDto.getContactAttemptConfiguration());
+		}
+	}
+
 	@Override
 	public List<CampaignDto> getAllCampaigns() {
 		List<String> lstOuId = organizationUnitRepository.findAllId();
@@ -467,6 +472,18 @@ public class CampaignServiceImpl implements CampaignService {
 		}).collect(Collectors.toList());
 	}
 
+	@Override
+	public void persistReferents(CampaignContextDto campaignDto, Campaign campaign){
+		campaignDto.getReferents().stream().forEach(refDto -> {
+			Referent ref = new Referent();
+			ref.setCampaign(campaign);
+			ref.setFirstName(refDto.getFirstName());
+			ref.setLastName(refDto.getLastName());
+			ref.setPhoneNumber(refDto.getPhoneNumber());
+			ref.setRole(refDto.getRole());
+			referentRepository.save(ref);
+		});
+	}
 
 }
  

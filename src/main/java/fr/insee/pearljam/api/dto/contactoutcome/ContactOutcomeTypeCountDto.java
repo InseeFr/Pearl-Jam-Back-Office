@@ -11,75 +11,74 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ContactOutcomeTypeCountDto {
-	
+
 	private String idDem;
-	
-    private String labelDem;
-    
+
+	private String labelDem;
+
 	private CampaignDto campaign;
-	
+
 	private Long inaCount;
-	
-    private Long refCount;
-    
-    private Long impCount;
-    
-    private Long ucdCount;
-    
-    private Long utrCount;
-    
-    private Long alaCount;
-    
-    private Long acpCount;
 
-    private Long dcdCount;
+	private Long refCount;
 
-    private Long nuhCount;
+	private Long impCount;
 
-    private Long nerCount;
-    
-    private Long total;
-       
-    public ContactOutcomeTypeCountDto() {
-    	super();
-    }
-    
-    public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
-    	if (obj != null && !obj.isEmpty()) {
-    		for(String str : Constants.CONTACT_OUTCOME_FIELDS) {
+	private Long ucdCount;
+
+	private Long utrCount;
+
+	private Long alaCount;
+
+	private Long dcdCount;
+
+	private Long nuhCount;
+
+	private Long dukCount;
+
+	private Long duuCount;
+
+	private Long noaCount;
+
+	private Long total;
+
+	public ContactOutcomeTypeCountDto() {
+		super();
+	}
+
+	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
+		if (obj != null && !obj.isEmpty()) {
+			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
 				try {
-					setLongField(str, obj.get(str)!=null?obj.get(str).longValue():0L);
+					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					e.printStackTrace();
-				} 
+				}
 			}
 		}
-    	
-    }
-    
-    public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
-    	this.campaign = campaign;
-    	if (obj != null && !obj.isEmpty()) {
-    		for(String str : Constants.CONTACT_OUTCOME_FIELDS) {
+
+	}
+
+	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
+		this.campaign = campaign;
+		if (obj != null && !obj.isEmpty()) {
+			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
 				try {
-					setLongField(str, obj.get(str)!=null?obj.get(str).longValue():0L);
+					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					e.printStackTrace();
-				} 
+				}
 			}
 		}
-    	
-    }
-    
-    public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
+
+	}
+
+	public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
 		this(obj);
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
 	}
-    
-    
-    
-	
+
 	/**
 	 * @return the idDem
 	 */
@@ -207,20 +206,6 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @return the acpCount
-	 */
-	public Long getAcpCount() {
-		return acpCount;
-	}
-
-	/**
-	 * @param acpCount the acpCount to set
-	 */
-	public void setAcpCount(Long acpCount) {
-		this.acpCount = acpCount;
-	}
-
-	/**
 	 * @return the dcdCount
 	 */
 	public Long getDcdCount() {
@@ -249,17 +234,45 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	/**
-	 * @return the nerCount
+	 * @return the dukCount
 	 */
-	public Long getNerCount() {
-		return nerCount;
+	public Long getDukCount() {
+		return dukCount;
 	}
 
 	/**
-	 * @param nerCount the nerCount to set
+	 * @param dukCount the dukCount to set
 	 */
-	public void setNerCount(Long nerCount) {
-		this.nerCount = nerCount;
+	public void setDukCount(Long dukCount) {
+		this.dukCount = dukCount;
+	}
+
+	/**
+	 * @return the duuCount
+	 */
+	public Long getDuuCount() {
+		return duuCount;
+	}
+
+	/**
+	 * @param nuhCount the duuCount to set
+	 */
+	public void setDuuCount(Long duuCount) {
+		this.duuCount = duuCount;
+	}
+
+	/**
+	 * @return the noaCount
+	 */
+	public Long getNoaCount() {
+		return noaCount;
+	}
+
+	/**
+	 * @param noaCount the noaCount to set
+	 */
+	public void setNoaCount(Long noaCount) {
+		this.noaCount = noaCount;
 	}
 
 	/**
@@ -277,9 +290,9 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	public void setLongField(String fieldName, Long value)
-	        throws NoSuchFieldException, IllegalAccessException {
-	    Field field = getClass().getDeclaredField(fieldName);
-	    field.set(this, value);
+			throws NoSuchFieldException, IllegalAccessException {
+		Field field = getClass().getDeclaredField(fieldName);
+		field.set(this, value);
 	}
 
 }

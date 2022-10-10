@@ -8,6 +8,7 @@ package fr.insee.pearljam.api.domain;
 public enum ClosingCauseType {
 	NPA("Not processed because of interviewer absence"),
 	NPI("Not processed by interviewer"),
+	NPX("Not processed for exceptional reason"),
 	ROW("Right of withdrawal");
 	
 	/**
