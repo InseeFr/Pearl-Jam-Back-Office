@@ -62,11 +62,13 @@ public class Identification implements Serializable {
     }
 
     public Identification(IdentificationDto identificationDto) {
-        this.identification = identificationDto.getIdentification();
-        this.access = identificationDto.getAccess();
-        this.situation = identificationDto.getSituation();
-        this.category = identificationDto.getCategory();
-        this.occupant = identificationDto.getOccupant();
+        if (identificationDto != null) {
+            this.identification = identificationDto.getIdentification();
+            this.access = identificationDto.getAccess();
+            this.situation = identificationDto.getSituation();
+            this.category = identificationDto.getCategory();
+            this.occupant = identificationDto.getOccupant();
+        }
     }
 
     public Long getId() {
