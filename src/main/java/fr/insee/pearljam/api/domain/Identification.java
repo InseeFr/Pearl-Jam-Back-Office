@@ -61,7 +61,8 @@ public class Identification implements Serializable {
     public Identification() {
     }
 
-    public Identification(IdentificationDto identificationDto) {
+    public Identification(IdentificationDto identificationDto, SurveyUnit su) {
+        this.surveyUnit = su;
         if (identificationDto != null) {
             this.identification = identificationDto.getIdentification();
             this.access = identificationDto.getAccess();

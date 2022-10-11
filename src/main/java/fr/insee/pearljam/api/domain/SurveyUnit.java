@@ -148,7 +148,7 @@ public class SurveyUnit implements Serializable {
 		this.sampleIdentifier = new InseeSampleIdentifier(su.getSampleIdentifiers());
 		this.campaign = campaign;
 		this.interviewer = null;
-		this.identification = new Identification(su.getIdentification());
+		this.identification = new Identification(su.getIdentification(),this);
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
