@@ -28,6 +28,7 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
 import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
@@ -46,6 +47,7 @@ import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -107,6 +109,9 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	@Autowired
 	PreferenceService preferenceService;
+
+	@Autowired
+	ReferentService referentService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -483,6 +488,26 @@ public class CampaignServiceImpl implements CampaignService {
 			ref.setRole(refDto.getRole());
 			referentRepository.save(ref);
 		});
+	}
+
+	@Override
+	public CampaignContextDto getCampaignDtoById(String id){
+		CampaignContextDto campaign = new CampaignContextDto();
+		CampaignDto campdto = campaignRepository.findDtoById(id);
+		campaign.setCampaign(campdto.getId());
+		campaign.setCampaignLabel(campdto.getLabel());
+		campaign.setEmail(campdto.getEmail());
+		campaign.setContactAttemptConfiguration(campdto.getContactAttemptConfiguration());
+		campaign.setContactOutcomeConfiguration(campdto.getContactOutcomeConfiguration());
+		campaign.setIdentificationConfiguration(campdto.getIdentificationConfiguration());
+		List<VisibilityContextDto> visibilities = visibilityRepository.findByCampaignId(id).stream()
+				.map(visibility -> new VisibilityContextDto(visibility)).collect(Collectors.toList());
+		campaign.setVisibilities(visibilities);
+
+		List<ReferentDto> referents = referentService.findByCampaignId(id);
+		campaign.setReferents(referents);
+
+		return campaign;
 	}
 
 }
