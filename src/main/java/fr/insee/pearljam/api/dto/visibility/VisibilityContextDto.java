@@ -23,7 +23,7 @@ public class VisibilityContextDto extends VisibilityDto {
 		setIdentificationPhaseStartDate(visibility.getIdentificationPhaseStartDate());
 		setCollectionStartDate(visibility.getCollectionStartDate());
 		setCollectionEndDate(visibility.getCollectionEndDate());
-		setEndDate(visibility.getCollectionEndDate());
+		setEndDate(visibility.getEndDate());
 		setOrganizationalUnit(visibility.getOrganizationUnit().getId());
 	}
 
