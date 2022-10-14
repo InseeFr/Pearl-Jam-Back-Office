@@ -95,7 +95,7 @@ public class Constants {
 
 	public static final String[] STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "npxCount", "rowCount" };
 
-	public static final String[] CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "npiCount", "rowCount", "total" };
+	public static final String[] CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "npxCount", "rowCount", "total" };
 
 	public static final String[] CONTACT_OUTCOME_FIELDS = { "inaCount", "refCount", "impCount", "ucdCount", "utrCount",
 			"alaCount", "dcdCount", "nuhCount", "dukCount", "duuCount", "noaCount" };
