@@ -288,7 +288,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
-		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
+		if (surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5) {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			surveyUnit.setClosingCause(null);
