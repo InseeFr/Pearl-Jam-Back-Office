@@ -251,11 +251,7 @@ public class SurveyUnitCampaignDto {
 	 * @param questionnaireState the questionnaireState to set
 	 */
 	public void setQuestionnaireState(String questionnaireState) {
-		if(questionnaireState==null) {
-			this.questionnaireState="NULL";
-		}else{
-			this.questionnaireState = questionnaireState;	
-		}
+		this.questionnaireState = questionnaireState;	
 	}
 
 	/**
