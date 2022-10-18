@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,14 @@ public class IdentificationServiceImpl implements IdentificationService {
         if (identificationIsMissing)
             return "MISSING";
 
-        boolean identificationIsFinished = List
-                .of(IdentificationQuestionValue.DESTROY, IdentificationQuestionValue.UNIDENTIFIED)
+        boolean identificationIsFinished = Arrays
+                .asList(IdentificationQuestionValue.DESTROY, IdentificationQuestionValue.UNIDENTIFIED)
                 .contains(identification.getIdentification()) ||
                 identification.getAccess() != null ||
-                List.of(SituationQuestionValue.ABSORBED, SituationQuestionValue.NOORDINARY)
+                Arrays.asList(SituationQuestionValue.ABSORBED, SituationQuestionValue.NOORDINARY)
                         .contains(identification.getSituation())
                 ||
-                List.of(CategoryQuestionValue.SECONDARY, CategoryQuestionValue.VACANT)
+                Arrays.asList(CategoryQuestionValue.SECONDARY, CategoryQuestionValue.VACANT)
                         .contains(identification.getCategory())
                 ||
                 identification.getOccupant() != null;
