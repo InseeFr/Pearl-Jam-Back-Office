@@ -32,14 +32,14 @@ public class IdentificationServiceImpl implements IdentificationService {
         boolean identificationIsFinished = Arrays
                 .asList(IdentificationQuestionValue.DESTROY, IdentificationQuestionValue.UNIDENTIFIED)
                 .contains(identification.getIdentification()) ||
-                identification.getAccess() != null ||
-                Arrays.asList(SituationQuestionValue.ABSORBED, SituationQuestionValue.NOORDINARY)
-                        .contains(identification.getSituation())
-                ||
-                Arrays.asList(CategoryQuestionValue.SECONDARY, CategoryQuestionValue.VACANT)
-                        .contains(identification.getCategory())
-                ||
-                identification.getOccupant() != null;
+                identification.getAccess() != null &&
+                        (Arrays.asList(SituationQuestionValue.ABSORBED, SituationQuestionValue.NOORDINARY)
+                                .contains(identification.getSituation())
+                                ||
+                                Arrays.asList(CategoryQuestionValue.SECONDARY, CategoryQuestionValue.VACANT)
+                                        .contains(identification.getCategory())
+                                ||
+                                identification.getOccupant() != null);
 
         if (identificationIsFinished)
             return "FINISHED";
