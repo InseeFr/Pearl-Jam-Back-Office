@@ -472,8 +472,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			LOGGER.error("All questionnaire states will be considered null");
 		}
 
-		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(SurveyUnitCampaignDto::new)
-				.collect(Collectors.toList());
+		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(su -> {
+			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
+			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
+			sudto.setIdentificationState(identificationResult);
+			return sudto;
+		}).collect(Collectors.toList());
 
 		Map<String, String> map = mapQuestionnaireStateBySu;
 		if (map != null) {

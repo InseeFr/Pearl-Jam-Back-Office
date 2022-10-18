@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 public interface IdentificationService {
 
     public Identification findBySurveyUnitId(String id);
+
+    public String getIdentificationState(Identification identification);
 }

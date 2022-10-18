@@ -38,7 +38,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	*/
 	@Query(value="SELECT COUNT(DISTINCT su.id) FROM state s " + 
 			"JOIN survey_unit su ON s.survey_unit_id=su.id " + 
-			"JOIN contact_outcome_unit co ON co.survey_unit_id=su.id " + 
+			"JOIN contact_outcome co ON co.survey_unit_id=su.id " + 
 			"WHERE su.interviewer_id ILIKE ?1 " +
 			"AND co.type='INA' " +
 			"AND su.campaign_id=?2 AND s.type='TBR'", nativeQuery=true)

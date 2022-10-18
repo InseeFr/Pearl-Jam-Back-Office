@@ -43,6 +43,8 @@ public class SurveyUnitCampaignDto {
 	
 	private ContactOutcomeType contactOutcome;
 	
+	private String identificationState;
+
 	private List<CommentDto> comments;
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
@@ -269,4 +271,13 @@ public class SurveyUnitCampaignDto {
 	public void setContactOutcome(ContactOutcomeType contactOutcome) {
 		this.contactOutcome = contactOutcome;
 	}
+
+	public String getIdentificationState() {
+		return this.identificationState;
+	}
+
+	public void setIdentificationState(String identificationState) {
+		this.identificationState = identificationState;
+	}
+
 }
