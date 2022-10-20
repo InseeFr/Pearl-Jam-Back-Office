@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -481,7 +484,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		Map<String, String> map = mapQuestionnaireStateBySu;
 		if (map != null) {
-			lstResult.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
+			lstResult.stream().filter(su -> Arrays.asList(ContactOutcomeType.INA, ContactOutcomeType.NOA, null)
+					.contains(su.getContactOutcome()) && map.get(su.getId()) == null)
+					.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
 		} else {
 			lstResult.forEach(su -> su.setQuestionnaireState(Constants.UNAVAILABLE));
 		}
