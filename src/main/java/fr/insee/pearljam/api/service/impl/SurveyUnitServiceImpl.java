@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -465,7 +465,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
 				.collect(Collectors.toList());
 
-		Map<String, String> mapQuestionnaireStateBySu = null;
+		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 		
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
@@ -475,21 +475,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			LOGGER.error("All questionnaire states will be considered null");
 		}
 
+		final Map<String, String> map = mapQuestionnaireStateBySu;
 		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
 			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
 			sudto.setIdentificationState(identificationResult);
+			String questionnaireState = Optional.ofNullable( map.get(su.getId())).orElse(Constants.UNAVAILABLE);
+			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
 		}).collect(Collectors.toList());
 
-		Map<String, String> map = mapQuestionnaireStateBySu;
-		if (map != null) {
-			lstResult.stream().filter(su -> Arrays.asList(ContactOutcomeType.INA, ContactOutcomeType.NOA, null)
-					.contains(su.getContactOutcome()) && map.get(su.getId()) == null)
-					.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
-		} else {
-			lstResult.forEach(su -> su.setQuestionnaireState(Constants.UNAVAILABLE));
-		}
 
 		return lstResult;
 	}
