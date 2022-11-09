@@ -80,7 +80,7 @@ public class SurveyUnitController {
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "POST SurveyUnit assignations to interviewer")
+	@ApiOperation(value = "POST SurveyUnits assignations to interviewer")
 	@PostMapping(path = "/survey-units")
 	public ResponseEntity<Object> postSurveyUnits(HttpServletRequest request, @RequestBody List<SurveyUnitContextDto> surveyUnits) {
 
@@ -95,7 +95,7 @@ public class SurveyUnitController {
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Post SurveyUnits")
+	@ApiOperation(value = "POST SurveyUnit assignations to interviewer")
 	@PostMapping(path = "/survey-units/interviewers")
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(HttpServletRequest request,
 			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
