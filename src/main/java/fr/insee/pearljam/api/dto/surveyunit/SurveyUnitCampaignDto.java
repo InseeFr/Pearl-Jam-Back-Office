@@ -43,6 +43,8 @@ public class SurveyUnitCampaignDto {
 	
 	private ContactOutcomeType contactOutcome;
 	
+	private String identificationState;
+
 	private List<CommentDto> comments;
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
@@ -249,11 +251,7 @@ public class SurveyUnitCampaignDto {
 	 * @param questionnaireState the questionnaireState to set
 	 */
 	public void setQuestionnaireState(String questionnaireState) {
-		if(questionnaireState==null) {
-			this.questionnaireState="NULL";
-		}else{
-			this.questionnaireState = questionnaireState;	
-		}
+		this.questionnaireState = questionnaireState;	
 	}
 
 	/**
@@ -269,4 +267,13 @@ public class SurveyUnitCampaignDto {
 	public void setContactOutcome(ContactOutcomeType contactOutcome) {
 		this.contactOutcome = contactOutcome;
 	}
+
+	public String getIdentificationState() {
+		return this.identificationState;
+	}
+
+	public void setIdentificationState(String identificationState) {
+		this.identificationState = identificationState;
+	}
+
 }

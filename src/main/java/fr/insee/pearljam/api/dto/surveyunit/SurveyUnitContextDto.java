@@ -1,14 +1,17 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseDto;
+import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -26,13 +29,16 @@ public class SurveyUnitContextDto {
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
 	private ClosingCauseDto closingCause;
+	private IdentificationDto identification;
+	private Set<CommentDto> comments;
 
 	public SurveyUnitContextDto() {
 	}
-	
-	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address, 
+
+	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address,
 			String organizationUnitId, Boolean priority, String campaign, SampleIdentifiersDto sampleIdentifiers,
-			List<StateDto> states, List<ContactAttemptDto> contactAttempts, ContactOutcomeDto contactOutcome, ClosingCauseDto closingCause) {
+			List<StateDto> states, List<ContactAttemptDto> contactAttempts, ContactOutcomeDto contactOutcome,
+			ClosingCauseDto closingCause) {
 		super();
 		this.id = id;
 		this.persons = persons;
@@ -95,6 +101,7 @@ public class SurveyUnitContextDto {
 	public String getOrganizationUnitId() {
 		return organizationUnitId;
 	}
+
 	/**
 	 * @param organizationUnitId the organizationUnitId to set
 	 */
@@ -143,7 +150,7 @@ public class SurveyUnitContextDto {
 	public void setSampleIdentifiers(SampleIdentifiersDto sampleIdentifiers) {
 		this.sampleIdentifiers = sampleIdentifiers;
 	}
-	
+
 	/**
 	 * @return the states
 	 */
@@ -200,15 +207,32 @@ public class SurveyUnitContextDto {
 		this.closingCause = closingCause;
 	}
 
+	public IdentificationDto getIdentification() {
+		return this.identification;
+	}
+
+	public void setIdentification(IdentificationDto identification) {
+		this.identification = identification;
+	}
+
+	public Set<CommentDto> getComments() {
+		return this.comments;
+	}
+
+	public void setComments(Set<CommentDto> comments) {
+		this.comments = comments;
+	}
+
 	/**
 	 * This method checks if mandatory fields in the Survey Unit are valid or not
+	 * 
 	 * @return boolean
 	 */
 	@JsonIgnore
 	public boolean isValid() {
-		return (this.id!=null && !this.id.isBlank()
-				&& this.campaign!=null && !this.campaign.isBlank()
-				&& this.address != null				
+		return (this.id != null && !this.id.isBlank()
+				&& this.campaign != null && !this.campaign.isBlank()
+				&& this.address != null
 				&& this.persons != null && !this.persons.isEmpty()
 				&& this.sampleIdentifiers != null
 				&& this.priority != null);
