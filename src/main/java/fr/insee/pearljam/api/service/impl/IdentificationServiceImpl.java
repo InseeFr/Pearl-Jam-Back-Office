@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.Identification;
 import fr.insee.pearljam.api.domain.IdentificationQuestions.CategoryQuestionValue;
 import fr.insee.pearljam.api.domain.IdentificationQuestions.IdentificationQuestionValue;
 import fr.insee.pearljam.api.domain.IdentificationQuestions.SituationQuestionValue;
+
 import fr.insee.pearljam.api.repository.IdentificationRepository;
 import fr.insee.pearljam.api.service.IdentificationService;
 

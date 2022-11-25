@@ -378,6 +378,7 @@ public class CampaignController {
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
 
+
 	/**
 	 * This method returns target campaign
 	 * 
@@ -417,7 +418,9 @@ public class CampaignController {
 		}
 
 		List<ReferentDto> referents = referentService.findByCampaignId(id);
+
 		LOGGER.info("{}  GOT {} referents for campaign {}", callerId, referents.size(), id);
+
 		return new ResponseEntity<>(referents, HttpStatus.OK);
 	}
 

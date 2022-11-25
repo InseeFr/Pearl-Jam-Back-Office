@@ -267,6 +267,7 @@ public class CampaignServiceImpl implements CampaignService {
 		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
+
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUAbandoned = 0;
@@ -306,11 +307,13 @@ public class CampaignServiceImpl implements CampaignService {
 		// Creating campaign
 		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
 				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
-				campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail());
+
+		campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail());
 		campaignRepository.save(campaign);
 
 		for (VisibilityContextDto dto : campaignDto.getVisibilities()) {
 			if (!verifyVisibilityContextDto(dto)) {
+
 				throw new VisibilityException("Some of the fields of a visibility are missing");
 			}
 			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(dto.getOrganizationalUnit());
@@ -400,8 +403,10 @@ public class CampaignServiceImpl implements CampaignService {
 		if (!StringUtils.isBlank(campaign.getEmail())) {
 			currentCampaign.setEmail(campaign.getEmail());
 		}
+
 		updateConfiguration(currentCampaign, campaign);
 		updateReferents(currentCampaign, campaign);
+
 		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
 				id,
 				v.getOrganizationalUnit(),
@@ -481,7 +486,9 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
+
 	public void persistReferents(CampaignContextDto campaignDto, Campaign campaign) {
+
 		campaignDto.getReferents().stream().forEach(refDto -> {
 			Referent ref = new Referent();
 			ref.setCampaign(campaign);
@@ -512,5 +519,6 @@ public class CampaignServiceImpl implements CampaignService {
 
 		return campaign;
 	}
+
 
 }

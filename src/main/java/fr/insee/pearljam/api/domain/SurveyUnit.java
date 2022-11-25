@@ -155,6 +155,7 @@ public class SurveyUnit implements Serializable {
 		this.comments = new HashSet<Comment>(
 				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
 						.map(comment -> new Comment(comment, this)).collect(Collectors.toList()));
+
 		if (su.getContactOutcome() != null) {
 			this.contactOucome = new ContactOutcome(su.getContactOutcome(), this);
 		}

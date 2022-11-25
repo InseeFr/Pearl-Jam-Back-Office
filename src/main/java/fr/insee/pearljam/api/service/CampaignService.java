@@ -80,4 +80,5 @@ public interface CampaignService {
 	void persistReferents(CampaignContextDto campaignDto, Campaign campaign);
 
 	CampaignContextDto getCampaignDtoById(String id);
+
 }

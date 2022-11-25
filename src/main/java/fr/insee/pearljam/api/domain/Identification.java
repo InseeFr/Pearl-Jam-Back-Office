@@ -19,6 +19,7 @@ import fr.insee.pearljam.api.domain.IdentificationQuestions.OccupantQuestionValu
 import fr.insee.pearljam.api.domain.IdentificationQuestions.SituationQuestionValue;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 
+
 @Entity
 @Table
 public class Identification implements Serializable {

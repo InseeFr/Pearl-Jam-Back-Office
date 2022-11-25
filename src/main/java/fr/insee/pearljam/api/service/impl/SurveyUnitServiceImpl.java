@@ -463,6 +463,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
 		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository
 				.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+
 		// merge lists
 		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
 				.collect(Collectors.toList());
@@ -472,6 +473,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
 					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
+
 		} catch (Exception e) {
 			LOGGER.error("Could not get data collection API : " + e.getMessage());
 			LOGGER.error("All questionnaire states will be considered null");
@@ -486,6 +488,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
 		}).collect(Collectors.toList());
+
 
 		return lstResult;
 	}

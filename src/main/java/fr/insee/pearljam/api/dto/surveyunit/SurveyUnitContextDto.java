@@ -36,6 +36,7 @@ public class SurveyUnitContextDto {
 	}
 
 	public SurveyUnitContextDto(String id, List<PersonDto> persons, AddressDto address,
+
 			String organizationUnitId, Boolean priority, String campaign, SampleIdentifiersDto sampleIdentifiers,
 			List<StateDto> states, List<ContactAttemptDto> contactAttempts, ContactOutcomeDto contactOutcome,
 			ClosingCauseDto closingCause) {
