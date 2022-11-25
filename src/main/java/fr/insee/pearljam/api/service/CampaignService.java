@@ -27,24 +27,25 @@ public interface CampaignService {
 
 	/**
 	 * @param userId
-	 * @return {@link List} of {@link CampaignDto} 
+	 * @return {@link List} of {@link CampaignDto}
 	 */
 	List<CampaignDto> getListCampaign(String userId);
 
 	/**
-	 * @return {@link List} of {@link CampaignDto} 
+	 * @return {@link List} of {@link CampaignDto}
 	 */
 	List<CampaignDto> getAllCampaigns();
 
 	/**
-	 * @return {@link List} of {@link CampaignDto} 
+	 * @return {@link List} of {@link CampaignDto}
 	 */
 	List<CampaignDto> getInterviewerCampaigns(String userId);
+
 	/**
 	 * @param userId
 	 * @param campaignId
 	 * @return {@link List} of {@link InterviewerDto}
-	 * @throws NotFoundException 
+	 * @throws NotFoundException
 	 */
 	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
 
@@ -54,9 +55,9 @@ public interface CampaignService {
 
 	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException;
 
-	
 	/**
 	 * Update the visibility for a given campaign and a Organizational Unit
+	 * 
 	 * @param idCampaign
 	 * @param idOu
 	 * @param updatedVisibility
@@ -72,11 +73,11 @@ public interface CampaignService {
 
 	HttpStatus updateCampaign(String id, CampaignContextDto campaign);
 
-    boolean isCampaignOngoing(String id);
+	boolean isCampaignOngoing(String id);
 
 	List<VisibilityContextDto> findAllVisiblitiesByCampaign(String campaignId);
 
 	void persistReferents(CampaignContextDto campaignDto, Campaign campaign);
 
-    CampaignContextDto getCampaignDtoById(String id);
+	CampaignContextDto getCampaignDtoById(String id);
 }

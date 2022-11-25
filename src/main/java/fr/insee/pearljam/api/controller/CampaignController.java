@@ -377,7 +377,7 @@ public class CampaignController {
 		LOGGER.info("{} checked if campaign {} is on-going : {}", callerId, id, campaignOngoing.isOngoing());
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * This method returns target campaign
 	 * 
@@ -417,7 +417,7 @@ public class CampaignController {
 		}
 
 		List<ReferentDto> referents = referentService.findByCampaignId(id);
-		LOGGER.info("{}  GOT {} referents for campaign {}", callerId,referents.size(), id);
+		LOGGER.info("{}  GOT {} referents for campaign {}", callerId, referents.size(), id);
 		return new ResponseEntity<>(referents, HttpStatus.OK);
 	}
 
