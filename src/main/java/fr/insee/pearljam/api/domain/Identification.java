@@ -17,6 +17,8 @@ import fr.insee.pearljam.api.domain.IdentificationQuestions.CategoryQuestionValu
 import fr.insee.pearljam.api.domain.IdentificationQuestions.IdentificationQuestionValue;
 import fr.insee.pearljam.api.domain.IdentificationQuestions.OccupantQuestionValue;
 import fr.insee.pearljam.api.domain.IdentificationQuestions.SituationQuestionValue;
+import fr.insee.pearljam.api.dto.identification.IdentificationDto;
+
 
 @Entity
 @Table
@@ -58,6 +60,17 @@ public class Identification implements Serializable {
     private SurveyUnit surveyUnit;
 
     public Identification() {
+    }
+
+    public Identification(IdentificationDto identificationDto, SurveyUnit su) {
+        this.surveyUnit = su;
+        if (identificationDto != null) {
+            this.identification = identificationDto.getIdentification();
+            this.access = identificationDto.getAccess();
+            this.situation = identificationDto.getSituation();
+            this.category = identificationDto.getCategory();
+            this.occupant = identificationDto.getOccupant();
+        }
     }
 
     public Long getId() {

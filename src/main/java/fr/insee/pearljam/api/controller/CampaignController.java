@@ -378,6 +378,32 @@ public class CampaignController {
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
 
+
+	/**
+	 * This method returns target campaign
+	 * 
+	 * @param request
+	 * @param id
+	 * @return {@link CampaignContextDto} , {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@ApiOperation(value = "Get target campaign")
+	@GetMapping(path = Constants.API_CAMPAIGN_ID)
+	public ResponseEntity<CampaignContextDto> getCampaign(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String callerId = utilsService.getUserId(request);
+		LOGGER.info("{} try to GET {}", callerId, id);
+
+		if (!campaignService.findById(id).isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		CampaignContextDto campaign = campaignService.getCampaignDtoById(id);
+
+		LOGGER.info("{} GET campaign {} : {}", callerId, id, HttpStatus.OK.toString());
+		return new ResponseEntity<>(campaign, HttpStatus.OK);
+	}
+
 	// API for REFERENT entity
 
 	@ApiOperation(value = "Get referents of targeted campaign")
@@ -392,7 +418,9 @@ public class CampaignController {
 		}
 
 		List<ReferentDto> referents = referentService.findByCampaignId(id);
-		LOGGER.info("{}  GOT {} referents for campaign {}", callerId,referents.size(), id);
+
+		LOGGER.info("{}  GOT {} referents for campaign {}", callerId, referents.size(), id);
+
 		return new ResponseEntity<>(referents, HttpStatus.OK);
 	}
 

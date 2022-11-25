@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -288,7 +291,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
-		if (surveyUnitRepository.findCountUeTBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
+		if (surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5) {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			surveyUnit.setClosingCause(null);
@@ -456,31 +459,36 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.IASCO);
 
 		// apply different business rules to select SU
-		List<SurveyUnit> noIdentSurveyUnitsToCheck=surveyUnitRepository.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
-		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+		List<SurveyUnit> noIdentSurveyUnitsToCheck = surveyUnitRepository
+				.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
+		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository
+				.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+
 		// merge lists
 		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
 				.collect(Collectors.toList());
 
-		Map<String, String> mapQuestionnaireStateBySu = null;
-		
+		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
+
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
-			suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
+					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
+
 		} catch (Exception e) {
 			LOGGER.error("Could not get data collection API : " + e.getMessage());
 			LOGGER.error("All questionnaire states will be considered null");
 		}
 
-		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(SurveyUnitCampaignDto::new)
-				.collect(Collectors.toList());
+		final Map<String, String> map = mapQuestionnaireStateBySu;
+		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(su -> {
+			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
+			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
+			sudto.setIdentificationState(identificationResult);
+			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
+			sudto.setQuestionnaireState(questionnaireState);
+			return sudto;
+		}).collect(Collectors.toList());
 
-		Map<String, String> map = mapQuestionnaireStateBySu;
-		if (map != null) {
-			lstResult.forEach(su -> su.setQuestionnaireState(map.get(su.getId())));
-		} else {
-			lstResult.forEach(su -> su.setQuestionnaireState(Constants.UNAVAILABLE));
-		}
 
 		return lstResult;
 	}
