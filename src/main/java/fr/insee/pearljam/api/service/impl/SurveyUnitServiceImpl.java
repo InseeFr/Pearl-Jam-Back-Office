@@ -459,17 +459,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.IASCO);
 
 		// apply different business rules to select SU
-		List<SurveyUnit> noIdentSurveyUnitsToCheck=surveyUnitRepository.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
-		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+		List<SurveyUnit> noIdentSurveyUnitsToCheck = surveyUnitRepository
+				.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
+		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository
+				.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
 		// merge lists
 		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
 				.collect(Collectors.toList());
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
-		
+
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
-			suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
+					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
 		} catch (Exception e) {
 			LOGGER.error("Could not get data collection API : " + e.getMessage());
 			LOGGER.error("All questionnaire states will be considered null");
@@ -480,11 +482,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
 			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
 			sudto.setIdentificationState(identificationResult);
-			String questionnaireState = Optional.ofNullable( map.get(su.getId())).orElse(Constants.UNAVAILABLE);
+			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
 		}).collect(Collectors.toList());
-
 
 		return lstResult;
 	}

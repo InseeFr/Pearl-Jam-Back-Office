@@ -76,7 +76,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	StateRepository stateRepository;
-	
+
 	@Autowired
 	ClosingCauseRepository closingCauseRepository;
 
@@ -91,22 +91,22 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
-	
+
 	@Autowired
 	MessageRepository messageRepository;
 
 	@Autowired
 	ReferentRepository referentRepository;
-	
+
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	UtilsService utilsService;
-	
+
 	@Autowired
 	SurveyUnitService surveyUnitService;
-	
+
 	@Autowired
 	PreferenceService preferenceService;
 
@@ -230,7 +230,8 @@ public class CampaignServiceImpl implements CampaignService {
 				&& visibility.getCollectionEndDate() < visibility.getEndDate();
 	}
 
-	private void setVisibilityDates(Visibility visibility, VisibilityDto updatedVisibility, String idOu, String idCampaign) {
+	private void setVisibilityDates(Visibility visibility, VisibilityDto updatedVisibility, String idOu,
+			String idCampaign) {
 		if (updatedVisibility.getManagementStartDate() != null) {
 			LOGGER.info("Updating management start date for campaign {} and Organizational Unit {}", idCampaign,
 					idOu);
@@ -266,7 +267,6 @@ public class CampaignServiceImpl implements CampaignService {
 		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
-
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
 		int nbSUAbandoned = 0;
@@ -284,36 +284,37 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		return new CountDto(nbSUNotAttributed);
 	}
-	
+
 	@Override
-	@Transactional(rollbackFor=Exception.class)
-	public Response postCampaign(CampaignContextDto campaignDto) throws NoOrganizationUnitException, VisibilityException {
-		if(campaignDto.getCampaign() == null) {
+	@Transactional(rollbackFor = Exception.class)
+	public Response postCampaign(CampaignContextDto campaignDto)
+			throws NoOrganizationUnitException, VisibilityException {
+		if (campaignDto.getCampaign() == null) {
 			return new Response("Campaign id is missing in request", HttpStatus.BAD_REQUEST);
 		}
-		if(campaignDto.getCampaignLabel() == null) {
+		if (campaignDto.getCampaignLabel() == null) {
 			return new Response("Campaign label is missing in request", HttpStatus.BAD_REQUEST);
 		}
-		if(campaignDto.getVisibilities() == null) {
+		if (campaignDto.getVisibilities() == null) {
 			return new Response("Campaign visibilities are missing in request", HttpStatus.BAD_REQUEST);
 		}
 		String campaignId = campaignDto.getCampaign().toUpperCase();
 		Optional<Campaign> campOpt = campaignRepository.findById(campaignId);
-		if(campOpt.isPresent()) {
-			return  new Response("Campaign with id '" + campaignId + "' already exists", HttpStatus.BAD_REQUEST);
+		if (campOpt.isPresent()) {
+			return new Response("Campaign with id '" + campaignId + "' already exists", HttpStatus.BAD_REQUEST);
 		}
 		// Creating campaign
 		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
 				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
-				campaignDto.getContactAttemptConfiguration(),campaignDto.getEmail());
+				campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail());
 		campaignRepository.save(campaign);
 
-		for(VisibilityContextDto dto : campaignDto.getVisibilities()) {
-			if(!verifyVisibilityContextDto(dto)) {
+		for (VisibilityContextDto dto : campaignDto.getVisibilities()) {
+			if (!verifyVisibilityContextDto(dto)) {
 				throw new VisibilityException("Some of the fields of a visibility are missing");
 			}
 			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(dto.getOrganizationalUnit());
-			if(ouOpt.isPresent()) {
+			if (ouOpt.isPresent()) {
 				Visibility visi = new Visibility();
 				visi.setVisibilityId(new VisibilityId(dto.getOrganizationalUnit(), campaign.getId()));
 				visi.setCampaign(campaign);
@@ -324,19 +325,19 @@ public class CampaignServiceImpl implements CampaignService {
 				visi.setInterviewerStartDate(dto.getInterviewerStartDate());
 				visi.setManagementStartDate(dto.getManagementStartDate());
 				visi.setEndDate(dto.getEndDate());
-				
+
 				visibilityRepository.save(visi);
-			}
-			else {
-				throw new NoOrganizationUnitException("Organizational unit '" + dto.getOrganizationalUnit()+ "' does not exist");
+			} else {
+				throw new NoOrganizationUnitException(
+						"Organizational unit '" + dto.getOrganizationalUnit() + "' does not exist");
 			}
 		}
 		persistReferents(campaignDto, campaign);
 
 		return new Response("", HttpStatus.OK);
 	}
-	
-	public boolean verifyVisibilityContextDto(VisibilityContextDto dto) {		
+
+	public boolean verifyVisibilityContextDto(VisibilityContextDto dto) {
 		return dto.getOrganizationalUnit() != null && dto.getCollectionStartDate() != null
 				&& dto.getCollectionEndDate() != null && dto.getIdentificationPhaseStartDate() != null
 				&& dto.getInterviewerStartDate() != null && dto.getManagementStartDate() != null
@@ -353,8 +354,9 @@ public class CampaignServiceImpl implements CampaignService {
 		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(su -> surveyUnitService.delete(su));
 		userRepository.findAll().stream()
 				.forEach(user -> {
-					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId).collect(Collectors.toList());
-					if(lstCampaignId.contains(campaign.getId())) {
+					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId)
+							.collect(Collectors.toList());
+					if (lstCampaignId.contains(campaign.getId())) {
 						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
 						preferenceService.setPreferences(lstCampaignId, user.getId());
 					}
@@ -380,7 +382,8 @@ public class CampaignServiceImpl implements CampaignService {
 
 		boolean visibilitiesArePresent = campaign.getVisibilities().stream()
 				.map(VisibilityContextDto::getOrganizationalUnit)
-				.allMatch(ouId -> visibilityRepository.findByCampaignIdIgnoreCaseAndOrganizationUnitIdIgnoreCase(id, ouId).isPresent());
+				.allMatch(ouId -> visibilityRepository
+						.findByCampaignIdIgnoreCaseAndOrganizationUnitIdIgnoreCase(id, ouId).isPresent());
 		if (!visibilitiesArePresent) {
 			LOGGER.warn("Can't update missing visibility for campaign {}", id);
 			return HttpStatus.NOT_FOUND;
@@ -397,8 +400,8 @@ public class CampaignServiceImpl implements CampaignService {
 		if (!StringUtils.isBlank(campaign.getEmail())) {
 			currentCampaign.setEmail(campaign.getEmail());
 		}
-		updateConfiguration(currentCampaign,campaign);
-		updateReferents(currentCampaign,campaign);
+		updateConfiguration(currentCampaign, campaign);
+		updateReferents(currentCampaign, campaign);
 		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
 				id,
 				v.getOrganizationalUnit(),
@@ -458,7 +461,7 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public boolean isCampaignOngoing(String campaignId) {
 		List<Visibility> visibilities = visibilityRepository.findByCampaignId(campaignId);
-		return visibilities.stream().anyMatch(visibility -> visibility.getEndDate()>Instant.now().toEpochMilli());
+		return visibilities.stream().anyMatch(visibility -> visibility.getEndDate() > Instant.now().toEpochMilli());
 	}
 
 	@Override
@@ -478,7 +481,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public void persistReferents(CampaignContextDto campaignDto, Campaign campaign){
+	public void persistReferents(CampaignContextDto campaignDto, Campaign campaign) {
 		campaignDto.getReferents().stream().forEach(refDto -> {
 			Referent ref = new Referent();
 			ref.setCampaign(campaign);
@@ -491,7 +494,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public CampaignContextDto getCampaignDtoById(String id){
+	public CampaignContextDto getCampaignDtoById(String id) {
 		CampaignContextDto campaign = new CampaignContextDto();
 		CampaignDto campdto = campaignRepository.findDtoById(id);
 		campaign.setCampaign(campdto.getId());
@@ -511,4 +514,3 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 }
- 
