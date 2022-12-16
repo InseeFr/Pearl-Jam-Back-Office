@@ -33,6 +33,7 @@ import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -478,6 +479,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 
 		final Map<String, String> map = mapQuestionnaireStateBySu;
+
 		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
 			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
@@ -485,6 +487,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
+
 		}).filter(this::isClosable)
 				.collect(Collectors.toList());
 
