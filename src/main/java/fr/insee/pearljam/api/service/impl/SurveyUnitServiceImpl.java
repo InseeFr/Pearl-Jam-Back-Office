@@ -33,7 +33,6 @@ import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -168,7 +167,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit), extended))
 					.collect(Collectors.toList());
 		}
-		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(id -> canBeSeenByInterviewer(id))
+		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(this::canBeSeenByInterviewer)
 				.collect(Collectors.toList());
 
 		return surveyUnitDtoIds.stream()
@@ -277,7 +276,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (currentState == StateType.WFS) {
 			addStateAuto(surveyUnit);
 		}
-		currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId()).getType();
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
 		if (BussinessRules.shouldFallBackToTbrOrFin(dbStates)) {
 			Set<State> ueStates = surveyUnit.getStates();
@@ -480,17 +478,30 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 
 		final Map<String, String> map = mapQuestionnaireStateBySu;
-		List<SurveyUnitCampaignDto> lstResult = suToCheck.stream().map(su -> {
+		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
 			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
 			sudto.setIdentificationState(identificationResult);
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
-		}).collect(Collectors.toList());
+		}).filter(this::isClosable)
+				.collect(Collectors.toList());
 
+	}
 
-		return lstResult;
+	private boolean isClosable(SurveyUnitCampaignDto sudto) {
+		boolean hasQuestionnaire = sudto.getQuestionnaireState() != Constants.UNAVAILABLE;
+		ContactOutcomeType outcome = sudto.getContactOutcome();
+		if (outcome == null)
+			return !hasQuestionnaire;
+		switch (outcome) {
+			case INA:
+			case NOA:
+				return !hasQuestionnaire;
+			default:
+				return true;
+		}
 	}
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
