@@ -139,6 +139,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 				"OR su.identification.identification IS NULL " +
 				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NULL ) " +
 				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation IS NULL ) " +
+				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation = 'ORDINARY' AND su.identification.category IS NULL ) " +
 				"OR (su.identification.identification = 'IDENTIFIED' AND su.identification.access IS NOT NULL AND su.identification.situation = 'ORDINARY' AND su.identification.category NOT IN ('SECONDARY', 'VACANT') ) " +
 				") " +
 		") " +
