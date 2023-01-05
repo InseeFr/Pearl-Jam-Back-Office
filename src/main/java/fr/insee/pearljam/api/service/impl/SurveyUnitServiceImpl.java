@@ -33,7 +33,6 @@ import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
@@ -474,7 +473,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
 
 		} catch (Exception e) {
-			LOGGER.error("Could not get data collection API : " + e.getMessage());
+			LOGGER.error("Could not get data collection API : {}", e.getMessage());
 			LOGGER.error("All questionnaire states will be considered null");
 		}
 
@@ -494,7 +493,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private boolean isClosable(SurveyUnitCampaignDto sudto) {
-		boolean hasQuestionnaire = sudto.getQuestionnaireState() != Constants.UNAVAILABLE;
+
+		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+
 		ContactOutcomeType outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
