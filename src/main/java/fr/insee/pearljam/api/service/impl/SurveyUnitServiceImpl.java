@@ -493,7 +493,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private boolean isClosable(SurveyUnitCampaignDto sudto) {
+
 		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+
 		ContactOutcomeType outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
