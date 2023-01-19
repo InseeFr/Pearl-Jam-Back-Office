@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.0.7</version>
+	<version>4.0.8</version>
 
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
@@ -145,6 +145,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
