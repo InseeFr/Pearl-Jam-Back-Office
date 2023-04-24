@@ -17,6 +17,7 @@ import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
+import fr.insee.pearljam.api.dto.mailrequest.MailRequestDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -35,35 +36,38 @@ public class SurveyUnitDetailDto {
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
+	private List<MailRequestDto> mailRequests;
 
 	public SurveyUnitDetailDto() {
 	}
 
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
-		this.id=surveyUnit.getId();
+		this.id = surveyUnit.getId();
 		this.setPersons(surveyUnit.getPersons().stream()
-				.map(person -> new PersonDto(person))
+				.map(PersonDto::new)
 				.collect(Collectors.toList()));
-		this.priority=surveyUnit.isPriority();
-		this.campaign=surveyUnit.getCampaign().getId();
+		this.priority = surveyUnit.isPriority();
+		this.campaign = surveyUnit.getCampaign().getId();
 		this.address = new AddressDto(surveyUnit.getAddress());
-		if(surveyUnit.getSampleIdentifier()!=null) {
+		if (surveyUnit.getSampleIdentifier() != null) {
 			this.sampleIdentifiers = new SampleIdentifiersDto(surveyUnit.getSampleIdentifier());
 		}
-		this.comments = surveyUnit.getComments().stream().map(c -> new CommentDto(c)).collect(Collectors.toList());
-		this.contactAttempts = surveyUnit.getContactAttempts().stream().map(c -> new ContactAttemptDto(c)).collect(Collectors.toList());
-		if(surveyUnit.getContactOucome()!=null) {
+		this.comments = surveyUnit.getComments().stream().map(CommentDto::new).collect(Collectors.toList());
+		this.contactAttempts = surveyUnit.getContactAttempts().stream().map(ContactAttemptDto::new)
+				.collect(Collectors.toList());
+		if (surveyUnit.getContactOucome() != null) {
 			this.contactOutcome = new ContactOutcomeDto(surveyUnit.getContactOucome());
 		}
 		this.states = surveyUnit.getStates().stream()
 				.sorted(Comparator.comparing(State::getDate, Comparator.nullsLast(Comparator.reverseOrder())))
 				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
-				.map(s -> new StateDto(s))
+				.map(StateDto::new)
 				.collect(Collectors.toList());
 		if (surveyUnit.getIdentification() != null) {
 			this.identification = new IdentificationDto(surveyUnit.getIdentification());
 		}
-		this.move=surveyUnit.isMove();
+		this.move = surveyUnit.isMove();
+		this.mailRequests = surveyUnit.getMailRequests().stream().map(MailRequestDto::new).collect(Collectors.toList());
 	}
 
 	/**
@@ -79,8 +83,6 @@ public class SurveyUnitDetailDto {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-
 
 	/**
 	 * @return the address
@@ -138,7 +140,7 @@ public class SurveyUnitDetailDto {
 		this.comments = comments;
 	}
 
-	/**	
+	/**
 	 * @return the sampleIdentifiers
 	 */
 	public SampleIdentifiersDto getSampleIdentifiers() {
@@ -193,7 +195,7 @@ public class SurveyUnitDetailDto {
 	public void setContactOutcome(ContactOutcomeDto contactOutcome) {
 		this.contactOutcome = contactOutcome;
 	}
-	
+
 	public List<PersonDto> getPersons() {
 		return persons;
 	}
@@ -201,7 +203,6 @@ public class SurveyUnitDetailDto {
 	public void setPersons(List<PersonDto> persons) {
 		this.persons = persons;
 	}
-
 
 	public Boolean isPriority() {
 		return this.priority;
@@ -215,7 +216,6 @@ public class SurveyUnitDetailDto {
 		this.identification = identification;
 	}
 
-
 	public Boolean isMove() {
 		return this.move;
 	}
@@ -227,35 +227,42 @@ public class SurveyUnitDetailDto {
 	public void setMove(Boolean move) {
 		this.move = move;
 	}
-	
-	
+
+	public List<MailRequestDto> getMailRequests() {
+		return this.mailRequests;
+	}
+
+	public void setMailRequests(List<MailRequestDto> mailRequests) {
+		this.mailRequests = mailRequests;
+	}
+
 	@Override
 	public String toString() {
 		return "SurveyUnitDetailDto [id=" + id
 				+ ", address=" + address
-				+ ", priority=" + priority 
-				+ ", campaign=" + campaign 
+				+ ", priority=" + priority
+				+ ", campaign=" + campaign
 				+ ", comments=" + comments
-				+ ", sampleIdentifiers=" + sampleIdentifiers 
+				+ ", sampleIdentifiers=" + sampleIdentifiers
 				+ ", states=" + states
 				+ ", identification=" + identification
-				+ ", contactAttempts=" + contactAttempts 
-				+ ", contactOutcome=" + contactOutcome 
+				+ ", contactAttempts=" + contactAttempts
+				+ ", contactOutcome=" + contactOutcome
+				+ ", mailRequests=" + mailRequests
 				+ ", move=" + move + "]";
 	}
-	
+
 	/**
 	 * This method checks if mandatory fields in the Survey Unit are valid or not
+	 * 
 	 * @return boolean
 	 */
 	@JsonIgnore
 	public boolean isValid() {
-		return (StringUtils.isNotBlank(this.id) 
-				&& StringUtils.isNotBlank(this.campaign) 
+		return (StringUtils.isNotBlank(this.id)
+				&& StringUtils.isNotBlank(this.campaign)
 				&& (this.states != null && !this.states.isEmpty()) && this.address != null
 				&& this.sampleIdentifiers != null && this.priority != null);
 	}
 
-
-	
 }

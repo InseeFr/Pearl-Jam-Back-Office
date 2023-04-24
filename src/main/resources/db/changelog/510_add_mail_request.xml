@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="SimonDmz" id="1681801321987-1">
+        <createTable tableName="mail_request">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="mail_requestPK" />
+            </column>
+            <column name="messhugah_id" type="VARCHAR(255)" />
+            <column name="survey_unit_id" type="VARCHAR(255)" />
+            <column name="type" type="VARCHAR(255)" />
+            <column name="status" type="VARCHAR(255)" />
+            <column name="date" type="BIGINT" />
+        </createTable>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1681801321987-2">
+        <addForeignKeyConstraint baseColumnNames="survey_unit_id" baseTableName="mail_request"
+            constraintName="FKmailRequestToSurveyunit" deferrable="false" initiallyDeferred="false"
+            referencedColumnNames="id" referencedTableName="survey_unit" />
+    </changeSet>
+</databaseChangeLog>

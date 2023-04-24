@@ -217,10 +217,22 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		updateIdentification(surveyUnit, surveyUnitDetailDto);
+		updateMailRequest(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
 		LOGGER.info("Survey Unit {} - update complete", id);
 		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
 		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
+	}
+
+	private void updateMailRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
+		if (surveyUnitDetailDto.getMailRequests() != null) {
+			Set<MailRequest> mailRequests = surveyUnit.getMailRequests();
+			mailRequests.clear();
+			Set<MailRequest> newMailrequests = surveyUnitDetailDto.getMailRequests().stream()
+					.map(dto -> new MailRequest(dto, surveyUnit)).collect(Collectors.toSet());
+			mailRequests.addAll(newMailrequests);
+		}
+		LOGGER.info("Survey Unit {} - mailRequests updated", surveyUnit.getId());
 	}
 
 	private void updateIdentification(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {

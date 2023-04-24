@@ -110,6 +110,9 @@ public class SurveyUnit implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<State> states = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = MailRequest.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<MailRequest> mailRequests = new HashSet<>();
+
 	public SurveyUnit() {
 		super();
 	}
@@ -152,7 +155,7 @@ public class SurveyUnit implements Serializable {
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
-		this.comments = new HashSet<Comment>(
+		this.comments = new HashSet<>(
 				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
 						.map(comment -> new Comment(comment, this)).collect(Collectors.toList()));
 
@@ -408,6 +411,14 @@ public class SurveyUnit implements Serializable {
 
 	public void setMove(Boolean move) {
 		this.move = move;
+	}
+
+	public Set<MailRequest> getMailRequests() {
+		return mailRequests;
+	}
+
+	public void setMailRequests(Set<MailRequest> mailRequests) {
+		this.mailRequests = mailRequests;
 	}
 
 	public Boolean isLastState(String state) {
