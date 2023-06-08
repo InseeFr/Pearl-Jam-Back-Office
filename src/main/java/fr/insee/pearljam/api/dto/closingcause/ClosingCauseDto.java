@@ -18,7 +18,6 @@ public class ClosingCauseDto {
 	}
 	public ClosingCauseDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * @return the date

@@ -16,11 +16,17 @@ import fr.insee.pearljam.api.exception.NotFoundException;
  *
  */
 public interface InterviewerService {
-	
+
 	List<CampaignDto> findCampaignsOfInterviewer(String interviewerId) throws NotFoundException;
-	
+
 	Response createInterviewers(List<InterviewerContextDto> interviewers);
 
 	Set<InterviewerDto> getListInterviewers(String userId);
+
+	boolean isPresent(String interviewerId);
+
+	void delete(String id) throws NotFoundException;
+
+	InterviewerDto update(String id, InterviewerContextDto interviewer) throws NotFoundException;
 
 }

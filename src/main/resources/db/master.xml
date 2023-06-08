@@ -31,8 +31,9 @@
 	<!-- Data model v4 : comment size extension -->
 	<include file="changelog/502_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 
-	<!-- Data model update : add mailRequest entity -->
-	<include file="changelog/510_add_mail_request.xml" relativeToChangelogFile="true" />
+	<!-- Data model update : add communicationRequest entity -->
+	<include file="changelog/510_add_communication_request.xml" relativeToChangelogFile="true" />
+	<include file="changelog/511_add_communication_configuration.xml" relativeToChangelogFile="true" />
 
 
 </databaseChangeLog>

@@ -14,10 +14,10 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
-import fr.insee.pearljam.api.dto.mailrequest.MailRequestDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -36,7 +36,7 @@ public class SurveyUnitDetailDto {
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
-	private List<MailRequestDto> mailRequests;
+	private List<CommunicationRequestDto> communicationRequests;
 
 	public SurveyUnitDetailDto() {
 	}
@@ -67,7 +67,8 @@ public class SurveyUnitDetailDto {
 			this.identification = new IdentificationDto(surveyUnit.getIdentification());
 		}
 		this.move = surveyUnit.isMove();
-		this.mailRequests = surveyUnit.getMailRequests().stream().map(MailRequestDto::new).collect(Collectors.toList());
+		this.communicationRequests = surveyUnit.getCommunicationRequests().stream().map(CommunicationRequestDto::new)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -228,12 +229,12 @@ public class SurveyUnitDetailDto {
 		this.move = move;
 	}
 
-	public List<MailRequestDto> getMailRequests() {
-		return this.mailRequests;
+	public List<CommunicationRequestDto> getCommunicationRequests() {
+		return this.communicationRequests;
 	}
 
-	public void setMailRequests(List<MailRequestDto> mailRequests) {
-		this.mailRequests = mailRequests;
+	public void setCommunicationRequests(List<CommunicationRequestDto> communicationRequests) {
+		this.communicationRequests = communicationRequests;
 	}
 
 	@Override
@@ -248,7 +249,7 @@ public class SurveyUnitDetailDto {
 				+ ", identification=" + identification
 				+ ", contactAttempts=" + contactAttempts
 				+ ", contactOutcome=" + contactOutcome
-				+ ", mailRequests=" + mailRequests
+				+ ", mailRequests=" + communicationRequests
 				+ ", move=" + move + "]";
 	}
 
