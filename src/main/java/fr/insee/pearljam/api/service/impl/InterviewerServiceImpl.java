@@ -189,4 +189,17 @@ public class InterviewerServiceImpl implements InterviewerService {
 		return interviewerRepository.findDtoById(id);
 	}
 
+	@Override
+	public Optional<InterviewerDto> findDtoById(String id) {
+		if (!interviewerRepository.existsById(id))
+			return Optional.empty();
+		return Optional.of(interviewerRepository.findDtoById(id));
+	}
+
+	@Override
+	public List<InterviewerDto> getCompleteListInterviewers() {
+
+		return interviewerRepository.findAll().stream().map(InterviewerDto::new).collect(Collectors.toList());
+	}
+
 }

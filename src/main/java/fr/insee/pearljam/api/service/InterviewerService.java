@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import fr.insee.pearljam.api.domain.Response;
@@ -28,5 +29,9 @@ public interface InterviewerService {
 	void delete(String id) throws NotFoundException;
 
 	InterviewerDto update(String id, InterviewerContextDto interviewer) throws NotFoundException;
+
+	Optional<InterviewerDto> findDtoById(String id);
+
+	List<InterviewerDto> getCompleteListInterviewers();
 
 }

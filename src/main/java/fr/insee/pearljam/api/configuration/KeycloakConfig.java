@@ -131,6 +131,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 		.antMatchers(HttpMethod.POST, Constants.API_INTERVIEWERS).hasAnyRole(adminRole)	
+		.antMatchers(HttpMethod.GET, Constants.API_ADMIN_INTERVIEWERS).hasAnyRole(adminRole)
 		.antMatchers(HttpMethod.PUT, Constants.API_INTERVIEWER_ID).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.DELETE, Constants.API_INTERVIEWER_ID).hasAnyRole(adminRole)	
 		.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS_SU_STATECOUNT).hasAnyRole(adminRole, userLocalRole, userNationalRole)	

@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +90,42 @@ public class InterviewerController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		LOGGER.info("Get interviewers resulting in 200");
+		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
+
+	}
+
+	@ApiOperation(value = "Get interviewer by Id")
+	@GetMapping(path = Constants.API_INTERVIEWER_ID)
+	public ResponseEntity<InterviewerDto> getInterviewer(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId)) {
+			LOGGER.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		Optional<InterviewerDto> interviewer = interviewerService.findDtoById(id);
+		if (interviewer.isEmpty()) {
+			LOGGER.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		LOGGER.info("{} -> Get interviewer [{}] resulting in 200", userId, id);
+		return new ResponseEntity<>(interviewer.get(), HttpStatus.OK);
+
+	}
+
+	@ApiOperation(value = "Get all interviewers")
+	@GetMapping(path = Constants.API_ADMIN_INTERVIEWERS)
+	public ResponseEntity<List<InterviewerDto>> getCompleteListInterviewers(HttpServletRequest request) {
+		String userId = utilsService.getUserId(request);
+		if (StringUtils.isBlank(userId)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		List<InterviewerDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
+		if (lstInterviewer.isEmpty()) {
+			LOGGER.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		LOGGER.info("{} -> Get all interviewers resulting in 200", userId);
 		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 
 	}

@@ -129,6 +129,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_VISIBILITIES).hasAnyRole(adminRole)
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_REFERENTS).hasAnyRole(adminRole, userLocalRole, userNationalRole)
 			.antMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING).hasAnyRole(adminRole)	
+			.antMatchers(HttpMethod.GET, Constants.API_ADMIN_INTERVIEWERS).hasAnyRole(adminRole)
 			.antMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS).hasAnyRole(adminRole, userLocalRole, userNationalRole)	
 			.antMatchers(HttpMethod.POST, Constants.API_INTERVIEWERS).hasAnyRole(adminRole)	
 			.antMatchers(HttpMethod.PUT, Constants.API_INTERVIEWER_ID).hasAnyRole(adminRole)	
