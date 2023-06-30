@@ -24,7 +24,6 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
@@ -70,11 +69,10 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Autowired
 	SurveyUnitService surveyUnitService;
 
-	public List<CampaignDto> findCampaignsOfInterviewer(String interviewerId) throws NotFoundException {
+	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
 		if (!intwOpt.isPresent()) {
-			throw new NotFoundException(
-					String.format("Interviewer with id %s was not found in database", interviewerId));
+			return Optional.empty();
 		}
 		Interviewer intw = intwOpt.get();
 		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).collect(Collectors.toList());
@@ -99,7 +97,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 				}
 			}
 		}
-		return dtos;
+		return Optional.of(dtos);
 
 	}
 
@@ -161,24 +159,25 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public void delete(String id) throws NotFoundException {
+	public boolean delete(String id) {
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
 		if (!optInterviewer.isPresent()) {
-			throw new NotFoundException(String.format("%s not found", id));
+			return false;
 		}
 		List<String> ids = surveyUnitService.getAllIdsByInterviewerId(id);
 		if (!ids.isEmpty()) {
 			surveyUnitService.removeInterviewerLink(ids);
 		}
 		interviewerRepository.deleteById(id);
+		return true;
 	}
 
 	@Override
-	public InterviewerContextDto update(String id, InterviewerContextDto interviewer) throws NotFoundException {
+	public Optional<InterviewerContextDto> update(String id, InterviewerContextDto interviewer) {
 
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
 		if (!optInterviewer.isPresent()) {
-			throw new NotFoundException(String.format("%s not found", id));
+			return Optional.empty();
 		}
 		Interviewer interviewerToUpdate = optInterviewer.get();
 		interviewerToUpdate.setEmail(interviewer.getEmail());
@@ -186,7 +185,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 		interviewerToUpdate.setLastName(interviewer.getLastName());
 		interviewerToUpdate.setPhoneNumber(interviewer.getPhoneNumer());
 
-		return interviewerRepository.findDtoById(id);
+		return Optional.of(interviewerRepository.findDtoById(id));
 	}
 
 	@Override

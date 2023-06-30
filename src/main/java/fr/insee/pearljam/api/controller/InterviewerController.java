@@ -26,7 +26,6 @@ import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
@@ -138,16 +137,13 @@ public class InterviewerController {
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		List<CampaignDto> list;
-		try {
-			list = interviewerService.findCampaignsOfInterviewer(id);
-		} catch (NotFoundException e) {
-			LOGGER.error(e.getMessage());
+		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
+		if (!list.isPresent()) {
 			LOGGER.info("{} -> Get interviewer campaigns resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		LOGGER.info("{} -> Get interviewers campaigns resulting in 200", userId);
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		return new ResponseEntity<>(list.get(), HttpStatus.OK);
 
 	}
 
@@ -162,16 +158,14 @@ public class InterviewerController {
 		if (id == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-		InterviewerContextDto updatedInterviewer;
-		try {
-			updatedInterviewer = interviewerService.update(id, interviewer);
-		} catch (NotFoundException e) {
-			LOGGER.error("{} : UPDATE interviewer {} resulting in 404. => {}", userId, id, e.getMessage());
+		Optional<InterviewerContextDto> updatedInterviewer = interviewerService.update(id, interviewer);
+		if (!updatedInterviewer.isPresent()) {
+			LOGGER.error("{} : UPDATE interviewer {} resulting in 404. ", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 		LOGGER.info("{} : UPDATE interviewer {} resulting in 200", userId, id);
-		return new ResponseEntity<>(updatedInterviewer, HttpStatus.OK);
+		return new ResponseEntity<>(updatedInterviewer.get(), HttpStatus.OK);
 
 	}
 
@@ -189,12 +183,13 @@ public class InterviewerController {
 			LOGGER.warn("{} : no interviewerId provided : resulting in 400.", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		try {
-			interviewerService.delete(id);
-		} catch (NotFoundException e) {
-			LOGGER.warn("{} : DELETE interviewer with id {} resulting in 404. => {}", userId, id, e.getMessage());
+
+		boolean wasPresent = interviewerService.delete(id);
+		if (!wasPresent) {
+			LOGGER.warn("{} : DELETE interviewer with id {} resulting in 404.", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+
 		LOGGER.info("{} : DELETE interviewer with id {} resulting in 200", userId, id);
 		return ResponseEntity.ok().build();
 
