@@ -30,6 +30,7 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -234,11 +235,24 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private void updateCommunicationRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
 		if (surveyUnitDetailDto.getCommunicationRequests() != null) {
+			List<CommunicationRequestDto> incommingCommRequests = surveyUnitDetailDto.getCommunicationRequests();
 			Set<CommunicationRequest> communicationRequests = surveyUnit.getCommunicationRequests();
-			Set<CommunicationRequest> newCommuncationsRequests = surveyUnitDetailDto.getCommunicationRequests().stream()
+			Set<CommunicationRequest> newCommunicationsRequests = incommingCommRequests.stream()
 					.filter(commRequest -> commRequest.getId() == null)
 					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
-			communicationRequests.addAll(newCommuncationsRequests);
+			communicationRequests.addAll(newCommunicationsRequests);
+
+			// for each communiactionRequest : update state then try to call messhugah if
+			// needed
+			// communicationRequests.stream()...
+			// handle INITIATED -> READY
+			// if(shouldAddReadyStatus(incommingCommRequests)) {
+			// communicationRequests.add(generateReadyCommunicationRequest(surveyUnit));
+			// }
+			// TODO : call messhugah to dispatch
+			// if(shouldTryToGenerateCommunication(newCommunicationsRequests)){
+			// boolean communicationRequestService.generateCommunication(commReq)
+			// }
 		}
 		LOGGER.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
 	}

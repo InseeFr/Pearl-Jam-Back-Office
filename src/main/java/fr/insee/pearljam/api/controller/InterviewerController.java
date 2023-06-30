@@ -96,14 +96,14 @@ public class InterviewerController {
 
 	@ApiOperation(value = "Get interviewer by Id")
 	@GetMapping(path = Constants.API_INTERVIEWER_ID)
-	public ResponseEntity<InterviewerDto> getInterviewer(HttpServletRequest request,
+	public ResponseEntity<InterviewerContextDto> getInterviewer(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
 			LOGGER.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		Optional<InterviewerDto> interviewer = interviewerService.findDtoById(id);
+		Optional<InterviewerContextDto> interviewer = interviewerService.findDtoById(id);
 		if (interviewer.isEmpty()) {
 			LOGGER.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -115,12 +115,12 @@ public class InterviewerController {
 
 	@ApiOperation(value = "Get all interviewers")
 	@GetMapping(path = Constants.API_ADMIN_INTERVIEWERS)
-	public ResponseEntity<List<InterviewerDto>> getCompleteListInterviewers(HttpServletRequest request) {
+	public ResponseEntity<List<InterviewerContextDto>> getCompleteListInterviewers(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		List<InterviewerDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
+		List<InterviewerContextDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
 		if (lstInterviewer.isEmpty()) {
 			LOGGER.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -153,7 +153,7 @@ public class InterviewerController {
 
 	@ApiOperation(value = "Update interviewer")
 	@PutMapping(path = Constants.API_INTERVIEWER_ID)
-	public ResponseEntity<InterviewerDto> updateInterviewer(HttpServletRequest request,
+	public ResponseEntity<InterviewerContextDto> updateInterviewer(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody InterviewerContextDto interviewer) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId))
@@ -162,7 +162,7 @@ public class InterviewerController {
 		if (id == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-		InterviewerDto updatedInterviewer;
+		InterviewerContextDto updatedInterviewer;
 		try {
 			updatedInterviewer = interviewerService.update(id, interviewer);
 		} catch (NotFoundException e) {

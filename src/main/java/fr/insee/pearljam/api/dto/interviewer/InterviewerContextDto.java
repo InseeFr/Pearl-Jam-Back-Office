@@ -4,6 +4,8 @@ import org.apache.commons.validator.EmailValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fr.insee.pearljam.api.domain.Interviewer;
+
 public class InterviewerContextDto {
 	private String id;
 	private String firstName;
@@ -18,6 +20,15 @@ public class InterviewerContextDto {
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumer = phoneNumer;
+	}
+
+	public InterviewerContextDto(Interviewer interviewer) {
+		super();
+		this.id = interviewer.getId();
+		this.firstName = interviewer.getFirstName();
+		this.lastName = interviewer.getLastName();
+		this.email = interviewer.getEmail();
+		this.phoneNumer = interviewer.getPhoneNumber();
 	}
 
 	public InterviewerContextDto() {
@@ -96,9 +107,9 @@ public class InterviewerContextDto {
 
 	@JsonIgnore
 	public boolean isValid() {
-		return this.id != null && !this.id.isBlank() 
-				&& this.firstName != null && !this.firstName.isBlank() 
-				&& this.lastName != null && !this.lastName.isBlank() 
+		return this.id != null && !this.id.isBlank()
+				&& this.firstName != null && !this.firstName.isBlank()
+				&& this.lastName != null && !this.lastName.isBlank()
 				&& this.email != null && !this.email.isBlank()
 				&& this.phoneNumer != null && !this.phoneNumer.isBlank()
 				&& EmailValidator.getInstance().isValid(this.email);

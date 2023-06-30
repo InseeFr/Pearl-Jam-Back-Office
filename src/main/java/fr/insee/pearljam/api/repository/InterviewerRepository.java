@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 
@@ -29,7 +30,7 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 			+ "WHERE su.organization_unit_id IN (:ouIds) ", nativeQuery = true)
 	Set<String> findIdsByOrganizationUnits(@Param("ouIds") List<String> ouIds);
 
-	InterviewerDto findDtoById(String id);
+	InterviewerContextDto findDtoById(String id);
 
 	@Query("SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName) "
 			+ "FROM SurveyUnit su "

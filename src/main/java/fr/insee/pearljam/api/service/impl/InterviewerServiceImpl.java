@@ -174,7 +174,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public InterviewerDto update(String id, InterviewerContextDto interviewer) throws NotFoundException {
+	public InterviewerContextDto update(String id, InterviewerContextDto interviewer) throws NotFoundException {
 
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
 		if (!optInterviewer.isPresent()) {
@@ -190,16 +190,16 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public Optional<InterviewerDto> findDtoById(String id) {
+	public Optional<InterviewerContextDto> findDtoById(String id) {
 		if (!interviewerRepository.existsById(id))
 			return Optional.empty();
 		return Optional.of(interviewerRepository.findDtoById(id));
 	}
 
 	@Override
-	public List<InterviewerDto> getCompleteListInterviewers() {
+	public List<InterviewerContextDto> getCompleteListInterviewers() {
 
-		return interviewerRepository.findAll().stream().map(InterviewerDto::new).collect(Collectors.toList());
+		return interviewerRepository.findAll().stream().map(InterviewerContextDto::new).collect(Collectors.toList());
 	}
 
 }

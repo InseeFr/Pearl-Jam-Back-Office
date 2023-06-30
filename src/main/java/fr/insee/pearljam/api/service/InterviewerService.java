@@ -28,10 +28,10 @@ public interface InterviewerService {
 
 	void delete(String id) throws NotFoundException;
 
-	InterviewerDto update(String id, InterviewerContextDto interviewer) throws NotFoundException;
+	InterviewerContextDto update(String id, InterviewerContextDto interviewer) throws NotFoundException;
 
-	Optional<InterviewerDto> findDtoById(String id);
+	Optional<InterviewerContextDto> findDtoById(String id);
 
-	List<InterviewerDto> getCompleteListInterviewers();
+	List<InterviewerContextDto> getCompleteListInterviewers();
 
 }

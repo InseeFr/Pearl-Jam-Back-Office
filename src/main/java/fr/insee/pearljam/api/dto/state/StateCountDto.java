@@ -8,15 +8,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StateCountDto {
 
 	private String idDem;
-    private String labelDem;
-    private InterviewerDto interviewer;
-    private CampaignDto campaign;
+	private String labelDem;
+	private InterviewerContextDto interviewer;
+	private CampaignDto campaign;
 	private Long nvmCount;
 	private Long nnsCount;
 	private Long anvCount;
@@ -41,12 +41,12 @@ public class StateCountDto {
 	public StateCountDto(Map<String, BigInteger> obj) {
 		super();
 		if (obj != null && !obj.isEmpty()) {
-			for(String str : Constants.STATE_COUNT_FIELDS) {
+			for (String str : Constants.STATE_COUNT_FIELDS) {
 				try {
-					setLongField(str, obj.get(str)!=null ? obj.get(str).longValue() : 0L);
+					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					e.printStackTrace();
-				} 
+				}
 			}
 		}
 	}
@@ -56,21 +56,19 @@ public class StateCountDto {
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
 	}
-	
-
 
 	public StateCountDto() {
 		super();
 	}
-	
+
 	public void addClosingCauseCount(Map<String, BigInteger> obj) {
 		if (obj != null && !obj.isEmpty()) {
-			for(String str : Constants.STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS) {
+			for (String str : Constants.STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS) {
 				try {
 					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					e.printStackTrace();
-				} 
+				}
 			}
 		}
 	}
@@ -88,8 +86,6 @@ public class StateCountDto {
 	public void setIdDem(String idDem) {
 		this.idDem = idDem;
 	}
-
-	
 
 	/**
 	 * @return the nvmCount
@@ -300,7 +296,7 @@ public class StateCountDto {
 	public void setNvaCount(Long nvaCount) {
 		this.nvaCount = nvaCount;
 	}
-	
+
 	public Long getNpaCount() {
 		return npaCount;
 	}
@@ -368,18 +364,18 @@ public class StateCountDto {
 		this.campaign = campaign;
 	}
 
-	public InterviewerDto getInterviewer() {
+	public InterviewerContextDto getInterviewer() {
 		return interviewer;
 	}
 
-	public void setInterviewer(InterviewerDto interviewer) {
+	public void setInterviewer(InterviewerContextDto interviewer) {
 		this.interviewer = interviewer;
 	}
-	
+
 	public void setLongField(String fieldName, Long value)
-	        throws NoSuchFieldException, IllegalAccessException {
-	    Field field = getClass().getDeclaredField(fieldName);
-	    field.set(this, value);
+			throws NoSuchFieldException, IllegalAccessException {
+		Field field = getClass().getDeclaredField(fieldName);
+		field.set(this, value);
 	}
 
 }
