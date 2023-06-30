@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -42,6 +44,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
+import fr.insee.pearljam.api.service.CommunicationRequestService;
 import fr.insee.pearljam.api.service.IdentificationService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
@@ -57,6 +60,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitServiceImpl.class);
 
 	private static final String GUEST = "GUEST";
+
+	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
+	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
 
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
@@ -114,6 +120,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Autowired
 	UtilsService utilsService;
+
+	@Autowired
+	CommunicationRequestService communicationRequestService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -200,7 +209,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
+			LOGGER.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, id, userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
@@ -217,10 +226,35 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		updateIdentification(surveyUnit, surveyUnitDetailDto);
+		updateCommunicationRequest(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
 		LOGGER.info("Survey Unit {} - update complete", id);
 		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
 		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
+	}
+
+	private void updateCommunicationRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
+		if (surveyUnitDetailDto.getCommunicationRequests() != null) {
+			List<CommunicationRequestDto> incommingCommRequests = surveyUnitDetailDto.getCommunicationRequests();
+			Set<CommunicationRequest> communicationRequests = surveyUnit.getCommunicationRequests();
+			Set<CommunicationRequest> newCommunicationsRequests = incommingCommRequests.stream()
+					.filter(commRequest -> commRequest.getId() == null)
+					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
+			communicationRequests.addAll(newCommunicationsRequests);
+
+			// for each communiactionRequest : update state then try to call messhugah if
+			// needed
+			// communicationRequests.stream()...
+			// handle INITIATED -> READY
+			// if(shouldAddReadyStatus(incommingCommRequests)) {
+			// communicationRequests.add(generateReadyCommunicationRequest(surveyUnit));
+			// }
+			// TODO : call messhugah to dispatch
+			// if(shouldTryToGenerateCommunication(newCommunicationsRequests)){
+			// boolean communicationRequestService.generateCommunication(commReq)
+			// }
+		}
+		LOGGER.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
 	}
 
 	private void updateIdentification(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -395,7 +429,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public HttpStatus updateSurveyUnitComment(String userId, String suId, CommentDto comment) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", suId, userId);
+			LOGGER.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
 			return HttpStatus.NOT_FOUND;
 		}
 		if (comment.getType() == null || comment.getValue() == null) {
@@ -417,7 +451,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public HttpStatus updateSurveyUnitViewed(String userId, String suId) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", suId, userId);
+			LOGGER.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
 			return HttpStatus.NOT_FOUND;
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
@@ -548,7 +582,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				return HttpStatus.FORBIDDEN;
 			}
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			LOGGER.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -573,7 +607,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			}
 
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			LOGGER.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -586,7 +620,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addOrModifyClosingCause(surveyUnit, type);
 			return HttpStatus.OK;
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			LOGGER.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.NOT_FOUND;
 		}
 	}
@@ -735,5 +769,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public List<String> getAllIdsByCampaignId(String campaignId) {
 		return surveyUnitRepository.findAllIdsByCampaignId(campaignId);
+	}
+
+	@Override
+	public List<String> getAllIdsByInterviewerId(String interviewerId) {
+		return surveyUnitRepository.findAllIdsByInterviewerId(interviewerId);
+	}
+
+	@Override
+	public void removeInterviewerLink(List<String> ids) {
+		surveyUnitRepository.setInterviewer(ids, null);
 	}
 }

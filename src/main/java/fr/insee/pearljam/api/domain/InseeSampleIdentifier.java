@@ -57,7 +57,6 @@ public class InseeSampleIdentifier extends SampleIdentifier {
 	
 	public InseeSampleIdentifier() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public InseeSampleIdentifier(SampleIdentifiersDto sampleIdentifiers) {

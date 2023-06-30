@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 	<changeSet author="bclaudel" id="1" context="not prod">
-		<sql dbms="postgresql" endDelimiter=";">
-	        CREATE SCHEMA IF NOT EXISTS public
-	    </sql>
+		<sql dbms="postgresql" endDelimiter=";"> CREATE SCHEMA IF NOT EXISTS public </sql>
 	</changeSet>
 	<include file="changelog/000_init.xml" relativeToChangelogFile="true" />
 
 	<!-- Add tables to manage notifications -->
 	<include file="changelog/130_notification.xml" relativeToChangelogFile="true" />
-	<!--Changing data type from INT to VARCHAR for status column in message_status table -->
+	<!--Changing
+	data type from INT to VARCHAR for status column in message_status table -->
 	<include file="changelog/130_notifications_datatype_status.xml" relativeToChangelogFile="true" />
 
 	<!-- Add tables to manage notifications -->
@@ -17,7 +18,8 @@
 
 	<!-- Rework of data model -->
 	<include file="changelog/300_data_model_changes.xml" relativeToChangelogFile="true" />
-	<include file="changelog/301_removing_interviewer_msg_recipent.xml" relativeToChangelogFile="true" />
+	<include file="changelog/301_removing_interviewer_msg_recipent.xml"
+		relativeToChangelogFile="true" />
 
 	<!-- Add new table (tempzone) in db -->
 	<include file="changelog/400_add_new_temp_zone.xml" relativeToChangelogFile="true" />
@@ -28,4 +30,8 @@
 	<include file="changelog/501_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 	<!-- Data model v4 : comment size extension -->
 	<include file="changelog/502_data_model_v4_changes.xml" relativeToChangelogFile="true" />
+
+	<!-- Data model update : add communicationRequest entity -->
+	<include file="changelog/510_add_communication_request.xml" relativeToChangelogFile="true" />
+	<include file="changelog/511_add_communication_configuration.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -116,4 +116,8 @@ public interface SurveyUnitService {
 	List<String> getAllIds();
 
 	List<String> getAllIdsByCampaignId(String campaignId);
+
+	List<String> getAllIdsByInterviewerId(String interviewerId);
+
+	void removeInterviewerLink(List<String> ids);
 }
