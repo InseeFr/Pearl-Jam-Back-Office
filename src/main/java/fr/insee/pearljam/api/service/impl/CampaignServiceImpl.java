@@ -308,7 +308,8 @@ public class CampaignServiceImpl implements CampaignService {
 		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
 				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
 
-		campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail());
+				campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail(),
+				campaignDto.getCommunicationRequestConfiguration());
 		campaignRepository.save(campaign);
 
 		for (VisibilityContextDto dto : campaignDto.getVisibilities()) {

@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,6 +53,9 @@ public class Campaign implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 
+	@Column
+	private Boolean communicationRequestConfiguration;
+
 	@Column(length = 255)
 	private String email;
 
@@ -69,7 +73,8 @@ public class Campaign implements Serializable {
 	}
 
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig,String email) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email,
+			Boolean communicationRequestConfiguration) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -77,6 +82,7 @@ public class Campaign implements Serializable {
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.identificationConfiguration = identConfig;
 		this.email = email;
+		this.communicationRequestConfiguration = Optional.ofNullable(communicationRequestConfiguration).orElse(false);
 	}
 
 	/**
@@ -159,6 +165,14 @@ public class Campaign implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public boolean isCommunicationRequestCOnfiguration() {
+		return communicationRequestConfiguration;
+	}
+
+	public void setCommunicationRequestCOnfiguration(boolean communicationRequestConfiguration) {
+		this.communicationRequestConfiguration = communicationRequestConfiguration;
 	}
 
 }

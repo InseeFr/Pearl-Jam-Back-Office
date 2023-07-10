@@ -35,5 +35,7 @@
 	<include file="changelog/510_add_communication_request.xml" relativeToChangelogFile="true" />
 	<include file="changelog/511_add_communication_configuration.xml" relativeToChangelogFile="true" />
 
+	<!-- Data model update : change communicationRequestConfiguration value to boolean -->
+	<include file="changelog/512_update_communication_configuration.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
