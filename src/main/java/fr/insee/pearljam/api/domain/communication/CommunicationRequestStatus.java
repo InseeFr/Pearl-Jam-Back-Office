@@ -36,9 +36,10 @@ public class CommunicationRequestStatus implements Serializable {
     public CommunicationRequestStatus() {
     }
 
-    public CommunicationRequestStatus(CommunicationRequestStatusDto crsDto) {
+    public CommunicationRequestStatus(CommunicationRequestStatusDto crsDto,CommunicationRequest communicationRequest) {
         this.date = crsDto.getDate();
         this.status = crsDto.getStatus();
+        this.communicationRequest = communicationRequest;
     }
 
     public Long getId() {
