@@ -62,7 +62,7 @@ public class CommunicationRequest implements Serializable {
         this.medium = dto.getMedium();
         this.emiter = dto.getEmiter();
         this.reason = dto.getReason();
-        this.status = dto.getStatus().stream().map(CommunicationRequestStatus::new).collect(Collectors.toList());
+        this.status = dto.getStatus().stream().map(statusDto -> new CommunicationRequestStatus(statusDto,this)).collect(Collectors.toList());
         this.surveyUnit = surveyUnit;
     }
 
