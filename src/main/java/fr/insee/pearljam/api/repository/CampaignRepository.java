@@ -50,13 +50,13 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	CampaignDto findDtoById(String id);
 	
 	@Query("SELECT "
-	+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationRequestConfiguration) "
+	+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationConfiguration) "
 	+ "FROM SurveyUnit su "
 	+ "JOIN su.campaign camp "
 	+ "WHERE su.id=?1")
 	CampaignDto findDtoBySurveyUnitId(String id);
 
-	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationRequestConfiguration) "
+	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationConfiguration) "
 			+ "FROM Campaign camp")
 	List<CampaignDto> findAllDto();
 
