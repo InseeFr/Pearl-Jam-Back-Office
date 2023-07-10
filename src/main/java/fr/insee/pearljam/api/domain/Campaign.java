@@ -54,7 +54,7 @@ public class Campaign implements Serializable {
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 
 	@Column
-	private Boolean communicationRequestConfiguration;
+	private Boolean communicationConfiguration;
 
 	@Column(length = 255)
 	private String email;
@@ -74,7 +74,7 @@ public class Campaign implements Serializable {
 
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
 			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email,
-			Boolean communicationRequestConfiguration) {
+			Boolean communicationConfiguration) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -82,7 +82,7 @@ public class Campaign implements Serializable {
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.identificationConfiguration = identConfig;
 		this.email = email;
-		this.communicationRequestConfiguration = Optional.ofNullable(communicationRequestConfiguration).orElse(false);
+		this.communicationConfiguration = Optional.ofNullable(communicationConfiguration).orElse(false);
 	}
 
 	/**
@@ -167,12 +167,12 @@ public class Campaign implements Serializable {
 		this.email = email;
 	}
 
-	public boolean isCommunicationRequestCOnfiguration() {
-		return communicationRequestConfiguration;
+	public boolean isCommunicationConfiguration() {
+		return communicationConfiguration;
 	}
 
-	public void setCommunicationRequestCOnfiguration(boolean communicationRequestConfiguration) {
-		this.communicationRequestConfiguration = communicationRequestConfiguration;
+	public void setCommunicationConfiguration(boolean communicationConfiguration) {
+		this.communicationConfiguration = communicationConfiguration;
 	}
 
 }
