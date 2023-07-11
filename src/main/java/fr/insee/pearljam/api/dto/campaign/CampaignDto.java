@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.campaign;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -66,7 +67,7 @@ public class CampaignDto {
 		this.identificationConfiguration = identConfig;
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.contactAttemptConfiguration = contAttConfig;
-		this.communicationRequestConfiguration = communicationRequestConfiguration;
+		this.communicationRequestConfiguration = Optional.ofNullable(communicationRequestConfiguration).orElse(false);
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
