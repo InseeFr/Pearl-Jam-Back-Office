@@ -514,7 +514,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaign.setContactAttemptConfiguration(campdto.getContactAttemptConfiguration());
 		campaign.setContactOutcomeConfiguration(campdto.getContactOutcomeConfiguration());
 		campaign.setIdentificationConfiguration(campdto.getIdentificationConfiguration());
-		campaign.setCommunicationRequestConfiguration(campdto.getCommunicationRequestConfiguration());
+		campaign.setCommunicationRequestConfiguration(Optional.ofNullable(campdto.getCommunicationRequestConfiguration()).orElse(false));
 		List<VisibilityContextDto> visibilities = visibilityRepository.findByCampaignId(id).stream()
 				.map(visibility -> new VisibilityContextDto(visibility)).collect(Collectors.toList());
 		campaign.setVisibilities(visibilities);
