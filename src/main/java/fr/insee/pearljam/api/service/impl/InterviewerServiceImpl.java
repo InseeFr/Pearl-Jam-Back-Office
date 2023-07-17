@@ -183,7 +183,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 		interviewerToUpdate.setEmail(interviewer.getEmail());
 		interviewerToUpdate.setFirstName(interviewer.getFirstName());
 		interviewerToUpdate.setLastName(interviewer.getLastName());
-		interviewerToUpdate.setPhoneNumber(interviewer.getPhoneNumer());
+		interviewerToUpdate.setPhoneNumber(interviewer.getPhoneNumber());
 
 		return Optional.of(interviewerRepository.findDtoById(id));
 	}

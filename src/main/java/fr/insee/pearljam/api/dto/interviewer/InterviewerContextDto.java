@@ -11,15 +11,15 @@ public class InterviewerContextDto {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String phoneNumer;
+	private String phoneNumber;
 
-	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumer) {
+	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumber) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		this.phoneNumer = phoneNumer;
+		this.phoneNumber = phoneNumber;
 	}
 
 	public InterviewerContextDto(Interviewer interviewer) {
@@ -28,7 +28,7 @@ public class InterviewerContextDto {
 		this.firstName = interviewer.getFirstName();
 		this.lastName = interviewer.getLastName();
 		this.email = interviewer.getEmail();
-		this.phoneNumer = interviewer.getPhoneNumber();
+		this.phoneNumber = interviewer.getPhoneNumber();
 	}
 
 	public InterviewerContextDto() {
@@ -92,17 +92,17 @@ public class InterviewerContextDto {
 	}
 
 	/**
-	 * @return the phoneNumer
+	 * @return the phoneNumber
 	 */
-	public String getPhoneNumer() {
-		return phoneNumer;
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
 
 	/**
-	 * @param phoneNumer the phoneNumer to set
+	 * @param phoneNumber the phoneNumber to set
 	 */
-	public void setPhoneNumer(String phoneNumer) {
-		this.phoneNumer = phoneNumer;
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
 	@JsonIgnore
@@ -111,7 +111,7 @@ public class InterviewerContextDto {
 				&& this.firstName != null && !this.firstName.isBlank()
 				&& this.lastName != null && !this.lastName.isBlank()
 				&& this.email != null && !this.email.isBlank()
-				&& this.phoneNumer != null && !this.phoneNumer.isBlank()
+				&& this.phoneNumber != null && !this.phoneNumber.isBlank()
 				&& EmailValidator.getInstance().isValid(this.email);
 	}
 }
