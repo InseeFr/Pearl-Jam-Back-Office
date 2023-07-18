@@ -87,7 +87,7 @@ public class Interviewer implements Serializable {
 		this.firstName = interviewerDto.getFirstName();
 		this.lastName = interviewerDto.getLastName();
 		this.email = interviewerDto.getEmail();
-		this.phoneNumber = interviewerDto.getPhoneNumer();
+		this.phoneNumber = interviewerDto.getPhoneNumber();
 	}
 
 	/**

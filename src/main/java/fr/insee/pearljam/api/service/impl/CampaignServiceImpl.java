@@ -308,7 +308,8 @@ public class CampaignServiceImpl implements CampaignService {
 		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
 				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
 
-		campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail());
+				campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail(),
+				campaignDto.getCommunicationRequestConfiguration());
 		campaignRepository.save(campaign);
 
 		for (VisibilityContextDto dto : campaignDto.getVisibilities()) {
@@ -438,6 +439,9 @@ public class CampaignServiceImpl implements CampaignService {
 		if (campDto.getContactAttemptConfiguration() != null) {
 			currentCampaign.setContactAttemptConfiguration(campDto.getContactAttemptConfiguration());
 		}
+		if (campDto.getCommunicationRequestConfiguration() != null) {
+			currentCampaign.setCommunicationConfiguration(campDto.getCommunicationRequestConfiguration());
+		}
 	}
 
 	@Override
@@ -510,6 +514,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaign.setContactAttemptConfiguration(campdto.getContactAttemptConfiguration());
 		campaign.setContactOutcomeConfiguration(campdto.getContactOutcomeConfiguration());
 		campaign.setIdentificationConfiguration(campdto.getIdentificationConfiguration());
+		campaign.setCommunicationRequestConfiguration(Optional.ofNullable(campdto.getCommunicationRequestConfiguration()).orElse(false));
 		List<VisibilityContextDto> visibilities = visibilityRepository.findByCampaignId(id).stream()
 				.map(visibility -> new VisibilityContextDto(visibility)).collect(Collectors.toList());
 		campaign.setVisibilities(visibilities);

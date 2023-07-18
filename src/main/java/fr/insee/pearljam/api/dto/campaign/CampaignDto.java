@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.campaign;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -30,19 +31,18 @@ public class CampaignDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
+	private Boolean communicationRequestConfiguration;
 
-	
-	
 	public CampaignDto() {
 		super();
 	}
-	
+
 	public CampaignDto(String id, String label) {
 		super();
 		this.id = id;
 		this.label = label;
 	}
-	
+
 	public CampaignDto(Campaign camp) {
 		super();
 		this.id = camp.getId();
@@ -58,7 +58,8 @@ public class CampaignDto {
 	}
 
 	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig,
+			Boolean communicationRequestConfiguration) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -66,6 +67,7 @@ public class CampaignDto {
 		this.identificationConfiguration = identConfig;
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.contactAttemptConfiguration = contAttConfig;
+		this.communicationRequestConfiguration = Optional.ofNullable(communicationRequestConfiguration).orElse(false);
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
@@ -301,7 +303,6 @@ public class CampaignDto {
 		this.email = email;
 	}
 
-
 	public IdentificationConfiguration getIdentificationConfiguration() {
 		return this.identificationConfiguration;
 	}
@@ -324,6 +325,14 @@ public class CampaignDto {
 
 	public void setContactOutcomeConfiguration(ContactOutcomeConfiguration contactOutcomeConfiguration) {
 		this.contactOutcomeConfiguration = contactOutcomeConfiguration;
+	}
+
+	public Boolean getCommunicationRequestConfiguration() {
+		return communicationRequestConfiguration;
+	}
+
+	public void setCommunicationRequestConfiguration(Boolean communicationRequestConfiguration) {
+		this.communicationRequestConfiguration = communicationRequestConfiguration;
 	}
 
 }
