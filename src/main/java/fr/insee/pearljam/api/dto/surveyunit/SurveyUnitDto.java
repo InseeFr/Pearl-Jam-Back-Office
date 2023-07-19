@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -64,6 +65,7 @@ public class SurveyUnitDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private boolean communicationRequestConfiguration;
 
 	private List<PersonDto> persons;
 
@@ -85,6 +87,7 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
 		this.contactAttemptConfiguration = su.getCampaign().getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = su.getCampaign().getContactOutcomeConfiguration();
+		this.communicationRequestConfiguration = Optional.ofNullable(su.getCampaign().isCommunicationConfiguration()).orElse(false);
 		if (Boolean.TRUE.equals(extended)) {
 			this.persons = su.getPersons().stream()
 					.map(person -> new PersonDto(person))
@@ -278,6 +281,14 @@ public class SurveyUnitDto {
 
 	public void setContactAttemptConfiguration(ContactAttemptConfiguration contactAttemptConfiguration) {
 		this.contactAttemptConfiguration = contactAttemptConfiguration;
+	}
+
+	public boolean isCommunicationRequestConfiguration() {
+		return communicationRequestConfiguration;
+	}
+
+	public void setCommunicationRequestConfiguration(boolean communicationRequestConfiguration) {
+		this.communicationRequestConfiguration = communicationRequestConfiguration;
 	}
 
 }
