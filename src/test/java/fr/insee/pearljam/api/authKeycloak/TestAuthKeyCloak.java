@@ -77,6 +77,7 @@ import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
+import fr.insee.pearljam.api.domain.TitleEnum;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -2035,7 +2036,7 @@ class TestAuthKeyCloak {
 
 	/**
 	 * Test that the Post endpoint
-	 * "/organization-unit/context" returns 200
+	 * "api/interviewers" returns 200
 	 * 
 	 * @throws InterruptedException
 	 */
@@ -2050,14 +2051,16 @@ class TestAuthKeyCloak {
 				"Pierre",
 				"Legrand",
 				"pierre.legrand@insee.fr",
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV2",
 				"Clara",
 				"Legouanec",
 				"clara.legouanec@insee.fr",
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2081,17 +2084,19 @@ class TestAuthKeyCloak {
 		assertEquals("Legrand", interv1Opt.get().getLastName());
 		assertEquals("pierre.legrand@insee.fr", interv1Opt.get().getEmail());
 		assertEquals("06 XX XX XX XX", interv1Opt.get().getPhoneNumber());
+		assertEquals(TitleEnum.MISTER, interv1Opt.get().getTitle());
 
 		assertEquals("Clara", interv2Opt.get().getFirstName());
 		assertEquals("Legouanec", interv2Opt.get().getLastName());
 		assertEquals("clara.legouanec@insee.fr", interv2Opt.get().getEmail());
 		assertEquals("06 XX XX XX XX", interv2Opt.get().getPhoneNumber());
+		assertEquals(TitleEnum.MISS, interv2Opt.get().getTitle());
 
 	}
 
 	/**
 	 * Test that the Post endpoint
-	 * "/organization-unit/context" returns 400
+	 * "api/interviewers" returns 400
 	 * when an email is missing
 	 * 
 	 * @throws InterruptedException
@@ -2107,14 +2112,16 @@ class TestAuthKeyCloak {
 				"Pierre",
 				"Legrand",
 				"pierre.legrand@insee.fr",
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV5",
 				"Clara",
 				"Legouanec",
 				null,
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2138,7 +2145,7 @@ class TestAuthKeyCloak {
 
 	/**
 	 * Test that the Post endpoint
-	 * "/organization-unit/context" returns 400
+	 * "api/interviewers" returns 400
 	 * when an iterviewer id is present twice
 	 * 
 	 * @throws InterruptedException
@@ -2154,14 +2161,16 @@ class TestAuthKeyCloak {
 				"Pierre",
 				"Legrand",
 				"pierre.legrand@insee.fr",
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV3",
 				"Clara",
 				"Legouanec",
 				"clara.legouanec@insee.fr",
-				"06 XX XX XX XX");
+				"06 XX XX XX XX",
+				TitleEnum.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2178,6 +2187,44 @@ class TestAuthKeyCloak {
 		// Interviewers should not have been added
 		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV3");
 		assertTrue(!interv1Opt.isPresent());
+	}
+
+	/**
+	 * Test that the Post endpoint
+	 * "api/interviewers" returns 200
+	 * and provide default title MISTER if no title provided
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	@Order(109)
+	void testPostInterviewersWithNoTitle() throws InterruptedException, JsonProcessingException, JSONException {
+		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+		List<InterviewerContextDto> listInterviewers = new ArrayList<>();
+
+		InterviewerContextDto intervNoTitle = new InterviewerContextDto(
+				"INTERV_WITHOUT_TITLE",
+				"Pierre",
+				"Legrand",
+				"pierre.legrand@insee.fr",
+				"06 XX XX XX XX",
+				null);
+
+		listInterviewers.add(intervNoTitle);
+
+		given()
+				.auth().oauth2(accessToken)
+				.contentType("application/json")
+				.body(new ObjectMapper().writeValueAsString(listInterviewers))
+				.when()
+				.post("api/interviewers")
+				.then()
+				.statusCode(200);
+
+		// Interviewers should have been added
+		Optional<Interviewer> intervNoTitleOpt = interviewerRepository.findById("INTERV_WITHOUT_TITLE");
+		assertTrue(intervNoTitleOpt.isPresent());
+		assertEquals(TitleEnum.MISTER, intervNoTitleOpt.get().getTitle());
 	}
 
 	/**
