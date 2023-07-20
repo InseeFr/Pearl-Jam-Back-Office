@@ -87,7 +87,8 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
 		this.contactAttemptConfiguration = su.getCampaign().getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = su.getCampaign().getContactOutcomeConfiguration();
-		this.communicationRequestConfiguration = Optional.ofNullable(su.getCampaign().isCommunicationConfiguration()).orElse(false);
+		this.communicationRequestConfiguration = Optional.ofNullable(su.getCampaign().isCommunicationConfiguration())
+				.orElse(false);
 		if (Boolean.TRUE.equals(extended)) {
 			this.persons = su.getPersons().stream()
 					.map(person -> new PersonDto(person))
@@ -109,6 +110,7 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = campaign.getIdentificationConfiguration();
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();
+		this.communicationRequestConfiguration = Optional.of(campaign.getCommunicationRequestConfiguration()).orElse(false);
 	}
 
 	/**

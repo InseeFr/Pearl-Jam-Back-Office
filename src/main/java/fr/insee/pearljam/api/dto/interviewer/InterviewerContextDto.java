@@ -5,6 +5,7 @@ import org.apache.commons.validator.EmailValidator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.TitleEnum;
 
 public class InterviewerContextDto {
 	private String id;
@@ -12,14 +13,17 @@ public class InterviewerContextDto {
 	private String lastName;
 	private String email;
 	private String phoneNumber;
+	private TitleEnum title = TitleEnum.MISTER;
 
-	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumber) {
+	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumber,
+			TitleEnum title) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.title = title;
 	}
 
 	public InterviewerContextDto(Interviewer interviewer) {
@@ -29,6 +33,7 @@ public class InterviewerContextDto {
 		this.lastName = interviewer.getLastName();
 		this.email = interviewer.getEmail();
 		this.phoneNumber = interviewer.getPhoneNumber();
+		this.title = interviewer.getTitle();
 	}
 
 	public InterviewerContextDto() {
@@ -105,6 +110,14 @@ public class InterviewerContextDto {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public TitleEnum getTitle() {
+		return title;
+	}
+
+	public void setTitle(TitleEnum title) {
+		this.title = title;
+	}
+
 	@JsonIgnore
 	public boolean isValid() {
 		return this.id != null && !this.id.isBlank()
@@ -114,4 +127,5 @@ public class InterviewerContextDto {
 				&& this.phoneNumber != null && !this.phoneNumber.isBlank()
 				&& EmailValidator.getInstance().isValid(this.email);
 	}
+
 }
