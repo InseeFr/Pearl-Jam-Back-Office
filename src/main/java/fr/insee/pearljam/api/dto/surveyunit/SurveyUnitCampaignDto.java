@@ -74,7 +74,7 @@ public class SurveyUnitCampaignDto {
 		}
 	    if(su.getAddress() instanceof InseeAddress
 	        && ((InseeAddress)su.getAddress()).getL6() != null
-	        && ((InseeAddress)su.getAddress()).getL6().contains(" ")) {
+	        && ((InseeAddress)su.getAddress()).getL6().trim().contains(" ")) {
 			      String locationAndCity = ((InseeAddress)su.getAddress()).getL6();
 				  String[] splittedCityName=locationAndCity.split(" ");
 			      this.location = splittedCityName[0];

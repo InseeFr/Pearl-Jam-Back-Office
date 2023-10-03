@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.0.8</version>
-  
+	<version>4.0.9</version>
+
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>
@@ -25,6 +26,7 @@
 		<log4j.version>2.17.1</log4j.version>
 		<maven.compiler.release>11</maven.compiler.release>
 		<testcontainers.version>1.15.2</testcontainers.version>
+		<keycloak.version>19.0.3</keycloak.version>
 	</properties>
 
 	<dependencyManagement>
@@ -247,18 +249,13 @@
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-spring-boot-2-starter</artifactId>
-			<version>4.0.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-security-adapter</artifactId>
-			<version>7.0.0</version>
+			<version>${keycloak.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
-			<version>7.0.0</version>
+			<version>${keycloak.version}</version>
 		</dependency>
 
 		<dependency>
