@@ -147,6 +147,18 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	)
 	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
 
+
+
+		@Query(value="SELECT su FROM SurveyUnit su "
+		+" LEFT JOIN fetch su.comments"
+		+" LEFT JOIN fetch su.states"
+		+" LEFT JOIN fetch su.address"
+		+" LEFT JOIN fetch su.sampleIdentifier "
+		+" LEFT JOIN fetch su.interviewer "
+		+" LEFT JOIN fetch su.contactOucome "
+		+" LEFT JOIN fetch su.closingCause "
+		+" LEFT JOIN fetch su.identification "
+			+ "WHERE su.campaign.id=:id AND su.organizationUnit.id IN (:lstOuId)")
 	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
