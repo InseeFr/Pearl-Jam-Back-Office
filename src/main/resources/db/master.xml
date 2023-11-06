@@ -29,5 +29,6 @@
 	<!-- Data model v4 : comment size extension -->
 	<include file="changelog/502_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 
-
+	<!-- add indexes for perf -->
+	<include file="changelog/510_indexes_for_state_and_surveyunit.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
