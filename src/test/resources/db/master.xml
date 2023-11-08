@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 	<changeSet author="bclaudel" id="1" context="not prod">
 		<sql dbms="postgresql" endDelimiter=";">
 	        CREATE SCHEMA IF NOT EXISTS public
-	    </sql>
+		</sql>
 	</changeSet>
 	<include file="changelog/000_init.xml" relativeToChangelogFile="true" />
 
@@ -28,4 +29,7 @@
 	<include file="changelog/501_data_model_v4_changes.xml" relativeToChangelogFile="true" />
 	<!-- Data model v4 : comment size extension -->
 	<include file="changelog/502_data_model_v4_changes.xml" relativeToChangelogFile="true" />
+
+	<!-- add indexes for perf -->
+	<include file="changelog/510_indexes_for_state_and_surveyunit.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
