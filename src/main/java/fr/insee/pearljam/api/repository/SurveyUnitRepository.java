@@ -158,8 +158,8 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 		+" LEFT JOIN fetch su.contactOucome "
 		+" LEFT JOIN fetch su.closingCause "
 		+" LEFT JOIN fetch su.identification "
-			+ "WHERE su.campaign.id=:id AND su.organizationUnit.id IN (:lstOuId)")
-	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId);
+		+ "WHERE su.campaign.id=:id AND su.organizationUnit.id IN (:lstOuId)")
+	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(@Param("id")String id, @Param("lstOuId")List<String> lstOuId);
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
 	
