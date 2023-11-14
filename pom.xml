@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.0.13</version>
-
+	<version>4.1.1</version>
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for for PearlJam</description>
-
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -17,7 +16,6 @@
 		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
-
 	<properties>
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,8 +25,8 @@
 		<log4j.version>2.17.1</log4j.version>
 		<maven.compiler.release>11</maven.compiler.release>
 		<testcontainers.version>1.15.2</testcontainers.version>
+		<keycloak.version>19.0.3</keycloak.version>
 	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -40,9 +38,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<dependencies>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
@@ -137,13 +133,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Database -->
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -153,8 +147,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-java8</artifactId>
 		</dependency>
-
-
 		<!-- TESTS -->
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -189,7 +181,6 @@
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
@@ -233,7 +224,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -245,24 +235,21 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-security-adapter</artifactId>
-			<version>18.0.2</version>
+			<version>${keycloak.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
-			<version>18.0.2</version>
+			<version>${keycloak.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-web</artifactId>
 		</dependency>
-
 		<!-- Commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -273,7 +260,6 @@
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.1</version>
 		</dependency>
-
 		<!-- Manage JSON OBJECT -->
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
@@ -285,7 +271,6 @@
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -351,7 +336,6 @@
 							<artifactId>jackson-databind</artifactId>
 							<version>2.11.0</version>
 						</dependency>
-
 						<dependency>
 							<groupId>org.hibernate</groupId>
 							<artifactId>hibernate-validator</artifactId>
@@ -404,5 +388,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 </project>
