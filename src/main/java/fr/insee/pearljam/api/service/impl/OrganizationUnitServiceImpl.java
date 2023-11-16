@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -35,22 +34,21 @@ import fr.insee.pearljam.api.service.UserService;
  */
 @Service
 @Transactional
+@Slf4j
 public class OrganizationUnitServiceImpl implements OrganizationUnitService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationUnitServiceImpl.class);
 
 	@Autowired
 	OrganizationUnitRepository organizationUnitRepository;
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	SurveyUnitRepository surveyUnitRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	MessageRepository messageRepository;
 
@@ -60,13 +58,17 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 			throws NoOrganizationUnitException, UserAlreadyExistsException {
 		// Verifying all attributes are set
 		if (organizationUnitDtos.stream().anyMatch(dto -> !allAttributesHaveValue(dto))) {
-			LOGGER.error("At least one organizational unit has an attribute missing");
+			log.error("At least one organizational unit has an attribute missing");
 			return new Response("At least one organizational unit has an attribute missing", HttpStatus.BAD_REQUEST);
 		}
-		String alreadyPresentIds = organizationUnitDtos.stream().map(OrganizationUnitContextDto::getId).filter(id -> organizationUnitRepository.findById(id).isPresent()).collect(Collectors.joining(", "));
+		String alreadyPresentIds = organizationUnitDtos.stream().map(OrganizationUnitContextDto::getId)
+				.filter(id -> organizationUnitRepository.findById(id).isPresent()).collect(Collectors.joining(", "));
 		if (alreadyPresentIds != null && !alreadyPresentIds.isEmpty()) {
-			LOGGER.error("The following Organizational units were already present: [{}]", alreadyPresentIds);
-			return new Response("The following Organizational units were already present: " + alreadyPresentIds, HttpStatus.BAD_REQUEST);
+			String errorMessage = String.format("The following Organizational units were already present: [%s]",
+					alreadyPresentIds);
+			log.error(errorMessage);
+			return new Response(errorMessage,
+					HttpStatus.BAD_REQUEST);
 		}
 		// Adding organization units
 		addOrganizationalUnits(organizationUnitDtos);
@@ -81,10 +83,11 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 				&& dto.getType() != null;
 	}
 
-	private void addUsers(List<OrganizationUnitContextDto> organizationUnitDtos) throws UserAlreadyExistsException, NoOrganizationUnitException {
+	private void addUsers(List<OrganizationUnitContextDto> organizationUnitDtos)
+			throws UserAlreadyExistsException, NoOrganizationUnitException {
 		for (OrganizationUnitContextDto ouDto : organizationUnitDtos) {
 			if (ouDto.getUsers() != null) {
-				userService.createUsersByOrganizationUnit(ouDto.getUsers(), ouDto.getId());	
+				userService.createUsersByOrganizationUnit(ouDto.getUsers(), ouDto.getId());
 			}
 		}
 	}
@@ -99,7 +102,8 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 			remainingNb = remainingToAdd.size();
 			List<OrganizationUnitContextDto> added = new ArrayList<>();
 			for (OrganizationUnitContextDto ouDto : remainingToAdd) {
-				if (ouDto.getOrganisationUnitRef() == null || ouDto.getOrganisationUnitRef().stream().noneMatch(ouId -> !organizationUnitRepository.findById(ouId).isPresent())) {
+				if (ouDto.getOrganisationUnitRef() == null || ouDto.getOrganisationUnitRef().stream()
+						.noneMatch(ouId -> !organizationUnitRepository.findById(ouId).isPresent())) {
 					OrganizationUnit orgUnit = new OrganizationUnit(ouDto.getId(), ouDto.getLabel(), ouDto.getType());
 					organizationUnitRepository.save(orgUnit);
 					added.add(ouDto);
@@ -110,8 +114,12 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
 		}
 		if (!remainingToAdd.isEmpty()) {
-			String remainingIds = remainingToAdd.stream().map(OrganizationUnitContextDto::getId).collect(Collectors.joining(", "));
-			throw new NoOrganizationUnitException("One of the organizationUnitRef of the following organizational units could not be found: " + remainingIds);
+			String remainingIds = remainingToAdd.stream().map(OrganizationUnitContextDto::getId)
+					.collect(Collectors.joining(", "));
+			throw new NoOrganizationUnitException(
+					String.format(
+							"One of the organizationUnitRef of the following organizational units could not be found: %s",
+							remainingIds));
 		}
 	}
 
@@ -131,23 +139,24 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	@Override
 	public List<OrganizationUnitContextDto> findAllOrganizationUnits() {
 		return organizationUnitRepository.findAll().stream()
-				.map(ou -> new OrganizationUnitContextDto(ou, userRepository.findAllByOrganizationUnitId(ou.getId()), organizationUnitRepository.findChildrenId(ou.getId())))
+				.map(ou -> new OrganizationUnitContextDto(ou, userRepository.findAllByOrganizationUnitId(ou.getId()),
+						organizationUnitRepository.findChildrenId(ou.getId())))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public HttpStatus delete(String id) {
 		Optional<OrganizationUnit> ou = organizationUnitRepository.findById(id);
-		if(!ou.isPresent()) {
+		if (!ou.isPresent()) {
 			return HttpStatus.NOT_FOUND;
 		}
 		List<SurveyUnit> lstSu = surveyUnitRepository.findByOrganizationUnitIdIn(List.of(id));
 		List<User> lstUser = userRepository.findAllByOrganizationUnitId(id);
-		if(!lstSu.isEmpty() || !lstUser.isEmpty()) {
+		if (!lstSu.isEmpty() || !lstUser.isEmpty()) {
 			return HttpStatus.BAD_REQUEST;
 		}
 		messageRepository.deleteOUMessageRecipientByOrganizationUnitId(ou.get().getId());
-		if(ou.get().getOrganizationUnitParent()!=null) {
+		if (ou.get().getOrganizationUnitParent() != null) {
 			ou.get().setOrganizationUnitParent(null);
 			organizationUnitRepository.save(ou.get());
 		}

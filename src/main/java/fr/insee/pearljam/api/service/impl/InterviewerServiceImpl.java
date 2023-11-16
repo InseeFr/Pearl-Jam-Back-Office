@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +31,7 @@ import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -42,8 +41,8 @@ import fr.insee.pearljam.api.service.UtilsService;
  */
 @Service
 @Transactional
+@Slf4j
 public class InterviewerServiceImpl implements InterviewerService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(InterviewerServiceImpl.class);
 
 	@Autowired
 	ContactOutcomeRepository contactOutcomeRepository;
@@ -124,19 +123,19 @@ public class InterviewerServiceImpl implements InterviewerService {
 		// Check attributes are not null
 		if (!interviewerErrors.isEmpty()) {
 			String errorMessage = String.format("Invalid format : [%s]", String.join(", ", interviewerErrors));
-			LOGGER.error(errorMessage);
+			log.error(errorMessage);
 			return new Response(String.format("Invalid format : [%s]", String.join(", ", interviewerErrors)),
 					HttpStatus.BAD_REQUEST);
 		}
 		// Check duplicate lines
 
 		if (!duplicates.keySet().stream().filter(id -> duplicates.get(id) > 1).collect(Collectors.toSet()).isEmpty()) {
-			LOGGER.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
+			log.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
 			return new Response(String.format("Duplicate entries : [%s]", String.join(", ", duplicates.keySet())),
 					HttpStatus.BAD_REQUEST);
 		}
 		interviewerRepository.saveAll(listInterviewers);
-		LOGGER.info("{} interviewers created", listInterviewers.size());
+		log.info("{} interviewers created", listInterviewers.size());
 		return new Response(String.format("%s interviewers created", listInterviewers.size()), HttpStatus.OK);
 	}
 

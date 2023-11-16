@@ -1,24 +1,23 @@
 package fr.insee.pearljam.api.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 
-public class CustomStompSessionHandler extends StompSessionHandlerAdapter {
+import lombok.extern.slf4j.Slf4j;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomStompSessionHandler.class);
+@Slf4j
+public class CustomStompSessionHandler extends StompSessionHandlerAdapter {
 
 	@Override
 	public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-		LOGGER.info("New session established : {}", session.getSessionId());
+		log.info("New session established : {}", session.getSessionId());
 	}
 
 	@Override
 	public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload,
 			Throwable exception) {
-		LOGGER.error("Got an exception", exception);
+		log.error("Got an exception", exception);
 	}
 }
