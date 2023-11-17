@@ -5,8 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,19 +23,19 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@Slf4j
 public class ContactOutcomeController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ContactOutcomeController.class);
 
 	@Autowired
 	ContactOutcomeService contactOutcomeService;
 
 	@Autowired
 	UtilsService utilsService;
-  
+
 	/**
 	 * This method is used to count survey units not attributed by contact-outcomes
 	 * 
@@ -57,12 +55,12 @@ public class ContactOutcomeController {
 			ContactOutcomeTypeCountDto contactOutcomes;
 			try {
 				contactOutcomes = contactOutcomeService.getNbSUNotAttributedContactOutcomes(userId, id, date);
-			} catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get Contact-outcomes count for non attributted SUs resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get Contact-outcomes count for non attributted SUs resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get Contact-outcomes count for non attributted SUs resulting in 200");
+			log.info("Get Contact-outcomes count for non attributted SUs resulting in 200");
 			return new ResponseEntity<>(contactOutcomes, HttpStatus.OK);
 		}
 	}
@@ -70,6 +68,7 @@ public class ContactOutcomeController {
 	/**
 	 * Return the contact-outcome type count
 	 * for each campaign
+	 * 
 	 * @param request
 	 * @param date
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
@@ -77,25 +76,28 @@ public class ContactOutcomeController {
 	 */
 	@ApiOperation(value = "Get campaignStateCount")
 	@GetMapping(path = "/campaigns/survey-units/contact-outcomes")
-	public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(HttpServletRequest request,
+	public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(
+			HttpServletRequest request,
 			@RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			List<ContactOutcomeTypeCountDto> listContactOutcomeTypeCountDto = contactOutcomeService.getContactOutcomeTypeCountByCampaign(userId, date);
+			List<ContactOutcomeTypeCountDto> listContactOutcomeTypeCountDto = contactOutcomeService
+					.getContactOutcomeTypeCountByCampaign(userId, date);
 			if (listContactOutcomeTypeCountDto == null) {
-				LOGGER.info("Get contactOutcomeTypeCount resulting in 404");
+				log.info("Get contactOutcomeTypeCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get contactOutcomeTypeCount resulting in 200");
+			log.info("Get contactOutcomeTypeCount resulting in 200");
 			return new ResponseEntity<>(listContactOutcomeTypeCountDto, HttpStatus.OK);
 		}
 	}
-	
+
 	/**
-	 * This method is used to count the contact-outcome types 
+	 * This method is used to count the contact-outcome types
 	 * by organizational units and campaign
+	 * 
 	 * @param request
 	 * @param id
 	 * @param date
@@ -104,7 +106,8 @@ public class ContactOutcomeController {
 	 */
 	@ApiOperation(value = "Get campaignStateCount")
 	@GetMapping(path = "/campaign/{id}/survey-units/contact-outcomes")
-	public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(HttpServletRequest request,
+	public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(
+			HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
@@ -113,20 +116,20 @@ public class ContactOutcomeController {
 			ContactOutcomeTypeCountCampaignDto stateCountCampaignDto;
 			try {
 				stateCountCampaignDto = contactOutcomeService.getContactOutcomeCountTypeByCampaign(userId, id, date);
-			}
-			catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get contact-outcome type count resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get contact-outcome type count resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get contact-outcome type count resulting in 200");
+			log.info("Get contact-outcome type count resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
 		}
 	}
-	
+
 	/**
 	 * This method is used to get the contact outcome type count associated with the
 	 * campaign {id} for current an interviewer
+	 * 
 	 * @param request
 	 * @param id
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
@@ -134,25 +137,25 @@ public class ContactOutcomeController {
 	 */
 	@ApiOperation(value = "Get contact-outcome type for an interviewer on a specific campaign")
 	@GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes")
-	public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(HttpServletRequest request,
+	public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(
+			HttpServletRequest request,
 			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
 			@RequestParam(required = false, name = "date") Long date) {
-        String userId = utilsService.getUserId(request);
+		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-          return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    	ContactOutcomeTypeCountDto cotd;
-    	try {
-    		cotd = contactOutcomeService.getContactOutcomeByInterviewerAndCampaign(userId, id, idep, date);
-    	}
-		catch(NotFoundException e) {
-			LOGGER.error(e.getMessage());
-			LOGGER.info("Get contactOutcomeTypeCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		ContactOutcomeTypeCountDto cotd;
+		try {
+			cotd = contactOutcomeService.getContactOutcomeByInterviewerAndCampaign(userId, id, idep, date);
+		} catch (NotFoundException e) {
+			log.error(e.getMessage());
+			log.info("Get contactOutcomeTypeCount resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        LOGGER.info("Get contactOutcomeTypeCount resulting in 200");
-        return new ResponseEntity<>(cotd, HttpStatus.OK);
-      
-    }
-	
+		}
+		log.info("Get contactOutcomeTypeCount resulting in 200");
+		return new ResponseEntity<>(cotd, HttpStatus.OK);
+
+	}
+
 }

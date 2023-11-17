@@ -7,8 +7,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +29,11 @@ import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class InterviewerController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(InterviewerController.class);
 
 	@Autowired
 	InterviewerService interviewerService;
@@ -62,7 +60,7 @@ public class InterviewerController {
 	public ResponseEntity<String> postInterviewers(HttpServletRequest request,
 			@RequestBody List<InterviewerContextDto> interviewers) {
 		Response response = interviewerService.createInterviewers(interviewers);
-		LOGGER.info("POST /interviewers resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("POST /interviewers resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -85,10 +83,10 @@ public class InterviewerController {
 		}
 		Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
 		if (lstInterviewer == null) {
-			LOGGER.info("Get interviewers resulting in 404");
+			log.info("Get interviewers resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("Get interviewers resulting in 200");
+		log.info("Get interviewers resulting in 200");
 		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 
 	}
@@ -99,15 +97,15 @@ public class InterviewerController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
+			log.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		Optional<InterviewerContextDto> interviewer = interviewerService.findDtoById(id);
 		if (interviewer.isEmpty()) {
-			LOGGER.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
+			log.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("{} -> Get interviewer [{}] resulting in 200", userId, id);
+		log.info("{} -> Get interviewer [{}] resulting in 200", userId, id);
 		return new ResponseEntity<>(interviewer.get(), HttpStatus.OK);
 
 	}
@@ -121,10 +119,10 @@ public class InterviewerController {
 		}
 		List<InterviewerContextDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
 		if (lstInterviewer.isEmpty()) {
-			LOGGER.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
+			log.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("{} -> Get all interviewers resulting in 200", userId);
+		log.info("{} -> Get all interviewers resulting in 200", userId);
 		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 
 	}
@@ -139,10 +137,10 @@ public class InterviewerController {
 		}
 		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
 		if (!list.isPresent()) {
-			LOGGER.info("{} -> Get interviewer campaigns resulting in 404", userId);
+			log.info("{} -> Get interviewer campaigns resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("{} -> Get interviewers campaigns resulting in 200", userId);
+		log.info("{} -> Get interviewers campaigns resulting in 200", userId);
 		return new ResponseEntity<>(list.get(), HttpStatus.OK);
 
 	}
@@ -160,11 +158,11 @@ public class InterviewerController {
 
 		Optional<InterviewerContextDto> updatedInterviewer = interviewerService.update(id, interviewer);
 		if (!updatedInterviewer.isPresent()) {
-			LOGGER.error("{} : UPDATE interviewer {} resulting in 404. ", userId, id);
+			log.error("{} : UPDATE interviewer {} resulting in 404. ", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
-		LOGGER.info("{} : UPDATE interviewer {} resulting in 200", userId, id);
+		log.info("{} : UPDATE interviewer {} resulting in 200", userId, id);
 		return new ResponseEntity<>(updatedInterviewer.get(), HttpStatus.OK);
 
 	}
@@ -175,22 +173,22 @@ public class InterviewerController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("{} : DELETE interviewer with id {} resulting in 403.", userId, id);
+			log.warn("{} : DELETE interviewer with id {} resulting in 403.", userId, id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 
 		if (id == null) {
-			LOGGER.warn("{} : no interviewerId provided : resulting in 400.", userId);
+			log.warn("{} : no interviewerId provided : resulting in 400.", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 		boolean wasPresent = interviewerService.delete(id);
 		if (!wasPresent) {
-			LOGGER.warn("{} : DELETE interviewer with id {} resulting in 404.", userId, id);
+			log.warn("{} : DELETE interviewer with id {} resulting in 404.", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
-		LOGGER.info("{} : DELETE interviewer with id {} resulting in 200", userId, id);
+		log.info("{} : DELETE interviewer with id {} resulting in 200", userId, id);
 		return ResponseEntity.ok().build();
 
 	}

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +20,12 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@Slf4j
 public class StateController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(StateController.class);
 
 	@Autowired
 	StateService stateService;
@@ -59,18 +57,18 @@ public class StateController {
 			StateCountDto stateCountDto;
 			try {
 				stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
-			} catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get interviewerStateCount resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get interviewerStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get interviewerStateCount resulting in 200");
+			log.info("Get interviewerStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
 		}
 
 	}
-  
-  	/**
+
+	/**
 	 * This method is used to count survey units not attributed by states
 	 * 
 	 * @param request
@@ -89,12 +87,12 @@ public class StateController {
 			StateCountDto stateCountDto;
 			try {
 				stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
-			} catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get state count for non attributted SUs resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get state count for non attributted SUs resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get state count for non attributted SUs resulting in 200");
+			log.info("Get state count for non attributted SUs resulting in 200");
 			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
 		}
 	}
@@ -120,12 +118,12 @@ public class StateController {
 			StateCountCampaignDto stateCountCampaignDto;
 			try {
 				stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
-			} catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get campaignStateCount resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get campaignStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get campaignStateCount resulting in 200");
+			log.info("Get campaignStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
 		}
 	}
@@ -148,10 +146,10 @@ public class StateController {
 		} else {
 			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByInterviewer(userId, date);
 			if (stateCountCampaignsDto == null) {
-				LOGGER.info("Get interviewersStateCount resulting in 404");
+				log.info("Get interviewersStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get interviewersStateCount resulting in 200");
+			log.info("Get interviewersStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
 		}
 	}
@@ -174,10 +172,10 @@ public class StateController {
 		} else {
 			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByCampaigns(userId, date);
 			if (stateCountCampaignsDto == null) {
-				LOGGER.info("Get campaignStateCount resulting in 404");
+				log.info("Get campaignStateCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get campaignStateCount resulting in 200");
+			log.info("Get campaignStateCount resulting in 200");
 			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
 		}
 	}

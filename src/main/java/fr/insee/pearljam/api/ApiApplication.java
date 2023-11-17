@@ -3,8 +3,6 @@ package fr.insee.pearljam.api;
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -22,63 +20,65 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.impl.DataSetInjectorServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication(scanBasePackages = "fr.insee.pearljam.api")
 @EnableJpaRepositories(basePackageClasses = SurveyUnitRepository.class)
-public class ApiApplication extends SpringBootServletInitializer{
-	private static final Logger LOG = LoggerFactory.getLogger(ApiApplication.class);
-	
+@Slf4j
+public class ApiApplication extends SpringBootServletInitializer {
+
 	@Autowired
-    private DataSetInjectorServiceImpl injector;
-	
+	private DataSetInjectorServiceImpl injector;
+
 	@Value("${spring.profiles.active}")
-    private String profile;
+	private String profile;
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(ApiApplication.class);
 		app.run(args);
 	}
-	
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		setProperties(); 
+		setProperties();
 		return application.sources(ApiApplication.class);
 	}
-	
+
 	public static void setProperties() {
 		System.setProperty("spring.config.location",
 				"classpath:/,"
-        + "file:///${catalina.base}/webapps/pearljambo.properties");
+						+ "file:///${catalina.base}/webapps/pearljambo.properties");
 
-    System.setProperty("spring.config.additional-location",
+		System.setProperty("spring.config.additional-location",
 				"classpath:/,"
-        + "file:///${catalina.base}/webapps/sabcolbo.properties");
+						+ "file:///${catalina.base}/webapps/sabcolbo.properties");
 
 	}
-	
-	@EventListener
-    public void handleContextRefresh(ContextRefreshedEvent event) {
 
-        final Environment env = event.getApplicationContext().getEnvironment();
-        LOG.info("================================ Properties =================================");
-        final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
-        StreamSupport.stream(sources.spliterator(), false)
-                .filter(EnumerablePropertySource.class::isInstance)
-                .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .distinct()
-                .filter(prop -> !(prop.contains("credentials") || prop.contains("password")))
-                .filter(prop -> prop.startsWith("fr.insee") || prop.startsWith("logging") || prop.startsWith("keycloak") || prop.startsWith("spring") || prop.startsWith("application"))
-                .sorted()
-                .forEach(prop -> LOG.info("{}: {}", prop, env.getProperty(prop)));
-        LOG.info("============================================================================");
-    }
-	
+	@EventListener
+	public void handleContextRefresh(ContextRefreshedEvent event) {
+
+		final Environment env = event.getApplicationContext().getEnvironment();
+		log.info("================================ Properties =================================");
+		final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
+		StreamSupport.stream(sources.spliterator(), false)
+				.filter(EnumerablePropertySource.class::isInstance)
+				.map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
+				.flatMap(Arrays::stream)
+				.distinct()
+				.filter(prop -> !(prop.contains("credentials") || prop.contains("password")))
+				.filter(prop -> prop.startsWith("fr.insee") || prop.startsWith("logging") || prop.startsWith("keycloak")
+						|| prop.startsWith("spring") || prop.startsWith("application"))
+				.sorted()
+				.forEach(prop -> log.info("{}: {}", prop, env.getProperty(prop)));
+		log.info("============================================================================");
+	}
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void doSomethingAfterStartup() {
-	    if(profile.contains("dev") && !profile.contains("test")) {
-	    	injector.createDataSet();
-	    }
+		if (profile.contains("dev") && !profile.contains("test")) {
+			injector.createDataSet();
+		}
 	}
 
 }

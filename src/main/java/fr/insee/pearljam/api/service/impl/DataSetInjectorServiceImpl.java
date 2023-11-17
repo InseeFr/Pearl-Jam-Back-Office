@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.service.DataSetInjectorService;
-
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class DataSetInjectorServiceImpl implements DataSetInjectorService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataSetInjectorServiceImpl.class);
 
 	@Autowired
 	private EntityManagerFactory emf;
@@ -33,32 +31,31 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 	public HttpStatus createDataSet() {
 		EntityManager em = emf.createEntityManager();
 
-		if(!campaignRepository.findAllIds().isEmpty()){
-			LOGGER.info("The database already contains a campaign, the dataset was not imported");
+		if (!campaignRepository.findAllIds().isEmpty()) {
+			log.info("The database already contains a campaign, the dataset was not imported");
 			return HttpStatus.NOT_MODIFIED;
 		}
-		LOGGER.info("Dataset creation start");
+		log.info("Dataset creation start");
 		try (
-			InputStream sqlFileInputStream = getClass().getClassLoader()
-	                .getResource("dataset//insert_test_data.sql").openStream()
-				){
-	        BufferedReader sqlFileBufferedReader = new BufferedReader( new InputStreamReader(sqlFileInputStream));
-	        executeStatements(sqlFileBufferedReader, em);
+				InputStream sqlFileInputStream = getClass().getClassLoader()
+						.getResource("dataset//insert_test_data.sql").openStream()) {
+			BufferedReader sqlFileBufferedReader = new BufferedReader(new InputStreamReader(sqlFileInputStream));
+			executeStatements(sqlFileBufferedReader, em);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return HttpStatus.NOT_MODIFIED;
 		}
-		LOGGER.info("Dataset creation end");	
+		log.info("Dataset creation end");
 		return HttpStatus.OK;
 
 	}
 
 	public HttpStatus deleteDataSet() {
 		try (InputStream sqlFileInputStream = getClass().getClassLoader()
-	                .getResource("dataset//delete_data.sql").openStream()){		
+				.getResource("dataset//delete_data.sql").openStream()) {
 			EntityManager em = emf.createEntityManager();
-	        BufferedReader sqlFileBufferedReader = new BufferedReader( new InputStreamReader(sqlFileInputStream));
-	        executeStatements(sqlFileBufferedReader, em);
+			BufferedReader sqlFileBufferedReader = new BufferedReader(new InputStreamReader(sqlFileInputStream));
+			executeStatements(sqlFileBufferedReader, em);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return HttpStatus.NOT_MODIFIED;
@@ -67,12 +64,11 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 
 	}
 
-
 	void executeStatements(BufferedReader br, EntityManager entityManager) throws IOException {
-	    String line;
-	    while( (line = br.readLine()) != null ){
-	    	entityManager.joinTransaction();
-	        entityManager.createNativeQuery(line).executeUpdate();
-	    }
+		String line;
+		while ((line = br.readLine()) != null) {
+			entityManager.joinTransaction();
+			entityManager.createNativeQuery(line).executeUpdate();
+		}
 	}
 }
