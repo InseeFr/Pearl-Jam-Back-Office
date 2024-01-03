@@ -6,7 +6,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,23 +37,23 @@ import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import fr.insee.pearljam.api.constants.Constants;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class CampaignController {
 
-	@Autowired
-	CampaignService campaignService;
+	private final CampaignService campaignService;
 
-	@Autowired
-	UtilsService utilsService;
+	private final UtilsService utilsService;
 
-	@Autowired
-	ReferentService referentService;
+	private final ReferentService referentService;
 
 	private static final String NO_USER_ID = "No userId : access denied.";
+	private static final String DEFAULT_FORCE_VALUE = "false";
 
 	/**
 	 * This method is used to post the campaign defined in request body
@@ -308,7 +307,7 @@ public class CampaignController {
 	@ApiOperation(value = "Delete a campaign")
 	@DeleteMapping(path = Constants.API_CAMPAIGN_ID)
 	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id,
-			@RequestParam(required = false) Boolean force) {
+			@RequestParam(required = false, defaultValue = DEFAULT_FORCE_VALUE) Boolean force) {
 		String callerId = utilsService.getUserId(request);
 		log.info("{} try to delete campaign {}", callerId, id);
 
