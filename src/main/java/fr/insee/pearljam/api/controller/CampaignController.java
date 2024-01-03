@@ -54,6 +54,8 @@ public class CampaignController {
 	@Autowired
 	ReferentService referentService;
 
+	private static final String NO_USER_ID = "No userId : access denied.";
+
 	/**
 	 * This method is used to post the campaign defined in request body
 	 * 
@@ -89,7 +91,7 @@ public class CampaignController {
 		String userId = utilsService.getUserId(request);
 		log.info("User {} : GET related campaigns", userId);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
@@ -111,7 +113,7 @@ public class CampaignController {
 		String userId = utilsService.getUserId(request);
 		log.info("User {} : GET all campaigns", userId);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
@@ -133,7 +135,7 @@ public class CampaignController {
 	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		log.info("Interviewer {} : GET related campaigns", userId);
@@ -158,7 +160,7 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		log.info("{} try to get campaign[{}] interviewers ", userId, id);
@@ -192,7 +194,7 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		log.info("{} try to get campaign[{}] visibilities ", userId, id);
@@ -224,7 +226,7 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			log.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		log.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
@@ -255,7 +257,7 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String callerId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(callerId)) {
-			log.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		log.info("{} try to get campaign[{}] not attributed survey-units ", callerId, id);
@@ -285,8 +287,8 @@ public class CampaignController {
 			@PathVariable(value = "idOu") String idOu) {
 		String callerId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(callerId)) {
-			log.info("Can't find caller Id");
-			return new ResponseEntity<>("Can't find caller Id", HttpStatus.FORBIDDEN);
+			log.info(NO_USER_ID);
+			return new ResponseEntity<>(NO_USER_ID, HttpStatus.FORBIDDEN);
 		}
 		log.info("{} try to change OU[{}] visibility on campaign[{}] ", callerId, idOu, idCampaign);
 		HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
@@ -306,7 +308,7 @@ public class CampaignController {
 	@ApiOperation(value = "Delete a campaign")
 	@DeleteMapping(path = Constants.API_CAMPAIGN_ID)
 	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id,
-			@RequestParam(required = false) boolean force) {
+			@RequestParam(required = false) Boolean force) {
 		String callerId = utilsService.getUserId(request);
 		log.info("{} try to delete campaign {}", callerId, id);
 
@@ -315,7 +317,7 @@ public class CampaignController {
 			log.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (!force && campaignService.isCampaignOngoing(id)) {
+		if (Boolean.FALSE.equals(force) && campaignService.isCampaignOngoing(id)) {
 			String errorMessage = String.format("Campaign %s is on-going and can't be deleted", id);
 			log.info(errorMessage);
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
