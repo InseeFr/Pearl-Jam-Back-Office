@@ -26,6 +26,8 @@
 		<maven.compiler.release>11</maven.compiler.release>
 		<testcontainers.version>1.15.2</testcontainers.version>
 		<keycloak.version>19.0.3</keycloak.version>
+		<sonar.organization>inseefr</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -266,7 +268,7 @@
 			<artifactId>commons-validator</artifactId>
 			<version>1.8.0</version>
 		</dependency>
-				<!-- Manage JSON OBJECT -->
+		<!-- Manage JSON OBJECT -->
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-52</artifactId>
