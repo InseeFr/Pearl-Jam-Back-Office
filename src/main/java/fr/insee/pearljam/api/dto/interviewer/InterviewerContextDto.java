@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.dto.interviewer;
 
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

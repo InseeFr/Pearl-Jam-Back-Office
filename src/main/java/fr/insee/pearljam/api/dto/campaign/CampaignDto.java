@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.api.dto.referent.ReferentDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CampaignDto {
@@ -32,6 +33,7 @@ public class CampaignDto {
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private Boolean communicationRequestConfiguration;
+	private List<ReferentDto> referents;
 
 	public CampaignDto() {
 		super();
@@ -333,6 +335,14 @@ public class CampaignDto {
 
 	public void setCommunicationRequestConfiguration(Boolean communicationRequestConfiguration) {
 		this.communicationRequestConfiguration = communicationRequestConfiguration;
+	}
+
+	public List<ReferentDto> getReferents() {
+		return referents;
+	}
+
+	public void setReferents(List<ReferentDto> referents) {
+		this.referents = referents;
 	}
 
 }
