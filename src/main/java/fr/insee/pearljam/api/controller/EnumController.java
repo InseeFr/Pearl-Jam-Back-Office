@@ -20,7 +20,7 @@ public class EnumController {
     public ResponseEntity<StateType[]> getStateEnum() {
 
         StateType[] enumValues = StateType.values();
-        return new ResponseEntity<StateType[]>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<>(enumValues, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get enum")
@@ -28,7 +28,7 @@ public class EnumController {
     public ResponseEntity<Status[]> getContactAttemptEnum() {
 
         Status[] enumValues = Status.values();
-        return new ResponseEntity<Status[]>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<>(enumValues, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get enum")
@@ -36,7 +36,7 @@ public class EnumController {
     public ResponseEntity<ContactOutcomeType[]> getContactOutcomeEnum() {
 
         ContactOutcomeType[] enumValues = ContactOutcomeType.values();
-        return new ResponseEntity<ContactOutcomeType[]>(enumValues, HttpStatus.OK);
+        return new ResponseEntity<>(enumValues, HttpStatus.OK);
     }
 
 }

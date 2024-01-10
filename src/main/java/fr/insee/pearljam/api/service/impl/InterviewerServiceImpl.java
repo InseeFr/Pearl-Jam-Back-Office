@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +21,12 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,33 +36,15 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Service
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class InterviewerServiceImpl implements InterviewerService {
 
-	@Autowired
-	ContactOutcomeRepository contactOutcomeRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	VisibilityRepository visibilityRepository;
-
-	@Autowired
-	UtilsService utilsService;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	SurveyUnitService surveyUnitService;
+	private final InterviewerRepository interviewerRepository;
+	private final VisibilityRepository visibilityRepository;
+	private final UserService userService;
+	private final SurveyUnitService surveyUnitService;
 
 	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);

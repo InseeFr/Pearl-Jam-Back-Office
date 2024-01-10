@@ -6,7 +6,6 @@ import java.util.function.BiFunction;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,24 +25,19 @@ import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping(path = "/api")
 @Slf4j
+@RequiredArgsConstructor
 public class MessageController {
 
-	@Autowired
-	MessageService messageService;
-
-	@Autowired
-	BiFunction<String, String, HttpStatus> sendMail;
-
-	@Autowired
-	UtilsService utilsService;
-
-	@Autowired
-	private SimpMessagingTemplate brokerMessagingTemplate;
+	private final MessageService messageService;
+	private final BiFunction<String, String, HttpStatus> sendMail;
+	private final UtilsService utilsService;
+	private final SimpMessagingTemplate brokerMessagingTemplate;
 
 	StompSessionHandler sessionHandler = new CustomStompSessionHandler();
 

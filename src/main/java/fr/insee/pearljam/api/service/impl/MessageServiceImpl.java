@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,35 +36,24 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-	@Autowired
-	MessageRepository messageRepository;
+	private final MessageRepository messageRepository;
+	private final MessageStatusRepository messageStatusRepository;
+	private final UserRepository userRepository;
+	private final UserService userService;
+	private final InterviewerRepository interviewerRepository;
+	private final CampaignRepository campaignRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final SimpMessagingTemplate brokerMessagingTemplate;
 
-	@Autowired
-	MessageStatusRepository messageStatusRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	private SimpMessagingTemplate brokerMessagingTemplate;
+	private static final String NOTIFICATIONS = "/notifications/";
 
 	public HttpStatus markAsRead(Long id, String idep) {
 		Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
@@ -80,7 +68,7 @@ public class MessageServiceImpl implements MessageService {
 				message.getMessageStatus().removeAll(statusList);
 			}
 			List<MessageStatus> newList = statusList.stream()
-					.filter(c -> c.getInterviewer().getId() != interv.get().getId())
+					.filter(c -> !c.getInterviewer().getId().equals(interv.get().getId()))
 					.collect(Collectors.toList());
 			newList.add(new MessageStatus(message, interv.get(), MessageStatusType.REA));
 			message.setMessageStatus(newList);
@@ -103,7 +91,7 @@ public class MessageServiceImpl implements MessageService {
 				message.getMessageStatus().removeAll(statusList);
 			}
 			List<MessageStatus> newList = statusList.stream()
-					.filter(c -> c.getInterviewer().getId() != interv.get().getId())
+					.filter(c -> !c.getInterviewer().getId().equals(interv.get().getId()))
 					.collect(Collectors.toList());
 			newList.add(new MessageStatus(message, interv.get(), MessageStatusType.DEL));
 			message.setMessageStatus(newList);
@@ -134,11 +122,11 @@ public class MessageServiceImpl implements MessageService {
 			if (recipient.equalsIgnoreCase("All") || recipient.equalsIgnoreCase("Tous")) {
 				for (String OUId : userOUIds) {
 					Optional<OrganizationUnit> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
-					if (ouRecipient.isPresent()) {
-						ouMessageRecipients.add(ouRecipient.get());
-					} else {
+					if (ouRecipient.isEmpty()) {
 						return HttpStatus.BAD_REQUEST;
+
 					}
+					ouMessageRecipients.add(ouRecipient.get());
 				}
 			} else {
 				Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
@@ -163,14 +151,14 @@ public class MessageServiceImpl implements MessageService {
 		message.setCampaignMessageRecipients(campaignMessageRecipients);
 
 		for (Interviewer recipient : uniqueInterviwerRecipients) {
-			log.info("push to '{}' ", "/notifications/".concat(recipient.getId().toUpperCase()));
-			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(recipient.getId().toUpperCase()),
+			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
+			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
 					"new message");
 		}
 
 		for (OrganizationUnit recipient : ouMessageRecipients) {
-			log.info("push to '{}' ", "/notifications/".concat(recipient.getId().toUpperCase()));
-			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(recipient.getId().toUpperCase()),
+			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
+			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
 					"new message");
 		}
 
@@ -248,7 +236,7 @@ public class MessageServiceImpl implements MessageService {
 		lstMessage.stream().forEach(msg -> {
 			messageRepository.deleteCampaignMessageRecipientByMessageId(msg.getId());
 			messageRepository.deleteOUMessageRecipientByMessageId(msg.getId());
-			msg.getMessageStatus().stream().forEach(ms -> messageStatusRepository.delete(ms));
+			msg.getMessageStatus().stream().forEach(messageStatusRepository::delete);
 		});
 		messageRepository.deleteAll(lstMessage);
 	}

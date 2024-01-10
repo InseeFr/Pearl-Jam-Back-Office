@@ -138,7 +138,7 @@ public class StateCountDto {
 
 	@Override
 	public String toString() {
-		return "StateCountDto [ansCount=" + anvCount + ", prcCount=" + prcCount + "]";
+		return "StateCountDto [anvCount=" + anvCount + ", prcCount=" + prcCount + "]";
 	}
 
 }

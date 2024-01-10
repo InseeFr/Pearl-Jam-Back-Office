@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +19,17 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
 @Slf4j
+@RequiredArgsConstructor
 public class StateController {
 
-	@Autowired
-	StateService stateService;
-
-	@Autowired
-	UtilsService utilsService;
+	private final StateService stateService;
+	private final UtilsService utilsService;
 
 	/**
 	 * This method is used to count survey units by states, interviewer and campaign
