@@ -1,16 +1,20 @@
 package fr.insee.pearljam.api.dto.state;
 
-import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.pearljam.api.constants.Constants;
+import static fr.insee.pearljam.api.constants.Constants.*;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
+@Setter
 public class StateCountDto {
 
 	private String idDem;
@@ -40,15 +44,8 @@ public class StateCountDto {
 
 	public StateCountDto(Map<String, BigInteger> obj) {
 		super();
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.STATE_COUNT_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		initializeFields(STATE_COUNT_FIELDS);
+		dispatchAttributeValues(obj);
 	}
 
 	public StateCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
@@ -62,320 +59,86 @@ public class StateCountDto {
 	}
 
 	public void addClosingCauseCount(Map<String, BigInteger> obj) {
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
+		initializeFields(STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS);
+		dispatchAttributeValues(obj);
+	}
+
+	private void initializeFields(List<String> fields) {
+		for (String fieldName : fields) {
+			setFieldValue(fieldName, 0L);
+		}
+	}
+
+	private void dispatchAttributeValues(Map<String, BigInteger> obj) {
+		if (obj != null) {
+			for (Map.Entry<String, BigInteger> entry : obj.entrySet()) {
+				String fieldName = entry.getKey();
+				Long value = entry.getValue().longValue();
+				setFieldValue(fieldName, value);
 			}
 		}
 	}
 
-	/**
-	 * @return the idDem
-	 */
-	public String getIdDem() {
-		return idDem;
-	}
-
-	/**
-	 * @param idDem the idDem to set
-	 */
-	public void setIdDem(String idDem) {
-		this.idDem = idDem;
-	}
-
-	/**
-	 * @return the nvmCount
-	 */
-	public Long getNvmCount() {
-		return nvmCount;
-	}
-
-	/**
-	 * @param nvmCount the nvmCount to set
-	 */
-	public void setNvmCount(Long nvmCount) {
-		this.nvmCount = nvmCount;
-	}
-
-	/**
-	 * @return the nnsCount
-	 */
-	public Long getNnsCount() {
-		return nnsCount;
-	}
-
-	/**
-	 * @param nnsCount the nnsCount to set
-	 */
-	public void setNnsCount(Long nnsCount) {
-		this.nnsCount = nnsCount;
-	}
-
-	/**
-	 * @return the anvCount
-	 */
-	public Long getAnvCount() {
-		return anvCount;
-	}
-
-	/**
-	 * @param anvCount the anvCount to set
-	 */
-	public void setAnvCount(Long anvCount) {
-		this.anvCount = anvCount;
-	}
-
-	/**
-	 * @return the vinCount
-	 */
-	public Long getVinCount() {
-		return vinCount;
-	}
-
-	/**
-	 * @param vinCount the vinCount to set
-	 */
-	public void setVinCount(Long vinCount) {
-		this.vinCount = vinCount;
-	}
-
-	/**
-	 * @return the vicCount
-	 */
-	public Long getVicCount() {
-		return vicCount;
-	}
-
-	/**
-	 * @param vicCount the vicCount to set
-	 */
-	public void setVicCount(Long vicCount) {
-		this.vicCount = vicCount;
-	}
-
-	/**
-	 * @return the prcCount
-	 */
-	public Long getPrcCount() {
-		return prcCount;
-	}
-
-	/**
-	 * @param prcCount the prcCount to set
-	 */
-	public void setPrcCount(Long prcCount) {
-		this.prcCount = prcCount;
-	}
-
-	/**
-	 * @return the aocCount
-	 */
-	public Long getAocCount() {
-		return aocCount;
-	}
-
-	/**
-	 * @param aocCount the aocCount to set
-	 */
-	public void setAocCount(Long aocCount) {
-		this.aocCount = aocCount;
-	}
-
-	/**
-	 * @return the apsCount
-	 */
-	public Long getApsCount() {
-		return apsCount;
-	}
-
-	/**
-	 * @param apsCount the apsCount to set
-	 */
-	public void setApsCount(Long apsCount) {
-		this.apsCount = apsCount;
-	}
-
-	/**
-	 * @return the insCount
-	 */
-	public Long getInsCount() {
-		return insCount;
-	}
-
-	/**
-	 * @param insCount the insCount to set
-	 */
-	public void setInsCount(Long insCount) {
-		this.insCount = insCount;
-	}
-
-	/**
-	 * @return the wftCount
-	 */
-	public Long getWftCount() {
-		return wftCount;
-	}
-
-	/**
-	 * @param wftCount the wftCount to set
-	 */
-	public void setWftCount(Long wftCount) {
-		this.wftCount = wftCount;
-	}
-
-	/**
-	 * @return the wfsCount
-	 */
-	public Long getWfsCount() {
-		return wfsCount;
-	}
-
-	/**
-	 * @param wfsCount the wfsCount to set
-	 */
-	public void setWfsCount(Long wfsCount) {
-		this.wfsCount = wfsCount;
-	}
-
-	/**
-	 * @return the tbrCount
-	 */
-	public Long getTbrCount() {
-		return tbrCount;
-	}
-
-	/**
-	 * @param tbrCount the tbrCount to set
-	 */
-	public void setTbrCount(Long tbrCount) {
-		this.tbrCount = tbrCount;
-	}
-
-	/**
-	 * @return the finCount
-	 */
-	public Long getFinCount() {
-		return finCount;
-	}
-
-	/**
-	 * @param finCount the finCount to set
-	 */
-	public void setFinCount(Long finCount) {
-		this.finCount = finCount;
-	}
-
-	/**
-	 * @return the cloCount
-	 */
-	public Long getCloCount() {
-		return cloCount;
-	}
-
-	/**
-	 * @param cloCount the cloCount to set
-	 */
-	public void setCloCount(Long cloCount) {
-		this.cloCount = cloCount;
-	}
-
-	/**
-	 * @return the nvaCount
-	 */
-	public Long getNvaCount() {
-		return nvaCount;
-	}
-
-	/**
-	 * @param nvaCount the nvaCount to set
-	 */
-	public void setNvaCount(Long nvaCount) {
-		this.nvaCount = nvaCount;
-	}
-
-	public Long getNpaCount() {
-		return npaCount;
-	}
-
-	public void setNpaCount(Long npaCount) {
-		this.npaCount = npaCount;
-	}
-
-	public Long getNpiCount() {
-		return npiCount;
-	}
-
-	public void setNpiCount(Long npiCount) {
-		this.npiCount = npiCount;
-	}
-
-	public Long getNpxCount() {
-		return npxCount;
-	}
-
-	public void setNpxCount(Long npxCount) {
-		this.npxCount = npxCount;
-	}
-
-	public Long getRowCount() {
-		return rowCount;
-	}
-
-	public void setRowCount(Long rowCount) {
-		this.rowCount = rowCount;
-	}
-
-	/**
-	 * @return the total
-	 */
-	public Long getTotal() {
-		return total;
-	}
-
-	/**
-	 * @param total the total to set
-	 */
-	public void setTotal(Long total) {
-		this.total = total;
+	private void setFieldValue(String fieldName, Long value) {
+		switch (fieldName) {
+			case NVM_COUNT:
+				nvmCount = value;
+				break;
+			case NNS_COUNT:
+				nnsCount = value;
+				break;
+			case ANV_COUNT:
+				anvCount = value;
+				break;
+			case VIN_COUNT:
+				vinCount = value;
+				break;
+			case VIC_COUNT:
+				vicCount = value;
+				break;
+			case PRC_COUNT:
+				prcCount = value;
+				break;
+			case AOC_COUNT:
+				aocCount = value;
+				break;
+			case APS_COUNT:
+				apsCount = value;
+				break;
+			case INS_COUNT:
+				insCount = value;
+				break;
+			case WFT_COUNT:
+				wftCount = value;
+				break;
+			case WFS_COUNT:
+				wfsCount = value;
+				break;
+			case TBR_COUNT:
+				tbrCount = value;
+				break;
+			case FIN_COUNT:
+				finCount = value;
+				break;
+			case CLO_COUNT:
+				cloCount = value;
+				break;
+			case NVA_COUNT:
+				nvaCount = value;
+				break;
+			case TOTAL_COUNT:
+				total = value;
+				break;
+			// Add more cases for other fields if needed
+			default:
+				// Handle unknown field name
+				break;
+		}
 	}
 
 	@Override
 	public String toString() {
 		return "StateCountDto [ansCount=" + anvCount + ", prcCount=" + prcCount + "]";
-	}
-
-	public String getLabelDem() {
-		return labelDem;
-	}
-
-	public void setLabelDem(String labelDem) {
-		this.labelDem = labelDem;
-	}
-
-	public CampaignDto getCampaign() {
-		return campaign;
-	}
-
-	public void setCampaign(CampaignDto campaign) {
-		this.campaign = campaign;
-	}
-
-	public InterviewerContextDto getInterviewer() {
-		return interviewer;
-	}
-
-	public void setInterviewer(InterviewerContextDto interviewer) {
-		this.interviewer = interviewer;
-	}
-
-	public void setLongField(String fieldName, Long value)
-			throws NoSuchFieldException, IllegalAccessException {
-		Field field = getClass().getDeclaredField(fieldName);
-		field.set(this, value);
 	}
 
 }

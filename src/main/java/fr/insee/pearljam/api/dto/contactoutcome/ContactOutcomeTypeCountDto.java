@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.dto.contactoutcome;
 
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Map;
 
@@ -8,8 +7,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
+@Setter
 public class ContactOutcomeTypeCountDto {
 
 	private String idDem;
@@ -47,29 +50,14 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		initializeFields();
+		dispatchAttributeValues(obj);
 
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
 		this.campaign = campaign;
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		dispatchAttributeValues(obj);
 
 	}
 
@@ -77,222 +65,68 @@ public class ContactOutcomeTypeCountDto {
 		this(obj);
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
+		dispatchAttributeValues(obj);
 	}
 
-	/**
-	 * @return the idDem
-	 */
-	public String getIdDem() {
-		return idDem;
+	private void initializeFields() {
+		for (String fieldName : Constants.CONTACT_OUTCOME_FIELDS) {
+			setFieldValue(fieldName, 0L);
+		}
 	}
 
-	/**
-	 * @param idDem the idDem to set
-	 */
-	public void setIdDem(String idDem) {
-		this.idDem = idDem;
+	private void dispatchAttributeValues(Map<String, BigInteger> obj) {
+		if (obj != null) {
+			for (Map.Entry<String, BigInteger> entry : obj.entrySet()) {
+				String fieldName = entry.getKey();
+				Long value = entry.getValue().longValue();
+				setFieldValue(fieldName, value);
+			}
+		}
 	}
 
-	/**
-	 * @return the labelDem
-	 */
-	public String getLabelDem() {
-		return labelDem;
-	}
-
-	/**
-	 * @param labelDem the labelDem to set
-	 */
-	public void setLabelDem(String labelDem) {
-		this.labelDem = labelDem;
-	}
-
-	/**
-	 * @return the campaign
-	 */
-	public CampaignDto getCampaign() {
-		return campaign;
-	}
-
-	/**
-	 * @param campaign the campaign to set
-	 */
-	public void setCampaign(CampaignDto campaign) {
-		this.campaign = campaign;
-	}
-
-	/**
-	 * @return the inaCount
-	 */
-	public Long getInaCount() {
-		return inaCount;
-	}
-
-	/**
-	 * @param inaCount the inaCount to set
-	 */
-	public void setInaCount(Long inaCount) {
-		this.inaCount = inaCount;
-	}
-
-	/**
-	 * @return the refCount
-	 */
-	public Long getRefCount() {
-		return refCount;
-	}
-
-	/**
-	 * @param refCount the refCount to set
-	 */
-	public void setRefCount(Long refCount) {
-		this.refCount = refCount;
-	}
-
-	/**
-	 * @return the impCount
-	 */
-	public Long getImpCount() {
-		return impCount;
-	}
-
-	/**
-	 * @param impCount the impCount to set
-	 */
-	public void setImpCount(Long impCount) {
-		this.impCount = impCount;
-	}
-
-	/**
-	 * @return the ucdCount
-	 */
-	public Long getUcdCount() {
-		return ucdCount;
-	}
-
-	/**
-	 * @param ucdCount the ucdCount to set
-	 */
-	public void setUcdCount(Long ucdCount) {
-		this.ucdCount = ucdCount;
-	}
-
-	/**
-	 * @return the utrCount
-	 */
-	public Long getUtrCount() {
-		return utrCount;
-	}
-
-	/**
-	 * @param utrCount the utrCount to set
-	 */
-	public void setUtrCount(Long utrCount) {
-		this.utrCount = utrCount;
-	}
-
-	/**
-	 * @return the alaCount
-	 */
-	public Long getAlaCount() {
-		return alaCount;
-	}
-
-	/**
-	 * @param alaCount the alaCount to set
-	 */
-	public void setAlaCount(Long alaCount) {
-		this.alaCount = alaCount;
-	}
-
-	/**
-	 * @return the dcdCount
-	 */
-	public Long getDcdCount() {
-		return dcdCount;
-	}
-
-	/**
-	 * @param dcdCount the dcdCount to set
-	 */
-	public void setDcdCount(Long dcdCount) {
-		this.dcdCount = dcdCount;
-	}
-
-	/**
-	 * @return the nuhCount
-	 */
-	public Long getNuhCount() {
-		return nuhCount;
-	}
-
-	/**
-	 * @param nuhCount the nuhCount to set
-	 */
-	public void setNuhCount(Long nuhCount) {
-		this.nuhCount = nuhCount;
-	}
-
-	/**
-	 * @return the dukCount
-	 */
-	public Long getDukCount() {
-		return dukCount;
-	}
-
-	/**
-	 * @param dukCount the dukCount to set
-	 */
-	public void setDukCount(Long dukCount) {
-		this.dukCount = dukCount;
-	}
-
-	/**
-	 * @return the duuCount
-	 */
-	public Long getDuuCount() {
-		return duuCount;
-	}
-
-	/**
-	 * @param nuhCount the duuCount to set
-	 */
-	public void setDuuCount(Long duuCount) {
-		this.duuCount = duuCount;
-	}
-
-	/**
-	 * @return the noaCount
-	 */
-	public Long getNoaCount() {
-		return noaCount;
-	}
-
-	/**
-	 * @param noaCount the noaCount to set
-	 */
-	public void setNoaCount(Long noaCount) {
-		this.noaCount = noaCount;
-	}
-
-	/**
-	 * @return the total
-	 */
-	public Long getTotal() {
-		return total;
-	}
-
-	/**
-	 * @param total the total to set
-	 */
-	public void setTotal(Long total) {
-		this.total = total;
-	}
-
-	public void setLongField(String fieldName, Long value)
-			throws NoSuchFieldException, IllegalAccessException {
-		Field field = getClass().getDeclaredField(fieldName);
-		field.set(this, value);
+	private void setFieldValue(String fieldName, Long value) {
+		switch (fieldName) {
+			case Constants.INA_COUNT:
+				inaCount = value;
+				break;
+			case Constants.REF_COUNT:
+				refCount = value;
+				break;
+			case Constants.IMP_COUNT:
+				impCount = value;
+				break;
+			case Constants.UCD_COUNT:
+				ucdCount = value;
+				break;
+			case Constants.UTR_COUNT:
+				utrCount = value;
+				break;
+			case Constants.ALA_COUNT:
+				alaCount = value;
+				break;
+			case Constants.DCD_COUNT:
+				dcdCount = value;
+				break;
+			case Constants.NUH_COUNT:
+				nuhCount = value;
+				break;
+			case Constants.DUK_COUNT:
+				dukCount = value;
+				break;
+			case Constants.DUU_COUNT:
+				duuCount = value;
+				break;
+			case Constants.NOA_COUNT:
+				noaCount = value;
+				break;
+			case Constants.TOTAL_COUNT:
+				total = value;
+				break;
+			// Add more cases for other fields if needed
+			default:
+				// Handle unknown field name
+				break;
+		}
 	}
 
 }
