@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -42,11 +41,11 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
-import fr.insee.pearljam.api.service.CommunicationRequestService;
 import fr.insee.pearljam.api.service.IdentificationService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -56,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private static final String GUEST = "GUEST";
@@ -63,65 +63,21 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
 	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
 
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-
-	@Autowired
-	SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
-
-	@Autowired
-	AddressRepository addressRepository;
-
-	@Autowired
-	SampleIdentifierRepository sampleIdentifierRepository;
-
-	@Autowired
-	CommentRepository commentRepository;
-
-	@Autowired
-	ContactAttemptRepository contactAttemptRepository;
-
-	@Autowired
-	ContactOutcomeRepository contactOutcomeRepository;
-
-	@Autowired
-	StateRepository stateRepository;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	VisibilityRepository visibilityRepository;
-
-	@Autowired
-	PersonRepository personRepository;
-
-	@Autowired
-	ClosingCauseRepository closingCauseRepository;
-
-	@Autowired
-	IdentificationRepository identificationRepository;
-
-	@Autowired
-	IdentificationService identificationService;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	UtilsService utilsService;
-
-	@Autowired
-	CommunicationRequestService communicationRequestService;
+	private final SurveyUnitRepository surveyUnitRepository;
+	private final SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
+	private final AddressRepository addressRepository;
+	private final ContactOutcomeRepository contactOutcomeRepository;
+	private final StateRepository stateRepository;
+	private final InterviewerRepository interviewerRepository;
+	private final CampaignRepository campaignRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final VisibilityRepository visibilityRepository;
+	private final PersonRepository personRepository;
+	private final ClosingCauseRepository closingCauseRepository;
+	private final IdentificationRepository identificationRepository;
+	private final IdentificationService identificationService;
+	private final UserService userService;
+	private final UtilsService utilsService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -310,7 +266,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (BussinessRules.shouldFallBackToTbrOrFin(dbStates)) {
+		if (Boolean.TRUE.equals(BussinessRules.shouldFallBackToTbrOrFin(dbStates))) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -529,10 +485,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
 
-		ContactOutcomeType outcome = sudto.getContactOutcome();
+		ContactOutcomeDto outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
-		switch (outcome) {
+		switch (outcome.getType()) {
 			case INA:
 			case NOA:
 				return !hasQuestionnaire;
