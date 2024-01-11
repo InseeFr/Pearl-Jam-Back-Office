@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,6 @@ import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +45,8 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository ouRepository;
-	private final MessageService messageService;
-	private final UserService userService;
-	private final PreferenceService preferenceService;
+	@Autowired
+	PreferenceService preferenceService;
 	private final ApplicationProperties applicationProperties;
 
 	public Optional<UserDto> getUser(String userId) {
@@ -105,18 +104,18 @@ public class UserServiceImpl implements UserService {
 		if (!userId.equals(Constants.GUEST)) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 			if (user.isPresent()) {
-				userService.getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
+				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
 			}
 		} else {
 			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
 			if (ouNat.isPresent()) {
-				userService.getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
+				getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
 			} else {
 				List<String> natOus = ouRepository.findNationalOUs();
 				if (!natOus.isEmpty()) {
 					Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.get(0));
 					if (ou.isPresent()) {
-						userService.getOrganizationUnits(organizationUnits, ou.get(), saveAllLevels);
+						getOrganizationUnits(organizationUnits, ou.get(), saveAllLevels);
 					}
 				}
 			}
@@ -164,7 +163,6 @@ public class UserServiceImpl implements UserService {
 		}
 		// delete preference
 		preferenceService.setPreferences(new ArrayList<>(), user.get().getId());
-		messageService.deleteMessageByUserId(user.get().getId());
 		userRepository.delete(user.get());
 		return HttpStatus.OK;
 	}

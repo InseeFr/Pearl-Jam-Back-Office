@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -35,7 +36,7 @@ public class UserController {
 	private final UtilsService utilsService;
 
 	private final UserService userService;
-
+	private final MessageService messageService;
 	private final OrganizationUnitService organizationUnitService;
 
 	/**
@@ -226,6 +227,7 @@ public class UserController {
 			log.warn(noFoundUser);
 			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
 		}
+		messageService.deleteMessageByUserId(id);
 
 		HttpStatus response = userService.delete(id);
 		log.info("{} : DELETE User {} resulting in {}", callerId, id, response.value());
