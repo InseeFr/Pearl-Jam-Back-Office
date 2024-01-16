@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
@@ -13,12 +12,13 @@ import fr.insee.pearljam.api.dto.communication.CommunicationRequestStatusDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CommunicationRequestRepository;
 import fr.insee.pearljam.api.service.CommunicationRequestService;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class CommunicationRequestServiceImpl implements CommunicationRequestService {
 
-    @Autowired
-    CommunicationRequestRepository communicationRequestRepository;
+    private final CommunicationRequestRepository communicationRequestRepository;
 
     @Override
     public CommunicationRequestDto updateCommunicationRequest(Long id, CommunicationRequestStatus newStatus)

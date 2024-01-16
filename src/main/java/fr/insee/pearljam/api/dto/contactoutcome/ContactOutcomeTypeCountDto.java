@@ -2,14 +2,22 @@ package fr.insee.pearljam.api.dto.contactoutcome;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.pearljam.api.constants.Constants;
+import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
+@Setter
+@Slf4j
 public class ContactOutcomeTypeCountDto {
 
 	private String idDem;
@@ -47,252 +55,39 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
 		this.campaign = campaign;
-		if (obj != null && !obj.isEmpty()) {
-			for (String str : Constants.CONTACT_OUTCOME_FIELDS) {
-				try {
-					setLongField(str, obj.get(str) != null ? obj.get(str).longValue() : 0L);
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
 	public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
 		this(obj);
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-	/**
-	 * @return the idDem
-	 */
-	public String getIdDem() {
-		return idDem;
+	private void dispatchAttributeValues(Map<String, BigInteger> obj, List<String> fieldKeys) {
+		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
+		for (String str : fieldKeys) {
+			if (nullOrEmpty) {
+				setLongField(str, 0L);
+			} else {
+				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(BigInteger.ZERO).longValue());
+			}
+		}
 	}
 
-	/**
-	 * @param idDem the idDem to set
-	 */
-	public void setIdDem(String idDem) {
-		this.idDem = idDem;
-	}
-
-	/**
-	 * @return the labelDem
-	 */
-	public String getLabelDem() {
-		return labelDem;
-	}
-
-	/**
-	 * @param labelDem the labelDem to set
-	 */
-	public void setLabelDem(String labelDem) {
-		this.labelDem = labelDem;
-	}
-
-	/**
-	 * @return the campaign
-	 */
-	public CampaignDto getCampaign() {
-		return campaign;
-	}
-
-	/**
-	 * @param campaign the campaign to set
-	 */
-	public void setCampaign(CampaignDto campaign) {
-		this.campaign = campaign;
-	}
-
-	/**
-	 * @return the inaCount
-	 */
-	public Long getInaCount() {
-		return inaCount;
-	}
-
-	/**
-	 * @param inaCount the inaCount to set
-	 */
-	public void setInaCount(Long inaCount) {
-		this.inaCount = inaCount;
-	}
-
-	/**
-	 * @return the refCount
-	 */
-	public Long getRefCount() {
-		return refCount;
-	}
-
-	/**
-	 * @param refCount the refCount to set
-	 */
-	public void setRefCount(Long refCount) {
-		this.refCount = refCount;
-	}
-
-	/**
-	 * @return the impCount
-	 */
-	public Long getImpCount() {
-		return impCount;
-	}
-
-	/**
-	 * @param impCount the impCount to set
-	 */
-	public void setImpCount(Long impCount) {
-		this.impCount = impCount;
-	}
-
-	/**
-	 * @return the ucdCount
-	 */
-	public Long getUcdCount() {
-		return ucdCount;
-	}
-
-	/**
-	 * @param ucdCount the ucdCount to set
-	 */
-	public void setUcdCount(Long ucdCount) {
-		this.ucdCount = ucdCount;
-	}
-
-	/**
-	 * @return the utrCount
-	 */
-	public Long getUtrCount() {
-		return utrCount;
-	}
-
-	/**
-	 * @param utrCount the utrCount to set
-	 */
-	public void setUtrCount(Long utrCount) {
-		this.utrCount = utrCount;
-	}
-
-	/**
-	 * @return the alaCount
-	 */
-	public Long getAlaCount() {
-		return alaCount;
-	}
-
-	/**
-	 * @param alaCount the alaCount to set
-	 */
-	public void setAlaCount(Long alaCount) {
-		this.alaCount = alaCount;
-	}
-
-	/**
-	 * @return the dcdCount
-	 */
-	public Long getDcdCount() {
-		return dcdCount;
-	}
-
-	/**
-	 * @param dcdCount the dcdCount to set
-	 */
-	public void setDcdCount(Long dcdCount) {
-		this.dcdCount = dcdCount;
-	}
-
-	/**
-	 * @return the nuhCount
-	 */
-	public Long getNuhCount() {
-		return nuhCount;
-	}
-
-	/**
-	 * @param nuhCount the nuhCount to set
-	 */
-	public void setNuhCount(Long nuhCount) {
-		this.nuhCount = nuhCount;
-	}
-
-	/**
-	 * @return the dukCount
-	 */
-	public Long getDukCount() {
-		return dukCount;
-	}
-
-	/**
-	 * @param dukCount the dukCount to set
-	 */
-	public void setDukCount(Long dukCount) {
-		this.dukCount = dukCount;
-	}
-
-	/**
-	 * @return the duuCount
-	 */
-	public Long getDuuCount() {
-		return duuCount;
-	}
-
-	/**
-	 * @param nuhCount the duuCount to set
-	 */
-	public void setDuuCount(Long duuCount) {
-		this.duuCount = duuCount;
-	}
-
-	/**
-	 * @return the noaCount
-	 */
-	public Long getNoaCount() {
-		return noaCount;
-	}
-
-	/**
-	 * @param noaCount the noaCount to set
-	 */
-	public void setNoaCount(Long noaCount) {
-		this.noaCount = noaCount;
-	}
-
-	/**
-	 * @return the total
-	 */
-	public Long getTotal() {
-		return total;
-	}
-
-	/**
-	 * @param total the total to set
-	 */
-	public void setTotal(Long total) {
-		this.total = total;
-	}
-
-	public void setLongField(String fieldName, Long value)
-			throws NoSuchFieldException, IllegalAccessException {
-		Field field = getClass().getDeclaredField(fieldName);
-		field.set(this, value);
+	private void setLongField(String fieldName, Long value) {
+		try {
+			Field field = getClass().getDeclaredField(fieldName);
+			field.set(this, value);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			log.warn("Couldn't set field {} with value {}", fieldName, value);
+		}
 	}
 
 }

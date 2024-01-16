@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,21 +24,20 @@ import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@RequiredArgsConstructor
 @Slf4j
 public class OrganizationUnitController {
 
-	@Autowired
-	OrganizationUnitService organizationUnitService;
+	private final OrganizationUnitService organizationUnitService;
 
-	@Autowired
-	UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	UtilsService utilsService;
+	private final UtilsService utilsService;
 
 	/**
 	 * This method is used to post the list of Organizational Units defined in
@@ -82,7 +80,6 @@ public class OrganizationUnitController {
 			response = organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
 		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
 			log.error(e.getMessage());
-			e.printStackTrace();
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 		log.info("{} POST /organization-unit resulting in {} with response [{}]", callerId, response.getHttpStatus(),

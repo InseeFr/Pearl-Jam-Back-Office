@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +37,7 @@ import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,16 +49,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @RequestMapping(path = "/api")
+@RequiredArgsConstructor
 @Slf4j
 public class SurveyUnitController {
 
 	private static final String GUEST = "GUEST";
 
-	@Autowired
-	SurveyUnitService surveyUnitService;
+	private final SurveyUnitService surveyUnitService;
 
-	@Autowired
-	UtilsService utilsService;
+	private final UtilsService utilsService;
 
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
 	String interviewerRole;
@@ -71,6 +70,8 @@ public class SurveyUnitController {
 
 	@Value("${fr.insee.pearljam.admin.role:#{null}}")
 	String adminRole;
+
+	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
 
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
@@ -160,14 +161,15 @@ public class SurveyUnitController {
 			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
 		} catch (NotFoundException | SurveyUnitException e) {
 			log.error(e.getMessage());
-			log.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
+			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
+			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.INTERNAL_SERVER_ERROR);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		log.info("{} : GET SurveyUnit with id {} resulting in 200", userId, id);
+		log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.OK);
 
 		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 

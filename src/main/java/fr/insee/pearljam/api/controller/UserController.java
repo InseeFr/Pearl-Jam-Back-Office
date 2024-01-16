@@ -1,9 +1,10 @@
 package fr.insee.pearljam.api.controller;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,25 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
 
-	@Autowired
-	UtilsService utilsService;
+	private final UtilsService utilsService;
 
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	OrganizationUnitService organizationUnitService;
+	private final UserService userService;
+	private final MessageService messageService;
+	private final OrganizationUnitService organizationUnitService;
 
 	/**
 	 * This method returns the current USER
@@ -53,16 +54,15 @@ public class UserController {
 			log.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			UserDto user;
-			try {
-				user = userService.getUser(userId);
-			} catch (NotFoundException e) {
+			Optional<UserDto> user = userService.getUser(userId);
+			if (user.isEmpty()) {
 				log.info("GET User resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			log.info("GET User resulting in 200");
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>(user.get(), HttpStatus.OK);
 		}
+
 	}
 
 	/**
@@ -81,15 +81,13 @@ public class UserController {
 			log.info("GET User {} resulting in 403", id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			UserDto user;
-			try {
-				user = userService.getUser(id);
-			} catch (NotFoundException e) {
-				log.info("GET User {} resulting in 404", id);
+			Optional<UserDto> user = userService.getUser(userId);
+			if (user.isEmpty()) {
+				log.info("GET User resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			log.info("GET User resulting in 200");
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>(user.get(), HttpStatus.OK);
 		}
 	}
 
@@ -157,10 +155,17 @@ public class UserController {
 			String differentUser = String.format("User %s can't be updated : provided Id [%s] is different", id,
 					user.getId());
 			log.warn(differentUser);
-			return new ResponseEntity<Object>(differentUser, HttpStatus.CONFLICT);
+			return new ResponseEntity<>(differentUser, HttpStatus.CONFLICT);
 		}
 
-		UserDto updatedUser = userService.updateUser(user);
+		UserDto updatedUser;
+		try {
+			updatedUser = userService.updateUser(user);
+		} catch (NotFoundException e) {
+			String noFoundUser = String.format("User %s can't be updated : not found", id);
+			log.warn(noFoundUser);
+			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
+		}
 		log.info("{} updated user {} - {} ", callerId, id, HttpStatus.OK.value());
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
@@ -176,33 +181,34 @@ public class UserController {
 			@PathVariable(value = "userId") String userId, @PathVariable(value = "ouId") String ouId) {
 		String callerId = utilsService.getUserId(request);
 		log.info("{} try to assign user {} to OU {}", callerId, userId, ouId);
-		if (!userService.userIsPresent(userId)) {
-			String notFoundUser = String.format("User %s can't be assigned : user not found - {}", userId,
+		Optional<UserDto> optUser = userService.getUser(userId);
+		if (optUser.isEmpty()) {
+			String notFoundUser = String.format("User %s can't be assigned : user not found - %s", userId,
 					HttpStatus.NOT_FOUND.value());
 			log.warn(notFoundUser);
 			return new ResponseEntity<>(notFoundUser, HttpStatus.NOT_FOUND);
 		}
 
 		if (!organizationUnitService.isPresent(ouId)) {
-			String notFoundOu = String.format("Organization Unit %s can't be targeted : not found - {}", ouId,
+			String notFoundOu = String.format("Organization Unit %s can't be targeted : not found - %s", ouId,
 					HttpStatus.NOT_FOUND.value());
 			log.warn(notFoundOu);
 			return new ResponseEntity<>(notFoundOu, HttpStatus.NOT_FOUND);
 		}
 
-		UserDto user = null;
-		try {
-			user = userService.getUser(userId);
-		} catch (NotFoundException e) {
-			log.warn("Error when searching user {}", userId, e);
-		}
+		UserDto user = optUser.get();
 		OrganizationUnitDto ou = organizationUnitService.findById(ouId).get();
 		user.setOrganizationUnit(ou);
-		userService.updateUser(user);
+		try {
+			user = userService.updateUser(user);
+		} catch (NotFoundException e) {
+			String error = String.format("Error when searching user %s", userId);
+			log.warn(error, e);
+			return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		}
 
-		UserDto updatedUser = userService.updateUser(user);
 		log.info("{} affected user {} to ou {} - {} ", callerId, userId, ouId, HttpStatus.OK.value());
-		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	/**
@@ -221,6 +227,7 @@ public class UserController {
 			log.warn(noFoundUser);
 			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
 		}
+		messageService.deleteMessageByUserId(id);
 
 		HttpStatus response = userService.delete(id);
 		log.info("{} : DELETE User {} resulting in {}", callerId, id, response.value());

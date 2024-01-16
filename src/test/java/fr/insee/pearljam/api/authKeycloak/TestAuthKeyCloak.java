@@ -112,6 +112,7 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
+import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
@@ -163,6 +164,9 @@ class TestAuthKeyCloak {
 
 	@Autowired
 	ReferentService referentservice;
+
+	@Autowired
+	MessageService messageService;
 
 	@Container
 	public static KeycloakContainer keycloak = new KeycloakContainer().withRealmImportFile("realm.json");
@@ -423,13 +427,8 @@ class TestAuthKeyCloak {
 	 */
 	@Test
 	@Order(2)
-	void testGetUserNotFound() throws InterruptedException, NotFoundException {
-		try {
-			assertEquals(null, userService.getUser("test"));
-			Assert.fail("Should have triggered NotFoundException");
-		} catch (Exception e) {
-			assertTrue(e instanceof NotFoundException);
-		}
+	void testGetUserNotFound() {
+		assertEquals(Optional.empty(), userService.getUser("test"));
 	}
 
 	/* CampaignController */
@@ -2712,7 +2711,10 @@ class TestAuthKeyCloak {
 				.stream().forEach(su -> surveyUnitRepository.delete(su));
 		// delete all Users before delete OU
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")
-				.stream().forEach(u -> userService.delete(u.getId()));
+				.stream().forEach(u -> {
+					messageService.deleteMessageByUserId(u.getId());
+					userService.delete(u.getId());
+				});
 
 		given().auth().oauth2(accessToken)
 				.when().delete("api/organization-unit/OU-NORTH")

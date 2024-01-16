@@ -15,24 +15,23 @@ import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PreferenceServiceImpl implements PreferenceService {
 
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
+	private final UserRepository userRepository;
+	private final CampaignRepository campaignRepository;
 
 	@Autowired
 	UserService userService;
 
 	public HttpStatus setPreferences(List<String> listPreference, String userId) {
 		if (listPreference == null) {
-			log.error("list of campaign to update is empty ");
+			log.error("list of preferences to update is null ");
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);

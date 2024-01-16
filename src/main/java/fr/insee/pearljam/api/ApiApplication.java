@@ -3,7 +3,6 @@ package fr.insee.pearljam.api;
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,15 +19,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.impl.DataSetInjectorServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication(scanBasePackages = "fr.insee.pearljam.api")
 @EnableJpaRepositories(basePackageClasses = SurveyUnitRepository.class)
+@RequiredArgsConstructor
 @Slf4j
 public class ApiApplication extends SpringBootServletInitializer {
 
-	@Autowired
-	private DataSetInjectorServiceImpl injector;
+	private final DataSetInjectorServiceImpl injector;
 
 	@Value("${spring.profiles.active}")
 	private String profile;

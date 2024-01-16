@@ -8,25 +8,24 @@ import java.io.InputStreamReader;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.service.DataSetInjectorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 
-	@Autowired
-	private EntityManagerFactory emf;
+	private final EntityManagerFactory emf;
 
-	@Autowired
-	private CampaignRepository campaignRepository;
+	private final CampaignRepository campaignRepository;
 
 	public HttpStatus createDataSet() {
 		EntityManager em = emf.createEntityManager();
