@@ -427,13 +427,8 @@ class TestAuthKeyCloak {
 	 */
 	@Test
 	@Order(2)
-	void testGetUserNotFound() throws InterruptedException, NotFoundException {
-		try {
-			assertEquals(Optional.empty(), userService.getUser("test"));
-			Assert.fail("Should have triggered NotFoundException");
-		} catch (Exception e) {
-			assertTrue(e instanceof NotFoundException);
-		}
+	void testGetUserNotFound() {
+		assertEquals(Optional.empty(), userService.getUser("test"));
 	}
 
 	/* CampaignController */
