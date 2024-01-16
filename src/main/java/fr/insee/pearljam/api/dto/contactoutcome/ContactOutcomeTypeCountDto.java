@@ -1,18 +1,23 @@
 package fr.insee.pearljam.api.dto.contactoutcome;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.pearljam.api.constants.Constants;
+import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
+@Slf4j
 public class ContactOutcomeTypeCountDto {
 
 	private String idDem;
@@ -50,82 +55,38 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
-		initializeFields();
-		dispatchAttributeValues(obj);
-
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
 	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
 		this.campaign = campaign;
-		dispatchAttributeValues(obj);
-
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
 	public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
 		this(obj);
 		this.idDem = idDem;
 		this.setLabelDem(labelDem);
-		dispatchAttributeValues(obj);
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-	private void initializeFields() {
-		for (String fieldName : Constants.CONTACT_OUTCOME_FIELDS) {
-			setFieldValue(fieldName, 0L);
-		}
-	}
-
-	private void dispatchAttributeValues(Map<String, BigInteger> obj) {
-		if (obj != null) {
-			for (Map.Entry<String, BigInteger> entry : obj.entrySet()) {
-				String fieldName = entry.getKey();
-				Long value = entry.getValue().longValue();
-				setFieldValue(fieldName, value);
+	private void dispatchAttributeValues(Map<String, BigInteger> obj, List<String> fieldKeys) {
+		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
+		for (String str : fieldKeys) {
+			if (nullOrEmpty) {
+				setLongField(str, 0L);
+			} else {
+				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(BigInteger.ZERO).longValue());
 			}
 		}
 	}
 
-	private void setFieldValue(String fieldName, Long value) {
-		switch (fieldName) {
-			case Constants.INA_COUNT:
-				inaCount = value;
-				break;
-			case Constants.REF_COUNT:
-				refCount = value;
-				break;
-			case Constants.IMP_COUNT:
-				impCount = value;
-				break;
-			case Constants.UCD_COUNT:
-				ucdCount = value;
-				break;
-			case Constants.UTR_COUNT:
-				utrCount = value;
-				break;
-			case Constants.ALA_COUNT:
-				alaCount = value;
-				break;
-			case Constants.DCD_COUNT:
-				dcdCount = value;
-				break;
-			case Constants.NUH_COUNT:
-				nuhCount = value;
-				break;
-			case Constants.DUK_COUNT:
-				dukCount = value;
-				break;
-			case Constants.DUU_COUNT:
-				duuCount = value;
-				break;
-			case Constants.NOA_COUNT:
-				noaCount = value;
-				break;
-			case Constants.TOTAL_COUNT:
-				total = value;
-				break;
-			// Add more cases for other fields if needed
-			default:
-				// Handle unknown field name
-				break;
+	private void setLongField(String fieldName, Long value) {
+		try {
+			Field field = getClass().getDeclaredField(fieldName);
+			field.set(this, value);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			log.warn("Couldn't set field {} with value {}", fieldName, value);
 		}
 	}
 

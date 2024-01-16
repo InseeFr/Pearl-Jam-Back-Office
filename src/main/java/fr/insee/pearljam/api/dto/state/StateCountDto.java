@@ -83,7 +83,7 @@ public class StateCountDto {
 			Field field = getClass().getDeclaredField(fieldName);
 			field.set(this, value);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			log.warn("Couldn't set field {} with value", fieldName, value);
+			log.warn("Couldn't set field {} with value {}", fieldName, value);
 		}
 	}
 
