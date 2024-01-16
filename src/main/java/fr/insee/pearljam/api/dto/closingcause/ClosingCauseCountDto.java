@@ -39,7 +39,7 @@ public class ClosingCauseCountDto {
 		}
 	}
 
-	public void setLongField(String fieldName, Long value) {
+	private void setLongField(String fieldName, Long value) {
 		try {
 			Field field = getClass().getDeclaredField(fieldName);
 			field.set(this, value);
