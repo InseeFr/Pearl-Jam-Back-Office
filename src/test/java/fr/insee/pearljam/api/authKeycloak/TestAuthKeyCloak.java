@@ -429,7 +429,7 @@ class TestAuthKeyCloak {
 	@Order(2)
 	void testGetUserNotFound() throws InterruptedException, NotFoundException {
 		try {
-			assertEquals(null, userService.getUser("test"));
+			assertEquals(Optional.empty(), userService.getUser("test"));
 			Assert.fail("Should have triggered NotFoundException");
 		} catch (Exception e) {
 			assertTrue(e instanceof NotFoundException);
@@ -2717,8 +2717,8 @@ class TestAuthKeyCloak {
 		// delete all Users before delete OU
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")
 				.stream().forEach(u -> {
-					userService.delete(u.getId());
 					messageService.deleteMessageByUserId(u.getId());
+					userService.delete(u.getId());
 				});
 
 		given().auth().oauth2(accessToken)
