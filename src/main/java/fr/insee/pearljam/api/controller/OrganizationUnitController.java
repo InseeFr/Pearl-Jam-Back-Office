@@ -3,8 +3,7 @@ package fr.insee.pearljam.api.controller;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,28 +15,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.domain.Response;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Tag(name = "05. Organization-units", description = "Endpoints for organization-units")
 @RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @Slf4j
 public class OrganizationUnitController {
 
 	private final OrganizationUnitService organizationUnitService;
-
 	private final UserService userService;
-
-	private final UtilsService utilsService;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
 	 * This method is used to post the list of Organizational Units defined in
@@ -47,18 +46,17 @@ public class OrganizationUnitController {
 	 * @param idCampaign
 	 * @param idOu
 	 */
-	@ApiOperation(value = "Create Context with Organizational Unit and users associated")
+	@Operation(summary = "Create Context with Organizational Unit and users associated")
 	@PostMapping(path = "/organization-units")
-	public ResponseEntity<Object> postContext(HttpServletRequest request,
-			@RequestBody List<OrganizationUnitContextDto> organizationUnits) {
-
+	public ResponseEntity<Object> postContext(@RequestBody List<OrganizationUnitContextDto> organizationUnits) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		Response response;
 		try {
 			response = organizationUnitService.createOrganizationUnits(organizationUnits);
 		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		log.info("POST /organization-units resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("{} : POST /organization-units resulting in {} with response [{}]", userId, response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -69,12 +67,11 @@ public class OrganizationUnitController {
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Create Organizational Unit and users associated")
+	@Operation(summary = "Create Organizational Unit and users associated")
 	@PostMapping(path = "/organization-unit")
-	public ResponseEntity<Object> postOrganizationUnit(HttpServletRequest request,
-			@RequestBody OrganizationUnitContextDto organizationUnit) {
-		String callerId = utilsService.getUserId(request);
-		log.info("{} try to create a new OU", callerId);
+	public ResponseEntity<Object> postOrganizationUnit(@RequestBody OrganizationUnitContextDto organizationUnit) {
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to create a new OU", userId);
 		Response response;
 		try {
 			response = organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
@@ -82,7 +79,7 @@ public class OrganizationUnitController {
 			log.error(e.getMessage());
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		log.info("{} POST /organization-unit resulting in {} with response [{}]", callerId, response.getHttpStatus(),
+		log.info("{} POST /organization-unit resulting in {} with response [{}]", userId, response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -94,11 +91,10 @@ public class OrganizationUnitController {
 	 * @param idCampaign
 	 * @param idOu
 	 */
-	@ApiOperation(value = "Create users by organization-unit")
+	@Operation(summary = "Create users by organization-unit")
 	@PostMapping(path = "/organization-unit/{id}/users")
-	public ResponseEntity<Object> postUsersByOrganizationUnit(HttpServletRequest request,
-			@PathVariable(value = "id") String id, @RequestBody List<UserContextDto> users) {
-
+	public ResponseEntity<Object> postUsersByOrganizationUnit(@PathVariable(value = "id") String id, 
+															  @RequestBody List<UserContextDto> users) {
 		Response response;
 		try {
 			response = userService.createUsersByOrganizationUnit(users, id);
@@ -117,11 +113,11 @@ public class OrganizationUnitController {
 	 * @param idCampaign
 	 * @param idOu
 	 */
-	@ApiOperation(value = "Get all organization-units")
+	@Operation(summary = "Get all organization-units")
 	@GetMapping(path = "/organization-units")
-	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits(HttpServletRequest request) {
-		String callerId = utilsService.getUserId(request);
-		log.info("{} try to get all OUs", callerId);
+	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits() {
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to get all OUs", userId);
 		return new ResponseEntity<>(organizationUnitService.findAllOrganizationUnits(), HttpStatus.OK);
 	}
 
@@ -132,13 +128,12 @@ public class OrganizationUnitController {
 	 * @param idCampaign
 	 * @param idOu
 	 */
-	@ApiOperation(value = "Delete an organization-unit")
+	@Operation(summary = "Delete an organization-unit")
 	@DeleteMapping(path = "/organization-unit/{id}")
-	public ResponseEntity<Object> deleteOrganizationUnit(HttpServletRequest request,
-			@PathVariable(value = "id") String id) {
+	public ResponseEntity<Object> deleteOrganizationUnit(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus response = organizationUnitService.delete(id);
-		log.info("DELETE User resulting in {}", response);
+		log.info("{} : DELETE User resulting in {}", userId, response);
 		return new ResponseEntity<>(response);
 	}
-
 }

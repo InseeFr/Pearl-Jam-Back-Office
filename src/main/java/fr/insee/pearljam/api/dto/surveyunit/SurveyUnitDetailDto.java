@@ -66,7 +66,7 @@ public class SurveyUnitDetailDto {
 		if (surveyUnit.getIdentification() != null) {
 			this.identification = new IdentificationDto(surveyUnit.getIdentification());
 		}
-		this.move = surveyUnit.isMove();
+		this.move = surveyUnit.getMove();
 		this.communicationRequests = surveyUnit.getCommunicationRequests().stream().map(CommunicationRequestDto::new)
 				.collect(Collectors.toList());
 	}

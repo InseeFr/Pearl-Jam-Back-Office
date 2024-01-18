@@ -5,16 +5,18 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 
 /**
@@ -25,6 +27,9 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
  */
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class Interviewer implements Serializable {
 
 	/**
@@ -68,15 +73,10 @@ public class Interviewer implements Serializable {
 
 	@Column(length = 25)
 	@Enumerated(EnumType.STRING)
-	private TitleEnum title = TitleEnum.MISTER;
-
-	public Interviewer() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	private Title title = Title.MISTER;
 
 	public Interviewer(String id, String firstName, String lastName, String email, String phoneNumber,
-			Set<SurveyUnit> surveyUnits, TitleEnum title) {
+			Set<SurveyUnit> surveyUnits, Title title) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -84,7 +84,7 @@ public class Interviewer implements Serializable {
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.surveyUnits = surveyUnits;
-		this.title = Optional.ofNullable(title).orElse(TitleEnum.MISTER);
+		this.title = Optional.ofNullable(title).orElse(Title.MISTER);
 	}
 
 	public Interviewer(InterviewerContextDto interviewerDto) {
@@ -94,89 +94,7 @@ public class Interviewer implements Serializable {
 		this.lastName = interviewerDto.getLastName();
 		this.email = interviewerDto.getEmail();
 		this.phoneNumber = interviewerDto.getPhoneNumber();
-		this.title = Optional.ofNullable(interviewerDto.getTitle()).orElse(TitleEnum.MISTER);
-	}
-
-	/**
-	 * @return the id of the Interviewer
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id of the Interviewer
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the first name of the Interviewer
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * @param id of the Interviewer
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * @return the last name of the Interviewer
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @param the last name of the Interviewer
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * @return the email of the Interviewer
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @param the email of the Interviewer
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * @return the phone number of the Interviewer
-	 */
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	/**
-	 * @param the phone number of the Interviewer
-	 */
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public Set<SurveyUnit> getSurveyUnits() {
-		return surveyUnits;
-	}
-
-	public TitleEnum getTitle() {
-		return title;
-	}
-
-	public void setTitle(TitleEnum title) {
-		this.title = title;
+		this.title = Optional.ofNullable(interviewerDto.getTitle()).orElse(Title.MISTER);
 	}
 
 }

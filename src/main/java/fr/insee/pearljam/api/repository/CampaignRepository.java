@@ -48,12 +48,12 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "FROM Campaign camp "
 			+ "WHERE camp.id=?1")
 	CampaignDto findDtoById(String id);
-	
+
 	@Query("SELECT "
-	+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationConfiguration) "
-	+ "FROM SurveyUnit su "
-	+ "JOIN su.campaign camp "
-	+ "WHERE su.id=?1")
+			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationConfiguration) "
+			+ "FROM SurveyUnit su "
+			+ "JOIN su.campaign camp "
+			+ "WHERE su.id=?1")
 	CampaignDto findDtoBySurveyUnitId(String id);
 
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.communicationConfiguration) "
@@ -85,10 +85,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "vi.organizationUnit.id in (:ouIds) "
 			+ "OR 'GUEST' in (:ouIds) "
 			+ "AND vi.managementStartDate<=:date "
-				+ "AND vi.managementStartDate<=:date " 
+			+ "AND vi.managementStartDate<=:date "
 			+ "AND vi.managementStartDate<=:date "
 			+ "AND vi.collectionStartDate<=:date "
-				+ "AND vi.collectionStartDate<=:date " 
+			+ "AND vi.collectionStartDate<=:date "
 			+ "AND vi.collectionStartDate<=:date "
 			+ "AND vi.collectionEndDate>:date"
 			+ ") "

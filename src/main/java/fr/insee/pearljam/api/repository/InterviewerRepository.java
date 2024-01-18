@@ -30,6 +30,11 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 			+ "WHERE su.organization_unit_id IN (:ouIds) ", nativeQuery = true)
 	Set<String> findIdsByOrganizationUnits(@Param("ouIds") List<String> ouIds);
 
+	@Query("""
+			SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto(interv.id, interv.firstName, interv.lastName,
+			interv.email, interv.phoneNumber, interv.title)
+			FROM Interviewer interv
+			WHERE interv.id=?1 """)
 	InterviewerContextDto findDtoById(String id);
 
 	@Query("SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName) "

@@ -4,23 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import fr.insee.pearljam.api.configuration.ApplicationProperties;
+import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
+import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
@@ -30,75 +26,21 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UtilsServiceImpl implements UtilsService {
 
-	@Autowired
-	ApplicationProperties applicationProperties;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	Environment environment;
-
-	@Value("${fr.insee.pearljam.datacollection.service.url.scheme:#{null}}")
-	private String dataCollectionScheme;
-
-	@Value("${fr.insee.pearljam.datacollection.service.url.host:#{null}}")
-	private String dataCollectionHost;
-
-	@Value("${fr.insee.pearljam.datacollection.service.url.port:#{null}}")
-	private String dataCollectionPort;
-
-	public String getUserId(HttpServletRequest request) {
-		String userId = null;
-		switch (applicationProperties.getMode()) {
-			case basic:
-				Object basic = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				if (basic instanceof UserDetails) {
-					userId = ((UserDetails) basic).getUsername();
-				} else {
-					userId = basic.toString();
-				}
-				break;
-			case keycloak:
-				KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
-				userId = keycloak.getPrincipal().toString();
-				break;
-			default:
-				userId = Constants.GUEST;
-				break;
-		}
-		return userId;
-	}
-
-	public boolean existUser(String userId, String service) {
-		if (service.equals(Constants.INTERVIEWER)) {
-			return Constants.GUEST.equals(userId) || interviewerRepository.findByIdIgnoreCase(userId).isPresent();
-		} else if (service.equals(Constants.USER)) {
-			return Constants.GUEST.equals(userId) || userRepository.findByIdIgnoreCase(userId).isPresent();
-		} else {
-			log.info("Choose a correct service");
-			return false;
-		}
-
-	}
+	private final ExternalServicesProperties externalServicesProperties;
+	private final UserRepository userRepository;
+	private final CampaignRepository campaignRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final UserService userService;
+	private final RestTemplate restTemplate;
+	private final Environment environment;
 
 	public List<String> getRelatedOrganizationUnits(String userId) {
 		List<String> l = new ArrayList<>();
@@ -156,18 +98,14 @@ public class UtilsServiceImpl implements UtilsService {
 	@Override
 	public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
 			List<String> ids) {
-		final StringBuilder uriPilotageFilter = new StringBuilder(dataCollectionScheme)
-				.append("://")
-				.append(dataCollectionHost)
-				.append(":")
-				.append(dataCollectionPort)
-				.append(Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+		final String dataCollectionUri = String.join(externalServicesProperties.datacollectionUrl(),
+				Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+
 		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(Constants.AUTHORIZATION, authTokenHeader);
-		return restTemplate.exchange(uriPilotageFilter.toString(), HttpMethod.POST, new HttpEntity<>(ids, headers),
+		return restTemplate.exchange(dataCollectionUri, HttpMethod.POST, new HttpEntity<>(ids, headers),
 				SurveyUnitOkNokDto.class);
 	}
 }

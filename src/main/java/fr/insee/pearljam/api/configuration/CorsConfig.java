@@ -1,34 +1,34 @@
 package fr.insee.pearljam.api.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpHeaders.*;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
 
 @Configuration
 public class CorsConfig {
-	/**
-	 * The url to allowed
-	 * Generate with the application property applcation.cros_origin
-	 */
-    @Value("${fr.insee.pearljam.application.crosOrigin}")
-    private String crosOrigin;
-    
+
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter() {
+    protected CorsConfigurationSource corsConfigurationSource(ApplicationProperties applicationProperties) {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin(crosOrigin);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setMaxAge(3600L); 
+        config.setAllowedOrigins(applicationProperties.corsOrigins());
+        config.setAllowedHeaders(List.of(AUTHORIZATION, CONTENT_TYPE));
+        config.setAllowedMethods(Stream.of(GET, PUT, DELETE, POST, OPTIONS).map(HttpMethod::toString).toList());
+        config.addExposedHeader(CONTENT_DISPOSITION);
+        config.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", config);
-        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(0);
-        return bean;
+        return source;
     }
+
 }

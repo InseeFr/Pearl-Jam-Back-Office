@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.dto.closingcause;
 
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,14 +26,14 @@ public class ClosingCauseCountDto {
 		super();
 	}
 
-	public ClosingCauseCountDto(Map<String, BigInteger> obj) {
-		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
+	public ClosingCauseCountDto(Map<String, Long> obj) {
+		boolean nullOrEmpty = (obj == null || obj.isEmpty());
 
 		for (String str : Constants.CLOSING_CAUSE_FIELDS) {
 			if (nullOrEmpty) {
 				setLongField(str, 0L);
 			} else {
-				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(BigInteger.ZERO).longValue());
+				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(0L));
 			}
 		}
 	}

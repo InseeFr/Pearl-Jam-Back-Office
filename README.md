@@ -57,7 +57,6 @@ Create pearljambo.properties near war file and complete the following properties
 spring.profiles.active=prod
 
 #Logs configuration
-fr.insee.pearljam.logging.path=${catalina.base}/webapps/log4j2.xml
 fr.insee.pearljam.logging.level=DEBUG
 
 #Application configuration
@@ -101,9 +100,6 @@ fr.insee.pearljam.admin.role=admin
 fr.insee.pearljam.user.local.role=manager_local
 fr.insee.pearljam.user.national.role=manager_national
 ```
-
-#### External log file
-Create log4j2.xml near war file and define your  external config for logs. 
 
 ### 4. Tomcat start
 From a terminal navigate to tomcat/bin folder and execute  

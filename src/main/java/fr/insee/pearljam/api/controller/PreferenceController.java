@@ -2,8 +2,7 @@ package fr.insee.pearljam.api.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.service.PreferenceService;
-import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,8 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PreferenceController {
 
 	private final PreferenceService preferenceService;
-
-	private final UtilsService utilsService;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
 	 * This method is using to update the state of Survey Units listed in request
@@ -36,18 +33,13 @@ public class PreferenceController {
 	 * @param listPreference
 	 * @return
 	 */
-	@ApiOperation(value = "Update preferences with campaigns listed in request body")
+	@Operation(summary = "Update preferences with campaigns listed in request body")
 	@PutMapping(path = "/preferences")
-	public ResponseEntity<Object> updateSurveyUnit(HttpServletRequest request,
-			@RequestBody List<String> listPreference) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
-			log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
-					returnCode.value());
-			return new ResponseEntity<>(returnCode);
-		}
+	public ResponseEntity<Object> updateSurveyUnit(@RequestBody List<String> listPreference) {
+		String userId = authenticatedUserService.getCurrentUserId();
+		HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
+		log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
+				returnCode.value());
+		return new ResponseEntity<>(returnCode);
 	}
 }

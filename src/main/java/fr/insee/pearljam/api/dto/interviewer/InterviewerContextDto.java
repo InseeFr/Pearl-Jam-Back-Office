@@ -5,7 +5,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.domain.TitleEnum;
+import fr.insee.pearljam.api.domain.Title;
 
 public class InterviewerContextDto {
 	private String id;
@@ -13,10 +13,10 @@ public class InterviewerContextDto {
 	private String lastName;
 	private String email;
 	private String phoneNumber;
-	private TitleEnum title = TitleEnum.MISTER;
+	private Title title = Title.MISTER;
 
 	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumber,
-			TitleEnum title) {
+			Title title) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -110,11 +110,11 @@ public class InterviewerContextDto {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public TitleEnum getTitle() {
+	public Title getTitle() {
 		return title;
 	}
 
-	public void setTitle(TitleEnum title) {
+	public void setTitle(Title title) {
 		this.title = title;
 	}
 

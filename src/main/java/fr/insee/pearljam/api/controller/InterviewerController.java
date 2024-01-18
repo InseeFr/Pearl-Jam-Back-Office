@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,27 +23,19 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.service.InterviewerService;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Tag(name = "04. Interviewers", description = "Endpoints for interviewers")
 @Slf4j
+@RequiredArgsConstructor
 public class InterviewerController {
 
-	@Autowired
-	InterviewerService interviewerService;
-
-	@Autowired
-	SurveyUnitService surveyUnitService;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	UtilsService utilsService;
+	private final InterviewerService interviewerService;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
 	 * This method is used to post the list of interviewers defined in request body
@@ -55,12 +45,12 @@ public class InterviewerController {
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Post interviewers")
+	@Operation(summary = "Post interviewers")
 	@PostMapping(path = Constants.API_INTERVIEWERS)
-	public ResponseEntity<String> postInterviewers(HttpServletRequest request,
-			@RequestBody List<InterviewerContextDto> interviewers) {
+	public ResponseEntity<String> postInterviewers(@RequestBody List<InterviewerContextDto> interviewers) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		Response response = interviewerService.createInterviewers(interviewers);
-		log.info("POST /interviewers resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("{} : POST /interviewers resulting in {} with response [{}]", userId, response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -74,13 +64,10 @@ public class InterviewerController {
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get interviewers")
+	@Operation(summary = "Get interviewers")
 	@GetMapping(path = Constants.API_INTERVIEWERS)
-	public ResponseEntity<Set<InterviewerDto>> getListInterviewers(HttpServletRequest request) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+	public ResponseEntity<Set<InterviewerDto>> getListInterviewers() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
 		if (lstInterviewer == null) {
 			log.info("Get interviewers resulting in 404");
@@ -91,15 +78,10 @@ public class InterviewerController {
 
 	}
 
-	@ApiOperation(value = "Get interviewer by Id")
+	@Operation(summary = "Get interviewer by Id")
 	@GetMapping(path = Constants.API_INTERVIEWER_ID)
-	public ResponseEntity<InterviewerContextDto> getInterviewer(HttpServletRequest request,
-			@PathVariable(value = "id") String id) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			log.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+	public ResponseEntity<InterviewerContextDto> getInterviewer(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		Optional<InterviewerContextDto> interviewer = interviewerService.findDtoById(id);
 		if (interviewer.isEmpty()) {
 			log.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
@@ -110,13 +92,10 @@ public class InterviewerController {
 
 	}
 
-	@ApiOperation(value = "Get all interviewers")
+	@Operation(summary = "Get all interviewers")
 	@GetMapping(path = Constants.API_ADMIN_INTERVIEWERS)
-	public ResponseEntity<List<InterviewerContextDto>> getCompleteListInterviewers(HttpServletRequest request) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+	public ResponseEntity<List<InterviewerContextDto>> getCompleteListInterviewers() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		List<InterviewerContextDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
 		if (lstInterviewer.isEmpty()) {
 			log.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
@@ -127,14 +106,10 @@ public class InterviewerController {
 
 	}
 
-	@ApiOperation(value = "Get interviewer campaigns")
+	@Operation(summary = "Get interviewer campaigns")
 	@GetMapping(path = Constants.API_INTERVIEWER_ID_CAMPAIGNS)
-	public ResponseEntity<List<CampaignDto>> getListCampaigns(HttpServletRequest request,
-			@PathVariable(value = "id") String id) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+	public ResponseEntity<List<CampaignDto>> getListCampaigns(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
 		if (!list.isPresent()) {
 			log.info("{} -> Get interviewer campaigns resulting in 404", userId);
@@ -145,13 +120,12 @@ public class InterviewerController {
 
 	}
 
-	@ApiOperation(value = "Update interviewer")
+	@Operation(summary = "Update interviewer")
 	@PutMapping(path = Constants.API_INTERVIEWER_ID)
-	public ResponseEntity<InterviewerContextDto> updateInterviewer(HttpServletRequest request,
-			@PathVariable(value = "id") String id, @RequestBody InterviewerContextDto interviewer) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	public ResponseEntity<InterviewerContextDto> updateInterviewer(
+			@PathVariable(value = "id") String id, 
+			@RequestBody InterviewerContextDto interviewer) {
+		String userId = authenticatedUserService.getCurrentUserId();
 
 		if (id == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -167,15 +141,10 @@ public class InterviewerController {
 
 	}
 
-	@ApiOperation(value = "Delete interviewer")
+	@Operation(summary = "Delete interviewer")
 	@DeleteMapping(path = Constants.API_INTERVIEWER_ID)
-	public ResponseEntity<Object> deleteInterviewer(HttpServletRequest request,
-			@PathVariable(value = "id") String id) {
-		String userId = utilsService.getUserId(request);
-		if (StringUtils.isBlank(userId)) {
-			log.warn("{} : DELETE interviewer with id {} resulting in 403.", userId, id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+	public ResponseEntity<Object> deleteInterviewer(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 
 		if (id == null) {
 			log.warn("{} : no interviewerId provided : resulting in 400.", userId);
