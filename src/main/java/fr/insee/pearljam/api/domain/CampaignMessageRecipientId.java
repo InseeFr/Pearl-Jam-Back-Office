@@ -3,80 +3,48 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
  * Campaign tables.
+ * 
  * @author Guillemet Paul
  */
 @Embeddable
-public class CampaignMessageRecipientId implements Serializable{
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class CampaignMessageRecipientId implements Serializable {
 
-	
 	private static final long serialVersionUID = 1L;
-  
+
 	/**
-	 * The organizationUnit Id 
+	 * The organizationUnit Id
 	 */
 	@Column(name = "message_id")
 	private Long messageId;
- 
+
 	/**
 	 * The campaign Id
 	 */
 	@Column(name = "campaign_id", nullable = true)
 	private String campaignId;
-  
-	/**
-	 * Default constructor for the entity
-	 */
-	public CampaignMessageRecipientId() {
-	}
-  
-	public CampaignMessageRecipientId(Long messageId, String campaignId) {
-	    super();
-	    this.messageId = messageId;
-	    this.campaignId = campaignId;
-	}
 
-	/**
-	 * @return the campaignId
-	 */
-	public Long getMessageId() {
-		return messageId;
-	}
-
-	/**
-	 * @param messageId the campaignId to set
-	 */
-	public void setMessageId(Long messageId) {
-		this.messageId = messageId;
-	}
-
-    /**
-	 * @return the campaignId
-	 */
-	public String getCampaignId() {
-		return campaignId;
-	}
-
-	/**
-	 * @param campaignId the campaignId to set
-	 */
-	public void setCampaignId(String campaignId) {
-		this.campaignId = campaignId;
-	}
-	
 	@Override
-    public boolean equals(Object o) {
-        return (this == o);
-    }
- 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMessageId(), getCampaignId());
-    }
+	public boolean equals(Object o) {
+		return (this == o);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getMessageId(), getCampaignId());
+	}
 
 }

@@ -7,16 +7,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 
@@ -29,6 +31,9 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class SurveyUnit implements Serializable {
 	/**
 	 * 
@@ -49,13 +54,13 @@ public class SurveyUnit implements Serializable {
 	private boolean priority;
 
 	/**
-	 * The priority of SurveyUnit
+	 * Has been viewed by the LocalUser
 	 */
 	@Column
 	private Boolean viewed;
 
 	/**
-	 * The priority of SurveyUnit
+	 * If interviewer had to make a move
 	 */
 	@Column
 	private Boolean move = false;
@@ -113,10 +118,6 @@ public class SurveyUnit implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequest.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationRequest> communicationRequests = new HashSet<>();
-
-	public SurveyUnit() {
-		super();
-	}
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 			Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit, Set<Person> persons) {
@@ -181,202 +182,6 @@ public class SurveyUnit implements Serializable {
 		}
 	}
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the priority
-	 */
-	public boolean isPriority() {
-		return priority;
-	}
-
-	/**
-	 * @param priority the priority to set
-	 */
-	public void setPriority(boolean priority) {
-		this.priority = priority;
-	}
-
-	/**
-	 * @return the viewed
-	 */
-	public Boolean getViewed() {
-		return viewed;
-	}
-
-	/**
-	 * @param viewed the viewed to set
-	 */
-	public void setViewed(Boolean viewed) {
-		this.viewed = viewed;
-	}
-
-	/**
-	 * @return the address
-	 */
-	public Address getAddress() {
-		return address;
-	}
-
-	/**
-	 * @param address the address to set
-	 */
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	/**
-	 * @return the sampleIdentifier
-	 */
-	public SampleIdentifier getSampleIdentifier() {
-		return sampleIdentifier;
-	}
-
-	/**
-	 * @param sampleIdentifier the sampleIdentifier to set
-	 */
-	public void setSampleIdentifier(SampleIdentifier sampleIdentifier) {
-		this.sampleIdentifier = sampleIdentifier;
-	}
-
-	/**
-	 * @return the contactOucome
-	 */
-	public ContactOutcome getContactOucome() {
-		return contactOucome;
-	}
-
-	/**
-	 * @param contactOucome the contactOucome to set
-	 */
-	public void setContactOucome(ContactOutcome contactOucome) {
-		this.contactOucome = contactOucome;
-	}
-
-	/**
-	 * @return the campaign
-	 */
-	public Campaign getCampaign() {
-		return campaign;
-	}
-
-	/**
-	 * @param campaign the campaign to set
-	 */
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
-
-	/**
-	 * @return the interviewer
-	 */
-	public Interviewer getInterviewer() {
-		return interviewer;
-	}
-
-	/**
-	 * @param interviewer the interviewer to set
-	 */
-	public void setInterviewer(Interviewer interviewer) {
-		this.interviewer = interviewer;
-	}
-
-	/**
-	 * @return the organizationUnit
-	 */
-	public OrganizationUnit getOrganizationUnit() {
-		return organizationUnit;
-	}
-
-	/**
-	 * @param organizationUnit the organizationUnit to set
-	 */
-	public void setOrganizationUnit(OrganizationUnit organizationUnit) {
-		this.organizationUnit = organizationUnit;
-	}
-
-	/**
-	 * @return the persons
-	 */
-	public Set<Person> getPersons() {
-		return persons;
-	}
-
-	/**
-	 * @param persons the persons to set
-	 */
-	public void setPersons(Set<Person> persons) {
-		this.persons = persons;
-	}
-
-	/**
-	 * @return the contactAttempts
-	 */
-	public Set<ContactAttempt> getContactAttempts() {
-		return contactAttempts;
-	}
-
-	/**
-	 * @param contactAttempts the contactAttempts to set
-	 */
-	public void setContactAttempts(Set<ContactAttempt> contactAttempts) {
-		this.contactAttempts = contactAttempts;
-	}
-
-	/**
-	 * @return the comments
-	 */
-	public Set<Comment> getComments() {
-		return comments;
-	}
-
-	/**
-	 * @param comments the comments to set
-	 */
-	public void setComments(Set<Comment> comments) {
-		this.comments = comments;
-	}
-
-	/**
-	 * @return the states
-	 */
-	public Set<State> getStates() {
-		return states;
-	}
-
-	/**
-	 * @param states the states to set
-	 */
-	public void setStates(Set<State> states) {
-		this.states = states;
-	}
-
-	/**
-	 * @return the closingCause
-	 */
-	public ClosingCause getClosingCause() {
-		return closingCause;
-	}
-
-	/**
-	 * @param closingCause the closingCause to set
-	 */
-	public void setClosingCause(ClosingCause closingCause) {
-		this.closingCause = closingCause;
-	}
-
 	public Boolean isAtLeastState(String state) {
 		for (State s : this.states) {
 			if (s.getType().toString().equals(state)) {
@@ -384,42 +189,6 @@ public class SurveyUnit implements Serializable {
 			}
 		}
 		return false;
-	}
-
-	public boolean getPriority() {
-		return this.priority;
-	}
-
-	public Boolean isViewed() {
-		return this.viewed;
-	}
-
-	public Identification getIdentification() {
-		return this.identification;
-	}
-
-	public void setIdentification(Identification identification) {
-		this.identification = identification;
-	}
-
-	public Boolean isMove() {
-		return this.move;
-	}
-
-	public Boolean getMove() {
-		return this.move;
-	}
-
-	public void setMove(Boolean move) {
-		this.move = move;
-	}
-
-	public Set<CommunicationRequest> getCommunicationRequests() {
-		return communicationRequests;
-	}
-
-	public void setCommunicationRequests(Set<CommunicationRequest> communicationRequests) {
-		this.communicationRequests = communicationRequests;
 	}
 
 	public Boolean isLastState(String state) {

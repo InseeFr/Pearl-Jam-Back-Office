@@ -138,7 +138,8 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
 		if (!visibility.isPresent()) {
-			log.error("No visibility found for campaign {}", idCampaign);
+			String errorMessage = String.format("No visibility found for campaign %s", idCampaign);
+			log.error(errorMessage);
 			return HttpStatus.NOT_FOUND;
 		}
 		VisibilityDto expectedVisibility = mergeVisibilities(visibility.get(), updatedVisibility);
@@ -479,6 +480,12 @@ public class CampaignServiceImpl implements CampaignService {
 		campaign.setReferents(referents);
 
 		return campaign;
+	}
+
+	@Override
+	public boolean existsAny() {
+
+		return !campaignRepository.findAllIds().isEmpty();
 	}
 
 }

@@ -4,14 +4,17 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity Campaign : represent the entity table in DB
@@ -21,6 +24,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table
+@Getter
+@Setter
+@NoArgsConstructor
 public class Campaign implements Serializable {
 
 	/**
@@ -68,10 +74,6 @@ public class Campaign implements Serializable {
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Referent> referents;
 
-	public Campaign() {
-		super();
-	}
-
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
 			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email,
 			Boolean communicationConfiguration) {
@@ -83,96 +85,6 @@ public class Campaign implements Serializable {
 		this.identificationConfiguration = identConfig;
 		this.email = email;
 		this.communicationConfiguration = Optional.ofNullable(communicationConfiguration).orElse(false);
-	}
-
-	/**
-	 * @return the id of the Campaign
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id of the Campaign
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the label of the Campaign
-	 */
-	public String getLabel() {
-		return label;
-	}
-
-	/**
-	 * @param label of the Campaign
-	 */
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the visibilities
-	 */
-	public List<Visibility> getVisibilities() {
-		return visibilities;
-	}
-
-	/**
-	 * @param visibilities the visibilities to set
-	 */
-	public void setVisibilities(List<Visibility> visibilities) {
-		this.visibilities = visibilities;
-	}
-
-	public List<Referent> getReferents() {
-		return this.referents;
-	}
-
-	public void setReferents(List<Referent> referents) {
-		this.referents = referents;
-	}
-
-	public IdentificationConfiguration getIdentificationConfiguration() {
-		return this.identificationConfiguration;
-	}
-
-	public void setIdentificationConfiguration(IdentificationConfiguration identificationConfiguration) {
-		this.identificationConfiguration = identificationConfiguration;
-	}
-
-	public ContactOutcomeConfiguration getContactOutcomeConfiguration() {
-		return this.contactOutcomeConfiguration;
-	}
-
-	public void setContactOutcomeConfiguration(ContactOutcomeConfiguration contactOutcomeConfiguration) {
-		this.contactOutcomeConfiguration = contactOutcomeConfiguration;
-	}
-
-	public ContactAttemptConfiguration getContactAttemptConfiguration() {
-		return this.contactAttemptConfiguration;
-	}
-
-	public void setContactAttemptConfiguration(ContactAttemptConfiguration contactAttemptConfiguration) {
-		this.contactAttemptConfiguration = contactAttemptConfiguration;
-	}
-
-	public String getEmail() {
-		return this.email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public boolean isCommunicationConfiguration() {
-		return communicationConfiguration;
-	}
-
-	public void setCommunicationConfiguration(boolean communicationConfiguration) {
-		this.communicationConfiguration = communicationConfiguration;
 	}
 
 }

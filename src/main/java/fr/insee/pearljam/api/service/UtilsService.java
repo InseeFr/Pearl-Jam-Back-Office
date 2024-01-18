@@ -2,28 +2,14 @@ package fr.insee.pearljam.api.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 
 public interface UtilsService {
-	
-	/**
-	 * This method retrieve the UserId passed in the HttpServletRequest
-	 * @param HttpServletRequest
-	 * @return {@link String} of UserId
-	 */
-	String getUserId(HttpServletRequest request);
-	
-	/**
-	 * This method check if the current User exist or not in database
-	 * @param userId
-	 * @return {@link Boolean}
-	 */
-	boolean existUser(String userId, String service);
-	
+
 	/**
 	 * @param userId
 	 * @param campaignId
@@ -31,7 +17,7 @@ public interface UtilsService {
 	 */
 	boolean checkUserCampaignOUConstraints(String userId, String campaignId);
 
-  /**
+	/**
 	 * This method retreives the organizationUnit of the user as well as all of its children units as a list of String
 	 * @param userId
 	 * @return {@link List} of {@link String}
@@ -39,8 +25,8 @@ public interface UtilsService {
 	List<String> getRelatedOrganizationUnits(String userId);
 
 	boolean isDevProfile();
-	
+
 	boolean isTestProfile();
-	
+
 	ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
 }

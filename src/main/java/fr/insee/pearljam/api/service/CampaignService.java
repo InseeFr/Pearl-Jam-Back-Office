@@ -81,4 +81,6 @@ public interface CampaignService {
 
 	CampaignContextDto getCampaignDtoById(String id);
 
+	boolean existsAny();
+
 }
