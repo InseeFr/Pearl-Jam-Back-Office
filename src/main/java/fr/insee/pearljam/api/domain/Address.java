@@ -2,10 +2,11 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 @Entity
 public abstract class Address implements Serializable {
 	/**
@@ -14,21 +15,23 @@ public abstract class Address implements Serializable {
 	private static final long serialVersionUID = 5680240598264620967L;
 
 	/**
-	* The id of Address 
-	*/
+	 * The id of Address
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Long id;
 
-	protected Address(){
-		
+	protected Address() {
+
 	}
+
 	/**
 	 * @return the id
 	 */
 	public Long getId() {
 		return id;
 	}
+
 	/**
 	 * @param id the id to set
 	 */

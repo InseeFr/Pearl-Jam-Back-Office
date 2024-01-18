@@ -2,36 +2,33 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.JoinColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.JoinColumn;
 
-import javax.persistence.FetchType;
+import jakarta.persistence.FetchType;
 
-
-
-import javax.persistence.ManyToOne;
+import jakarta.persistence.ManyToOne;
 
 /**
-* Entity MessageRecipient : represent the entity table in DB
-* 
-* @author Paul Guillemet
-* 
-*/
+ * Entity MessageRecipient : represent the entity table in DB
+ * 
+ * @author Paul Guillemet
+ * 
+ */
 
 @Entity
 @Table
 public class MessageStatus implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
 	private MessageStatusId messageStatusId;
-
 
 	/**
 	 * The id of MessageRecipient
@@ -41,17 +38,17 @@ public class MessageStatus implements Serializable {
 	private Message message;
 
 	/**
-	* The first name of the MessageRecipient 
-	*/
+	 * The first name of the MessageRecipient
+	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "interviewer_id", insertable = false, updatable = false)
 	private Interviewer interviewer;
-  
+
 	@Column
 	@Enumerated(EnumType.STRING)
 	MessageStatusType status;
-	
-	public MessageStatus(){
+
+	public MessageStatus() {
 		super();
 	}
 
@@ -59,19 +56,19 @@ public class MessageStatus implements Serializable {
 		super();
 		this.message = message;
 		this.messageStatusId = new MessageStatusId(message.getId(), interviewer.getId());
-	    this.interviewer = interviewer;
-	    this.status = status;
+		this.interviewer = interviewer;
+		this.status = status;
 	}
-  
-  	/**
+
+	/**
 	 * @return id of comment
 	 */
 	public MessageStatusId getId() {
 		return messageStatusId;
 	}
-  
+
 	public void setId(MessageStatusId messageStatusId) {
-	  this.messageStatusId = messageStatusId;
+		this.messageStatusId = messageStatusId;
 	}
 
 	/**
