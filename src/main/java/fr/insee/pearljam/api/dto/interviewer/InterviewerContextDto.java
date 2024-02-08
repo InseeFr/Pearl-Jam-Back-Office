@@ -1,23 +1,39 @@
 package fr.insee.pearljam.api.dto.interviewer;
 
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import fr.insee.pearljam.api.domain.Interviewer;
+import fr.insee.pearljam.api.domain.TitleEnum;
 
 public class InterviewerContextDto {
 	private String id;
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String phoneNumer;
+	private String phoneNumber;
+	private TitleEnum title = TitleEnum.MISTER;
 
-	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumer) {
+	public InterviewerContextDto(String id, String firstName, String lastName, String email, String phoneNumber,
+			TitleEnum title) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		this.phoneNumer = phoneNumer;
+		this.phoneNumber = phoneNumber;
+		this.title = title;
+	}
+
+	public InterviewerContextDto(Interviewer interviewer) {
+		super();
+		this.id = interviewer.getId();
+		this.firstName = interviewer.getFirstName();
+		this.lastName = interviewer.getLastName();
+		this.email = interviewer.getEmail();
+		this.phoneNumber = interviewer.getPhoneNumber();
+		this.title = interviewer.getTitle();
 	}
 
 	public InterviewerContextDto() {
@@ -81,26 +97,35 @@ public class InterviewerContextDto {
 	}
 
 	/**
-	 * @return the phoneNumer
+	 * @return the phoneNumber
 	 */
-	public String getPhoneNumer() {
-		return phoneNumer;
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
 
 	/**
-	 * @param phoneNumer the phoneNumer to set
+	 * @param phoneNumber the phoneNumber to set
 	 */
-	public void setPhoneNumer(String phoneNumer) {
-		this.phoneNumer = phoneNumer;
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public TitleEnum getTitle() {
+		return title;
+	}
+
+	public void setTitle(TitleEnum title) {
+		this.title = title;
 	}
 
 	@JsonIgnore
 	public boolean isValid() {
-		return this.id != null && !this.id.isBlank() 
-				&& this.firstName != null && !this.firstName.isBlank() 
-				&& this.lastName != null && !this.lastName.isBlank() 
+		return this.id != null && !this.id.isBlank()
+				&& this.firstName != null && !this.firstName.isBlank()
+				&& this.lastName != null && !this.lastName.isBlank()
 				&& this.email != null && !this.email.isBlank()
-				&& this.phoneNumer != null && !this.phoneNumer.isBlank()
+				&& this.phoneNumber != null && !this.phoneNumber.isBlank()
 				&& EmailValidator.getInstance().isValid(this.email);
 	}
+
 }

@@ -17,9 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -46,6 +45,8 @@ import fr.insee.pearljam.api.service.IdentificationService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author scorcaud
@@ -53,67 +54,30 @@ import fr.insee.pearljam.api.service.UtilsService;
  */
 @Service
 @Transactional
+@Slf4j
+@RequiredArgsConstructor
 public class SurveyUnitServiceImpl implements SurveyUnitService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitServiceImpl.class);
 
 	private static final String GUEST = "GUEST";
 
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
+	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
+	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
 
-	@Autowired
-	SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
-
-	@Autowired
-	AddressRepository addressRepository;
-
-	@Autowired
-	SampleIdentifierRepository sampleIdentifierRepository;
-
-	@Autowired
-	CommentRepository commentRepository;
-
-	@Autowired
-	ContactAttemptRepository contactAttemptRepository;
-
-	@Autowired
-	ContactOutcomeRepository contactOutcomeRepository;
-
-	@Autowired
-	StateRepository stateRepository;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	VisibilityRepository visibilityRepository;
-
-	@Autowired
-	PersonRepository personRepository;
-
-	@Autowired
-	ClosingCauseRepository closingCauseRepository;
-
-	@Autowired
-	IdentificationRepository identificationRepository;
-
-	@Autowired
-	IdentificationService identificationService;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	UtilsService utilsService;
+	private final SurveyUnitRepository surveyUnitRepository;
+	private final SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
+	private final AddressRepository addressRepository;
+	private final ContactOutcomeRepository contactOutcomeRepository;
+	private final StateRepository stateRepository;
+	private final InterviewerRepository interviewerRepository;
+	private final CampaignRepository campaignRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final VisibilityRepository visibilityRepository;
+	private final PersonRepository personRepository;
+	private final ClosingCauseRepository closingCauseRepository;
+	private final IdentificationRepository identificationRepository;
+	private final IdentificationService identificationService;
+	private final UserService userService;
+	private final UtilsService utilsService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -158,7 +122,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
 		}
 		if (surveyUnitDtoIds.isEmpty()) {
-			LOGGER.error("No Survey Unit found for interviewer {}", userId);
+			log.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
 		}
 		if (userId.equals(GUEST)) {
@@ -188,9 +152,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Transactional
 	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id,
 			SurveyUnitDetailDto surveyUnitDetailDto) {
-		LOGGER.info("Update Survey Unit {}", id);
+		log.info("Update Survey Unit {}", id);
 		if (surveyUnitDetailDto == null) {
-			LOGGER.error("Survey Unit in parameter is null");
+			log.error("Survey Unit in parameter is null");
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		Optional<SurveyUnit> surveyUnitOpt;
@@ -200,7 +164,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", id, userId);
+			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, id, userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
@@ -209,7 +173,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		try {
 			updatePersons(surveyUnitDetailDto);
 		} catch (SurveyUnitException e) {
-			LOGGER.error("Error when updating persons related to survey Unit {} - {}", id, e.getMessage());
+			log.error("Error when updating persons related to survey Unit {} - {}", id, e.getMessage());
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		updateComment(surveyUnit, surveyUnitDetailDto);
@@ -217,10 +181,35 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		updateIdentification(surveyUnit, surveyUnitDetailDto);
+		updateCommunicationRequest(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
-		LOGGER.info("Survey Unit {} - update complete", id);
+		log.info("Survey Unit {} - update complete", id);
 		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
 		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
+	}
+
+	private void updateCommunicationRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
+		if (surveyUnitDetailDto.getCommunicationRequests() != null) {
+			List<CommunicationRequestDto> incommingCommRequests = surveyUnitDetailDto.getCommunicationRequests();
+			Set<CommunicationRequest> communicationRequests = surveyUnit.getCommunicationRequests();
+			Set<CommunicationRequest> newCommunicationsRequests = incommingCommRequests.stream()
+					.filter(commRequest -> commRequest.getId() == null)
+					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
+			communicationRequests.addAll(newCommunicationsRequests);
+
+			// for each communiactionRequest : update state then try to call messhugah if
+			// needed
+			// communicationRequests.stream()...
+			// handle INITIATED -> READY
+			// if(shouldAddReadyStatus(incommingCommRequests)) {
+			// communicationRequests.add(generateReadyCommunicationRequest(surveyUnit));
+			// }
+			// TODO : call messhugah to dispatch
+			// if(shouldTryToGenerateCommunication(newCommunicationsRequests)){
+			// boolean communicationRequestService.generateCommunication(commReq)
+			// }
+		}
+		log.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
 	}
 
 	private void updateIdentification(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -237,7 +226,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			identification.setSurveyUnit(surveyUnit);
 			identificationRepository.save(identification);
 		}
-		LOGGER.info("Survey-unit {} - Identification updated", surveyUnit.getId());
+		log.info("Survey-unit {} - Identification updated", surveyUnit.getId());
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -251,7 +240,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			contactOutcome.setSurveyUnit(surveyUnit);
 			contactOutcomeRepository.save(contactOutcome);
 		}
-		LOGGER.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
+		log.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
 	}
 
 	private void updateContactAttempt(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -261,7 +250,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<ContactAttempt> newContactAttempts = surveyUnitDetailDto.getContactAttempts().stream()
 					.map(dto -> new ContactAttempt(dto, surveyUnit)).collect(Collectors.toSet());
 			contactAttemps.addAll(newContactAttempts);
-			LOGGER.info("Survey-unit {} - Contact attempts updated", surveyUnit.getId());
+			log.info("Survey-unit {} - Contact attempts updated", surveyUnit.getId());
 		}
 	}
 
@@ -277,7 +266,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (BussinessRules.shouldFallBackToTbrOrFin(dbStates)) {
+		if (Boolean.TRUE.equals(BussinessRules.shouldFallBackToTbrOrFin(dbStates))) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -285,7 +274,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			}
 		}
-		LOGGER.info("Survey-unit {} - States updated", surveyUnit.getId());
+		log.info("Survey-unit {} - States updated", surveyUnit.getId());
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
@@ -309,7 +298,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<Comment> newComments = surveyUnitDetailDto.getComments().stream().filter(dto -> dto.getType() != null)
 					.map(dto -> new Comment(dto, surveyUnit)).collect(Collectors.toSet());
 			comments.addAll(newComments);
-			LOGGER.info("Survey-unit {} - Comments updated", surveyUnit.getId());
+			log.info("Survey-unit {} - Comments updated", surveyUnit.getId());
 		}
 	}
 
@@ -329,7 +318,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				}
 
 			}
-			LOGGER.info("Survey-unit {} - Persons updated", surveyUnitDetailDto.getId());
+			log.info("Survey-unit {} - Persons updated", surveyUnitDetailDto.getId());
 		}
 	}
 
@@ -388,18 +377,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			// Update Address
 			addressRepository.save(inseeAddress);
 		}
-		LOGGER.info("Survey-unit {} - Address updated", surveyUnit.getId());
+		log.info("Survey-unit {} - Address updated", surveyUnit.getId());
 	}
 
 	@Transactional
 	public HttpStatus updateSurveyUnitComment(String userId, String suId, CommentDto comment) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", suId, userId);
+			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
 			return HttpStatus.NOT_FOUND;
 		}
 		if (comment.getType() == null || comment.getValue() == null) {
-			LOGGER.error("Some of the required fields (type, value) are missing in request body");
+			log.error("Some of the required fields (type, value) are missing in request body");
 			return HttpStatus.BAD_REQUEST;
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
@@ -408,7 +397,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.collect(Collectors.toSet());
 		comments.removeAll(commentsToRemove);
 		comments.add(new Comment(comment, surveyUnit));
-		LOGGER.info("Comments updated");
+		log.info("Comments updated");
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
@@ -417,12 +406,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public HttpStatus updateSurveyUnitViewed(String userId, String suId) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
 		if (!surveyUnitOpt.isPresent()) {
-			LOGGER.error("Survey Unit {} not found in DB for interviewer {}", suId, userId);
+			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
 			return HttpStatus.NOT_FOUND;
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
 		surveyUnit.setViewed(true);
-		LOGGER.info("Viewed updated");
+		log.info("Viewed updated");
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
@@ -440,7 +429,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isLastState(state)).collect(Collectors.toSet());
 		}
 		if (lstSurveyUnit.isEmpty()) {
-			LOGGER.warn("No Survey Unit found for the user {}", userId);
+			log.warn("No Survey Unit found for the user {}", userId);
 		}
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
@@ -473,8 +462,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
 
 		} catch (Exception e) {
-			LOGGER.error("Could not get data collection API : {}", e.getMessage());
-			LOGGER.error("All questionnaire states will be considered null");
+			log.error("Could not get data collection API : {}", e.getMessage());
+			log.error("All questionnaire states will be considered null");
 		}
 
 		final Map<String, String> map = mapQuestionnaireStateBySu;
@@ -496,10 +485,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
 
-		ContactOutcomeType outcome = sudto.getContactOutcome();
+		ContactOutcomeDto outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
-		switch (outcome) {
+		switch (outcome.getType()) {
 			case INA:
 			case NOA:
 				return !hasQuestionnaire;
@@ -512,16 +501,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			List<String> lstSu) {
 		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
 				lstSu);
-		LOGGER.info("GET state from data collection service call resulting in {}", result.getStatusCode());
+		log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 		SurveyUnitOkNokDto object = result.getBody();
 		HttpStatus responseCode = result.getStatusCode();
 
 		if (!responseCode.equals(HttpStatus.OK)) {
 			String code = responseCode.toString();
-			LOGGER.error("Data collection API responded with error code {}", code);
+			log.error("Data collection API responded with error code {}", code);
 		}
 		if (object == null) {
-			LOGGER.error("Could not get response from data collection API");
+			log.error("Could not get response from data collection API");
 			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();
@@ -537,18 +526,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
 			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
-					LOGGER.info("Deleting closing causes of survey unit {}", surveyUnitId);
+					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
 				}
 				stateRepository.save(new State(new Date().getTime(), su.get(), state));
 				return HttpStatus.OK;
 			} else {
-				LOGGER.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState,
+				log.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState,
 						state);
 				return HttpStatus.FORBIDDEN;
 			}
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			log.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -567,13 +556,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else {
-				LOGGER.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState,
+				log.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState,
 						StateType.CLO);
 				return HttpStatus.FORBIDDEN;
 			}
 
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			log.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.BAD_REQUEST;
 		}
 	}
@@ -586,7 +575,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addOrModifyClosingCause(surveyUnit, type);
 			return HttpStatus.OK;
 		} else {
-			LOGGER.error("Survey unit with id {} was not found in database", surveyUnitId);
+			log.error(SU_ID_NOT_FOUND, surveyUnitId);
 			return HttpStatus.NOT_FOUND;
 		}
 	}
@@ -610,7 +599,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public List<StateDto> getListStatesBySurveyUnitId(String suId) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(suId);
 		if (!su.isPresent()) {
-			LOGGER.error("SU {} not found in database", suId);
+			log.error("SU {} not found in database", suId);
 			return List.of();
 		}
 		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);
@@ -657,14 +646,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		});
 		// Check attributes are not null
 		if (!surveyUnitErrors.isEmpty()) {
-			LOGGER.error("Invalid format : [{}]", String.join(", ", surveyUnitErrors));
+			log.error("Invalid format : [{}]", String.join(", ", surveyUnitErrors));
 			return new Response(String.format("Invalid format : [%s]", String.join(", ", surveyUnitErrors)),
 					HttpStatus.BAD_REQUEST);
 		}
 
 		// Check duplicate lines
 		if (!duplicates.keySet().stream().filter(id -> duplicates.get(id) > 1).collect(Collectors.toSet()).isEmpty()) {
-			LOGGER.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
+			log.error("Duplicate entry : [{}]", String.join(", ", duplicates.keySet()));
 			return new Response(String.format("Duplicate entries : [%s]", String.join(", ", duplicates.keySet())),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -695,7 +684,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 						|| !mapInterviewer.containsKey(link.getInterviewerId()))
 				.map(SurveyUnitInterviewerLinkDto::getLink).collect(Collectors.toList());
 		if (!errors.isEmpty()) {
-			LOGGER.error("Invalid value : [{}]", String.join(", ", errors));
+			log.error("Invalid value : [{}]", String.join(", ", errors));
 			return new Response(String.format("Invalid value : [%s]", String.join(", ", errors)),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -703,7 +692,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			mapSurveyUnit.get(link.getSurveyUnitId()).setInterviewer(mapInterviewer.get(link.getInterviewerId()));
 			surveyUnitRepository.save(mapSurveyUnit.get(link.getSurveyUnitId()));
 		});
-		LOGGER.info("{} links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size());
+		log.info("{} links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size());
 		return new Response(
 				String.format("%s links Survey-unit/Interviewer created or updated", surveyUnitInterviewerLink.size()),
 				HttpStatus.OK);
@@ -735,5 +724,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public List<String> getAllIdsByCampaignId(String campaignId) {
 		return surveyUnitRepository.findAllIdsByCampaignId(campaignId);
+	}
+
+	@Override
+	public List<String> getAllIdsByInterviewerId(String interviewerId) {
+		return surveyUnitRepository.findAllIdsByInterviewerId(interviewerId);
+	}
+
+	@Override
+	public void removeInterviewerLink(List<String> ids) {
+		surveyUnitRepository.setInterviewer(ids, null);
 	}
 }

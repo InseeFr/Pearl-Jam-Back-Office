@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="SimonDmz" id="1681801321987-1">
+        <createTable tableName="communication_request">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="communication_requestPK" />
+            </column>
+            <column name="messhugah_id" type="VARCHAR(255)" />
+            <column name="survey_unit_id" type="VARCHAR(255)" />
+            <column name="type" type="VARCHAR(255)" />
+            <column name="emiter" type="VARCHAR(255)" />
+            <column name="medium" type="VARCHAR(255)" />
+            <column name="reason" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1681801321987-2">
+        <addForeignKeyConstraint baseColumnNames="survey_unit_id"
+            baseTableName="communication_request"
+            constraintName="FKmailRequestToSurveyunit" deferrable="false" initiallyDeferred="false"
+            referencedColumnNames="id" referencedTableName="survey_unit" />
+    </changeSet>
+    <changeSet id="1681801321987-3" author="SimonDmz">
+        <createTable tableName="communication_request_status">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="communication_request_statusPK" />
+            </column>
+            <column name="communication_request_id" type="BIGINT" />
+            <column name="status" type="VARCHAR(255)" />
+            <column name="date" type="BIGINT" />
+        </createTable>
+    </changeSet>
+    <changeSet author="SimonDmz" id="1681801321987-4">
+        <addForeignKeyConstraint baseColumnNames="communication_request_id"
+            baseTableName="communication_request_status"
+            constraintName="FKcommunicationRequestStatusToCommunicationRequest" deferrable="false"
+            initiallyDeferred="false"
+            referencedColumnNames="id" referencedTableName="communication_request" />
+    </changeSet>
+</databaseChangeLog>

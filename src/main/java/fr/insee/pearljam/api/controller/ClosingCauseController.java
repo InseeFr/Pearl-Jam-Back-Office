@@ -5,8 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +20,12 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ClosingCauseService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@Slf4j
 public class ClosingCauseController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClosingCauseController.class);
 
 	@Autowired
 	ClosingCauseService closingCauseService;
@@ -59,13 +57,12 @@ public class ClosingCauseController {
 			ClosingCauseCountDto closingCountDto;
 			try {
 				closingCountDto = closingCauseService.getClosingCauseCount(userId, id, idep, date, associatedOrgUnits);
-			}
-			catch(NotFoundException e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.info("Get ClosingCauseCount resulting in 404");
+			} catch (NotFoundException e) {
+				log.error(e.getMessage());
+				log.info("Get ClosingCauseCount resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			LOGGER.info("Get ClosingCauseCount resulting in 200");
+			log.info("Get ClosingCauseCount resulting in 200");
 			return new ResponseEntity<>(closingCountDto, HttpStatus.OK);
 		}
 

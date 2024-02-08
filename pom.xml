@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.1.0</version>
+	<version>4.1.5</version>
 
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
@@ -14,21 +15,22 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.1.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
+		<!-- lookup parent from repository -->
 	</parent>
-
 	<properties>
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jdk.version>1.11</jdk.version>
 		<java.version>1.11</java.version>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.20.0</log4j.version>
 		<maven.compiler.release>11</maven.compiler.release>
 		<testcontainers.version>1.15.2</testcontainers.version>
 		<keycloak.version>19.0.3</keycloak.version>
+		<sonar.organization>inseefr</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -38,11 +40,15 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.18.30</version>
+				<scope>provided</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<dependencies>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
@@ -137,13 +143,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Database -->
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -153,8 +157,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-java8</artifactId>
 		</dependency>
-
-
 		<!-- TESTS -->
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -189,7 +191,6 @@
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
@@ -233,7 +234,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -245,7 +245,6 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
@@ -257,23 +256,20 @@
 			<artifactId>keycloak-spring-boot-starter</artifactId>
 			<version>${keycloak.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-web</artifactId>
 		</dependency>
-
 		<!-- Commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>0.8.1</version>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.8.0</version>
 		</dependency>
-
 		<!-- Manage JSON OBJECT -->
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
@@ -284,7 +280,46 @@
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>coverage</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.11</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>report</id>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<formats>
+										<format>XML</format>
+									</formats>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -351,7 +386,6 @@
 							<artifactId>jackson-databind</artifactId>
 							<version>2.11.0</version>
 						</dependency>
-
 						<dependency>
 							<groupId>org.hibernate</groupId>
 							<artifactId>hibernate-validator</artifactId>
@@ -374,7 +408,7 @@
 						<contexts>test,dev,prod</contexts>
 						<username>pearljam_api</username>
 						<password>pearljam_api</password>
-						<referenceUrl>hibernate:spring:fr.insee.pearljam.api.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+						<referenceUrl> hibernate:spring:fr.insee.pearljam.api.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
 						<referenceDefaultSchemaName>public</referenceDefaultSchemaName>
 						<verbose>true</verbose>
 						<logging>debug</logging>
@@ -394,7 +428,8 @@
 						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds>
 						<forkCount>3</forkCount>
 						<reuseForks>true</reuseForks>
-						<argLine>-Xmx2048m -Xmx1G -XX:PermSize=1024m</argLine>
+						<!-- argLine to prevent jacoco argLine override -->
+						<argLine>${argLine} -Xmx2048m -Xmx1G -XX:PermSize=1024m</argLine>
 						<environmentVariables>
 							<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
 						</environmentVariables>
@@ -404,5 +439,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 </project>

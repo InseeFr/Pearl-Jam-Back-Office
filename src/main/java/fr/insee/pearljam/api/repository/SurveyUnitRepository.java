@@ -196,4 +196,13 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT id FROM survey_unit "
 			+ "WHERE campaign_id=:campaignId", nativeQuery=true)
 	List<String> findAllIdsByCampaignId(@Param("campaignId") String campaignId);
+
+	@Query(value="SELECT id FROM survey_unit "
+			+ "WHERE interviewer_id=:interviewerId", nativeQuery=true)
+	List<String> findAllIdsByInterviewerId(@Param("interviewerId") String interviewerId);
+
+	@Query(value="UPDATE survey_unit "
+	+ "SET interviewer_id=:interviewerId "
+	+ "WHERE id IN (:surveyUnitIds)", nativeQuery=true)
+	void setInterviewer(List<String> surveyUnitIds, String interviewerId);
 }

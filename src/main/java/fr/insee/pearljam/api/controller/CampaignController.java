@@ -6,9 +6,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,22 +37,23 @@ import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import fr.insee.pearljam.api.constants.Constants;
 
 @RestController
+@Slf4j
+@RequiredArgsConstructor
 public class CampaignController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignController.class);
+	private final CampaignService campaignService;
 
-	@Autowired
-	CampaignService campaignService;
+	private final UtilsService utilsService;
 
-	@Autowired
-	UtilsService utilsService;
+	private final ReferentService referentService;
 
-	@Autowired
-	ReferentService referentService;
+	private static final String NO_USER_ID = "No userId : access denied.";
+	private static final String DEFAULT_FORCE_VALUE = "false";
 
 	/**
 	 * This method is used to post the campaign defined in request body
@@ -71,10 +69,10 @@ public class CampaignController {
 		try {
 			response = campaignService.postCampaign(campaignDto);
 		} catch (NoOrganizationUnitException | VisibilityException e) {
-			LOGGER.error(e.getMessage());
+			log.error(e.getMessage());
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		LOGGER.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("POST /campaign resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -90,13 +88,13 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getListCampaign(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		LOGGER.info("User {} : GET related campaigns", userId);
+		log.info("User {} : GET related campaigns", userId);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
-			LOGGER.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
+			log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
 			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 		}
 	}
@@ -112,13 +110,13 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getAllCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
-		LOGGER.info("User {} : GET all campaigns", userId);
+		log.info("User {} : GET all campaigns", userId);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
-			LOGGER.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
+			log.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
 					lstCampaigns.size());
 			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 		}
@@ -136,12 +134,12 @@ public class CampaignController {
 	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("No userId : access denied.");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("Interviewer {} : GET related campaigns", userId);
+		log.info("Interviewer {} : GET related campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
-		LOGGER.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
+		log.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
 		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 
 	}
@@ -161,20 +159,20 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("{} try to get campaign[{}] interviewers ", userId, id);
+		log.info("{} try to get campaign[{}] interviewers ", userId, id);
 		List<InterviewerDto> lstInterviewer;
 		try {
 			lstInterviewer = campaignService.getListInterviewers(userId, id);
 		} catch (NotFoundException e) {
-			LOGGER.error(e.getMessage());
-			LOGGER.info("Get interviewers resulting in 404");
+			log.error(e.getMessage());
+			log.info("Get interviewers resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
-		LOGGER.info("Get interviewers resulting in 200");
+		log.info("Get interviewers resulting in 200");
 		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
 
 	}
@@ -195,18 +193,18 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("{} try to get campaign[{}] visibilities ", userId, id);
+		log.info("{} try to get campaign[{}] visibilities ", userId, id);
 		if (!campaignService.findById(id).isPresent()) {
-			LOGGER.warn("Can't find visibilities : campaign {} is missing", id);
+			log.warn("Can't find visibilities : campaign {} is missing", id);
 			return ResponseEntity.notFound().build();
 		}
 
 		List<VisibilityContextDto> visibilities = campaignService.findAllVisiblitiesByCampaign(id);
 
-		LOGGER.info("Get visibilities resulting in 200");
+		log.info("Get visibilities resulting in 200");
 		return new ResponseEntity<>(visibilities, HttpStatus.OK);
 
 	}
@@ -227,18 +225,18 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
+		log.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
 		CountDto nbSUAbandoned;
 		try {
 			nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
 		} catch (NotFoundException e) {
-			LOGGER.info("Get numberSUAbandoned resulting in 404");
+			log.info("Get numberSUAbandoned resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("Get numberSUAbandoned resulting in 200");
+		log.info("Get numberSUAbandoned resulting in 200");
 		return new ResponseEntity<>(nbSUAbandoned, HttpStatus.OK);
 
 	}
@@ -258,18 +256,18 @@ public class CampaignController {
 			@PathVariable(value = "id") String id) {
 		String callerId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(callerId)) {
-			LOGGER.warn("Can't find caller ID");
+			log.warn(NO_USER_ID);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("{} try to get campaign[{}] not attributed survey-units ", callerId, id);
+		log.info("{} try to get campaign[{}] not attributed survey-units ", callerId, id);
 		CountDto nbSUNotAttributed;
 		try {
 			nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(callerId, id);
 		} catch (NotFoundException e) {
-			LOGGER.info("Get numberSUAbandoned resulting in 404");
+			log.info("Get numberSUAbandoned resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("Get numberSUAbandoned resulting in 200");
+		log.info("Get numberSUAbandoned resulting in 200");
 		return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
 
 	}
@@ -288,12 +286,12 @@ public class CampaignController {
 			@PathVariable(value = "idOu") String idOu) {
 		String callerId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(callerId)) {
-			LOGGER.info("Can't find caller Id");
-			return new ResponseEntity<>("Can't find caller Id", HttpStatus.FORBIDDEN);
+			log.info(NO_USER_ID);
+			return new ResponseEntity<>(NO_USER_ID, HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("{} try to change OU[{}] visibility on campaign[{}] ", callerId, idOu, idCampaign);
+		log.info("{} try to change OU[{}] visibility on campaign[{}] ", callerId, idOu, idCampaign);
 		HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
-		LOGGER.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
+		log.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
 				idOu, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 
@@ -309,23 +307,23 @@ public class CampaignController {
 	@ApiOperation(value = "Delete a campaign")
 	@DeleteMapping(path = Constants.API_CAMPAIGN_ID)
 	public ResponseEntity<Object> deleteCampaignById(HttpServletRequest request, @PathVariable(value = "id") String id,
-			@RequestParam(required = false) boolean force) {
+			@RequestParam(required = false, defaultValue = DEFAULT_FORCE_VALUE) Boolean force) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to delete campaign {}", callerId, id);
+		log.info("{} try to delete campaign {}", callerId, id);
 
 		Optional<Campaign> campaignOptional = campaignService.findById(id);
 		if (!campaignOptional.isPresent()) {
-			LOGGER.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
+			log.error("DELETE campaign with id {} resulting in 404 because it does not exists", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (!force && campaignService.isCampaignOngoing(id)) {
+		if (Boolean.FALSE.equals(force) && campaignService.isCampaignOngoing(id)) {
 			String errorMessage = String.format("Campaign %s is on-going and can't be deleted", id);
-			LOGGER.info(errorMessage);
+			log.info(errorMessage);
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
 		}
 
 		campaignService.delete(campaignOptional.get());
-		LOGGER.info("DELETE campaign with id {} resulting in 200", id);
+		log.info("DELETE campaign with id {} resulting in 200", id);
 		return ResponseEntity.ok().build();
 	}
 
@@ -341,13 +339,13 @@ public class CampaignController {
 	public ResponseEntity<Object> putCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id, @RequestBody CampaignContextDto campaign) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to update campaign {} collection dates", callerId, id);
+		log.info("{} try to update campaign {} collection dates", callerId, id);
 
 		if (StringUtils.isBlank(callerId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = campaignService.updateCampaign(id, campaign);
-		LOGGER.info("PUT campaign with id {} resulting in {}", id, returnCode.value());
+		log.info("PUT campaign with id {} resulting in {}", id, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 
 	}
@@ -365,7 +363,7 @@ public class CampaignController {
 	public ResponseEntity<OngoingDto> isOngoing(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} check if {} is on-going", callerId, id);
+		log.info("{} check if {} is on-going", callerId, id);
 
 		if (!campaignService.findById(id).isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -374,10 +372,9 @@ public class CampaignController {
 		OngoingDto campaignOngoing = new OngoingDto();
 		campaignOngoing.setOngoing(campaignService.isCampaignOngoing(id));
 
-		LOGGER.info("{} checked if campaign {} is on-going : {}", callerId, id, campaignOngoing.isOngoing());
+		log.info("{} checked if campaign {} is on-going : {}", callerId, id, campaignOngoing.isOngoing());
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
-
 
 	/**
 	 * This method returns target campaign
@@ -392,7 +389,7 @@ public class CampaignController {
 	public ResponseEntity<CampaignContextDto> getCampaign(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to GET {}", callerId, id);
+		log.info("{} try to GET {}", callerId, id);
 
 		if (!campaignService.findById(id).isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -400,7 +397,7 @@ public class CampaignController {
 
 		CampaignContextDto campaign = campaignService.getCampaignDtoById(id);
 
-		LOGGER.info("{} GET campaign {} : {}", callerId, id, HttpStatus.OK.toString());
+		log.info("{} GET campaign {} : {}", callerId, id, HttpStatus.OK.toString());
 		return new ResponseEntity<>(campaign, HttpStatus.OK);
 	}
 
@@ -411,15 +408,15 @@ public class CampaignController {
 	public ResponseEntity<List<ReferentDto>> getReferents(HttpServletRequest request,
 			@PathVariable(value = "id") String id) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to GET {} referents", callerId, id);
+		log.info("{} try to GET {} referents", callerId, id);
 		if (!campaignService.findById(id).isPresent()) {
-			LOGGER.warn("Campaign {} is not present, can't get referents", id);
+			log.warn("Campaign {} is not present, can't get referents", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 		List<ReferentDto> referents = referentService.findByCampaignId(id);
 
-		LOGGER.info("{}  GOT {} referents for campaign {}", callerId, referents.size(), id);
+		log.info("{}  GOT {} referents for campaign {}", callerId, referents.size(), id);
 
 		return new ResponseEntity<>(referents, HttpStatus.OK);
 	}

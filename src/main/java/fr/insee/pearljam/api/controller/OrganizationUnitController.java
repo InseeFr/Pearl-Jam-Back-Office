@@ -5,9 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,23 +24,24 @@ import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@RequiredArgsConstructor
+@Slf4j
 public class OrganizationUnitController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationUnitController.class);
-	@Autowired
-	OrganizationUnitService organizationUnitService;
-	
-	@Autowired
-	UserService userService;
-	
-	@Autowired
-	UtilsService utilsService;
-	
+	private final OrganizationUnitService organizationUnitService;
+
+	private final UserService userService;
+
+	private final UtilsService utilsService;
+
 	/**
-	 * This method is used to post the list of Organizational Units defined in request body
+	 * This method is used to post the list of Organizational Units defined in
+	 * request body
 	 * 
 	 * @param request
 	 * @param idCampaign
@@ -51,15 +49,17 @@ public class OrganizationUnitController {
 	 */
 	@ApiOperation(value = "Create Context with Organizational Unit and users associated")
 	@PostMapping(path = "/organization-units")
-	public ResponseEntity<Object> postContext(HttpServletRequest request, @RequestBody List<OrganizationUnitContextDto> organizationUnits){
+	public ResponseEntity<Object> postContext(HttpServletRequest request,
+			@RequestBody List<OrganizationUnitContextDto> organizationUnits) {
 
 		Response response;
 		try {
 			response = organizationUnitService.createOrganizationUnits(organizationUnits);
 		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
-		} 
-		LOGGER.info("POST /organization-units resulting in {} with response [{}]", response.getHttpStatus(), response.getMessage());
+		}
+		log.info("POST /organization-units resulting in {} with response [{}]", response.getHttpStatus(),
+				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
 
@@ -74,16 +74,15 @@ public class OrganizationUnitController {
 	public ResponseEntity<Object> postOrganizationUnit(HttpServletRequest request,
 			@RequestBody OrganizationUnitContextDto organizationUnit) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to create a new OU", callerId);
+		log.info("{} try to create a new OU", callerId);
 		Response response;
 		try {
 			response = organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
 		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
+			log.error(e.getMessage());
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		LOGGER.info("{} POST /organization-unit resulting in {} with response [{}]", callerId, response.getHttpStatus(),
+		log.info("{} POST /organization-unit resulting in {} with response [{}]", callerId, response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -97,18 +96,20 @@ public class OrganizationUnitController {
 	 */
 	@ApiOperation(value = "Create users by organization-unit")
 	@PostMapping(path = "/organization-unit/{id}/users")
-	public ResponseEntity<Object> postUsersByOrganizationUnit(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestBody List<UserContextDto> users){
+	public ResponseEntity<Object> postUsersByOrganizationUnit(HttpServletRequest request,
+			@PathVariable(value = "id") String id, @RequestBody List<UserContextDto> users) {
 
 		Response response;
 		try {
 			response = userService.createUsersByOrganizationUnit(users, id);
 		} catch (UserAlreadyExistsException | NoOrganizationUnitException e) {
 			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
-		} 
-		LOGGER.info("POST /organization-unit/{}/users resulting in {} with response [{}]", id, response.getHttpStatus(), response.getMessage());
+		}
+		log.info("POST /organization-unit/{}/users resulting in {} with response [{}]", id, response.getHttpStatus(),
+				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
-	
+
 	/**
 	 * This method return a list of all Organization Units
 	 * 
@@ -118,12 +119,12 @@ public class OrganizationUnitController {
 	 */
 	@ApiOperation(value = "Get all organization-units")
 	@GetMapping(path = "/organization-units")
-	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits(HttpServletRequest request){
+	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits(HttpServletRequest request) {
 		String callerId = utilsService.getUserId(request);
-		LOGGER.info("{} try to get all OUs", callerId);
+		log.info("{} try to get all OUs", callerId);
 		return new ResponseEntity<>(organizationUnitService.findAllOrganizationUnits(), HttpStatus.OK);
 	}
-	
+
 	/**
 	 * This method try to delete target Organization Unit
 	 * 
@@ -133,10 +134,11 @@ public class OrganizationUnitController {
 	 */
 	@ApiOperation(value = "Delete an organization-unit")
 	@DeleteMapping(path = "/organization-unit/{id}")
-	public ResponseEntity<Object> deleteOrganizationUnit(HttpServletRequest request, @PathVariable(value = "id") String id){
+	public ResponseEntity<Object> deleteOrganizationUnit(HttpServletRequest request,
+			@PathVariable(value = "id") String id) {
 		HttpStatus response = organizationUnitService.delete(id);
-		LOGGER.info("DELETE User resulting in {}", response);
+		log.info("DELETE User resulting in {}", response);
 		return new ResponseEntity<>(response);
 	}
-	
+
 }

@@ -2,7 +2,6 @@ package fr.insee.pearljam.api.service.impl;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.domain.Identification;
@@ -12,12 +11,13 @@ import fr.insee.pearljam.api.domain.IdentificationQuestions.SituationQuestionVal
 
 import fr.insee.pearljam.api.repository.IdentificationRepository;
 import fr.insee.pearljam.api.service.IdentificationService;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class IdentificationServiceImpl implements IdentificationService {
 
-    @Autowired
-    IdentificationRepository identificationRepository;
+    private final IdentificationRepository identificationRepository;
 
     @Override
     public Identification findBySurveyUnitId(String id) {
@@ -26,8 +26,9 @@ public class IdentificationServiceImpl implements IdentificationService {
 
     @Override
     public String getIdentificationState(Identification identification) {
-        boolean identificationIsMissing = identification == null || identification.getIdentification() == null;
-        if (identificationIsMissing)
+        if (identification == null)
+            return "MISSING";
+        if (identification.getIdentification() == null)
             return "MISSING";
 
         boolean identificationIsFinished = Arrays

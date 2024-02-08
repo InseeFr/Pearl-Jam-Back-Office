@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +37,8 @@ import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UtilsService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnit}
@@ -50,17 +49,15 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping(path = "/api")
+@RequiredArgsConstructor
+@Slf4j
 public class SurveyUnitController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SurveyUnitController.class);
 
 	private static final String GUEST = "GUEST";
 
-	@Autowired
-	SurveyUnitService surveyUnitService;
+	private final SurveyUnitService surveyUnitService;
 
-	@Autowired
-	UtilsService utilsService;
+	private final UtilsService utilsService;
 
 	@Value("${fr.insee.pearljam.interviewer.role:#{null}}")
 	String interviewerRole;
@@ -74,6 +71,8 @@ public class SurveyUnitController {
 	@Value("${fr.insee.pearljam.admin.role:#{null}}")
 	String adminRole;
 
+	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
+
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
 	 * 
@@ -86,7 +85,7 @@ public class SurveyUnitController {
 			@RequestBody List<SurveyUnitContextDto> surveyUnits) {
 
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
-		LOGGER.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
 	}
@@ -104,7 +103,7 @@ public class SurveyUnitController {
 			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
 
 		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
-		LOGGER.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(),
+		log.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
@@ -126,10 +125,10 @@ public class SurveyUnitController {
 		}
 		List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
 		if (lstSurveyUnit == null) {
-			LOGGER.info("{} GET SurveyUnits resulting in 404", userId);
+			log.info("{} GET SurveyUnits resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("{} GET SurveyUnits resulting in 200", userId);
+		log.info("{} GET SurveyUnits resulting in 200", userId);
 		return new ResponseEntity<>(lstSurveyUnit, HttpStatus.OK);
 	}
 
@@ -150,26 +149,27 @@ public class SurveyUnitController {
 		}
 		Optional<SurveyUnit> su = surveyUnitService.findById(id);
 		if (!su.isPresent()) {
-			LOGGER.error("{} : Survey unit with id {} was not found in database", userId, id);
+			log.error("{} : Survey unit with id {} was not found in database", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
-			LOGGER.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
+			log.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		SurveyUnitDetailDto surveyUnit;
 		try {
 			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
 		} catch (NotFoundException | SurveyUnitException e) {
-			LOGGER.error(e.getMessage());
-			LOGGER.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
+			log.error(e.getMessage());
+			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
+			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.INTERNAL_SERVER_ERROR);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		LOGGER.info("{} : GET SurveyUnit with id {} resulting in 200", userId, id);
+		log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.OK);
 
 		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 
@@ -194,7 +194,7 @@ public class SurveyUnitController {
 		ResponseEntity<SurveyUnitDetailDto> updatedSurveyUnitResponse = surveyUnitService.updateSurveyUnitDetail(userId,
 				id, surveyUnitUpdated);
 		HttpStatus returnCode = updatedSurveyUnitResponse.getStatusCode();
-		LOGGER.info("{} : PUT SurveyUnit with id {} resulting in {}", userId, id, returnCode.value());
+		log.info("{} : PUT SurveyUnit with id {} resulting in {}", userId, id, returnCode.value());
 		return updatedSurveyUnitResponse;
 	}
 
@@ -207,7 +207,7 @@ public class SurveyUnitController {
 			HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		surveyUnitService.saveSurveyUnitToTempZone(id, userId, surveyUnit);
-		LOGGER.info("{} : POST survey-unit {} to temp-zone resulting in 201", userId, id);
+		log.info("{} : POST survey-unit {} to temp-zone resulting in 201", userId, id);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
@@ -218,7 +218,7 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-units/temp-zone")
 	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
 		List<SurveyUnitTempZone> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
-		LOGGER.info("GET survey-units in temp-zone resulting in 200");
+		log.info("GET survey-units in temp-zone resulting in 200");
 		return new ResponseEntity<>(surveyUnitTempZones, HttpStatus.OK);
 	}
 
@@ -240,7 +240,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
-		LOGGER.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
+		log.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
@@ -264,7 +264,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = surveyUnitService.closeSurveyUnit(surveyUnitId, closingCause);
-		LOGGER.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
+		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
@@ -288,7 +288,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
-		LOGGER.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
+		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
@@ -310,7 +310,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = surveyUnitService.updateSurveyUnitComment(userId, surveyUnitId, comment);
-		LOGGER.info("PUT comment on su {} resulting in {}", surveyUnitId, returnCode.value());
+		log.info("PUT comment on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
 
@@ -323,7 +323,7 @@ public class SurveyUnitController {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		HttpStatus returnCode = surveyUnitService.updateSurveyUnitViewed(userId, surveyUnitId);
-		LOGGER.info("PUT viewed on su {} resulting in {}", surveyUnitId, returnCode.value());
+		log.info("PUT viewed on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
 
@@ -346,10 +346,10 @@ public class SurveyUnitController {
 		}
 		Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
 		if (surveyUnit == null) {
-			LOGGER.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
+			log.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		LOGGER.info("{} : GET SurveyUnit with id {} resulting in 200", userId, id);
+		log.info("{} : GET SurveyUnit with id {} resulting in 200", userId, id);
 		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
 	}
 
@@ -366,14 +366,14 @@ public class SurveyUnitController {
 		resp.setHabilitated(false);
 
 		if (role == null) {
-			LOGGER.info(
+			log.info(
 					"Check habilitation of {} without role for accessing survey-unit {} is denied. Please provide a role in request.",
 					userId, id);
 			return new ResponseEntity<>(resp, HttpStatus.OK);
 		}
 		if (request.isUserInRole(adminRole)) {
 			resp.setHabilitated(true);
-			LOGGER.info(
+			log.info(
 					"Check habilitation of {} as {} for accessing survey-unit {} resulted in {} : Admin habilitation override",
 					userId,
 					role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
@@ -390,7 +390,7 @@ public class SurveyUnitController {
 			boolean checkToken = request.isUserInRole(userLocalRole) || request.isUserInRole(userNationalRole);
 			resp.setHabilitated(checkdataBase && checkToken);
 		}
-		LOGGER.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
+		log.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
 				role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
 		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
@@ -409,13 +409,13 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("GET states of surveyUnit {} resulting in 403", id);
+			log.info("GET states of surveyUnit {} resulting in 403", id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		LOGGER.info("GET states of surveyUnit {} resulting in 403", id);
+		log.info("GET states of surveyUnit {} resulting in 403", id);
 		List<StateDto> lstState = surveyUnitService.getListStatesBySurveyUnitId(id);
 		if (lstState.isEmpty()) {
-			LOGGER.info("GET states of surveyUnit {} resulting in 404", id);
+			log.info("GET states of surveyUnit {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new SurveyUnitStatesDto(id, lstState), HttpStatus.OK);
@@ -434,14 +434,14 @@ public class SurveyUnitController {
 	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 
-		LOGGER.info("{} try to GET closable units", userId);
+		log.info("{} try to GET closable units", userId);
 
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("GET closable survey units resulting in 401");
+			log.info("GET closable survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
-		LOGGER.info("GET closable survey units resulting in 200");
+		log.info("GET closable survey units resulting in 200");
 		return new ResponseEntity<>(lstSu, HttpStatus.OK);
 	}
 
@@ -456,15 +456,15 @@ public class SurveyUnitController {
 
 	public ResponseEntity<Object> deleteSurveyUnit(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
-		LOGGER.info("{} try to DELETE survey-unit {}", userId, id);
+		log.info("{} try to DELETE survey-unit {}", userId, id);
 
 		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
 		if (!surveyUnitOptional.isPresent()) {
-			LOGGER.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);
+			log.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		surveyUnitService.delete(surveyUnitOptional.get());
-		LOGGER.info("DELETE survey-unit with id {} resulting in 200", id);
+		log.info("DELETE survey-unit with id {} resulting in 200", id);
 		return ResponseEntity.ok().build();
 	}
 
@@ -479,11 +479,11 @@ public class SurveyUnitController {
 	public ResponseEntity<List<String>> getAllSurveyUnitsId(HttpServletRequest request) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("GET admin survey units resulting in 401");
+			log.info("GET admin survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		List<String> suIds = surveyUnitService.getAllIds();
-		LOGGER.info("{} : GET admin survey units resulting in 200", userId);
+		log.info("{} : GET admin survey units resulting in 200", userId);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);
 	}
 
@@ -500,11 +500,11 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String id) {
 		String userId = utilsService.getUserId(request);
 		if (StringUtils.isBlank(userId)) {
-			LOGGER.info("GET admin survey units for campaign {} resulting in 401", id);
+			log.info("GET admin survey units for campaign {} resulting in 401", id);
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		List<String> suIds = surveyUnitService.getAllIdsByCampaignId(id);
-		LOGGER.info("GET admin survey units for campaign {} resulting in 200", id);
+		log.info("GET admin survey units for campaign {} resulting in 200", id);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);
 	}
 }

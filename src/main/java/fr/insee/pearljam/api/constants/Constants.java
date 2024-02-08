@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.constants;
 
+import java.util.List;
+
 public class Constants {
 	private Constants() {
 		throw new IllegalStateException("Constants class");
@@ -58,7 +60,9 @@ public class Constants {
 
 	public static final String API_INTERVIEWERS = "/api/interviewers";
 	public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";
+	public static final String API_INTERVIEWER_ID = "/api/interviewer/{id}";
 	public static final String API_INTERVIEWER_ID_CAMPAIGNS = "/api/interviewer/{id}/campaigns";
+	public static final String API_ADMIN_INTERVIEWERS = "/api/admin/interviewers";
 
 	public static final String API_USER = "/api/user";
 	public static final String API_USER_ID = "/api/user/{id}";
@@ -84,27 +88,66 @@ public class Constants {
 
 	public static final String API_HEALTH_CHECK = "/api/healthcheck";
 
-	// Error messages
-	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";
-	public static final String ERR_CAMPAIGN_NOT_EXIST = "Campaign {} does not exist";
-	public static final String ERR_NO_OU_FOR_CAMPAIGN = "There is no Organisation Unit for Campaign {} affiliated to user {}";
-
-	public static final String[] STATE_COUNT_FIELDS = { "nvmCount", "nnsCount", "anvCount", "vinCount", "vicCount",
-			"prcCount", "aocCount", "apsCount", "insCount", "wftCount", "wfsCount", "tbrCount", "finCount", "cloCount",
-			"nvaCount", "total" };
-
-	public static final String[] STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "npxCount", "rowCount" };
-
-	public static final String[] CLOSING_CAUSE_FIELDS = { "npaCount", "npiCount", "npxCount", "rowCount", "total" };
-
-	public static final String[] CONTACT_OUTCOME_FIELDS = { "inaCount", "refCount", "impCount", "ucdCount", "utrCount",
-			"alaCount", "dcdCount", "nuhCount", "dukCount", "duuCount", "noaCount" };
-
-	public static final String UNAVAILABLE = "UNAVAILABLE";
-
 	public static final String API_MAIL = "/api/mail";
 
 	public static final String API_ENUM_STATE = "/api/enum/state";
 	public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
 	public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
+	// Error messages
+	public static final String ERR_USER_NOT_EXIST = "User {} does not exist";
+	public static final String ERR_CAMPAIGN_NOT_EXIST = "Campaign {} does not exist";
+	public static final String ERR_NO_OU_FOR_CAMPAIGN = "There is no Organisation Unit for Campaign {} affiliated to user {}";
+
+	// Front expected variables names
+
+	public static final String NVM_COUNT = "nvmCount";
+	public static final String NNS_COUNT = "nnsCount";
+	public static final String ANV_COUNT = "anvCount";
+	public static final String VIN_COUNT = "vinCount";
+	public static final String VIC_COUNT = "vicCount";
+	public static final String PRC_COUNT = "prcCount";
+	public static final String AOC_COUNT = "aocCount";
+	public static final String APS_COUNT = "apsCount";
+	public static final String INS_COUNT = "insCount";
+	public static final String WFT_COUNT = "wftCount";
+	public static final String WFS_COUNT = "wfsCount";
+	public static final String TBR_COUNT = "tbrCount";
+	public static final String FIN_COUNT = "finCount";
+	public static final String CLO_COUNT = "cloCount";
+	public static final String NVA_COUNT = "nvaCount";
+	public static final String TOTAL_COUNT = "total";
+
+	public static final String NPA_COUNT = "npaCount";
+	public static final String NPI_COUNT = "npiCount";
+	public static final String NPX_COUNT = "npxCount";
+	public static final String ROW_COUNT = "rowCount";
+
+	public static final String INA_COUNT = "inaCount";
+	public static final String REF_COUNT = "refCount";
+	public static final String IMP_COUNT = "impCount";
+	public static final String UCD_COUNT = "ucdCount";
+	public static final String UTR_COUNT = "utrCount";
+	public static final String ALA_COUNT = "alaCount";
+	public static final String DCD_COUNT = "dcdCount";
+	public static final String NUH_COUNT = "nuhCount";
+	public static final String DUK_COUNT = "dukCount";
+	public static final String DUU_COUNT = "duuCount";
+	public static final String NOA_COUNT = "noaCount";
+
+	public static final List<String> STATE_COUNT_FIELDS = List.of(NVM_COUNT, NNS_COUNT, ANV_COUNT, VIN_COUNT, VIC_COUNT,
+			PRC_COUNT, AOC_COUNT, APS_COUNT, INS_COUNT, WFT_COUNT, WFS_COUNT, TBR_COUNT, FIN_COUNT, CLO_COUNT,
+			NVA_COUNT, TOTAL_COUNT);
+
+	public static final List<String> STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS = List.of(NPA_COUNT, NPI_COUNT, NPX_COUNT,
+			ROW_COUNT);
+
+	public static final List<String> CLOSING_CAUSE_FIELDS = List.of(NPA_COUNT, NPI_COUNT, NPX_COUNT, ROW_COUNT,
+			TOTAL_COUNT);
+
+	public static final List<String> CONTACT_OUTCOME_FIELDS = List.of(INA_COUNT, REF_COUNT, IMP_COUNT, UCD_COUNT,
+			UTR_COUNT,
+			ALA_COUNT, DCD_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
+
+	public static final String UNAVAILABLE = "UNAVAILABLE";
+
 }

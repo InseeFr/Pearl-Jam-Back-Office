@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 
@@ -15,6 +16,7 @@ import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 
 /**
  * Service for the Interviewer entity
+ * 
  * @author scorcaud
  *
  */
@@ -22,11 +24,10 @@ public interface UserService {
 
 	/**
 	 * @param userId
-	 * @return {@link UserDto}
-	 * @throws NotFoundException 
+	 * @return {@link Optional<UserDto>}
 	 */
-	UserDto getUser(String userId) throws NotFoundException;
-	
+	Optional<UserDto> getUser(String userId);
+
 	/**
 	 * @param userId
 	 * @return true if user is present
@@ -38,14 +39,15 @@ public interface UserService {
 	 * @param currentOu
 	 * @param saveAllLevels
 	 */
-	void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels);
+	void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu,
+			boolean saveAllLevels);
 
 	/**
 	 * @param userId
 	 * @param saveAllLevels
 	 */
 	List<OrganizationUnitDto> getUserOUs(String userId, boolean saveAllLevels);
-	
+
 	/**
 	 * @param campaignId
 	 * @param userId
@@ -53,13 +55,14 @@ public interface UserService {
 	 */
 	public boolean isUserAssocitedToCampaign(String campaignId, String userId);
 
-	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId) throws UserAlreadyExistsException, NoOrganizationUnitException;
+	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId)
+			throws UserAlreadyExistsException, NoOrganizationUnitException;
 
 	HttpStatus delete(String id);
 
-    boolean checkValidity(UserDto user);
+	boolean checkValidity(UserDto user);
 
 	UserDto createUser(UserDto user) throws NotFoundException;
 
-	UserDto updateUser(UserDto user);
+	UserDto updateUser(UserDto user) throws NotFoundException;
 }

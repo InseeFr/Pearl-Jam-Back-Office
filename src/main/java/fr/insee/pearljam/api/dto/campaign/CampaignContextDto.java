@@ -20,6 +20,7 @@ public class CampaignContextDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private Boolean communicationRequestConfiguration;
 
 	public CampaignContextDto() {
 		super();
@@ -87,6 +88,14 @@ public class CampaignContextDto {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getCommunicationRequestConfiguration() {
+		return communicationRequestConfiguration;
+	}
+
+	public void setCommunicationRequestConfiguration(Boolean communicationRequestConfiguration) {
+		this.communicationRequestConfiguration = communicationRequestConfiguration;
 	}
 
 }
