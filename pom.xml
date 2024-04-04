@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.1.5</version>
+	<version>4.1.7</version>
 
 	<packaging>war</packaging>
 	<name>Pearl-Jam-Back-Office</name>
-	<description>Back-office services for for PearlJam</description>
+	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

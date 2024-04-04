@@ -1,4 +1,4 @@
-FROM tomcat:8.5-jdk11-slim
+FROM tomcat:9-jre11-temurin
 
 RUN rm -rf $CATALINA_HOME/webapps/*
 COPY pearljambo.properties log4j2.xml $CATALINA_HOME/webapps/
