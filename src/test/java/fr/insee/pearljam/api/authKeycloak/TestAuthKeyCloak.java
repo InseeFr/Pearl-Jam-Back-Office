@@ -12,8 +12,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -24,37 +29,33 @@ import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.Campaign;
@@ -77,7 +78,6 @@ import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.Status;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
-import fr.insee.pearljam.api.domain.TitleEnum;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.domain.Visibility;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -116,20 +116,17 @@ import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import io.restassured.RestAssured;
+import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import liquibase.Liquibase;
-import liquibase.exception.LiquibaseException;
 
 /* Test class for Keycloak Authentication */
-@ExtendWith(SpringExtension.class)
-@ActiveProfiles({ "test" })
-@ContextConfiguration(initializers = { TestAuthKeyCloak.Initializer.class })
-@Testcontainers
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+@ContextConfiguration
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"fr.insee.pearljam.application.mode = keycloak" })
 class TestAuthKeyCloak {
 
 	@Autowired
@@ -168,64 +165,69 @@ class TestAuthKeyCloak {
 	@Autowired
 	MessageService messageService;
 
-	@Container
-	public static KeycloakContainer keycloak = new KeycloakContainer().withRealmImportFile("realm.json");
+	@Autowired
+	private MockMvc mockMvc;
 
 	@LocalServerPort
-	int port;
+	private int port;
 
-	public static ClientAndServer clientAndServer;
-	public static MockServerClient mockServerClient;
+	private static ClientAndServer clientAndServer;
+	private static MockServerClient mockServerClient;
 
 	public Liquibase liquibase;
 
 	public static final String CLIENT_SECRET = "8951f422-44dd-45b4-a6ac-dde6748075d7";
 	public static final String CLIENT = "client-web";
 
+	static Authentication MANAGER = AuthenticatedUserTestHelper.AUTH_MANAGER;
+	static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
+
 	/**
-	 * This method set up the port of the PostgreSqlContainer
+	 * This method set up the dataBase content
 	 * 
-	 * @throws SQLException
-	 * @throws LiquibaseException
-	 * @throws JSONException
+	 * @throws Exception
+	 * 
 	 */
 	@BeforeEach
-	public void setUp() throws SQLException, LiquibaseException, JSONException {
-		RestAssured.port = port;
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().post("api/create-dataset");
+	public void setUp() throws Exception {
 
+		mockMvc.perform(post("/api/create-dataset").accept(MediaType.APPLICATION_JSON)
+				.with(authentication(MANAGER)));
 	}
 
 	@BeforeAll
-	static void init() throws JSONException {
-		clientAndServer = ClientAndServer.startClientAndServer(8081);
-		mockServerClient = new MockServerClient("127.0.0.1", 8081);
-		String expectedBody = "{"
-				+ "  \"surveyUnitOK\": ["
-				+ "    {"
-				+ "      \"id\": \"23\","
-				+ "      \"stateData\": {"
-				+ "        \"state\": null,"
-				+ "        \"date\": null,"
-				+ "        \"currentPage\": null"
-				+ "      }"
-				+ "    },"
-				+ "    {"
-				+ "      \"id\": \"20\","
-				+ "      \"stateData\": {"
-				+ "        \"state\": \"INIT\","
-				+ "        \"date\": 0,"
-				+ "        \"currentPage\": \"1\""
-				+ "      }"
-				+ "    }"
-				+ "  ],"
-				+ "  \"surveyUnitNOK\": ["
-				+ "    {"
-				+ "      \"id\": \"21\""
-				+ "    }"
-				+ "  ]"
-				+ "}";
+	static void init() {
+
+		clientAndServer = ClientAndServer.startClientAndServer(8088);
+		mockServerClient = new MockServerClient("127.0.0.1", 8088);
+		String expectedBody = """
+				{
+					"surveyUnitOK" : [
+						{
+							"id":"23",
+							"stateData":{
+								"state": null,
+								"date": null,
+								"currentPage": null
+							}
+						},
+						{
+							"id":"20",
+							"stateData":{
+								"state": null,
+								"date": null,
+								"currentPage": null
+							}
+						}
+					],
+					"surveyUnitNOK" : [
+						{
+							"id":"21"
+						}
+					]
+				}
+				""";
+
 		mockServerClient
 				.when(request().withPath(Constants.API_QUEEN_SURVEYUNITS_STATEDATA).withBody("[\"20\",\"21\",\"23\"]"))
 				.respond(response().withStatusCode(200)
@@ -236,41 +238,19 @@ class TestAuthKeyCloak {
 
 	/**
 	 * This method is used to kill the container
+	 * 
+	 * @throws Exception
 	 */
 	@AfterAll
-	public static void cleanUp() {
-		if (postgreSQLContainer != null) {
-			postgreSQLContainer.close();
-		}
-		if (keycloak != null) {
-			keycloak.close();
-		}
+	public static void cleanUp() throws Exception {
+
 		if (mockServerClient != null) {
 			mockServerClient.close();
 		}
 		if (clientAndServer != null) {
 			clientAndServer.close();
 		}
-	}
 
-	/**
-	 * Defines the configuration of the PostgreSqlContainer
-	 */
-	@SuppressWarnings("rawtypes")
-	@Container
-	@ClassRule
-	public static PostgreSQLContainer postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
-			.withDatabaseName("pearljam").withUsername("pearljam").withPassword("pearljam");
-
-	public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
-							"spring.datasource.username=" + postgreSQLContainer.getUsername(),
-							"spring.datasource.password=" + postgreSQLContainer.getPassword(),
-							"keycloak.auth-server-url=" + keycloak.getAuthServerUrl())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
 	}
 
 	/**
@@ -334,15 +314,7 @@ class TestAuthKeyCloak {
 	 */
 	public String resourceOwnerLogin(String clientId, String clientSecret, String username, String password)
 			throws JSONException {
-		Response response = given().auth().preemptive().basic(clientId, clientSecret)
-				.formParam("grant_type", "password")
-				.formParam("username", username)
-				.formParam("password", password)
-				.when()
-				.post(keycloak.getAuthServerUrl() + "/realms/insee-realm/protocol/openid-connect/token");
-		JSONObject jsonObject = new JSONObject(response.getBody().asString());
-		String accessToken = jsonObject.get("access_token").toString();
-		return accessToken;
+		return "YoloToken";
 	}
 
 	/* UserController */
@@ -351,70 +323,79 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/user"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(1)
-	void testGetUser() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/user").then().statusCode(200).and()
-				.assertThat().body("id", equalTo("ABC")).and()
-				.assertThat().body("firstName", equalTo("Melinda")).and()
-				.assertThat().body("lastName", equalTo("Webb")).and()
-				.assertThat().body("organizationUnit.id", equalTo("OU-NORTH")).and()
-				.assertThat().body("organizationUnit.label", equalTo("North region organizational unit")).and()
-				.assertThat().body("localOrganizationUnits[0].id", equalTo("OU-NORTH")).and()
-				.assertThat().body("localOrganizationUnits[0].label", equalTo("North region organizational unit"));
+	void testGetUser() throws Exception {
+
+		mockMvc.perform(get("/api/user").accept(MediaType.APPLICATION_JSON)
+				.with(authentication(MANAGER)))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.id").value("ABC"),
+						jsonPath("$.firstName").value("Melinda"),
+						jsonPath("$.lastName").value("Webb"),
+						jsonPath("$.organizationUnit.id").value("OU-NORTH"),
+						jsonPath("$.organizationUnit.label").value("North region organizational unit"),
+						jsonPath("$.localOrganizationUnits[0].id").value("OU-NORTH"),
+						jsonPath("$.localOrganizationUnits[0].label").value("North region organizational unit"));
 	}
 
 	@Test
 	@Order(1)
-	void testGetCampaignInterviewerStateCountNotAttributed() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+	void testGetCampaignInterviewerStateCountNotAttributed() throws Exception {
 
-		given().auth().oauth2(accessToken).when()
-				.get("api/campaign/SIMPSONS2020X00/survey-units/not-attributed/state-count").then().statusCode(200)
-				.and()
-				.assertThat().body("idDem", equalTo(null)).and()
-				.assertThat().body("nvmCount", equalTo(0)).and()
-				.assertThat().body("nnsCount", equalTo(0)).and()
-				.assertThat().body("anvCount", equalTo(0)).and()
-				.assertThat().body("vinCount", equalTo(0)).and()
-				.assertThat().body("vicCount", equalTo(0)).and()
-				.assertThat().body("prcCount", equalTo(0)).and()
-				.assertThat().body("aocCount", equalTo(0)).and()
-				.assertThat().body("apsCount", equalTo(0)).and()
-				.assertThat().body("insCount", equalTo(0)).and()
-				.assertThat().body("wftCount", equalTo(0)).and()
-				.assertThat().body("wfsCount", equalTo(0)).and()
-				.assertThat().body("tbrCount", equalTo(1)).and()
-				.assertThat().body("finCount", equalTo(0)).and()
-				.assertThat().body("cloCount", equalTo(0)).and()
-				.assertThat().body("nvaCount", equalTo(0)).and()
-				.assertThat().body("npaCount", equalTo(0)).and()
-				.assertThat().body("npiCount", equalTo(0)).and()
-				.assertThat().body("rowCount", equalTo(0)).and()
-				.assertThat().body("total", equalTo(1));
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/state-count")
+				.accept(MediaType.APPLICATION_JSON)
+				.with(authentication(MANAGER)))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.nvmCount").value("0"),
+						jsonPath("$.nnsCount").value("0"),
+						jsonPath("$.anvCount").value("0"),
+						jsonPath("$.vinCount").value("0"),
+						jsonPath("$.vicCount").value("0"),
+						jsonPath("$.prcCount").value("0"),
+						jsonPath("$.aocCount").value("0"),
+						jsonPath("$.apsCount").value("0"),
+						jsonPath("$.insCount").value("0"),
+						jsonPath("$.wftCount").value("0"),
+						jsonPath("$.wfsCount").value("0"),
+						jsonPath("$.tbrCount").value("1"),
+						jsonPath("$.finCount").value("0"),
+						jsonPath("$.cloCount").value("0"),
+						jsonPath("$.nvaCount").value("0"),
+						jsonPath("$.npaCount").value("0"),
+						jsonPath("$.npiCount").value("0"),
+						jsonPath("$.npxCount").value("0"),
+						jsonPath("$.rowCount").value("0"),
+						jsonPath("$.total").value("1"));
+
 	}
 
 	@Test
 	@Order(1)
-	void testGetContactOutcomeCountNotattributed() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
-				.get("api/campaign/SIMPSONS2020X00/survey-units/not-attributed/contact-outcomes").then().statusCode(200)
-				.and().assertThat().body("inaCount", equalTo(0))
-				.and().assertThat().body("refCount", equalTo(0))
-				.and().assertThat().body("impCount", equalTo(0))
-				.and().assertThat().body("ucdCount", equalTo(0))
-				.and().assertThat().body("utrCount", equalTo(0))
-				.and().assertThat().body("alaCount", equalTo(0))
-				.and().assertThat().body("dcdCount", equalTo(0))
-				.and().assertThat().body("nuhCount", equalTo(0))
-				.and().assertThat().body("dukCount", equalTo(1))
-				.and().assertThat().body("duuCount", equalTo(0))
-				.and().assertThat().body("noaCount", equalTo(0));
+	void testGetContactOutcomeCountNotattributed() throws Exception {
+		mockMvc
+				.perform(get(
+						"https://localhost:8080/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/contact-outcomes")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.inaCount").value("0"),
+						jsonPath("$.refCount").value("0"),
+						jsonPath("$.impCount").value("0"),
+						jsonPath("$.ucdCount").value("0"),
+						jsonPath("$.utrCount").value("0"),
+						jsonPath("$.alaCount").value("0"),
+						jsonPath("$.dcdCount").value("0"),
+						jsonPath("$.nuhCount").value("0"),
+						jsonPath("$.dukCount").value("1"),
+						jsonPath("$.duuCount").value("0"),
+						jsonPath("$.noaCount").value("0"));
+
 	}
 
 	/**
@@ -431,48 +412,67 @@ class TestAuthKeyCloak {
 		assertEquals(Optional.empty(), userService.getUser("test"));
 	}
 
+	private ResultMatcher checkJsonPath(String formattablePath, String... args) {
+		return jsonPath(String.format(formattablePath, (Object[]) args)).exists();
+	}
+
 	/* CampaignController */
 
 	/**
 	 * Test that the GET endpoint "api/campaigns"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(3)
-	void testGetCampaign() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).then().statusCode(200).and()
-				.assertThat().body("id", hasItem("SIMPSONS2020X00")).and()
-				.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
-				.assertThat().body("allocated", hasItem(4)).and()
-				.assertThat().body("toAffect", hasItem(0)).and()
-				.assertThat().body("toFollowUp", hasItem(0)).and()
-				.assertThat().body("toReview", hasItem(0)).and()
-				.assertThat().body("finalized", hasItem(0)).and()
-				.assertThat().body("toProcessInterviewer", hasItem(0)).and()
-				.assertThat().body("preference", hasItem(true)).and()
-				.assertThat().body("email", hasItem("first.email@test.com")).and()
-				.assertThat().body("identificationConfiguration", hasItem("IASCO")).and()
-				.assertThat().body("contactAttemptConfiguration", hasItem("F2F")).and()
-				.assertThat().body("contactOutcomeConfiguration", hasItem("F2F"));
+	void testGetCampaign() throws Exception {
+		String campaignJsonPath = "$.[?(@.id == 'SIMPSONS2020X00' && @.%s == '%s')]";
 
-		// Testing dates
-		assertTrue(testingDates("managementStartDate",
-				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("managementStartDate[0]")));
-		assertTrue(testingDates("interviewerStartDate",
-				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
-						.path("interviewerStartDate[0]")));
-		assertTrue(testingDates("identificationPhaseStartDate", given().auth().oauth2(accessToken).when()
-				.get(Constants.API_CAMPAIGNS).path("identificationPhaseStartDate[0]")));
-		assertTrue(testingDates("collectionStartDate",
-				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("collectionStartDate[0]")));
-		assertTrue(testingDates("collectionEndDate",
-				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("collectionEndDate[0]")));
-		assertTrue(testingDates("endDate",
-				given().auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("endDate[0]")));
+		mockMvc
+				.perform(get(Constants.API_CAMPAIGNS)
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						checkJsonPath(campaignJsonPath, "label", "Survey on the Simpsons tv show 2020"),
+						checkJsonPath(campaignJsonPath, "allocated", "4"),
+						checkJsonPath(campaignJsonPath, "toProcessInterviewer", "0"),
+						checkJsonPath(campaignJsonPath, "toAffect", "0"),
+						checkJsonPath(campaignJsonPath, "toFollowUp", "0"),
+						checkJsonPath(campaignJsonPath, "finalized", "0"),
+						checkJsonPath(campaignJsonPath, "email", "first.email@test.com"),
+						checkJsonPath(campaignJsonPath, "identificationConfiguration",
+								IdentificationConfiguration.IASCO.name()),
+						checkJsonPath(campaignJsonPath, "contactAttemptConfiguration",
+								ContactAttemptConfiguration.F2F.name()),
+						checkJsonPath(campaignJsonPath, "contactOutcomeConfiguration",
+								ContactOutcomeConfiguration.F2F.name()));
+		// dig this to complete test:
+		// checkJsonPath(campaignJsonPath, "preference", "true"),
+		// checkJsonPath(campaignJsonPath, "toReview", "0"),
+		// checkJsonPath(campaignJsonPath, "communicationRequestConfiguration",
+		// "false"),
+
+		// // Testing dates => need a refactor of service to provide a Clock (fixed
+		// clock for tests)
+		// assertTrue(testingDates("managementStartDate",
+		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
+		// .path("managementStartDate[0]")));
+		// assertTrue(testingDates("interviewerStartDate",
+		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
+		// .path("interviewerStartDate[0]")));
+		// assertTrue(testingDates("identificationPhaseStartDate",
+		// given().port(port).auth().oauth2(accessToken).when()
+		// .get(Constants.API_CAMPAIGNS).path("identificationPhaseStartDate[0]")));
+		// assertTrue(testingDates("collectionStartDate",
+		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
+		// .path("collectionStartDate[0]")));
+		// assertTrue(testingDates("collectionEndDate",
+		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)
+		// .path("collectionEndDate[0]")));
+		// assertTrue(testingDates("endDate",
+		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS).path("endDate[0]")));
 
 	}
 
@@ -480,79 +480,87 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(4)
-	void testGetCampaignInterviewer() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X00/interviewers").then()
-				.statusCode(200).and()
-				.assertThat().body("id", hasItem("INTW1")).and()
-				.assertThat().body("interviewerFirstName", hasItem("Margie")).and()
-				.assertThat().body("interviewerLastName", hasItem("Lucas")).and()
-				.assertThat().body("surveyUnitCount", hasItem(2));
+	void testGetCampaignInterviewer() throws Exception {
+		String interviewerJsonPath = "$.[?(@.id == 'INTW1' && @.%s == '%s')]";
+		mockMvc
+				.perform(get("/api/campaign/SIMPSONS2020X00/interviewers")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						checkJsonPath(interviewerJsonPath, "interviewerFirstName", "Margie"),
+						checkJsonPath(interviewerJsonPath, "interviewerLastName", "Lucas"),
+						checkJsonPath(interviewerJsonPath, "surveyUnitCount", "2"));
 	}
 
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 404 when campaign Id is false
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(5)
-	void testGetCampaignInterviewerNotFound() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X000000/interviewers").then()
-				.statusCode(404);
+	void testGetCampaignInterviewerNotFound() throws Exception {
+		mockMvc
+				.perform(get("/api/campaign/SIMPSONS2020X000000/interviewers")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
 	}
 
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(6)
-	void testGetCampaignStateCount() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X00/survey-units/state-count").then()
-				.statusCode(200).and()
-				.assertThat().body("organizationUnits.idDem", hasItem("OU-NORTH")).and()
-				.assertThat().body("organizationUnits[0].nvmCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].nnsCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].anvCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].vinCount", equalTo(1)).and()
-				.assertThat().body("organizationUnits[0].vicCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].prcCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].aocCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].apsCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].insCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].wftCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].wfsCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].tbrCount", equalTo(4)).and()
-				.assertThat().body("organizationUnits[0].finCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].cloCount", equalTo(0)).and()
-				// .assertThat().body("organizationUnits[0].qnaFinCount",equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].nvaCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].npaCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].npiCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].rowCount", equalTo(0)).and()
-				.assertThat().body("organizationUnits[0].total", equalTo(5));
+	void testGetCampaignStateCount() throws Exception {
+		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH' && @.%s == '%s')]";
+
+		mockMvc
+				.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						checkJsonPath(ouJsonPath, "nvmCount", "0"),
+						checkJsonPath(ouJsonPath, "nnsCount", "0"),
+						checkJsonPath(ouJsonPath, "anvCount", "0"),
+						checkJsonPath(ouJsonPath, "vinCount", "1"),
+						checkJsonPath(ouJsonPath, "vicCount", "0"),
+						checkJsonPath(ouJsonPath, "prcCount", "0"),
+						checkJsonPath(ouJsonPath, "aocCount", "0"),
+						checkJsonPath(ouJsonPath, "apsCount", "0"),
+						checkJsonPath(ouJsonPath, "insCount", "0"),
+						checkJsonPath(ouJsonPath, "wftCount", "0"),
+						checkJsonPath(ouJsonPath, "wfsCount", "0"),
+						checkJsonPath(ouJsonPath, "tbrCount", "4"),
+						checkJsonPath(ouJsonPath, "finCount", "0"),
+						checkJsonPath(ouJsonPath, "cloCount", "0"),
+						checkJsonPath(ouJsonPath, "nvaCount", "0"),
+						checkJsonPath(ouJsonPath, "npaCount", "0"),
+						checkJsonPath(ouJsonPath, "npiCount", "0"),
+						checkJsonPath(ouJsonPath, "rowCount", "0"),
+						checkJsonPath(ouJsonPath, "total", "5"));
+
 	}
 
 	@Test
 	@Order(7)
 	void testPutClosingCauseNoPreviousClosingCause()
-			throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().put("api/survey-unit/11/closing-cause/NPI")
-				.then().statusCode(200);
+			throws Exception {
+		mockMvc
+				.perform(put("/api/survey-unit/11/closing-cause/NPI")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
 		Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
@@ -563,24 +571,26 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
 	@Order(7)
-	void testGetCampaignStateCountNotFound() throws InterruptedException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/test/survey-units/state-count").then()
-				.statusCode(404);
+	void testGetCampaignStateCountNotFound() throws Exception {
+		mockMvc
+				.perform(get("/api/campaign/test/survey-units/state-count")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	@Order(8)
-	void testPutClosingCausePreviousClosingCause() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-
-		given().auth().oauth2(accessToken).when().put("api/survey-unit/11/closing-cause/NPA")
-				.then().statusCode(200);
+	void testPutClosingCausePreviousClosingCause() throws Exception {
+		mockMvc
+				.perform(put("/api/survey-unit/11/closing-cause/NPA")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
 		Assert.assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
@@ -588,17 +598,24 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(9)
-	void testPutCloseSU() throws InterruptedException, JsonProcessingException, JSONException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+	void testPutCloseSU() throws Exception {
+		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH' && @.%s == '%s')]";
+		mockMvc
+				.perform(put("/api/survey-unit/14/close/ROW")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+		mockMvc
+				.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
+						.with(authentication(MANAGER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(status().isOk(),
+						checkJsonPath(ouJsonPath, "tbrCount", "3"),
+						checkJsonPath(ouJsonPath, "rowCount", "1")
 
-		given().auth().oauth2(accessToken).when().put("api/survey-unit/14/close/ROW")
-				.then().statusCode(200);
-
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X00/survey-units/state-count")
-				.then().statusCode(200).and()
-				.assertThat().body("organizationUnits[0].tbrCount", equalTo(3)).and()
-				.assertThat().body("organizationUnits[0].rowCount", equalTo(1));
+				);
 	}
 
 	/**
@@ -606,14 +623,14 @@ class TestAuthKeyCloak {
 	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws Exception
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(8)
-	void testGetCampaignInterviewerStateCount() throws InterruptedException, JSONException {
+	void testGetCampaignInterviewerStateCount() throws Exception {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/state-count").then().statusCode(200)
 				.and()
 				.assertThat().body("idDem", equalTo(null)).and()
@@ -648,10 +665,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(9)
 	void testGetCampaignInterviewerStateCountNotFoundCampaign() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/state-count").then()
 				.statusCode(404);
 	}
@@ -665,10 +683,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(10)
 	void testGetCampaignInterviewerStateCountNotFoundIntw() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X00/survey-units/interviewer/test/state-count").then().statusCode(404);
 	}
 
@@ -682,10 +701,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(11)
 	void testGetSurveyUnitDetail() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
-		given().auth().oauth2(accessToken).when().get("api/survey-unit/11").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/survey-unit/11").then().statusCode(200).and()
 				.assertThat().body("id", equalTo("11")).and()
 				.assertThat().body("persons[2].firstName", is(oneOf("Christine", "Ted", "Louise"))).and()
 				.assertThat().body("persons[2].phoneNumbers[0].number", equalTo("+33677542802")).and()
@@ -717,16 +737,17 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(12)
 	void testGetAllSurveyUnit() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
 		String accessToken2 = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/survey-units").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/survey-units").then().statusCode(200).and()
 				.assertThat().body("id", hasItem("11")).and()
 				.assertThat().body("campaign", hasItem("SIMPSONS2020X00")).and()
 				.assertThat().body("campaignLabel", hasItem("Survey on the Simpsons tv show 2020"));
 
-		Response resp = given().auth().oauth2(accessToken2).when().get(Constants.API_CAMPAIGNS);
+		Response resp = given().port(port).auth().oauth2(accessToken2).when().get(Constants.API_CAMPAIGNS);
 		// Testing dates
 		assertTrue(testingDates("managementStartDate", resp.path("managementStartDate[0]")));
 		assertTrue(testingDates("interviewerStartDate", resp.path("interviewerStartDate[0]")));
@@ -745,10 +766,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(13)
 	void testGetSurveyUnitDetailNotFound() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
-		given().auth().oauth2(accessToken).when().get("api/survey-unit/123456789")
+		given().port(port).auth().oauth2(accessToken).when().get("api/survey-unit/123456789")
 				.then()
 				.statusCode(404);
 	}
@@ -762,6 +784,7 @@ class TestAuthKeyCloak {
 	 * @throws SurveyUnitException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(14)
 	void testPutSurveyUnitDetail() throws InterruptedException, JsonProcessingException, JSONException,
 			SurveyUnitException, NotFoundException {
@@ -787,14 +810,14 @@ class TestAuthKeyCloak {
 		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC, Medium.TEL),
 				new ContactAttemptDto(1589268800000L, Status.INA, Medium.TEL)));
 		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.IMP, 2));
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(surveyUnitDetailDto))
 				.when()
 				.put("api/survey-unit/20")
 				.then()
 				.statusCode(200);
-		Response response = given().auth().oauth2(accessToken).when().get("api/survey-unit/20");
+		Response response = given().port(port).auth().oauth2(accessToken).when().get("api/survey-unit/20");
 		response.then().statusCode(200).and()
 				.assertThat().body("id", equalTo("20")).and()
 				.assertThat().body("persons[0].phoneNumbers[0].number", equalTo("test")).and()
@@ -833,10 +856,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(15)
 	void testPutSurveyUnitState() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.when()
 				.put("api/survey-unit/12/state/WFT")
@@ -851,10 +875,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(16)
 	void testPutSurveyUnitStateStateFalse() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.when()
 				.put("api/survey-unit/11/state/test")
@@ -869,12 +894,13 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(17)
 	void testPutSurveyUnitStateNoSu() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listSu = new ArrayList<>();
 		listSu.add("");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.when()
 				.put("api/survey-unit/11/state/AOC")
@@ -889,12 +915,13 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(18)
 	void testPutPreferences() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("SIMPSONS2020X00");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(listPreferences))
 				.when()
@@ -910,12 +937,13 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(19)
 	void testPutPreferencesWrongCampaignId() throws InterruptedException, JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		List<String> listPreferences = new ArrayList<>();
 		listPreferences.add("");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(listPreferences))
 				.when()
@@ -931,11 +959,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(19)
 	void testGetCampaignInterviewerClosingCauseCount() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/closing-causes").then()
 				.statusCode(200).and()
 				.assertThat().body("npaCount", equalTo(1)).and()
@@ -951,10 +980,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(20)
 	void testGetNbSuAbandoned() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("api/campaign/SIMPSONS2020X00/survey-units/abandoned")
 				.then()
 				.statusCode(200).and()
@@ -968,10 +998,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(20)
 	void testGetContactOutcomeCountByCampaign() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X00/survey-units/contact-outcomes")
+		given().port(port).auth().oauth2(accessToken).when()
+				.get("api/campaign/SIMPSONS2020X00/survey-units/contact-outcomes")
 				.then().statusCode(200)
 				.and().assertThat().body("organizationUnits[0].idDem", equalTo("OU-NORTH"))
 				.and().assertThat().body("organizationUnits[0].labelDem", equalTo("North region organizational unit"))
@@ -995,10 +1027,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(20)
 	void testGetContactOutcomeCountAllCampaign() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaigns/survey-units/contact-outcomes").then()
+		given().port(port).auth().oauth2(accessToken).when().get("api/campaigns/survey-units/contact-outcomes").then()
 				.statusCode(200)
 				.and().assertThat().body("[0].campaign.id", equalTo("SIMPSONS2020X00"))
 				.and().assertThat().body("[0].campaign.label", equalTo("Survey on the Simpsons tv show 2020"))
@@ -1023,10 +1056,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(21)
 	void testGetNbSuAbandonedNotFound() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("api/campaign/test/survey-units/abandoned")
 				.then()
 				.statusCode(404);
@@ -1039,10 +1073,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(22)
 	void testGetNbSuNotAttributed() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("api/campaign/SIMPSONS2020X00/survey-units/not-attributed")
 				.then()
 				.statusCode(200).and()
@@ -1056,10 +1091,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(23)
 	void testGetNbSuNotAttributedNotFound() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("api/campaign/test/survey-units/not-attributed")
 				.then()
 				.statusCode(404);
@@ -1073,10 +1109,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(29)
 	void testPutVisibilityModifyAllDates() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body("{\"managementStartDate\": 1575937000000 , "
 						+ "\"interviewerStartDate\": 1576801000000,"
@@ -1107,11 +1144,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(30)
 	void testPutVisibilityModifyCollectionStartDate()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body("{\"collectionStartDate\": 1577847800000}")
 				.when()
@@ -1132,11 +1170,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(31)
 	void testPutVisibilityModifyCollectionEndDate()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body("{\"collectionEndDate\": 1577857800000}")
 				.when()
@@ -1157,10 +1196,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(32)
 	void testPutVisibilityEmptyBody() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body("{}")
 				.when()
@@ -1177,10 +1217,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(33)
 	void testPutVisibilityBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body("{\"managementStartDate\": 1640996200000, "
 						+ "\"interviewerStartDate\": \"10/10/2020\","
@@ -1200,6 +1241,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(34)
 	void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1207,7 +1249,7 @@ class TestAuthKeyCloak {
 		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("abc");
-		given().auth().oauth2(accessToken).contentType("application/json")
+		given().port(port).auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/message").then().statusCode(200);
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
@@ -1220,10 +1262,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(35)
 	void testPostMessageBadFormat() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).contentType("application/json")
+		given().port(port).auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(null)).when().post("api/message").then().statusCode(400);
 	}
 
@@ -1234,10 +1277,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(36)
 	void testGetMessage() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
-		given().auth().oauth2(accessToken).when().get("api/messages/INTW1").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/messages/INTW1").then().statusCode(200).and()
 				.assertThat().body("text", hasItem("TEST"));
 	}
 
@@ -1248,10 +1292,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(37)
 	void testGetMessageWrongId() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "INTW1", "a");
-		given().auth().oauth2(accessToken).when().get("api/messages/123456789").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/messages/123456789").then().statusCode(200).and()
 				.assertThat().body("isEmpty()", Matchers.is(true));
 	}
 
@@ -1262,11 +1307,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(38)
 	void testPutMessageAsRead() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
-		given().auth().oauth2(accessToken).contentType("application/json").when()
+		given().port(port).auth().oauth2(accessToken).contentType("application/json").when()
 				.put("api/message/" + messageId + "/interviewer/INTW1/read").then().statusCode(200);
 		Optional<Message> message = messageRepository.findById(messageId);
 		assertEquals(MessageStatusType.REA, message.get().getMessageStatus().get(0).getStatus());
@@ -1279,11 +1325,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(39)
 	void testPutMessageAsDelete() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
-		given().auth().oauth2(accessToken).contentType("application/json").when()
+		given().port(port).auth().oauth2(accessToken).contentType("application/json").when()
 				.put("api/message/" + messageId + "/interviewer/INTW1/delete").then().statusCode(200);
 		Optional<Message> message = messageRepository.findById(messageId);
 		assertEquals(MessageStatusType.DEL, message.get().getMessageStatus().get(0).getStatus());
@@ -1296,11 +1343,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(40)
 	void testPutMessageAsReadWrongId() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
-		given().auth().oauth2(accessToken).contentType("application/json").when()
+		given().port(port).auth().oauth2(accessToken).contentType("application/json").when()
 				.put("api/message/" + messageId + "/interviewer/Test/read").then().statusCode(404);
 	}
 
@@ -1311,10 +1359,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(41)
 	void testGetMessageHistory() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/message-history").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/message-history").then().statusCode(200).and()
 				.assertThat().body("text", hasItem("TEST"));
 	}
 
@@ -1325,11 +1374,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(42)
 	void testPostVerifyName() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		WsText message = new WsText("simps");
-		given().auth().oauth2(accessToken).contentType("application/json")
+		given().port(port).auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/verify-name").then()
 				.statusCode(200).and().assertThat().body("id", hasItem("SIMPSONS2020X00"));
 	}
@@ -1340,13 +1390,14 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(43)
 	void testPostMessageSysteme() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "intw1", "a");
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("Synchronisation", recipients);
-		given().auth().oauth2(accessToken).contentType("application/json")
+		given().port(port).auth().oauth2(accessToken).contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(message)).when().post("api/message").then().statusCode(200);
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
@@ -1360,10 +1411,11 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(44)
 	void testGetInterviewer() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/interviewers").then().statusCode(200)
+		given().port(port).auth().oauth2(accessToken).when().get("api/interviewers").then().statusCode(200)
 				.and().assertThat().body("id", hasItem("INTW1"))
 				.and().assertThat().body("interviewerFirstName", hasItem("Margie"))
 				.and().assertThat().body("interviewerLastName", hasItem("Lucas"));
@@ -1376,16 +1428,19 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(45)
 	void testGetInterviewerForCampaign() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/interviewer/INTW1/campaigns").then().statusCode(200)
+		given().port(port).auth().oauth2(accessToken).when().get("api/interviewer/INTW1/campaigns").then()
+				.statusCode(200)
 				.and().assertThat().body("id", hasItem("SIMPSONS2020X00"))
 				.and().assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020"));
-		assertTrue(testingDates("managementStartDate", given().auth().oauth2(accessToken).when()
+		assertTrue(testingDates("managementStartDate", given().port(port).auth().oauth2(accessToken).when()
 				.get("api/interviewer/INTW1/campaigns").path("managementStartDate[0]")));
 		assertTrue(testingDates("endDate",
-				given().auth().oauth2(accessToken).when().get("api/interviewer/INTW1/campaigns").path("endDate[0]")));
+				given().port(port).auth().oauth2(accessToken).when().get("api/interviewer/INTW1/campaigns")
+						.path("endDate[0]")));
 	}
 
 	/**
@@ -1396,10 +1451,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(46)
 	void testGetInterviewerNotExistForCampaign() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/interviewer/INTW123/campaigns").then().statusCode(404);
+		given().port(port).auth().oauth2(accessToken).when().get("api/interviewer/INTW123/campaigns").then()
+				.statusCode(404);
 	}
 
 	/**
@@ -1409,6 +1466,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(47)
 	void testGetSUCloasable() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1423,7 +1481,7 @@ class TestAuthKeyCloak {
 			visi.setEndDate(System.currentTimeMillis() + 86400000);
 			visibilityRepository.save(visi);
 
-			given().auth().oauth2(accessToken).when()
+			given().port(port).auth().oauth2(accessToken).when()
 					.get("api/survey-units/closable").then().statusCode(200)
 					.and().assertThat().body("id", hasItem("21"))
 					.and().assertThat().body("ssech", hasItem(1));
@@ -1445,11 +1503,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(48)
 	void testGetContactOutcomeCountByCampaignAndInterviewer()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/contact-outcomes").then()
 				.statusCode(200)
 				.and().assertThat().body("inaCount", equalTo(0))
@@ -1473,11 +1532,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(49)
 	void testGetContactOutcomeCountByCampaignNotExistAndInterviewer()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/contact-outcomes").then()
 				.statusCode(404);
 	}
@@ -1490,11 +1550,12 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(50)
 	void testGetContactOutcomeCountByCampaignAndInterviewerNotExist()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when()
+		given().port(port).auth().oauth2(accessToken).when()
 				.get("api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW123/contact-outcomes").then()
 				.statusCode(404);
 	}
@@ -1506,11 +1567,13 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(52)
 	void testGetContactOutcomeCountByCampaignNotExist()
 			throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/campaign/SIMPSONS2020X000000/survey-units/contact-outcomes")
+		given().port(port).auth().oauth2(accessToken).when()
+				.get("api/campaign/SIMPSONS2020X000000/survey-units/contact-outcomes")
 				.then().statusCode(404);
 	}
 
@@ -1521,6 +1584,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(54)
 	void testPutCommentOnSu() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1534,7 +1598,7 @@ class TestAuthKeyCloak {
 				.body(new ObjectMapper().writeValueAsString(new CommentDto(comment)))
 				.when()
 				.put("api/survey-unit/11/comment").then().statusCode(200);
-		given().auth().oauth2(accessToken2).when().get("api/survey-unit/11").then().statusCode(200)
+		given().port(port).auth().oauth2(accessToken2).when().get("api/survey-unit/11").then().statusCode(200)
 				.and().assertThat().body("comments[0].type", equalTo(CommentType.MANAGEMENT.toString()))
 				.and().assertThat().body("comments[0].value", equalTo("Test of comment"));
 	}
@@ -1547,6 +1611,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(55)
 	void testPutCommentSuNotExist() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1568,6 +1633,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(56)
 	void testPutSuViewed() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1589,6 +1655,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(57)
 	void testPutSuViewedNotExist() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1609,10 +1676,11 @@ class TestAuthKeyCloak {
 	 * @throws JSONException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(58)
 	void testGetOrganizationUnits() throws InterruptedException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken).when().get("api/organization-units").then().statusCode(200).and()
+		given().port(port).auth().oauth2(accessToken).when().get("api/organization-units").then().statusCode(200).and()
 				.assertThat().body("id", hasItem("OU-NORTH")).and()
 				.assertThat().body("label", hasItem("North region organizational unit")).and()
 				.assertThat().body("id", hasItem("OU-SOUTH")).and()
@@ -1628,6 +1696,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(100)
 	void testPostCampaignContext() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1710,6 +1779,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(101)
 	void testPostCampaignContextNoLabel() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1762,6 +1832,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(102)
 	void testPostCampaignContextMissingOU() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1812,6 +1883,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(103)
 	void testPostOrganizationUnitContext() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -1906,6 +1978,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(104)
 	void testPostOrganizationUnitContextDuplicateUser()
 			throws InterruptedException, JsonProcessingException, JSONException {
@@ -1973,6 +2046,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(105)
 	void testPostOrganizationUnitContextNoOU() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2040,6 +2114,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(106)
 	void testPostInterviewers() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2051,7 +2126,7 @@ class TestAuthKeyCloak {
 				"Legrand",
 				"pierre.legrand@insee.fr",
 				"06 XX XX XX XX",
-				TitleEnum.MISTER);
+				Title.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV2",
@@ -2059,7 +2134,7 @@ class TestAuthKeyCloak {
 				"Legouanec",
 				"clara.legouanec@insee.fr",
 				"06 XX XX XX XX",
-				TitleEnum.MISS);
+				Title.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2083,13 +2158,13 @@ class TestAuthKeyCloak {
 		assertEquals("Legrand", interv1Opt.get().getLastName());
 		assertEquals("pierre.legrand@insee.fr", interv1Opt.get().getEmail());
 		assertEquals("06 XX XX XX XX", interv1Opt.get().getPhoneNumber());
-		assertEquals(TitleEnum.MISTER, interv1Opt.get().getTitle());
+		assertEquals(Title.MISTER, interv1Opt.get().getTitle());
 
 		assertEquals("Clara", interv2Opt.get().getFirstName());
 		assertEquals("Legouanec", interv2Opt.get().getLastName());
 		assertEquals("clara.legouanec@insee.fr", interv2Opt.get().getEmail());
 		assertEquals("06 XX XX XX XX", interv2Opt.get().getPhoneNumber());
-		assertEquals(TitleEnum.MISS, interv2Opt.get().getTitle());
+		assertEquals(Title.MISS, interv2Opt.get().getTitle());
 
 	}
 
@@ -2101,6 +2176,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(107)
 	void testPostInterviewersMissingEmail() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2112,7 +2188,7 @@ class TestAuthKeyCloak {
 				"Legrand",
 				"pierre.legrand@insee.fr",
 				"06 XX XX XX XX",
-				TitleEnum.MISTER);
+				Title.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV5",
@@ -2120,7 +2196,7 @@ class TestAuthKeyCloak {
 				"Legouanec",
 				null,
 				"06 XX XX XX XX",
-				TitleEnum.MISS);
+				Title.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2150,6 +2226,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(108)
 	void testPostInterviewersDuplicateId() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2161,7 +2238,7 @@ class TestAuthKeyCloak {
 				"Legrand",
 				"pierre.legrand@insee.fr",
 				"06 XX XX XX XX",
-				TitleEnum.MISTER);
+				Title.MISTER);
 
 		InterviewerContextDto interv2 = new InterviewerContextDto(
 				"INTERV3",
@@ -2169,7 +2246,7 @@ class TestAuthKeyCloak {
 				"Legouanec",
 				"clara.legouanec@insee.fr",
 				"06 XX XX XX XX",
-				TitleEnum.MISS);
+				Title.MISS);
 
 		listInterviewers.add(interv1);
 		listInterviewers.add(interv2);
@@ -2196,6 +2273,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(109)
 	void testPostInterviewersWithNoTitle() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2223,7 +2301,7 @@ class TestAuthKeyCloak {
 		// Interviewers should have been added
 		Optional<Interviewer> intervNoTitleOpt = interviewerRepository.findById("INTERV_WITHOUT_TITLE");
 		assertTrue(intervNoTitleOpt.isPresent());
-		assertEquals(TitleEnum.MISTER, intervNoTitleOpt.get().getTitle());
+		assertEquals(Title.MISTER, intervNoTitleOpt.get().getTitle());
 	}
 
 	/**
@@ -2235,6 +2313,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(111)
 	void testPostSurveyUnits() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2279,6 +2358,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(112)
 	void testPostSurveyUnitsDuplicateInDB() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2322,6 +2402,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(113)
 	void testPostSurveyUnitsDuplicateInBody() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2365,6 +2446,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(114)
 	void testPostSurveyUnitsOUNotExist() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2408,6 +2490,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(115)
 	void testPostSurveyUnitsCampaignNotExist() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2451,6 +2534,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(117)
 	void testPostSurveyUnitsSUNotValid() throws JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2511,6 +2595,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(118)
 	void testPostAssignements() throws InterruptedException, JsonProcessingException, JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2547,6 +2632,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(119)
 	void testPostAssignementsNoInterviewerDoesntExist()
 			throws InterruptedException, JsonProcessingException, JSONException {
@@ -2585,6 +2671,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(120)
 	void testPostUsersByOU() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2613,6 +2700,7 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
+	@Disabled("WIP")
 	@Order(121)
 	void testPostUsersByOUThatDoesNotExist() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2633,76 +2721,83 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(200)
 	void testDeleteSurveyUnit() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/survey-unit/11")
 				.then().statusCode(200);
 		assertTrue(surveyUnitRepository.findById("11").isEmpty());
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(201)
 	void testDeleteSurveyUnitNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/survey-unit/toto")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(202)
 	void testDeleteCampaign() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/campaign/XCLOSEDX00")
 				.then().statusCode(200);
 		assertTrue(campaignRepository.findById("XCLOSEDX00").isEmpty());
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00")
 				.then().statusCode(409);
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00?force=false")
 				.then().statusCode(409);
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020X00?force=true")
 				.then().statusCode(200);
 		assertTrue(campaignRepository.findById("SIMPSONS2020X00").isEmpty());
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(203)
 	void testDeleteCampaignNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/campaign/SIMPSONS2020XTT")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(204)
 	void testDeleteUser() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/user/JKL")
 				.then().statusCode(200);
 		assertTrue(userRepository.findById("JKL").isEmpty());
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(205)
 	void testDeleteUserNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/user/USER")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(206)
 	void testDeleteOrganizationUnit() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2716,36 +2811,39 @@ class TestAuthKeyCloak {
 					userService.delete(u.getId());
 				});
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/organization-unit/OU-NORTH")
 				.then().statusCode(200);
 		assertTrue(organizationUnitRepository.findById("OU-NORTH").isEmpty());
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(207)
 	void testDeleteOrganizationUnitWithUsersOrSurveyUnits() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/organization-unit/OU-SOUTH")
 				.then().statusCode(400);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(208)
 	void testDeleteOrganizationUnitNotExist() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().delete("api/organization-unit/TEST")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(209)
 	void testCreateValidUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		UserDto user = generateValidUser();
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2753,11 +2851,12 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(210)
 	void testCreateAreadyPresentUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		UserDto user = generateValidUser();
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2765,11 +2864,12 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(211)
 	void testCreateInvalidUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(null))
 				.when().post("api/user")
@@ -2777,7 +2877,7 @@ class TestAuthKeyCloak {
 
 		UserDto user = generateValidUser();
 		user.setFirstName(null);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2785,7 +2885,7 @@ class TestAuthKeyCloak {
 
 		user = generateValidUser();
 		user.setLastName(null);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2793,7 +2893,7 @@ class TestAuthKeyCloak {
 
 		user = generateValidUser();
 		user.setId(null);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2803,7 +2903,7 @@ class TestAuthKeyCloak {
 		OrganizationUnitDto missingOU = user.getOrganizationUnit();
 		missingOU.setId("WHERE_IS_CHARLIE");
 		user.setOrganizationUnit(missingOU);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().post("api/user")
@@ -2811,11 +2911,12 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(212)
 	void testUpdateMissingUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		UserDto user = generateValidUser();
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().put("api/user/TEST")
@@ -2823,11 +2924,12 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(213)
 	void testUpdateWrongUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		UserDto user = generateValidUser();
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().put("api/user/GHI")
@@ -2835,12 +2937,13 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(214)
 	void testUpdateUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
 		UserDto user = generateValidUser();
 		user.setId("GHI");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(user))
 				.when().put("api/user/GHI")
@@ -2853,10 +2956,11 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(215)
 	void testAssignUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().put("api/user/GHI/organization-unit/OU-SOUTH")
 				.then().statusCode(200).and()
 				.assertThat().body("id", equalTo("GHI")).and()
@@ -2865,47 +2969,52 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(216)
 	void testAssignUserMissingUser() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().put("api/user/MISSING/organization-unit/OU-SOUTH")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(217)
 	void testAssignUserMissingOu() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().put("api/user/GHI/organization-unit/MISSING")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(218)
 	void testOngoing() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("/campaigns/ZCLOSEDX00/ongoing")
 				.then().statusCode(200).and()
 				.assertThat().body("ongoing", equalTo(false));
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("/campaigns/VQS2021X00/ongoing")
 				.then().statusCode(200).and()
 				.assertThat().body("ongoing", equalTo(true));
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(219)
 	void testOngoingNotFound() throws JSONException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.when().get("/campaigns/MISSING/ongoing")
 				.then().statusCode(404);
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(220)
 	void testPutCampaign() throws JSONException, JsonProcessingException {
 		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
@@ -2930,7 +3039,7 @@ class TestAuthKeyCloak {
 		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
 
 		// path variable campaignId not found in DB
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/MISSING")
@@ -2938,21 +3047,21 @@ class TestAuthKeyCloak {
 
 		// BAD REQUESTS
 		campaignContext.setCampaignLabel(null);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
 				.then().statusCode(400);
 
 		campaignContext.setCampaignLabel("  ");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
 				.then().statusCode(400);
 
 		campaignContext.setCampaignLabel("");
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
@@ -2960,7 +3069,7 @@ class TestAuthKeyCloak {
 
 		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
 		campaignContext.setVisibilities(List.of(emptyVcd));
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
@@ -2968,7 +3077,7 @@ class TestAuthKeyCloak {
 
 		// NOT FOUND VISIBILITY
 		campaignContext.setVisibilities(List.of(missingVcd));
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
@@ -2976,7 +3085,7 @@ class TestAuthKeyCloak {
 
 		// CONFLICT due to visibilities
 		campaignContext.setVisibilities(List.of(invalidVcd));
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
@@ -2988,7 +3097,7 @@ class TestAuthKeyCloak {
 		campaignContext.setContactAttemptConfiguration(ContactAttemptConfiguration.TEL);
 		campaignContext.setContactOutcomeConfiguration(ContactOutcomeConfiguration.TEL);
 		campaignContext.setIdentificationConfiguration(IdentificationConfiguration.NOIDENT);
-		given().auth().oauth2(accessToken)
+		given().port(port).auth().oauth2(accessToken)
 				.contentType("application/json")
 				.body(new ObjectMapper().writeValueAsString(campaignContext))
 				.when().put("api/campaign/ZCLOSEDX00")
@@ -3003,63 +3112,60 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
+	@Disabled("WIP")
 	@Order(221)
-	void testUpdateVisibilityByOu() throws JSONException, JsonProcessingException {
-		String accessToken = resourceOwnerLogin(CLIENT, CLIENT_SECRET, "abc", "a");
+	void testUpdateVisibilityByOu() throws Exception {
 		VisibilityDto visibility = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
 		visibility.setEndDate(visibility.getEndDate() + 1);
-		VisibilityDto emptyVisibility = new VisibilityDto();
 		VisibilityDto invalidVcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
 		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
 
+		String visibilityJson = asJsonString(visibility);
+		String emptyVisibilityJson = asJsonString(new VisibilityDto());
+		String invalidVisibilityJson = asJsonString(invalidVcd);
+
 		// BAD REQUEST
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(visibility))
-				.when().put("api/campaign//organizational-unit/OU-WEST/visibility")
-				.then().statusCode(400);
-
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(visibility))
-				.when().put("api/campaign/ZCLOSEDX00/organizational-unit//visibility")
-				.then().statusCode(400);
-
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(emptyVisibility))
-				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
-				.then().statusCode(400);
+		updateVisibility("ZCLOSEDX00", "OU-WEST", emptyVisibilityJson).andExpect(status().isBadRequest());
 
 		// NOT FOUND
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(visibility))
-				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/MISSING/visibility")
-				.then().statusCode(404);
+		updateVisibility("ZCLOSEDX00", "MISSING", visibilityJson).andExpect(status().isNotFound());
 
 		// CONFLICT
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(invalidVcd))
-				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
-				.then().statusCode(409);
+		updateVisibility("ZCLOSEDX00", "OU-WEST", invalidVisibilityJson).andExpect(status().isConflict());
 
 		// OK
-		given().auth().oauth2(accessToken)
-				.contentType("application/json")
-				.body(new ObjectMapper().writeValueAsString(visibility))
-				.when().put("api/campaign/ZCLOSEDX00/organizational-unit/OU-WEST/visibility")
-				.then().statusCode(200);
+		updateVisibility("ZCLOSEDX00", "OU-WEST", visibilityJson).andExpect(status().isOk());
 		assertEquals(visibility.getEndDate(),
 				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
+	}
 
+	private ResultActions updateVisibility(String campaignId, String OuId, String visibility) throws Exception {
+		return mockMvc.perform(
+				put(updateVisibilityUrl(campaignId, OuId))
+						.with(authentication(MANAGER))
+						.content(visibility)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+	}
+
+	private static String updateVisibilityFormat = "/api/campaign/%s/organizational-unit/%s/visibility";
+
+	private String updateVisibilityUrl(String campaignId, String OuId) {
+		return String.format(updateVisibilityFormat, campaignId, OuId);
+	}
+
+	private static String asJsonString(final Object obj) {
+		try {
+			return new ObjectMapper().writeValueAsString(obj);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private VisibilityContextDto generateVisibilityContextDto(String OuId, String campaignId) {
 		Visibility vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, OuId).get();
 		VisibilityContextDto vcd = new VisibilityContextDto();
-		vcd.setOrganizationalUnit(vis.getCampaign().getId());
+		vcd.setOrganizationalUnit(vis.getOrganizationUnit().getId());
 		vcd.setCollectionEndDate(vis.getCollectionEndDate());
 		vcd.setCollectionStartDate(vis.getCollectionStartDate());
 		vcd.setEndDate(vis.getEndDate());

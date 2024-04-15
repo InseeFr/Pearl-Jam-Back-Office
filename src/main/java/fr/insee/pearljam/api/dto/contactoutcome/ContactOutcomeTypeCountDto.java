@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.dto.contactoutcome;
 
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+// @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @Slf4j
@@ -54,29 +53,29 @@ public class ContactOutcomeTypeCountDto {
 		super();
 	}
 
-	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj) {
+	public ContactOutcomeTypeCountDto(Map<String, Long> obj) {
 		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-	public ContactOutcomeTypeCountDto(Map<String, BigInteger> obj, CampaignDto campaign) {
+	public ContactOutcomeTypeCountDto(Map<String, Long> obj, CampaignDto campaign) {
 		this.campaign = campaign;
 		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-	public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, BigInteger> obj) {
+	public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, Long> obj) {
 		this(obj);
 		this.idDem = idDem;
-		this.setLabelDem(labelDem);
+		this.labelDem = labelDem;
 		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-	private void dispatchAttributeValues(Map<String, BigInteger> obj, List<String> fieldKeys) {
+	private void dispatchAttributeValues(Map<String, Long> obj, List<String> fieldKeys) {
 		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
 		for (String str : fieldKeys) {
 			if (nullOrEmpty) {
 				setLongField(str, 0L);
 			} else {
-				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(BigInteger.ZERO).longValue());
+				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(0L));
 			}
 		}
 	}

@@ -2,44 +2,46 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
  * Campaign tables.
+ * 
  * @author scorcaud
  */
 @Embeddable
-public class VisibilityId implements Serializable{
-	
+public class VisibilityId implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The organizationUnit Id 
+	 * The organizationUnit Id
 	 */
 	@Column(name = "organization_unit_id")
-    private String organizationUnitId;
- 
+	private String organizationUnitId;
+
 	/**
 	 * The campaign Id
 	 */
-    @Column(name = "campaign_id")
-    private String campaignId;
-  
-    /**
-     * Default constructor for the entity
-     */
-    public VisibilityId() {
-    	
-    }
-    
-    /**
-     * Constructor for the entity
-     * @param organizationUnitId
-     * @param campaignId
-     */
-    public VisibilityId(String organizationUnitId, String campaignId) {
+	@Column(name = "campaign_id")
+	private String campaignId;
+
+	/**
+	 * Default constructor for the entity
+	 */
+	public VisibilityId() {
+
+	}
+
+	/**
+	 * Constructor for the entity
+	 * 
+	 * @param organizationUnitId
+	 * @param campaignId
+	 */
+	public VisibilityId(String organizationUnitId, String campaignId) {
 		super();
 		this.organizationUnitId = organizationUnitId;
 		this.campaignId = campaignId;

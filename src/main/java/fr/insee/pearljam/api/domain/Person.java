@@ -5,84 +5,80 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import fr.insee.pearljam.api.dto.person.PersonDto;
 
 /**
-* Entity Person : represent the entity table in DB
-* 
-* @author Corcaud Samuel
-* 
-*/
+ * Entity Person : represent the entity table in DB
+ * 
+ * @author Corcaud Samuel
+ * 
+ */
 @Entity
 @Table
 public class Person implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	/**
-	* The title of Person 
-	*/
+	 * The title of Person
+	 */
 	private Title title;
-	
+
 	/**
 	 * The first name of the Person
 	 */
 	private String firstName;
-	
+
 	/**
 	 * The last name of the Person
 	 */
 	private String lastName;
-	
+
 	/**
 	 * The email of the Person
 	 */
 	private String email;
-	
+
 	/**
 	 * The birthdate of the Person
 	 */
 	private Long birthdate;
-	
-
 
 	/**
 	 * Is the favorite email of the person
 	 */
 	private boolean favoriteEmail;
-	
+
 	/**
 	 * Is the person privileged
 	 */
 	private boolean privileged;
-	
+
 	/**
 	 * SurveyUnit associated to the person
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	private SurveyUnit surveyUnit;
-	
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity=PhoneNumber.class, cascade = CascadeType.ALL, mappedBy="person", orphanRemoval=true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
 	private Set<PhoneNumber> phoneNumbers = new HashSet<>();
-	
 
 	/**
 	 * Default constructor
@@ -94,7 +90,8 @@ public class Person implements Serializable {
 	/**
 	 * Constructor with all args
 	 */
-	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail, boolean privileged, Long birthdate) {
+	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail,
+			boolean privileged, Long birthdate) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -103,7 +100,7 @@ public class Person implements Serializable {
 		this.privileged = privileged;
 		this.birthdate = birthdate;
 	}
-	
+
 	public Person(PersonDto p, SurveyUnit su) {
 		this.title = p.getTitle();
 		this.firstName = p.getFirstName();
@@ -112,7 +109,8 @@ public class Person implements Serializable {
 		this.favoriteEmail = p.isFavoriteEmail();
 		this.privileged = p.isPrivileged();
 		this.birthdate = p.getBirthdate();
-		this.phoneNumbers = p.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, this)).collect(Collectors.toSet());
+		this.phoneNumbers = p.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, this))
+				.collect(Collectors.toSet());
 		this.surveyUnit = su;
 	}
 
@@ -144,7 +142,7 @@ public class Person implements Serializable {
 	public void setBirthdate(Long birthdate) {
 		this.birthdate = birthdate;
 	}
-	
+
 	/**
 	 * @return the firstName
 	 */
@@ -235,8 +233,7 @@ public class Person implements Serializable {
 	public void setFavoriteEmail(boolean favoriteEmail) {
 		this.favoriteEmail = favoriteEmail;
 	}
-	
-	
+
 	public Set<PhoneNumber> getPhoneNumbers() {
 		return phoneNumbers;
 	}

@@ -2,42 +2,22 @@ package fr.insee.pearljam.api.dto.address;
 
 import fr.insee.pearljam.api.domain.Address;
 import fr.insee.pearljam.api.domain.InseeAddress;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@AllArgsConstructor
+@Getter
+@Setter
 public class AddressDto {
 
-	/**
-	 * First line of the AdressDto
-	 */
+	// address 7 lines
 	private String l1;
-
-	/**
-	 * Second line of the AdressDto
-	 */
 	private String l2;
-
-	/**
-	 * Third line of the AdressDto
-	 */
 	private String l3;
-
-	/**
-	 * Fourth line of the AdressDto
-	 */
 	private String l4;
-
-	/**
-	 * Fifth line of the AdressDto
-	 */
 	private String l5;
-
-	/**
-	 * Sixtth line of the AdressDto
-	 */
 	private String l6;
-
-	/**
-	 * Seventh line of the AdressDto
-	 */
 	private String l7;
 
 	private Boolean elevator;
@@ -46,23 +26,6 @@ public class AddressDto {
 	private String door;
 	private String staircase;
 	private Boolean cityPriorityDistrict;
-
-	public AddressDto(String l1, String l2, String l3, String l4, String l5, String l6, String l7, Boolean elevator,
-			String building, String floor, String door, String staircase, Boolean cityPriorityDistrict) {
-		this.l1 = l1;
-		this.l2 = l2;
-		this.l3 = l3;
-		this.l4 = l4;
-		this.l5 = l5;
-		this.l6 = l6;
-		this.l7 = l7;
-		this.elevator = elevator;
-		this.building = building;
-		this.floor = floor;
-		this.door = door;
-		this.staircase = staircase;
-		this.cityPriorityDistrict = cityPriorityDistrict;
-	}
 
 	public AddressDto(Address address) {
 		super();
@@ -85,160 +48,6 @@ public class AddressDto {
 
 	public AddressDto() {
 		super();
-	}
-
-	/**
-	 * @return the l1
-	 */
-	public String getL1() {
-		return l1;
-	}
-
-	/**
-	 * @param l1 the l1 to set
-	 */
-	public void setL1(String l1) {
-		this.l1 = l1;
-	}
-
-	/**
-	 * @return the l2
-	 */
-	public String getL2() {
-		return l2;
-	}
-
-	/**
-	 * @param l2 the l2 to set
-	 */
-	public void setL2(String l2) {
-		this.l2 = l2;
-	}
-
-	/**
-	 * @return the l3
-	 */
-	public String getL3() {
-		return l3;
-	}
-
-	/**
-	 * @param l3 the l3 to set
-	 */
-	public void setL3(String l3) {
-		this.l3 = l3;
-	}
-
-	/**
-	 * @return the l4
-	 */
-	public String getL4() {
-		return l4;
-	}
-
-	/**
-	 * @param l4 the l4 to set
-	 */
-	public void setL4(String l4) {
-		this.l4 = l4;
-	}
-
-	/**
-	 * @return the l5
-	 */
-	public String getL5() {
-		return l5;
-	}
-
-	/**
-	 * @param l5 the l5 to set
-	 */
-	public void setL5(String l5) {
-		this.l5 = l5;
-	}
-
-	/**
-	 * @return the l6
-	 */
-	public String getL6() {
-		return l6;
-	}
-
-	/**
-	 * @param l6 the l6 to set
-	 */
-	public void setL6(String l6) {
-		this.l6 = l6;
-	}
-
-	/**
-	 * @return the l7
-	 */
-	public String getL7() {
-		return l7;
-	}
-
-	/**
-	 * @param l7 the l7 to set
-	 */
-	public void setL7(String l7) {
-		this.l7 = l7;
-	}
-
-	public Boolean isElevator() {
-		return this.elevator;
-	}
-
-	public Boolean getElevator() {
-		return this.elevator;
-	}
-
-	public void setElevator(Boolean elevator) {
-		this.elevator = elevator;
-	}
-
-	public String getBuilding() {
-		return this.building;
-	}
-
-	public void setBuilding(String building) {
-		this.building = building;
-	}
-
-	public String getFloor() {
-		return this.floor;
-	}
-
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-
-	public String getDoor() {
-		return this.door;
-	}
-
-	public void setDoor(String door) {
-		this.door = door;
-	}
-
-	public String getStaircase() {
-		return this.staircase;
-	}
-
-	public void setStaircase(String staircase) {
-		this.staircase = staircase;
-	}
-
-	public Boolean isCityPriorityDistrict() {
-		return this.cityPriorityDistrict;
-	}
-
-	public Boolean getCityPriorityDistrict() {
-		return this.cityPriorityDistrict;
-	}
-
-	public void setCityPriorityDistrict(Boolean cityPriorityDistrict) {
-		this.cityPriorityDistrict = cityPriorityDistrict;
 	}
 
 	@Override

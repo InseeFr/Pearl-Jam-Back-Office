@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.repository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") "
 		+ ") as t", nativeQuery = true)
-	Map<String, BigInteger> findContactOutcomeTypeByInterviewerAndCampaign(@Param("campaignId") String campaignId, 
+	Map<String, Long> findContactOutcomeTypeByInterviewerAndCampaign(@Param("campaignId") String campaignId, 
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 	
@@ -106,7 +105,7 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") "
 		+ ") as t", nativeQuery = true)
-	Map<String, BigInteger> findContactOutcomeTypeNotAttributed(@Param("campaignId") String campaignId, 
+	Map<String, Long> findContactOutcomeTypeNotAttributed(@Param("campaignId") String campaignId, 
 			@Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 	
@@ -142,7 +141,7 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "AND (date<=?2 OR ?2<0) GROUP BY survey_unit_id"
 			+ ") "
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getContactOutcomeTypeCountByCampaignId(String campaignId, Long date);
+	Map<String,Long> getContactOutcomeTypeCountByCampaignId(String campaignId, Long date);
 
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='INA' THEN 1 ELSE 0 END) AS inaCount, "
@@ -177,5 +176,5 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 				+ "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getContactOutcomeTypeCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
+	Map<String,Long> getContactOutcomeTypeCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
 }

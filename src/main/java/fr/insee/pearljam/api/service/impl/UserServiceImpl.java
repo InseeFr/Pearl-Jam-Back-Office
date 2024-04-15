@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fr.insee.pearljam.api.configuration.ApplicationProperties;
-import fr.insee.pearljam.api.configuration.ApplicationProperties.Mode;
+import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
+import fr.insee.pearljam.api.configuration.properties.AuthEnumProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
 	public Optional<UserDto> getUser(String userId) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (applicationProperties.getMode() != Mode.noauth) {
+		if (applicationProperties.auth() != AuthEnumProperties.NOAUTH) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
@@ -66,11 +66,11 @@ public class UserServiceImpl implements UserService {
 				return Optional.empty();
 			}
 		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.guestOU());
 			if (ouNat.isPresent()) {
 				getOrganizationUnits(organizationUnits, ouNat.get(), false);
 				Optional<OrganizationUnitDto> ou = ouRepository
-						.findDtoByIdIgnoreCase(applicationProperties.getGuestOU());
+						.findDtoByIdIgnoreCase(applicationProperties.guestOU());
 				if (ou.isPresent()) {
 					return Optional.of(new UserDto("", "Guest", "", ou.get(), organizationUnits));
 				}
@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
 				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
 			}
 		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.getGuestOU());
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.guestOU());
 			if (ouNat.isPresent()) {
 				getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
 			} else {
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto createUser(UserDto userToCreate) throws NotFoundException {
-		OrganizationUnit ou = organizationUnitRepository.getOne(userToCreate.getOrganizationUnit().getId());
+		OrganizationUnit ou = organizationUnitRepository.findById(userToCreate.getOrganizationUnit().getId()).get();
 		User user = new User(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
 		userRepository.save(user);
 		return getUser(userToCreate.getId()).orElse(null);

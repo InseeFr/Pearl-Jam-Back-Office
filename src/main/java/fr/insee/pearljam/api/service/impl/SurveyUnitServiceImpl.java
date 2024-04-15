@@ -18,6 +18,7 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.*;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -197,6 +198,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
 			communicationRequests.addAll(newCommunicationsRequests);
 
+			// NOTE
 			// for each communiactionRequest : update state then try to call messhugah if
 			// needed
 			// communicationRequests.stream()...
@@ -204,7 +206,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			// if(shouldAddReadyStatus(incommingCommRequests)) {
 			// communicationRequests.add(generateReadyCommunicationRequest(surveyUnit));
 			// }
-			// TODO : call messhugah to dispatch
+			// here : call messhugah to dispatch
 			// if(shouldTryToGenerateCommunication(newCommunicationsRequests)){
 			// boolean communicationRequestService.generateCommunication(commReq)
 			// }
@@ -371,8 +373,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				inseeAddress.setFloor(surveyUnitDetailDto.getAddress().getFloor());
 				inseeAddress.setDoor(surveyUnitDetailDto.getAddress().getDoor());
 				inseeAddress.setStaircase(surveyUnitDetailDto.getAddress().getStaircase());
-				inseeAddress.setElevator(surveyUnitDetailDto.getAddress().isElevator());
-				inseeAddress.setCityPriorityDistrict(surveyUnitDetailDto.getAddress().isCityPriorityDistrict());
+				inseeAddress.setElevator(surveyUnitDetailDto.getAddress().getElevator());
+				inseeAddress.setCityPriorityDistrict(surveyUnitDetailDto.getAddress().getCityPriorityDistrict());
 			}
 			// Update Address
 			addressRepository.save(inseeAddress);
@@ -503,7 +505,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				lstSu);
 		log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 		SurveyUnitOkNokDto object = result.getBody();
-		HttpStatus responseCode = result.getStatusCode();
+		HttpStatusCode responseCode = result.getStatusCode();
 
 		if (!responseCode.equals(HttpStatus.OK)) {
 			String code = responseCode.toString();
@@ -545,8 +547,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Transactional
 	public HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType type) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
+
 		if (su.isPresent()) {
 			SurveyUnit surveyUnit = su.get();
+			log.info("{} -> {}", surveyUnitId, type);
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);

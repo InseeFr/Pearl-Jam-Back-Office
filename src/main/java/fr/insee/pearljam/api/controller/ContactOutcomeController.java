@@ -2,12 +2,10 @@ package fr.insee.pearljam.api.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,20 +19,19 @@ import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
-import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@RequiredArgsConstructor
 @Slf4j
 public class ContactOutcomeController {
 
-	@Autowired
-	ContactOutcomeService contactOutcomeService;
-
-	@Autowired
-	UtilsService utilsService;
+	private final ContactOutcomeService contactOutcomeService;
+	private final AuthenticationHelper authHelper;
 
 	/**
 	 * This method is used to count survey units not attributed by contact-outcomes
@@ -44,11 +41,11 @@ public class ContactOutcomeController {
 	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get Contact-outcomes count for non attributted SUs")
+	@Operation(summary = "Get Contact-outcomes count for non attributted SUs")
 	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed/contact-outcomes")
-	public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(HttpServletRequest request,
+	public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(Authentication auth,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -74,12 +71,12 @@ public class ContactOutcomeController {
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get campaignStateCount")
+	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaigns/survey-units/contact-outcomes")
 	public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(
-			HttpServletRequest request,
+			Authentication auth,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -104,12 +101,12 @@ public class ContactOutcomeController {
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get campaignStateCount")
+	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaign/{id}/survey-units/contact-outcomes")
 	public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(
-			HttpServletRequest request,
+			Authentication auth,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -135,13 +132,13 @@ public class ContactOutcomeController {
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get contact-outcome type for an interviewer on a specific campaign")
+	@Operation(summary = "Get contact-outcome type for an interviewer on a specific campaign")
 	@GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes")
 	public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(
-			HttpServletRequest request,
+			Authentication auth,
 			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}

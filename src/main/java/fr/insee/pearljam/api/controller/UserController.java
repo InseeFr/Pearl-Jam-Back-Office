@@ -2,11 +2,10 @@ package fr.insee.pearljam.api.controller;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,18 +21,20 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Tag(name = "03. Users", description = "Endpoints for users")
 @RequestMapping(path = "/api")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
 
-	private final UtilsService utilsService;
+	private final AuthenticationHelper authHelper;
 
 	private final UserService userService;
 	private final MessageService messageService;
@@ -46,10 +47,10 @@ public class UserController {
 	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get User")
+	@Operation(summary = "Get User")
 	@GetMapping(path = "/user")
-	public ResponseEntity<UserDto> getUser(HttpServletRequest request) {
-		String userId = utilsService.getUserId(request);
+	public ResponseEntity<UserDto> getUser(Authentication auth) {
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -72,16 +73,16 @@ public class UserController {
 	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get User by id")
+	@Operation(summary = "Get User by id")
 	@GetMapping(path = "/user/{id}")
-	public ResponseEntity<UserDto> getUserById(HttpServletRequest request, @PathVariable(value = "id") String id) {
-		String userId = utilsService.getUserId(request);
+	public ResponseEntity<UserDto> getUserById(Authentication auth, @PathVariable(value = "id") String id) {
+		String userId = authHelper.getUserId(auth);
 		log.info("{} try to GET user with id : {}", userId, id);
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET User {} resulting in 403", id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			Optional<UserDto> user = userService.getUser(userId);
+			Optional<UserDto> user = userService.getUser(id);
 			if (user.isEmpty()) {
 				log.info("GET User resulting in 404");
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -96,10 +97,10 @@ public class UserController {
 	 * 
 	 * @param request
 	 */
-	@ApiOperation(value = "Create User")
+	@Operation(summary = "Create User")
 	@PostMapping(path = "/user")
-	public ResponseEntity<Object> createUser(HttpServletRequest request, @RequestBody UserDto user) {
-		String callerId = utilsService.getUserId(request);
+	public ResponseEntity<Object> createUser(Authentication auth, @RequestBody UserDto user) {
+		String callerId = authHelper.getUserId(auth);
 		log.info("{} try to create a new user", callerId);
 		if (!userService.checkValidity(user)) {
 			String invalidUserInfo = String.format("Invalid user : %s", user.toString());
@@ -132,11 +133,11 @@ public class UserController {
 	 * 
 	 * @param request
 	 */
-	@ApiOperation(value = "Update User")
+	@Operation(summary = "Update User")
 	@PutMapping(path = "/user/{id}")
-	public ResponseEntity<Object> updateUser(HttpServletRequest request, @PathVariable(value = "id") String id,
+	public ResponseEntity<Object> updateUser(Authentication auth, @PathVariable(value = "id") String id,
 			@RequestBody UserDto user) {
-		String callerId = utilsService.getUserId(request);
+		String callerId = authHelper.getUserId(auth);
 		log.info("{} try to update user {}", callerId, id);
 
 		if (!userService.checkValidity(user)) {
@@ -175,11 +176,11 @@ public class UserController {
 	 * 
 	 * @param request
 	 */
-	@ApiOperation(value = "Assign User to Organization Unit")
+	@Operation(summary = "Assign User to Organization Unit")
 	@PutMapping(path = "/user/{userId}/organization-unit/{ouId}")
-	public ResponseEntity<Object> assignUserToOU(HttpServletRequest request,
+	public ResponseEntity<Object> assignUserToOU(Authentication auth,
 			@PathVariable(value = "userId") String userId, @PathVariable(value = "ouId") String ouId) {
-		String callerId = utilsService.getUserId(request);
+		String callerId = authHelper.getUserId(auth);
 		log.info("{} try to assign user {} to OU {}", callerId, userId, ouId);
 		Optional<UserDto> optUser = userService.getUser(userId);
 		if (optUser.isEmpty()) {
@@ -216,10 +217,10 @@ public class UserController {
 	 * 
 	 * @param request
 	 */
-	@ApiOperation(value = "Delete User")
+	@Operation(summary = "Delete User")
 	@DeleteMapping(path = "/user/{id}")
-	public ResponseEntity<Object> deleteUser(HttpServletRequest request, @PathVariable(value = "id") String id) {
-		String callerId = utilsService.getUserId(request);
+	public ResponseEntity<Object> deleteUser(Authentication auth, @PathVariable(value = "id") String id) {
+		String callerId = authHelper.getUserId(auth);
 		log.info("{} try to delete user {}", callerId, id);
 
 		if (!userService.userIsPresent(id)) {

@@ -1,8 +1,9 @@
 package fr.insee.pearljam.api.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 
 /**
@@ -12,6 +13,8 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
  * 
  */
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class InseeAddress extends Address {
 	/**
 	 * 
@@ -88,47 +91,6 @@ public class InseeAddress extends Address {
 	private Boolean cityPriorityDistrict;
 
 	/**
-	 * Defaut constructor for the entity
-	 */
-	public InseeAddress() {
-
-	}
-
-	/**
-	 * Constructor for the entity
-	 * 
-	 * @param l1
-	 * @param l2
-	 * @param l3
-	 * @param l4
-	 * @param l5
-	 * @param l6
-	 * @param l7
-	 * @param elevator
-	 * @param building
-	 * @param floor
-	 * @param door
-	 * @param staircase
-	 * @param cityPriorityDistrict
-	 */
-	public InseeAddress(String l1, String l2, String l3, String l4, String l5, String l6, String l7, Boolean elevator,
-			String building, String floor, String door, String staircase, Boolean cityPriorityDistrict) {
-		this.l1 = l1;
-		this.l2 = l2;
-		this.l3 = l3;
-		this.l4 = l4;
-		this.l5 = l5;
-		this.l6 = l6;
-		this.l7 = l7;
-		this.elevator = elevator;
-		this.building = building;
-		this.floor = floor;
-		this.door = door;
-		this.staircase = staircase;
-		this.cityPriorityDistrict = cityPriorityDistrict;
-	}
-
-	/**
 	 * Constructor for the entity
 	 * 
 	 * @param address
@@ -141,12 +103,12 @@ public class InseeAddress extends Address {
 		this.l5 = address.getL5();
 		this.l6 = address.getL6();
 		this.l7 = address.getL7();
-		this.elevator = address.isElevator();
+		this.elevator = address.getElevator();
 		this.building = address.getBuilding();
 		this.floor = address.getFloor();
 		this.door = address.getDoor();
 		this.staircase = address.getStaircase();
-		this.cityPriorityDistrict = address.isCityPriorityDistrict();
+		this.cityPriorityDistrict = address.getCityPriorityDistrict();
 	}
 
 	/**
@@ -252,7 +214,7 @@ public class InseeAddress extends Address {
 	}
 
 	public void setElevator(Boolean elevator) {
-		this.elevator = elevator != null ? elevator : false;
+		this.elevator = elevator != null && elevator;
 	}
 
 	public String getBuilding() {
@@ -292,7 +254,7 @@ public class InseeAddress extends Address {
 	}
 
 	public void setCityPriorityDistrict(Boolean cityPriorityDistrict) {
-		this.cityPriorityDistrict = cityPriorityDistrict != null ? cityPriorityDistrict : false;
+		this.cityPriorityDistrict = cityPriorityDistrict != null && cityPriorityDistrict;
 	}
 
 }

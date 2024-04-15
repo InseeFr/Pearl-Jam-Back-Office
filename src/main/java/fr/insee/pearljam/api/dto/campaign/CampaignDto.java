@@ -74,10 +74,10 @@ public class CampaignDto {
 
 	public void setCampaignStats(List<Object[]> obj) {
 		if (obj != null && !obj.isEmpty() && obj.get(0).length > 3 && obj.get(0)[0] != null) {
-			this.toProcessInterviewer = ((java.math.BigInteger) obj.get(0)[0]).longValue();
-			this.toReview = ((java.math.BigInteger) obj.get(0)[1]).longValue();
-			this.finalized = ((java.math.BigInteger) obj.get(0)[2]).longValue();
-			this.allocated = ((java.math.BigInteger) obj.get(0)[3]).longValue();
+			this.toProcessInterviewer = (Long) obj.get(0)[0];
+			this.toReview = (Long) (obj.get(0)[1]);
+			this.finalized = (Long) (obj.get(0)[2]);
+			this.allocated = (Long) (obj.get(0)[3]);
 			this.toAffect = 0L;
 			this.toFollowUp = 0L;
 		}

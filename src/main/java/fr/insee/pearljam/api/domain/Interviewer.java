@@ -68,7 +68,7 @@ public class Interviewer implements Serializable {
 
 	@Column(length = 25)
 	@Enumerated(EnumType.STRING)
-	private TitleEnum title = TitleEnum.MISTER;
+	private Title title = Title.MISTER;
 
 	public Interviewer() {
 		super();
@@ -76,7 +76,7 @@ public class Interviewer implements Serializable {
 	}
 
 	public Interviewer(String id, String firstName, String lastName, String email, String phoneNumber,
-			Set<SurveyUnit> surveyUnits, TitleEnum title) {
+			Set<SurveyUnit> surveyUnits, Title title) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -84,7 +84,7 @@ public class Interviewer implements Serializable {
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.surveyUnits = surveyUnits;
-		this.title = Optional.ofNullable(title).orElse(TitleEnum.MISTER);
+		this.title = Optional.ofNullable(title).orElse(Title.MISTER);
 	}
 
 	public Interviewer(InterviewerContextDto interviewerDto) {
@@ -94,7 +94,7 @@ public class Interviewer implements Serializable {
 		this.lastName = interviewerDto.getLastName();
 		this.email = interviewerDto.getEmail();
 		this.phoneNumber = interviewerDto.getPhoneNumber();
-		this.title = Optional.ofNullable(interviewerDto.getTitle()).orElse(TitleEnum.MISTER);
+		this.title = Optional.ofNullable(interviewerDto.getTitle()).orElse(Title.MISTER);
 	}
 
 	/**
@@ -171,11 +171,11 @@ public class Interviewer implements Serializable {
 		return surveyUnits;
 	}
 
-	public TitleEnum getTitle() {
+	public Title getTitle() {
 		return title;
 	}
 
-	public void setTitle(TitleEnum title) {
+	public void setTitle(Title title) {
 		this.title = title;
 	}
 

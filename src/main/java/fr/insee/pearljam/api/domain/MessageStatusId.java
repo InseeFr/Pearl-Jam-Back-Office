@@ -3,43 +3,44 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
  * Campaign tables.
+ * 
  * @author Guillemet Paul
  */
 @Embeddable
-public class MessageStatusId implements Serializable{
-	
+public class MessageStatusId implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-  
+
 	/**
-	 * The organizationUnit Id 
+	 * The organizationUnit Id
 	 */
 	@Column(name = "message_id")
 	private Long messageId;
- 
+
 	/**
 	 * The campaign Id
 	 */
 	@Column(name = "interviewer_id", nullable = true)
 	private String interviewerId;
-  
+
 	/**
 	 * Default constructor for the entity
 	 */
 	public MessageStatusId() {
 	}
-  
+
 	public MessageStatusId(Long messageId, String interviewerId) {
-	    super();
-	    this.messageId = messageId;
-	    this.interviewerId = interviewerId;
+		super();
+		this.messageId = messageId;
+		this.interviewerId = interviewerId;
 	}
-	
+
 	/**
 	 * @return the campaignId
 	 */
@@ -55,16 +56,16 @@ public class MessageStatusId implements Serializable{
 	}
 
 	@Override
-    public boolean equals(Object o) {
-        return (this == o);
-    }
- 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMessageId(), getInterviewerId());
-    }
-  
-    /**
+	public boolean equals(Object o) {
+		return (this == o);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getMessageId(), getInterviewerId());
+	}
+
+	/**
 	 * @return the campaignId
 	 */
 	public String getInterviewerId() {

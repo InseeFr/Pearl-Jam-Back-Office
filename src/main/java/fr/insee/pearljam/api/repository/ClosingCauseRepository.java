@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.repository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 					+ ") " 
 					+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) "
 			+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getStateClosedByClosingCauseCount(@Param("campaignId") String campaignId, 
+	Map<String,Long> getStateClosedByClosingCauseCount(@Param("campaignId") String campaignId, 
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 	
@@ -66,7 +65,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getgetStateClosedByClosingCauseCountByCampaign(@Param("campaignId") String campaignId,
+	Map<String,Long> getgetStateClosedByClosingCauseCountByCampaign(@Param("campaignId") String campaignId,
 			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = "SELECT " 
@@ -92,7 +91,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") "
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCountNotAttributed(@Param("campaignId") String campaignId, 
+	Map<String,Long> getClosingCauseCountNotAttributed(@Param("campaignId") String campaignId, 
 			@Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 	
@@ -119,7 +118,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCountSumByInterviewer(@Param("campaignIds") List<String> campaignId,
+	Map<String,Long> getClosingCauseCountSumByInterviewer(@Param("campaignIds") List<String> campaignId,
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, @Param("date") Long date);
 	
 	@Query(value = "SELECT "
@@ -145,7 +144,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCountNotAttributed(@Param("campaignIds") List<String> campaignId,
+	Map<String,Long> getClosingCauseCountNotAttributed(@Param("campaignIds") List<String> campaignId,
 			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 	
 	@Query(value = "SELECT " 
@@ -170,7 +169,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id"
 			+ ") " 
 		+ ") as t", nativeQuery = true)
-	Map<String,BigInteger> getClosingCauseCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
+	Map<String,Long> getClosingCauseCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
 
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='NPA' THEN 1 ELSE 0 END) AS npaCount, "
@@ -193,7 +192,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ "AND (date<=?2 OR ?2<0) GROUP BY survey_unit_id"
 			+ ") "
 		+ ") as t", nativeQuery = true)
-	Map<String, BigInteger> getClosingCauseCountByCampaignId(String campaignId, Long date);
+	Map<String, Long> getClosingCauseCountByCampaignId(String campaignId, Long date);
 
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='NPA' THEN 1 ELSE 0 END) AS npaCount, "
@@ -212,7 +211,7 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 				+ ") " 
 				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id) "
 		+ ") as t", nativeQuery = true)
-	Map<String, BigInteger> getClosingCauseCount(@Param("campaignId") String campaignId, 
+	Map<String, Long> getClosingCauseCount(@Param("campaignId") String campaignId, 
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, 
 			@Param("date") Long date);
 }

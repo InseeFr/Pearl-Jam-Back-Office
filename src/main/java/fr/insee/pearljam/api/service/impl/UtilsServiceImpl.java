@@ -20,7 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import fr.insee.pearljam.api.configuration.ApplicationProperties;
+import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
+import fr.insee.pearljam.api.configuration.properties.AuthEnumProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
@@ -30,14 +31,15 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UtilsServiceImpl implements UtilsService {
 
-	@Autowired
-	ApplicationProperties applicationProperties;
+	private final ApplicationProperties applicationProperties;
 
 	@Autowired
 	InterviewerRepository interviewerRepository;
@@ -54,8 +56,7 @@ public class UtilsServiceImpl implements UtilsService {
 	@Autowired
 	UserService userService;
 
-	@Autowired
-	Environment environment;
+	private final Environment environment;
 
 	@Value("${fr.insee.pearljam.datacollection.service.url.scheme:#{null}}")
 	private String dataCollectionScheme;
@@ -68,8 +69,8 @@ public class UtilsServiceImpl implements UtilsService {
 
 	public String getUserId(HttpServletRequest request) {
 		String userId = null;
-		switch (applicationProperties.getMode()) {
-			case basic:
+		switch (applicationProperties.auth()) {
+			case AuthEnumProperties.BASIC:
 				Object basic = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 				if (basic instanceof UserDetails) {
 					userId = ((UserDetails) basic).getUsername();
@@ -77,7 +78,7 @@ public class UtilsServiceImpl implements UtilsService {
 					userId = basic.toString();
 				}
 				break;
-			case keycloak:
+			case AuthEnumProperties.KEYCLOAK:
 				KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
 				userId = keycloak.getPrincipal().toString();
 				break;

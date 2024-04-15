@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
 	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>4.1.4</version>
-
-	<packaging>war</packaging>
+	<version>5.0.0</version>
 	<name>Pearl-Jam-Back-Office</name>
-	<description>Back-office services for for PearlJam</description>
+	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
-		<relativePath />
-		<!-- lookup parent from repository -->
+		<version>3.2.4</version>
+		<relativePath /><!-- lookup parent from repository -->
 	</parent>
+
 	<properties>
-		<java.version>11</java.version>
+		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jdk.version>1.11</jdk.version>
-		<java.version>1.11</java.version>
 		<log4j.version>2.20.0</log4j.version>
-		<maven.compiler.release>11</maven.compiler.release>
 		<testcontainers.version>1.15.2</testcontainers.version>
 		<keycloak.version>19.0.3</keycloak.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -40,12 +38,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>1.18.30</version>
-				<scope>provided</scope>
-			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -105,43 +98,24 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 		<!-- Database -->
 		<dependency>
@@ -151,13 +125,21 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.4.3</version>
+			<version>42.5.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-java8</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- TESTS -->
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
@@ -167,12 +149,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -218,32 +194,23 @@
 			<groupId>org.mock-server</groupId>
 			<artifactId>mockserver-netty</artifactId>
 			<version>5.11.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger.parser.v3</groupId>
+					<artifactId>swagger-parser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mock-server</groupId>
 			<artifactId>mockserver-client-java</artifactId>
 			<version>5.11.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- Swagger -->
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<!-- Keycloak -->
 		<dependency>
@@ -255,10 +222,6 @@
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
 			<version>${keycloak.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-web</artifactId>
 		</dependency>
 		<!-- Commons -->
 		<dependency>
@@ -355,38 +318,40 @@
 				<plugin>
 					<groupId>org.liquibase</groupId>
 					<artifactId>liquibase-maven-plugin</artifactId>
-					<version>3.5.3</version>
+					<version>${liquibase.version}</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.javassist</groupId>
 							<artifactId>javassist</artifactId>
-							<version>3.24.1-GA</version>
+							<version>3.30.2-GA</version>
 							<scope>compile</scope>
 						</dependency>
 						<dependency>
 							<groupId>org.liquibase.ext</groupId>
-							<artifactId>liquibase-hibernate5</artifactId>
-							<version>3.6</version>
-							<scope>compile</scope>
+							<artifactId>liquibase-hibernate6</artifactId>
+							<version>${liquibase.version}</version>
 						</dependency>
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-starter-data-jpa</artifactId>
-							<version>2.1.4.RELEASE</version>
-							<scope>compile</scope>
+							<version>3.2.2</version>
 						</dependency>
 						<dependency>
-							<groupId>javax.xml.bind</groupId>
-							<artifactId>jaxb-api</artifactId>
-							<version>2.3.1</version>
-							<scope>compile</scope>
+							<groupId>jakarta.xml.bind</groupId>
+							<artifactId>jakarta.xml.bind-api</artifactId>
+							<version>4.0.1</version>
 						</dependency>
-						<dependency>
+						<!-- <dependency>
 							<groupId>com.fasterxml.jackson.core</groupId>
 							<artifactId>jackson-databind</artifactId>
 							<version>2.11.0</version>
-						</dependency>
+						</dependency> -->
 						<dependency>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-starter-validation</artifactId>
+						</dependency>
+
+						<!-- <dependency>
 							<groupId>org.hibernate</groupId>
 							<artifactId>hibernate-validator</artifactId>
 							<version>5.3.5.Final</version>
@@ -397,7 +362,7 @@
 							<artifactId>hibernate-java8</artifactId>
 							<version>5.0.10.Final</version>
 							<scope>compile</scope>
-						</dependency>
+						</dependency> -->
 					</dependencies>
 					<configuration>
 						<changeLogFile>src/main/resources/db/master.xml</changeLogFile>
@@ -406,9 +371,10 @@
 						<url>jdbc:postgresql://localhost:5432/pearljam_api</url>
 						<defaultSchemaName>public</defaultSchemaName>
 						<contexts>test,dev,prod</contexts>
-						<username>pearljam_api</username>
-						<password>pearljam_api</password>
-						<referenceUrl> hibernate:spring:fr.insee.pearljam.api.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+						<username></username>
+						<password></password>
+						<referenceUrl>
+							hibernate:spring:fr.insee.pearljam.api.domain?hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
 						<referenceDefaultSchemaName>public</referenceDefaultSchemaName>
 						<verbose>true</verbose>
 						<logging>debug</logging>
@@ -417,7 +383,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M4</version>
+					<version>3.2.5</version>
 					<configuration>
 						<runOrder>alphabetical</runOrder>
 						<includes>
@@ -425,15 +391,16 @@
 							<include>TestNoAuth.java</include>
 							<include>TestBasicAuth.java</include>
 						</includes>
-						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds>
-						<forkCount>3</forkCount>
-						<reuseForks>true</reuseForks>
+						<!--
+						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds> -->
+						<!-- <forkCount>1</forkCount> -->
+						<!-- <reuseForks>true</reuseForks> -->
 						<!-- argLine to prevent jacoco argLine override -->
-						<argLine>${argLine} -Xmx2048m -Xmx1G -XX:PermSize=1024m</argLine>
-						<environmentVariables>
+						<!-- <argLine> -Dfile.encoding=UTF-8 -Xmx2048m -Xmx1G -->
+						<!-- -XX:PermSize=1024m</argLine> -->
+						<!-- <environmentVariables>
 							<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
-						</environmentVariables>
-						<argLine>--illegal-access=permit</argLine>
+						</environmentVariables> -->
 					</configuration>
 				</plugin>
 			</plugins>

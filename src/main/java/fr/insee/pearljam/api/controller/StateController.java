@@ -2,11 +2,10 @@ package fr.insee.pearljam.api.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,18 +17,22 @@ import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UtilsService;
-import io.swagger.annotations.ApiOperation;
+import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/api")
+@Tag(name = "07. State-count", description = "Endpoints for state counts")
 @Slf4j
 @RequiredArgsConstructor
 public class StateController {
 
 	private final StateService stateService;
 	private final UtilsService utilsService;
+	private final AuthenticationHelper authHelper;
 
 	/**
 	 * This method is used to count survey units by states, interviewer and campaign
@@ -41,12 +44,12 @@ public class StateController {
 	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get interviewerStateCount")
+	@Operation(summary = "Get interviewerStateCount")
 	@GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/state-count")
-	public ResponseEntity<StateCountDto> getInterviewerStateCount(HttpServletRequest request,
+	public ResponseEntity<StateCountDto> getInterviewerStateCount(Authentication auth,
 			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
 		if (StringUtils.isBlank(userId)) {
@@ -74,11 +77,11 @@ public class StateController {
 	 * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get state count for non attributted SUs")
+	@Operation(summary = "Get state count for non attributted SUs")
 	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed/state-count")
-	public ResponseEntity<StateCountDto> getNbSUNotAttributedStateCount(HttpServletRequest request,
+	public ResponseEntity<StateCountDto> getNbSUNotAttributedStateCount(Authentication auth,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -105,11 +108,11 @@ public class StateController {
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get campaignStateCount")
+	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaign/{id}/survey-units/state-count")
-	public ResponseEntity<StateCountCampaignDto> getCampaignStateCount(HttpServletRequest request,
+	public ResponseEntity<StateCountCampaignDto> getCampaignStateCount(Authentication auth,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -134,11 +137,11 @@ public class StateController {
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get interviewersStateCount")
+	@Operation(summary = "Get interviewersStateCount")
 	@GetMapping(path = "/interviewers/survey-units/state-count")
-	public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(HttpServletRequest request,
+	public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(Authentication auth,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -160,11 +163,11 @@ public class StateController {
 	 * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
-	@ApiOperation(value = "Get campaignStateCount")
+	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaigns/survey-units/state-count")
-	public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(HttpServletRequest request,
+	public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(Authentication auth,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = utilsService.getUserId(request);
+		String userId = authHelper.getUserId(auth);
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
