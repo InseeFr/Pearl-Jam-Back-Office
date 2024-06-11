@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.configuration.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,8 +15,12 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 public class PublicSecurityFilterChain {
 
-        @Autowired
-        MvcRequestMatcher.Builder mvc;
+        private static final String H2_CONSOLE_PATH = "/h2-console/**";
+        private final MvcRequestMatcher.Builder mvc;
+
+        public PublicSecurityFilterChain(HandlerMappingIntrospector introspector) {
+                this.mvc = new MvcRequestMatcher.Builder(introspector);
+        }
 
         @Bean
         MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
@@ -26,7 +29,7 @@ public class PublicSecurityFilterChain {
 
         SecurityFilterChain buildSecurityPublicFilterChain(HttpSecurity http,
                         String[] publicUrls) throws Exception {
-                return buildSecurityPublicFilterChain(http, mvc, publicUrls, "/h2-console/**");
+                return buildSecurityPublicFilterChain(http, mvc, publicUrls, H2_CONSOLE_PATH);
         }
 
         SecurityFilterChain buildSecurityPublicFilterChain(HttpSecurity http,
@@ -41,7 +44,7 @@ public class PublicSecurityFilterChain {
                                 .securityMatcher(publicUrls)
                                 .csrf(csrf -> csrf
                                                 .ignoringRequestMatchers(
-                                                                AntPathRequestMatcher.antMatcher("/h2-console/**")))
+                                                                AntPathRequestMatcher.antMatcher(H2_CONSOLE_PATH)))
                                 .cors(Customizer.withDefaults())
                                 .headers(headers -> headers
                                                 .xssProtection(xssConfig -> xssConfig.headerValue(
@@ -58,7 +61,7 @@ public class PublicSecurityFilterChain {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 // .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                                .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                                                .requestMatchers(new AntPathRequestMatcher(H2_CONSOLE_PATH))
                                                 .permitAll()
                                                 .requestMatchers(mvc.pattern("/**")).permitAll()
                                                 .anyRequest()

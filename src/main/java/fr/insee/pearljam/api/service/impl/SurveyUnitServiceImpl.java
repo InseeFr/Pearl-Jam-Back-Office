@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
@@ -240,6 +240,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			contactOutcome.setTotalNumberOfContactAttempts(
 					surveyUnitDetailDto.getContactOutcome().getTotalNumberOfContactAttempts());
 			contactOutcome.setSurveyUnit(surveyUnit);
+			surveyUnit.setContactOucome(contactOutcome);
 			contactOutcomeRepository.save(contactOutcome);
 		}
 		log.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
@@ -276,7 +277,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.TBR));
 			}
 		}
-		log.info("Survey-unit {} - States updated", surveyUnit.getId());
 	}
 
 	private void addStateAuto(SurveyUnit surveyUnit) {
@@ -300,7 +300,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<Comment> newComments = surveyUnitDetailDto.getComments().stream().filter(dto -> dto.getType() != null)
 					.map(dto -> new Comment(dto, surveyUnit)).collect(Collectors.toSet());
 			comments.addAll(newComments);
-			log.info("Survey-unit {} - Comments updated", surveyUnit.getId());
 		}
 	}
 
@@ -320,7 +319,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				}
 
 			}
-			log.info("Survey-unit {} - Persons updated", surveyUnitDetailDto.getId());
 		}
 	}
 
@@ -379,7 +377,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			// Update Address
 			addressRepository.save(inseeAddress);
 		}
-		log.info("Survey-unit {} - Address updated", surveyUnit.getId());
 	}
 
 	@Transactional
@@ -399,7 +396,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.collect(Collectors.toSet());
 		comments.removeAll(commentsToRemove);
 		comments.add(new Comment(comment, surveyUnit));
-		log.info("Comments updated");
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
@@ -413,7 +409,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.get();
 		surveyUnit.setViewed(true);
-		log.info("Viewed updated");
 		surveyUnitRepository.save(surveyUnit);
 		return HttpStatus.OK;
 	}
@@ -551,7 +546,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (su.isPresent()) {
 			SurveyUnit surveyUnit = su.get();
 			log.info("{} -> {}", surveyUnitId, type);
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnitId).getType();
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
@@ -640,9 +635,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if (surveyUnitsDb.contains(su.getId())) {
 				duplicates.put(su.getId(), duplicates.get(su.getId()) + 1);
 			}
-			if (!su.isValid()
-					|| !mapOrganizationUnits.containsKey(su.getOrganizationUnitId())
-					|| !mapCampaigns.containsKey(su.getCampaign())) {
+			if (!checkValidity(su, mapOrganizationUnits, mapCampaigns)) {
 				surveyUnitErrors.add(su.getId());
 			}
 			listSurveyUnits.add(new SurveyUnit(su, mapOrganizationUnits.get(su.getOrganizationUnitId()),
@@ -663,6 +656,25 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		surveyUnitRepository.saveAll(listSurveyUnits);
 		return new Response(String.format("%s surveyUnits created", listSurveyUnits.size()), HttpStatus.OK);
+	}
+
+	private boolean checkValidity(SurveyUnitContextDto su, Map<String, OrganizationUnit> ous,
+			Map<String, Campaign> camps) {
+		if (!su.isValid()) {
+			log.info("Su {} is not valid", su.getId());
+			return false;
+		}
+		if (!ous.containsKey(su.getOrganizationUnitId())) {
+			log.info("Su {} : OU {} not found!", su.getId(), su.getOrganizationUnitId());
+
+			return false;
+		}
+		if (!camps.containsKey(su.getCampaign())) {
+			log.info("Su {} : camp {} not found!", su.getId(), su.getCampaign());
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override

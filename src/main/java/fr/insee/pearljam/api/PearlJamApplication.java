@@ -4,9 +4,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,20 +27,14 @@ public class PearlJamApplication {
 		return application.sources(PearlJamApplication.class).listeners(new PropertiesLogger());
 	}
 
-	// public static void setProperties() {
-	// System.setProperty("spring.config.location",
-	// "classpath:/,"
-	// + "file:///${catalina.base}/webapps/pearljambo.properties");
-
-	// System.setProperty("spring.config.additional-location",
-	// "classpath:/,"
-	// + "file:///${catalina.base}/webapps/sabcolbo.properties");
-
-	// }
-
 	@EventListener
 	public void handleApplicationReady(ApplicationReadyEvent event) {
 		log.info("=============== Pearl-Jam Back-Office has successfully started. ===============");
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 }

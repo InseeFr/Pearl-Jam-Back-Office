@@ -22,7 +22,6 @@ import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

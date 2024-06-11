@@ -5,6 +5,9 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -16,23 +19,18 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mockserver.client.MockServerClient;
-import org.mockserver.integration.ClientAndServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,10 +42,7 @@ import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import io.restassured.RestAssured;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import lombok.RequiredArgsConstructor;
 
 /* Test class for no Authentication */
 @ActiveProfiles("test")
@@ -55,29 +50,19 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestNoAuth {
 
-	@Autowired
-	MessageRepository messageRepository;
-
-	@Autowired
-	ClosingCauseRepository closingCauseRepository;
-
-	@Autowired
-	private MockMvc mockMvc;
-
-	@LocalServerPort
-	private int port;
-
-	public static ClientAndServer clientAndServer;
-	public static MockServerClient mockServerClient;
+	private final MessageRepository messageRepository;
+	private final ClosingCauseRepository closingCauseRepository;
+	private final MockMvc mockMvc;
 
 	@Before
-	public void setUpPort() throws Exception {
+	public void clearDataSet() throws Exception {
 		mockMvc.perform(delete("/api/delete-dataset").accept(MediaType.APPLICATION_JSON)
 				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
-		RestAssured.port = port;
 	}
 
 	/**
@@ -87,19 +72,9 @@ class TestNoAuth {
 	 * 
 	 */
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void initDataSetIfNotPresent() throws Exception {
 		mockMvc.perform(post("/api/create-dataset").accept(MediaType.APPLICATION_JSON)
 				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
-	}
-
-	/**
-	 * This method is used to kill the container
-	 * 
-	 * @throws Exception
-	 */
-	@AfterAll
-	public static void cleanUp() throws Exception {
-		System.out.println("should clean");
 	}
 
 	/**
@@ -164,9 +139,9 @@ class TestNoAuth {
 
 	@Test
 	@Order(1)
-	void testGetCampaign() throws InterruptedException, JSONException, ParseException {
+	void testGetCampaign() {
 
-		given().port(port).when().get("api/campaigns").then().statusCode(200).and()
+		given().when().get("api/campaigns").then().statusCode(200).and()
 				.assertThat().body("id", hasItem("SIMPSONS2020X00")).and()
 				.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
 				.assertThat().body("allocated", hasItem(4)).and()
@@ -190,9 +165,8 @@ class TestNoAuth {
 
 	@Test
 	@Order(2)
-	void testPutClosingCauseNoPreviousClosingCause()
-			throws InterruptedException, JsonProcessingException, JSONException {
-		given().port(port).when().put("api/survey-unit/11/closing-cause/NPI")
+	void testPutClosingCauseNoPreviousClosingCause() {
+		given().when().put("api/survey-unit/11/closing-cause/NPI")
 				.then().statusCode(200);
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
@@ -204,16 +178,16 @@ class TestNoAuth {
 	 * Test that the POST endpoint
 	 * "api/message" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException
 	 */
 	@Test
 	@Order(3)
-	void testPostMessage() throws InterruptedException, JsonProcessingException, JSONException {
+	void testPostMessage() throws JsonProcessingException {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("GUEST");
-		given().port(port).contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
+		given().contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
 				.post("api/message").then().statusCode(200);
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));

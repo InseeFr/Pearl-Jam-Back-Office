@@ -2,7 +2,6 @@ package fr.insee.pearljam.api.domain.communication;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

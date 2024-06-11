@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,7 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,23 +34,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 @Slf4j
 public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	MessageRepository messageRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final UserService userService;
+	private final SurveyUnitRepository surveyUnitRepository;
+	private final UserRepository userRepository;
+	private final MessageRepository messageRepository;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)

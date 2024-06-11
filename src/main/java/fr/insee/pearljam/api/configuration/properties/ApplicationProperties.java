@@ -1,10 +1,6 @@
 package fr.insee.pearljam.api.configuration.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-// import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-// @Validated
 @ConfigurationProperties(prefix = "application")
 public record ApplicationProperties(
         String host,
@@ -53,8 +48,4 @@ public record ApplicationProperties(
                 '}';
     }
 
-    // @Bean
-    // ConversionService conversionService() {
-    // return new DefaultConversionService();
-    // }
 }

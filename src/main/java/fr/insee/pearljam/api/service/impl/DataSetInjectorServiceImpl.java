@@ -48,6 +48,7 @@ import fr.insee.pearljam.api.domain.IdentificationQuestions.OccupantQuestionValu
 import fr.insee.pearljam.api.domain.IdentificationQuestions.SituationQuestionValue;
 import fr.insee.pearljam.api.repository.AddressRepository;
 import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.api.repository.IdentificationRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.PersonRepository;
@@ -76,6 +77,7 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 	private final VisibilityRepository visibilityRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final PersonRepository personRepository;
+	private final IdentificationRepository identificationRepository;
 
 	private static final String PHONE_NUMBERS = "+33677542802";
 
@@ -181,18 +183,19 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		User user4 = userRepository.save(new User("JKL", "Julius", "Howell", ouNational));
 		userRepository.save(new User("MNO", "Ted", "Kannt", ouWest));
 
+		String campLabel = "Everyday life and health survey 2021";
 		// create campaign entities
 		Campaign campaign1 = campaignRepository
 				.save(new Campaign("SIMPSONS2020X00", "Survey on the Simpsons tv show 2020",
 						IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
 						ContactAttemptConfiguration.F2F, "first.email@test.com", Boolean.FALSE));
-		Campaign campaign2 = campaignRepository.save(new Campaign("VQS2021X00", "Everyday life and health survey 2021",
+		Campaign campaign2 = campaignRepository.save(new Campaign("VQS2021X00", campLabel,
 				IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.TEL, ContactAttemptConfiguration.TEL,
 				"second.email@test.com", Boolean.FALSE));
-		Campaign campaign3 = campaignRepository.save(new Campaign("ZCLOSEDX00", "Everyday life and health survey 2021",
+		Campaign campaign3 = campaignRepository.save(new Campaign("ZCLOSEDX00", campLabel,
 				IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
 				"third.email@test.com", Boolean.FALSE));
-		Campaign campaign4 = campaignRepository.save(new Campaign("XCLOSEDX00", "Everyday life and health survey 2021",
+		Campaign campaign4 = campaignRepository.save(new Campaign("XCLOSEDX00", campLabel,
 				IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.TEL, ContactAttemptConfiguration.TEL,
 				"fourth.email@test.com", Boolean.FALSE));
 
@@ -254,45 +257,32 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 
 		// create person entities
 		String email = "test@test.com";
-		Person person1 = personRepository.save(new Person(Title.MISTER, "Ted", "Farmer", email, true, true, 11111111l));
+		Person person1 = personRepository
+				.save(new Person(Title.MISTER, "Ted", "Farmer", email, true, true, 11111111l, su11));
 		Person person2 = personRepository
-				.save(new Person(Title.MISS, "Cecilia", "Ortega", email, true, true, 11111111l));
+				.save(new Person(Title.MISS, "Cecilia", "Ortega", email, true, true, 11111111l, su12));
 		Person person3 = personRepository
-				.save(new Person(Title.MISTER, "Claude", "Watkins", email, true, true, 11111111l));
+				.save(new Person(Title.MISTER, "Claude", "Watkins", email, true, true, 11111111l, su13));
 		Person person4 = personRepository
-				.save(new Person(Title.MISS, "Veronica", "Baker", email, true, true, 11111111l));
+				.save(new Person(Title.MISS, "Veronica", "Baker", email, true, true, 11111111l, su14));
 		Person person5 = personRepository
-				.save(new Person(Title.MISS, "Christine", "Aguilar", email, true, false, 11111111l));
+				.save(new Person(Title.MISS, "Christine", "Aguilar", email, true, false, 11111111l, su11));
 		Person person6 = personRepository
-				.save(new Person(Title.MISS, "Louise", "Walker", email, true, false, 11111111l));
+				.save(new Person(Title.MISS, "Louise", "Walker", email, true, false, 11111111l, su11));
 		Person person7 = personRepository
-				.save(new Person(Title.MISTER, "Anthony", "Bennett", email, true, false, 11111111l));
+				.save(new Person(Title.MISTER, "Anthony", "Bennett", email, true, false, 11111111l, su12));
 		Person person8 = personRepository
-				.save(new Person(Title.MISTER, "Christopher", "Lewis", email, true, false, 11111111l));
+				.save(new Person(Title.MISTER, "Christopher", "Lewis", email, true, false, 11111111l, su14));
 		Person person9 = personRepository
-				.save(new Person(Title.MISS, "Harriette", "Raymond", email, true, true, 11111111l));
+				.save(new Person(Title.MISS, "Harriette", "Raymond", email, true, true, 11111111l, su20));
 		Person person10 = personRepository
-				.save(new Person(Title.MISTER, "Aimée", "Lamothe", email, true, true, 11111111l));
+				.save(new Person(Title.MISTER, "Aimée", "Lamothe", email, true, true, 11111111l, su21));
 		Person person11 = personRepository
-				.save(new Person(Title.MISTER, "Perrin", "Blanchard", email, true, true, 11111111l));
+				.save(new Person(Title.MISTER, "Perrin", "Blanchard", email, true, true, 11111111l, su22));
 		Person person12 = personRepository
-				.save(new Person(Title.MISTER, "Artus", "Arnoux", email, true, true, 11111111l));
+				.save(new Person(Title.MISTER, "Artus", "Arnoux", email, true, true, 11111111l, su23));
 		Person person13 = personRepository
-				.save(new Person(Title.MISTER, "Laurent", "Neville", email, true, true, 11111111l));
-
-		person1.setSurveyUnit(su11);
-		person2.setSurveyUnit(su12);
-		person3.setSurveyUnit(su13);
-		person4.setSurveyUnit(su14);
-		person5.setSurveyUnit(su11);
-		person6.setSurveyUnit(su11);
-		person7.setSurveyUnit(su12);
-		person8.setSurveyUnit(su14);
-		person9.setSurveyUnit(su20);
-		person10.setSurveyUnit(su21);
-		person11.setSurveyUnit(su22);
-		person12.setSurveyUnit(su23);
-		person13.setSurveyUnit(su24);
+				.save(new Person(Title.MISTER, "Laurent", "Neville", email, true, true, 11111111l, su24));
 
 		// create phone_number entities
 		person1.setPhoneNumbers(Set.of(new PhoneNumber(Source.FISCAL, true, PHONE_NUMBERS, person1),
@@ -309,10 +299,6 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		addPhoneNUmber(person11);
 		addPhoneNUmber(person12);
 		addPhoneNUmber(person13);
-
-		// 111112111l TBR
-		// 110111111l VIN
-		// 101111111l NNS
 
 		// create state entities
 		su11.setStates(Set.of(new State(111112111l, su11, StateType.VIN),
@@ -335,12 +321,17 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 		su11.setClosingCause(new ClosingCause(null, m3Days, ClosingCauseType.NPI, su11));
 
 		// create identification entities
-		su11.setIdentification(new Identification(null, IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC,
-				SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED,
-				su11));
-		su11.setIdentification(new Identification(null, IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC,
-				SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED,
-				su21));
+		Identification identif1 = identificationRepository
+				.save(new Identification(null, IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC,
+						SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY,
+						OccupantQuestionValue.IDENTIFIED, su11));
+		Identification identif2 = identificationRepository
+				.save(new Identification(null, IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC,
+						SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY,
+						OccupantQuestionValue.IDENTIFIED, su21));
+
+		su11.setIdentification(identif1);
+		su21.setIdentification(identif2);
 
 		log.info("Dataset creation end");
 		return HttpStatus.OK;

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import lombok.Getter;

@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -40,22 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 public class UtilsServiceImpl implements UtilsService {
 
 	private final ApplicationProperties applicationProperties;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	UserService userService;
-
+	private final InterviewerRepository interviewerRepository;
+	private final UserRepository userRepository;
+	private final CampaignRepository campaignRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final UserService userService;
+	private final RestTemplate restTemplate;
 	private final Environment environment;
 
 	@Value("${fr.insee.pearljam.datacollection.service.url.scheme:#{null}}")
@@ -164,7 +153,6 @@ public class UtilsServiceImpl implements UtilsService {
 				.append(dataCollectionPort)
 				.append(Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
 		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(Constants.AUTHORIZATION, authTokenHeader);

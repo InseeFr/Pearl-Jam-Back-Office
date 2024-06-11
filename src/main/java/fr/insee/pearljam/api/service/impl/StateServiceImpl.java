@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,16 +16,14 @@ import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,42 +35,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class StateServiceImpl implements StateService {
 
 	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
 
-	@Autowired
-	CampaignRepository campaignRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	ContactOutcomeRepository contactOutcomeRepository;
-
-	@Autowired
-	StateRepository stateRepository;
-
-	@Autowired
-	ClosingCauseRepository closingCauseRepository;
-
-	@Autowired
-	InterviewerRepository interviewerRepository;
-
-	@Autowired
-	SurveyUnitRepository surveyUnitRepository;
-
-	@Autowired
-	VisibilityRepository visibilityRepository;
-
-	@Autowired
-	OrganizationUnitRepository organizationUnitRepository;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	UtilsService utilsService;
+	private final CampaignRepository campaignRepository;
+	private final StateRepository stateRepository;
+	private final ClosingCauseRepository closingCauseRepository;
+	private final InterviewerRepository interviewerRepository;
+	private final VisibilityRepository visibilityRepository;
+	private final OrganizationUnitRepository organizationUnitRepository;
+	private final UserService userService;
+	private final UtilsService utilsService;
 
 	public StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
 			List<String> associatedOrgUnits) throws NotFoundException {

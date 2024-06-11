@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +37,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,7 +63,6 @@ public class SurveyUnitController {
 
 	private final SurveyUnitService surveyUnitService;
 
-	private final UtilsService utilsService;
 	private final AuthenticationHelper authHelper;
 
 	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
@@ -76,7 +73,7 @@ public class SurveyUnitController {
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@Operation(summary = "POST SurveyUnit assignations to interviewer")
+	@Operation(summary = "Create survey-units")
 	@PostMapping(path = "/survey-units")
 	public ResponseEntity<Object> postSurveyUnits(Authentication auth,
 			@RequestBody List<SurveyUnitContextDto> surveyUnits) {
@@ -94,7 +91,7 @@ public class SurveyUnitController {
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
-	@Operation(summary = "Post SurveyUnits")
+	@Operation(summary = "Assign SurveyUnits to interviewers")
 	@PostMapping(path = "/survey-units/interviewers")
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(Authentication auth,
 			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
@@ -430,8 +427,9 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get closable survey units")
 	@GetMapping(path = "/survey-units/closable")
-	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
-		String userId = utilsService.getUserId(request);
+	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request,
+			Authentication auth) {
+		String userId = authHelper.getUserId(auth);
 
 		log.info("{} try to GET closable units", userId);
 

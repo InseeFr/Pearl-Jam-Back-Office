@@ -91,7 +91,7 @@ public class Person implements Serializable {
 	 * Constructor with all args
 	 */
 	public Person(Title title, String firstName, String lastName, String email, boolean favoriteEmail,
-			boolean privileged, Long birthdate) {
+			boolean privileged, Long birthdate, SurveyUnit surveyUnit) {
 		this.title = title;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -99,6 +99,7 @@ public class Person implements Serializable {
 		this.favoriteEmail = favoriteEmail;
 		this.privileged = privileged;
 		this.birthdate = birthdate;
+		this.surveyUnit = surveyUnit;
 	}
 
 	public Person(PersonDto p, SurveyUnit su) {

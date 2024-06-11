@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
+import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +41,7 @@ public class UserController {
 	private final UserService userService;
 	private final MessageService messageService;
 	private final OrganizationUnitService organizationUnitService;
+	private final PreferenceService preferenceService;
 
 	/**
 	 * This method returns the current USER
@@ -229,6 +232,7 @@ public class UserController {
 			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
 		}
 		messageService.deleteMessageByUserId(id);
+		preferenceService.setPreferences(Collections.emptyList(), id);
 
 		HttpStatus response = userService.delete(id);
 		log.info("{} : DELETE User {} resulting in {}", callerId, id, response.value());

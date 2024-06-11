@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PreferenceController {
 
 	private final PreferenceService preferenceService;
-
 	private final AuthenticationHelper authHelper;
 
 	/**

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,6 @@ import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -45,8 +43,6 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository ouRepository;
-	@Autowired
-	PreferenceService preferenceService;
 	private final ApplicationProperties applicationProperties;
 
 	public Optional<UserDto> getUser(String userId) {
@@ -75,7 +71,7 @@ public class UserServiceImpl implements UserService {
 					return Optional.of(new UserDto("", "Guest", "", ou.get(), organizationUnits));
 				}
 			}
-			return Optional.of(new UserDto("", "Guest", "",
+			return Optional.of(new UserDto("GUEST", "Guest", "",
 					new OrganizationUnitDto("OU-NORTH", "Guest organizational unit"), List.of()));
 		}
 	}
@@ -161,8 +157,6 @@ public class UserServiceImpl implements UserService {
 		if (!user.isPresent()) {
 			return HttpStatus.NOT_FOUND;
 		}
-		// delete preference
-		preferenceService.setPreferences(new ArrayList<>(), user.get().getId());
 		userRepository.delete(user.get());
 		return HttpStatus.OK;
 	}
@@ -180,7 +174,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto createUser(UserDto userToCreate) throws NotFoundException {
-		OrganizationUnit ou = organizationUnitRepository.findById(userToCreate.getOrganizationUnit().getId()).get();
+		Optional<OrganizationUnit> ouOpt = organizationUnitRepository
+				.findById(userToCreate.getOrganizationUnit().getId());
+		if (ouOpt.isEmpty()) {
+			throw new NotFoundException(String.format("Organization Unit with id %s not found",
+					userToCreate.getOrganizationUnit().getId()));
+		}
+		OrganizationUnit ou = ouOpt.get();
 		User user = new User(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
 		userRepository.save(user);
 		return getUser(userToCreate.getId()).orElse(null);
