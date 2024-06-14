@@ -7,20 +7,18 @@ import java.util.Optional;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
 import fr.insee.pearljam.api.configuration.properties.AuthEnumProperties;
+import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
@@ -39,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UtilsServiceImpl implements UtilsService {
 
 	private final ApplicationProperties applicationProperties;
+	private final ExternalServicesProperties externalServicesProperties;
 	private final InterviewerRepository interviewerRepository;
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
@@ -47,35 +46,13 @@ public class UtilsServiceImpl implements UtilsService {
 	private final RestTemplate restTemplate;
 	private final Environment environment;
 
-	@Value("${fr.insee.pearljam.datacollection.service.url.scheme:#{null}}")
-	private String dataCollectionScheme;
-
-	@Value("${fr.insee.pearljam.datacollection.service.url.host:#{null}}")
-	private String dataCollectionHost;
-
-	@Value("${fr.insee.pearljam.datacollection.service.url.port:#{null}}")
-	private String dataCollectionPort;
-
 	public String getUserId(HttpServletRequest request) {
-		String userId = null;
-		switch (applicationProperties.auth()) {
-			case AuthEnumProperties.BASIC:
-				Object basic = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				if (basic instanceof UserDetails) {
-					userId = ((UserDetails) basic).getUsername();
-				} else {
-					userId = basic.toString();
-				}
-				break;
-			case AuthEnumProperties.KEYCLOAK:
-				KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
-				userId = keycloak.getPrincipal().toString();
-				break;
-			default:
-				userId = Constants.GUEST;
-				break;
+		if (applicationProperties.auth() == AuthEnumProperties.KEYCLOAK) {
+			KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
+			return keycloak.getPrincipal().toString();
 		}
-		return userId;
+
+		return Constants.GUEST;
 	}
 
 	public boolean existUser(String userId, String service) {
@@ -146,17 +123,14 @@ public class UtilsServiceImpl implements UtilsService {
 	@Override
 	public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
 			List<String> ids) {
-		final StringBuilder uriPilotageFilter = new StringBuilder(dataCollectionScheme)
-				.append("://")
-				.append(dataCollectionHost)
-				.append(":")
-				.append(dataCollectionPort)
-				.append(Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+		final String dataCollectionUri = String.join(externalServicesProperties.datacollectionUrl(),
+				Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+
 		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(Constants.AUTHORIZATION, authTokenHeader);
-		return restTemplate.exchange(uriPilotageFilter.toString(), HttpMethod.POST, new HttpEntity<>(ids, headers),
+		return restTemplate.exchange(dataCollectionUri, HttpMethod.POST, new HttpEntity<>(ids, headers),
 				SurveyUnitOkNokDto.class);
 	}
 }

@@ -157,9 +157,6 @@ class TestAuthKeyCloak {
 
 	public Liquibase liquibase;
 
-	public static final String CLIENT_SECRET = "8951f422-44dd-45b4-a6ac-dde6748075d7";
-	public static final String CLIENT = "client-web";
-
 	static Authentication MANAGER = AuthenticatedUserTestHelper.AUTH_MANAGER;
 	static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
 
@@ -365,7 +362,7 @@ class TestAuthKeyCloak {
 						checkJsonPath(campaignJsonPath, "contactOutcomeConfiguration",
 								ContactOutcomeConfiguration.F2F.name()));
 
-		// // Testing dates => need a refactor of service to provide a Clock (fixed
+		// TODO - Testing dates => need a refactor of service to provide a Clock (fixed
 		// clock for tests)
 		// assertTrue(testingDates("managementStartDate",
 		// given().port(port).auth().oauth2(accessToken).when().get(Constants.API_CAMPAIGNS)

@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
-import lombok.RequiredArgsConstructor;
-
 import fr.insee.pearljam.api.configuration.properties.KeycloakProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -20,11 +18,11 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SwaggerConfiguration is the class using to configure swagger 3 ways to
- * authenticated : - without authentication, - basic authentication - and
- * keycloak authentication
+ * SwaggerConfiguration is the class using to configure swagger 2 ways to
+ * authenticated : - without authentication, - keycloak authentication
  * 
  * @author Claudel Benjamin
  * 
