@@ -6,11 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.oneOf;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -33,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONException;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
@@ -467,7 +462,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+		assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
 
 	}
 
@@ -495,7 +490,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		Assert.assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
+		assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
 
 	}
 
@@ -1400,7 +1395,7 @@ class TestAuthKeyCloak {
 
 		Optional<Visibility> visiOpt = visibilityRepository.findVisibilityByCampaignIdAndOuId("VQS2021X00", "OU-NORTH");
 		if (visiOpt.isEmpty()) {
-			Assert.fail("No visibility found for VQS2021X00  and OU-NORTH");
+			fail("No visibility found for VQS2021X00  and OU-NORTH");
 		}
 
 		Visibility visi = visiOpt.get();
@@ -2002,7 +1997,7 @@ class TestAuthKeyCloak {
 				.content(asJsonString(List.of(generateSurveyUnit("8")))))
 				.andExpect(status().isOk());
 
-		Assert.assertTrue(surveyUnitRepository.findById("8").isPresent());
+		assertTrue(surveyUnitRepository.findById("8").isPresent());
 	}
 
 	/**

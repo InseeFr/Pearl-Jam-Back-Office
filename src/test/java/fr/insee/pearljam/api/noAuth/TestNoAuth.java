@@ -1,24 +1,19 @@
 package fr.insee.pearljam.api.noAuth;
 
-import static io.restassured.RestAssured.get;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jayway.jsonpath.JsonPath;
 import org.json.JSONException;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
@@ -43,6 +38,7 @@ import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 /* Test class for no Authentication */
 @ActiveProfiles("test")
@@ -59,7 +55,7 @@ class TestNoAuth {
 	private final ClosingCauseRepository closingCauseRepository;
 	private final MockMvc mockMvc;
 
-	@Before
+	@BeforeEach
 	public void clearDataSet() throws Exception {
 		mockMvc.perform(delete("/api/delete-dataset").accept(MediaType.APPLICATION_JSON)
 				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
@@ -77,53 +73,38 @@ class TestNoAuth {
 				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
 	}
 
-	/**
-	 * This method is use to check if the dates are correct
-	 * 
-	 * @param dateType
-	 * @param date
-	 * @return
-	 */
-	private boolean testingDates(String dateType, long date) {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		LocalDate localDateNow = LocalDate.now();
-		boolean check = false;
-		LocalDate value = LocalDate.parse(df.format(date));
-		switch (dateType) {
-			case ("managementStartDate"):
-				if (value.equals(localDateNow.minusDays(4))) {
-					check = true;
-				}
-				break;
-			case ("interviewerStartDate"):
-				if (value.equals(localDateNow.minusDays(3))) {
-					check = true;
-				}
-				break;
-			case ("identificationPhaseStartDate"):
-				if (value.equals(localDateNow.minusDays(2))) {
-					check = true;
-				}
-				break;
-			case ("collectionStartDate"):
-				if (value.equals(localDateNow.minusDays(2))) {
-					check = true;
-				}
-				break;
-			case ("collectionEndDate"):
-				if (value.equals(localDateNow.plusMonths(1))) {
-					check = true;
-				}
-				break;
-			case ("endDate"):
-				if (value.equals(localDateNow.plusMonths(2))) {
-					check = true;
-				}
-				break;
-			default:
-				return check;
-		}
-		return check;
+	private ResultMatcher expectValidManagementStartDate() {
+		return expectTimestampFromCurrentDate("$.managementStartDate", -4, ChronoUnit.DAYS);
+	}
+
+	private ResultMatcher expectValidInterviewerStartDate() {
+		return expectTimestampFromCurrentDate("$.interviewerStartDate", -3, ChronoUnit.DAYS);
+	}
+
+	private ResultMatcher expectValidIdentificationPhaseStartDate() {
+		return expectTimestampFromCurrentDate("$.identificationPhaseStartDate", -2, ChronoUnit.DAYS);
+	}
+
+	private ResultMatcher expectValidCollectionStartDate() {
+		return expectTimestampFromCurrentDate("$.collectionStartDate", -2, ChronoUnit.DAYS);
+	}
+
+	private ResultMatcher expectValidCollectionEndDate() {
+		return expectTimestampFromCurrentDate("$.collectionEndDate", 1, ChronoUnit.MONTHS);
+	}
+
+	private ResultMatcher expectValidEndDate() {
+		return expectTimestampFromCurrentDate("$ndDate", 2, ChronoUnit.MONTHS);
+	}
+
+	private ResultMatcher expectTimestampFromCurrentDate(String expression, int unitToAdd, ChronoUnit chronoUnit) {
+		return mvcResult -> {
+			String content = mvcResult.getResponse().getContentAsString();
+			long timestamp = JsonPath.read(content, expression);
+			LocalDate localDateNow = LocalDate.now();
+			LocalDate dateToCheck = LocalDate.ofEpochDay(timestamp);
+			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
+		};
 	}
 
 	/* CampaignController */
@@ -139,39 +120,37 @@ class TestNoAuth {
 
 	@Test
 	@Order(1)
-	void testGetCampaign() {
-
-		given().when().get("api/campaigns").then().statusCode(200).and()
-				.assertThat().body("id", hasItem("SIMPSONS2020X00")).and()
-				.assertThat().body("label", hasItem("Survey on the Simpsons tv show 2020")).and()
-				.assertThat().body("allocated", hasItem(4)).and()
-				.assertThat().body("toAffect", hasItem(0)).and()
-				.assertThat().body("toFollowUp", hasItem(0)).and()
-				.assertThat().body("toReview", hasItem(0)).and()
-				.assertThat().body("finalized", hasItem(0)).and()
-				.assertThat().body("toProcessInterviewer", hasItem(0)).and()
-				.assertThat().body("preference", hasItem(true));
-
-		// Testing dates
-		assertTrue(testingDates("managementStartDate", get("api/campaigns").path("managementStartDate[0]")));
-		assertTrue(testingDates("interviewerStartDate", get("api/campaigns").path("interviewerStartDate[0]")));
-		assertTrue(testingDates("identificationPhaseStartDate",
-				get("api/campaigns").path("identificationPhaseStartDate[0]")));
-		assertTrue(testingDates("collectionStartDate", get("api/campaigns").path("collectionStartDate[0]")));
-		assertTrue(testingDates("collectionEndDate", get("api/campaigns").path("collectionEndDate[0]")));
-		assertTrue(testingDates("endDate", get("api/campaigns").path("endDate[0]")));
-
+	void testGetCampaign() throws Exception {
+		mockMvc.perform(get("/api/campaigns").accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.id").value("SIMPSONS2020X00"),
+						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
+						jsonPath("$.allocated").value(4),
+						jsonPath("$.toAffect").value(0),
+						jsonPath("$.toFollowUp").value(0),
+						jsonPath("$.toReview").value(0),
+						jsonPath("$.finalized").value(0),
+						jsonPath("$.toProcessInterviewer").value(0),
+						jsonPath("$.preference").value(true),
+						jsonPath("$.managementStartDate").value(true),
+						expectValidManagementStartDate(),
+						expectValidIdentificationPhaseStartDate(),
+						expectValidInterviewerStartDate(),
+						expectValidCollectionStartDate(),
+						expectValidCollectionEndDate(),
+						expectValidEndDate());
 	}
 
 	@Test
 	@Order(2)
-	void testPutClosingCauseNoPreviousClosingCause() {
-		given().when().put("api/survey-unit/11/closing-cause/NPI")
-				.then().statusCode(200);
+	void testPutClosingCauseNoPreviousClosingCause() throws Exception {
+		mockMvc.perform(put("api/survey-unit/11/closing-cause/NPI")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		Assert.assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
-
+		assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
 	}
 
 	/**
@@ -182,13 +161,17 @@ class TestNoAuth {
 	 */
 	@Test
 	@Order(3)
-	void testPostMessage() throws JsonProcessingException {
+	void testPostMessage() throws Exception {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("GUEST");
-		given().contentType("application/json").body(new ObjectMapper().writeValueAsString(message)).when()
-				.post("api/message").then().statusCode(200);
+		mockMvc.perform(post("/api/message")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(message)))
+				.andExpect(status().isOk());
+
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
 		assertEquals("TEST", messages.get(0).getText());
