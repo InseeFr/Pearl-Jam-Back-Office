@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.configuration.auth.AuthConstants;
 import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.AbstractOAuth2Token;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -36,5 +37,10 @@ public class AuthenticationUserHelper implements AuthenticationHelper {
             }
             default -> throw new AuthenticationTokenException("No authentication mode used");
         }
+    }
+
+    @Override
+    public Authentication getAuthenticationPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 }

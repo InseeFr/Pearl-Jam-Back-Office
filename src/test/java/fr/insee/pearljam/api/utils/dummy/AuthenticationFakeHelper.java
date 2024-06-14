@@ -17,4 +17,9 @@ public class AuthenticationFakeHelper implements AuthenticationHelper {
         }
         return authentication.getName();
     }
+
+    @Override
+    public Authentication getAuthenticationPrincipal() {
+        return null;
+    }
 }
