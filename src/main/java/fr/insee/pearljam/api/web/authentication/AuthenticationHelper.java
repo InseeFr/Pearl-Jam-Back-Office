@@ -18,4 +18,11 @@ public interface AuthenticationHelper {
      * @return the user id
      */
     String getUserId(Authentication authentication);
+
+    /**
+     * Retrieve the authentication principal for current user
+     *
+     * @return {@link Authentication} the authentication user object
+     */
+    Authentication getAuthenticationPrincipal();
 }
