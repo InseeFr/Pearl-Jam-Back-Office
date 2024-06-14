@@ -6,13 +6,13 @@ import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,7 +48,7 @@ public class UtilsServiceImpl implements UtilsService {
 
 	public String getUserId(HttpServletRequest request) {
 		if (applicationProperties.auth() == AuthEnumProperties.KEYCLOAK) {
-			KeycloakAuthenticationToken keycloak = (KeycloakAuthenticationToken) request.getUserPrincipal();
+            JwtAuthenticationToken keycloak = (JwtAuthenticationToken) request.getUserPrincipal();
 			return keycloak.getPrincipal().toString();
 		}
 
