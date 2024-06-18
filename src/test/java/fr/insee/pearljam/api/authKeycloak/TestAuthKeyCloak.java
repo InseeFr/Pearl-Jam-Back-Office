@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import fr.insee.pearljam.api.service.*;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -111,17 +112,12 @@ import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
-import fr.insee.pearljam.api.service.MessageService;
-import fr.insee.pearljam.api.service.PreferenceService;
-import fr.insee.pearljam.api.service.ReferentService;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import liquibase.Liquibase;
 import lombok.RequiredArgsConstructor;
 
 /* Test class for Keycloak Authentication */
-@ActiveProfiles("test")
+@ActiveProfiles("auth")
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -144,6 +140,7 @@ class TestAuthKeyCloak {
 	private final ReferentService referentservice;
 	private final MessageService messageService;
 	private final PreferenceService preferenceService;
+	private final DataSetInjectorService injectorService;
 
 	private final MockMvc mockMvc;
 	private final RestTemplate restTemplate;
@@ -152,20 +149,19 @@ class TestAuthKeyCloak {
 
 	public Liquibase liquibase;
 
-	static Authentication MANAGER = AuthenticatedUserTestHelper.AUTH_MANAGER;
+	static Authentication LOCAL_USER = AuthenticatedUserTestHelper.AUTH_LOCAL_USER;
 	static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
+	static Authentication ADMIN = AuthenticatedUserTestHelper.AUTH_ADMIN;
 
 	/**
 	 * This method set up the dataBase content
 	 * 
-	 * @throws Exception
-	 * 
+	 *
 	 */
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setUp() {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
-		mockMvc.perform(post("/api/create-dataset").accept(MediaType.APPLICATION_JSON)
-				.with(authentication(MANAGER)));
+		injectorService.createDataSet();
 	}
 
 	/**
@@ -228,9 +224,9 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(1)
 	void testGetUser() throws Exception {
-
 		mockMvc.perform(get("/api/user").accept(MediaType.APPLICATION_JSON)
-				.with(authentication(MANAGER)))
+				.with(authentication(LOCAL_USER)))
+				.andDo(print())
 				.andExpectAll(
 						status().isOk(),
 						jsonPath("$.id").value("ABC"),
@@ -248,7 +244,7 @@ class TestAuthKeyCloak {
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/state-count")
 				.accept(MediaType.APPLICATION_JSON)
-				.with(authentication(MANAGER)))
+				.with(authentication(LOCAL_USER)))
 				.andExpectAll(
 						status().isOk(),
 						jsonPath("$.nvmCount").value("0"),
@@ -279,7 +275,7 @@ class TestAuthKeyCloak {
 	void testGetContactOutcomeCountNotattributed() throws Exception {
 		mockMvc.perform(get(
 				"https://localhost:8080/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -335,7 +331,7 @@ class TestAuthKeyCloak {
 		String campaignJsonPath = "$.[?(@.id == 'SIMPSONS2020X00')].%s";
 
 		mockMvc.perform(get(Constants.API_CAMPAIGNS)
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -390,7 +386,7 @@ class TestAuthKeyCloak {
 	void testGetCampaignInterviewer() throws Exception {
 		String interviewerJsonPath = "$.[?(@.id == 'INTW1')].%s";
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -409,7 +405,7 @@ class TestAuthKeyCloak {
 	@Order(5)
 	void testGetCampaignInterviewerNotFound() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -426,7 +422,7 @@ class TestAuthKeyCloak {
 		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -457,7 +453,7 @@ class TestAuthKeyCloak {
 	void testPutClosingCauseNoPreviousClosingCause()
 			throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPI")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -476,7 +472,7 @@ class TestAuthKeyCloak {
 	@Order(7)
 	void testGetCampaignStateCountNotFound() throws Exception {
 		mockMvc.perform(get("/api/campaign/test/survey-units/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -485,7 +481,7 @@ class TestAuthKeyCloak {
 	@Order(8)
 	void testPutClosingCausePreviousClosingCause() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPA")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -500,18 +496,18 @@ class TestAuthKeyCloak {
 		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						checkJsonPath(ouJsonPath, "tbrCount", 4L),
 						checkJsonPath(ouJsonPath, "rowCount", 0L));
 
 		mockMvc.perform(put("/api/survey-unit/14/close/ROW")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						checkJsonPath(ouJsonPath, "tbrCount", 3L),
@@ -529,7 +525,7 @@ class TestAuthKeyCloak {
 	@Order(8)
 	void testGetCampaignInterviewerStateCount() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$.nvmCount").value(0L),
@@ -564,7 +560,7 @@ class TestAuthKeyCloak {
 	@Order(9)
 	void testGetCampaignInterviewerStateCountNotFoundCampaign() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -581,7 +577,7 @@ class TestAuthKeyCloak {
 	@Order(10)
 	void testGetCampaignInterviewerStateCountNotFoundIntw() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/test/state-count")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -657,7 +653,7 @@ class TestAuthKeyCloak {
 						jsonPath("$.campaignLabel").value(hasItem("Survey on the Simpsons tv show 2020")));
 
 		MvcResult result = mockMvc.perform(get(Constants.API_CAMPAIGNS)
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andReturn();
@@ -685,7 +681,7 @@ class TestAuthKeyCloak {
 	@Order(13)
 	void testGetSurveyUnitDetailNotFound() throws Exception {
 		mockMvc.perform(get("/api/survey-unit/123456789")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -765,7 +761,7 @@ class TestAuthKeyCloak {
 	@Order(15)
 	void testPutSurveyUnitState() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/12/state/WFT")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -782,7 +778,7 @@ class TestAuthKeyCloak {
 	@Order(16)
 	void testPutSurveyUnitStateStateFalse() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/state/test")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isInternalServerError());
 	}
@@ -797,7 +793,7 @@ class TestAuthKeyCloak {
 	@Order(17)
 	void testPutSurveyUnitStateNoSu() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/state/AOC")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isForbidden());
 	}
@@ -812,7 +808,7 @@ class TestAuthKeyCloak {
 	@Order(18)
 	void testPutPreferences() throws Exception {
 		mockMvc.perform(put("/api/preferences")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of("SIMPSONS2020X00")))
 				.contentType(MediaType.APPLICATION_JSON))
@@ -829,7 +825,7 @@ class TestAuthKeyCloak {
 	@Order(19)
 	void testPutPreferencesWrongCampaignId() throws Exception {
 		mockMvc.perform(put("/api/preferences")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of("")))
 				.contentType(MediaType.APPLICATION_JSON))
@@ -848,7 +844,7 @@ class TestAuthKeyCloak {
 		// use a beforeEach method to run each test with a cleaned database
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/closing-causes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$.npaCount").value("1"),
@@ -867,7 +863,7 @@ class TestAuthKeyCloak {
 	@Order(20)
 	void testGetNbSuAbandoned() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/abandoned")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$.count").value("0"));
@@ -885,7 +881,7 @@ class TestAuthKeyCloak {
 		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						checkJsonPath(ouJsonPath, "labelDem", "North region organizational unit"),
@@ -914,7 +910,7 @@ class TestAuthKeyCloak {
 		String ouJsonPath = "$.[?(@.campaign.id == 'SIMPSONS2020X00')].%s";
 
 		mockMvc.perform(get("/api/campaigns/survey-units/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						checkJsonPath(ouJsonPath, "campaign.label", "Survey on the Simpsons tv show 2020"),
@@ -941,7 +937,7 @@ class TestAuthKeyCloak {
 	@Order(21)
 	void testGetNbSuAbandonedNotFound() throws Exception {
 		mockMvc.perform(get("/api/campaign/test/survey-units/abandoned")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -955,7 +951,7 @@ class TestAuthKeyCloak {
 	@Order(22)
 	void testGetNbSuNotAttributed() throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/not-attributed")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$.count").value("0"));
@@ -971,7 +967,7 @@ class TestAuthKeyCloak {
 	@Order(23)
 	void testGetNbSuNotAttributedNotFound() throws Exception {
 		mockMvc.perform(get("/api/campaign/test/survey-units/not-attributed")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -998,7 +994,7 @@ class TestAuthKeyCloak {
 				""";
 
 		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(campaignInput))
 				.andExpect(status().isOk());
@@ -1031,7 +1027,7 @@ class TestAuthKeyCloak {
 		String jsonContent = String.format("{\"collectionStartDate\": %d}", now);
 
 		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonContent))
 				.andExpect(status().isOk());
@@ -1059,7 +1055,7 @@ class TestAuthKeyCloak {
 		String jsonContent = String.format("{\"collectionEndDate\": %d}", now);
 
 		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonContent))
 				.andExpect(status().isOk());
@@ -1080,7 +1076,7 @@ class TestAuthKeyCloak {
 	@Order(32)
 	void testPutVisibilityEmptyBody() throws Exception {
 		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{}"))
 				.andExpect(status().isBadRequest());
@@ -1108,7 +1104,7 @@ class TestAuthKeyCloak {
 				}""";
 
 		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -1128,7 +1124,7 @@ class TestAuthKeyCloak {
 		message.setSender("abc");
 
 		mockMvc.perform(post("/api/message")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(message)))
 				.andExpect(status().isOk());
@@ -1148,7 +1144,7 @@ class TestAuthKeyCloak {
 	@Order(35)
 	void testPostMessageBadFormat() throws Exception {
 		mockMvc.perform(post("/api/message")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(null)))
 				.andExpect(status().isBadRequest());
@@ -1220,7 +1216,7 @@ class TestAuthKeyCloak {
 		String url = String.format("/api/message/%d/interviewer/INTW1/delete", messageId);
 
 		mockMvc.perform(put(url)
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -1241,7 +1237,7 @@ class TestAuthKeyCloak {
 		String url = String.format("/api/message/%d/interviewer/Test/read", messageId);
 
 		mockMvc.perform(put(url)
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 
@@ -1257,7 +1253,7 @@ class TestAuthKeyCloak {
 	@Order(41)
 	void testGetMessageHistory() throws Exception {
 		mockMvc.perform(get("/api/message-history")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$[?(@.text == 'TEST')]").exists());
@@ -1276,7 +1272,7 @@ class TestAuthKeyCloak {
 		WsText message = new WsText("simps");
 
 		mockMvc.perform(post("/api/verify-name")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(message)))
 				.andExpectAll(status().isOk(),
@@ -1315,7 +1311,7 @@ class TestAuthKeyCloak {
 		String interviewerJsonPath = "$.[?(@.id == 'INTW1')].%s";
 
 		mockMvc.perform(get("/api/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -1335,7 +1331,7 @@ class TestAuthKeyCloak {
 	@Order(45)
 	void testGetInterviewerRelatedCampaigns() throws Exception {
 		MvcResult result = mockMvc.perform(get("/api/interviewer/INTW1/campaigns")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -1361,7 +1357,7 @@ class TestAuthKeyCloak {
 	@Order(46)
 	void testGetInterviewerNotExistForCampaign() throws Exception {
 		mockMvc.perform(get("/api/interviewer/INTW123/campaigns")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -1408,7 +1404,7 @@ class TestAuthKeyCloak {
 
 		mockMvc
 				.perform(get("/api/survey-units/closable")
-						.with(authentication(MANAGER))
+						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -1437,7 +1433,7 @@ class TestAuthKeyCloak {
 	void testGetContactOutcomeCountByCampaignAndInterviewer()
 			throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -1466,7 +1462,7 @@ class TestAuthKeyCloak {
 	void testGetContactOutcomeCountByCampaignNotExistAndInterviewer()
 			throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isNotFound());
@@ -1485,7 +1481,7 @@ class TestAuthKeyCloak {
 	void testGetContactOutcomeCountByCampaignAndInterviewerNotExist()
 			throws Exception {
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW123/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isNotFound());
@@ -1504,7 +1500,7 @@ class TestAuthKeyCloak {
 			throws Exception {
 
 		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/contact-outcomes")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isNotFound());
@@ -1522,7 +1518,7 @@ class TestAuthKeyCloak {
 		String comment = asJsonString(new CommentDto(CommentType.MANAGEMENT, "Test of comment"));
 
 		mockMvc.perform(put("/api/survey-unit/11/comment")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(comment))
 				.andExpect(status().isOk());
@@ -1550,7 +1546,7 @@ class TestAuthKeyCloak {
 		String comment = asJsonString(new CommentDto(CommentType.MANAGEMENT, "Test of comment"));
 
 		mockMvc.perform(put("/api/survey-unit/11111111111/comment")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(comment))
 				.andExpect(status().isNotFound());
@@ -1567,7 +1563,7 @@ class TestAuthKeyCloak {
 	@Order(56)
 	void testPutSuViewed() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/24/viewed")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -1586,7 +1582,7 @@ class TestAuthKeyCloak {
 	@Order(57)
 	void testPutSuViewedNotExist() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11111111111/viewed")
-				.with(authentication(MANAGER))
+				.with(authentication(LOCAL_USER))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -1602,7 +1598,7 @@ class TestAuthKeyCloak {
 	@Order(58)
 	void testGetOrganizationUnits() throws Exception {
 		mockMvc.perform(get("/api/organization-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -1635,7 +1631,7 @@ class TestAuthKeyCloak {
 		campDto.setVisibilities(List.of(visi1, visi2));
 
 		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campDto)))
 				.andExpect(status().isOk());
@@ -1692,7 +1688,7 @@ class TestAuthKeyCloak {
 		campDto.setVisibilities(List.of(visi1, visi2));
 
 		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campDto)))
 				.andExpect(status().isBadRequest());
@@ -1723,7 +1719,7 @@ class TestAuthKeyCloak {
 		campDto.setVisibilities(List.of(visi1, visi2));
 
 		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campDto)))
 				.andExpect(status().isBadRequest());
@@ -1758,7 +1754,7 @@ class TestAuthKeyCloak {
 		ou2.setUsers(List.of(user3, user4));
 
 		mockMvc.perform(post("/api/organization-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(ou1, ou2))))
 				.andExpect(status().isOk());
@@ -1816,7 +1812,7 @@ class TestAuthKeyCloak {
 				OrganizationUnitType.LOCAL, List.of(user2, user3));
 
 		mockMvc.perform(post("/api/organization-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(ou1, ou2))))
 				.andExpect(status().isBadRequest());
@@ -1851,7 +1847,7 @@ class TestAuthKeyCloak {
 				OrganizationUnitType.LOCAL, List.of(user2, user3));
 
 		mockMvc.perform(post("/api/organization-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(ou1, ou2))))
 				.andExpect(status().isBadRequest());
@@ -1877,7 +1873,7 @@ class TestAuthKeyCloak {
 		InterviewerContextDto interv2 = generateInterviewerBContextDto("INTERV2");
 
 		mockMvc.perform(post("/api/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(interv1, interv2))))
 				.andExpect(status().isOk());
@@ -1917,7 +1913,7 @@ class TestAuthKeyCloak {
 		interv2.setEmail(null);
 
 		mockMvc.perform(post("/api/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(interv1, interv2))))
 				.andExpect(status().isBadRequest());
@@ -1943,7 +1939,7 @@ class TestAuthKeyCloak {
 		InterviewerContextDto interv2 = generateInterviewerBContextDto("INTERV3");
 
 		mockMvc.perform(post("/api/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(interv1, interv2))))
 				.andExpect(status().isBadRequest());
@@ -1968,7 +1964,7 @@ class TestAuthKeyCloak {
 		intervNoTitle.setTitle(null);
 
 		mockMvc.perform(post("/api/interviewers")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(intervNoTitle))))
 				.andExpect(status().isOk());
@@ -1992,7 +1988,7 @@ class TestAuthKeyCloak {
 	@Order(111)
 	void testPostSurveyUnits() throws Exception {
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(generateSurveyUnit("8")))))
 				.andExpect(status().isOk());
@@ -2012,7 +2008,7 @@ class TestAuthKeyCloak {
 	@Order(112)
 	void testPostSurveyUnitsDuplicateInDB() throws Exception {
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(generateSurveyUnit("8")))))
 				.andExpect(status().isBadRequest());
@@ -2032,7 +2028,7 @@ class TestAuthKeyCloak {
 		SurveyUnitContextDto su = generateSurveyUnit("9");
 
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su, su))))
 				.andExpect(status().isBadRequest());
@@ -2054,7 +2050,7 @@ class TestAuthKeyCloak {
 		su.setOrganizationUnitId("OU-TEST");
 
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su))))
 				.andExpect(status().isBadRequest());
@@ -2075,7 +2071,7 @@ class TestAuthKeyCloak {
 		su.setCampaign("campaignTest");
 
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su))))
 				.andExpect(status().isBadRequest());
@@ -2097,7 +2093,7 @@ class TestAuthKeyCloak {
 
 		// ID null
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su))))
 				.andExpect(status().isBadRequest());
@@ -2106,7 +2102,7 @@ class TestAuthKeyCloak {
 		su.setId("9");
 		su.setCampaign("");
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su))))
 				.andExpect(status().isBadRequest());
@@ -2115,7 +2111,7 @@ class TestAuthKeyCloak {
 		su.setPersons(Collections.emptyList());
 		su.setCampaign("SIMPSONS2020X00");
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(su))))
 				.andExpect(status().isBadRequest());
@@ -2140,7 +2136,7 @@ class TestAuthKeyCloak {
 		SurveyUnitInterviewerLinkDto assign2 = new SurveyUnitInterviewerLinkDto("102", "INTW3");
 
 		mockMvc.perform(post(Constants.API_SURVEYUNITS_INTERVIEWERS)
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(assign1, assign2))))
 				.andDo(print())
@@ -2176,7 +2172,7 @@ class TestAuthKeyCloak {
 		SurveyUnitInterviewerLinkDto assign2 = new SurveyUnitInterviewerLinkDto("104", "INTWDOESNTEXIST");
 
 		mockMvc.perform(post(Constants.API_SURVEYUNITS_INTERVIEWERS)
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(assign1, assign2))))
 				.andDo(print())
@@ -2206,7 +2202,7 @@ class TestAuthKeyCloak {
 	@Order(120)
 	void testPostUsersByOU() throws Exception {
 		mockMvc.perform(post("/api/organization-unit/OU-NORTH/users")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(
 						new UserContextDto("TEST", "test", "test", null, null),
@@ -2235,7 +2231,7 @@ class TestAuthKeyCloak {
 	@Order(121)
 	void testPostUsersByOUThatDoesNotExist() throws Exception {
 		mockMvc.perform(post("/api/organization-unit/OU-TEST/users")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(
 						new UserContextDto("TEST", "test", "test", null, null),
@@ -2256,7 +2252,7 @@ class TestAuthKeyCloak {
 	@Order(200)
 	void testDeleteSurveyUnit() throws Exception {
 		mockMvc.perform(delete("/api/survey-unit/11")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -2267,7 +2263,7 @@ class TestAuthKeyCloak {
 	@Order(201)
 	void testDeleteSurveyUnitNotExist() throws Exception {
 		mockMvc.perform(delete("/api/survey-unit/toto")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2276,24 +2272,24 @@ class TestAuthKeyCloak {
 	@Order(202)
 	void testDeleteCampaign() throws Exception {
 		mockMvc.perform(delete("/api/campaign/XCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
 		assertTrue(campaignRepository.findById("XCLOSEDX00").isEmpty());
 
 		mockMvc.perform(delete("/api/campaign/SIMPSONS2020X00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict());
 
 		mockMvc.perform(delete("/api/campaign/SIMPSONS2020X00?force=false")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict());
 
 		mockMvc.perform(delete("/api/campaign/SIMPSONS2020X00?force=true")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -2304,7 +2300,7 @@ class TestAuthKeyCloak {
 	@Order(203)
 	void testDeleteCampaignNotExist() throws Exception {
 		mockMvc.perform(delete("/api/campaign/SIMPSONS2020XTT")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2313,7 +2309,7 @@ class TestAuthKeyCloak {
 	@Order(204)
 	void testDeleteUser() throws Exception {
 		mockMvc.perform(delete("/api/user/JKL")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -2324,7 +2320,7 @@ class TestAuthKeyCloak {
 	@Order(205)
 	void testDeleteUserNotExist() throws Exception {
 		mockMvc.perform(delete("/api/user/USER")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2345,7 +2341,7 @@ class TestAuthKeyCloak {
 				});
 
 		mockMvc.perform(delete("/api/organization-unit/OU-NORTH")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -2356,7 +2352,7 @@ class TestAuthKeyCloak {
 	@Order(207)
 	void testDeleteOrganizationUnitWithUsersOrSurveyUnits() throws Exception {
 		mockMvc.perform(delete("/api/organization-unit/OU-SOUTH")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
 	}
@@ -2365,7 +2361,7 @@ class TestAuthKeyCloak {
 	@Order(208)
 	void testDeleteOrganizationUnitNotExist() throws Exception {
 		mockMvc.perform(delete("/api/organization-unit/TEST")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2374,7 +2370,7 @@ class TestAuthKeyCloak {
 	@Order(209)
 	void testCreateValidUser() throws Exception {
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(generateValidUser())))
 				.andExpect(status().isCreated());
@@ -2384,7 +2380,7 @@ class TestAuthKeyCloak {
 	@Order(210)
 	void testCreateAreadyPresentUser() throws Exception {
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(generateValidUser())))
 				.andExpect(status().isConflict());
@@ -2395,7 +2391,7 @@ class TestAuthKeyCloak {
 	void testCreateInvalidUser() throws Exception {
 		// Null user object
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(null)))
 				.andDo(print())
@@ -2405,7 +2401,7 @@ class TestAuthKeyCloak {
 		UserDto user = generateValidUser();
 		user.setFirstName(null);
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(user)))
 				.andExpect(status().isBadRequest());
@@ -2414,7 +2410,7 @@ class TestAuthKeyCloak {
 		user = generateValidUser();
 		user.setLastName(null);
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(user)))
 				.andExpect(status().isBadRequest());
@@ -2423,7 +2419,7 @@ class TestAuthKeyCloak {
 		user = generateValidUser();
 		user.setId(null);
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(user)))
 				.andExpect(status().isBadRequest());
@@ -2432,7 +2428,7 @@ class TestAuthKeyCloak {
 		user = generateValidUser();
 		user.getOrganizationUnit().setId("WHERE_IS_CHARLIE");
 		mockMvc.perform(post("/api/user")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(user)))
 				.andExpect(status().isBadRequest());
@@ -2442,7 +2438,7 @@ class TestAuthKeyCloak {
 	@Order(212)
 	void testUpdateMissingUser() throws Exception {
 		mockMvc.perform(put("/api/user/TEST")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(generateValidUser())))
 				.andExpect(status().isNotFound());
@@ -2452,7 +2448,7 @@ class TestAuthKeyCloak {
 	@Order(213)
 	void testUpdateWrongUser() throws Exception {
 		mockMvc.perform(put("/api/user/GHI")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(generateValidUser())))
 				.andExpect(status().isConflict());
@@ -2465,7 +2461,7 @@ class TestAuthKeyCloak {
 		user.setId("GHI");
 
 		mockMvc.perform(put("/api/user/GHI")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(user)))
 				.andExpectAll(
@@ -2481,7 +2477,7 @@ class TestAuthKeyCloak {
 	@Order(215)
 	void testAssignUser() throws Exception {
 		mockMvc.perform(put("/api/user/GHI/organization-unit/OU-SOUTH")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -2494,7 +2490,7 @@ class TestAuthKeyCloak {
 	@Order(216)
 	void testAssignUserMissingUser() throws Exception {
 		mockMvc.perform(put("/api/user/MISSING/organization-unit/OU-SOUTH")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2503,7 +2499,7 @@ class TestAuthKeyCloak {
 	@Order(217)
 	void testAssignUserMissingOu() throws Exception {
 		mockMvc.perform(put("/api/user/GHI/organization-unit/MISSING")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2512,14 +2508,14 @@ class TestAuthKeyCloak {
 	@Order(218)
 	void testOngoing() throws Exception {
 		mockMvc.perform(get("/campaigns/ZCLOSEDX00/ongoing")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
 						jsonPath("$.ongoing").value(false));
 
 		mockMvc.perform(get("/campaigns/VQS2021X00/ongoing")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
@@ -2530,7 +2526,7 @@ class TestAuthKeyCloak {
 	@Order(219)
 	void testOngoingNotFound() throws Exception {
 		mockMvc.perform(get("/campaigns/MISSING/ongoing")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
@@ -2561,7 +2557,7 @@ class TestAuthKeyCloak {
 
 		// path variable campaignId not found in DB
 		mockMvc.perform(put("/api/campaign/MISSING")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isNotFound());
@@ -2569,21 +2565,21 @@ class TestAuthKeyCloak {
 		// BAD REQUESTS
 		campaignContext.setCampaignLabel(null);
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isBadRequest());
 
 		campaignContext.setCampaignLabel("  ");
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isBadRequest());
 
 		campaignContext.setCampaignLabel("");
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isBadRequest());
@@ -2591,7 +2587,7 @@ class TestAuthKeyCloak {
 		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
 		campaignContext.setVisibilities(List.of(emptyVcd));
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isBadRequest());
@@ -2599,7 +2595,7 @@ class TestAuthKeyCloak {
 		// NOT FOUND VISIBILITY
 		campaignContext.setVisibilities(List.of(missingVcd));
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isNotFound());
@@ -2607,7 +2603,7 @@ class TestAuthKeyCloak {
 		// CONFLICT due to visibilities
 		campaignContext.setVisibilities(List.of(invalidVcd));
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isConflict());
@@ -2620,7 +2616,7 @@ class TestAuthKeyCloak {
 		campaignContext.setIdentificationConfiguration(IdentificationConfiguration.NOIDENT);
 
 		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(campaignContext)))
 				.andExpect(status().isOk());
@@ -2664,7 +2660,7 @@ class TestAuthKeyCloak {
 	private ResultActions updateVisibility(String campaignId, String OuId, String visibility) throws Exception {
 		return mockMvc.perform(
 				put(updateVisibilityUrl(campaignId, OuId))
-						.with(authentication(MANAGER))
+						.with(authentication(LOCAL_USER))
 						.content(visibility)
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON));
@@ -2762,7 +2758,7 @@ class TestAuthKeyCloak {
 
 	private void addUnattributedSU(String suId) throws Exception {
 		mockMvc.perform(post("/api/survey-units")
-				.with(authentication(MANAGER))
+				.with(authentication(ADMIN))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(List.of(generateSurveyUnit(suId)))));
 	}

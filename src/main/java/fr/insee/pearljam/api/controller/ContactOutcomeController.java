@@ -2,10 +2,10 @@ package fr.insee.pearljam.api.controller;
 
 import java.util.List;
 
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,6 @@ import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
-import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ContactOutcomeController {
 
 	private final ContactOutcomeService contactOutcomeService;
-	private final AuthenticationHelper authHelper;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
 	 * This method is used to count survey units not attributed by contact-outcomes
@@ -43,9 +42,9 @@ public class ContactOutcomeController {
 	 */
 	@Operation(summary = "Get Contact-outcomes count for non attributted SUs")
 	@GetMapping(path = "/campaign/{id}/survey-units/not-attributed/contact-outcomes")
-	public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(Authentication auth,
+	public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -74,9 +73,8 @@ public class ContactOutcomeController {
 	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaigns/survey-units/contact-outcomes")
 	public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(
-			Authentication auth,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -104,9 +102,8 @@ public class ContactOutcomeController {
 	@Operation(summary = "Get campaignStateCount")
 	@GetMapping(path = "/campaign/{id}/survey-units/contact-outcomes")
 	public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(
-			Authentication auth,
 			@PathVariable(value = "id") String id, @RequestParam(required = false, name = "date") Long date) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -135,10 +132,9 @@ public class ContactOutcomeController {
 	@Operation(summary = "Get contact-outcome type for an interviewer on a specific campaign")
 	@GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes")
 	public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(
-			Authentication auth,
 			@PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
 			@RequestParam(required = false, name = "date") Long date) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}

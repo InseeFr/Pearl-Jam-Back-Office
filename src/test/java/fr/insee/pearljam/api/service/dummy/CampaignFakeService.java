@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service.dummy;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.domain.Campaign;
@@ -19,10 +20,13 @@ import fr.insee.pearljam.api.exception.VisibilityException;
 import fr.insee.pearljam.api.service.CampaignService;
 import lombok.Getter;
 
-@Getter
+@RequiredArgsConstructor
 public class CampaignFakeService implements CampaignService {
 
+    @Getter
     private boolean deleted = false;
+
+    private final Campaign campaign;
 
     @Override
     public List<CampaignDto> getListCampaign(String userId) {
@@ -81,14 +85,12 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public Optional<Campaign> findById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return Optional.of(campaign);
     }
 
     @Override
     public void delete(Campaign campaign) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        deleted = true;
     }
 
     @Override

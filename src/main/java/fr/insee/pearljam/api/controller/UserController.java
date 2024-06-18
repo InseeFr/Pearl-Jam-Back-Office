@@ -3,10 +3,10 @@ package fr.insee.pearljam.api.controller;
 import java.util.Collections;
 import java.util.Optional;
 
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +23,6 @@ import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserController {
 
-	private final AuthenticationHelper authHelper;
-
 	private final UserService userService;
 	private final MessageService messageService;
 	private final OrganizationUnitService organizationUnitService;
 	private final PreferenceService preferenceService;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
 	 * This method returns the current USER
@@ -52,8 +50,8 @@ public class UserController {
 	 */
 	@Operation(summary = "Get User")
 	@GetMapping(path = "/user")
-	public ResponseEntity<UserDto> getUser(Authentication auth) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<UserDto> getUser() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET User resulting in 403");
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -78,8 +76,9 @@ public class UserController {
 	 */
 	@Operation(summary = "Get User by id")
 	@GetMapping(path = "/user/{id}")
-	public ResponseEntity<UserDto> getUserById(Authentication auth, @PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<UserDto> getUserById(
+						@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET user with id : {}", userId, id);
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET User {} resulting in 403", id);
@@ -102,9 +101,10 @@ public class UserController {
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(path = "/user")
-	public ResponseEntity<Object> createUser(Authentication auth, @RequestBody UserDto user) {
-		String callerId = authHelper.getUserId(auth);
-		log.info("{} try to create a new user", callerId);
+	public ResponseEntity<Object> createUser(
+						@RequestBody UserDto user) {
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to create a new user", userId);
 		if (!userService.checkValidity(user)) {
 			String invalidUserInfo = String.format("Invalid user : %s", user.toString());
 			log.info(invalidUserInfo);
@@ -138,10 +138,11 @@ public class UserController {
 	 */
 	@Operation(summary = "Update User")
 	@PutMapping(path = "/user/{id}")
-	public ResponseEntity<Object> updateUser(Authentication auth, @PathVariable(value = "id") String id,
+	public ResponseEntity<Object> updateUser(
+			@PathVariable(value = "id") String id,
 			@RequestBody UserDto user) {
-		String callerId = authHelper.getUserId(auth);
-		log.info("{} try to update user {}", callerId, id);
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to update user {}", userId, id);
 
 		if (!userService.checkValidity(user)) {
 			String invalidUserInfo = String.format("Invalid user : %s", user.toString());
@@ -170,7 +171,7 @@ public class UserController {
 			log.warn(noFoundUser);
 			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
 		}
-		log.info("{} updated user {} - {} ", callerId, id, HttpStatus.OK.value());
+		log.info("{} updated user {} - {} ", userId, id, HttpStatus.OK.value());
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
 
@@ -181,9 +182,10 @@ public class UserController {
 	 */
 	@Operation(summary = "Assign User to Organization Unit")
 	@PutMapping(path = "/user/{userId}/organization-unit/{ouId}")
-	public ResponseEntity<Object> assignUserToOU(Authentication auth,
-			@PathVariable(value = "userId") String userId, @PathVariable(value = "ouId") String ouId) {
-		String callerId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> assignUserToOU(
+			@PathVariable(value = "userId") String userId, 
+			@PathVariable(value = "ouId") String ouId) {
+		String callerId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to assign user {} to OU {}", callerId, userId, ouId);
 		Optional<UserDto> optUser = userService.getUser(userId);
 		if (optUser.isEmpty()) {
@@ -222,9 +224,9 @@ public class UserController {
 	 */
 	@Operation(summary = "Delete User")
 	@DeleteMapping(path = "/user/{id}")
-	public ResponseEntity<Object> deleteUser(Authentication auth, @PathVariable(value = "id") String id) {
-		String callerId = authHelper.getUserId(auth);
-		log.info("{} try to delete user {}", callerId, id);
+	public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to delete user {}", userId, id);
 
 		if (!userService.userIsPresent(id)) {
 			String noFoundUser = String.format("User %s can't be deleted : not found", id);
@@ -235,7 +237,7 @@ public class UserController {
 		preferenceService.setPreferences(Collections.emptyList(), id);
 
 		HttpStatus response = userService.delete(id);
-		log.info("{} : DELETE User {} resulting in {}", callerId, id, response.value());
+		log.info("{} : DELETE User {} resulting in {}", userId, id, response.value());
 		return new ResponseEntity<>(response);
 	}
 }

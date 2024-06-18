@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.configuration.log;
 
-import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class LogInterceptor implements HandlerInterceptor {
-    private final AuthenticationHelper authenticationHelper;
+    private final AuthenticatedUserService authenticationUserHelper;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -28,9 +27,7 @@ public class LogInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String operationPath = request.getRequestURI();
 
-        Authentication authentication = authenticationHelper.getAuthenticationPrincipal();
-
-        String userId = authentication.getName();
+        String userId = authenticationUserHelper.getCurrentUserId();
 
         MDC.put("id", fishTag);
         MDC.put("path", operationPath);

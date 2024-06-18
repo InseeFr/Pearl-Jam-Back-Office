@@ -1,21 +1,23 @@
 package fr.insee.pearljam.api.noAuth;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.jayway.jsonpath.JsonPath;
+import fr.insee.pearljam.api.service.DataSetInjectorService;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -36,13 +38,11 @@ import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 /* Test class for no Authentication */
-@ActiveProfiles("test")
-@Disabled("Refactor : migrate to mockMvc before enabling again")
+@ActiveProfiles("noauth")
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,11 +54,11 @@ class TestNoAuth {
 	private final MessageRepository messageRepository;
 	private final ClosingCauseRepository closingCauseRepository;
 	private final MockMvc mockMvc;
+	private final DataSetInjectorService injectorService;
 
 	@BeforeEach
-	public void clearDataSet() throws Exception {
-		mockMvc.perform(delete("/api/delete-dataset").accept(MediaType.APPLICATION_JSON)
-				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
+	public void clearDataSet() {
+		injectorService.deleteDataSet();
 	}
 
 	/**
@@ -68,33 +68,32 @@ class TestNoAuth {
 	 * 
 	 */
 	@BeforeEach
-	public void initDataSetIfNotPresent() throws Exception {
-		mockMvc.perform(post("/api/create-dataset").accept(MediaType.APPLICATION_JSON)
-				.with(authentication(AuthenticatedUserTestHelper.AUTH_MANAGER)));
+	public void initDataSetIfNotPresent() {
+		injectorService.createDataSet();
 	}
 
 	private ResultMatcher expectValidManagementStartDate() {
-		return expectTimestampFromCurrentDate("$.managementStartDate", -4, ChronoUnit.DAYS);
+		return expectTimestampFromCurrentDate("$[0].managementStartDate", -4, ChronoUnit.DAYS);
 	}
 
 	private ResultMatcher expectValidInterviewerStartDate() {
-		return expectTimestampFromCurrentDate("$.interviewerStartDate", -3, ChronoUnit.DAYS);
+		return expectTimestampFromCurrentDate("$[0].interviewerStartDate", -3, ChronoUnit.DAYS);
 	}
 
 	private ResultMatcher expectValidIdentificationPhaseStartDate() {
-		return expectTimestampFromCurrentDate("$.identificationPhaseStartDate", -2, ChronoUnit.DAYS);
+		return expectTimestampFromCurrentDate("$[0].identificationPhaseStartDate", -2, ChronoUnit.DAYS);
 	}
 
 	private ResultMatcher expectValidCollectionStartDate() {
-		return expectTimestampFromCurrentDate("$.collectionStartDate", -2, ChronoUnit.DAYS);
+		return expectTimestampFromCurrentDate("$[0].collectionStartDate", -1, ChronoUnit.DAYS);
 	}
 
 	private ResultMatcher expectValidCollectionEndDate() {
-		return expectTimestampFromCurrentDate("$.collectionEndDate", 1, ChronoUnit.MONTHS);
+		return expectTimestampFromCurrentDate("$[0].collectionEndDate", 1, ChronoUnit.MONTHS);
 	}
 
 	private ResultMatcher expectValidEndDate() {
-		return expectTimestampFromCurrentDate("$ndDate", 2, ChronoUnit.MONTHS);
+		return expectTimestampFromCurrentDate("$[0].endDate", 2, ChronoUnit.MONTHS);
 	}
 
 	private ResultMatcher expectTimestampFromCurrentDate(String expression, int unitToAdd, ChronoUnit chronoUnit) {
@@ -102,7 +101,8 @@ class TestNoAuth {
 			String content = mvcResult.getResponse().getContentAsString();
 			long timestamp = JsonPath.read(content, expression);
 			LocalDate localDateNow = LocalDate.now();
-			LocalDate dateToCheck = LocalDate.ofEpochDay(timestamp);
+			Instant instant = Instant.ofEpochMilli(timestamp);
+			LocalDate dateToCheck = LocalDate.ofInstant(instant, ZoneId.systemDefault());
 			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
 		};
 	}
@@ -121,19 +121,19 @@ class TestNoAuth {
 	@Test
 	@Order(1)
 	void testGetCampaign() throws Exception {
-		mockMvc.perform(get("/api/campaigns").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/campaigns")
+						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
-						jsonPath("$.id").value("SIMPSONS2020X00"),
-						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
-						jsonPath("$.allocated").value(4),
-						jsonPath("$.toAffect").value(0),
-						jsonPath("$.toFollowUp").value(0),
-						jsonPath("$.toReview").value(0),
-						jsonPath("$.finalized").value(0),
-						jsonPath("$.toProcessInterviewer").value(0),
-						jsonPath("$.preference").value(true),
-						jsonPath("$.managementStartDate").value(true),
+						jsonPath("$[0].id").value("SIMPSONS2020X00"),
+						jsonPath("$[0].label").value("Survey on the Simpsons tv show 2020"),
+						jsonPath("$[0].allocated").value(4),
+						jsonPath("$[0].toAffect").value(0),
+						jsonPath("$[0].toFollowUp").value(0),
+						jsonPath("$[0].toReview").value(3),
+						jsonPath("$[0].finalized").value(0),
+						jsonPath("$[0].toProcessInterviewer").value(0),
+						jsonPath("$[0].preference").value(true),
 						expectValidManagementStartDate(),
 						expectValidIdentificationPhaseStartDate(),
 						expectValidInterviewerStartDate(),
@@ -145,8 +145,9 @@ class TestNoAuth {
 	@Test
 	@Order(2)
 	void testPutClosingCauseNoPreviousClosingCause() throws Exception {
-		mockMvc.perform(put("api/survey-unit/11/closing-cause/NPI")
-				.accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPI")
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
@@ -167,9 +168,9 @@ class TestNoAuth {
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("GUEST");
 		mockMvc.perform(post("/api/message")
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(message)))
+						.accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ObjectMapper().writeValueAsString(message)))
 				.andExpect(status().isOk());
 
 		List<MessageDto> messages = messageRepository

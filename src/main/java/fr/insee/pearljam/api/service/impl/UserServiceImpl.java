@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.infrastructure.security.config.OidcProperties;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
-import fr.insee.pearljam.api.configuration.properties.AuthEnumProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
@@ -43,11 +42,11 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository ouRepository;
-	private final ApplicationProperties applicationProperties;
+	private final OidcProperties oidcProperties;
 
 	public Optional<UserDto> getUser(String userId) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (applicationProperties.auth() != AuthEnumProperties.NOAUTH) {
+		if (oidcProperties.enabled()) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 
 			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
@@ -62,11 +61,11 @@ public class UserServiceImpl implements UserService {
 				return Optional.empty();
 			}
 		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.guestOU());
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
 			if (ouNat.isPresent()) {
 				getOrganizationUnits(organizationUnits, ouNat.get(), false);
 				Optional<OrganizationUnitDto> ou = ouRepository
-						.findDtoByIdIgnoreCase(applicationProperties.guestOU());
+						.findDtoByIdIgnoreCase("OU-NORTH");
 				if (ou.isPresent()) {
 					return Optional.of(new UserDto("", "Guest", "", ou.get(), organizationUnits));
 				}
@@ -103,7 +102,7 @@ public class UserServiceImpl implements UserService {
 				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
 			}
 		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase(applicationProperties.guestOU());
+			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
 			if (ouNat.isPresent()) {
 				getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
 			} else {

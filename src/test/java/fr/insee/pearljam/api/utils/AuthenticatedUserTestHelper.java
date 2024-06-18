@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.utils;
 
-import static fr.insee.pearljam.api.configuration.auth.AuthConstants.*;
-import fr.insee.pearljam.api.configuration.auth.AuthorityRoleEnum;
+import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,15 +16,17 @@ import java.util.stream.Stream;
 
 public class AuthenticatedUserTestHelper {
 
-        public final static Authentication AUTH_MANAGER = getAuthenticatedUser("abc",
-                        AuthorityRoleEnum.LOCAL_USER);
+        public final static Authentication AUTH_LOCAL_USER = getAuthenticatedUser("abc",
+                        AuthorityRole.LOCAL_USER);
         public final static Authentication AUTH_INTERVIEWER = getAuthenticatedUser("INTW1",
-                        AuthorityRoleEnum.INTERVIEWER);
+                AuthorityRole.INTERVIEWER);
+        public final static Authentication AUTH_ADMIN = getAuthenticatedUser("GUEST",
+                AuthorityRole.ADMIN);
         public final static Authentication NOT_AUTHENTICATED = getNotAuthenticatedUser();
 
-        public static Authentication getAuthenticatedUser(String id, AuthorityRoleEnum... roles) {
+        public static Authentication getAuthenticatedUser(String id, AuthorityRole... roles) {
                 List<? extends GrantedAuthority> authorities = Stream.of(roles)
-                                .map(role -> new SimpleGrantedAuthority(ROLE_PREFIX + role.name())).toList();
+                                .map(role -> new SimpleGrantedAuthority(role.securityRole())).toList();
 
                 Map<String, Object> headers = Map.of("typ", "JWT");
                 Map<String, Object> claims = Map.of(
@@ -34,13 +35,13 @@ public class AuthenticatedUserTestHelper {
                                 "realmRoles", List.of("offline_access", "manager_local", "uma_authorization"));
 
                 Jwt jwt = new Jwt("token-value", Instant.MIN, Instant.MAX, headers, claims);
-                return new JwtAuthenticationToken(jwt, authorities, "Jean Dupont");
+                return new JwtAuthenticationToken(jwt, authorities, id);
         }
 
         private static Authentication getNotAuthenticatedUser() {
                 Map<String, String> principal = new HashMap<>();
                 Authentication auth = new AnonymousAuthenticationToken("id", principal,
-                                List.of(new SimpleGrantedAuthority(ROLE_PREFIX + ANONYMOUS)));
+                                List.of(new SimpleGrantedAuthority(AuthorityRole.ROLE_PREFIX + "ANONYMOUS")));
                 auth.setAuthenticated(false);
                 return auth;
         }

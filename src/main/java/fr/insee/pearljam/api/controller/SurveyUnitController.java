@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.insee.pearljam.api.configuration.auth.AuthorityRoleEnum;
+import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -37,13 +37,10 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import static fr.insee.pearljam.api.configuration.auth.AuthorityRole.autorityContainsRole;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnit}
@@ -60,10 +57,8 @@ import static fr.insee.pearljam.api.configuration.auth.AuthorityRole.autorityCon
 public class SurveyUnitController {
 
 	private static final String GUEST = "GUEST";
-
 	private final SurveyUnitService surveyUnitService;
-
-	private final AuthenticationHelper authHelper;
+	private final AuthenticatedUserService authenticatedUserService;
 
 	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
 
@@ -75,9 +70,7 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Create survey-units")
 	@PostMapping(path = "/survey-units")
-	public ResponseEntity<Object> postSurveyUnits(Authentication auth,
-			@RequestBody List<SurveyUnitContextDto> surveyUnits) {
-
+	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitContextDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
@@ -93,9 +86,7 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Assign SurveyUnits to interviewers")
 	@PostMapping(path = "/survey-units/interviewers")
-	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(Authentication auth,
-			@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
-
+	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
 		log.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
@@ -111,9 +102,9 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get SurveyUnits")
 	@GetMapping(path = "/survey-units")
-	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(Authentication auth,
-			@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
+						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -135,9 +126,8 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
 	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(Authentication auth,
-			@PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -179,9 +169,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnit(Authentication auth,
-			@RequestBody SurveyUnitDetailDto surveyUnitUpdated, @PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnit(
+			@RequestBody SurveyUnitDetailDto surveyUnitUpdated, 
+			@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -197,9 +188,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Post survey-unit to temp-zone")
 	@PostMapping(path = "/survey-unit/{id}/temp-zone")
-	public ResponseEntity<Object> postSurveyUnitByIdInTempZone(@RequestBody JsonNode surveyUnit,
-			Authentication auth, @PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> postSurveyUnitByIdInTempZone(
+			@RequestBody JsonNode surveyUnit,
+			@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		surveyUnitService.saveSurveyUnitToTempZone(id, userId, surveyUnit);
 		log.info("{} : POST survey-unit {} to temp-zone resulting in 201", userId, id);
 		return new ResponseEntity<>(HttpStatus.CREATED);
@@ -227,9 +219,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
 	@PutMapping(path = "/survey-unit/{id}/state/{state}")
-	public ResponseEntity<Object> updateSurveyUnitState(Authentication auth,
-			@PathVariable(value = "id") String surveyUnitId, @PathVariable(value = "state") StateType state) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> updateSurveyUnitState(
+			@PathVariable(value = "id") String surveyUnitId,
+			@PathVariable(value = "state") StateType state) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -250,10 +243,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Closes a survey unit")
 	@PutMapping(path = "/survey-unit/{id}/close/{closingCause}")
-	public ResponseEntity<Object> closeSurveyUnit(Authentication auth,
+	public ResponseEntity<Object> closeSurveyUnit(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -275,10 +268,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Add Closing cause")
 	@PutMapping(path = "/survey-unit/{id}/closing-cause/{closingCause}")
-	public ResponseEntity<Object> updateClosingCause(Authentication auth,
+	public ResponseEntity<Object> updateClosingCause(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -298,9 +291,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
 	@PutMapping(path = "/survey-unit/{id}/comment")
-	public ResponseEntity<Object> updateSurveyUnitComment(Authentication auth,
-			@RequestBody CommentDto comment, @PathVariable(value = "id") String surveyUnitId) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> updateSurveyUnitComment(
+			@RequestBody CommentDto comment, 
+			@PathVariable(value = "id") String surveyUnitId) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -311,9 +305,8 @@ public class SurveyUnitController {
 
 	@Operation(summary = "Update the state of Survey Units listed in request body")
 	@PutMapping(path = "/survey-unit/{id}/viewed")
-	public ResponseEntity<Object> updateSurveyUnitViewed(Authentication auth,
-			@PathVariable(value = "id") String surveyUnitId) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> updateSurveyUnitViewed(@PathVariable(value = "id") String surveyUnitId) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -333,9 +326,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get Survey Units in target campaign")
 	@GetMapping(path = "/campaign/{id}/survey-units")
-	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(Authentication auth,
-			@PathVariable(value = "id") String id, @RequestParam(value = "state", required = false) String state) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(
+			@PathVariable(value = "id") String id, 
+			@RequestParam(value = "state", required = false) String state) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
@@ -353,10 +347,11 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Check habilitation")
 	@GetMapping(path = "/check-habilitation")
-	public ResponseEntity<HabilitationDto> checkHabilitation(Authentication auth,
-			@RequestParam(value = "id", required = true) String id,
+	public ResponseEntity<HabilitationDto> checkHabilitation(
+			@RequestParam(value = "id") String id,
 			@RequestParam(value = "role", required = false) String role) {
-		String userId = authHelper.getUserId(auth);
+
+		String userId = authenticatedUserService.getCurrentUserId();
 		HabilitationDto resp = new HabilitationDto();
 		resp.setHabilitated(false);
 
@@ -366,7 +361,7 @@ public class SurveyUnitController {
 					userId, id);
 			return new ResponseEntity<>(resp, HttpStatus.OK);
 		}
-		if (autorityContainsRole(auth, AuthorityRoleEnum.ADMIN)) {
+		if (authenticatedUserService.hasRole(AuthorityRole.ADMIN)) {
 			resp.setHabilitated(true);
 			log.info(
 					"Check habilitation of {} as {} for accessing survey-unit {} resulted in {} : Admin habilitation override",
@@ -377,13 +372,12 @@ public class SurveyUnitController {
 		if (role.isBlank()) {
 			// interviewer
 			boolean checkdataBase = surveyUnitService.checkHabilitationInterviewer(userId, id);
-			boolean checkToken = autorityContainsRole(auth, AuthorityRoleEnum.INTERVIEWER);
+			boolean checkToken = authenticatedUserService.hasRole(AuthorityRole.INTERVIEWER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		} else if (role.equals(Constants.REVIEWER)) {
 			// local or national user
 			boolean checkdataBase = surveyUnitService.checkHabilitationReviewer(userId, id);
-			boolean checkToken = autorityContainsRole(auth, AuthorityRoleEnum.LOCAL_USER)
-					|| autorityContainsRole(auth, AuthorityRoleEnum.NATIONAL_USER);
+			boolean checkToken = authenticatedUserService.hasAnyRole(AuthorityRole.LOCAL_USER, AuthorityRole.NATIONAL_USER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		}
 		log.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
@@ -401,9 +395,10 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get states of given survey unit")
 	@GetMapping(path = "/survey-unit/{id}/states")
-	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(Authentication auth,
+	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(
 			@PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET states of surveyUnit {} resulting in 403", id);
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -427,10 +422,9 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get closable survey units")
 	@GetMapping(path = "/survey-units/closable")
-	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request,
-			Authentication auth) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 
+		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET closable units", userId);
 
 		if (StringUtils.isBlank(userId)) {
@@ -450,9 +444,8 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")
-
-	public ResponseEntity<Object> deleteSurveyUnit(Authentication auth, @PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> deleteSurveyUnit(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to DELETE survey-unit {}", userId, id);
 
 		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
@@ -473,8 +466,8 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get survey units id")
 	@GetMapping(path = "/admin/survey-units")
-	public ResponseEntity<List<String>> getAllSurveyUnitsId(Authentication auth) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<String>> getAllSurveyUnitsId() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET admin survey units resulting in 401");
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -493,9 +486,8 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get survey units id by campaign")
 	@GetMapping(path = "/admin/campaign/{id}/survey-units")
-	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(Authentication auth,
-			@PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			log.info("GET admin survey units for campaign {} resulting in 401", id);
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

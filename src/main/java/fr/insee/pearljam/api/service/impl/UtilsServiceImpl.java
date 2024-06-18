@@ -12,12 +12,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import fr.insee.pearljam.api.configuration.properties.ApplicationProperties;
-import fr.insee.pearljam.api.configuration.properties.AuthEnumProperties;
 import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
@@ -36,36 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UtilsServiceImpl implements UtilsService {
 
-	private final ApplicationProperties applicationProperties;
 	private final ExternalServicesProperties externalServicesProperties;
-	private final InterviewerRepository interviewerRepository;
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final UserService userService;
 	private final RestTemplate restTemplate;
 	private final Environment environment;
-
-	public String getUserId(HttpServletRequest request) {
-		if (applicationProperties.auth() == AuthEnumProperties.KEYCLOAK) {
-            JwtAuthenticationToken keycloak = (JwtAuthenticationToken) request.getUserPrincipal();
-			return keycloak.getPrincipal().toString();
-		}
-
-		return Constants.GUEST;
-	}
-
-	public boolean existUser(String userId, String service) {
-		if (service.equals(Constants.INTERVIEWER)) {
-			return Constants.GUEST.equals(userId) || interviewerRepository.findByIdIgnoreCase(userId).isPresent();
-		} else if (service.equals(Constants.USER)) {
-			return Constants.GUEST.equals(userId) || userRepository.findByIdIgnoreCase(userId).isPresent();
-		} else {
-			log.info("Choose a correct service");
-			return false;
-		}
-
-	}
 
 	public List<String> getRelatedOrganizationUnits(String userId) {
 		List<String> l = new ArrayList<>();

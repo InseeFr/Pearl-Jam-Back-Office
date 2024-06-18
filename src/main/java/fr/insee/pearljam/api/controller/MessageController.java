@@ -3,12 +3,12 @@ package fr.insee.pearljam.api.controller;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,13 +17,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.message.MailDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.service.MessageService;
-import fr.insee.pearljam.api.service.UtilsService;
-import fr.insee.pearljam.api.web.authentication.AuthenticationHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +35,9 @@ public class MessageController {
 
 	private final MessageService messageService;
 	private final BiFunction<String, String, HttpStatus> sendMail;
-	private final UtilsService utilsService;
 	private final SimpMessagingTemplate brokerMessagingTemplate;
-	private final AuthenticationHelper authHelper;
-
+	private final AuthenticatedUserService authenticatedUserService;
+	
 	StompSessionHandler sessionHandler = new CustomStompSessionHandler();
 
 	/**
@@ -49,15 +45,11 @@ public class MessageController {
 	 */
 	@Operation(summary = "Post a message")
 	@PostMapping(path = "/message")
-	public ResponseEntity<Object> postMessage(Authentication auth, @RequestBody MessageDto message) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> postMessage(@RequestBody MessageDto message) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
-			if (!userId.equals(Constants.GUEST) && utilsService.existUser(userId, Constants.USER)
-					&& !userId.equalsIgnoreCase(message.getSender())) {
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			}
 			String text = message.getText();
 			List<String> recipients = message.getRecipients();
 			log.info("POST text '{}' ", text);
@@ -75,9 +67,10 @@ public class MessageController {
 	 */
 	@Operation(summary = "Mark a message as read")
 	@PutMapping(path = "/message/{id}/interviewer/{idep}/read")
-	public ResponseEntity<Object> postMessage(Authentication auth, @PathVariable(value = "id") Long id,
+	public ResponseEntity<Object> postMessage(
+			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -96,9 +89,10 @@ public class MessageController {
 	 */
 	@Operation(summary = "Mark a message as deleted")
 	@PutMapping(path = "/message/{id}/interviewer/{idep}/delete")
-	public ResponseEntity<Object> postDeletedMessage(Authentication auth, @PathVariable(value = "id") Long id,
+	public ResponseEntity<Object> postDeletedMessage(
+			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
-		String userId = authHelper.getUserId(auth);
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -116,9 +110,8 @@ public class MessageController {
 	 */
 	@Operation(summary = "Get a message")
 	@GetMapping(path = "/messages/{id}")
-	public ResponseEntity<List<MessageDto>> getMessages(Authentication auth,
-			@PathVariable(value = "id") String id) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "id") String id) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -132,8 +125,8 @@ public class MessageController {
 	 */
 	@Operation(summary = "Get the message history")
 	@GetMapping(path = "/message-history")
-	public ResponseEntity<List<MessageDto>> getMessageHistory(Authentication auth) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<List<MessageDto>> getMessageHistory() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -147,8 +140,8 @@ public class MessageController {
 	 */
 	@Operation(summary = "Update Messages with campaigns or interviewers listed in request body")
 	@PostMapping(path = "/verify-name")
-	public ResponseEntity<Object> postMessage(Authentication auth, @RequestBody WsText name) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> postMessage(@RequestBody WsText name) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
@@ -166,8 +159,8 @@ public class MessageController {
 	 */
 	@Operation(summary = "Post a mail to admins")
 	@PostMapping(path = "/mail")
-	public ResponseEntity<Object> postMailMessage(Authentication auth, @RequestBody MailDto mail) {
-		String userId = authHelper.getUserId(auth);
+	public ResponseEntity<Object> postMailMessage(@RequestBody MailDto mail) {
+		String userId = authenticatedUserService.getCurrentUserId();
 		if (StringUtils.isBlank(userId)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}

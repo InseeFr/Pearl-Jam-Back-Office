@@ -11,20 +11,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 public interface UtilsService {
 
 	/**
-	 * This method retrieve the UserId passed in the HttpServletRequest
-	 * @param HttpServletRequest
-	 * @return {@link String} of UserId
-	 */
-	String getUserId(HttpServletRequest request);
-
-	/**
-	 * This method check if the current User exist or not in database
-	 * @param userId
-	 * @return {@link Boolean}
-	 */
-	boolean existUser(String userId, String service);
-
-	/**
 	 * @param userId
 	 * @param campaignId
 	 * @return {@link Boolean}

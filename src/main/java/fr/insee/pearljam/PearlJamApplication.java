@@ -1,5 +1,6 @@
-package fr.insee.pearljam.api;
+package fr.insee.pearljam;
 
+import fr.insee.pearljam.api.configuration.log.PropertiesLogger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

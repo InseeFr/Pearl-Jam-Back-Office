@@ -10,7 +10,7 @@ DELETE FROM public.survey_unit;
 DELETE FROM public.visibility;
 DELETE FROM public.preference;
 DELETE FROM public.campaign;
-DELETE FROM public."user";
+DELETE FROM public.user;
 DELETE FROM public.sample_identifier;
 DELETE FROM public.interviewer;
 DELETE FROM public.organization_unit;

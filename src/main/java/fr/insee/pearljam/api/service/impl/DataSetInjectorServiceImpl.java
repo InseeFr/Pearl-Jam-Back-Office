@@ -178,6 +178,7 @@ public class DataSetInjectorServiceImpl implements DataSetInjectorService {
 
 		// create user entities
 		userRepository.save(new User("ABC", "Melinda", "Webb", ouNorth));
+		userRepository.save(new User("GUEST", "firstname", "lastname", ouNorth));
 		userRepository.save(new User("DEF", "Everett", "Juste", ouNorth));
 		User user3 = userRepository.save(new User("GHI", "Elsie", "Clarke", ouSouth));
 		User user4 = userRepository.save(new User("JKL", "Julius", "Howell", ouNational));

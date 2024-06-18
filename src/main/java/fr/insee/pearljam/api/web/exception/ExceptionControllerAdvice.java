@@ -2,7 +2,6 @@ package fr.insee.pearljam.api.web.exception;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import fr.insee.pearljam.api.web.authentication.AuthenticationTokenException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -135,14 +134,6 @@ public class ExceptionControllerAdvice {
     public void noEntityFoundException(EntityNotFoundException e, WebRequest request) {
         log.error(e.getMessage(), e);
         processException(e, HttpStatus.NOT_FOUND, request);
-    }
-
-    @ExceptionHandler(AuthenticationTokenException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public void authenticationTokenExceptionException(AuthenticationTokenException e, WebRequest request) {
-        log.error(e.getMessage(), e);
-        processException(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
     }
 
     @ExceptionHandler(EntityAlreadyExistException.class)
