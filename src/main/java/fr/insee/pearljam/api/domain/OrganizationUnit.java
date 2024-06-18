@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 /**
  * Entity OrganizationUnit : represent the entity table in DB
@@ -21,6 +22,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table
+@Data
 public class OrganizationUnit implements Serializable {
 
 	/**
@@ -66,76 +68,6 @@ public class OrganizationUnit implements Serializable {
 		this.id = id;
 		this.label = label;
 		this.type = type;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
-
-	/**
-	 * @param label the label to set
-	 */
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the organisationUnitType
-	 */
-	public OrganizationUnitType getType() {
-		return type;
-	}
-
-	/**
-	 * @param organizationUnitType the organisationUnitType to set
-	 */
-	public void setType(OrganizationUnitType type) {
-		this.type = type;
-	}
-
-	/**
-	 * @return the organizationUnit
-	 */
-	public OrganizationUnit getOrganizationUnitParent() {
-		return organizationUnitParent;
-	}
-
-	/**
-	 * @param organizationUnit the organizationUnit to set
-	 */
-	public void setOrganizationUnitParent(OrganizationUnit organizationUnitParent) {
-		this.organizationUnitParent = organizationUnitParent;
-	}
-
-	/**
-	 * @return the visibilities
-	 */
-	public List<Visibility> getVisibilities() {
-		return visibilities;
-	}
-
-	/**
-	 * @param visibilities the visibilities to set
-	 */
-	public void setVisibilities(List<Visibility> visibilities) {
-		this.visibilities = visibilities;
 	}
 
 }

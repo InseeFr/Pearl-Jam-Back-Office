@@ -145,24 +145,6 @@ public class ExceptionControllerAdvice {
         processException(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
     }
 
-    // @ExceptionHandler(HabilitationException.class)
-    // @ResponseStatus(HttpStatus.FORBIDDEN)
-    // @ResponseBody
-    // public void habilitationException(HabilitationException e, WebRequest
-    // request) {
-    // log.error(e.getMessage(), e);
-    // processException(e, HttpStatus.FORBIDDEN, request);
-    // }
-
-    // @ExceptionHandler(CampaignDeletionException.class)
-    // @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    // @ResponseBody
-    // public void campaignDeletionException(CampaignDeletionException e, WebRequest
-    // request) {
-    // log.error(e.getMessage(), e);
-    // processException(e, HttpStatus.UNPROCESSABLE_ENTITY, request);
-    // }
-
     @ExceptionHandler(EntityAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

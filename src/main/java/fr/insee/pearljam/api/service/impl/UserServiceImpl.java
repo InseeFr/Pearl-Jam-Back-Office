@@ -176,11 +176,10 @@ public class UserServiceImpl implements UserService {
 	public UserDto createUser(UserDto userToCreate) throws NotFoundException {
 		Optional<OrganizationUnit> ouOpt = organizationUnitRepository
 				.findById(userToCreate.getOrganizationUnit().getId());
-		if (ouOpt.isEmpty()) {
-			throw new NotFoundException(String.format("Organization Unit with id %s not found",
-					userToCreate.getOrganizationUnit().getId()));
-		}
-		OrganizationUnit ou = ouOpt.get();
+
+		OrganizationUnit ou = ouOpt
+				.orElseThrow(() -> new NotFoundException(String.format("Organization Unit with id %s not found",
+						userToCreate.getOrganizationUnit().getId())));
 		User user = new User(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
 		userRepository.save(user);
 		return getUser(userToCreate.getId()).orElse(null);
