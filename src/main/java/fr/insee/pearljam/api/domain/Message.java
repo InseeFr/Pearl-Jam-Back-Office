@@ -16,6 +16,9 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity Message : represent the entity table in DB
@@ -26,16 +29,15 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class Message implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1439604738865064692L;
-
-	public Message() {
-		super();
-	}
 
 	/**
 	 * The id of Message
@@ -84,12 +86,6 @@ public class Message implements Serializable {
 	@Column
 	public Long date;
 
-	public Message(String text, Long date) {
-		super();
-		this.text = text;
-		this.date = date;
-	}
-
 	public Message(String text, User sender, Long date) {
 		super();
 		this.text = text;
@@ -103,104 +99,6 @@ public class Message implements Serializable {
 		this.text = text;
 		this.sender = sender;
 		this.ouMessageRecipients = ouMessageRecipients;
-		this.date = date;
-	}
-
-	/**
-	 * @return the id of the Message
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id of the Message
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the text of the Message
-	 */
-	public String getText() {
-		return text;
-	}
-
-	/**
-	 * @param text of the Message
-	 */
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	/**
-	 * @return the last name of the Message
-	 */
-	public User getSender() {
-		return sender;
-	}
-
-	/**
-	 * @param the last name of the Message
-	 */
-	public void setSender(User sender) {
-		this.sender = sender;
-	}
-
-	/**
-	 * @return the email of the Message
-	 */
-	public List<OrganizationUnit> getOuMessageRecipients() {
-		return ouMessageRecipients;
-	}
-
-	/**
-	 * @param the email of the Message
-	 */
-	public void setOuMessageRecipients(List<OrganizationUnit> ouMessageRecipients) {
-		this.ouMessageRecipients = ouMessageRecipients;
-	}
-
-	/**
-	 * @return the email of the Message
-	 */
-	public List<Campaign> getCampaignMessageRecipients() {
-		return campaignMessageRecipients;
-	}
-
-	/**
-	 * @param the email of the Message
-	 */
-	public void setCampaignMessageRecipients(List<Campaign> campaignMessageRecipients) {
-		this.campaignMessageRecipients = campaignMessageRecipients;
-	}
-
-	/**
-	 * @return the email of the Message
-	 */
-	public List<MessageStatus> getMessageStatus() {
-		return messageStatus;
-	}
-
-	/**
-	 * @param the email of the Message
-	 */
-	public void setMessageStatus(List<MessageStatus> messageStatus) {
-		this.messageStatus.addAll(messageStatus);
-	}
-
-	/**
-	 * @return the phone number of the Message
-	 */
-	public Long getDate() {
-		return date;
-	}
-
-	/**
-	 * @param the phone number of the Message
-	 */
-	public void setDate(Long date) {
 		this.date = date;
 	}
 

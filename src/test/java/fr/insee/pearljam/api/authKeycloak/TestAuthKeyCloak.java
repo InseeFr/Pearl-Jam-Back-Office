@@ -1668,7 +1668,7 @@ class TestAuthKeyCloak {
 		assertEquals(IdentificationConfiguration.IASCO, campOpt.get().getIdentificationConfiguration());
 		assertEquals(ContactAttemptConfiguration.F2F, campOpt.get().getContactAttemptConfiguration());
 		assertEquals(ContactOutcomeConfiguration.F2F, campOpt.get().getContactOutcomeConfiguration());
-		assertEquals(false, campOpt.get().isCommunicationConfiguration());
+		assertEquals(false, campOpt.get().getCommunicationConfiguration());
 
 	}
 

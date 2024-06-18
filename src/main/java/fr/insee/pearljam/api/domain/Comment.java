@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
+import fr.insee.pearljam.api.dto.comment.CommentDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,8 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.insee.pearljam.api.dto.comment.CommentDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity Comment : represent the entity table in DB
@@ -22,6 +25,10 @@ import fr.insee.pearljam.api.dto.comment.CommentDto;
  */
 @Entity
 @Table
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment implements Serializable {
 	/**
 	 * 
@@ -52,79 +59,11 @@ public class Comment implements Serializable {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 
-	public Comment(Long id, CommentType type, String value, SurveyUnit surveyUnit) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.value = value;
-		this.surveyUnit = surveyUnit;
-	}
-
-	public Comment() {
-		super();
-	}
-
 	public Comment(CommentDto dto, SurveyUnit surveyUnit) {
 		super();
 		this.type = dto.getType();
 		String commentValue = dto.getValue();
 		this.value = commentValue.length() > 999 ? commentValue.substring(0, 999) : commentValue;
-		this.surveyUnit = surveyUnit;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the type
-	 */
-	public CommentType getType() {
-		return type;
-	}
-
-	/**
-	 * @param type the type to set
-	 */
-	public void setType(CommentType type) {
-		this.type = type;
-	}
-
-	/**
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
-	}
-
-	/**
-	 * @param value the value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-	/**
-	 * @return the surveyUnit
-	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
-	}
-
-	/**
-	 * @param surveyUnit the surveyUnit to set
-	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
 		this.surveyUnit = surveyUnit;
 	}
 

@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 
+import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,8 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity ContactAttempt : represent the entity table in DB
@@ -22,6 +24,9 @@ import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
  */
 @Entity
 @Table
+@Getter
+@Setter
+@NoArgsConstructor
 public class ContactAttempt implements Serializable {
 	/**
 	 * 
@@ -55,10 +60,6 @@ public class ContactAttempt implements Serializable {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 
-	public ContactAttempt() {
-
-	}
-
 	public ContactAttempt(ContactAttemptDto dto, SurveyUnit surveyUnit) {
 		super();
 		this.date = dto.getDate();
@@ -81,67 +82,4 @@ public class ContactAttempt implements Serializable {
 		this.surveyUnit = surveyUnit;
 	}
 
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the date
-	 */
-	public Long getDate() {
-		return date;
-	}
-
-	/**
-	 * @param date the date to set
-	 */
-	public void setDate(Long date) {
-		this.date = date;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public Status getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	/**
-	 * @return the surveyUnit
-	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
-	}
-
-	/**
-	 * @param surveyUnit the surveyUnit to set
-	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		this.surveyUnit = surveyUnit;
-	}
-
-	public Medium getMedium() {
-		return this.medium;
-	}
-
-	public void setMedium(Medium medium) {
-		this.medium = medium;
-	}
 }

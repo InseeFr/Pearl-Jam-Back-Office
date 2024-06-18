@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain.communication;
 
 import java.io.Serializable;
 
+import fr.insee.pearljam.api.dto.communication.CommunicationRequestStatusDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,11 +13,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.insee.pearljam.api.dto.communication.CommunicationRequestStatusDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommunicationRequestStatus implements Serializable {
 
     @Id
@@ -33,37 +38,10 @@ public class CommunicationRequestStatus implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private CommunicationRequest communicationRequest;
 
-    public CommunicationRequestStatus() {
-    }
-
     public CommunicationRequestStatus(CommunicationRequestStatusDto crsDto, CommunicationRequest communicationRequest) {
         this.date = crsDto.getDate();
         this.status = crsDto.getStatus();
         this.communicationRequest = communicationRequest;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getDate() {
-        return date;
-    }
-
-    public void setDate(Long date) {
-        this.date = date;
-    }
-
-    public CommunicationStatusType getStatus() {
-        return status;
-    }
-
-    public void setStatus(CommunicationStatusType status) {
-        this.status = status;
     }
 
 }
