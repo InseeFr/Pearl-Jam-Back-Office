@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-// @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @Slf4j
@@ -68,7 +67,7 @@ public class ContactOutcomeTypeCountDto {
 	}
 
 	private void dispatchAttributeValues(Map<String, Long> obj, List<String> fieldKeys) {
-		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
+		boolean nullOrEmpty = (obj == null || obj.isEmpty());
 		for (String str : fieldKeys) {
 			if (nullOrEmpty) {
 				setLongField(str, 0L);

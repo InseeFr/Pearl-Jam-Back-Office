@@ -198,18 +198,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
 			communicationRequests.addAll(newCommunicationsRequests);
 
-			// NOTE
-			// for each communiactionRequest : update state then try to call messhugah if
-			// needed
-			// communicationRequests.stream()...
-			// handle INITIATED -> READY
-			// if(shouldAddReadyStatus(incommingCommRequests)) {
-			// communicationRequests.add(generateReadyCommunicationRequest(surveyUnit));
-			// }
-			// here : call messhugah to dispatch
-			// if(shouldTryToGenerateCommunication(newCommunicationsRequests)){
-			// boolean communicationRequestService.generateCommunication(commReq)
-			// }
 		}
 		log.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
 	}

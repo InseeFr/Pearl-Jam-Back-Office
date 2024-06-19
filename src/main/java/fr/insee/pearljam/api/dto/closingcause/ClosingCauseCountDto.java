@@ -27,7 +27,7 @@ public class ClosingCauseCountDto {
 	}
 
 	public ClosingCauseCountDto(Map<String, Long> obj) {
-		boolean nullOrEmpty = Optional.ofNullable(obj.isEmpty()).orElse(true);
+		boolean nullOrEmpty = (obj == null || obj.isEmpty());
 
 		for (String str : Constants.CLOSING_CAUSE_FIELDS) {
 			if (nullOrEmpty) {

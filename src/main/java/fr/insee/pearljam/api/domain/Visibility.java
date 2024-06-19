@@ -8,8 +8,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-// import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity Visibility : represent the entity table in DB
@@ -19,6 +21,9 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class Visibility implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -41,6 +46,7 @@ public class Visibility implements Serializable {
 	// @MapsId("campaign_id")
 	@JoinColumn(name = "campaign_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private Campaign campaign;
+
 	/**
 	 * The start date of Visibility of management
 	 */
@@ -71,10 +77,6 @@ public class Visibility implements Serializable {
 	 */
 	private Long endDate;
 
-	public Visibility() {
-		super();
-	}
-
 	public Visibility(VisibilityDto vis) {
 		super();
 		this.collectionEndDate = vis.getCollectionEndDate();
@@ -96,139 +98,5 @@ public class Visibility implements Serializable {
 		this.campaign = campaign;
 		this.organizationUnit = ou;
 		this.visibilityId = new VisibilityId(ou.getId(), campaign.getId());
-
 	}
-
-	/**
-	 * @return the organizationUnit
-	 */
-	public OrganizationUnit getOrganizationUnit() {
-		return organizationUnit;
-	}
-
-	/**
-	 * @param organizationUnit the organizationUnit to set
-	 */
-	public void setOrganizationUnit(OrganizationUnit organizationUnit) {
-		this.organizationUnit = organizationUnit;
-	}
-
-	/**
-	 * @return the campaign
-	 */
-	public Campaign getCampaign() {
-		return campaign;
-	}
-
-	/**
-	 * @param campaign the campaign to set
-	 */
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
-
-	/**
-	 * @return the visibilityId
-	 */
-	public VisibilityId getVisibilityId() {
-		return visibilityId;
-	}
-
-	/**
-	 * @param visibilityId the visibilityId to set
-	 */
-	public void setVisibilityId(VisibilityId visibilityId) {
-		this.visibilityId = visibilityId;
-	}
-
-	/**
-	 * @return the managementStartDate
-	 */
-	public Long getManagementStartDate() {
-		return managementStartDate;
-	}
-
-	/**
-	 * @param managementStartDate the managementStartDate to set
-	 */
-	public void setManagementStartDate(Long managementStartDate) {
-		this.managementStartDate = managementStartDate;
-	}
-
-	/**
-	 * @return the interviewerStartDate
-	 */
-	public Long getInterviewerStartDate() {
-		return interviewerStartDate;
-	}
-
-	/**
-	 * @param interviewerStartDate the interviewerStartDate to set
-	 */
-	public void setInterviewerStartDate(Long interviewerStartDate) {
-		this.interviewerStartDate = interviewerStartDate;
-	}
-
-	/**
-	 * @return the identificationPhaseStartDate
-	 */
-	public Long getIdentificationPhaseStartDate() {
-		return identificationPhaseStartDate;
-	}
-
-	/**
-	 * @param identificationPhaseStartDate the identificationPhaseStartDate to set
-	 */
-	public void setIdentificationPhaseStartDate(Long identificationPhaseStartDate) {
-		this.identificationPhaseStartDate = identificationPhaseStartDate;
-	}
-
-	/**
-	 * @return the collectionStartDate
-	 */
-	public Long getCollectionStartDate() {
-		return collectionStartDate;
-	}
-
-	/**
-	 * @param collectionStartDate the collectionStartDate to set
-	 */
-	public void setCollectionStartDate(Long collectionStartDate) {
-		this.collectionStartDate = collectionStartDate;
-	}
-
-	/**
-	 * @return the collectionEndDate
-	 */
-	public Long getCollectionEndDate() {
-		return collectionEndDate;
-	}
-
-	/**
-	 * @param collectionEndDate the collectionEndDate to set
-	 */
-	public void setCollectionEndDate(Long collectionEndDate) {
-		this.collectionEndDate = collectionEndDate;
-	}
-
-	/**
-	 * @return the endDate
-	 */
-	public Long getEndDate() {
-		return endDate;
-	}
-
-	/**
-	 * @param endDate the endDate to set
-	 */
-	public void setEndDate(Long endDate) {
-		this.endDate = endDate;
-	}
-
-	public boolean checkDateConsistency() {
-		return managementStartDate < interviewerStartDate && interviewerStartDate < identificationPhaseStartDate
-				&& identificationPhaseStartDate < collectionStartDate && collectionStartDate < collectionEndDate
-				&& collectionEndDate < endDate;
-	}
-
 }

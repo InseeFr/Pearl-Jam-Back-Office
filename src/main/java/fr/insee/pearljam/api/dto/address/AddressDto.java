@@ -37,12 +37,12 @@ public class AddressDto {
 			this.l5 = ((InseeAddress) address).getL5();
 			this.l6 = ((InseeAddress) address).getL6();
 			this.l7 = ((InseeAddress) address).getL7();
-			this.elevator = ((InseeAddress) address).isElevator();
+			this.elevator = ((InseeAddress) address).getElevator();
 			this.building = ((InseeAddress) address).getBuilding();
 			this.floor = ((InseeAddress) address).getFloor();
 			this.door = ((InseeAddress) address).getDoor();
 			this.staircase = ((InseeAddress) address).getStaircase();
-			this.cityPriorityDistrict = ((InseeAddress) address).isCityPriorityDistrict();
+			this.cityPriorityDistrict = ((InseeAddress) address).getCityPriorityDistrict();
 		}
 	}
 
