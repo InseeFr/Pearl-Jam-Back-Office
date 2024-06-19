@@ -3,7 +3,9 @@ package fr.insee.pearljam.api.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 
 /**
@@ -15,6 +17,8 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class InseeAddress extends Address {
 	/**
 	 * 
@@ -109,152 +113,6 @@ public class InseeAddress extends Address {
 		this.door = address.getDoor();
 		this.staircase = address.getStaircase();
 		this.cityPriorityDistrict = address.getCityPriorityDistrict();
-	}
-
-	/**
-	 * @return the line 1
-	 */
-	public String getL1() {
-		return l1;
-	}
-
-	/**
-	 * @param l1 the line 1 to set
-	 */
-	public void setL1(String l1) {
-		this.l1 = l1;
-	}
-
-	/**
-	 * @return the line 2
-	 */
-	public String getL2() {
-		return l2;
-	}
-
-	/**
-	 * @param l2 the line 2 to set
-	 */
-	public void setL2(String l2) {
-		this.l2 = l2;
-	}
-
-	/**
-	 * @return the line 3
-	 */
-	public String getL3() {
-		return l3;
-	}
-
-	/**
-	 * @param l3 the line 3 to set
-	 */
-	public void setL3(String l3) {
-		this.l3 = l3;
-	}
-
-	/**
-	 * @return the line 4
-	 */
-	public String getL4() {
-		return l4;
-	}
-
-	/**
-	 * @param l4 the line 4 to set
-	 */
-	public void setL4(String l4) {
-		this.l4 = l4;
-	}
-
-	/**
-	 * @return the line 5
-	 */
-	public String getL5() {
-		return l5;
-	}
-
-	/**
-	 * @param l5 the line 5 to set
-	 */
-	public void setL5(String l5) {
-		this.l5 = l5;
-	}
-
-	/**
-	 * @return the line 6
-	 */
-	public String getL6() {
-		return l6;
-	}
-
-	/**
-	 * @param l6 the line 6 to set
-	 */
-	public void setL6(String l6) {
-		this.l6 = l6;
-	}
-
-	/**
-	 * @return the line 7
-	 */
-	public String getL7() {
-		return l7;
-	}
-
-	/**
-	 * @param l7 the line 7 to set
-	 */
-	public void setL7(String l7) {
-		this.l7 = l7;
-	}
-
-	public Boolean isElevator() {
-		return this.elevator;
-	}
-
-	public void setElevator(Boolean elevator) {
-		this.elevator = elevator != null && elevator;
-	}
-
-	public String getBuilding() {
-		return this.building;
-	}
-
-	public void setBuilding(String building) {
-		this.building = building;
-	}
-
-	public String getFloor() {
-		return this.floor;
-	}
-
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-
-	public String getDoor() {
-		return this.door;
-	}
-
-	public void setDoor(String door) {
-		this.door = door;
-	}
-
-	public String getStaircase() {
-		return this.staircase;
-	}
-
-	public void setStaircase(String staircase) {
-		this.staircase = staircase;
-	}
-
-	public Boolean isCityPriorityDistrict() {
-		return this.cityPriorityDistrict;
-	}
-
-	public void setCityPriorityDistrict(Boolean cityPriorityDistrict) {
-		this.cityPriorityDistrict = cityPriorityDistrict != null && cityPriorityDistrict;
 	}
 
 }

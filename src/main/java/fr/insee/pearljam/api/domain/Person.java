@@ -14,7 +14,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 
 /**
@@ -25,7 +27,9 @@ import fr.insee.pearljam.api.dto.person.PersonDto;
  */
 @Entity
 @Table
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Person implements Serializable {
 
 	/**
@@ -80,13 +84,6 @@ public class Person implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
 	private Set<PhoneNumber> phoneNumbers = new HashSet<>();
-
-	/**
-	 * Default constructor
-	 */
-	public Person() {
-		super();
-	}
 
 	/**
 	 * Constructor with all args

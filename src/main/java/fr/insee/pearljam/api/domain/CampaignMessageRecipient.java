@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.JoinColumn;
 
@@ -20,6 +23,9 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table
+@Getter
+@Setter
+@NoArgsConstructor
 public class CampaignMessageRecipient implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -41,52 +47,10 @@ public class CampaignMessageRecipient implements Serializable {
 	@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
 	private Campaign campaign;
 
-	public CampaignMessageRecipient() {
-		super();
-	}
-
 	public CampaignMessageRecipient(Message message, Campaign campaign) {
 		super();
 		this.message = message;
 		this.campaign = campaign;
 	}
 
-	/**
-	 * @return id of comment
-	 */
-	public CampaignMessageRecipientId getId() {
-		return messageRecipientId;
-	}
-
-	public void setId(CampaignMessageRecipientId messageRecipientId) {
-		this.messageRecipientId = messageRecipientId;
-	}
-
-	/**
-	 * @return the text of the MessageRecipient
-	 */
-	public Message getMessage() {
-		return message;
-	}
-
-	/**
-	 * @param text of the MessageRecipient
-	 */
-	public void setMessage(Message message) {
-		this.message = message;
-	}
-
-	/**
-	 * @return the last name of the MessageRecipient
-	 */
-	public Campaign getCampaign() {
-		return campaign;
-	}
-
-	/**
-	 * @param the last name of the MessageRecipient
-	 */
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
 }

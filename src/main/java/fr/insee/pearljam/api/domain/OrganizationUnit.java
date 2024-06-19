@@ -12,7 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity OrganizationUnit : represent the entity table in DB
@@ -22,7 +24,9 @@ import lombok.Data;
  */
 @Entity
 @Table
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class OrganizationUnit implements Serializable {
 
 	/**
@@ -58,10 +62,6 @@ public class OrganizationUnit implements Serializable {
 	 */
 	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Visibility> visibilities;
-
-	public OrganizationUnit() {
-		super();
-	}
 
 	public OrganizationUnit(String id, String label, OrganizationUnitType type) {
 		super();

@@ -11,7 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import fr.insee.pearljam.api.dto.state.StateDto;
 
 /**
@@ -22,6 +24,9 @@ import fr.insee.pearljam.api.dto.state.StateDto;
  */
 @Entity
 @Table
+@NoArgsConstructor
+@Getter
+@Setter
 public class State implements Serializable {
 	/**
 	 * 
@@ -51,12 +56,7 @@ public class State implements Serializable {
 	@Column(length = 3)
 	private StateType type;
 
-	public State() {
-
-	}
-
 	/**
-	 * @param id
 	 * @param date
 	 * @param surveyUnit
 	 * @param type
@@ -73,62 +73,6 @@ public class State implements Serializable {
 		this.date = s.getDate();
 		this.surveyUnit = surveyUnit;
 		this.type = s.getType();
-	}
-
-	/**
-	 * @return id of comment
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return date of State
-	 */
-	public Long getDate() {
-		return date;
-	}
-
-	/**
-	 * @param date date to set
-	 */
-	public void setDate(Long date) {
-		this.date = date;
-	}
-
-	/**
-	 * @return type of State
-	 */
-	public StateType getType() {
-		return type;
-	}
-
-	/**
-	 * @param type type to set
-	 */
-	public void setType(StateType type) {
-		this.type = type;
-	}
-
-	/**
-	 * @return the surveyUnit
-	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
-	}
-
-	/**
-	 * @param surveyUnit the surveyUnit to set
-	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		this.surveyUnit = surveyUnit;
 	}
 
 }

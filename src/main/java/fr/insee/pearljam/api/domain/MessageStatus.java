@@ -6,6 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.JoinColumn;
@@ -23,6 +26,9 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table
+@Getter
+@Setter
+@NoArgsConstructor
 public class MessageStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -48,10 +54,6 @@ public class MessageStatus implements Serializable {
 	@Enumerated(EnumType.STRING)
 	MessageStatusType status;
 
-	public MessageStatus() {
-		super();
-	}
-
 	public MessageStatus(Message message, Interviewer interviewer, MessageStatusType status) {
 		super();
 		this.message = message;
@@ -60,56 +62,4 @@ public class MessageStatus implements Serializable {
 		this.status = status;
 	}
 
-	/**
-	 * @return id of comment
-	 */
-	public MessageStatusId getId() {
-		return messageStatusId;
-	}
-
-	public void setId(MessageStatusId messageStatusId) {
-		this.messageStatusId = messageStatusId;
-	}
-
-	/**
-	 * @return the text of the MessageRecipient
-	 */
-	public Message getMessage() {
-		return message;
-	}
-
-	/**
-	 * @param text of the MessageRecipient
-	 */
-	public void setMessage(Message message) {
-		this.message = message;
-	}
-
-	/**
-	 * @return the last name of the MessageRecipient
-	 */
-	public Interviewer getInterviewer() {
-		return interviewer;
-	}
-
-	/**
-	 * @param the last name of the MessageRecipient
-	 */
-	public void setInterviewer(Interviewer interviewer) {
-		this.interviewer = interviewer;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public MessageStatusType getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(MessageStatusType status) {
-		this.status = status;
-	}
 }

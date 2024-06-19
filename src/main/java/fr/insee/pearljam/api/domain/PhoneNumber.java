@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 
@@ -23,6 +24,7 @@ import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 @Table
 @Getter
 @Setter
+@NoArgsConstructor
 public class PhoneNumber implements Serializable {
 
 	/**
@@ -43,13 +45,6 @@ public class PhoneNumber implements Serializable {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Person person;
-
-	/**
-	 * Default constructor
-	 */
-	public PhoneNumber() {
-		super();
-	}
 
 	public PhoneNumber(PhoneNumberDto phoneNumber, Person person) {
 		super();

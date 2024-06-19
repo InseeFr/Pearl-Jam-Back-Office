@@ -5,6 +5,10 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
@@ -13,6 +17,10 @@ import jakarta.persistence.Embeddable;
  * @author Guillemet Paul
  */
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class MessageStatusId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -29,32 +37,6 @@ public class MessageStatusId implements Serializable {
 	@Column(name = "interviewer_id", nullable = true)
 	private String interviewerId;
 
-	/**
-	 * Default constructor for the entity
-	 */
-	public MessageStatusId() {
-	}
-
-	public MessageStatusId(Long messageId, String interviewerId) {
-		super();
-		this.messageId = messageId;
-		this.interviewerId = interviewerId;
-	}
-
-	/**
-	 * @return the campaignId
-	 */
-	public Long getMessageId() {
-		return messageId;
-	}
-
-	/**
-	 * @param messageId the campaignId to set
-	 */
-	public void setCampaignId(Long messageId) {
-		this.messageId = messageId;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		return (this == o);
@@ -63,20 +45,6 @@ public class MessageStatusId implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(getMessageId(), getInterviewerId());
-	}
-
-	/**
-	 * @return the campaignId
-	 */
-	public String getInterviewerId() {
-		return interviewerId;
-	}
-
-	/**
-	 * @param InterviewerId the campaignId to set
-	 */
-	public void setInterviewerId(String interviewerId) {
-		this.interviewerId = interviewerId;
 	}
 
 }

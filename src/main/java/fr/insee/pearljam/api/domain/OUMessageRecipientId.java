@@ -5,6 +5,10 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
@@ -13,6 +17,10 @@ import jakarta.persistence.Embeddable;
  * @author Guillemet Paul
  */
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 public class OUMessageRecipientId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -28,46 +36,6 @@ public class OUMessageRecipientId implements Serializable {
 	 */
 	@Column(name = "organization_unit_id")
 	private String organizationUnitId;
-
-	/**
-	 * Default constructor for the entity
-	 */
-	public OUMessageRecipientId() {
-	}
-
-	public OUMessageRecipientId(Long messageId, String organizationUnitId) {
-		super();
-		this.organizationUnitId = organizationUnitId;
-		this.messageId = messageId;
-	}
-
-	/**
-	 * @return the organizationUnitId
-	 */
-	public String getOrganizationUnitId() {
-		return organizationUnitId;
-	}
-
-	/**
-	 * @param organizationUnitId the organizationUnitId to set
-	 */
-	public void setOrganizationUnitId(String organizationUnitId) {
-		this.organizationUnitId = organizationUnitId;
-	}
-
-	/**
-	 * @return the campaignId
-	 */
-	public Long getMessageId() {
-		return messageId;
-	}
-
-	/**
-	 * @param messageId the campaignId to set
-	 */
-	public void setCampaignId(Long messageId) {
-		this.messageId = messageId;
-	}
 
 	@Override
 	public boolean equals(Object o) {

@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Entity SampleIdentifier : represent the entity table in DB
@@ -14,6 +16,8 @@ import jakarta.persistence.Id;
  * 
  */
 @Entity
+@Getter
+@Setter
 public abstract class SampleIdentifier implements Serializable {
 	/**
 	 * 
@@ -25,19 +29,5 @@ public abstract class SampleIdentifier implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 }
