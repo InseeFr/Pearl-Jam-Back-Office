@@ -50,21 +50,16 @@ public class ClosingCauseController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			ClosingCauseCountDto closingCountDto;
-			try {
-				closingCountDto = closingCauseService.getClosingCauseCount(userId, id, idep, date,
-						associatedOrgUnits);
-			} catch (NotFoundException e) {
-				log.error(e.getMessage());
-				log.info("Get ClosingCauseCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get ClosingCauseCount resulting in 200");
-			return new ResponseEntity<>(closingCountDto, HttpStatus.OK);
+		ClosingCauseCountDto closingCountDto;
+		try {
+			closingCountDto = closingCauseService.getClosingCauseCount(userId, id, idep, date,
+					associatedOrgUnits);
+		} catch (NotFoundException e) {
+			log.error(e.getMessage());
+			log.info("Get ClosingCauseCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
+		log.info("Get ClosingCauseCount resulting in 200");
+		return new ResponseEntity<>(closingCountDto, HttpStatus.OK);
 	}
 }

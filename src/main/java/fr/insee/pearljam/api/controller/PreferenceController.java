@@ -37,13 +37,9 @@ public class PreferenceController {
 	@PutMapping(path = "/preferences")
 	public ResponseEntity<Object> updateSurveyUnit(@RequestBody List<String> listPreference) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
-			log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
-					returnCode.value());
-			return new ResponseEntity<>(returnCode);
-		}
+		HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
+		log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
+				returnCode.value());
+		return new ResponseEntity<>(returnCode);
 	}
 }

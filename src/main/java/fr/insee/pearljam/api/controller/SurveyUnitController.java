@@ -105,9 +105,6 @@ public class SurveyUnitController {
 	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
 						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
 		if (lstSurveyUnit == null) {
 			log.info("{} GET SurveyUnits resulting in 404", userId);
@@ -128,9 +125,6 @@ public class SurveyUnitController {
 	@GetMapping(path = "/survey-unit/{id}")
 	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Optional<SurveyUnit> su = surveyUnitService.findById(id);
 		if (!su.isPresent()) {
 			log.error("{} : Survey unit with id {} was not found in database", userId, id);
@@ -173,9 +167,6 @@ public class SurveyUnitController {
 			@RequestBody SurveyUnitDetailDto surveyUnitUpdated, 
 			@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		ResponseEntity<SurveyUnitDetailDto> updatedSurveyUnitResponse = surveyUnitService.updateSurveyUnitDetail(userId,
 				id, surveyUnitUpdated);
 		HttpStatusCode returnCode = updatedSurveyUnitResponse.getStatusCode();
@@ -222,10 +213,6 @@ public class SurveyUnitController {
 	public ResponseEntity<Object> updateSurveyUnitState(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "state") StateType state) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
 		log.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
 				returnCode.value());
@@ -247,9 +234,6 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("{} : PUT close with cause '{}' on su {}", userId, closingCause, surveyUnitId);
 		HttpStatus returnCode = surveyUnitService.closeSurveyUnit(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
@@ -271,10 +255,6 @@ public class SurveyUnitController {
 	public ResponseEntity<Object> updateClosingCause(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
@@ -295,9 +275,6 @@ public class SurveyUnitController {
 			@RequestBody CommentDto comment, 
 			@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		HttpStatus returnCode = surveyUnitService.updateSurveyUnitComment(userId, surveyUnitId, comment);
 		log.info("PUT comment on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
@@ -307,9 +284,6 @@ public class SurveyUnitController {
 	@PutMapping(path = "/survey-unit/{id}/viewed")
 	public ResponseEntity<Object> updateSurveyUnitViewed(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		HttpStatus returnCode = surveyUnitService.updateSurveyUnitViewed(userId, surveyUnitId);
 		log.info("PUT viewed on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
@@ -330,9 +304,6 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String id, 
 			@RequestParam(value = "state", required = false) String state) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
 		if (surveyUnit == null) {
 			log.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
@@ -398,11 +369,6 @@ public class SurveyUnitController {
 	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(
 			@PathVariable(value = "id") String id) {
 
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET states of surveyUnit {} resulting in 403", id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("GET states of surveyUnit {} resulting in 403", id);
 		List<StateDto> lstState = surveyUnitService.getListStatesBySurveyUnitId(id);
 		if (lstState.isEmpty()) {
@@ -426,11 +392,6 @@ public class SurveyUnitController {
 
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET closable units", userId);
-
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET closable survey units resulting in 401");
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
 		List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
 		log.info("GET closable survey units resulting in 200");
 		return new ResponseEntity<>(lstSu, HttpStatus.OK);
@@ -468,10 +429,6 @@ public class SurveyUnitController {
 	@GetMapping(path = "/admin/survey-units")
 	public ResponseEntity<List<String>> getAllSurveyUnitsId() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET admin survey units resulting in 401");
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
 		List<String> suIds = surveyUnitService.getAllIds();
 		log.info("{} : GET admin survey units resulting in 200", userId);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);
@@ -487,11 +444,6 @@ public class SurveyUnitController {
 	@Operation(summary = "Get survey units id by campaign")
 	@GetMapping(path = "/admin/campaign/{id}/survey-units")
 	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET admin survey units for campaign {} resulting in 401", id);
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
 		List<String> suIds = surveyUnitService.getAllIdsByCampaignId(id);
 		log.info("GET admin survey units for campaign {} resulting in 200", id);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);

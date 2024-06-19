@@ -51,21 +51,16 @@ public class StateController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			StateCountDto stateCountDto;
-			try {
-				stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
-			} catch (NotFoundException e) {
-				log.error(e.getMessage());
-				log.info("Get interviewerStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get interviewerStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
+		StateCountDto stateCountDto;
+		try {
+			stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
+		} catch (NotFoundException e) {
+			log.error(e.getMessage());
+			log.info("Get interviewerStateCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
+		log.info("Get interviewerStateCount resulting in 200");
+		return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
 	}
 
 	/**
@@ -82,20 +77,16 @@ public class StateController {
 						@PathVariable(value = "id") String id, 
 						@RequestParam(required = false, name = "date") Long date) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			StateCountDto stateCountDto;
-			try {
-				stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
-			} catch (NotFoundException e) {
-				log.error(e.getMessage());
-				log.info("Get state count for non attributted SUs resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get state count for non attributted SUs resulting in 200");
-			return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
+		StateCountDto stateCountDto;
+		try {
+			stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
+		} catch (NotFoundException e) {
+			log.error(e.getMessage());
+			log.info("Get state count for non attributted SUs resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		log.info("Get state count for non attributted SUs resulting in 200");
+		return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
 	}
 
 	/**
@@ -114,20 +105,16 @@ public class StateController {
 						@PathVariable(value = "id") String id, 
 						@RequestParam(required = false, name = "date") Long date) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			StateCountCampaignDto stateCountCampaignDto;
-			try {
-				stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
-			} catch (NotFoundException e) {
-				log.error(e.getMessage());
-				log.info("Get campaignStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get campaignStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
+		StateCountCampaignDto stateCountCampaignDto;
+		try {
+			stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
+		} catch (NotFoundException e) {
+			log.error(e.getMessage());
+			log.info("Get campaignStateCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		log.info("Get campaignStateCount resulting in 200");
+		return new ResponseEntity<>(stateCountCampaignDto, HttpStatus.OK);
 	}
 
 	/**
@@ -143,17 +130,13 @@ public class StateController {
 	public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(
 			@RequestParam(required = false, name = "date") Long date) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByInterviewer(userId, date);
-			if (stateCountCampaignsDto == null) {
-				log.info("Get interviewersStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get interviewersStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
+		List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByInterviewer(userId, date);
+		if (stateCountCampaignsDto == null) {
+			log.info("Get interviewersStateCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		log.info("Get interviewersStateCount resulting in 200");
+		return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
 	}
 
 	/**
@@ -169,16 +152,12 @@ public class StateController {
 	public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(
 						@RequestParam(required = false, name = "date") Long date) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByCampaigns(userId, date);
-			if (stateCountCampaignsDto == null) {
-				log.info("Get campaignStateCount resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("Get campaignStateCount resulting in 200");
-			return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
+		List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByCampaigns(userId, date);
+		if (stateCountCampaignsDto == null) {
+			log.info("Get campaignStateCount resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		log.info("Get campaignStateCount resulting in 200");
+		return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
 	}
 }

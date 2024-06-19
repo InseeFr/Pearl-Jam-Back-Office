@@ -68,9 +68,6 @@ public class InterviewerController {
 	@GetMapping(path = Constants.API_INTERVIEWERS)
 	public ResponseEntity<Set<InterviewerDto>> getListInterviewers() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
 		if (lstInterviewer == null) {
 			log.info("Get interviewers resulting in 404");
@@ -85,10 +82,6 @@ public class InterviewerController {
 	@GetMapping(path = Constants.API_INTERVIEWER_ID)
 	public ResponseEntity<InterviewerContextDto> getInterviewer(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info("{} -> Get interviewer [{}] resulting in 403 : unknown user", userId, id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Optional<InterviewerContextDto> interviewer = interviewerService.findDtoById(id);
 		if (interviewer.isEmpty()) {
 			log.info("{} -> Get interviewer [{}] resulting in 404", userId, id);
@@ -103,9 +96,6 @@ public class InterviewerController {
 	@GetMapping(path = Constants.API_ADMIN_INTERVIEWERS)
 	public ResponseEntity<List<InterviewerContextDto>> getCompleteListInterviewers() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		List<InterviewerContextDto> lstInterviewer = interviewerService.getCompleteListInterviewers();
 		if (lstInterviewer.isEmpty()) {
 			log.info("{} -> Get all interviewers resulting in 404 : no interviewers", userId);
@@ -120,9 +110,6 @@ public class InterviewerController {
 	@GetMapping(path = Constants.API_INTERVIEWER_ID_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getListCampaigns(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
 		if (!list.isPresent()) {
 			log.info("{} -> Get interviewer campaigns resulting in 404", userId);
@@ -139,8 +126,6 @@ public class InterviewerController {
 			@PathVariable(value = "id") String id, 
 			@RequestBody InterviewerContextDto interviewer) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		if (id == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -160,10 +145,6 @@ public class InterviewerController {
 	@DeleteMapping(path = Constants.API_INTERVIEWER_ID)
 	public ResponseEntity<Object> deleteInterviewer(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn("{} : DELETE interviewer with id {} resulting in 403.", userId, id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 
 		if (id == null) {
 			log.warn("{} : no interviewerId provided : resulting in 400.", userId);

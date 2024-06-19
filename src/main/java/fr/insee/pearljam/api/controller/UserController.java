@@ -52,19 +52,13 @@ public class UserController {
 	@GetMapping(path = "/user")
 	public ResponseEntity<UserDto> getUser() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET User resulting in 403");
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			Optional<UserDto> user = userService.getUser(userId);
-			if (user.isEmpty()) {
-				log.info("GET User resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("GET User resulting in 200");
-			return new ResponseEntity<>(user.get(), HttpStatus.OK);
+		Optional<UserDto> user = userService.getUser(userId);
+		if (user.isEmpty()) {
+			log.info("GET User resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
+		log.info("GET User resulting in 200");
+		return new ResponseEntity<>(user.get(), HttpStatus.OK);
 	}
 
 	/**
@@ -80,18 +74,13 @@ public class UserController {
 						@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET user with id : {}", userId, id);
-		if (StringUtils.isBlank(userId)) {
-			log.info("GET User {} resulting in 403", id);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			Optional<UserDto> user = userService.getUser(id);
-			if (user.isEmpty()) {
-				log.info("GET User resulting in 404");
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			log.info("GET User resulting in 200");
-			return new ResponseEntity<>(user.get(), HttpStatus.OK);
+		Optional<UserDto> user = userService.getUser(id);
+		if (user.isEmpty()) {
+			log.info("GET User resulting in 404");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		log.info("GET User resulting in 200");
+		return new ResponseEntity<>(user.get(), HttpStatus.OK);
 	}
 
 	/**

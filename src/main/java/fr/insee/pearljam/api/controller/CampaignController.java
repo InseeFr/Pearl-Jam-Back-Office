@@ -87,14 +87,9 @@ public class CampaignController {
 	public ResponseEntity<List<CampaignDto>> getListCampaign() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("User {} : GET related campaigns", userId);
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
-			log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
-			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
-		}
+		List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
+		log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
+		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 	}
 
 	/**
@@ -109,15 +104,11 @@ public class CampaignController {
 	public ResponseEntity<List<CampaignDto>> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("User {} : GET all campaigns", userId);
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
-			log.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
-					lstCampaigns.size());
-			return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
-		}
+		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
+		log.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
+				lstCampaigns.size());
+		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
+
 	}
 
 	/**
@@ -131,10 +122,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_INTERVIEWER_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("Interviewer {} : GET related campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
 		log.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
@@ -155,10 +142,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_INTERVIEWERS)
 	public ResponseEntity<List<InterviewerDto>> getListInterviewers(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("{} try to get campaign[{}] interviewers ", userId, id);
 		List<InterviewerDto> lstInterviewer;
 		try {
@@ -188,10 +171,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_VISIBILITIES)
 	public ResponseEntity<List<VisibilityContextDto>> getVisibilities(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("{} try to get campaign[{}] visibilities ", userId, id);
 		if (!campaignService.findById(id).isPresent()) {
 			log.warn("Can't find visibilities : campaign {} is missing", id);
@@ -219,10 +198,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_ABANDONED)
 	public ResponseEntity<CountDto> getNbSUAbandoned(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
 		CountDto nbSUAbandoned;
 		try {
@@ -249,10 +224,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED)
 	public ResponseEntity<CountDto> getNbSUNotAttributed(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.warn(NO_USER_ID);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("{} try to get campaign[{}] not attributed survey-units ", userId, id);
 		CountDto nbSUNotAttributed;
 		try {
@@ -280,10 +251,6 @@ public class CampaignController {
 			@PathVariable(value = "idCampaign") String idCampaign,
 			@PathVariable(value = "idOu") String idOu) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			log.info(NO_USER_ID);
-			return new ResponseEntity<>(NO_USER_ID, HttpStatus.FORBIDDEN);
-		}
 		log.info("{} try to change OU[{}] visibility on campaign[{}] ", userId, idOu, idCampaign);
 		HttpStatus returnCode = campaignService.updateVisibility(idCampaign, idOu, visibilityUpdated);
 		log.info("PUT visibility with CampaignId {} for Organizational Unit {} resulting in {}", idCampaign,
@@ -337,9 +304,6 @@ public class CampaignController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to update campaign {} collection dates", userId, id);
 
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		HttpStatus returnCode = campaignService.updateCampaign(id, campaign);
 		log.info("PUT campaign with id {} resulting in {}", id, returnCode.value());
 		return new ResponseEntity<>(returnCode);

@@ -47,18 +47,15 @@ public class MessageController {
 	@PostMapping(path = "/message")
 	public ResponseEntity<Object> postMessage(@RequestBody MessageDto message) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			String text = message.getText();
-			List<String> recipients = message.getRecipients();
-			log.info("POST text '{}' ", text);
-			for (String recipient : recipients) {
-				log.info("POST recipient '{}' ", recipient);
-			}
-			HttpStatus returnCode = messageService.addMessage(text, recipients, userId);
-			return new ResponseEntity<>(returnCode);
+		String text = message.getText();
+		List<String> recipients = message.getRecipients();
+		log.info("POST text '{}' ", text);
+		for (String recipient : recipients) {
+			log.info("POST recipient '{}' ", recipient);
 		}
+		HttpStatus returnCode = messageService.addMessage(text, recipients, userId);
+		return new ResponseEntity<>(returnCode);
+
 	}
 
 	/**
@@ -70,17 +67,12 @@ public class MessageController {
 	public ResponseEntity<Object> postMessage(
 			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = messageService.markAsRead(id, idep);
-			if (returnCode == HttpStatus.OK) {
-				this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
-						"new message");
-			}
-			return new ResponseEntity<>(returnCode);
+		HttpStatus returnCode = messageService.markAsRead(id, idep);
+		if (returnCode == HttpStatus.OK) {
+			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
+					"new message");
 		}
+		return new ResponseEntity<>(returnCode);
 	}
 
 	/**
@@ -92,17 +84,12 @@ public class MessageController {
 	public ResponseEntity<Object> postDeletedMessage(
 			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			HttpStatus returnCode = messageService.markAsDeleted(id, idep);
-			if (returnCode == HttpStatus.OK) {
-				this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
-						"new message");
-			}
-			return new ResponseEntity<>(returnCode);
+		HttpStatus returnCode = messageService.markAsDeleted(id, idep);
+		if (returnCode == HttpStatus.OK) {
+			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
+					"new message");
 		}
+		return new ResponseEntity<>(returnCode);
 	}
 
 	/**
@@ -111,13 +98,8 @@ public class MessageController {
 	@Operation(summary = "Get a message")
 	@GetMapping(path = "/messages/{id}")
 	public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<MessageDto> messages = messageService.getMessages(id);
-			return new ResponseEntity<>(messages, HttpStatus.OK);
-		}
+		List<MessageDto> messages = messageService.getMessages(id);
+		return new ResponseEntity<>(messages, HttpStatus.OK);
 	}
 
 	/**
@@ -127,12 +109,8 @@ public class MessageController {
 	@GetMapping(path = "/message-history")
 	public ResponseEntity<List<MessageDto>> getMessageHistory() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			List<MessageDto> messages = messageService.getMessageHistory(userId);
-			return new ResponseEntity<>(messages, HttpStatus.OK);
-		}
+		List<MessageDto> messages = messageService.getMessageHistory(userId);
+		return new ResponseEntity<>(messages, HttpStatus.OK);
 	}
 
 	/**
@@ -142,16 +120,12 @@ public class MessageController {
 	@PostMapping(path = "/verify-name")
 	public ResponseEntity<Object> postMessage(@RequestBody WsText name) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else {
-			String text = name.getText();
-			List<VerifyNameResponseDto> resp = messageService.verifyName(text, userId);
-			if (resp != null) {
-				return new ResponseEntity<>(resp, HttpStatus.OK);
-			}
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		String text = name.getText();
+		List<VerifyNameResponseDto> resp = messageService.verifyName(text, userId);
+		if (resp != null) {
+			return new ResponseEntity<>(resp, HttpStatus.OK);
 		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
@@ -161,9 +135,6 @@ public class MessageController {
 	@PostMapping(path = "/mail")
 	public ResponseEntity<Object> postMailMessage(@RequestBody MailDto mail) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		if (StringUtils.isBlank(userId)) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		log.info("User {} send a mail", userId);
 		HttpStatus returnCode = sendMail.apply(mail.getContent(), mail.getSubject());
 		return new ResponseEntity<>(returnCode);
