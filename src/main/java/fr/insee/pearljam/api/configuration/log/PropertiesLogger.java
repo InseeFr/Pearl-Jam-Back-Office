@@ -33,14 +33,7 @@ public class PropertiesLogger implements ApplicationListener<ApplicationEnvironm
                 .distinct()
                 .filter(Objects::nonNull)
                 .sorted()
-                .filter(ps -> {
-                    for(String propertyObject : propertyObjects) {
-                        if(ps.startsWith(propertyObject)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
+                .filter(ps -> propertyObjects.stream().anyMatch(ps::startsWith))
                 .forEach(key -> log.info("{} = {}", key, hideProperties(key, environment)));
         log.info("===============================================================================================");
 

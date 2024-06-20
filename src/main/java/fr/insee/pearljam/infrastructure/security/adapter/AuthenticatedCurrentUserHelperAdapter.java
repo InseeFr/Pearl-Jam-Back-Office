@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class AuthenticatedCurrentUserHelperAdapter implements AuthenticatedUserH
 
     @Override
     public boolean hasAnyRole(AuthorityRole... roles) {
-        return Arrays.stream(roles)
+        return Stream.of(roles)
                 .anyMatch(this::hasRole);
     }
 
