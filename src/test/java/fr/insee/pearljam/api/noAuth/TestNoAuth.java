@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.noAuth;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,13 +13,10 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.jayway.jsonpath.JsonPath;
-import fr.insee.pearljam.api.service.DataSetInjectorService;
+import fr.insee.pearljam.api.utils.ScriptConstants;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,23 +52,6 @@ class TestNoAuth {
 	private final MessageRepository messageRepository;
 	private final ClosingCauseRepository closingCauseRepository;
 	private final MockMvc mockMvc;
-	private final DataSetInjectorService injectorService;
-
-	@BeforeEach
-	public void clearDataSet() {
-		injectorService.deleteDataSet();
-	}
-
-	/**
-	 * This method set up the dataBase content
-	 * 
-	 * @throws Exception
-	 * 
-	 */
-	@BeforeEach
-	public void initDataSetIfNotPresent() {
-		injectorService.createDataSet();
-	}
 
 	private ResultMatcher expectValidManagementStartDate() {
 		return expectTimestampFromCurrentDate("$[0].managementStartDate", -4, ChronoUnit.DAYS);
@@ -118,7 +100,6 @@ class TestNoAuth {
 	 */
 
 	@Test
-	@Order(1)
 	void testGetCampaign() throws Exception {
 		mockMvc.perform(get("/api/campaigns")
 						.accept(MediaType.APPLICATION_JSON))
@@ -142,7 +123,7 @@ class TestNoAuth {
 	}
 
 	@Test
-	@Order(2)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutClosingCauseNoPreviousClosingCause() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPI")
 						.accept(MediaType.APPLICATION_JSON))
@@ -159,7 +140,7 @@ class TestNoAuth {
 	 * @throws JsonProcessingException
 	 */
 	@Test
-	@Order(3)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPostMessage() throws Exception {
 		List<String> recipients = new ArrayList<String>();
 		recipients.add("SIMPSONS2020X00");
@@ -175,5 +156,4 @@ class TestNoAuth {
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
 		assertEquals("TEST", messages.get(0).getText());
 	}
-
 }

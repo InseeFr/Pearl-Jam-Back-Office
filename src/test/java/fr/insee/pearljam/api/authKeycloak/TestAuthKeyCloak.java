@@ -111,7 +111,6 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import liquibase.Liquibase;
 import lombok.RequiredArgsConstructor;
 
 /* Test class for Keycloak Authentication */
@@ -138,14 +137,11 @@ class TestAuthKeyCloak {
 	private final ReferentService referentservice;
 	private final MessageService messageService;
 	private final PreferenceService preferenceService;
-	private final DataSetInjectorService injectorService;
 
 	private final MockMvc mockMvc;
 	private final RestTemplate restTemplate;
 
 	private MockRestServiceServer mockServer;
-
-	public Liquibase liquibase;
 
 	static Authentication LOCAL_USER = AuthenticatedUserTestHelper.AUTH_LOCAL_USER;
 	static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
@@ -159,7 +155,6 @@ class TestAuthKeyCloak {
 	@BeforeEach
 	public void setUp() {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
-		injectorService.createDataSet();
 	}
 
 	private ResultMatcher expectValidManagementStartDate() {

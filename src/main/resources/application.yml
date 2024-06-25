@@ -1,0 +1,87 @@
+application:
+  host: http://localhost:8080
+  corsOrigins:
+  # Define Roles mapping here
+  roles:
+    interviewer:
+    local_user:
+    national_user:
+    admin:
+    webclient:
+  # Folder where to store temp files.
+  # DO NOT USE THE DEFAULT TEMP DIRECTORY OF THE OS as it adresses some vulnerabilities in a non container env.
+  # Use a folder with permissions for the app only
+  temp-folder:
+  external:
+    service:
+      datacollection-url:
+      mail-url:
+
+feature:
+  oidc:
+    enabled: true
+    auth-server-host:
+    application-host: ${application.host}
+    auth-server-url: ${feature.oidc.auth-server-host}/auth
+    client-id:
+    realm:
+    principal-attribute:
+  swagger:
+    enabled: false
+  logging:
+    file:
+      enabled: false
+
+spring:
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 2
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      id:
+        new_generator_mappings: true
+      cache:
+        use_second_level_cache: false
+        use_query_cache: false
+      generate_statistics: false
+      hbm2ddl:
+        auto: validate
+  liquibase:
+    enabled: true
+    contexts: prod
+    changeLog: classpath:db/master.xml
+    defaultSchema: public
+  h2:
+    console:
+      enabled: false
+  security:
+    # used only if oidc enabled
+    oauth2.resourceserver.jwt.issuer-uri: ${feature.oidc.auth-server-url}/realms/${feature.oidc.realm}
+
+springdoc:
+  swagger-ui:
+    # used only if oidc enabled
+    oauth.client-id: ${feature.oidc.client-id}
+    path: /
+    syntax-highlight:
+      activated: false
+    tagsSorter: alpha
+    doc-expansion: none
+
+logging:
+  level:
+    root: INFO
+    springdoc: INFO
+    fr.insee.pearljam: INFO
+    liquibase: INFO

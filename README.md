@@ -5,7 +5,7 @@ REST API for communication between Pearl Jam DB and Pearl Jam UI.
 
 ## Requirements
 For building and running the application you need:
-- [JDK 11](https://jdk.java.net/archive/)
+- [JDK 21](https://jdk.java.net/archive/)
 - Maven 3  
 - Docker for tests
 
@@ -22,17 +22,7 @@ mvn spring-boot:run
 ```  
 
 ## Application Accesses locally
-To access to swagger-ui, use this url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
-
-## Keycloak Configuration 
-1. To start the server on port 8180 execute in the bin folder of your keycloak :
-```shell
-standalone.bat -Djboss.socket.binding.port-offset=100 (on Windows)
-
-standalone.sh -Djboss.socket.binding.port-offset=100 (on Unix-based systems)
-```  
-2. Go to the console administration and create role investigator and a user with this role.
-
+To access to swagger-ui, use this url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ## Deploy application on Tomcat server
 ### 1. Package the application
@@ -62,7 +52,6 @@ fr.insee.pearljam.logging.level=DEBUG
 #Application configuration
 fr.insee.pearljam.application.mode=keycloak
 fr.insee.pearljam.application.crosOrigin=*
-fr.insee.pearljam.application.guestOU=OU-POLE
 
 #Database configuration
 fr.insee.pearljam.persistence.database.host = pearljam-db
