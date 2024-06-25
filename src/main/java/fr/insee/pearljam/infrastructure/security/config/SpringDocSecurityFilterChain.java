@@ -19,7 +19,7 @@ public class SpringDocSecurityFilterChain {
 
         SecurityFilterChain buildSecurityFilterChain(HttpSecurity http,
                                                      String authorizedConnectionHost) throws Exception {
-                String[] swaggerUrls = new String[]{"/swagger-ui/**","/v3/api-docs/**"};
+                String[] swaggerUrls = new String[]{"/", "/swagger-ui/**","/v3/api-docs/**"};
                 return http
                         .securityMatcher(swaggerUrls)
                         .cors(Customizer.withDefaults())
