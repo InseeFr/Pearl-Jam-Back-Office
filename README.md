@@ -7,7 +7,6 @@ REST API for communication between Pearl Jam DB and Pearl Jam UI.
 For building and running the application you need:
 - [JDK 21](https://jdk.java.net/archive/)
 - Maven 3  
-- Docker for tests
 
 ## Install and excute unit tests
 Use the maven clean and maven install 
@@ -16,99 +15,83 @@ mvn clean install
 ```  
 
 ## Running the application locally
-Use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:  
 ```shell
 mvn spring-boot:run
 ```  
 
-## Application Accesses locally
-To access to swagger-ui, use this url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-
-## Deploy application on Tomcat server
+## Deployment
 ### 1. Package the application
-Use the [Spring Boot Maven plugin]  (https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:  
 ```shell
 mvn clean package
 ```  
-The war will be generate in `/target` repository  
+The jar will be generated in `/target` repository
 
-### 2. Install tomcat and deploy war
-To deploy the war file in Tomcat, you need to : 
-Download Apache Tomcat and unpackage it into a tomcat folder  
-Copy your WAR file from target/ to the tomcat/webapps/ folder  
-
-### 3. Tomcat config
-Before to startup the tomcat server, some configurations are needed : 
- 
-#### External Properties file
-Create pearljambo.properties near war file and complete the following properties:  
-```shell  
-#Profile configuration
-spring.profiles.active=prod
-
-#Logs configuration
-fr.insee.pearljam.logging.level=DEBUG
-
-#Application configuration
-fr.insee.pearljam.application.mode=keycloak
-fr.insee.pearljam.application.crosOrigin=*
-
-#Database configuration
-fr.insee.pearljam.persistence.database.host = pearljam-db
-fr.insee.pearljam.persistence.database.port = 5432
-fr.insee.pearljam.persistence.database.schema = pearljam
-fr.insee.pearljam.persistence.database.user = pearljam
-fr.insee.pearljam.persistence.database.password = pearljam
-fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
-fr.insee.pearljam.defaultSchema=public
-
-#Datacollection service config
-fr.insee.pearljam.datacollection.service.url.scheme=http
-fr.insee.pearljam.datacollection.service.url.host=localhost
-fr.insee.pearljam.datacollection.service.url.port=8081
-
-#Mail service config
-fr.insee.pearljam.mail.service.url.scheme=http
-fr.insee.pearljam.mail.service.url.host=localhost
-fr.insee.pearljam.mail.service.url.port=8082
-fr.insee.pearljam.mail.service.recipients.list=pearl@pearljam.fr,jam@pearljam.fr
-fr.insee.pearljam.mail.service.url.login=pearljam
-fr.insee.pearljam.mail.service.url.password=pearljam
-
-#Keycloak configuration
-keycloak.realm=insee-realm
-keycloak.resource=pearljam-web
-keycloak.auth-server-url=http://localhost:8180/auth
-keycloak.public-client=true
-keycloak.bearer-only=true
-keycloak.principal-attribute:preferred_username
-
-#Keycloak roles
-fr.insee.pearljam.interviewer.role=investigator
-fr.insee.pearljam.admin.role=admin
-fr.insee.pearljam.user.local.role=manager_local
-fr.insee.pearljam.user.national.role=manager_national
+### 2. Launch app with embedded tomcat
+```shell
+java -jar app.jar
 ```
 
-### 4. Tomcat start
-From a terminal navigate to tomcat/bin folder and execute  
-```shell
-catalina.bat run (on Windows)
-```  
-```shell
-catalina.sh run (on Unix-based systems)
-```  
+### 3. Application Access
+To access the swagger-ui, use this url : [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
-### 5. Application Access
-To access to swagger-ui, use this url : [http://localhost:8080/pearljam/swagger-ui.html](http://localhost:8080/pearljam/swagger-ui.html)  
-To access to keycloak, use this url : [http://localhost:8180](http://localhost:8180)  
+## Docker/Kubernetes
 
-## Before you commit
-Before committing code please ensure,  
-1 - README.md is updated  
-2 - A successful build is run and all tests are sucessful  
-3 - All newly implemented APIs are documented  
-4 - All newly added properties are documented  
+A Dockerfile is present on this root project to deploy a container. You can [get docker images on docker hub](https://hub.docker.com/r/inseefr/pearl-jam-back-office)
+
+[Helm chart repository](https://github.com/InseeFr/Helm-Charts/) is available for the pearl jam backoffice/db/frontend
+
+
+## Liquibase
+Liquibase is enabled by default and run changelogs if needed.
+
+#### Properties
+Minimal configuration for dev purpose only (no auth)
+User is considered as authenticated admin user
+
+```yaml  
+application:
+  roles:
+    interviewer:
+    local_user:
+    national_user:
+    admin: admin_user
+    webclient:
+feature:
+  oidc:
+    enabled: false
+  swagger:
+    enabled: true
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pearljam
+    username: 
+    password:
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    contexts: dev
+    changeLog: classpath:db/demo.xml
+  messages:
+    cache-seconds: 1
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+  jackson:
+    serialization:
+      indent-output: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: WARN
+        type:
+          descriptor:
+            sql:
+              BasicBinder: WARN
+    liquibase: INFO
+```
 
 ## End-Points
 ### Campaign-Controller
@@ -187,23 +170,17 @@ Before committing code please ensure,
 - `DELETE /api/user/{id}` : Delete User
 
 ## Libraries used
-- spring-boot-jpa
+- spring-boot-data-jpa
 - spring-boot-security
 - spring-boot-web
 - spring-boot-tomcat
 - spring-boot-test
-- rest-assured
+- spring-boot-starter-oauth2-resource-server
 - liquibase
 - postgresql
+- h2 (tests)
 - junit
-- springfox-swagger2
-- hibernate
-- keycloak 
-
-## Developers
-- Benjamin Claudel (benjamin.claudel@keyconsulting.fr)
-- Samuel Corcaud (samuel.corcaud@keyconsulting.fr)
-- Paul Guillemet (paul.guillemet@keyconsulting.fr)
+- springdoc
 
 ## License
 Please check [LICENSE](https://github.com/InseeFr/Pearl-Jam-Back-Office/blob/master/LICENSE) file
