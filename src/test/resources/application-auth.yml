@@ -1,0 +1,58 @@
+application:
+  corsOrigins: '*'
+  roles:
+    interviewer: interviewer_access
+    local_user: local_manager_access
+    national_user: national_manager_access
+    admin: admin_access
+    webclient: webclient_access
+
+spring:
+  application:
+    name: api
+  liquibase:
+    enabled: true
+    contexts: test
+    defaultSchema: public
+    change-log: classpath:db/integration-test.xml
+  datasource:
+    url: jdbc:h2:mem:testauthdb;NON_KEYWORDS=user,value;DATABASE_TO_UPPER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=create domain if not exists jsonb as json;MODE=PostgreSQL
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+logging:
+  level:
+    root: INFO
+    liquibase: WARN
+
+feature:
+  oidc:
+    enabled: true
+    auth-server-host: https://auth.host
+    application-host: ${application.host}
+    auth-server-url: ${feature.oidc.auth-server-host}/auth
+    client-id:
+    realm:
+    principal-attribute: username
+
+fr:
+  insee:
+    pearljam:
+      #Datacollection config
+      datacollection:
+        service:
+          url:
+            scheme: http
+            host: localhost
+            port: 8081
+      #Mail service config
+      mail:
+        service:
+          url:
+            scheme: http
+            host: localhost
+            port: 8082
+            login: pearljam
+            password: pearljam
+        recipients:
+          list: pearl@pearljam.fr,jam@pearljam.fr
