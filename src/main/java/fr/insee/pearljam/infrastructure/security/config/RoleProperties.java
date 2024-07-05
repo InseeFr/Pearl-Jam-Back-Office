@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.configuration.properties;
+package fr.insee.pearljam.infrastructure.security.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

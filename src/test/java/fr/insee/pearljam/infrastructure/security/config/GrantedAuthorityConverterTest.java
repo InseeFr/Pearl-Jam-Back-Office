@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.security.config;
 
-import fr.insee.pearljam.api.configuration.properties.RoleProperties;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
