@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import fr.insee.pearljam.infrastructure.security.config.OidcProperties;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
@@ -42,37 +40,22 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository ouRepository;
-	private final OidcProperties oidcProperties;
 
 	public Optional<UserDto> getUser(String userId) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (oidcProperties.enabled()) {
-			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 
-			OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
-			if (user.isPresent()) {
-				organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
-				organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
-				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
-
-				return Optional.of(new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-						organizationUnitsParent, organizationUnits));
-			} else {
-				return Optional.empty();
-			}
-		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
-			if (ouNat.isPresent()) {
-				getOrganizationUnits(organizationUnits, ouNat.get(), false);
-				Optional<OrganizationUnitDto> ou = ouRepository
-						.findDtoByIdIgnoreCase("OU-NORTH");
-				if (ou.isPresent()) {
-					return Optional.of(new UserDto("", "Guest", "", ou.get(), organizationUnits));
-				}
-			}
-			return Optional.of(new UserDto("GUEST", "Guest", "",
-					new OrganizationUnitDto("OU-NORTH", "Guest organizational unit"), List.of()));
+		if (user.isEmpty()) {
+			return Optional.empty();
 		}
+
+		OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
+		organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
+		organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
+		getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
+
+		return Optional.of(new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
+				organizationUnitsParent, organizationUnits));
 	}
 
 	public boolean userIsPresent(String userId) {
@@ -98,9 +81,7 @@ public class UserServiceImpl implements UserService {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
 		if (!userId.equals(Constants.GUEST)) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-			if (user.isPresent()) {
-				getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), saveAllLevels);
-			}
+            user.ifPresent(value -> getOrganizationUnits(organizationUnits, value.getOrganizationUnit(), saveAllLevels));
 		} else {
 			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
 			if (ouNat.isPresent()) {
@@ -108,10 +89,8 @@ public class UserServiceImpl implements UserService {
 			} else {
 				List<String> natOus = ouRepository.findNationalOUs();
 				if (!natOus.isEmpty()) {
-					Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.get(0));
-					if (ou.isPresent()) {
-						getOrganizationUnits(organizationUnits, ou.get(), saveAllLevels);
-					}
+					Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.getFirst());
+                    ou.ifPresent(organizationUnit -> getOrganizationUnits(organizationUnits, organizationUnit, saveAllLevels));
 				}
 			}
 		}
@@ -122,11 +101,11 @@ public class UserServiceImpl implements UserService {
 	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
 		List<OrganizationUnitDto> lstUserOU = new ArrayList<>();
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		if (!user.isPresent()) {
+		if (user.isEmpty()) {
 			return false;
 		}
 		getOrganizationUnits(lstUserOU, user.get().getOrganizationUnit(), true);
-		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
+		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).toList();
 		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
 		return !Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
 	}
@@ -140,7 +119,7 @@ public class UserServiceImpl implements UserService {
 				throw new UserAlreadyExistsException("Found duplicate user with id: " + user.getId());
 			}
 			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(organisationUnitId);
-			if (!ouOpt.isPresent()) {
+			if (ouOpt.isEmpty()) {
 				throw new NoOrganizationUnitException("Organization Unit does not exist : " + organisationUnitId);
 			}
 			userRepository.save(new User(user.getId(), user.getFirstName(), user.getLastName(), ouOpt.get()));
@@ -153,7 +132,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public HttpStatus delete(String id) {
 		Optional<User> user = userRepository.findById(id);
-		if (!user.isPresent()) {
+		if (user.isEmpty()) {
 			return HttpStatus.NOT_FOUND;
 		}
 		userRepository.delete(user.get());

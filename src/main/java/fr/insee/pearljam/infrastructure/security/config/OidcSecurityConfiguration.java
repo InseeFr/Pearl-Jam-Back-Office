@@ -23,7 +23,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
-import fr.insee.pearljam.api.configuration.properties.RoleProperties;
 import lombok.RequiredArgsConstructor;
 
 /**
