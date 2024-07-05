@@ -20,20 +20,15 @@ public class GrantedAuthorityConverter implements Converter<Jwt, Collection<Gran
     public static final String REALM_ACCESS_ROLE = "roles";
     public static final String REALM_ACCESS = "realm_access";
 
-    private final Map<String, SimpleGrantedAuthority> grantedRoles;
+    private final Map<String, List<SimpleGrantedAuthority>> roles;
 
     public GrantedAuthorityConverter(RoleProperties roleProperties) {
-        this.grantedRoles = new HashMap<>();
-        this.grantedRoles.put(roleProperties.local_user(),
-                new SimpleGrantedAuthority(AuthorityRole.LOCAL_USER.securityRole()));
-        this.grantedRoles.put(roleProperties.national_user(),
-                new SimpleGrantedAuthority(AuthorityRole.NATIONAL_USER.securityRole()));
-        this.grantedRoles.put(roleProperties.interviewer(),
-                new SimpleGrantedAuthority(AuthorityRole.INTERVIEWER.securityRole()));
-        this.grantedRoles.put(roleProperties.admin(),
-                new SimpleGrantedAuthority(AuthorityRole.ADMIN.securityRole()));
-        this.grantedRoles.put(roleProperties.webclient(),
-                new SimpleGrantedAuthority(AuthorityRole.WEBCLIENT.securityRole()));
+        this.roles = new HashMap<>();
+        initRole(roleProperties.local_user(), AuthorityRole.LOCAL_USER);
+        initRole(roleProperties.national_user(), AuthorityRole.NATIONAL_USER);
+        initRole(roleProperties.interviewer(), AuthorityRole.INTERVIEWER);
+        initRole(roleProperties.admin(), AuthorityRole.ADMIN);
+        initRole(roleProperties.webclient(), AuthorityRole.WEBCLIENT);
     }
 
     @SuppressWarnings("unchecked")
@@ -41,13 +36,28 @@ public class GrantedAuthorityConverter implements Converter<Jwt, Collection<Gran
     public Collection<GrantedAuthority> convert(@NonNull Jwt jwt) {
         Map<String, Object> claims = jwt.getClaims();
         Map<String, Object> realmAccess = (Map<String, Object>) claims.get(REALM_ACCESS);
-        List<String> roles = (List<String>) realmAccess.get(REALM_ACCESS_ROLE);
+        List<String> userRoles = (List<String>) realmAccess.get(REALM_ACCESS_ROLE);
 
-        return roles.stream()
-                .filter(Objects::nonNull)
-                .filter(role -> !role.isBlank())
-                .filter(grantedRoles::containsKey)
-                .map(grantedRoles::get)
+        return userRoles.stream()
+                .filter(this.roles::containsKey)
+                .map(this.roles::get)
+                .flatMap(List::stream)
+                .distinct()
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private void initRole(String configRole, AuthorityRole authorityRole)  {
+        // config role is not set
+        if(configRole == null || configRole.isBlank()) {
+            return;
+        }
+
+        this.roles.compute(configRole, (key, grantedAuthorities) -> {
+            if(grantedAuthorities == null) {
+                grantedAuthorities = new ArrayList<>();
+            }
+            grantedAuthorities.add(new SimpleGrantedAuthority(authorityRole.securityRole()));
+            return grantedAuthorities;
+        });
     }
 }

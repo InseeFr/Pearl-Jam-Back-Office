@@ -38,6 +38,8 @@ class GrantedAuthorityConverterTest {
     @Test
     @DisplayName("Given a JWT, when converting null or empty JWT role, then converting ignore these roles")
     void testConverter01() {
+        roleProperties = new RoleProperties("", null, jwtRoleNationalUser, jwtRoleAdmin, jwtRoleWebclient);
+        converter = new GrantedAuthorityConverter(roleProperties);
         List<String> tokenRoles = new ArrayList<>();
         tokenRoles.add(null);
         tokenRoles.add("");
@@ -62,10 +64,32 @@ class GrantedAuthorityConverterTest {
                         new SimpleGrantedAuthority(AuthorityRole.NATIONAL_USER.securityRole()));
     }
 
+    @Test
+    @DisplayName("Given a JWT, when converting roles, then accept a config role can be used for multiple app roles")
+    void testConverter03() {
+        String dummyRole = "dummyRole";
+        String dummyRole2 = "dummyRole2";
+        roleProperties = new RoleProperties(dummyRole, dummyRole, dummyRole2, dummyRole2, dummyRole2);
+        converter = new GrantedAuthorityConverter(roleProperties);
+
+        List<String> tokenRoles = List.of(dummyRole, roleProperties.local_user(), dummyRole2, roleProperties.national_user());
+        Jwt jwt = createJwt(tokenRoles);
+
+        Collection<GrantedAuthority> authorities = converter.convert(jwt);
+        assertThat(authorities)
+                .hasSize(5)
+                .contains(
+                        new SimpleGrantedAuthority(AuthorityRole.INTERVIEWER.securityRole()),
+                        new SimpleGrantedAuthority(AuthorityRole.LOCAL_USER.securityRole()),
+                        new SimpleGrantedAuthority(AuthorityRole.NATIONAL_USER.securityRole()),
+                        new SimpleGrantedAuthority(AuthorityRole.ADMIN.securityRole()),
+                        new SimpleGrantedAuthority(AuthorityRole.NATIONAL_USER.securityRole()));
+    }
+
     @ParameterizedTest
     @MethodSource("provideJWTRoleWithAppRoleAssociated")
     @DisplayName("Given a JWT, when converting roles, then assure each JWT role is converted to equivalent app role")
-    void testConverter03(String jwtRole, AuthorityRole appRole) {
+    void testConverter04(String jwtRole, AuthorityRole appRole) {
         converter = new GrantedAuthorityConverter(roleProperties);
         List<String> tokenRoles = List.of(jwtRole);
         Jwt jwt = createJwt(tokenRoles);
