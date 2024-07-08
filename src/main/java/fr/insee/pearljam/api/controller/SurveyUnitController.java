@@ -4,15 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.domain.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
@@ -54,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class SurveyUnitController {
 
 	private static final String GUEST = "GUEST";
@@ -155,23 +157,21 @@ public class SurveyUnitController {
 
 	/**
 	 * This method is used to update a specific survey unit
-	 * 
-	 * @param request
-	 * @param surveyUnitUpdated
-	 * @param id
-	 * @return {@link HttpStatus}
+	 * @param surveyUnitDetails survey unit informations to update
+	 * @param id survey unit id
+	 * @return {@link SurveyUnitDetailDto}
+	 * @throws EntityNotFoundException exception thrown if entity not found
 	 */
 	@Operation(summary = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnit(
-			@RequestBody SurveyUnitDetailDto surveyUnitUpdated, 
-			@PathVariable(value = "id") String id) {
+	public SurveyUnitDetailDto updateSurveyUnit(
+			@Valid @NotNull @RequestBody SurveyUnitDetailDto surveyUnitDetails,
+			@PathVariable(value = "id") String id) throws EntityNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		ResponseEntity<SurveyUnitDetailDto> updatedSurveyUnitResponse = surveyUnitService.updateSurveyUnitDetail(userId,
-				id, surveyUnitUpdated);
-		HttpStatusCode returnCode = updatedSurveyUnitResponse.getStatusCode();
-		log.info("{} : PUT SurveyUnit with id {} resulting in {}", userId, id, returnCode.value());
-		return updatedSurveyUnitResponse;
+		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnitDetail(userId,
+				id, surveyUnitDetails);
+		log.info("SurveyUnit {} updated", id);
+		return updatedSurveyUnit;
 	}
 
 	/**
@@ -258,25 +258,6 @@ public class SurveyUnitController {
 		HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
-		return new ResponseEntity<>(returnCode);
-	}
-
-	/**
-	 * This method is used to update the comment of a Survey Unit
-	 * 
-	 * @param request
-	 * @param listSU
-	 * @param state
-	 * @return {@link HttpStatus}
-	 */
-	@Operation(summary = "Update the state of Survey Units listed in request body")
-	@PutMapping(path = "/survey-unit/{id}/comment")
-	public ResponseEntity<Object> updateSurveyUnitComment(
-			@RequestBody CommentDto comment, 
-			@PathVariable(value = "id") String surveyUnitId) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		HttpStatus returnCode = surveyUnitService.updateSurveyUnitComment(userId, surveyUnitId, comment);
-		log.info("PUT comment on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
 

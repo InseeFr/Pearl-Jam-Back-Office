@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -110,8 +113,8 @@ public class SurveyUnit implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactAttempt.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<ContactAttempt> contactAttempts = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = Comment.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
-	private Set<Comment> comments = new HashSet<>();
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommentDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<CommentDB> comments = new HashSet<>();
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<State> states = new HashSet<>();
@@ -159,7 +162,9 @@ public class SurveyUnit implements Serializable {
 
 		this.comments = new HashSet<>(
 				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
-						.map(comment -> new Comment(comment, this)).collect(Collectors.toList()));
+						.map(commentDto -> CommentDto.toModel(this.getId(), commentDto))
+						.map(comment -> CommentDB.fromModel(this, comment))
+						.toList());
 
 		if (su.getContactOutcome() != null) {
 			this.contactOucome = new ContactOutcome(su.getContactOutcome(), this);
@@ -201,4 +206,29 @@ public class SurveyUnit implements Serializable {
 		return state.equals(lastState.getType().toString());
 	}
 
+	public Set<Comment> getDomainComments() {
+		return comments.stream().map(CommentDB::toModel)
+				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * update a list of comments for a survey unit
+	 * @param commentsToUpdate the comment to update
+	 */
+	public void updateComments(Set<Comment> commentsToUpdate) {
+		Set<CommentDB> existingComments = this.getComments();
+
+		Set<CommentDB> commentsDBToUpdate = commentsToUpdate.stream()
+				.map(newComment -> CommentDB.fromModel(this, newComment))
+				.collect(Collectors.toSet());
+
+		Set<CommentDB> commentsToDelete = existingComments.stream()
+				.filter(existingComment -> commentsDBToUpdate.stream()
+						.anyMatch(commentToUpdate -> commentToUpdate.getType() == existingComment.getType())
+				)
+				.collect(Collectors.toSet());
+
+		existingComments.removeAll(commentsToDelete);
+		existingComments.addAll(commentsDBToUpdate);
+	}
 }

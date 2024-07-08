@@ -1,8 +1,10 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import java.io.Serializable;
 
-import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,15 +25,15 @@ import lombok.Setter;
  * @author Claudel Benjamin
  * 
  */
-@Entity
+@Entity(name = "comment")
 @Table
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment implements Serializable {
+public class CommentDB implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 6363481673399032153L;
 	/**
@@ -59,12 +61,14 @@ public class Comment implements Serializable {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 
-	public Comment(CommentDto dto, SurveyUnit surveyUnit) {
-		super();
-		this.type = dto.getType();
-		String commentValue = dto.getValue();
-		this.value = commentValue.length() > 999 ? commentValue.substring(0, 999) : commentValue;
-		this.surveyUnit = surveyUnit;
+	public static CommentDB fromModel(SurveyUnit surveyUnit, Comment comment) {
+		return new CommentDB(null, comment.type(), comment.value(), surveyUnit);
 	}
 
+	public static Comment toModel(CommentDB comment) {
+		if(comment == null) {
+			return null;
+		}
+		return new Comment(comment.getType(), comment.getValue(), comment.getSurveyUnit().getId());
+	}
 }
