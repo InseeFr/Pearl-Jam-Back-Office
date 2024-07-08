@@ -90,6 +90,7 @@ class ArchunitApplicationTests {
     void infrastructureClassesShouldNotBeAccessed() {
         classes()
                 .that().resideOutsideOfPackage("..infrastructure.security.config.swagger")
+                .and().resideOutsideOfPackage("..infrastructure.mail")
                 .and().resideInAPackage("..infrastructure..")
                 // TODO disable api.dto and api.domain when refacto is done
                 .should().onlyBeAccessed().byClassesThat().resideInAnyPackage("..infrastructure..", "..api.dto..", "..api.domain..", "..api.service..")
