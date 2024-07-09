@@ -214,9 +214,7 @@ INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
 
 
 INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES
-    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
-
-INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES
+    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
     ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
 
 SET REFERENTIAL_INTEGRITY TRUE;

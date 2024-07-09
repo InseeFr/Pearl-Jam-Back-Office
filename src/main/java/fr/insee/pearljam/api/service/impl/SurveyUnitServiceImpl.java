@@ -11,9 +11,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,7 +35,7 @@ import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.identification.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -45,7 +48,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
-import fr.insee.pearljam.api.service.IdentificationService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -78,8 +80,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final VisibilityRepository visibilityRepository;
 	private final PersonRepository personRepository;
 	private final ClosingCauseRepository closingCauseRepository;
-	private final IdentificationRepository identificationRepository;
-	private final IdentificationService identificationService;
 	private final UserService userService;
 	private final UtilsService utilsService;
 
@@ -92,7 +92,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public boolean checkHabilitationReviewer(String userId, String id) {
 		List<String> userOUs = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 
 		return !surveyUnitRepository.findByIdInOrganizationalUnit(id, userOUs).isEmpty();
 	}
@@ -133,17 +133,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			return surveyUnitDtoIds.stream()
 					.map(idSurveyUnit -> new SurveyUnitDto(surveyUnitRepository.findById(idSurveyUnit).get(),
 							visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit), extended))
-					.collect(Collectors.toList());
+					.toList();
 		}
 		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(this::canBeSeenByInterviewer)
-				.collect(Collectors.toList());
+				.toList();
 
 		return surveyUnitDtoIds.stream()
 				.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
 						campaignRepository.findDtoBySurveyUnitId(idSurveyUnit),
 						visibilityRepository.findVisibilityBySurveyUnitId(idSurveyUnit)))
 
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
@@ -179,7 +179,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
-		updateIdentification(surveyUnit, surveyUnitDetailDto);
+		Identification identification = IdentificationDto.toModel(surveyUnitDetailDto.getIdentification());
+		surveyUnit.updateIdentification(identification);
 		updateCommunicationRequest(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
 
@@ -198,23 +199,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		}
 		log.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
-	}
-
-	private void updateIdentification(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if (surveyUnitDetailDto.getIdentification() != null) {
-			Identification identification = identificationService.findBySurveyUnitId(surveyUnit.getId());
-			if (identification == null)
-				identification = new Identification();
-			IdentificationDto identDto = surveyUnitDetailDto.getIdentification();
-			identification.setIdentification(identDto.getIdentification());
-			identification.setAccess(identDto.getAccess());
-			identification.setSituation(identDto.getSituation());
-			identification.setCategory(identDto.getCategory());
-			identification.setOccupant(identDto.getOccupant());
-			identification.setSurveyUnit(surveyUnit);
-			identificationRepository.save(identification);
-		}
-		log.info("Survey-unit {} - Identification updated", surveyUnit.getId());
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -277,12 +261,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void updatePersons(SurveyUnitDetailDto surveyUnitDetailDto) throws PersonNotFoundException {
-		if (surveyUnitDetailDto.getPersons() != null) {
-			for (PersonDto personDto : surveyUnitDetailDto.getPersons()) {
-				Person pers = personRepository.findById(personDto.getId()).orElseThrow(PersonNotFoundException::new);
-				updatePerson(personDto, pers);
-			}
-		}
+		if (surveyUnitDetailDto.getPersons() == null) {
+            return;
+        }
+        for (PersonDto personDto : surveyUnitDetailDto.getPersons()) {
+            Person pers = personRepository.findById(personDto.getId()).orElseThrow(PersonNotFoundException::new);
+            updatePerson(personDto, pers);
+        }
 	}
 
 	private void updatePerson(PersonDto person, Person pers) {
@@ -357,7 +342,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 		Set<SurveyUnit> lstSurveyUnit = surveyUnitRepository.findByCampaignIdAndOrganizationUnitIdIn(campaignId,
 				lstOuId);
 		if (state != null && !state.isEmpty() && state.equalsIgnoreCase(StateType.FIN.toString())) {
@@ -375,7 +360,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 
 		List<String> noIdentSurveyUnitIds = surveyUnitRepository
 				.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
@@ -392,13 +377,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		// merge lists
 		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
-				.collect(Collectors.toList());
+				.toList();
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 
 		try {
 			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
-					suToCheck.stream().map(SurveyUnit::getId).collect(Collectors.toList()));
+					suToCheck.stream().map(SurveyUnit::getId).toList());
 
 		} catch (Exception e) {
 			log.error("Could not get data collection API : {}", e.getMessage());
@@ -409,14 +394,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
-			String identificationResult = identificationService.getIdentificationState(su.getIdentification());
+			IdentificationState identificationResult = IdentificationState.getState(IdentificationDB.toModel(su.getIdentification()));
 			sudto.setIdentificationState(identificationResult);
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
 
 		}).filter(this::isClosable)
-				.collect(Collectors.toList());
+				.toList();
 
 	}
 
@@ -427,13 +412,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		ContactOutcomeDto outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
-		switch (outcome.getType()) {
-			case INA:
-			case NOA:
-				return !hasQuestionnaire;
-			default:
-				return true;
-		}
+        return switch (outcome.getType()) {
+            case INA, NOA -> !hasQuestionnaire;
+            default -> true;
+        };
 	}
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
@@ -562,14 +544,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Map<String, Campaign> mapCampaigns = campaignRepository.findAllById(
 				surveyUnits.stream()
 						.map(SurveyUnitContextDto::getCampaign)
-						.collect(Collectors.toList()))
+						.toList())
 				.stream().collect(Collectors.toMap(Campaign::getId, c -> c));
 		Map<String, OrganizationUnit> mapOrganizationUnits = organizationUnitRepository.findAllById(
 				surveyUnits.stream()
 						.map(SurveyUnitContextDto::getOrganizationUnitId)
-						.collect(Collectors.toList()))
+						.toList())
 				.stream().collect(Collectors.toMap(OrganizationUnit::getId, gl -> gl));
-		surveyUnits.stream().forEach(su -> {
+		surveyUnits.forEach(su -> {
 			if (!duplicates.containsKey(su.getId())) {
 				duplicates.put(su.getId(), 0);
 			}
@@ -627,12 +609,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Map<String, SurveyUnit> mapSurveyUnit = surveyUnitRepository
 				.findAllById(surveyUnitInterviewerLink.stream()
 						.map(SurveyUnitInterviewerLinkDto::getSurveyUnitId)
-						.collect(Collectors.toList()))
+						.toList())
 				.stream().collect(Collectors.toMap(SurveyUnit::getId, su -> su));
 		Map<String, Interviewer> mapInterviewer = interviewerRepository
 				.findAllById(surveyUnitInterviewerLink.stream()
 						.map(SurveyUnitInterviewerLinkDto::getInterviewerId)
-						.collect(Collectors.toList()))
+						.toList())
 				.stream().collect(Collectors.toMap(Interviewer::getId, itw -> itw));
 
 		// Create new assignment
@@ -640,13 +622,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.filter(link -> !link.isValid()
 						|| !mapSurveyUnit.containsKey(link.getSurveyUnitId())
 						|| !mapInterviewer.containsKey(link.getInterviewerId()))
-				.map(SurveyUnitInterviewerLinkDto::getLink).collect(Collectors.toList());
+				.map(SurveyUnitInterviewerLinkDto::getLink).toList();
 		if (!errors.isEmpty()) {
 			log.error("Invalid value : [{}]", String.join(", ", errors));
 			return new Response(String.format("Invalid value : [%s]", String.join(", ", errors)),
 					HttpStatus.BAD_REQUEST);
 		}
-		surveyUnitInterviewerLink.stream().forEach(link -> {
+		surveyUnitInterviewerLink.forEach(link -> {
 			mapSurveyUnit.get(link.getSurveyUnitId()).setInterviewer(mapInterviewer.get(link.getInterviewerId()));
 			surveyUnitRepository.save(mapSurveyUnit.get(link.getSurveyUnitId()));
 		});

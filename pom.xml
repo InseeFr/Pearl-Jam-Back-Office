@@ -251,14 +251,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.2.5</version>
-					<configuration>
-						<runOrder>alphabetical</runOrder>
-						<includes>
-							<include>TestAuthKeyCloak.java</include>
-							<include>TestNoAuth.java</include>
-							<include>TestBasicAuth.java</include>
-						</includes>
-					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
