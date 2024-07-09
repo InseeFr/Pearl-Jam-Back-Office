@@ -17,6 +17,7 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,7 +37,7 @@ public class SurveyUnitCampaignDto {
 	private Boolean viewed;
 	private String questionnaireState;
 	private ContactOutcomeDto contactOutcome;
-	private String identificationState;
+	private IdentificationState identificationState;
 	private List<CommentDto> comments;
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })

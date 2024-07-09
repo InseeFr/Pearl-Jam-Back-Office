@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import lombok.Data;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -16,7 +17,7 @@ import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.identification.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -67,7 +68,7 @@ public class SurveyUnitDetailDto {
 				.map(StateDto::new)
 				.toList();
 		if (surveyUnit.getIdentification() != null) {
-			this.identification = new IdentificationDto(surveyUnit.getIdentification());
+			this.identification = IdentificationDto.fromModel(IdentificationDB.toModel(surveyUnit.getIdentification()));
 		}
 		this.move = surveyUnit.getMove();
 		this.communicationRequests = surveyUnit.getCommunicationRequests().stream().map(CommunicationRequestDto::new)

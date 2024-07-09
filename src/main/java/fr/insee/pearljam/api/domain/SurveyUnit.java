@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
@@ -89,8 +92,8 @@ public class SurveyUnit implements Serializable {
 	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private ClosingCause closingCause;
 
-	@OneToOne(fetch = FetchType.LAZY, targetEntity = Identification.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
-	private Identification identification;
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = IdentificationDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private IdentificationDB identification;
 
 	/**
 	 * The Campaign of SurveyUnit
@@ -156,7 +159,7 @@ public class SurveyUnit implements Serializable {
 		this.sampleIdentifier = new InseeSampleIdentifier(su.getSampleIdentifiers());
 		this.campaign = campaign;
 		this.interviewer = null;
-		this.identification = new Identification(su.getIdentification(), this);
+		this.identification = new IdentificationDB(IdentificationDto.toModel(su.getIdentification()), this);
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
@@ -204,6 +207,21 @@ public class SurveyUnit implements Serializable {
 			}
 		}
 		return state.equals(lastState.getType().toString());
+	}
+
+	public void updateIdentification(Identification identification) {
+		if (identification == null) {
+			return;
+		}
+
+		IdentificationDB identificationDB = getIdentification();
+		if(identificationDB == null) {
+			identificationDB = new IdentificationDB(identification, this);
+			setIdentification(identificationDB);
+			return;
+		}
+
+		identificationDB.update(identification);
 	}
 
 	public Set<Comment> getDomainComments() {
