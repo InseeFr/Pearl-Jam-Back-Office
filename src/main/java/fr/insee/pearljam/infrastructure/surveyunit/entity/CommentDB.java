@@ -61,14 +61,22 @@ public class CommentDB implements Serializable {
 	@ManyToOne
 	private SurveyUnit surveyUnit;
 
+	/**
+	 * Create entity object from model object
+	 * @param surveyUnit survey unit entity
+	 * @param comment comment model object
+	 * @return comment entity object
+	 */
 	public static CommentDB fromModel(SurveyUnit surveyUnit, Comment comment) {
 		return new CommentDB(null, comment.type(), comment.value(), surveyUnit);
 	}
 
+	/**
+	 * Create model object from entity
+	 * @param comment entity object
+	 * @return comment model object
+	 */
 	public static Comment toModel(CommentDB comment) {
-		if(comment == null) {
-			return null;
-		}
 		return new Comment(comment.getType(), comment.getValue(), comment.getSurveyUnit().getId());
 	}
 }

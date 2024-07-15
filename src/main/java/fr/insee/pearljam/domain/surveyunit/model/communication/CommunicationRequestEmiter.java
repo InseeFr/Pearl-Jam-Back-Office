@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.domain.communication;
+package fr.insee.pearljam.domain.surveyunit.model.communication;
 
 public enum CommunicationRequestEmiter {
     TOOL, INTERVIEWER

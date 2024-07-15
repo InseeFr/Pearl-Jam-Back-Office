@@ -17,6 +17,7 @@ import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
+import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,9 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -82,6 +80,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final ClosingCauseRepository closingCauseRepository;
 	private final UserService userService;
 	private final UtilsService utilsService;
+	private final SurveyUnitUpdateService surveyUnitUpdateService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -169,36 +168,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateAddress(surveyUnit, surveyUnitDetailDto);
 		updatePersons(surveyUnitDetailDto);
 
-		if(surveyUnitDetailDto.getComments() != null) {
-			Set<Comment> commentsToUpdate = surveyUnitDetailDto.getComments().stream()
-					.map(commentDto -> CommentDto.toModel(surveyUnit.getId(), commentDto))
-					.collect(Collectors.toSet());
-
-			surveyUnit.updateComments(commentsToUpdate);
-		}
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		Identification identification = IdentificationDto.toModel(surveyUnitDetailDto.getIdentification());
 		surveyUnit.updateIdentification(identification);
-		updateCommunicationRequest(surveyUnit, surveyUnitDetailDto);
+		updateIdentification(surveyUnit, surveyUnitDetailDto);
+
+		surveyUnitUpdateService.updateSurveyUnitInfos(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
 
 		log.info("Survey Unit {} - update complete", id);
 		return new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
-	}
-
-	private void updateCommunicationRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if (surveyUnitDetailDto.getCommunicationRequests() != null) {
-			List<CommunicationRequestDto> incommingCommRequests = surveyUnitDetailDto.getCommunicationRequests();
-			Set<CommunicationRequest> communicationRequests = surveyUnit.getCommunicationRequests();
-			Set<CommunicationRequest> newCommunicationsRequests = incommingCommRequests.stream()
-					.filter(commRequest -> commRequest.getId() == null)
-					.map(dto -> new CommunicationRequest(dto, surveyUnit)).collect(Collectors.toSet());
-			communicationRequests.addAll(newCommunicationsRequests);
-
-		}
-		log.info("Survey Unit {} - communicationRequests updated", surveyUnit.getId());
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
