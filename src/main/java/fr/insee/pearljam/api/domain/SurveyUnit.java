@@ -1,17 +1,16 @@
 package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,7 +24,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 
 /**
@@ -122,8 +121,8 @@ public class SurveyUnit implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<State> states = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequest.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
-	private Set<CommunicationRequest> communicationRequests = new HashSet<>();
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequestDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<CommunicationRequestDB> communicationRequests = new HashSet<>();
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 			Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit, Set<Person> persons) {
@@ -248,5 +247,19 @@ public class SurveyUnit implements Serializable {
 
 		existingComments.removeAll(commentsToDelete);
 		existingComments.addAll(commentsDBToUpdate);
+	}
+
+	/**
+	 * update a list of communication requests for a survey unit
+	 * @param communicationRequestsToUpdate the communication requests to update
+	 */
+	public void updateCommunicationRequests(List<CommunicationRequest> communicationRequestsToUpdate) {
+		Set<CommunicationRequestDB> newCommunicationsRequests = communicationRequestsToUpdate.stream()
+				.filter(newCommunicationRequest -> newCommunicationRequest.id() == null)
+				.map(newCommunicationRequest -> CommunicationRequestDB.fromModel(newCommunicationRequest, this))
+				.collect(Collectors.toSet());
+
+		this.getCommunicationRequests()
+				.addAll(newCommunicationsRequests);
 	}
 }
