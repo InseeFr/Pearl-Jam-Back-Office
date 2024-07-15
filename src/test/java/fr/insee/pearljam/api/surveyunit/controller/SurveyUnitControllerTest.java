@@ -24,21 +24,19 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SurveyUnitControllerTest {
     private MockMvc mockMvc;
     private SurveyUnitFakeService surveyUnitService;
     private String surveyUnitJson;
-    private String comments;
     private String identification;
     private String surveyUnitTemplate;
     private final String updatePath = "/api/survey-unit/1";
 
     @BeforeEach
     void setup() {
-        comments = """
+        String comments = """
                 "comments": [
                     {
                         "type": "MANAGEMENT",
@@ -80,24 +78,14 @@ class SurveyUnitControllerTest {
     @Test
     @DisplayName("Should update survey unit")
     void updateSurveyUnit01() throws Exception {
-        mockMvc.perform(put("/api/survey-unit/1")
+        mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(surveyUnitJson))
-                .andDo(print())
                 .andExpect(status().isOk());
 
         SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitUpdated();
         assertThat(surveyUnitDetailDto.getId()).isEqualTo("su-id");
-/*
-        IdentificationDto identificationExpected = new IdentificationDto();
-        identificationExpected.setIdentification(IdentificationQuestionValue.IDENTIFIED);
-        identificationExpected.setAccess(AccessQuestionValue.ACC);
-        identificationExpected.setCategory(CategoryQuestionValue.OCCASIONAL);
-        identificationExpected.setOccupant(OccupantQuestionValue.IDENTIFIED);
-        identificationExpected.setSituation(SituationQuestionValue.ABSORBED);
 
-        assertThat(surveyUnitDetailDto.getIdentification()).isEqualTo(identificationExpected);
-*/
         CommentDto commentExpected1 = new CommentDto(CommentType.MANAGEMENT, "5");
         CommentDto commentExpected2 = new CommentDto(CommentType.INTERVIEWER, "value");
         assertThat(surveyUnitDetailDto.getComments())
@@ -151,7 +139,6 @@ class SurveyUnitControllerTest {
             mockMvc.perform(put(updatePath)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(surveyUnitJson))
-                    .andDo(print())
                     .andExpect(
                             MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE)
                     );

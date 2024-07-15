@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +31,7 @@ class CommentControllerTest {
 
     private MockMvc mockMvc;
     private CommentFakeService commentService;
+    private final String updatePath = "/api/survey-unit/1/comment";
 
     @BeforeEach
     void setup() {
@@ -59,7 +59,7 @@ class CommentControllerTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/survey-unit/1/comment")
+        mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(comment))
                 .andExpect(status().isOk());
@@ -73,20 +73,35 @@ class CommentControllerTest {
     @ValueSource(strings = {"{\"value\": \"5\"}", "{\"type\": \"INTERVIEWER\"}"})
     @DisplayName("Should return bad request when comment type or value is null")
     void updateComment02(String invalidComment) throws Exception {
-        String path = "/api/survey-unit/1/comment";
-
-        mockMvc.perform(put(path)
+        mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidComment))
-                .andDo(print())
                 .andExpect(MockMvcTestUtils
-                        .apiErrorMatches(HttpStatus.BAD_REQUEST, path, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
+                        .apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
+        assertThat(commentService.getCommentUpdated()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should return bad request when comment value is > 999")
+    void updateComment03() throws Exception {
+        String invalidValue = "\"" + new String(new char[1000]).replace('\0', 'a') + "\"";
+        String invalidComment = """
+                {
+                    "type": "INTERVIEWER",
+                    "value":""" + invalidValue + """
+                }
+                """;
+        mockMvc.perform(put(updatePath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidComment))
+                .andExpect(MockMvcTestUtils
+                        .apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
         assertThat(commentService.getCommentUpdated()).isNull();
     }
 
     @Test
     @DisplayName("Should return not found when survey unit does not exist")
-    void updateComment03() throws Exception {
+    void updateComment04() throws Exception {
         commentService.setShouldThrowException(true);
         String comment = """
                 {
@@ -94,15 +109,13 @@ class CommentControllerTest {
                     "value": 5
                 }
                 """;
-        String path = "/api/survey-unit/1/comment";
 
-        mockMvc.perform(put(path)
+        mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(comment))
-                .andDo(print())
                 .andExpectAll(status().isNotFound(),
                         jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()),
-                        jsonPath("$.path").value(path),
+                        jsonPath("$.path").value(updatePath),
                         jsonPath("$.message").value(SurveyUnitNotFoundException.MESSAGE),
                         jsonPath("$.timestamp", new StructureDateMatcher()));
         assertThat(commentService.getCommentUpdated()).isNull();
