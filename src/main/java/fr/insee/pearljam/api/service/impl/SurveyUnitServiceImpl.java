@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.domain.exception.PersonNotFoundException;
+import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.communication.CommunicationRequest;
-import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.communication.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.identification.IdentificationDto;
@@ -151,42 +154,37 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Transactional
-	public ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id,
-			SurveyUnitDetailDto surveyUnitDetailDto) {
+	public SurveyUnitDetailDto updateSurveyUnitDetail(String userId, String id,
+			SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
 		log.info("Update Survey Unit {}", id);
-		if (surveyUnitDetailDto == null) {
-			log.error("Survey Unit in parameter is null");
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+
 		Optional<SurveyUnit> surveyUnitOpt;
 		if (userId.equals(GUEST)) {
 			surveyUnitOpt = surveyUnitRepository.findById(id);
 		} else {
 			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
 		}
-		if (!surveyUnitOpt.isPresent()) {
-			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, id, userId);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		SurveyUnit surveyUnit = surveyUnitOpt.get();
-		surveyUnit.setMove(surveyUnitDetailDto.isMove());
+		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(SurveyUnitNotFoundException::new);
+		surveyUnit.setMove(surveyUnitDetailDto.getMove());
 		updateAddress(surveyUnit, surveyUnitDetailDto);
-		try {
-			updatePersons(surveyUnitDetailDto);
-		} catch (SurveyUnitException e) {
-			log.error("Error when updating persons related to survey Unit {} - {}", id, e.getMessage());
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		updatePersons(surveyUnitDetailDto);
+
+		if(surveyUnitDetailDto.getComments() != null) {
+			Set<Comment> commentsToUpdate = surveyUnitDetailDto.getComments().stream()
+					.map(commentDto -> CommentDto.toModel(surveyUnit.getId(), commentDto))
+					.collect(Collectors.toSet());
+
+			surveyUnit.updateComments(commentsToUpdate);
 		}
-		updateComment(surveyUnit, surveyUnitDetailDto);
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
 		updateIdentification(surveyUnit, surveyUnitDetailDto);
 		updateCommunicationRequest(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);
+
 		log.info("Survey Unit {} - update complete", id);
-		SurveyUnitDetailDto updatedSurveyUnit = new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
-		return new ResponseEntity<>(updatedSurveyUnit, HttpStatus.OK);
+		return new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
 	}
 
 	private void updateCommunicationRequest(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
@@ -278,34 +276,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	private void updateComment(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-		if (surveyUnitDetailDto.getComments() != null) {
-			Set<Comment> comments = surveyUnit.getComments();
-			Set<Comment> commentsToRemove = comments.stream()
-					.filter(c -> surveyUnitDetailDto.getComments().stream().anyMatch(c2 -> c2.getType() == c.getType()))
-					.collect(Collectors.toSet());
-			comments.removeAll(commentsToRemove);
-			Set<Comment> newComments = surveyUnitDetailDto.getComments().stream().filter(dto -> dto.getType() != null)
-					.map(dto -> new Comment(dto, surveyUnit)).collect(Collectors.toSet());
-			comments.addAll(newComments);
-		}
-	}
-
-	private void updatePersons(SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitException {
+	private void updatePersons(SurveyUnitDetailDto surveyUnitDetailDto) throws PersonNotFoundException {
 		if (surveyUnitDetailDto.getPersons() != null) {
-			for (PersonDto person : surveyUnitDetailDto.getPersons()) {
-				if (person.getId() != null) {
-					Optional<Person> persOpt = personRepository.findById(person.getId());
-					if (persOpt.isPresent()) {
-						updatePerson(person, persOpt.get());
-					} else {
-						throw new SurveyUnitException(
-								String.format("Person with id %s was not found in database", person.getId()));
-					}
-				} else {
-					throw new SurveyUnitException("One of the persons in argument has a null id");
-				}
-
+			for (PersonDto personDto : surveyUnitDetailDto.getPersons()) {
+				Person pers = personRepository.findById(personDto.getId()).orElseThrow(PersonNotFoundException::new);
+				updatePerson(personDto, pers);
 			}
 		}
 	}
@@ -365,27 +340,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			// Update Address
 			addressRepository.save(inseeAddress);
 		}
-	}
-
-	@Transactional
-	public HttpStatus updateSurveyUnitComment(String userId, String suId, CommentDto comment) {
-		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
-		if (!surveyUnitOpt.isPresent()) {
-			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
-			return HttpStatus.NOT_FOUND;
-		}
-		if (comment.getType() == null || comment.getValue() == null) {
-			log.error("Some of the required fields (type, value) are missing in request body");
-			return HttpStatus.BAD_REQUEST;
-		}
-		SurveyUnit surveyUnit = surveyUnitOpt.get();
-		Set<Comment> comments = surveyUnit.getComments();
-		Set<Comment> commentsToRemove = comments.stream().filter(c -> c.getType() == comment.getType())
-				.collect(Collectors.toSet());
-		comments.removeAll(commentsToRemove);
-		comments.add(new Comment(comment, surveyUnit));
-		surveyUnitRepository.save(surveyUnit);
-		return HttpStatus.OK;
 	}
 
 	@Transactional

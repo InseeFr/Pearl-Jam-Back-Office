@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.domain.exception.PersonNotFoundException;
+import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import fr.insee.pearljam.api.dto.comment.CommentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
@@ -55,10 +55,10 @@ public interface SurveyUnitService {
 	 * @param userId
 	 * @param id
 	 * @param surveyUnitDetailDto
-	 * @return {@link ResponseEntity}<{@link SurveyUnitDetailDto}>
+	 * @return {@link SurveyUnitDetailDto}
 	 */
-	ResponseEntity<SurveyUnitDetailDto> updateSurveyUnitDetail(String userId, String id,
-			SurveyUnitDetailDto surveyUnitDetailDto);
+	SurveyUnitDetailDto updateSurveyUnitDetail(String userId, String id,
+			SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
 
 	/**
 	 * @param userId
@@ -86,8 +86,6 @@ public interface SurveyUnitService {
 	public Optional<SurveyUnit> findById(String id);
 
 	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
-
-	HttpStatus updateSurveyUnitComment(String userId, String surveyUnitId, CommentDto comment);
 
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 

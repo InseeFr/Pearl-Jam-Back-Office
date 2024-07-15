@@ -14,7 +14,7 @@ import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.comment.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import lombok.Getter;
@@ -99,9 +99,9 @@ public class SurveyUnitCampaignDto {
 		this.state = currentState == null ? null : currentState.getType();
 		this.campaign = su.getCampaign().getLabel();
 		this.interviewer = su.getInterviewer() != null ? new InterviewerDto(su.getInterviewer()) : null;
-		this.comments = su.getComments().stream()
-				.map(CommentDto::new)
-				.collect(Collectors.toList());
+		this.comments = su.getDomainComments().stream()
+				.map(CommentDto::fromModel)
+				.toList();
 		if (su.getContactOucome() != null) {
 			this.contactOutcome = new ContactOutcomeDto(su.getContactOucome());
 		}
