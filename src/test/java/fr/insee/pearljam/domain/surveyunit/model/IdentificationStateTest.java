@@ -76,10 +76,19 @@ class IdentificationStateTest {
     }
 
     @Test
-    @DisplayName("Should return ONGOING state")
+    @DisplayName("Should return ONGOING state when access is null")
     void testState06() {
         Identification identificationToCheck = new Identification(
-                IdentificationQuestionValue.IDENTIFIED, null, null, null, OccupantQuestionValue.IDENTIFIED);
+                IdentificationQuestionValue.IDENTIFIED, null, null, null, null);
+
+        assertThat(IdentificationState.getState(identificationToCheck)).isEqualTo(IdentificationState.ONGOING);
+    }
+
+    @Test
+    @DisplayName("Should return ONGOING state")
+    void testState07() {
+        Identification identificationToCheck = new Identification(
+                IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, null, null, null);
 
         assertThat(IdentificationState.getState(identificationToCheck)).isEqualTo(IdentificationState.ONGOING);
     }
