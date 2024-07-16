@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.controller.SurveyUnitController;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
@@ -11,6 +12,7 @@ import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,11 +88,20 @@ class SurveyUnitControllerTest {
         SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitUpdated();
         assertThat(surveyUnitDetailDto.getId()).isEqualTo("su-id");
 
+        IdentificationDto identificationExpected = new IdentificationDto(IdentificationQuestionValue.IDENTIFIED,
+                AccessQuestionValue.ACC,
+                SituationQuestionValue.ABSORBED,
+                CategoryQuestionValue.OCCASIONAL,
+                OccupantQuestionValue.IDENTIFIED);
+
+        assertThat(surveyUnitDetailDto.getIdentification()).isEqualTo(identificationExpected);
+
         CommentDto commentExpected1 = new CommentDto(CommentType.MANAGEMENT, "5");
         CommentDto commentExpected2 = new CommentDto(CommentType.INTERVIEWER, "value");
         assertThat(surveyUnitDetailDto.getComments())
                 .hasSize(2)
                 .containsExactlyInAnyOrder(commentExpected1, commentExpected2);
+        assertThat(surveyUnitDetailDto.getIdentification()).isEqualTo(identificationExpected);
     }
 
     @Test
