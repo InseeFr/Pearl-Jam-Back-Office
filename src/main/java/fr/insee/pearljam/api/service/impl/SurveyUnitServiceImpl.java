@@ -171,9 +171,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		updateStates(surveyUnit, surveyUnitDetailDto);
 		updateContactAttempt(surveyUnit, surveyUnitDetailDto);
 		updateContactOutcome(surveyUnit, surveyUnitDetailDto);
-		Identification identification = IdentificationDto.toModel(surveyUnitDetailDto.getIdentification());
-		surveyUnit.updateIdentification(identification);
-		updateIdentification(surveyUnit, surveyUnitDetailDto);
 
 		surveyUnitUpdateService.updateSurveyUnitInfos(surveyUnit, surveyUnitDetailDto);
 		surveyUnitRepository.save(surveyUnit);

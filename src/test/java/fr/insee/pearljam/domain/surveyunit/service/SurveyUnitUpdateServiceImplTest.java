@@ -6,10 +6,13 @@ import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestStatusDto;
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -179,5 +182,74 @@ class SurveyUnitUpdateServiceImplTest {
                         tuple(null, CommentType.INTERVIEWER, "value4", surveyUnit),
                         tuple(3L, CommentType.MANAGEMENT, "value3", surveyUnit)
                 );
+    }
+
+    @Test
+    @DisplayName("Should update identification")
+    void testUpdateIdentification01() {
+        IdentificationDB identificationDB = new IdentificationDB(2L,
+                IdentificationQuestionValue.IDENTIFIED,
+                AccessQuestionValue.ACC,
+                SituationQuestionValue.ORDINARY,
+                CategoryQuestionValue.SECONDARY,
+                OccupantQuestionValue.IDENTIFIED,
+                surveyUnit);
+        surveyUnit.setIdentification(identificationDB);
+
+        IdentificationDto identification = new IdentificationDto(IdentificationQuestionValue.UNIDENTIFIED,
+                AccessQuestionValue.NACC,
+                SituationQuestionValue.NOORDINARY,
+                CategoryQuestionValue.VACANT,
+                OccupantQuestionValue.UNIDENTIFIED);
+        surveyUnitDto.setIdentification(identification);
+
+        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+        IdentificationDB identificationResult = surveyUnit.getIdentification();
+        assertThat(identificationResult.getId()).isEqualTo(2L);
+        assertThat(identificationResult.getIdentification()).isEqualTo(IdentificationQuestionValue.UNIDENTIFIED);
+        assertThat(identificationResult.getAccess()).isEqualTo(AccessQuestionValue.NACC);
+        assertThat(identificationResult.getSituation()).isEqualTo(SituationQuestionValue.NOORDINARY);
+        assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
+        assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
+        assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
+    }
+
+    @Test
+    @DisplayName("Should not update identification entity when identification model is null")
+    void testUpdateIdentification02() {
+        IdentificationDB identificationDB = new IdentificationDB(2L,
+                IdentificationQuestionValue.IDENTIFIED,
+                AccessQuestionValue.ACC,
+                SituationQuestionValue.ABSORBED,
+                CategoryQuestionValue.SECONDARY,
+                OccupantQuestionValue.IDENTIFIED,
+                surveyUnit);
+        surveyUnit.setIdentification(identificationDB);
+        surveyUnitDto.setIdentification(null);
+        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+        assertThat(surveyUnit.getIdentification()).isEqualTo(identificationDB);
+    }
+
+    @Test
+    @DisplayName("Should create identification entity when entity does not exist")
+    void testUpdateIdentification03() {
+        surveyUnit.setIdentification(null);
+        IdentificationDto identification = new IdentificationDto(IdentificationQuestionValue.UNIDENTIFIED,
+                AccessQuestionValue.NACC,
+                SituationQuestionValue.NOORDINARY,
+                CategoryQuestionValue.VACANT,
+                OccupantQuestionValue.UNIDENTIFIED);
+        surveyUnitDto.setIdentification(identification);
+
+        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+
+        IdentificationDB identificationResult = surveyUnit.getIdentification();
+        assertThat(identificationResult.getId()).isNull();
+        assertThat(identificationResult.getIdentification()).isEqualTo(IdentificationQuestionValue.UNIDENTIFIED);
+        assertThat(identificationResult.getAccess()).isEqualTo(AccessQuestionValue.NACC);
+        assertThat(identificationResult.getSituation()).isEqualTo(SituationQuestionValue.NOORDINARY);
+        assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
+        assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
+        assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
     }
 }
