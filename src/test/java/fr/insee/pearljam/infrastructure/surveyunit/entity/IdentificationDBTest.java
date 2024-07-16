@@ -62,7 +62,7 @@ class IdentificationDBTest {
 
     @Test
     @DisplayName("Should create model")
-    void testModel01() {
+    void testToModel01() {
         Identification identification = IdentificationDB.toModel(identificationDB);
         assertThat(identificationDB.getIdentification()).isEqualTo(identification.identification());
         assertThat(identificationDB.getOccupant()).isEqualTo(identification.occupant());
@@ -73,7 +73,7 @@ class IdentificationDBTest {
 
     @Test
     @DisplayName("Should return null when identification db is null")
-    void testModel02() {
+    void testToModel02() {
         assertThat(IdentificationDB.toModel(null)).isNull();
     }
 }
