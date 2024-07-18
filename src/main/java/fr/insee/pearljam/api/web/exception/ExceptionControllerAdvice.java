@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.web.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
+import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,7 @@ public class ExceptionControllerAdvice {
      * @return the apierror object with linked status code
      */
     private ResponseEntity<ApiError> generateResponseError(Exception ex, HttpStatus status, WebRequest request, String overrideErrorMessage) {
+        log.error(ex.getMessage(), ex);
         String errorMessage = ex.getMessage();
         if (overrideErrorMessage != null) {
             errorMessage = overrideErrorMessage;
@@ -63,7 +65,6 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiError> noHandlerFoundException(NoHandlerFoundException e, WebRequest request) {
-        log.error(e.getMessage());
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
@@ -76,7 +77,6 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<ApiError> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e,
             WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request, INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -84,7 +84,6 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<ApiError> handleConstraintViolation(
             ConstraintViolationException e,
             WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request, "Invalid data");
     }
 
@@ -109,25 +108,26 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> noEntityFoundException(EntityNotFoundException e, WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(EntityAlreadyExistException.class)
     public ResponseEntity<ApiError> entityAlreadyExistException(EntityAlreadyExistException e, WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<ApiError> exceptions(HttpClientErrorException e, WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.valueOf(e.getStatusCode().value()), request, ERROR_OCCURRED_LABEL);
+    }
+
+    @ExceptionHandler(SendMailException.class)
+    public ResponseEntity<ApiError> exceptions(SendMailException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> exceptions(Exception e, WebRequest request) {
-        log.error(e.getMessage(), e);
         return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
     }
 }

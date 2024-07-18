@@ -1,11 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.CommentFakeService;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
-import fr.insee.pearljam.api.web.exception.ApiExceptionComponent;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
@@ -15,10 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -36,16 +31,10 @@ class CommentControllerTest {
     @BeforeEach
     void setup() {
         commentService = new CommentFakeService();
-        ExceptionControllerAdvice exceptionControllerAdvice =
-                new ExceptionControllerAdvice(new ApiExceptionComponent(new DefaultErrorAttributes()));
         CommentController commentController = new CommentController(commentService);
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
-                MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper(new ObjectMapper().registerModule(new ParameterNamesModule()));
         mockMvc = MockMvcBuilders
                 .standaloneSetup(commentController)
-                .setControllerAdvice(exceptionControllerAdvice)
-                .setMessageConverters(mappingJackson2HttpMessageConverter)
+                .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
                 .build();
     }
 

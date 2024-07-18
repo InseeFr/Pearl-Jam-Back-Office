@@ -26,6 +26,13 @@ feature:
     client-id:
     realm:
     principal-attribute:
+  mail-service:
+    enabled: true
+    url:
+    login:
+    password:
+    mail-recipients:
+    mail-sender:
   swagger:
     enabled: false
   logging:

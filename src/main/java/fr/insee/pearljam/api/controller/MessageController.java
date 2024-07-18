@@ -1,23 +1,18 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
+import fr.insee.pearljam.infrastructure.mail.MailSender;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.apache.commons.lang3.StringUtils;
+import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import fr.insee.pearljam.api.dto.message.MailDto;
+import fr.insee.pearljam.api.message.dto.MailDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.service.MessageService;
@@ -26,19 +21,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Controller
+@RestController
 @RequestMapping(path = "/api")
 @Tag(name = "12. Messages", description = "Endpoints for messages")
 @Slf4j
 @RequiredArgsConstructor
-public class MessageController {
+@Validated
+public class MessageController{
 
 	private final MessageService messageService;
-	private final BiFunction<String, String, HttpStatus> sendMail;
 	private final SimpMessagingTemplate brokerMessagingTemplate;
 	private final AuthenticatedUserService authenticatedUserService;
-	
-	StompSessionHandler sessionHandler = new CustomStompSessionHandler();
+	private final MailSender mailSender;
 
 	/**
 	 * This method is used to post a message
@@ -129,14 +123,15 @@ public class MessageController {
 	}
 
 	/**
-	 * This method is used to post a mail
+	 *
+	 * @param mail mail to send
+	 * @throws SendMailException exception thrown when sending mail problems
 	 */
 	@Operation(summary = "Post a mail to admins")
 	@PostMapping(path = "/mail")
-	public ResponseEntity<Object> postMailMessage(@RequestBody MailDto mail) {
+	public void postMailMessage(@Valid @RequestBody MailDto mail) throws SendMailException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("User {} send a mail", userId);
-		HttpStatus returnCode = sendMail.apply(mail.getContent(), mail.getSubject());
-		return new ResponseEntity<>(returnCode);
+		mailSender.sendMail(mail.subject(), mail.content());
 	}
 }
