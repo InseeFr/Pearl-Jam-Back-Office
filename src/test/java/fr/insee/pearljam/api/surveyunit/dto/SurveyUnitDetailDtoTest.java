@@ -85,12 +85,12 @@ class SurveyUnitDetailDtoTest {
                 new CommunicationRequestStatusDB(4L, 123345678912L, CommunicationStatusType.CANCELLED, null)
         );
 
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, "messhugahid1", CommunicationRequestType.NOTICE,
-                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                CommunicationRequestEmiter.INTERVIEWER, surveyUnit, status1));
-        communicationRequestDBs.add(new CommunicationRequestDB(11L, "messhugahid2", CommunicationRequestType.REMINDER,
-                CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                CommunicationRequestEmiter.TOOL, surveyUnit, status2));
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, 1L,
+                CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.INTERVIEWER, surveyUnit, status1));
+        communicationRequestDBs.add(new CommunicationRequestDB(11L, 2L,
+                CommunicationRequestReason.REFUSAL,
+                CommunicationRequestEmitter.TOOL, surveyUnit, status2));
         surveyUnit.setCommunicationRequests(communicationRequestDBs);
 
         SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
@@ -107,12 +107,12 @@ class SurveyUnitDetailDtoTest {
 
         assertThat(surveyUnitDetailDto.getCommunicationRequests())
                 .containsExactlyInAnyOrder(
-                        new CommunicationRequestDto(10L, "messhugahid1", CommunicationRequestType.NOTICE,
-                                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                                CommunicationRequestEmiter.INTERVIEWER, status1Expected),
-                        new CommunicationRequestDto(11L, "messhugahid2", CommunicationRequestType.REMINDER,
-                                CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                                CommunicationRequestEmiter.TOOL, status2Expected)
+                        new CommunicationRequestResponseDto(10L, 1L,
+                                CommunicationRequestReason.UNREACHABLE,
+                                CommunicationRequestEmitter.INTERVIEWER, status1Expected),
+                        new CommunicationRequestResponseDto(11L, 2L,
+                                CommunicationRequestReason.REFUSAL,
+                                CommunicationRequestEmitter.TOOL, status2Expected)
                 );
     }
 }

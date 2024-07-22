@@ -6,20 +6,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.dto.statedata.StateDataDto;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SurveyUnitResponseDto {
+public class SurveyUnitOkNokResponseDto {
 	String id;
 	private StateDataDto stateData;
 	
-	public SurveyUnitResponseDto() {
+	public SurveyUnitOkNokResponseDto() {
 		super();
 	}
 
-	public SurveyUnitResponseDto(String id, StateDataDto stateData) {
+	public SurveyUnitOkNokResponseDto(String id, StateDataDto stateData) {
 		super();
 		this.id = id;
 		this.stateData = stateData;
 	}
-	public SurveyUnitResponseDto(String id) {
+	public SurveyUnitOkNokResponseDto(String id) {
 		super();
 		this.id = id;
 	}

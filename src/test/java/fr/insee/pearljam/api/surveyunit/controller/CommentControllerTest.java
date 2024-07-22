@@ -59,8 +59,12 @@ class CommentControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"{\"value\": \"5\"}", "{\"type\": \"INTERVIEWER\"}"})
-    @DisplayName("Should return bad request when comment type or value is null")
+    @ValueSource(strings = {
+            "{\"value\": \"5\"}",
+            "{\"type\": \"INTERVIEWER\"}",
+            "{\"value\": \"5\",\"type\": \"INVALID\"}"
+    })
+    @DisplayName("Should return bad request when comment type or value is invalid")
     void updateComment02(String invalidComment) throws Exception {
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)

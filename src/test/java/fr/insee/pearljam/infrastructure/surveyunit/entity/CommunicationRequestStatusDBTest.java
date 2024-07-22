@@ -21,9 +21,9 @@ class CommunicationRequestStatusDBTest {
     @Test
     @DisplayName("Should return entity object")
     void testFromModel01() {
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(null, "messhugahid1", CommunicationRequestType.NOTICE,
-                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                CommunicationRequestEmiter.INTERVIEWER, null, null);
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(null, 1L,
+                CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.INTERVIEWER, null, null);
         CommunicationRequestStatus communicationRequestStatus = new CommunicationRequestStatus(1L, 123456789L, CommunicationStatusType.INITIATED);
 
         CommunicationRequestStatusDB communicationRequestStatusDB = CommunicationRequestStatusDB.fromModel(communicationRequestStatus, communicationRequestDB);

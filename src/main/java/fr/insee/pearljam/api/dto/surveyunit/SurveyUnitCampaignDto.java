@@ -100,9 +100,7 @@ public class SurveyUnitCampaignDto {
 		this.state = currentState == null ? null : currentState.getType();
 		this.campaign = su.getCampaign().getLabel();
 		this.interviewer = su.getInterviewer() != null ? new InterviewerDto(su.getInterviewer()) : null;
-		this.comments = su.getDomainComments().stream()
-				.map(CommentDto::fromModel)
-				.toList();
+		this.comments = CommentDto.fromModel(su.getModelComments());
 		if (su.getContactOucome() != null) {
 			this.contactOutcome = new ContactOutcomeDto(su.getContactOucome());
 		}

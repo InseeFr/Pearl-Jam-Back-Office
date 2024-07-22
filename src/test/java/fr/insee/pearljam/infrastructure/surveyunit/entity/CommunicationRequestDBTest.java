@@ -28,16 +28,15 @@ class CommunicationRequestDBTest {
                 new CommunicationRequestStatusDB(null, 1233456789L, CommunicationStatusType.INITIATED, null),
                 new CommunicationRequestStatusDB(2L, 123345678910L, CommunicationStatusType.FAILED, null)
         );
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, "messhugahid1", CommunicationRequestType.NOTICE,
-                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                CommunicationRequestEmiter.INTERVIEWER, surveyUnit, statusDB);
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, 2L,
+                CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.INTERVIEWER,
+                surveyUnit,
+                statusDB);
 
         CommunicationRequest communicationRequest = CommunicationRequestDB.toModel(communicationRequestDB);
         assertThat(communicationRequest.id()).isEqualTo(communicationRequestDB.getId());
-        assertThat(communicationRequest.messhugahId()).isEqualTo(communicationRequestDB.getMesshugahId());
-        assertThat(communicationRequest.type()).isEqualTo(communicationRequestDB.getType());
-        assertThat(communicationRequest.emiter()).isEqualTo(communicationRequestDB.getEmiter());
-        assertThat(communicationRequest.medium()).isEqualTo(communicationRequestDB.getMedium());
+        assertThat(communicationRequest.communicationTemplateId()).isEqualTo(communicationRequestDB.getCommunicationTemplateId());
         assertThat(communicationRequest.reason()).isEqualTo(communicationRequestDB.getReason());
         List<CommunicationRequestStatus> status = statusDB.stream()
                 .map(CommunicationRequestStatusDB::toModel)
@@ -53,16 +52,15 @@ class CommunicationRequestDBTest {
                 new CommunicationRequestStatus(2L, 123345678910L, CommunicationStatusType.FAILED)
         );
 
-        CommunicationRequest communicationRequest = new CommunicationRequest(1L, "messhugahid1", CommunicationRequestType.NOTICE,
-                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                CommunicationRequestEmiter.INTERVIEWER, status);
+        CommunicationRequest communicationRequest = new CommunicationRequest(1L,
+                2L,
+                CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.INTERVIEWER,
+                status);
 
         CommunicationRequestDB communicationRequestDB = CommunicationRequestDB.fromModel(communicationRequest, surveyUnit);
         assertThat(communicationRequestDB.getId()).isEqualTo(communicationRequest.id());
-        assertThat(communicationRequestDB.getMesshugahId()).isEqualTo(communicationRequest.messhugahId());
-        assertThat(communicationRequestDB.getType()).isEqualTo(communicationRequest.type());
-        assertThat(communicationRequestDB.getEmiter()).isEqualTo(communicationRequest.emiter());
-        assertThat(communicationRequestDB.getMedium()).isEqualTo(communicationRequest.medium());
+        assertThat(communicationRequestDB.getCommunicationTemplateId()).isEqualTo(communicationRequest.communicationTemplateId());
         assertThat(communicationRequestDB.getReason()).isEqualTo(communicationRequest.reason());
         assertThat(communicationRequestDB.getStatus())
                 .extracting(CommunicationRequestStatusDB::getId,

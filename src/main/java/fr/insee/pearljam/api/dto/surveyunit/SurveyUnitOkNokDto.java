@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitOkNokDto {
-	List<SurveyUnitResponseDto> surveyUnitOK;
-	List<SurveyUnitResponseDto> surveyUnitNOK;
+	List<SurveyUnitOkNokResponseDto> surveyUnitOK;
+	List<SurveyUnitOkNokResponseDto> surveyUnitNOK;
 	
-	public SurveyUnitOkNokDto(List<SurveyUnitResponseDto> surveyUnitOK, List<SurveyUnitResponseDto> surveyUnitNOK) {
+	public SurveyUnitOkNokDto(List<SurveyUnitOkNokResponseDto> surveyUnitOK, List<SurveyUnitOkNokResponseDto> surveyUnitNOK) {
 		super();
 		this.surveyUnitOK = surveyUnitOK;
 		this.surveyUnitNOK = surveyUnitNOK;
@@ -25,25 +25,25 @@ public class SurveyUnitOkNokDto {
 	/**
 	 * @return the surveyUnitOK
 	 */
-	public List<SurveyUnitResponseDto> getSurveyUnitOK() {
+	public List<SurveyUnitOkNokResponseDto> getSurveyUnitOK() {
 		return surveyUnitOK;
 	}
 	/**
 	 * @param surveyUnitOK the surveyUnitOK to set
 	 */
-	public void setSurveyUnitOK(List<SurveyUnitResponseDto> surveyUnitOK) {
+	public void setSurveyUnitOK(List<SurveyUnitOkNokResponseDto> surveyUnitOK) {
 		this.surveyUnitOK = surveyUnitOK;
 	}
 	/**
 	 * @return the surveyUnitNOK
 	 */
-	public List<SurveyUnitResponseDto> getSurveyUnitNOK() {
+	public List<SurveyUnitOkNokResponseDto> getSurveyUnitNOK() {
 		return surveyUnitNOK;
 	}
 	/**
 	 * @param surveyUnitNOK the surveyUnitNOK to set
 	 */
-	public void setSurveyUnitNOK(List<SurveyUnitResponseDto> surveyUnitNOK) {
+	public void setSurveyUnitNOK(List<SurveyUnitOkNokResponseDto> surveyUnitNOK) {
 		this.surveyUnitNOK = surveyUnitNOK;
 	}
 	
