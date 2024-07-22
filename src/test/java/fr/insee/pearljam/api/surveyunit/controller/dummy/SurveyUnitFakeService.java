@@ -7,6 +7,7 @@ import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     private boolean shouldThrowPersonException = false;
 
     @Getter
-    private SurveyUnitDetailDto surveyUnitUpdated = null;
+    private SurveyUnitUpdateDto surveyUnitUpdated = null;
 
     @Override
     public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException {
@@ -40,7 +41,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public SurveyUnitDetailDto updateSurveyUnitDetail(String userId, String id, SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
+    public SurveyUnitDetailDto updateSurveyUnit(String userId, String id, SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
         if(shouldThrowSurveyUnitException) {
             throw new SurveyUnitNotFoundException();
         }
@@ -48,8 +49,8 @@ public class SurveyUnitFakeService implements SurveyUnitService {
         if(shouldThrowPersonException) {
             throw new PersonNotFoundException();
         }
-        surveyUnitUpdated = surveyUnitDetailDto;
-        return surveyUnitDetailDto;
+        surveyUnitUpdated = surveyUnitUpdateDto;
+        return null;
     }
 
     @Override

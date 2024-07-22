@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,10 +24,13 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 @ControllerAdvice
 @Slf4j
-@RequiredArgsConstructor
 public class ExceptionControllerAdvice {
 
     private final ApiExceptionComponent errorComponent;
+
+    public ExceptionControllerAdvice(ErrorAttributes errorAttributes) {
+        this.errorComponent = new ApiExceptionComponent(errorAttributes);
+    }
 
     private static final String ERROR_OCCURRED_LABEL = "An error has occurred";
     public static final String INVALID_PARAMETERS_MESSAGE = "Invalid parameters";

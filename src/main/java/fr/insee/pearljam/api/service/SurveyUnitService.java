@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,11 +15,6 @@ import fr.insee.pearljam.api.domain.*;
 import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 
@@ -54,11 +51,11 @@ public interface SurveyUnitService {
 	 * 
 	 * @param userId
 	 * @param id
-	 * @param surveyUnitDetailDto
+	 * @param surveyUnitUpdateDto
 	 * @return {@link SurveyUnitDetailDto}
 	 */
-	SurveyUnitDetailDto updateSurveyUnitDetail(String userId, String id,
-			SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
+	SurveyUnitDetailDto updateSurveyUnit(String userId, String id,
+										 SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
 
 	/**
 	 * @param userId

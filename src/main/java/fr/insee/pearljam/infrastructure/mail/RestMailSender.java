@@ -48,7 +48,7 @@ public class RestMailSender implements MailSender {
                     String.class);
             log.info("Response : message # {}", response.getStatusCode());
         } catch(RestClientException ex) {
-            throw new SendMailException();
+            throw new SendMailException(ex.getMessage());
         }
     }
 }

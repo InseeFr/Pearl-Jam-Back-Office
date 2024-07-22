@@ -1,6 +1,8 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
@@ -78,5 +80,16 @@ public class CommentDB implements Serializable {
 	 */
 	public static Comment toModel(CommentDB comment) {
 		return new Comment(comment.getType(), comment.getValue(), comment.getSurveyUnit().getId());
+	}
+
+	/**
+	 * Create model objects from entities
+	 * @param comments entities object
+	 * @return comment models object
+	 */
+	public static Set<Comment> toModel(Set<CommentDB> comments) {
+		return comments.stream()
+				.map(CommentDB::toModel)
+				.collect(Collectors.toSet());
 	}
 }

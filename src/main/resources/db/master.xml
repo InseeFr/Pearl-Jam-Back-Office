@@ -42,4 +42,7 @@
 	<!-- Data model update : add interviewer.title with default value to 'MISTER' -->
 	<include file="changelog/530_add_interviewer_title.xml" relativeToChangelogFile="true" />
 
+	<!-- Data model update : new implementation for communication requests -->
+	<include file="changelog/540_alter_communication_request.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

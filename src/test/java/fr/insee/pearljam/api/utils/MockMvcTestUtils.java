@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.utils;
 
 import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
-import fr.insee.pearljam.api.web.exception.ApiExceptionComponent;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
@@ -23,6 +22,6 @@ public class MockMvcTestUtils {
     }
 
     public static ExceptionControllerAdvice createExceptionControllerAdvice() {
-        return new ExceptionControllerAdvice(new ApiExceptionComponent(new DefaultErrorAttributes()));
+        return new ExceptionControllerAdvice(new DefaultErrorAttributes());
     }
 }

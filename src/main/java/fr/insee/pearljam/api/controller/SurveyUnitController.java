@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,12 +31,6 @@ import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -165,11 +161,11 @@ public class SurveyUnitController {
 	@Operation(summary = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
 	public SurveyUnitDetailDto updateSurveyUnit(
-			@Valid @NotNull @RequestBody SurveyUnitDetailDto surveyUnitDetails,
+			@Valid @NotNull @RequestBody SurveyUnitUpdateDto surveyUnitUpdateDto,
 			@PathVariable(value = "id") String id) throws EntityNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnitDetail(userId,
-				id, surveyUnitDetails);
+		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnit(userId,
+				id, surveyUnitUpdateDto);
 		log.info("SurveyUnit {} updated", id);
 		return updatedSurveyUnit;
 	}

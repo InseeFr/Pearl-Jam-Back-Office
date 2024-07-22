@@ -1,10 +1,10 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
 import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
@@ -24,22 +24,20 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
     @Transactional
     @Override
-    public void updateSurveyUnitInfos(SurveyUnit surveyUnit, SurveyUnitDetailDto surveyUnitDetailDto) {
-        if(surveyUnitDetailDto.getComments() != null) {
-            Set<Comment> commentsToUpdate = surveyUnitDetailDto.getComments().stream()
+    public void updateSurveyUnitInfos(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
+        if(surveyUnitUpdateDto.comments() != null) {
+            Set<Comment> commentsToUpdate = surveyUnitUpdateDto.comments().stream()
                     .map(commentDto -> CommentDto.toModel(surveyUnit.getId(), commentDto))
                     .collect(Collectors.toSet());
 
             surveyUnit.updateComments(commentsToUpdate);
         }
-        if(surveyUnitDetailDto.getCommunicationRequests() != null) {
-            List<CommunicationRequest> communicationRequests = surveyUnitDetailDto.getCommunicationRequests().stream()
-                    .map(CommunicationRequestDto::toModel)
-                    .toList();
-            surveyUnit.updateCommunicationRequests(communicationRequests);
+        if(surveyUnitUpdateDto.communicationRequests() != null) {
+            List<CommunicationRequest> communicationRequests = CommunicationRequestCreateDto.toModel(surveyUnitUpdateDto.communicationRequests());
+            surveyUnit.addCommunicationRequests(communicationRequests);
         }
 
-        Identification identification = IdentificationDto.toModel(surveyUnitDetailDto.getIdentification());
+        Identification identification = IdentificationDto.toModel(surveyUnitUpdateDto.identification());
         surveyUnit.updateIdentification(identification);
     }
 }
