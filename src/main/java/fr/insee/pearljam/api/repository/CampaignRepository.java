@@ -80,7 +80,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
 			+ "FROM Campaign camp "
-			+ "INNER JOIN Visibility vi ON vi.campaign.id = camp.id "
+			+ "JOIN camp.visibilities vi "
 			+ "WHERE ("
 			+ "vi.organizationUnit.id in (:ouIds) "
 			+ "OR 'GUEST' in (:ouIds) "
@@ -96,12 +96,4 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "GROUP BY camp.id ")
 	List<VerifyNameResponseDto> findMatchingCampaigns(@Param("text") String text, @Param("ouIds") List<String> ouIds,
 			@Param("date") Long date, Pageable pageable);
-
-	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
-			+ "FROM Campaign camp "
-			+ "INNER JOIN Visibility vi ON vi.campaign.id = camp.id "
-			+ "WHERE vi.organizationUnit.id in (:ouIds) OR 'GUEST' in (:ouIds) "
-			+ "GROUP BY camp.id ")
-	List<VerifyNameResponseDto> findMatchingCampaignsByOuForAll(@Param("ouIds") List<String> ouIds);
-
 }

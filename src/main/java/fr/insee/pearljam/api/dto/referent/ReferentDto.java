@@ -1,11 +1,12 @@
 package fr.insee.pearljam.api.dto.referent;
 
 import fr.insee.pearljam.api.domain.Referent;
+import lombok.Data;
 
 /**
  * ReferentDto
  */
-
+@Data
 public class ReferentDto {
 
     private String firstName;
@@ -32,37 +33,4 @@ public class ReferentDto {
         this.phoneNumber = ref.getPhoneNumber();
         this.role = ref.getRole();
     }
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return this.phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getRole() {
-        return this.role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
 }

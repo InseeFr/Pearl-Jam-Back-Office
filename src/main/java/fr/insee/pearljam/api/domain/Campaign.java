@@ -69,7 +69,7 @@ public class Campaign implements Serializable {
 	 * The reference to visibility table
 	 */
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Visibility> visibilities;
+	private List<VisibilityDB> visibilities;
 
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Referent> referents;
@@ -86,5 +86,4 @@ public class Campaign implements Serializable {
 		this.email = email;
 		this.communicationConfiguration = Optional.ofNullable(communicationConfiguration).orElse(false);
 	}
-
 }

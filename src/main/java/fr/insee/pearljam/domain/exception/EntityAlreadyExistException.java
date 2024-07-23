@@ -1,8 +1,8 @@
-package fr.insee.pearljam.api.web.exception;
+package fr.insee.pearljam.domain.exception;
 
 import java.io.Serial;
 
-public class EntityAlreadyExistException extends RuntimeException {
+public class EntityAlreadyExistException extends Exception {
     @Serial
     private static final long serialVersionUID = -478002885484590045L;
 

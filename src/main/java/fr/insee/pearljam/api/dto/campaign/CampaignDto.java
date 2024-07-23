@@ -84,5 +84,4 @@ public class CampaignDto {
 			this.toFollowUp = 0L;
 		}
 	}
-
 }
