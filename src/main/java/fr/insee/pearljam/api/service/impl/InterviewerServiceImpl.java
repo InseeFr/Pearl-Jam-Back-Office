@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.Visibility;
+import fr.insee.pearljam.api.domain.VisibilityDB;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InterviewerServiceImpl implements InterviewerService {
 
 	private final InterviewerRepository interviewerRepository;
-	private final VisibilityRepository visibilityRepository;
+	private final VisibilityJpaRepository visibilityRepository;
 	private final UserService userService;
 	private final SurveyUnitService surveyUnitService;
 
@@ -53,9 +53,9 @@ public class InterviewerServiceImpl implements InterviewerService {
 		}
 		Interviewer intw = intwOpt.get();
 		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).collect(Collectors.toList());
-		List<Visibility> visibilities = visibilityRepository.findAllVisibilityBySurveyUnitIds(suIds);
+		List<VisibilityDB> visibilities = visibilityRepository.findAllVisibilityBySurveyUnitIds(suIds);
 		List<CampaignDto> dtos = new ArrayList<>();
-		for (Visibility vi : visibilities) {
+		for (VisibilityDB vi : visibilities) {
 			Optional<CampaignDto> dtoOpt = dtos.stream()
 					.filter(dto -> dto.getId().equals(vi.getCampaign().getId()))
 					.findFirst();

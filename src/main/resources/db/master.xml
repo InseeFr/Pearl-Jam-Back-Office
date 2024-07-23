@@ -45,4 +45,7 @@
 	<!-- Data model update : new implementation for communication requests -->
 	<include file="changelog/540_alter_communication_request.xml" relativeToChangelogFile="true" />
 
+	<!-- Data model update : add communication template -->
+	<include file="changelog/541_add_communication_template.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
