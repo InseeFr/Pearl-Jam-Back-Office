@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
-import fr.insee.pearljam.api.domain.VisibilityDB;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
@@ -40,15 +39,6 @@ public class CommunicationTemplateDB implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommunicationType type;
 
-    /**
-     * The reference to visibility table
-     */
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_unit_id", referencedColumnName = "organization_unit_id", insertable = false, updatable = false)
-    @JoinColumn(name = "campaign_id", referencedColumnName = "campaign_id", insertable = false, updatable = false)
-    private VisibilityDB visibility;
-
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateDB> communicationTemplatesDB) {
         return communicationTemplatesDB.stream()
                 .map(communicationTemplateDB -> new CommunicationTemplate(
@@ -64,8 +54,7 @@ public class CommunicationTemplateDB implements Serializable {
                 .map(communicationTemplate -> new CommunicationTemplateDB(null,
                         communicationTemplate.messhugahId(),
                         communicationTemplate.medium(),
-                        communicationTemplate.type(),
-                        null))
+                        communicationTemplate.type()))
                 .toList();
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.VisibilityDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;

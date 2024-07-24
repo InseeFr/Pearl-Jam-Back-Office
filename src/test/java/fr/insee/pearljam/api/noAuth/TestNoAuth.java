@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import com.jayway.jsonpath.JsonPath;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import org.json.JSONException;
 import org.junit.jupiter.api.MethodOrderer;
@@ -78,10 +79,11 @@ class TestNoAuth {
 	}
 
 	private ResultMatcher expectTimestampFromCurrentDate(String expression, int unitToAdd, ChronoUnit chronoUnit) {
+
 		return mvcResult -> {
 			String content = mvcResult.getResponse().getContentAsString();
 			long timestamp = JsonPath.read(content, expression);
-			LocalDate localDateNow = LocalDate.now();
+			LocalDate localDateNow = MockMvcTestUtils.getDate();
 			Instant instant = Instant.ofEpochMilli(timestamp);
 			LocalDate dateToCheck = LocalDate.ofInstant(instant, ZoneId.systemDefault());
 			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
@@ -93,7 +95,7 @@ class TestNoAuth {
 	/**
 	 * Test that the GET endpoint "api/campaigns"
 	 * return 404
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws JSONException
 	 * @throws ParseException

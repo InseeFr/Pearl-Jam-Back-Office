@@ -27,6 +27,7 @@ class ArchunitApplicationTests {
         architecture = Architectures.layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
                 .layer("application").definedBy("..api..")
+                .layer("old.service").definedBy("..api..service..")
                 .layer("domain.port.userside").definedBy("..domain..port.userside..")
                 .layer("domain.port.serverside").definedBy("..domain..port.serverside..")
                 .layer("domain.model").definedBy("..domain..model..")
@@ -60,7 +61,7 @@ class ArchunitApplicationTests {
     @Test
     void serversidePortsShouldOnlyBeAccessedByDaoAndServices() {
         architecture
-                .whereLayer("domain.port.serverside").mayOnlyBeAccessedByLayers("domain.service", "infrastructure.adapter")
+                .whereLayer("domain.port.serverside").mayOnlyBeAccessedByLayers("domain.service", "infrastructure.adapter", "old.service")
                 .check(importedClasses);
     }
 

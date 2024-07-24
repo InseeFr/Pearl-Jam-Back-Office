@@ -1,10 +1,8 @@
-package fr.insee.pearljam.api.campaign.dto.input.visibility;
+package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -36,21 +34,19 @@ public record VisibilityCampaignCreateDto(
 		@NotNull
 		Long endDate,
 		@NotBlank
-		String organizationalUnit,
-		@Valid
-		List<CommunicationTemplateCreateDto> communicationTemplates
+		String organizationalUnit
 ) {
 
-	public static Visibility toModel(VisibilityCampaignCreateDto visibilityDto) {
-		return new Visibility(null,
-				visibilityDto.organizationalUnit(),
-				visibilityDto.managementStartDate(),
-				visibilityDto.interviewerStartDate(),
-				visibilityDto.identificationPhaseStartDate(),
-				visibilityDto.collectionStartDate(),
-				visibilityDto.collectionEndDate(),
-				visibilityDto.endDate(),
-				null
-		);
+	public static List<Visibility> toModel(List<VisibilityCampaignCreateDto> visibilities, String campaignId) {
+		return visibilities.stream()
+				.map(visibility -> new Visibility(campaignId,
+					visibility.organizationalUnit(),
+					visibility.managementStartDate(),
+					visibility.interviewerStartDate(),
+					visibility.identificationPhaseStartDate(),
+					visibility.collectionStartDate(),
+					visibility.collectionEndDate(),
+					visibility.endDate()))
+				.toList();
 	}
 }

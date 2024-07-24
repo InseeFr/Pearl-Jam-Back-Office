@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.campaign.dto.output.visibility;
+package fr.insee.pearljam.api.campaign.dto.output;
 
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 

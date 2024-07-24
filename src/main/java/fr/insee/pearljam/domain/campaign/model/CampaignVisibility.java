@@ -10,6 +10,7 @@ package fr.insee.pearljam.domain.campaign.model;
  * @param collectionEndDate            The end date of collection
  * @param endDate                      The end date of visibility
  */
+
 public record CampaignVisibility(
         Long managementStartDate,
         Long interviewerStartDate,

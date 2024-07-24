@@ -1,13 +1,11 @@
-package fr.insee.pearljam.api.service.dummy;
+package fr.insee.pearljam.api.campaign.controller.dummy;
 
 import java.util.List;
 import java.util.Optional;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.exception.*;
 import lombok.RequiredArgsConstructor;
 
 import fr.insee.pearljam.api.domain.Campaign;
@@ -16,7 +14,6 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.domain.exception.CampaignAlreadyExistException;
 import fr.insee.pearljam.api.service.CampaignService;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +24,9 @@ public class CampaignFakeService implements CampaignService {
     @Getter
     private boolean deleted = false;
 
+    @Getter
+    private boolean deleteForced = false;
+
     @Setter
     private boolean shouldThrowCampaignAlreadyExistException = false;
 
@@ -34,13 +34,25 @@ public class CampaignFakeService implements CampaignService {
     private boolean shouldThrowCampaignNotFoundException = false;
 
     @Setter
+    private boolean shouldThrowCampaignOnGoingException = false;
+
+    @Setter
     private boolean shouldThrowVisibilityNotFoundException = false;
+
+    @Setter
+    private boolean shouldThrowVisibilityHasInvalidDatesException = false;
+
+    @Setter
+    private boolean shouldThrowOrganizationalUnitNotFoundException = false;
 
     @Getter
     private CampaignCreateDto campaignCreated = null;
 
     @Getter
     private CampaignUpdateDto campaignUpdated = null;
+
+    @Setter
+    private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
     public List<CampaignDto> getListCampaign(String userId) {
@@ -79,9 +91,15 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public void createCampaign(CampaignCreateDto campaignDto)
-            throws CampaignAlreadyExistException {
+            throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
         if(shouldThrowCampaignAlreadyExistException) {
             throw new CampaignAlreadyExistException();
+        }
+        if(shouldThrowOrganizationalUnitNotFoundException) {
+            throw new OrganizationalUnitNotFoundException();
+        }
+        if(shouldThrowVisibilityHasInvalidDatesException) {
+            throw new VisibilityHasInvalidDatesException();
         }
         campaignCreated = campaignDto;
     }
@@ -92,17 +110,27 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public void delete(Campaign campaign) {
+    public void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException {
+        deleteForced = force;
+        if(shouldThrowCampaignNotFoundException) {
+            throw new CampaignNotFoundException();
+        }
+        if(shouldThrowCampaignOnGoingException) {
+            throw new CampaignOnGoingException();
+        }
         deleted = true;
     }
 
     @Override
-    public void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException{
+    public void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         if(shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
         if(shouldThrowVisibilityNotFoundException) {
             throw new VisibilityNotFoundException();
+        }
+        if(shouldThrowVisibilityHasInvalidDatesException) {
+            throw new VisibilityHasInvalidDatesException();
         }
         campaignUpdated = campaign;
     }
@@ -113,17 +141,10 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<Visibility> findAllVisibilitiesByCampaign(String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'findAllVisiblitiesByCampaign'");
-    }
-
-    @Override
-    public CampaignResponseDto getCampaignDtoById(String id) {
-        throw new UnsupportedOperationException("Unimplemented method 'getCampaignDtoById'");
-    }
-
-    @Override
-    public void updateVisibility(Visibility visibilityToUpdate) throws VisibilityNotFoundException {
-        throw new UnsupportedOperationException("Unimplemented method 'updateVisibility'");
+    public CampaignResponseDto getCampaignDtoById(String campaignId) throws CampaignNotFoundException{
+        if(shouldThrowCampaignNotFoundException) {
+            throw new CampaignNotFoundException();
+        }
+        return campaignToRetrieve;
     }
 }

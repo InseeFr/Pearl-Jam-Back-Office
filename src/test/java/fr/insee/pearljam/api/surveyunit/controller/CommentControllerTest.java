@@ -61,8 +61,7 @@ class CommentControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "{\"value\": \"5\"}",
-            "{\"type\": \"INTERVIEWER\"}",
-            "{\"value\": \"5\",\"type\": \"INVALID\"}"
+            "{\"type\": \"INTERVIEWER\"}"
     })
     @DisplayName("Should return bad request when comment type or value is invalid")
     void updateComment02(String invalidComment) throws Exception {

@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.infrastructure.campaign.entity;
 
 import java.io.Serializable;
 
