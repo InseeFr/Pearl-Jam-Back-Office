@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
-import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
@@ -113,27 +112,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
-		List<String> surveyUnitDtoIds = null;
-		if (userId.equals(GUEST)) {
-			surveyUnitDtoIds = surveyUnitRepository.findAllIds();
-		} else {
-			surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
-		}
+		List<String> surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
+
 		if (surveyUnitDtoIds.isEmpty()) {
 			log.error("No Survey Unit found for interviewer {}", userId);
 			return List.of();
 		}
-		if (userId.equals(GUEST)) {
-			return surveyUnitDtoIds.stream()
-					.map(idSurveyUnit -> {
-						Visibility visibility = visibilityRepository.getVisibilityBySurveyUnitId(idSurveyUnit);
-						return new SurveyUnitDto(
-										surveyUnitRepository.findById(idSurveyUnit).get(),
-										SurveyUnitVisibilityDto.fromModel(visibility),
-										extended);
-					})
-					.toList();
-		}
+
 		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(this::canBeSeenByInterviewer)
 				.toList();
 

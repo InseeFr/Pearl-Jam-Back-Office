@@ -1,7 +1,9 @@
-package fr.insee.pearljam.api.campaign.dto.input.visibility;
+package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import fr.insee.pearljam.api.web.annotation.AtLeastOneDateValid;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
+import lombok.NonNull;
 
 /**
  * A Data Transfer Object for representing visibility information.
@@ -14,6 +16,7 @@ import fr.insee.pearljam.domain.campaign.model.Visibility;
  * @param endDate                     End date of the visibility
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AtLeastOneDateValid
 public record VisibilityUpdateDto(
         Long managementStartDate,
         Long interviewerStartDate,
@@ -23,14 +26,15 @@ public record VisibilityUpdateDto(
         Long endDate
 ) {
 
-    public static Visibility toModel(VisibilityUpdateDto visibilityDto, String campaignId, String ouId) {
+    public static Visibility toModel(@NonNull VisibilityUpdateDto visibilityDto,
+                                     @NonNull String campaignId,
+                                     @NonNull String ouId) {
         return new Visibility(campaignId, ouId,
                 visibilityDto.managementStartDate(),
                 visibilityDto.interviewerStartDate(),
                 visibilityDto.identificationPhaseStartDate(),
                 visibilityDto.collectionStartDate(),
                 visibilityDto.collectionEndDate(),
-                visibilityDto.endDate(),
-                null);
+                visibilityDto.endDate());
     }
 }

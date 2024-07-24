@@ -76,7 +76,7 @@ class MessageControllerTest {
                         .content(mail))
                 .andExpectAll(status().isInternalServerError(),
                         MockMvcTestUtils
-                                .apiErrorMatches(HttpStatus.INTERNAL_SERVER_ERROR, mailPath, "")
+                                .apiErrorMatches(HttpStatus.INTERNAL_SERVER_ERROR, mailPath, ExceptionControllerAdvice.ERROR_OCCURRED_LABEL)
                 );
 
         assertThat(mailSender.isMailSent()).isFalse();

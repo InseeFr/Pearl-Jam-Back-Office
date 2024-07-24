@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.service.dummy;
+package fr.insee.pearljam.api.campaign.controller.dummy;
 
 import java.util.List;
 

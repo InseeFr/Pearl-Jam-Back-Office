@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.visibility.VisibilityCampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.CampaignController;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
@@ -9,17 +9,19 @@ import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.exception.CampaignAlreadyExistException;
-import org.javatuples.Pair;
+import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
+import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import fr.insee.pearljam.api.service.dummy.CampaignFakeService;
-import fr.insee.pearljam.api.service.dummy.ReferentFakeService;
+import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;
+import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,82 +54,64 @@ class CampaignControllerCreateTest {
     @Test
     @DisplayName("Should create campaign")
     void testCreateCampaign01() throws Exception {
-        Pair<String, VisibilityCampaignCreateDto> firstVisibility = generateVisibility("OU-NORTH", 1721683250L,
-                1721683251L,
-                1721683252L,
-                1721683253L,
-                1721683254L,
-                1721683255L);
-        Pair<String, VisibilityCampaignCreateDto> secondVisibility = generateVisibility("OU-SOUTH", 1721683260L,
-                1721683261L,
-                1721683262L,
-                1721683263L,
-                1721683264L,
-                1721683265L);
-        Pair<String, ReferentDto> firstReferent = generateReferent("Bob", "Marley", "0123456789", "PRIMARY");
-        Pair<String, ReferentDto> secondReferent = generateReferent("Dupont", "Jean", "1234567890", "PRIMARY");
-        Pair<String, CampaignCreateDto> campaign = generateCampaign("campId", "An other campaign",
-                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
-                ContactAttemptConfiguration.F2F,
-                true,
-                List.of(firstVisibility, secondVisibility),
-                List.of(firstReferent, secondReferent));
+        CampaignCreateDto campaign= generateDefaultCampaign();
 
         mockMvc.perform(post(Constants.API_CAMPAIGN)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(campaign.getValue0()))
+                        .content(JsonTestHelper.toJson(campaign)))
                 .andExpect(status().isOk());
 
         CampaignCreateDto campaignCreated = campaignService.getCampaignCreated();
-        assertThat(campaignCreated).isEqualTo(campaign.getValue1());
+        assertThat(campaignCreated).isEqualTo(campaign);
     }
 
     @Test
     @DisplayName("Should return bad request when campaign already exists")
     void testCreateCampaign02() throws Exception {
         campaignService.setShouldThrowCampaignAlreadyExistException(true);
-        Pair<String, VisibilityCampaignCreateDto> visibility = generateVisibility("OU-SOUTH", 1721683260L,
-                1721683261L,
-                1721683262L,
-                1721683263L,
-                1721683264L,
-                1721683265L);
-        Pair<String, CampaignCreateDto> campaign = generateCampaign("campId", "An other campaign",
-                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
-                ContactAttemptConfiguration.F2F,
-                true,
-                List.of(visibility),
-                List.of());
+        CampaignCreateDto campaign = generateDefaultCampaign();
 
         mockMvc.perform(post(Constants.API_CAMPAIGN)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(campaign.getValue0()))
+                        .content(JsonTestHelper.toJson(campaign)))
                 .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, Constants.API_CAMPAIGN, CampaignAlreadyExistException.MESSAGE));
     }
 
     @Test
-    @DisplayName("Should return bad request when invalid campaign input")
+    @DisplayName("Should return bad request when organizationalUnit does not exist")
     void testCreateCampaign03() throws Exception {
+        campaignService.setShouldThrowOrganizationalUnitNotFoundException(true);
+        CampaignCreateDto campaign = generateDefaultCampaign();
 
-        Pair<String, VisibilityCampaignCreateDto> visibility = generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
+        mockMvc.perform(post(Constants.API_CAMPAIGN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonTestHelper.toJson(campaign)))
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, Constants.API_CAMPAIGN, OrganizationalUnitNotFoundException.MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Should return bad request when invalid campaign label")
+    void testCreateCampaign04() throws Exception {
+
+        VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
                 1721683253L, 1721683254L, 1721683255L);
-        Pair<String, CampaignCreateDto> campaign1 = generateCampaign("   ", "An other campaign",
+       CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 true,
                 List.of(visibility),
                 List.of());
-        Pair<String, CampaignCreateDto> campaign2 = generateCampaign("campId", "   ",
+       CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 true,
                 List.of(visibility),
                 List.of());
-        List<Pair<String, CampaignCreateDto>> campaigns = List.of(campaign1, campaign2);
-        for(Pair<String, CampaignCreateDto> campaign : campaigns) {
+        List<CampaignCreateDto> campaigns = List.of(campaign1, campaign2);
+        for(CampaignCreateDto campaign : campaigns) {
             mockMvc.perform(post(Constants.API_CAMPAIGN)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(campaign.getValue0()))
+                            .content(JsonTestHelper.toJson(campaign)))
                     .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, Constants.API_CAMPAIGN, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
 
             CampaignCreateDto campaignCreated = campaignService.getCampaignCreated();
@@ -138,8 +122,8 @@ class CampaignControllerCreateTest {
 
     @Test
     @DisplayName("Should return bad request when invalid visibility")
-    void testCreateCampaign04() throws Exception {
-        List<Pair<String, VisibilityCampaignCreateDto>> invalidVisibilities = new ArrayList<>(Arrays.asList(
+    void testCreateCampaign05() throws Exception {
+        List<VisibilityCampaignCreateDto> invalidVisibilities = new ArrayList<>(Arrays.asList(
                 generateVisibility("   ", 1721683250L, 1721683251L, 1721683252L,
                         1721683253L, 1721683254L, 1721683255L),
                 generateVisibility("OU-NORTH", null, 1721683251L, 1721683252L,
@@ -157,12 +141,12 @@ class CampaignControllerCreateTest {
         ));
         invalidVisibilities.add(null);
 
-        for(Pair<String, VisibilityCampaignCreateDto> invalidVisibility : invalidVisibilities) {
-            List<Pair<String, VisibilityCampaignCreateDto>> invalidCampaignVisibilities = List.of();
+        for(VisibilityCampaignCreateDto invalidVisibility : invalidVisibilities) {
+            List<VisibilityCampaignCreateDto> invalidCampaignVisibilities = List.of();
             if(invalidVisibility != null) {
                 invalidCampaignVisibilities = List.of(invalidVisibility);
             }
-            Pair<String, CampaignCreateDto> campaign = generateCampaign("campId", "campaignLabel",
+           CampaignCreateDto campaign = generateCampaign("campId", "campaignLabel",
                     "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                     ContactAttemptConfiguration.F2F,
                     true,
@@ -170,117 +154,80 @@ class CampaignControllerCreateTest {
                     List.of());
             mockMvc.perform(post(Constants.API_CAMPAIGN)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(campaign.getValue0()))
+                            .content(JsonTestHelper.toJson(campaign)))
                     .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, Constants.API_CAMPAIGN, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
 
             CampaignCreateDto campaignCreated = campaignService.getCampaignCreated();
 
             assertThat(campaignCreated).isNull();
         }
-
     }
 
-    private Pair<String, CampaignCreateDto> generateCampaign(String campaignId, String campaignLabel,
-                                                             String email, IdentificationConfiguration identificationConfiguration,
-                                                             ContactOutcomeConfiguration contactOutcomeConfiguration,
-                                                             ContactAttemptConfiguration contactAttemptConfiguration,
-                                                             Boolean communicationRequestConfiguration,
-                                                             List<Pair<String, VisibilityCampaignCreateDto>> visibilities,
-                                                             List<Pair<String, ReferentDto>> referents) {
-        StringBuilder visibilitiesJson = new StringBuilder("\"visibilities\": [");
-        for(Pair<String, VisibilityCampaignCreateDto> visibility : visibilities) {
-            visibilitiesJson.append(visibility.getValue0());
-            if(!visibility.getValue0().equals(visibilities.getLast().getValue0())) {
-                visibilitiesJson.append(", ");
-            }
-        }
-        visibilitiesJson.append("], ");
+    @Test
+    @DisplayName("Should return conflict when invalid visibility dates")
+    void testCreateCampaign06() throws Exception {
+        campaignService.setShouldThrowVisibilityHasInvalidDatesException(true);
+        CampaignCreateDto campaign = generateDefaultCampaign();
 
-        StringBuilder referentsJson = new StringBuilder("\"referents\": [");
-        for(Pair<String, ReferentDto> referent : referents) {
-            referentsJson.append(referent.getValue0());
-            if(!referent.getValue0().equals(referents.getLast().getValue0())) {
-                referentsJson.append(", ");
-            }
-        }
-        referentsJson.append("], ");
-
-        String campaignTemplate = """
-                {""" + visibilitiesJson + referentsJson + """
-                    "campaign": "%s",
-                    "campaignLabel": "%s",
-                    "email": "%s",
-                    "identificationConfiguration": "%s",
-                    "contactOutcomeConfiguration": "%s",
-                    "contactAttemptConfiguration": "%s",
-                    "communicationRequestConfiguration": %b
-                }
-                """;
-        String campaignJson = String.format(campaignTemplate, campaignId, campaignLabel, email, identificationConfiguration,
-                contactOutcomeConfiguration, contactAttemptConfiguration, communicationRequestConfiguration);
-
-        CampaignCreateDto campaignCreateDto = new CampaignCreateDto(campaignId,
-                campaignLabel,
-                visibilities.stream()
-                        .map(Pair::getValue1)
-                        .toList(),
-                referents.stream()
-                        .map(Pair::getValue1)
-                        .toList(),
-                email,
-                IdentificationConfiguration.IASCO,
-                ContactOutcomeConfiguration.F2F,
-                ContactAttemptConfiguration.F2F,
-                communicationRequestConfiguration
-        );
-
-        return Pair.with(campaignJson, campaignCreateDto);
+        mockMvc.perform(post(Constants.API_CAMPAIGN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonTestHelper.toJson(campaign)))
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.CONFLICT, Constants.API_CAMPAIGN, VisibilityHasInvalidDatesException.MESSAGE));
     }
 
     /**
-     * Generate a pair of visibility json string and visbility create dto
-     * @param organizationalUnit
-     * @param managementDate
-     * @param interviewerDate
-     * @param identificationDate
-     * @param collectionStartDate
-     * @param collectionEndDate
-     * @param endDate
-     * @return
+     * Generate a default campaign
+     * @return a pair of json string and dto object for the campaign
      */
-    private Pair<String, VisibilityCampaignCreateDto> generateVisibility(String organizationalUnit,
-                                                                         Long managementDate, Long interviewerDate,
-                                                                         Long identificationDate, Long collectionStartDate,
-                                                                         Long collectionEndDate, Long endDate) {
-        String visibilityPlaceHolder = """
-        {
-            "organizationalUnit": "%s",
-            "managementStartDate": %d,
-            "interviewerStartDate": %d,
-            "identificationPhaseStartDate": %d,
-            "collectionStartDate": %d,
-            "collectionEndDate": %d,
-            "endDate": %d
-        }""";
-        String visibilityJson = String.format(String.format(visibilityPlaceHolder, organizationalUnit,
-                managementDate, interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate));
-
-        VisibilityCampaignCreateDto visibilityCampaignCreateDto = new VisibilityCampaignCreateDto(managementDate,
-                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit, null);
-        return Pair.with(visibilityJson, visibilityCampaignCreateDto);
+    public CampaignCreateDto generateDefaultCampaign() {
+        VisibilityCampaignCreateDto firstVisibility = generateVisibility("OU-NORTH", 1721683250L,
+                1721683251L,
+                1721683252L,
+                1721683253L,
+                1721683254L,
+                1721683255L);
+        VisibilityCampaignCreateDto secondVisibility = generateVisibility("OU-SOUTH", 1721683260L,
+                1721683261L,
+                1721683262L,
+                1721683263L,
+                1721683264L,
+                1721683265L);
+        ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
+        ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
+        return generateCampaign("campId", "An other campaign",
+                "test.test@sdf.com", IdentificationConfiguration.NOIDENT, ContactOutcomeConfiguration.TEL,
+                ContactAttemptConfiguration.TEL,
+                true,
+                List.of(firstVisibility, secondVisibility),
+                List.of(firstReferent, secondReferent));
     }
 
-    private Pair<String, ReferentDto> generateReferent(String firstName, String lastName, String phoneNumber, String role) {
-        String referentPlaceHolder = """
-        {
-            "firstName": "%s",
-            "lastName": "%s",
-            "phoneNumber": "%s",
-            "role": "%s"
-        }""";
-        String referentJson = String.format(referentPlaceHolder, firstName, lastName, phoneNumber, role);
+    private CampaignCreateDto generateCampaign(
+            String campaignId, String campaignLabel,
+            String email, IdentificationConfiguration identificationConfiguration,
+            ContactOutcomeConfiguration contactOutcomeConfiguration,
+            ContactAttemptConfiguration contactAttemptConfiguration,
+            Boolean communicationRequestConfiguration,
+            List<VisibilityCampaignCreateDto> visibilities,
+            List<ReferentDto> referents) {
 
-        ReferentDto referentDto = new ReferentDto(firstName, lastName, phoneNumber, role);
-        return Pair.with(referentJson, referentDto);
+        return new CampaignCreateDto(campaignId,
+                campaignLabel,
+                visibilities,
+                referents,
+                email,
+                identificationConfiguration,
+                contactOutcomeConfiguration,
+                contactAttemptConfiguration,
+                communicationRequestConfiguration
+        );
+    }
+
+    private VisibilityCampaignCreateDto generateVisibility(String organizationalUnit,
+                                                           Long managementDate, Long interviewerDate,
+                                                           Long identificationDate, Long collectionStartDate,
+                                                           Long collectionEndDate, Long endDate) {
+        return new VisibilityCampaignCreateDto(managementDate,
+                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit);
     }
 }

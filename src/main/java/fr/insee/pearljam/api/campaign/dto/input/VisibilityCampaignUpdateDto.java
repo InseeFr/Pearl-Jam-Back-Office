@@ -1,7 +1,7 @@
-package fr.insee.pearljam.api.campaign.dto.input.visibility;
+package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.web.exception.VisibilityInvalidException;
+import fr.insee.pearljam.api.web.annotation.AtLeastOneDateValid;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import jakarta.validation.constraints.NotBlank;
 
@@ -18,6 +18,7 @@ import java.util.List;
  * @param endDate                     End date of the visibility
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AtLeastOneDateValid
 public record VisibilityCampaignUpdateDto(
 		Long managementStartDate,
 		Long interviewerStartDate,
@@ -28,15 +29,6 @@ public record VisibilityCampaignUpdateDto(
 		@NotBlank
 		String organizationalUnit
 ) {
-	public static final String AT_LEAST_ONE_DATE_REQUIRED_MESSAGE = "At least one date must be provided for a visibility";
-
-	public VisibilityCampaignUpdateDto {
-		if (managementStartDate == null && interviewerStartDate == null && identificationPhaseStartDate == null &&
-				collectionStartDate == null && collectionEndDate == null && endDate == null) {
-			throw new VisibilityInvalidException(AT_LEAST_ONE_DATE_REQUIRED_MESSAGE);
-		}
-	}
-
 	public static List<Visibility> toModel(List<VisibilityCampaignUpdateDto> visibilitiesDto, String campaignId) {
 		return visibilitiesDto.stream()
 				.map(visibilityDto -> new Visibility(campaignId,
@@ -46,8 +38,7 @@ public record VisibilityCampaignUpdateDto(
 					visibilityDto.identificationPhaseStartDate(),
 					visibilityDto.collectionStartDate(),
 					visibilityDto.collectionEndDate(),
-					visibilityDto.endDate(),
-					null
+					visibilityDto.endDate()
 				))
 				.toList();
 	}

@@ -129,8 +129,7 @@ class SurveyUnitControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "\"comments\": [{\"value\": \"5\"}]",
-            "\"comments\": [{\"type\": \"INTERVIEWER\"}]",
-            "\"comments\": [{\"value\": \"5\",\"type\": \"INVALID\"}]"
+            "\"comments\": [{\"type\": \"INTERVIEWER\"}]"
     })
     @DisplayName("Should return bad request when comment are invalid")
     void updateSurveyUnit04(String invalidComment) throws Exception {

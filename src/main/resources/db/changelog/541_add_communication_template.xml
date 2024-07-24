@@ -3,12 +3,12 @@
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-    <changeSet author="davdarras" id="541-1">
+    <changeSet author="davdar" id="541-1">
         <createTable tableName="communication_template">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="communication_templatePK" />
             </column>
-            <column name="messhugahId" type="VARCHAR(255)">
+            <column name="messhugah_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="medium" type="VARCHAR(255)">
@@ -27,14 +27,14 @@
 
         <addForeignKeyConstraint
                 baseTableName="communication_template"
-                baseColumnNames="organization_unit_id, campaign_id"
-                constraintName="fk_visibility"
-                referencedTableName="visibility"
-                referencedColumnNames="organization_unit_id, campaign_id"/>
+                baseColumnNames="campaign_id"
+                constraintName="fk_campaign"
+                referencedTableName="campaign"
+                referencedColumnNames="id"/>
 
         <addUniqueConstraint
-                columnNames="type, medium, campaign_id, organization_unit_id"
-                constraintName="uk_type_medium"
+                columnNames="type, medium, campaign_id"
+                constraintName="uniq_constraint_type_medium"
                 tableName="communication_template"/>
     </changeSet>
 </databaseChangeLog>

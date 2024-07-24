@@ -22,9 +22,8 @@ spring:
     password: password
 logging:
   level:
-    root: DEBUG
-    liquibase: INFO
-
+    root: INFO
+    liquibase: WARN
 feature:
   oidc:
     enabled: true

@@ -1,10 +1,11 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.infrastructure.campaign.entity;
 
 import java.io.Serializable;
 import java.util.List;
 
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@Entity(name = "visibility")
-@Table
+@Entity
+@Table(name = "visibility")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -33,10 +34,6 @@ public class VisibilityDB implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
 	private Campaign campaign;
-
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "visibility", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<CommunicationTemplateDB> communicationTemplates;
 
 	private Long managementStartDate;
 	private Long interviewerStartDate;
@@ -78,7 +75,6 @@ public class VisibilityDB implements Serializable {
 		VisibilityDBId id = new VisibilityDBId(organizationUnit.getId(), campaign.getId());
 		return new VisibilityDB(id,
 				organizationUnit, campaign,
-				CommunicationTemplateDB.fromModel(visibility.communicationTemplates()),
 				visibility.managementStartDate(), visibility.interviewerStartDate(), visibility.identificationPhaseStartDate(),
 				visibility.collectionStartDate(), visibility.collectionEndDate(), visibility.endDate());
 	}
@@ -92,8 +88,7 @@ public class VisibilityDB implements Serializable {
 				visibilityDB.getIdentificationPhaseStartDate(),
 				visibilityDB.getCollectionStartDate(),
 				visibilityDB.getCollectionEndDate(),
-				visibilityDB.getEndDate(),
-				CommunicationTemplateDB.toModel(visibilityDB.getCommunicationTemplates()));
+				visibilityDB.getEndDate());
 	}
 
 	public static List<Visibility> toModel(List<VisibilityDB> visibilityDBs) {

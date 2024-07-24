@@ -3,8 +3,10 @@ package fr.insee.pearljam.api.web.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.domain.exception.CampaignOnGoingException;
 import fr.insee.pearljam.domain.exception.EntityAlreadyExistException;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,7 @@ public class ExceptionControllerAdvice {
         this.errorComponent = new ApiExceptionComponent(errorAttributes);
     }
 
-    private static final String ERROR_OCCURRED_LABEL = "An error has occurred";
+    public static final String ERROR_OCCURRED_LABEL = "An error has occurred";
     public static final String INVALID_PARAMETERS_MESSAGE = "Invalid parameters";
 
     /**
@@ -126,9 +128,14 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(VisibilityInvalidException.class)
-    public ResponseEntity<ApiError> exceptions(VisibilityInvalidException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    @ExceptionHandler(VisibilityHasInvalidDatesException.class)
+    public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(CampaignOnGoingException.class)
+    public ResponseEntity<ApiError> exceptions(CampaignOnGoingException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)

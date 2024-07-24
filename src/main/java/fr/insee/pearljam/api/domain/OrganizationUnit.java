@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

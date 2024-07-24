@@ -1,16 +1,10 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.output.visibility.VisibilityCampaignDto;
-import fr.insee.pearljam.api.campaign.dto.input.visibility.VisibilityUpdateDto;
-import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
@@ -36,7 +29,6 @@ import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.domain.exception.CampaignAlreadyExistException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.ReferentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,8 +57,7 @@ public class CampaignController {
 	@Operation(summary = "Create a Campaign")
 	@PostMapping(path = Constants.API_CAMPAIGN)
 	public void createCampaign(@Valid @NotNull @RequestBody CampaignCreateDto campaignDto)
-			throws CampaignAlreadyExistException,
-			CampaignNotFoundException, OrganizationalUnitNotFoundException {
+            throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
 		campaignService.createCampaign(campaignDto);
 	}
 
@@ -152,23 +143,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * This method returns the list of visibilities associated with the
-	 * campaign {id}
-	 * 
-	 * @param campaignId campaign id
-	 * @return List of {@link VisibilityCampaignDto}
-	 */
-	@Operation(summary = "Get campaign visibilities")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID_VISIBILITIES)
-	public List<VisibilityCampaignDto> getVisibilities(@PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to get campaign[{}] visibilities ", userId, campaignId);
-
-		List<Visibility> visibilities = campaignService.findAllVisibilitiesByCampaign(campaignId);
-		return VisibilityCampaignDto.fromModel(visibilities);
-	}
-
-	/**
 	 * This method is used to count survey units that are abandoned by campaign
 	 * Return the sum of survey units states by campaign as a list
 	 *
@@ -216,27 +190,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * Update the visibility dates for a given campaign and organizational unit
-	 *
-	 * @param visibilityToUpdate the visibility to update
-	 * @param idCampaign campaign identifier
-	 * @param idOu organizational unit id
-	 * @throws VisibilityNotFoundException if the visibility does not exist
-	 */
-	@Operation(summary = "Change visibility of a campaign for an Organizational Unit")
-	@PutMapping(path = Constants.API_CAMPAIGN_ID_OU_ID_VISIBILITY)
-	public void updateVisibility(
-			@Valid @NotNull @RequestBody VisibilityUpdateDto visibilityToUpdate,
-			@NotBlank @PathVariable(value = "idCampaign") String idCampaign,
-			@NotBlank @PathVariable(value = "idOu") String idOu) throws VisibilityNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to change OU[{}] visibility on campaign[{}] ", userId, idOu, idCampaign);
-		campaignService.updateVisibility(VisibilityUpdateDto.toModel(visibilityToUpdate, idCampaign, idOu));
-		log.info("Visibility with CampaignId {} for Organizational Unit {} updated", idCampaign,
-				idOu);
-	}
-
-	/**
 	 * This method deletes a campaign
 	 * 
 	 * @param campaignId the value to delete
@@ -245,26 +198,17 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Delete a campaign")
 	@DeleteMapping(path = Constants.API_CAMPAIGN_ID)
-	public ResponseEntity<Object> deleteCampaignById(
-			@PathVariable(value = "id") String campaignId,
-			@RequestParam(required = false, defaultValue = DEFAULT_FORCE_VALUE) Boolean force) throws CampaignNotFoundException {
+	public void deleteCampaignById(
+			@NotBlank @PathVariable(value = "id")
+			String campaignId,
+			@RequestParam(required = false, defaultValue = DEFAULT_FORCE_VALUE)
+			boolean force)
+			throws CampaignNotFoundException, CampaignOnGoingException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to delete campaign {}", userId, campaignId);
 
-		Optional<Campaign> campaignOptional = campaignService.findById(campaignId);
-		if (!campaignOptional.isPresent()) {
-			log.error("DELETE campaign with id {} resulting in 404 because it does not exists", campaignId);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (Boolean.FALSE.equals(force) && campaignService.isCampaignOngoing(campaignId)) {
-			String errorMessage = String.format("Campaign %s is on-going and can't be deleted", campaignId);
-			log.info(errorMessage);
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
-		}
-
-		campaignService.delete(campaignOptional.get());
+		campaignService.delete(campaignId, force);
 		log.info("DELETE campaign with id {} resulting in 200", campaignId);
-		return ResponseEntity.ok().build();
 	}
 
 	/**
@@ -275,13 +219,12 @@ public class CampaignController {
 	@Operation(summary = "Update campaign (label, email, configurations, visibilities")
 	@PutMapping(path = Constants.API_CAMPAIGN_ID)
 	public void updateCampaign(@NotBlank @PathVariable(value = "id") String id,
-			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException {
+			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to update campaign {} collection dates", userId, id);
 
 		campaignService.updateCampaign(id, campaign);
 		log.info("Campaign with id {} updated", id);
-
 	}
 
 	/**

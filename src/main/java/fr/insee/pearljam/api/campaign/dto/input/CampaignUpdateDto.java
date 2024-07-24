@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.campaign.dto.input.visibility.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;

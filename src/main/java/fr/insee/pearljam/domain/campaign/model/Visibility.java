@@ -1,9 +1,6 @@
 package fr.insee.pearljam.domain.campaign.model;
 
-import fr.insee.pearljam.api.web.exception.VisibilityInvalidException;
-import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
-
-import java.util.List;
+import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
 
 /**
  * A class representing the visibility of a campaign for an organizational unit
@@ -14,7 +11,6 @@ import java.util.List;
  * @param collectionStartDate          The start date of collection
  * @param collectionEndDate            The end date of collection
  * @param endDate                      The end date of visibility
- * @param communicationTemplates       List of communication templates associated with the visibility
  */
 public record Visibility(
         String campaignId,
@@ -24,12 +20,9 @@ public record Visibility(
         Long identificationPhaseStartDate,
         Long collectionStartDate,
         Long collectionEndDate,
-        Long endDate,
-        List<CommunicationTemplate> communicationTemplates
+        Long endDate
 ) {
-    public static final String DATE_SHOULD_BE_INCREASING = "Invalid Visibility dates : should be strictly increasing";
-
-    public static Visibility merge(Visibility currentVisibility, Visibility visibilityToUpdate) {
+    public static Visibility merge(Visibility currentVisibility, Visibility visibilityToUpdate) throws VisibilityHasInvalidDatesException {
         Long managementStartDate = visibilityToUpdate.managementStartDate() != null ?
                 visibilityToUpdate.managementStartDate() : currentVisibility.managementStartDate();
         Long interviewerStartDate = visibilityToUpdate.interviewerStartDate() != null ?
@@ -51,17 +44,16 @@ public record Visibility(
                 identificationPhaseStartDate,
                 collectionStartDate,
                 collectionEndDate,
-                endDate,
-                null);
+                endDate);
 
         if(isValid(updatedVisibility)) {
             return updatedVisibility;
         }
 
-        throw new VisibilityInvalidException(DATE_SHOULD_BE_INCREASING);
+        throw new VisibilityHasInvalidDatesException();
     }
 
-    private static boolean isValid(Visibility visibility) {
+    public static boolean isValid(Visibility visibility) {
         return visibility.managementStartDate() < visibility.interviewerStartDate()
                 && visibility.interviewerStartDate() < visibility.identificationPhaseStartDate()
                 && visibility.identificationPhaseStartDate() < visibility.collectionStartDate()

@@ -20,15 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.api.campaign.dto.input.visibility.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +47,6 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.client.RestTemplate;
 
@@ -58,7 +56,6 @@ import com.jayway.jsonpath.JsonPath;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ClosingCause;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
@@ -78,9 +75,8 @@ import fr.insee.pearljam.api.domain.Status;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
 import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.domain.VisibilityDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
@@ -90,7 +86,6 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
@@ -98,8 +93,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.campaign.dto.input.visibility.VisibilityCampaignCreateDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
@@ -185,7 +178,7 @@ class TestAuthKeyCloak {
 		return mvcResult -> {
 			String content = mvcResult.getResponse().getContentAsString();
 			long timestamp = JsonPath.read(content, expression);
-			LocalDate localDateNow = LocalDate.now();
+			LocalDate localDateNow = MockMvcTestUtils.getDate();
 			Instant instant = Instant.ofEpochMilli(timestamp);
 			LocalDate dateToCheck = LocalDate.ofInstant(instant, ZoneId.systemDefault());
 			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
@@ -930,147 +923,6 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying all dates
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(29)
-	void testPutVisibilityModifyAllDates() throws Exception {
-		String campaignInput = """
-				{
-					"managementStartDate": 1575937000000,
-					"interviewerStartDate": 1576801000000,
-					"identificationPhaseStartDate": 1577233000000,
-					"collectionStartDate": 1577837800000,
-					"collectionEndDate": 1640996200000,
-					"endDate": 1641514600000
-				}
-				""";
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(campaignInput))
-				.andExpect(status().isOk());
-
-		Optional<VisibilityDB> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(1575937000000L, visi.get().getManagementStartDate());
-		assertEquals(1576801000000L, visi.get().getInterviewerStartDate());
-		assertEquals(1577233000000L, visi.get().getIdentificationPhaseStartDate());
-		assertEquals(1577837800000L, visi.get().getCollectionStartDate());
-		assertEquals(1640996200000L, visi.get().getCollectionEndDate());
-		assertEquals(1641514600000L, visi.get().getEndDate());
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying start date
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Disabled("Need Clock injection refactor")
-	@Order(30)
-	void testPutVisibilityModifyCollectionStartDate()
-			throws Exception {
-
-		long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		String jsonContent = String.format("{\"collectionStartDate\": %d}", now);
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonContent))
-				.andExpectAll(
-						status().isOk(),
-						expectValidCollectionStartDate());
-
-		Optional<VisibilityDB> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(now, visi.get().getCollectionStartDate());
-
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying end date
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Disabled("Need Clock injection refactor")
-	@Order(31)
-	void testPutVisibilityModifyCollectionEndDate()
-			throws Exception {
-		long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		String jsonContent = String.format("{\"collectionEndDate\": %d}", now);
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonContent))
-				.andExpect(status().isOk());
-		Optional<VisibilityDB> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(now, visi.get().getCollectionEndDate());
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 400 when empty body
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(32)
-	void testPutVisibilityEmptyBody() throws Exception {
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("{}"))
-				.andExpect(status().isBadRequest());
-
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 400 when bad format
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(33)
-	void testPutVisibilityBadFormat() throws Exception {
-		String requestBody = """
-				{
-					"managementStartDate": 1640996200000,
-					"interviewerStartDate": "10/10/2020",
-					"identificationPhaseStartDate": 1641514600000,
-					"collectionStartDate": 1577233000000,
-					"collectionEndDate": 1576801000000,
-					"endDate": 1575937000000
-				}""";
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestBody))
-				.andExpect(status().isBadRequest());
-
-	}
-
-	/**
 	 * Test that the POST endpoint "api/message" return 200
 	 * 
 	 * @throws InterruptedException
@@ -1559,142 +1411,6 @@ class TestAuthKeyCloak {
 						jsonPath("$[?(@.id == 'OU-NORTH')].label").value("North region organizational unit"),
 						jsonPath("$[?(@.id == 'OU-SOUTH')].label").value("South region organizational unit"),
 						jsonPath("$[?(@.id == 'OU-NATIONAL')].label").value("National organizational unit"));
-
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 200
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(100)
-	void testPostCampaignContext() throws Exception {
-		VisibilityCampaignCreateDto visi1 = generateDumbVisibilityCampaignCreateDto("OU-NORTH");
-		VisibilityCampaignCreateDto visi2 = generateDumbVisibilityCampaignCreateDto("OU-SOUTH");
-
-		CampaignCreateDto campDto = new CampaignCreateDto(
-				"campId",
-				"An other campaign",
-				List.of(visi1, visi2),
-				List.of(new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY")),
-				null,
-				IdentificationConfiguration.IASCO,
-				ContactOutcomeConfiguration.F2F,
-				ContactAttemptConfiguration.F2F,
-				null
-				);
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isOk());
-
-		Optional<Campaign> campOpt = campaignRepository.findById("CAMPID");
-		assertTrue(campOpt.isPresent());
-		assertEquals("An other campaign", campOpt.get().getLabel());
-
-		Optional<VisibilityDB> visi1Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("CAMPID", "OU-NORTH");
-		Optional<VisibilityDB> visi2Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("CAMPID", "OU-SOUTH");
-
-		assertTrue(visi1Opt.isPresent());
-		assertTrue(visi2Opt.isPresent());
-
-		VisibilityDB visi = visi1Opt.get();
-		assertEquals(1111L, visi.getCollectionStartDate());
-		assertEquals(2222L, visi.getCollectionEndDate());
-		assertEquals(3333L, visi.getIdentificationPhaseStartDate());
-		assertEquals(4444L, visi.getInterviewerStartDate());
-		assertEquals(5555L, visi.getManagementStartDate());
-		assertEquals(6666L, visi.getEndDate());
-
-		List<ReferentDto> refs = referentservice.findByCampaignId("CAMPID");
-		assertEquals(1, refs.size());
-		assertEquals("Bob", refs.get(0).getFirstName());
-		assertEquals("Marley", refs.get(0).getLastName());
-		assertEquals("0123456789", refs.get(0).getPhoneNumber());
-		assertEquals("PRIMARY", refs.get(0).getRole());
-
-		assertEquals(IdentificationConfiguration.IASCO, campOpt.get().getIdentificationConfiguration());
-		assertEquals(ContactAttemptConfiguration.F2F, campOpt.get().getContactAttemptConfiguration());
-		assertEquals(ContactOutcomeConfiguration.F2F, campOpt.get().getContactOutcomeConfiguration());
-		assertEquals(false, campOpt.get().getCommunicationConfiguration());
-
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 400
-	 * when an attribute is missing
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(101)
-	void testPostCampaignContextNoLabel() throws Exception {
-		VisibilityCampaignCreateDto visi1 = generateDumbVisibilityCampaignCreateDto("OU-NORTH");
-		VisibilityCampaignCreateDto visi2 = generateDumbVisibilityCampaignCreateDto("OU-SOUTH");
-
-		CampaignCreateDto campDto = new CampaignCreateDto(
-				"campId2",
-				null,
-				List.of(visi1, visi2),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isBadRequest());
-
-		// Campaign should not have been created
-		Optional<Campaign> campOpt = campaignRepository.findById("campId2");
-		assertTrue(!campOpt.isPresent());
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 400
-	 * when an an organizational unit does not exist
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(102)
-	void testPostCampaignContextMissingOU() throws Exception {
-
-		VisibilityCampaignCreateDto visi1 = generateDumbVisibilityCampaignCreateDto("OU-NORTH");
-		VisibilityCampaignCreateDto visi2 = generateDumbVisibilityCampaignCreateDto("AN-OU-THAT-DOESNT-EXIST");
-
-		CampaignCreateDto campDto = new CampaignCreateDto(
-				"campId3",
-				null,
-				List.of(visi1, visi2),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isBadRequest());
-
-		// Campaign should not have been created
-		Optional<Campaign> campOpt = campaignRepository.findById("campId3");
-		assertTrue(!campOpt.isPresent());
 
 	}
 
@@ -2499,46 +2215,6 @@ class TestAuthKeyCloak {
 				.andExpect(status().isNotFound());
 	}
 
-	@Test
-	@Order(221)
-	void testUpdateVisibilityByOu() throws Exception {
-		SurveyUnitVisibilityDto visibility = generateSurveyUnitVisibilityDto("OU-WEST", "ZCLOSEDX00", false);
-		SurveyUnitVisibilityDto invalidVcd = generateSurveyUnitVisibilityDto("OU-WEST", "ZCLOSEDX00", true);
-
-		String visibilityJson = asJsonString(visibility);
-		String emptyVisibilityJson = "{}";
-		String invalidVisibilityJson = asJsonString(invalidVcd);
-
-		// BAD REQUEST
-		updateVisibility("ZCLOSEDX00", "OU-WEST", emptyVisibilityJson).andExpect(status().isBadRequest());
-
-		// NOT FOUND
-		updateVisibility("ZCLOSEDX00", "MISSING", visibilityJson).andExpect(status().isNotFound());
-
-		// CONFLICT
-		updateVisibility("ZCLOSEDX00", "OU-WEST", invalidVisibilityJson).andExpect(status().isConflict());
-
-		// OK
-		updateVisibility("ZCLOSEDX00", "OU-WEST", visibilityJson).andExpect(status().isOk());
-		assertEquals(visibility.endDate(),
-				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
-	}
-
-	private ResultActions updateVisibility(String campaignId, String OuId, String visibility) throws Exception {
-		return mockMvc.perform(
-				put(updateVisibilityUrl(campaignId, OuId))
-						.with(authentication(LOCAL_USER))
-						.content(visibility)
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON));
-	}
-
-	private static String updateVisibilityFormat = "/api/campaign/%s/organizational-unit/%s/visibility";
-
-	private String updateVisibilityUrl(String campaignId, String OuId) {
-		return String.format(updateVisibilityFormat, campaignId, OuId);
-	}
-
 	private static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);
@@ -2591,43 +2267,6 @@ class TestAuthKeyCloak {
 				"clara.legouanec@insee.fr",
 				"06 XX XX XX XX",
 				Title.MISS);
-	}
-
-	private VisibilityCampaignCreateDto generateDumbVisibilityCampaignCreateDto(String ouId) {
-		return new VisibilityCampaignCreateDto(5555L, 4444L,
-				3333L, 1111L,
-				2222L, 6666L, ouId, null);
-	}
-
-	private VisibilityCampaignCreateDto generateVisibilityCampaignCreateDto(String OuId, String campaignId) {
-		VisibilityDB vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, OuId).get();
-		return new VisibilityCampaignCreateDto(vis.getManagementStartDate(), vis.getInterviewerStartDate(),
-				vis.getIdentificationPhaseStartDate(), vis.getCollectionStartDate(),
-				vis.getCollectionEndDate(), vis.getEndDate(), vis.getOrganizationUnit().getId(), null);
-	}
-
-	private VisibilityCampaignUpdateDto generateVisibilityCampaignUpdateDto(String OuId, String campaignId, boolean isInvalid) {
-		VisibilityDB vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, OuId).get();
-		Long interviewerStartDate = vis.getInterviewerStartDate();
-		if(isInvalid) {
-			interviewerStartDate = vis.getIdentificationPhaseStartDate();
-		}
-		return new VisibilityCampaignUpdateDto(vis.getManagementStartDate(), interviewerStartDate,
-				vis.getIdentificationPhaseStartDate(), vis.getCollectionStartDate(),
-				vis.getCollectionEndDate(), vis.getEndDate(), vis.getOrganizationUnit().getId());
-	}
-
-	private SurveyUnitVisibilityDto generateSurveyUnitVisibilityDto(String ouId, String campaignId,
-																	boolean isInvalid) {
-		VisibilityDB vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, ouId).get();
-
-		Long interviewerStartDate = vis.getInterviewerStartDate();
-		if(isInvalid) {
-			interviewerStartDate = vis.getIdentificationPhaseStartDate();
-		}
-		return new SurveyUnitVisibilityDto(vis.getManagementStartDate(), interviewerStartDate,
-				vis.getIdentificationPhaseStartDate(), vis.getCollectionStartDate(),
-				vis.getCollectionEndDate(), vis.getEndDate());
 	}
 
 	private UserDto generateValidUser() {
