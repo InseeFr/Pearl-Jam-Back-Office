@@ -1,5 +1,9 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
+import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
@@ -16,15 +20,19 @@ class CommunicationTemplateDBTest {
     @DisplayName("Should create model objects")
     void testToModel() {
         // Given
-        CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(1L, "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplateDB templateDB2 = new CommunicationTemplateDB(2L, "msg2", CommunicationMedium.MAIL, CommunicationType.REMINDER);
+        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+                ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
+                "email@plop.com", true);
+        CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(1L, "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
+        CommunicationTemplateDB templateDB2 = new CommunicationTemplateDB(2L, "msg2", CommunicationMedium.MAIL, CommunicationType.REMINDER, campaign);
         List<CommunicationTemplateDB> dbList = List.of(templateDB1, templateDB2);
 
         // When
         List<CommunicationTemplate> modelList = CommunicationTemplateDB.toModel(dbList);
 
         // Then
-        assertThat(modelList).hasSize(2);
+        assertThat(modelList)
+                .hasSize(2);
 
         assertThat(modelList.getFirst().id()).isEqualTo(1L);
         assertThat(modelList.getFirst().messhugahId()).isEqualTo("msg1");
@@ -41,24 +49,41 @@ class CommunicationTemplateDBTest {
     @DisplayName("Should create entity objects")
     void testFromModel() {
         // Given
+        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+                ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
+                "email@plop.com", true);
         CommunicationTemplate template1 = new CommunicationTemplate(1L, "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         CommunicationTemplate template2 = new CommunicationTemplate(2L, "msg2", CommunicationMedium.MAIL, CommunicationType.REMINDER);
         List<CommunicationTemplate> modelList = List.of(template1, template2);
 
         // When
-        List<CommunicationTemplateDB> dbList = CommunicationTemplateDB.fromModel(modelList);
+        List<CommunicationTemplateDB> dbList = CommunicationTemplateDB.fromModel(modelList, campaign);
 
         // Then
-        assertThat(dbList).hasSize(2);
+        assertThat(dbList)
+                .hasSize(2)
+                .anySatisfy(templateDB -> {
+                    verifyCommunicationTemplateDB(templateDB, null,
+                            "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
+                })
+                .anySatisfy(templateDB -> {
+                    verifyCommunicationTemplateDB(templateDB, null,
+                            "msg2", CommunicationMedium.MAIL, CommunicationType.REMINDER, campaign);
+                });
+    }
 
-        assertThat(dbList.getFirst().getId()).isNull(); // ID is null because it's not set in fromModel method
-        assertThat(dbList.getFirst().getMesshugahId()).isEqualTo("msg1");
-        assertThat(dbList.getFirst().getMedium()).isEqualTo(CommunicationMedium.EMAIL);
-        assertThat(dbList.getFirst().getType()).isEqualTo(CommunicationType.NOTICE);
-
-        assertThat(dbList.getLast().getId()).isNull(); // ID is null because it's not set in fromModel method
-        assertThat(dbList.getLast().getMesshugahId()).isEqualTo("msg2");
-        assertThat(dbList.getLast().getMedium()).isEqualTo(CommunicationMedium.MAIL);
-        assertThat(dbList.getLast().getType()).isEqualTo(CommunicationType.REMINDER);
+    private void verifyCommunicationTemplateDB(
+            CommunicationTemplateDB templateDB,
+            Long expectedId,
+            String expectedMesshugahId,
+            CommunicationMedium expectedMedium,
+            CommunicationType expectedType,
+            Campaign expectedCampaign
+    ) {
+        assertThat(templateDB.getId()).isEqualTo(expectedId);
+        assertThat(templateDB.getMesshugahId()).isEqualTo(expectedMesshugahId);
+        assertThat(templateDB.getMedium()).isEqualTo(expectedMedium);
+        assertThat(templateDB.getType()).isEqualTo(expectedType);
+        assertThat(templateDB.getCampaign()).isEqualTo(expectedCampaign);
     }
 }

@@ -17,9 +17,6 @@
             <column name="type" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="organization_unit_id" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="campaign_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
