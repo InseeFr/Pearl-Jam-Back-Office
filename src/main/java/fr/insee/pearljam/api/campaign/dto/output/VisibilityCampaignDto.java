@@ -1,10 +1,12 @@
 package fr.insee.pearljam.api.campaign.dto.output;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 
 import java.util.List;
 
-
+@JsonPropertyOrder({ "organizationalUnit", "managementStartDate", "interviewerStartDate",
+        "identificationPhaseStartDate", "collectionStartDate", "collectionEndDate", "endDate"})
 public record VisibilityCampaignDto(
         String organizationalUnit,
         Long managementStartDate,
