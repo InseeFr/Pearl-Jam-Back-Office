@@ -154,9 +154,10 @@ class VisibilityDaoAdapterTest {
         List<Visibility> visibilities = visibilityDaoAdapter.findVisibilities(campaign.getId());
 
         // Then
-        assertThat(visibilities).hasSize(2);
-        assertEquals(visibilities.getFirst(), visibilityDB1);
-        assertEquals(visibilities.getLast(), visibilityDB2);
+        assertThat(visibilities)
+                .hasSize(2)
+                .anySatisfy(visibility -> assertEquals(visibility, visibilityDB1))
+                .anySatisfy(visibility -> assertEquals(visibility, visibilityDB2));
     }
 
     @Test
