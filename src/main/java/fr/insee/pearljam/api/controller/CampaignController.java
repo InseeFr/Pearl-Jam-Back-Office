@@ -260,8 +260,6 @@ public class CampaignController {
 	@Operation(summary = "Get target campaign")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID)
 	public CampaignResponseDto getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to GET {}", userId, campaignId);
 		return campaignService.getCampaignDtoById(campaignId);
 	}
 
