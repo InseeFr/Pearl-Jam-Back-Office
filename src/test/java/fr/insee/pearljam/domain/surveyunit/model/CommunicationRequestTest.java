@@ -11,17 +11,17 @@ class CommunicationRequestTest {
     @Test
     void testCreateCommunicationRequest() {
         // Given
-        Long configurationId = 1L;
+        Long communicationTemplateId = 1L;
         Long creationDate = System.currentTimeMillis();
         CommunicationRequestReason reason = CommunicationRequestReason.REFUSAL;
 
         // When
-        CommunicationRequest communicationRequest = CommunicationRequest.create(configurationId, creationDate, reason);
+        CommunicationRequest communicationRequest = CommunicationRequest.create(communicationTemplateId, creationDate, reason);
 
         // Then
         assertNotNull(communicationRequest);
         assertNull(communicationRequest.id());
-        assertEquals(configurationId, communicationRequest.communicationTemplateId());
+        assertEquals(communicationTemplateId, communicationRequest.communicationTemplateId());
         assertEquals(reason, communicationRequest.reason());
         assertEquals(CommunicationRequestEmitter.INTERVIEWER, communicationRequest.emitter());
         assertNotNull(communicationRequest.status());
