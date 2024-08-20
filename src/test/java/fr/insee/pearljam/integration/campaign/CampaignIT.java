@@ -116,21 +116,21 @@ class CampaignIT {
                    "campaignLabel":"An other campaign",
                    "visibilities":[
                       {
-                         "managementStartDate":1721683250,
-                         "interviewerStartDate":1721683251,
-                         "identificationPhaseStartDate":1721683252,
-                         "collectionStartDate":1721683253,
-                         "collectionEndDate":1721683254,
-                         "endDate":1721683255,
+                         "managementStartDate":1721683250000,
+                         "interviewerStartDate":1721683251000,
+                         "identificationPhaseStartDate":1721683252000,
+                         "collectionStartDate":1721683253000,
+                         "collectionEndDate":1721683254000,
+                         "endDate":1721683255000,
                          "organizationalUnit":"OU-NORTH"
                       },
                       {
-                         "managementStartDate":1721683260,
-                         "interviewerStartDate":1721683261,
-                         "identificationPhaseStartDate":1721683262,
-                         "collectionStartDate":1721683263,
-                         "collectionEndDate":1721683264,
-                         "endDate":1721683265,
+                         "managementStartDate":1721683260000,
+                         "interviewerStartDate":1721683261000,
+                         "identificationPhaseStartDate":1721683262000,
+                         "collectionStartDate":1721683263000,
+                         "collectionEndDate":1721683264000,
+                         "endDate":1721683265000,
                          "organizationalUnit":"OU-SOUTH"
                       }
                    ],
@@ -171,11 +171,11 @@ class CampaignIT {
         assertThat(campaignCreated.getVisibilities()).hasSize(2);
         assertThat(campaignCreated.getVisibilities())
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
-                        1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L))
+                        1721683250000L, 1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
-                        1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L));
+                        1721683250000L, 1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L));
         assertThat(campaignCreated.getReferents()).hasSize(2);
         assertThat(campaignCreated.getReferents())
                 .anySatisfy(referentToCheck -> assertReferent(referentToCheck, campaignId, "PRIMARY",
@@ -195,21 +195,21 @@ class CampaignIT {
                    "campaignLabel":"An other campaign",
                    "visibilities":[
                       {
-                         "managementStartDate":1721683250,
-                         "interviewerStartDate":1721683251,
-                         "identificationPhaseStartDate":1721683252,
-                         "collectionStartDate":1721683253,
-                         "collectionEndDate":1721683254,
-                         "endDate":1721683255,
+                         "managementStartDate":1721683250000,
+                         "interviewerStartDate":1721683251000,
+                         "identificationPhaseStartDate":1721683252000,
+                         "collectionStartDate":1721683253000,
+                         "collectionEndDate":1721683254000,
+                         "endDate":1721683255000,
                          "organizationalUnit":"OU-NORTH"
                       },
                       {
-                         "managementStartDate":1721683260,
-                         "interviewerStartDate":1721683261,
-                         "identificationPhaseStartDate":1721683262,
-                         "collectionStartDate":1721683263,
-                         "collectionEndDate":1721683264,
-                         "endDate":1721683265,
+                         "managementStartDate":1721683260000,
+                         "interviewerStartDate":1721683261000,
+                         "identificationPhaseStartDate":1721683262000,
+                         "collectionStartDate":1721683263000,
+                         "collectionEndDate":1721683264000,
+                         "endDate":1721683265000,
                          "organizationalUnit":"OU-SOUTH"
                       }
                    ],
@@ -250,13 +250,13 @@ class CampaignIT {
         assertThat(campaignUpdated.getVisibilities()).hasSize(2);
         assertThat(campaignUpdated.getVisibilities())
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
-                        1721683250L, 1721683251L,
-                        1721683252L, 1721683253L,
-                        1721683254L, 1721683255L))
+                        1721683250000L, 1721683251000L,
+                        1721683252000L, 1721683253000L,
+                        1721683254000L, 1721683255000L))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
-                        1721683250L, 1721683251L,
-                        1721683252L, 1721683253L,
-                        1721683254L, 1721683255L));
+                        1721683250000L, 1721683251000L,
+                        1721683252000L, 1721683253000L,
+                        1721683254000L, 1721683255000L));
 
         assertThat(campaignUpdated.getReferents()).hasSize(2);
         assertThat(campaignUpdated.getReferents())

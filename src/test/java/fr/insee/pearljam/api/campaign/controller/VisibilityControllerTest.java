@@ -35,14 +35,11 @@ class VisibilityControllerTest {
     private VisibilityFakeService visibilityService;
     private final String campaignId = "campaign-id";
     private final String organizationalUnitId = "ou-id";
-    private String updatePath;
-    private String findPath;
+    private final String updatePath = String.format("/api/campaign/%s/organizational-unit/%s/visibility", campaignId, organizationalUnitId);
+    private final String findPath = String.format("/api/campaign/%s/visibilities", campaignId);
 
     @BeforeEach
     void setup() {
-        updatePath = String.format("/api/campaign/%s/organizational-unit/%s/visibility", campaignId, organizationalUnitId);
-        findPath = String.format("/api/campaign/%s/visibilities", campaignId);
-
         visibilityService = new VisibilityFakeService();
         AuthenticationUserFakeService authenticatedUserService = new AuthenticationUserFakeService(AuthenticatedUserTestHelper.AUTH_ADMIN);
         VisibilityController visibilityController = new VisibilityController(visibilityService, authenticatedUserService);
@@ -57,10 +54,12 @@ class VisibilityControllerTest {
     void testGetVisibilities01() throws Exception {
         // Given
         List<Visibility> visibilities = List.of(
-                new Visibility(campaignId, organizationalUnitId, 1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L),
-                new Visibility(campaignId, "ou-id2", 1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L)
+                new Visibility(campaignId, organizationalUnitId, 1721683250000L,
+                        1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L),
+                new Visibility(campaignId, "ou-id2", 1721683250L,
+                        1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L)
         );
         visibilityService.setVisibilitiesToFind(visibilities);
 
@@ -138,8 +137,9 @@ class VisibilityControllerTest {
     }
 
     private VisibilityUpdateDto generateUpdateVisibility() {
-        return generateUpdateVisibility(1721683250L, 1721683251L, 1721683252L,
-                1721683253L, 1721683254L, 1721683255L);
+        return generateUpdateVisibility(1721683250000L, 1721683251000L,
+                1721683252000L, 1721683253000L,
+                1721683254000L, 1721683255000L);
     }
 
     private VisibilityUpdateDto generateUpdateVisibility(
