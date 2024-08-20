@@ -93,8 +93,8 @@ class CampaignControllerCreateTest {
     @DisplayName("Should return bad request when invalid campaign label")
     void testCreateCampaign04() throws Exception {
 
-        VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
-                1721683253L, 1721683254L, 1721683255L);
+        VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
+                1721683253000L, 1721683254000L, 1721683255000L);
        CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
@@ -124,20 +124,20 @@ class CampaignControllerCreateTest {
     @DisplayName("Should return bad request when invalid visibility")
     void testCreateCampaign05() throws Exception {
         List<VisibilityCampaignCreateDto> invalidVisibilities = new ArrayList<>(Arrays.asList(
-                generateVisibility("   ", 1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L),
-                generateVisibility("OU-NORTH", null, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L),
-                generateVisibility("OU-NORTH", 1721683250L, null, 1721683252L,
-                        1721683253L, 1721683254L, 1721683255L),
-                generateVisibility("OU-NORTH", 1721683250L, 1721683251L, null,
-                        1721683253L, 1721683254L, 1721683255L),
-                generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
-                        null, 1721683254L, 1721683255L),
-                generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, null, 1721683255L),
-                generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
-                        1721683253L, 1721683254L, null)
+                generateVisibility("   ", 1721683250000L, 1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L),
+                generateVisibility("OU-NORTH", null, 1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L),
+                generateVisibility("OU-NORTH", 1721683250000L, null, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L),
+                generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, null,
+                        1721683253000L, 1721683254000L, 1721683255000L),
+                generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
+                        null, 1721683254000L, 1721683255000L),
+                generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
+                        1721683253000L, null, 1721683255000L),
+                generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, null)
         ));
         invalidVisibilities.add(null);
 
@@ -180,18 +180,18 @@ class CampaignControllerCreateTest {
      * @return a pair of json string and dto object for the campaign
      */
     public CampaignCreateDto generateDefaultCampaign() {
-        VisibilityCampaignCreateDto firstVisibility = generateVisibility("OU-NORTH", 1721683250L,
-                1721683251L,
-                1721683252L,
-                1721683253L,
-                1721683254L,
-                1721683255L);
+        VisibilityCampaignCreateDto firstVisibility = generateVisibility("OU-NORTH", 1721683250000L,
+                1721683251000L,
+                1721683252000L,
+                1721683253000L,
+                1721683254000L,
+                1721683255000L);
         VisibilityCampaignCreateDto secondVisibility = generateVisibility("OU-SOUTH", 1721683260L,
-                1721683261L,
-                1721683262L,
-                1721683263L,
-                1721683264L,
-                1721683265L);
+                1721683261000L,
+                1721683262000L,
+                1721683263000L,
+                1721683264000L,
+                1721683265000L);
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("campId", "An other campaign",

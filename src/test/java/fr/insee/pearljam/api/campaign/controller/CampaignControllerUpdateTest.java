@@ -86,8 +86,10 @@ class CampaignControllerUpdateTest {
     @Test
     @DisplayName("Should return bad request when invalid OU in visibility")
     void testUpdateCampaign03() throws Exception {
-        VisibilityCampaignUpdateDto visibility = generateVisibility("   ", 1721683250L, 1721683251L, 1721683252L,
-                1721683253L, 1721683254L, 1721683255L);
+        VisibilityCampaignUpdateDto visibility = generateVisibility("   ", 1721683250000L,
+                1721683251000L, 1721683252000L,
+                1721683253000L, 1721683254000L,
+                1721683255000L);
         testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -148,11 +150,11 @@ class CampaignControllerUpdateTest {
     private CampaignUpdateDto generateDefaultCampaign() {
         VisibilityCampaignUpdateDto firstVisibility = generateDefaultVisibility();
         VisibilityCampaignUpdateDto secondVisibility = generateVisibility("OU-SOUTH", 1721683260L,
-                1721683261L,
-                1721683262L,
-                1721683263L,
-                1721683264L,
-                1721683265L);
+                1721683261000L,
+                1721683262000L,
+                1721683263000L,
+                1721683264000L,
+                1721683265000L);
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("An other campaign",
@@ -184,14 +186,15 @@ class CampaignControllerUpdateTest {
     }
 
     private VisibilityCampaignUpdateDto generateDefaultVisibility() {
-        return generateVisibility("OU-NORTH", 1721683250L, 1721683251L, 1721683252L,
-                1721683253L, 1721683254L, 1721683255L);
+        return generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L,
+                1721683252000L, 1721683253000L,
+                1721683254000L, 1721683255000L);
     }
 
-    private VisibilityCampaignUpdateDto generateVisibility(String organizationalUnit,
-                                                                               Long managementDate, Long interviewerDate,
-                                                                               Long identificationDate, Long collectionStartDate,
-                                                                               Long collectionEndDate, Long endDate) {
+    private VisibilityCampaignUpdateDto generateVisibility(
+            String organizationalUnit, Long managementDate,
+            Long interviewerDate, Long identificationDate,
+            Long collectionStartDate, Long collectionEndDate, Long endDate) {
         return new VisibilityCampaignUpdateDto(managementDate,
                 interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit);
     }
