@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,12 +27,10 @@ class SurveyUnitIT {
     @Autowired
     private MockMvc mockMvc;
 
-    static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
-
     @Test
     void testGetAllSurveyUnits() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/survey-units")
-                        .with(authentication(INTERVIEWER))
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
 
