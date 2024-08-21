@@ -55,21 +55,21 @@ class VisibilityIT {
                 [
                    {
                       "organizationalUnit":"OU-NORTH",
-                      "managementStartDate":1718966154308,
-                      "interviewerStartDate":1719052554308,
-                      "identificationPhaseStartDate":1719138954308,
-                      "collectionStartDate":1719225354308,
-                      "collectionEndDate":1721903754308,
-                      "endDate":1724582154308
+                      "managementStartDate":1718966154301,
+                      "interviewerStartDate":1719052554302,
+                      "identificationPhaseStartDate":1719138954303,
+                      "collectionStartDate":1719225354304,
+                      "collectionEndDate":1721903754305,
+                      "endDate":1724582154306
                    },
                    {
                       "organizationalUnit":"OU-SOUTH",
                       "managementStartDate":1718966154308,
-                      "interviewerStartDate":1719052554308,
-                      "identificationPhaseStartDate":1719138954308,
-                      "collectionStartDate":1719225354308,
-                      "collectionEndDate":1721903754308,
-                      "endDate":1724582154308
+                      "interviewerStartDate":1719052554309,
+                      "identificationPhaseStartDate":1719138954310,
+                      "collectionStartDate":1719225354314,
+                      "collectionEndDate":1721903754315,
+                      "endDate":1724582154316
                    }
                 ]
                 """;
@@ -104,9 +104,9 @@ class VisibilityIT {
         assertThat(visibilityDBToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(visibilityDBToCheck.getOrganizationUnit().getId()).isEqualTo(organizationalUnitId);
         assertThat(visibilityDBToCheck.getManagementStartDate()).isEqualTo(1718966200000L);
-        assertThat(visibilityDBToCheck.getInterviewerStartDate()).isEqualTo(1719052554308L);
+        assertThat(visibilityDBToCheck.getInterviewerStartDate()).isEqualTo(1719052554302L);
         assertThat(visibilityDBToCheck.getIdentificationPhaseStartDate()).isEqualTo(1719138954308L);
-        assertThat(visibilityDBToCheck.getCollectionStartDate()).isEqualTo(1719225354308L);
+        assertThat(visibilityDBToCheck.getCollectionStartDate()).isEqualTo(1719225354304L);
         assertThat(visibilityDBToCheck.getCollectionEndDate()).isEqualTo(1921903754308L);
         assertThat(visibilityDBToCheck.getEndDate()).isEqualTo(2024582154308L);
     }
