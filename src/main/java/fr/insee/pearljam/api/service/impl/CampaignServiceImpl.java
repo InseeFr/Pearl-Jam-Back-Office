@@ -1,50 +1,41 @@
 package fr.insee.pearljam.api.service.impl;
 
+import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.Referent;
+import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.count.CountDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
+import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.*;
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
-import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.Referent;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.service.CampaignService;
-import fr.insee.pearljam.api.service.PreferenceService;
-import fr.insee.pearljam.api.service.ReferentService;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -181,7 +172,9 @@ public class CampaignServiceImpl implements CampaignService {
 			visibilitiesDBToCreate.add(VisibilityDB.fromModel(visibility, campaign, organizationUnit));
 		}
 		campaign.setVisibilities(visibilitiesDBToCreate);
-		updateReferents(campaign, campaignDto.referents());
+		if(campaignDto.referents() != null) {
+			updateReferents(campaign, campaignDto.referents());
+		}
 		campaignRepository.save(campaign);
 	}
 
@@ -219,9 +212,11 @@ public class CampaignServiceImpl implements CampaignService {
 		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
-		List<Visibility> visibilitiesToUpdate = VisibilityCampaignUpdateDto.toModel(campaignToUpdate.visibilities(), campaignId);
-		for(Visibility visibilityToUpdate : visibilitiesToUpdate) {
-			visibilityService.updateVisibility(visibilityToUpdate);
+		if(campaignToUpdate.visibilities() != null) {
+			List<Visibility> visibilitiesToUpdate = VisibilityCampaignUpdateDto.toModel(campaignToUpdate.visibilities(), campaignId);
+			for (Visibility visibilityToUpdate : visibilitiesToUpdate) {
+				visibilityService.updateVisibility(visibilityToUpdate);
+			}
 		}
 
 		currentCampaign.setLabel(campaignToUpdate.campaignLabel());
@@ -230,7 +225,9 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		updateConfiguration(currentCampaign, campaignToUpdate);
-		updateReferents(currentCampaign, campaignToUpdate.referents());
+		if(campaignToUpdate.referents() != null) {
+			updateReferents(currentCampaign, campaignToUpdate.referents());
+		}
 
 		campaignRepository.save(currentCampaign);
 	}
@@ -281,7 +278,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.anyMatch(visibility -> visibility.endDate() > Instant.now().toEpochMilli());
 	}
 
-	private void updateReferents(Campaign campaign, List<ReferentDto> referentDtos) {
+	private void updateReferents(Campaign campaign, @NonNull List<ReferentDto> referentDtos) {
 		List<Referent> referents = campaign.getReferents();
 		referents.clear();
 		referentDtos.forEach(refDto -> {

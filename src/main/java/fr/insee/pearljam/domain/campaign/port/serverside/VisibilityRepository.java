@@ -28,7 +28,7 @@ public interface VisibilityRepository {
     /**
      *
      * @param campaignId campaign id
-     * @return the visibilites of a campaign
+     * @return the visibilities of a campaign
      */
     List<Visibility> findVisibilities(String campaignId);
 

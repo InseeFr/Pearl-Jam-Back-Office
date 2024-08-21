@@ -4,7 +4,6 @@ import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class VisibilityServiceImpl implements VisibilityService {
     private final VisibilityRepository visibilityRepository;
 
     @Override
-    public List<Visibility> findVisibilities(String campaignId) throws CampaignNotFoundException {
+    public List<Visibility> findVisibilities(String campaignId) {
         return visibilityRepository.findVisibilities(campaignId);
     }
 

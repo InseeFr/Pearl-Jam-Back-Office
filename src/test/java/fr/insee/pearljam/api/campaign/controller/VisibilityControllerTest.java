@@ -53,21 +53,24 @@ class VisibilityControllerTest {
     @DisplayName("Should return not found when campaign does not exist")
     void testGetVisibilities01() throws Exception {
         // Given
-        List<Visibility> visibilities = List.of(
+        Visibility visibility1 =
                 new Visibility(campaignId, organizationalUnitId, 1721683250000L,
                         1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L),
-                new Visibility(campaignId, "ou-id2", 1721683250L,
+                        1721683253000L, 1721683254000L, 1721683255000L);
+        Visibility visibility2 =
+                new Visibility(campaignId, "ou-id2", 1721683250000L,
                         1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L)
-        );
-        visibilityService.setVisibilitiesToFind(visibilities);
+                        1721683253000L, 1721683254000L, 1721683255000L);
+        List<Visibility> visibilities = List.of(visibility1, visibility2);
+        visibilityService.save(visibility1);
+        visibilityService.save(visibility2);
 
         // When & Then
         MvcResult result = mockMvc.perform(get(findPath)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
+
 
         List<VisibilityCampaignDto> visibilitiesExpected = VisibilityCampaignDto.fromModel(visibilities);
         String resultContent = result.getResponse().getContentAsString();
@@ -88,8 +91,16 @@ class VisibilityControllerTest {
     @Test
     @DisplayName("Should update visibility")
     void testUpdateVisibility01() throws Exception {
+        // Given
+        Visibility visibility =
+                new Visibility(campaignId, organizationalUnitId, 1721683250000L,
+                        1721683251000L, 1721683252000L,
+                        1721683253000L, 1721683254000L, 1721683255000L);
+        visibilityService.save(visibility);
+
         VisibilityUpdateDto visibilityToUpdate = generateUpdateVisibility();
 
+        // When & Then
         mockMvc.perform(put(updatePath)
                         .content(JsonTestHelper.toJson(visibilityToUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -104,12 +115,12 @@ class VisibilityControllerTest {
     @Test
     @DisplayName("Should return not found when visibility does not exist")
     void testUpdateVisibility02() throws Exception {
-        visibilityService.setShouldThrowVisibilityNotFoundException(true);
+        String updateInvalidPath = String.format("/api/campaign/%s/organizational-unit/%s/visibility", "campaign-with-no-visibility", organizationalUnitId);
         VisibilityUpdateDto visibilityToUpdate = generateUpdateVisibility();
-        mockMvc.perform(put(updatePath)
+        mockMvc.perform(put(updateInvalidPath)
                         .content(JsonTestHelper.toJson(visibilityToUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updatePath, VisibilityNotFoundException.MESSAGE));
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updateInvalidPath, VisibilityNotFoundException.MESSAGE));
     }
 
     @Test

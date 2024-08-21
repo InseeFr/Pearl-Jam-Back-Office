@@ -5,32 +5,59 @@ import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VisibilityFakeRepository implements VisibilityRepository {
+
+    private final List<Visibility> visibilities = new ArrayList<>();
+    public static final CampaignVisibility CAMPAIGN_VISIBILITY =
+            new CampaignVisibility(1627845600000L, 1627932000000L,
+                    1628018400000L, 1628104800000L,
+                    1628191200000L, 1628277600000L);
+
     @Override
     public CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return CAMPAIGN_VISIBILITY;
     }
 
     @Override
     public Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return visibilities.stream()
+                .filter(visibility -> visibility.campaignId().equals(campaignId))
+                .filter((visibility -> visibility.organizationalUnitId().equals(organizationalUnitId)))
+                .findFirst();
     }
 
     @Override
     public List<Visibility> findVisibilities(String campaignId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return visibilities.stream()
+                .filter(visibility -> visibility.campaignId().equals(campaignId))
+                .toList();
     }
 
     @Override
     public void updateDates(Visibility visibilityToUpdate) throws VisibilityNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+        String campaignId = visibilityToUpdate.campaignId();
+        String organizationalUnitId = visibilityToUpdate.organizationalUnitId();
+
+        Visibility visibilityToRemove = findVisibility(campaignId, organizationalUnitId)
+                .orElseThrow(VisibilityNotFoundException::new);
+
+        visibilities.remove(visibilityToRemove);
+        visibilities.add(visibilityToUpdate);
     }
 
     @Override
     public Visibility getVisibilityBySurveyUnitId(String surveyUnitId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return new Visibility("campaign1", "OU1",
+                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+    }
+
+    // Additional methods for testing purposes
+
+    public void save(Visibility visibility) {
+        if(!visibilities.contains(visibility)) {
+            visibilities.add(visibility);
+        }
     }
 }

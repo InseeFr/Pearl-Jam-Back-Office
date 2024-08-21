@@ -18,23 +18,19 @@ public class VisibilityFakeService implements VisibilityService {
     private boolean shouldThrowCampaignNotFoundException = false;
 
     @Setter
-    private boolean shouldThrowVisibilityNotFoundException = false;
-
-    @Setter
     private boolean shouldThrowVisibilityMergingException = false;
 
     @Getter
     private Visibility visibilityUpdated = null;
 
-    @Setter
-    private List<Visibility> visibilitiesToFind = new ArrayList<>();
+    private List<Visibility> visibilities = new ArrayList<>();
 
     @Override
     public List<Visibility> findVisibilities(String campaignId) throws CampaignNotFoundException {
         if(shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
-        return visibilitiesToFind;
+        return visibilities;
     }
 
     @Override
@@ -43,14 +39,20 @@ public class VisibilityFakeService implements VisibilityService {
             throw new VisibilityHasInvalidDatesException();
         }
 
-        if(shouldThrowVisibilityNotFoundException) {
-            throw new VisibilityNotFoundException();
-        }
+        visibilities.stream()
+                .filter(visibility -> visibility.organizationalUnitId().equals(visibilityToUpdate.organizationalUnitId()))
+                .filter(visibility -> visibility.campaignId().equals(visibilityToUpdate.campaignId()))
+                .findFirst()
+                .orElseThrow(VisibilityNotFoundException::new);
         visibilityUpdated = visibilityToUpdate;
     }
 
     @Override
     public CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds) {
         return null;
+    }
+
+    public void save(Visibility visibility) {
+        visibilities.add(visibility);
     }
 }
