@@ -189,8 +189,6 @@ public class CampaignServiceImpl implements CampaignService {
 				.orElseThrow(CampaignNotFoundException::new);
 
 		if (!force && isCampaignOngoing(campaignId)) {
-			String errorMessage = String.format("Campaign %s is on-going and can't be deleted", campaignId);
-			log.info(errorMessage);
 			throw new CampaignOnGoingException();
 		}
 		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(surveyUnitService::delete);
