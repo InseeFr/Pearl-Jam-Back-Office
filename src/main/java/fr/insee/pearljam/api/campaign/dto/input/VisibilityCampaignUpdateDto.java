@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.web.annotation.AtLeastOneDateValid;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -29,17 +30,20 @@ public record VisibilityCampaignUpdateDto(
 		@NotBlank
 		String organizationalUnit
 ) {
+	public static Visibility toModel(@NonNull VisibilityCampaignUpdateDto visibility, String campaignId) {
+		return new Visibility(campaignId,
+				visibility.organizationalUnit(),
+				visibility.managementStartDate(),
+				visibility.interviewerStartDate(),
+				visibility.identificationPhaseStartDate(),
+				visibility.collectionStartDate(),
+				visibility.collectionEndDate(),
+				visibility.endDate());
+	}
+
 	public static List<Visibility> toModel(List<VisibilityCampaignUpdateDto> visibilitiesDto, String campaignId) {
 		return visibilitiesDto.stream()
-				.map(visibilityDto -> new Visibility(campaignId,
-					visibilityDto.organizationalUnit(),
-					visibilityDto.managementStartDate(),
-					visibilityDto.interviewerStartDate(),
-					visibilityDto.identificationPhaseStartDate(),
-					visibilityDto.collectionStartDate(),
-					visibilityDto.collectionEndDate(),
-					visibilityDto.endDate()
-				))
+				.map(visibilityDto -> toModel(visibilityDto, campaignId))
 				.toList();
 	}
 }
