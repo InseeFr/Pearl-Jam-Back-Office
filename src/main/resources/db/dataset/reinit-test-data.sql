@@ -29,6 +29,7 @@ TRUNCATE TABLE public.address;
 INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, elevator, building, floor, door, staircase, city_priority_district) VALUES
     ('InseeAddress', 'Ted Farmer' ,'','','1 rue de la gare' ,'','29270 Carhaix' ,'France', true, 'Bat. C', 'Etg 4', 'Porte 48', 'Escalier B', true),
     ('InseeAddress', 'Cecilia Ortega' ,'','','2 place de la mairie' ,'','90000 Belfort' ,'France', false, null, null, null, null, false),
+    ('InseeAddress', 'Mylene Mikoton' ,'','','3 place de la mairie' ,'','90000 Belfort' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Claude Watkins' ,'','','3 avenue de la République' ,'','32230 Marciac' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Veronica Gill' ,'','','4 chemin du ruisseau' ,'','44190 Clisson' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Christine Aguilar' ,'','','5 rue de l''école' ,'','59620 Aulnoye-Aimeries' ,'France', false, null, null, null, null, false),
@@ -82,7 +83,6 @@ INSERT INTO public.preference (id_user, id_campaign) VALUES
     ('GUEST', 'ZCLOSEDX00'),
     ('GUEST', 'XCLOSEDX00');
 
-
 INSERT INTO visibility (
     organization_unit_id,
     campaign_id,
@@ -93,8 +93,8 @@ INSERT INTO visibility (
     interviewer_start_date,
     management_start_date
 ) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308),
-    ('OU-SOUTH', 'SIMPSONS2020X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308),
+    ('OU-NORTH', 'SIMPSONS2020X00',1721903754305, 1719225354304, 1724582154306, 1719138954303, 1719052554302, 1718966154301),
+    ('OU-SOUTH', 'SIMPSONS2020X00',1721903754315, 1719225354314, 1724582154316, 1719138954310, 1719052554309, 1718966154308),
     ('OU-NORTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308),
     ('OU-SOUTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308),
     ('OU-SOUTH', 'XCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308),
@@ -105,6 +105,7 @@ INSERT INTO visibility (
 
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '11', TRUE, a.id, 'SIMPSONS2020X00', 'INTW1', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Ted Farmer' AND s.bs='11';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '12', TRUE, a.id, 'SIMPSONS2020X00', 'INTW1', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Cecilia Ortega' AND s.bs='12';
+INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '25', TRUE, a.id, 'SIMPSONS2020X00', 'INTW1', s.id, 'OU-SOUTH' FROM address a, sample_identifier s WHERE a.l1='Mylene Mikoton' AND s.bs='25';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '13', FALSE, a.id, 'SIMPSONS2020X00', 'INTW2', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Claude Watkins' AND s.bs='13';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '14', FALSE, a.id, 'SIMPSONS2020X00', 'INTW3', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Veronica Gill' AND s.bs='14';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '20', FALSE, a.id, 'VQS2021X00', 'INTW1', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Christine Aguilar' AND s.bs='20';
@@ -117,6 +118,7 @@ INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interview
 INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES
     ('test@test.com',TRUE, 'Ted', 'Farmer', 11111111, 0, TRUE, '11'),
     ('test@test.com', TRUE,'Cecilia', 'Ortega', 11111111, 1, TRUE, '12'),
+    ('test@test.com', TRUE,'Mylene', 'Mikoton', 11111111, 1, TRUE, '25'),
     ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, TRUE, '13'),
     ('test@test.com', TRUE,'Veronica', 'Baker', 11111111, 1, TRUE, '14'),
     ('test@test.com', TRUE,'Christine', 'Aguilar', 11111111, 1, FALSE, '11'),
@@ -134,6 +136,7 @@ INSERT INTO public.person (email, favorite_email, first_name, last_name, birthda
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Ted' and p.last_name='Farmer' and p.survey_unit_id='11';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT FALSE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Ted' and p.last_name='Farmer' and p.survey_unit_id='11';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Cecilia' and p.last_name='Ortega' and p.survey_unit_id='12';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Mylene' and p.last_name='Mikoton' and p.survey_unit_id='25';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Claude' and p.last_name='Watkins' and p.survey_unit_id='13';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Veronica' and p.last_name='Baker' and p.survey_unit_id='14';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Christine' and p.last_name='Aguilar' and p.survey_unit_id='11';
@@ -150,6 +153,7 @@ INSERT INTO public.state (date, type, survey_unit_id) VALUES
     (111112111,'VIN', '11'),
     (110111111,'NNS', '11'),
     (111111111,'TBR', '12'),
+    (111111111,'TBR', '25'),
     (111111111,'TBR', '13'),
     (111111111,'TBR', '14'),
     (101111111,'TBR', '11'),

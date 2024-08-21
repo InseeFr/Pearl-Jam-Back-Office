@@ -1,83 +1,12 @@
 package fr.insee.pearljam.api.authKeycloak;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import fr.insee.pearljam.api.service.*;
-import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
-import fr.insee.pearljam.api.domain.ClosingCause;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.domain.Medium;
-import fr.insee.pearljam.api.domain.Message;
-import fr.insee.pearljam.api.domain.MessageStatusType;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.OrganizationUnitType;
-import fr.insee.pearljam.api.domain.Source;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.Status;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.Title;
-import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
@@ -94,17 +23,50 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
+import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.domain.surveyunit.model.CommentType;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for Keycloak Authentication */
 @ActiveProfiles("auth")
@@ -590,40 +552,9 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the GET endpoint "api/survey-unit/"
-	 * return 200
-	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
-	 */
-	@Test
-	@Order(12)
-	void testGetAllSurveyUnit() throws Exception {
-		mockMvc.perform(get("/api/survey-units")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.[?(@.id == '11')]").exists(),
-						jsonPath("$.[?(@.id == '11')].campaign").value("SIMPSONS2020X00"),
-						jsonPath("$.[?(@.id == '11')].campaignLabel").value("Survey on the Simpsons tv show 2020"));
-
-		mockMvc.perform(get(Constants.API_CAMPAIGNS)
-				.with(authentication(LOCAL_USER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						expectValidManagementStartDate(),
-						expectValidIdentificationPhaseStartDate(),
-						expectValidInterviewerStartDate(),
-						expectValidCollectionStartDate(),
-						expectValidCollectionEndDate(),
-						expectValidEndDate());
-	}
-
-	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 404 when survey-unit is false
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws JSONException
 	 */

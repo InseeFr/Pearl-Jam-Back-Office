@@ -46,13 +46,11 @@ class CampaignIT {
 
     /**
      * Test that the GET endpoint "api/campaigns"
-     * return 404
      *
      * @throws InterruptedException
      * @throws JSONException
      * @throws ParseException
      */
-
     @Test
     @DisplayName("Should retrieve campaign")
     void testGetCampaign() throws Exception {
@@ -70,21 +68,21 @@ class CampaignIT {
                    "visibilities":[
                       {
                          "organizationalUnit":"OU-NORTH",
-                         "managementStartDate":1718966154308,
-                         "interviewerStartDate":1719052554308,
-                         "identificationPhaseStartDate":1719138954308,
-                         "collectionStartDate":1719225354308,
-                         "collectionEndDate":1721903754308,
-                         "endDate":1724582154308
+                         "managementStartDate":1718966154301,
+                         "interviewerStartDate":1719052554302,
+                         "identificationPhaseStartDate":1719138954303,
+                         "collectionStartDate":1719225354304,
+                         "collectionEndDate":1721903754305,
+                         "endDate":1724582154306
                       },
                       {
                          "organizationalUnit":"OU-SOUTH",
                          "managementStartDate":1718966154308,
-                         "interviewerStartDate":1719052554308,
-                         "identificationPhaseStartDate":1719138954308,
-                         "collectionStartDate":1719225354308,
-                         "collectionEndDate":1721903754308,
-                         "endDate":1724582154308
+                         "interviewerStartDate":1719052554309,
+                         "identificationPhaseStartDate":1719138954310,
+                         "collectionStartDate":1719225354314,
+                         "collectionEndDate":1721903754315,
+                         "endDate":1724582154316
                       }
                    ],
                    "referents":[
