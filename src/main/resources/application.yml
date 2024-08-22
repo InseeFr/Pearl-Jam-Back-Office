@@ -85,6 +85,7 @@ springdoc:
       activated: false
     tagsSorter: alpha
     doc-expansion: none
+    tryItOutEnabled: true
 
 logging:
   level:
