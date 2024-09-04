@@ -17,7 +17,7 @@ class CommunicationTemplateCreateDtoTest {
     void testToModel() {
         // Given
         CommunicationTemplateCreateDto dto1 = new CommunicationTemplateCreateDto("msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplateCreateDto dto2 = new CommunicationTemplateCreateDto("msg2", CommunicationMedium.MAIL, CommunicationType.REMINDER);
+        CommunicationTemplateCreateDto dto2 = new CommunicationTemplateCreateDto("msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplateCreateDto> dtoList = List.of(dto1, dto2);
 
         // When
@@ -28,14 +28,14 @@ class CommunicationTemplateCreateDtoTest {
 
         CommunicationTemplate firstTemplate = modelList.getFirst();
         assertThat(firstTemplate.id()).isNull();
-        assertThat(firstTemplate.messhugahId()).isEqualTo("msg1");
+        assertThat(firstTemplate.meshuggahId()).isEqualTo("msg1");
         assertThat(firstTemplate.medium()).isEqualTo(CommunicationMedium.EMAIL);
         assertThat(firstTemplate.type()).isEqualTo(CommunicationType.NOTICE);
 
         CommunicationTemplate lastTemplate = modelList.getLast();
         assertThat(lastTemplate.id()).isNull();
-        assertThat(lastTemplate.messhugahId()).isEqualTo("msg2");
-        assertThat(lastTemplate.medium()).isEqualTo(CommunicationMedium.MAIL);
+        assertThat(lastTemplate.meshuggahId()).isEqualTo("msg2");
+        assertThat(lastTemplate.medium()).isEqualTo(CommunicationMedium.LETTER);
         assertThat(lastTemplate.type()).isEqualTo(CommunicationType.REMINDER);
     }
 }

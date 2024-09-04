@@ -8,7 +8,7 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="communication_templatePK" />
             </column>
-            <column name="messhugah_id" type="VARCHAR(255)">
+            <column name="meshuggah_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="medium" type="VARCHAR(255)">
