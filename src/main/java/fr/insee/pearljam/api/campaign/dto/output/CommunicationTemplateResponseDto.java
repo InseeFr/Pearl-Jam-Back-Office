@@ -17,7 +17,7 @@ public record CommunicationTemplateResponseDto(
                 .map(communicationTemplate ->
                         new CommunicationTemplateResponseDto(
                                 communicationTemplate.id(),
-                                communicationTemplate.messhugahId(),
+                                communicationTemplate.meshuggahId(),
                                 communicationTemplate.medium(),
                                 communicationTemplate.type()))
                 .toList();

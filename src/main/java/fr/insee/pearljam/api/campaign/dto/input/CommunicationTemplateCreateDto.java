@@ -10,13 +10,13 @@ import java.util.List;
 /**
  * A class representing the communication template of a visibility.
  *
- * @param messhugahId  The identifier for Messhugah
+ * @param meshuggahId  The identifier for Messhugah
  * @param medium       The medium of communication
  * @param type         The type of communication
  */
 public record CommunicationTemplateCreateDto(
         @NotNull
-        String messhugahId,
+        String meshuggahId,
         @NotNull
         CommunicationMedium medium,
         @NotNull
@@ -27,7 +27,7 @@ public record CommunicationTemplateCreateDto(
                 .map(communicationTemplate ->
                         new CommunicationTemplate(
                                 null,
-                                communicationTemplate.messhugahId(),
+                                communicationTemplate.meshuggahId(),
                                 communicationTemplate.medium(),
                                 communicationTemplate.type()))
                 .toList();

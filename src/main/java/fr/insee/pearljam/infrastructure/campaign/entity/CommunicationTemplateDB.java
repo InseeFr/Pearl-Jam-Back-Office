@@ -30,7 +30,7 @@ public class CommunicationTemplateDB implements Serializable {
     private Long id;
 
     @Column
-    private String messhugahId;
+    private String meshuggahId;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -48,7 +48,7 @@ public class CommunicationTemplateDB implements Serializable {
         return communicationTemplatesDB.stream()
                 .map(communicationTemplateDB -> new CommunicationTemplate(
                         communicationTemplateDB.getId(),
-                        communicationTemplateDB.getMesshugahId(),
+                        communicationTemplateDB.getMeshuggahId(),
                         communicationTemplateDB.getMedium(),
                         communicationTemplateDB.getType()))
                 .toList();
@@ -57,7 +57,7 @@ public class CommunicationTemplateDB implements Serializable {
     public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, Campaign campaign) {
         return communicationTemplates.stream()
                 .map(communicationTemplate -> new CommunicationTemplateDB(null,
-                        communicationTemplate.messhugahId(),
+                        communicationTemplate.meshuggahId(),
                         communicationTemplate.medium(),
                         communicationTemplate.type(),
                         campaign))
