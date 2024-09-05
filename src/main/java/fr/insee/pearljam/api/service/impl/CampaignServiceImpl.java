@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +61,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final PreferenceService preferenceService;
 	private final ReferentService referentService;
 	private final VisibilityService visibilityService;
+	private final DateService dateService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -280,7 +280,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.orElseThrow(CampaignNotFoundException::new);
 		List<Visibility> visibilities = visibilityService.findVisibilities(campaign.getId());
 		return visibilities.stream()
-				.anyMatch(visibility -> visibility.endDate() > Instant.now().toEpochMilli());
+				.anyMatch(visibility -> visibility.endDate() > dateService.getCurrentTimestamp());
 	}
 
 	private void updateReferents(Campaign campaign, @NonNull List<ReferentDto> referentDtos) {

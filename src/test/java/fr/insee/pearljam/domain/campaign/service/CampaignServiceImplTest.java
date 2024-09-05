@@ -32,6 +32,7 @@ class CampaignServiceImplTest {
     private CampaignFakeRepository campaignRepository;
     private VisibilityFakeService visibilityService;
     private CampaignServiceImpl campaignService;
+    private CurrentDateService dateService = new CurrentDateService();
     private final OrganizationUnit existingOrganizationUnit = new OrganizationUnit("OU-NORTH", "label-ou", OrganizationUnitType.LOCAL);
     private final Campaign existingCampaign =  new Campaign(
             "CAMPAIGN-ID",
@@ -82,7 +83,7 @@ class CampaignServiceImplTest {
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService);
+                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
     }
 
     // TODO : handle referent
