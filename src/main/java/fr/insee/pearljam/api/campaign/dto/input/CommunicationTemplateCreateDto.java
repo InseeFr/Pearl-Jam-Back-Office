@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTempla
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,13 +24,22 @@ public record CommunicationTemplateCreateDto(
         CommunicationType type
 ) {
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateCreateDto> communicationTemplates) {
+        if(communicationTemplates == null) {
+            return new ArrayList<>();
+        }
         return communicationTemplates.stream()
-                .map(communicationTemplate ->
-                        new CommunicationTemplate(
-                                null,
-                                communicationTemplate.meshuggahId(),
-                                communicationTemplate.medium(),
-                                communicationTemplate.type()))
+                .map(CommunicationTemplateCreateDto::toModel)
                 .toList();
+    }
+
+    public static CommunicationTemplate toModel(CommunicationTemplateCreateDto communicationTemplate) {
+        if(communicationTemplate == null) {
+            return null;
+        }
+        return new CommunicationTemplate(
+                null,
+                communicationTemplate.meshuggahId(),
+                communicationTemplate.medium(),
+                communicationTemplate.type());
     }
 }

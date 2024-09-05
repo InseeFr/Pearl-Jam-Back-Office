@@ -13,9 +13,10 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.List;
 
-@Entity(name = "communication_template")
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"type", "medium", "campaign_id"})
+@Entity
+@Table(name = "communication_template",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"type", "medium", "campaign_id"})
 })
 @Getter
 @Setter
@@ -46,12 +47,19 @@ public class CommunicationTemplateDB implements Serializable {
 
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateDB> communicationTemplatesDB) {
         return communicationTemplatesDB.stream()
-                .map(communicationTemplateDB -> new CommunicationTemplate(
-                        communicationTemplateDB.getId(),
-                        communicationTemplateDB.getMeshuggahId(),
-                        communicationTemplateDB.getMedium(),
-                        communicationTemplateDB.getType()))
+                .map(CommunicationTemplateDB::toModel)
                 .toList();
+    }
+
+    public static CommunicationTemplate toModel(CommunicationTemplateDB communicationTemplate) {
+        if(communicationTemplate == null) {
+            return null;
+        }
+        return new CommunicationTemplate(
+                        communicationTemplate.getId(),
+                        communicationTemplate.getMeshuggahId(),
+                        communicationTemplate.getMedium(),
+                        communicationTemplate.getType());
     }
 
     public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, Campaign campaign) {
