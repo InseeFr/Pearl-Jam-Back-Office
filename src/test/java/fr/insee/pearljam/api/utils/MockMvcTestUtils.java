@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.utils;
 
 import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -30,7 +31,7 @@ public class MockMvcTestUtils {
     }
 
     public static LocalDate getDate() {
-        Instant fixedInstant = Instant.ofEpochMilli(1719324512000L);
+        Instant fixedInstant = Instant.ofEpochMilli(FixedDateService.FIXED_TIMESTAMP);
         return LocalDate.ofInstant(fixedInstant, ZoneId.systemDefault());
     }
 }
