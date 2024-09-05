@@ -243,19 +243,6 @@ public class SurveyUnit implements Serializable {
 		existingComments.addAll(commentsDBToUpdate);
 	}
 
-	/**
-	 * add a list of communication requests for a survey unit
-	 * @param communicationRequestsToCreate the communication requests to add
-	 */
-	public void addCommunicationRequests(List<CommunicationRequest> communicationRequestsToCreate) {
-		Set<CommunicationRequestDB> newCommunicationsRequests = communicationRequestsToCreate.stream()
-				.map(newCommunicationRequest -> CommunicationRequestDB.fromModel(newCommunicationRequest, this))
-				.collect(Collectors.toSet());
-
-		this.getCommunicationRequests()
-				.addAll(newCommunicationsRequests);
-	}
-
 	public Set<Comment> getModelComments() {
 		return CommentDB.toModel(this.getComments());
 	}

@@ -1,6 +1,7 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,8 @@ class CommunicationRequestStatusDBTest {
     @Test
     @DisplayName("Should return entity object")
     void testFromModel01() {
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(null, 1L,
+        CommunicationTemplateDB communicationTemplate = new CommunicationTemplateDB(1L, null, null, null, null);
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(null, communicationTemplate,
                 CommunicationRequestReason.UNREACHABLE,
                 CommunicationRequestEmitter.INTERVIEWER, null, null);
         CommunicationRequestStatus communicationRequestStatus = new CommunicationRequestStatus(1L, 123456789L, CommunicationStatusType.INITIATED);
