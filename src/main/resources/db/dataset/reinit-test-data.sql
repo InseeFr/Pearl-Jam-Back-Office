@@ -1,6 +1,9 @@
 --changeset davdarras:reset-data context:test
 
 SET REFERENTIAL_INTEGRITY FALSE;
+TRUNCATE TABLE public.communication_request_status;
+TRUNCATE TABLE public.communication_request;
+TRUNCATE TABLE public.communication_template;
 TRUNCATE TABLE public.campaign_message_recipient;
 TRUNCATE TABLE public.contact_attempt;
 TRUNCATE TABLE public.message_status;
@@ -23,6 +26,22 @@ TRUNCATE TABLE public.comment;
 TRUNCATE TABLE public.closing_cause;
 TRUNCATE TABLE public.organization_unit;
 TRUNCATE TABLE public.address;
+
+ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.communication_template ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.contact_attempt ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.referent ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.message ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.sample_identifier ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.identification ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.person ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.phone_number ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.state ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.contact_outcome ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.comment ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.closing_cause ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.address ALTER COLUMN id RESTART WITH 1;
 
 --changeset davdarras:init-data context:test
 
@@ -179,5 +198,27 @@ INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
 INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES
     ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
     ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+
+INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
+    ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
+    ('mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
+    ('mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
+    ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
+    ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
+
+INSERT INTO public.communication_request (survey_unit_id, emitter, reason, communication_template_id) VALUES
+    ('11', 'INTERVIEWER', 'REFUSAL', 1),
+    ('11', 'INTERVIEWER', 'UNREACHABLE', 2),
+    ('20', 'INTERVIEWER', 'REFUSAL', 3),
+    ('20', 'INTERVIEWER', 'UNREACHABLE', 4);
+
+INSERT INTO public.communication_request_status (communication_request_id, status, date) VALUES
+    (1, 'INITIATED', 1721903754305),
+    (1, 'READY', 1721903755305),
+    (1, 'SUBMITTED', 1721903756305),
+    (2, 'INITIATED', 1721903754305),
+    (2, 'READY', 1721903756310),
+    (3, 'INITIATED', 1721903754205),
+    (4, 'INITIATED', 1721903754205);
 
 SET REFERENTIAL_INTEGRITY TRUE;

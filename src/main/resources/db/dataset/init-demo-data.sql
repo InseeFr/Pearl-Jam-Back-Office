@@ -9,7 +9,7 @@ INSERT INTO public.address (dtype, l1, l2, l3, l4, l5, l6, l7, elevator, buildin
     ('InseeAddress', 'Louise Walker' ,'','','6 impasse du lac' ,'','38200 Vienne' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Anthony Bennett' ,'','','7 avenue de la Liberté' ,'','62000 Arras' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Christopher Lewis' ,'','','8 route du moulin' ,'','35000 Rennes' ,'France', false, null, null, null, null, false),
-    ('InseeAddress', 'Laurent Neville' ,'','','5 route du sapin' ,'','35000 Rennes' ,'France', false, null, null, null, null, false)
+    ('InseeAddress', 'Laurent Neville' ,'','','5 route du sapin' ,'','35000 Rennes' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Alain Thé' ,'','','7 rue des Infusions' ,'','75001 Paris' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Brie Savarin' ,'','','15 avenue des Fromages' ,'','69002 Lyon' ,'France', false, null, null, null, null, false),
     ('InseeAddress', 'Cécile Houte' ,'','','8 impasse des Aromates' ,'','13003 Marseille' ,'France', false, null, null, null, null, false),
@@ -178,11 +178,11 @@ INSERT INTO public.person (email, favorite_email, first_name, last_name, birthda
     ('test@test.com', TRUE, 'Harry', 'Cover', 11111111, 1, FALSE, '25'),
     ('test@test.com', TRUE, 'Ella', 'Gance', 11111111, 0, FALSE, '25'),
     ('test@test.com', TRUE, 'Jean', 'Neige', 11111111, 0, FALSE, '26'),
-    ('test@test.com', TRUE, 'Phil', 'Harmonie', 11111111, 0, FALSE, '28')
+    ('test@test.com', TRUE, 'Phil', 'Harmonie', 11111111, 0, FALSE, '28'),
     ('test@test.com', TRUE, 'Alain', 'Thé', 11111111, 0, TRUE, '25'),
     ('test@test.com', TRUE, 'Brie', 'Savarin', 11111111, 1, TRUE, '26'),
     ('test@test.com', TRUE, 'Cécile', 'Houte', 11111111, 0, TRUE, '27'),
-    ('test@test.com', TRUE, 'Dan', 'Tifrice', 11111111, 1 TRUE, '28'),
+    ('test@test.com', TRUE, 'Dan', 'Tifrice', 11111111, 1, TRUE, '28'),
     ('test@test.com', TRUE, 'Émile', 'Pates', 11111111, 1, TRUE, '29'),
     ('test@test.com', TRUE, 'François', 'Appétit', 11111111, 1, TRUE, '30'),
     ('test@test.com', TRUE, 'Gérard', 'Dine', 11111111, 0, TRUE, '31'),
@@ -261,3 +261,25 @@ INSERT INTO public.identification (survey_unit_id, identification,access,situati
     ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
     ('25', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
     ('30', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+
+INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
+    ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
+    ('mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
+    ('mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
+    ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
+    ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
+
+INSERT INTO public.communication_request (survey_unit_id, emitter, reason, communication_template_id) VALUES
+    ('11', 'INTERVIEWER', 'REFUSAL', 1),
+    ('11', 'INTERVIEWER', 'UNREACHABLE', 2),
+    ('20', 'INTERVIEWER', 'REFUSAL', 3),
+    ('20', 'INTERVIEWER', 'UNREACHABLE', 4);
+
+INSERT INTO public.communication_request_status (communication_request_id, status, date) VALUES
+    (1, 'INITIATED', 1721903754305),
+    (1, 'READY', 1721903755305),
+    (1, 'SUBMITTED', 1721903756305),
+    (2, 'INITIATED', 1721903754305),
+    (2, 'READY', 1721903756310),
+    (3, 'INITIATED', 1721903754205),
+    (4, 'INITIATED', 1721903754205);

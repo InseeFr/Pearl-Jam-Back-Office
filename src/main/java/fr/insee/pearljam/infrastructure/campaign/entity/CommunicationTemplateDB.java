@@ -42,7 +42,6 @@ public class CommunicationTemplateDB implements Serializable {
     private CommunicationType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "campaign_id", insertable = false, updatable = false)
     private Campaign campaign;
 
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateDB> communicationTemplatesDB) {

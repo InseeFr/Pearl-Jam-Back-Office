@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="davdar" id="540-1">
+        <dropColumn columnName="type" tableName="communication_request"/>
+        <dropColumn columnName="medium" tableName="communication_request"/>
+        <dropColumn columnName="messhugah_id" tableName="communication_request"/>
+        <renameColumn tableName="communication_request" oldColumnName="emiter" newColumnName="emitter"/>
+
+        <addColumn tableName="communication_request">
+            <column name="communication_template_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="communication_template_id"
+                                 baseTableName="communication_request"
+                                 constraintName="FK506gklsgdfiner7hc3vbo77ku"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 referencedColumnNames="id"
+                                 referencedTableName="communication_template"
+                                 validate="true"/>
+    </changeSet>
+</databaseChangeLog>
