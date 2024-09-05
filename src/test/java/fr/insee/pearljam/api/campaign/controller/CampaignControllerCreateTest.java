@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.CampaignController;
@@ -13,6 +14,8 @@ import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.exception.CampaignAlreadyExistException;
 import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
 import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
@@ -95,17 +98,19 @@ class CampaignControllerCreateTest {
 
         VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L);
-       CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
+        CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 true,
                 List.of(visibility),
+                List.of(),
                 List.of());
-       CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
+        CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 true,
                 List.of(visibility),
+                List.of(),
                 List.of());
         List<CampaignCreateDto> campaigns = List.of(campaign1, campaign2);
         for(CampaignCreateDto campaign : campaigns) {
@@ -151,6 +156,7 @@ class CampaignControllerCreateTest {
                     ContactAttemptConfiguration.F2F,
                     true,
                     invalidCampaignVisibilities,
+                    List.of(),
                     List.of());
             mockMvc.perform(post(Constants.API_CAMPAIGN)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -175,11 +181,34 @@ class CampaignControllerCreateTest {
                 .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.CONFLICT, Constants.API_CAMPAIGN, VisibilityHasInvalidDatesException.MESSAGE));
     }
 
+    @Test
+    @DisplayName("Should return conflict when duplicate medium/type on communication configurations")
+    void testCreateCampaign07() throws Exception {
+        VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
+                1721683253000L, 1721683254000L, 1721683255000L);
+        CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto("messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto("messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CampaignCreateDto campaign = generateCampaign("campId", "label",
+                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
+                ContactAttemptConfiguration.F2F,
+                true,
+                List.of(visibility),
+                List.of(),
+                List.of(communicationTemplate, duplicatedCommunicationTemplate));
+
+        mockMvc.perform(post(Constants.API_CAMPAIGN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonTestHelper.toJson(campaign)))
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, Constants.API_CAMPAIGN, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
+    }
+
     /**
      * Generate a default campaign
      * @return a pair of json string and dto object for the campaign
      */
     public CampaignCreateDto generateDefaultCampaign() {
+        CommunicationTemplateCreateDto communicationTemplate1 = new CommunicationTemplateCreateDto("messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto communicationTemplate2 = new CommunicationTemplateCreateDto("messhId2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         VisibilityCampaignCreateDto firstVisibility = generateVisibility("OU-NORTH", 1721683250000L,
                 1721683251000L,
                 1721683252000L,
@@ -199,7 +228,8 @@ class CampaignControllerCreateTest {
                 ContactAttemptConfiguration.TEL,
                 true,
                 List.of(firstVisibility, secondVisibility),
-                List.of(firstReferent, secondReferent));
+                List.of(firstReferent, secondReferent),
+                List.of(communicationTemplate1, communicationTemplate2));
     }
 
     private CampaignCreateDto generateCampaign(
@@ -209,11 +239,13 @@ class CampaignControllerCreateTest {
             ContactAttemptConfiguration contactAttemptConfiguration,
             Boolean communicationRequestConfiguration,
             List<VisibilityCampaignCreateDto> visibilities,
-            List<ReferentDto> referents) {
+            List<ReferentDto> referents,
+            List<CommunicationTemplateCreateDto> communicationTemplates) {
 
         return new CampaignCreateDto(campaignId,
                 campaignLabel,
                 visibilities,
+                communicationTemplates,
                 referents,
                 email,
                 identificationConfiguration,

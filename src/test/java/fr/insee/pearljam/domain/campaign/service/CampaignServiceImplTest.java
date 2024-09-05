@@ -2,16 +2,16 @@ package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.input.*;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.CampaignServiceImpl;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -90,12 +90,15 @@ class CampaignServiceImplTest {
     @DisplayName("Should create a new campaign successfully")
     void shouldCreateNewCampaign() throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = "CAMP1";
+
+        CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId());
         CampaignCreateDto campaignCreateDto = new CampaignCreateDto(
                 campaignId,
                 "Campaign 1",
                 List.of(visibilityDto),
+                List.of(communicationTemplateDto),
                 null,
                 null,
                 IdentificationConfiguration.IASCO,
@@ -116,7 +119,13 @@ class CampaignServiceImplTest {
         assertThat(createdCampaign.getContactOutcomeConfiguration()).isEqualTo(campaignCreateDto.contactOutcomeConfiguration());
         assertThat(createdCampaign.getVisibilities())
                 .hasSize(1)
-                .satisfiesExactly(visibility -> assertThat(VisibilityDB.toModel(visibility)).isEqualTo(VisibilityCampaignCreateDto.toModel(visibilityDto, campaignId)));
+                .satisfiesExactly(visibility -> assertThat(VisibilityDB.toModel(visibility))
+                        .isEqualTo(VisibilityCampaignCreateDto.toModel(visibilityDto, campaignId)));
+        assertThat(createdCampaign.getCommunicationTemplates())
+                .hasSize(1)
+                .satisfiesExactly(communicationTemplateDB ->
+                        assertThat(CommunicationTemplateDB.toModel(communicationTemplateDB))
+                                .isEqualTo(CommunicationTemplateCreateDto.toModel(communicationTemplateDto)));
     }
 
     @Test
@@ -129,6 +138,7 @@ class CampaignServiceImplTest {
                 campaignId,
                 "Existing campaign",
                 List.of(visibilityDto),
+                null,
                 null,
                 null,
                 IdentificationConfiguration.IASCO,
@@ -228,7 +238,6 @@ class CampaignServiceImplTest {
         assertThat(updatedCampaign.getVisibilities()).hasSize(2);
     }
 
-    // TODO : handle referents
     @Test
     @DisplayName("Should not update referents if null")
     void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException {

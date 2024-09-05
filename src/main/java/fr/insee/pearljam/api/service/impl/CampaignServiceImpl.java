@@ -1,9 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.input.*;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.domain.Campaign;
@@ -20,8 +17,11 @@ import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
 import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -160,6 +160,7 @@ public class CampaignServiceImpl implements CampaignService {
 				campaignDto.email(),
 				campaignDto.communicationRequestConfiguration());
 		campaign.setReferents(new ArrayList<>());
+		campaign.setCommunicationTemplates(new ArrayList<>());
 
 		List<VisibilityDB> visibilitiesDBToCreate = new ArrayList<>();
 		List<Visibility> visibilities = VisibilityCampaignCreateDto.toModel(campaignDto.visibilities(), campaignDto.campaign());
@@ -174,6 +175,12 @@ public class CampaignServiceImpl implements CampaignService {
 		campaign.setVisibilities(visibilitiesDBToCreate);
 		if(campaignDto.referents() != null) {
 			updateReferents(campaign, campaignDto.referents());
+		}
+
+		List<CommunicationTemplate> communicationTemplatesToCreate = CommunicationTemplateCreateDto.toModel(campaignDto.communications());
+		if(communicationTemplatesToCreate != null) {
+			List<CommunicationTemplateDB> communicationsDBToCreate = CommunicationTemplateDB.fromModel(communicationTemplatesToCreate, campaign);
+			campaign.setCommunicationTemplates(communicationsDBToCreate);
 		}
 		campaignRepository.save(campaign);
 	}
