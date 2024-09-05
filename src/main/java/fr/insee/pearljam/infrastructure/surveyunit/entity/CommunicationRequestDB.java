@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,8 +38,8 @@ public class CommunicationRequestDB implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long communicationTemplateId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private CommunicationTemplateDB communicationTemplate;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -60,10 +61,10 @@ public class CommunicationRequestDB implements Serializable {
      * @param request model object
      * @return entity object
      */
-    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit) {
+    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, CommunicationTemplateDB communicationTemplate) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), request.communicationTemplateId(),
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), communicationTemplate,
                 request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {
@@ -87,7 +88,7 @@ public class CommunicationRequestDB implements Serializable {
                     .map(CommunicationRequestStatusDB::toModel).toList();
         }
 
-        return new CommunicationRequest(request.getId(), request.getCommunicationTemplateId(),
+        return new CommunicationRequest(request.getId(), request.getCommunicationTemplate().getId(),
                 request.getReason(), request.getEmitter(), status);
     }
 

@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestStatusDB;
@@ -85,10 +86,14 @@ class SurveyUnitDetailDtoTest {
                 new CommunicationRequestStatusDB(4L, 123345678912L, CommunicationStatusType.CANCELLED, null)
         );
 
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, 1L,
+        CommunicationTemplateDB communicationTemplate1 = new CommunicationTemplateDB(1L, null, null, null, null);
+        CommunicationTemplateDB communicationTemplate2 = new CommunicationTemplateDB(2L, null, null, null, null);
+
+
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplate1,
                 CommunicationRequestReason.UNREACHABLE,
                 CommunicationRequestEmitter.INTERVIEWER, surveyUnit, status1));
-        communicationRequestDBs.add(new CommunicationRequestDB(11L, 2L,
+        communicationRequestDBs.add(new CommunicationRequestDB(11L, communicationTemplate2,
                 CommunicationRequestReason.REFUSAL,
                 CommunicationRequestEmitter.TOOL, surveyUnit, status2));
         surveyUnit.setCommunicationRequests(communicationRequestDBs);

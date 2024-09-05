@@ -6,6 +6,8 @@ import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
@@ -21,17 +23,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 class SurveyUnitUpdateServiceImplTest {
+    private CommunicationRequestFakeRepository communicationRequestFakeRepository;
     private SurveyUnitUpdateServiceImpl surveyUnitService;
     private SurveyUnit surveyUnit;
     private SurveyUnitUpdateDto surveyUnitDto;
+    private CommunicationTemplateDB communicationTemplate;
 
     @BeforeEach
     void setup() {
-        surveyUnitService = new SurveyUnitUpdateServiceImpl();
+        communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
+        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository);
         surveyUnit = new SurveyUnit("id", true, true, null,
                 null, null, null, null, null);
+
+        communicationTemplate = new CommunicationTemplateDB(3L, null, null, null, null);
         Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, 3L,
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplate,
                 CommunicationRequestReason.REFUSAL,
                 CommunicationRequestEmitter.TOOL,
                 surveyUnit, null));
@@ -51,16 +58,15 @@ class SurveyUnitUpdateServiceImplTest {
         surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
-        Set<CommunicationRequestDB> communicationRequestResults = surveyUnit.getCommunicationRequests();
+        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
         assertThat(communicationRequestResults)
-                .hasSize(3)
-                .extracting(CommunicationRequestDB::getId,
-                        CommunicationRequestDB::getCommunicationTemplateId,
-                        CommunicationRequestDB::getReason,
-                        CommunicationRequestDB::getEmitter,
-                        CommunicationRequestDB::getSurveyUnit,
-                        communicationRequestDB -> communicationRequestDB.getStatus() == null ? null : communicationRequestDB.getStatus().stream()
-                                .map(status -> tuple(status.getId(), status.getDate(), status.getStatus()))
+                .hasSize(2)
+                .extracting(CommunicationRequest::id,
+                        CommunicationRequest::communicationTemplateId,
+                        CommunicationRequest::reason,
+                        CommunicationRequest::emitter,
+                        communicationRequest -> communicationRequest.status().stream()
+                                .map(status -> tuple(status.id(), status.date(), status.status()))
                                 .toList()
                         )
                 .containsExactlyInAnyOrder(
@@ -68,30 +74,30 @@ class SurveyUnitUpdateServiceImplTest {
                                 1L,
                                 CommunicationRequestReason.UNREACHABLE,
                                 CommunicationRequestEmitter.INTERVIEWER,
-                                surveyUnit,
                                 List.of(tuple(null, 12345678910L, CommunicationStatusType.INITIATED))
                         ),
                         tuple(null,
                                 2L,
                                 CommunicationRequestReason.REFUSAL,
                                 CommunicationRequestEmitter.INTERVIEWER,
-                                surveyUnit,
                                 List.of(tuple(null, 1234567891011L, CommunicationStatusType.INITIATED))
-                        ),
-                        tuple(10L,
-                                3L,
-                                CommunicationRequestReason.REFUSAL,
-                                CommunicationRequestEmitter.TOOL,
-                                surveyUnit,
-                                null)
+                        )
                 );
+    }
 
-        // Check that CommunicationRequestStatusDB has the correct parent
-        communicationRequestResults.forEach(request -> {
-            if (request.getStatus() != null) {
-                request.getStatus().forEach(status -> assertThat(status.getCommunicationRequest()).isEqualTo(request));
-            }
-        });
+    @Test
+    @DisplayName("Should not add communication requests with duplicate communication configuration")
+    void testUpdateCommunication02() {
+        List<CommunicationRequestCreateDto> communicationRequests = List.of(
+                new CommunicationRequestCreateDto(communicationTemplate.getId(), 12345678910L,
+                        CommunicationRequestReason.UNREACHABLE)
+        );
+
+        surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
+        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+
+        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
+        assertThat(communicationRequestResults).isEmpty();
     }
 
     @Test

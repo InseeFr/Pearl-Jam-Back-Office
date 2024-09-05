@@ -3,10 +3,7 @@ package fr.insee.pearljam.api.web.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.domain.exception.CampaignOnGoingException;
-import fr.insee.pearljam.domain.exception.EntityAlreadyExistException;
-import fr.insee.pearljam.domain.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
+import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -126,6 +123,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(NoOrganizationUnitException.class)
     public ResponseEntity<ApiError> exceptions(NoOrganizationUnitException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(CommunicationTemplateNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(CommunicationTemplateNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(VisibilityHasInvalidDatesException.class)
