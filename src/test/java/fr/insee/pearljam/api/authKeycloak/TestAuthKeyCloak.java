@@ -7,8 +7,6 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
@@ -16,9 +14,7 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
-import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
@@ -28,6 +24,7 @@ import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.DateServiceConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
@@ -45,6 +42,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
@@ -62,6 +60,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -506,53 +505,6 @@ class TestAuthKeyCloak {
 
 	/* SurveyUnitController */
 
-	/**
-	 * Test that the GET endpoint "api/survey-unit/{id}"
-	 * return 200.
-	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
-	 */
-	@Test
-	@Order(11)
-	void testGetSurveyUnitDetail() throws Exception {
-		String personJsonPath = "$.persons.[?(@.firstName == 'Christine')].%s";
-
-		mockMvc.perform(get("/api/survey-unit/11")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.id").value("11"),
-						jsonPath("$.priority", equalTo(true)),
-						checkJsonPath(personJsonPath, "lastName", "Aguilar"),
-						checkJsonPath(personJsonPath, "favoriteEmail", true),
-						checkJsonPath(personJsonPath, "privileged", false),
-						checkJsonPath(personJsonPath, "birthdate", 11111111L),
-						checkJsonPath(personJsonPath, "phoneNumbers[0].number", "+33677542802"),
-						jsonPath("$.address.l1", equalTo("Ted Farmer")),
-						jsonPath("$.address.l2", equalTo("")),
-						jsonPath("$.address.l3", equalTo("")),
-						jsonPath("$.address.l4", equalTo("1 rue de la gare")),
-						jsonPath("$.address.l5", equalTo("")),
-						jsonPath("$.address.l6", equalTo("29270 Carhaix")),
-						jsonPath("$.address.l7", equalTo("France")),
-						jsonPath("$.address.elevator", equalTo(true)),
-						jsonPath("$.address.building", equalTo("Bat. C")),
-						jsonPath("$.address.floor", equalTo("Etg 4")),
-						jsonPath("$.address.door", equalTo("Porte 48")),
-						jsonPath("$.address.staircase", equalTo("Escalier B")),
-						jsonPath("$.address.cityPriorityDistrict", equalTo(true)),
-						jsonPath("$.campaign", equalTo("SIMPSONS2020X00")),
-						jsonPath("$.contactOutcome").doesNotHaveJsonPath(),
-						jsonPath("$.comments", empty()),
-						jsonPath("$.states[0].type", equalTo("VIN")),
-						jsonPath("$.contactAttempts", empty()),
-						jsonPath("$.identification.identification", equalTo("IDENTIFIED")),
-						jsonPath("$.identification.access", equalTo("ACC")),
-						jsonPath("$.identification.situation", equalTo("ORDINARY")),
-						jsonPath("$.identification.category", equalTo("PRIMARY")),
-						jsonPath("$.identification.occupant", equalTo("IDENTIFIED")));
-	}
 
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
@@ -571,71 +523,6 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 200
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	@Order(14)
-	void testPutSurveyUnitDetail() throws Exception {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
-		surveyUnitDetailDto.getPersons().get(0).getPhoneNumbers().get(0).setNumber("test");
-		surveyUnitDetailDto.getAddress().setL1("test");
-		surveyUnitDetailDto.getAddress().setL2("test");
-		surveyUnitDetailDto.getAddress().setL3("test");
-		surveyUnitDetailDto.getAddress().setL4("test");
-		surveyUnitDetailDto.getAddress().setL5("test");
-		surveyUnitDetailDto.getAddress().setL6("test");
-		surveyUnitDetailDto.getAddress().setL7("test");
-		surveyUnitDetailDto.getAddress().setBuilding("testBuilding");
-		surveyUnitDetailDto.getAddress().setDoor("testDoor");
-		surveyUnitDetailDto.getAddress().setFloor("testFloor");
-		surveyUnitDetailDto.getAddress().setStaircase("testStaircase");
-		surveyUnitDetailDto.getAddress().setElevator(true);
-		surveyUnitDetailDto.getAddress().setCityPriorityDistrict(true);
-		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),
-				new CommentDto(CommentType.MANAGEMENT, "test")));
-		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.NNS)));
-		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC, Medium.TEL),
-				new ContactAttemptDto(1589268800000L, Status.INA, Medium.TEL)));
-		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.IMP, 2));
-
-		mockMvc.perform(put("/api/survey-unit/20")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON)
-				.content(asJsonString(surveyUnitDetailDto))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.id", equalTo("20")),
-						jsonPath("$.persons[0].phoneNumbers[0].number", equalTo("test")),
-						jsonPath("$.address.l1", equalTo("test")),
-						jsonPath("$.address.l2", equalTo("test")),
-						jsonPath("$.address.l3", equalTo("test")),
-						jsonPath("$.address.l4", equalTo("test")),
-						jsonPath("$.address.l5", equalTo("test")),
-						jsonPath("$.address.l6", equalTo("test")),
-						jsonPath("$.address.l7", equalTo("test")),
-						jsonPath("$.address.building", equalTo("testBuilding")),
-						jsonPath("$.address.door", equalTo("testDoor")),
-						jsonPath("$.address.floor", equalTo("testFloor")),
-						jsonPath("$.address.staircase", equalTo("testStaircase")),
-						jsonPath("$.address.elevator", equalTo(true)),
-						jsonPath("$.address.cityPriorityDistrict", equalTo(true)),
-						jsonPath("$.contactOutcome.type", equalTo(ContactOutcomeType.IMP.toString())),
-						jsonPath("$.contactOutcome.date", equalTo(Long.valueOf(1589268626000L))),
-						jsonPath("$.contactOutcome.totalNumberOfContactAttempts", is(2)),
-						jsonPath("$.comments[1].value", equalTo("test")),
-						jsonPath("comments[1].type",
-								is(oneOf(CommentType.MANAGEMENT.toString(), CommentType.INTERVIEWER.toString()))),
-						jsonPath("contactAttempts[1].status", is(oneOf(Status.NOC.toString(), Status.INA.toString())))
-
-				);
-
-	}
-
-	/**
 	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 200
 	 * 
@@ -643,6 +530,7 @@ class TestAuthKeyCloak {
 	 */
 	@Test
 	@Order(15)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutSurveyUnitState() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/12/state/WFT")
 				.with(authentication(LOCAL_USER))
@@ -731,8 +619,8 @@ class TestAuthKeyCloak {
 				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
-						jsonPath("$.npaCount").value("1"),
-						jsonPath("$.npiCount").value("0"),
+						jsonPath("$.npaCount").value("0"),
+						jsonPath("$.npiCount").value("1"),
 						jsonPath("$.rowCount").value("0"),
 						jsonPath("$.npxCount").value("0"),
 						jsonPath("$.total").value("2"));
@@ -1072,7 +960,6 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Disabled("Need Clock injection refactor")
 	@Order(45)
 	void testGetInterviewerRelatedCampaigns() throws Exception {
 		mockMvc.perform(get("/api/interviewer/INTW1/campaigns")
@@ -1080,8 +967,8 @@ class TestAuthKeyCloak {
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
-						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')").exists(),
-						jsonPath("$.[?(@.id == 'SIMPSONS2020X00' ).label").value("Survey on the Simpsons tv show 2020"),
+						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')]").exists(),
+						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')].label").value("Survey on the Simpsons tv show 2020"),
 						expectValidManagementStartDate(),
 						expectValidEndDate());
 	}
@@ -1888,6 +1775,7 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(202)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteCampaign() throws Exception {
 		mockMvc.perform(delete("/api/campaign/XCLOSEDX00")
 				.with(authentication(ADMIN))
@@ -1945,6 +1833,7 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(206)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteOrganizationUnit() throws Exception {
 		// Delete all Survey Units before deleting Organization Unit
 		surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"))

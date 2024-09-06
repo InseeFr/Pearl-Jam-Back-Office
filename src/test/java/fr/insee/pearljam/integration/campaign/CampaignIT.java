@@ -5,6 +5,9 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import org.json.JSONException;
 import org.junit.jupiter.api.DisplayName;
@@ -102,7 +105,6 @@ class CampaignIT {
         JSONAssert.assertEquals(contentResult, expectedResult, JSONCompareMode.NON_EXTENSIBLE);
     }
 
-
     @Test
     @DisplayName("Should create campaign")
     @Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
@@ -146,6 +148,23 @@ class CampaignIT {
                          "role":"PRIMARY"
                       }
                    ],
+                   "communications": [
+                      {
+                         "meshuggahId": "meshId1",
+                         "medium": "LETTER",
+                         "type": "REMINDER"
+                      },
+                      {
+                         "meshuggahId": "meshId2",
+                         "medium": "EMAIL",
+                         "type": "NOTICE"
+                      },
+                      {
+                         "meshuggahId": "meshId3",
+                         "medium": "LETTER",
+                         "type": "NOTICE"
+                      }
+                   ],
                    "email": "test.email@plop.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
@@ -174,12 +193,30 @@ class CampaignIT {
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
                         1721683250000L, 1721683251000L, 1721683252000L,
                         1721683253000L, 1721683254000L, 1721683255000L));
+
+        assertThat(campaignCreated.getCommunicationTemplates()).hasSize(3);
+        assertThat(campaignCreated.getCommunicationTemplates())
+                .anySatisfy(communicationTemplateToCheck -> assertCommunicationTemplate(communicationTemplateToCheck, campaignId, "meshId1",
+                        CommunicationMedium.LETTER, CommunicationType.REMINDER))
+                .anySatisfy(communicationTemplateToCheck -> assertCommunicationTemplate(communicationTemplateToCheck, campaignId, "meshId2",
+                        CommunicationMedium.EMAIL, CommunicationType.NOTICE))
+                .anySatisfy(communicationTemplateToCheck -> assertCommunicationTemplate(communicationTemplateToCheck, campaignId, "meshId3",
+                        CommunicationMedium.LETTER, CommunicationType.NOTICE));
         assertThat(campaignCreated.getReferents()).hasSize(2);
+
         assertThat(campaignCreated.getReferents())
                 .anySatisfy(referentToCheck -> assertReferent(referentToCheck, campaignId, "PRIMARY",
                         "Marley", "Bob", "0123456789"))
                 .anySatisfy(referentToCheck -> assertReferent(referentToCheck, campaignId, "PRIMARY",
                         "Mikoton", "Mylene", "2345678901"));
+    }
+
+    private void assertCommunicationTemplate(CommunicationTemplateDB communicationTemplateToCheck, String campaignId,
+                                             String meshuggahId, CommunicationMedium medium, CommunicationType type) {
+        assertThat(communicationTemplateToCheck.getMeshuggahId()).isEqualTo(meshuggahId);
+        assertThat(communicationTemplateToCheck.getCampaign().getId()).isEqualTo(campaignId);
+        assertThat(communicationTemplateToCheck.getType()).isEqualTo(type);
+        assertThat(communicationTemplateToCheck.getMedium()).isEqualTo(medium);
     }
 
     @Test
