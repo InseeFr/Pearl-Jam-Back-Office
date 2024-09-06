@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
-import jakarta.validation.Valid;
 import lombok.Data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,14 +29,12 @@ public class SurveyUnitDetailDto {
 	private Boolean priority;
 	private Boolean move;
 	private String campaign;
-	@Valid
 	private List<CommentDto> comments;
 	private SampleIdentifiersDto sampleIdentifiers;
 	private List<StateDto> states;
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
-	@Valid
 	private List<CommunicationRequestResponseDto> communicationRequests;
 
 	public SurveyUnitDetailDto() {
