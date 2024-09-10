@@ -157,8 +157,7 @@ public class CampaignServiceImpl implements CampaignService {
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
-				campaignDto.email(),
-				campaignDto.communicationRequestConfiguration());
+				campaignDto.email());
 		campaign.setReferents(new ArrayList<>());
 		campaign.setCommunicationTemplates(new ArrayList<>());
 
@@ -247,9 +246,6 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		if (campDto.contactAttemptConfiguration() != null) {
 			currentCampaign.setContactAttemptConfiguration(campDto.contactAttemptConfiguration());
-		}
-		if (campDto.communicationRequestConfiguration() != null) {
-			currentCampaign.setCommunicationConfiguration(campDto.communicationRequestConfiguration());
 		}
 	}
 

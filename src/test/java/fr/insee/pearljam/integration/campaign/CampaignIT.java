@@ -168,8 +168,7 @@ class CampaignIT {
                    "email": "test.email@plop.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
-                   "contactAttemptConfiguration":"F2F",
-                   "communicationRequestConfiguration": null
+                   "contactAttemptConfiguration":"F2F"
                 }
                 """;
         mockMvc.perform(post(Constants.API_CAMPAIGN)
@@ -183,7 +182,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         Campaign campaignCreated = campaignOptional.get();
         assertCampaignInfos(campaignCreated, campaignId, "An other campaign", "test.email@plop.com",
-                false, ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F);
         assertThat(campaignCreated.getVisibilities()).hasSize(2);
         assertThat(campaignCreated.getVisibilities())
@@ -265,8 +264,7 @@ class CampaignIT {
                    "email":"test.test@sdf.com",
                    "identificationConfiguration":"NOIDENT",
                    "contactOutcomeConfiguration":"TEL",
-                   "contactAttemptConfiguration":"F2F",
-                   "communicationRequestConfiguration":true
+                   "contactAttemptConfiguration":"F2F"
                 }
         """;
         mockMvc.perform(put("/api/campaign/" + campaignId)
@@ -280,7 +278,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         Campaign campaignUpdated = campaignOptional.get();
         assertCampaignInfos(campaignUpdated, campaignId, "An other campaign", "test.test@sdf.com",
-                true, ContactAttemptConfiguration.F2F, IdentificationConfiguration.NOIDENT,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL);
         assertThat(campaignUpdated.getVisibilities()).hasSize(2);
         assertThat(campaignUpdated.getVisibilities())
@@ -341,12 +339,11 @@ class CampaignIT {
     }
 
     private void assertCampaignInfos(Campaign campaignToCheck, String campaignId, String label, String email,
-                                     boolean communicationConfiguration, ContactAttemptConfiguration contactAttemptConfig,
+                                     ContactAttemptConfiguration contactAttemptConfig,
                                      IdentificationConfiguration identificationConfig, ContactOutcomeConfiguration contactOutcomeConfig) {
         assertThat(campaignToCheck.getId()).isEqualTo(campaignId);
         assertThat(campaignToCheck.getLabel()).isEqualTo(label);
         assertThat(campaignToCheck.getEmail()).isEqualTo(email);
-        assertThat(campaignToCheck.getCommunicationConfiguration()).isEqualTo(communicationConfiguration);
         assertThat(campaignToCheck.getContactAttemptConfiguration()).isEqualTo(contactAttemptConfig);
         assertThat(campaignToCheck.getIdentificationConfiguration()).isEqualTo(identificationConfig);
         assertThat(campaignToCheck.getContactOutcomeConfiguration()).isEqualTo(contactOutcomeConfig);

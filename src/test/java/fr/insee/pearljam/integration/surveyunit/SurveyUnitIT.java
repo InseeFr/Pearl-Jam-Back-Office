@@ -59,8 +59,7 @@ class SurveyUnitIT {
                   "endDate":1724582154306,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"F2F",
-                  "contactAttemptConfiguration":"F2F",
-                  "communicationRequestConfiguration":false
+                  "contactAttemptConfiguration":"F2F"
                },
                {
                   "id":"12",
@@ -74,8 +73,7 @@ class SurveyUnitIT {
                   "endDate":1724582154306,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"F2F",
-                  "contactAttemptConfiguration":"F2F",
-                  "communicationRequestConfiguration":false
+                  "contactAttemptConfiguration":"F2F"
                },
                {
                   "id":"20",
@@ -89,8 +87,7 @@ class SurveyUnitIT {
                   "endDate":1724582154308,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"TEL",
-                  "contactAttemptConfiguration":"TEL",
-                  "communicationRequestConfiguration":false
+                  "contactAttemptConfiguration":"TEL"
                }
             ]
         """;

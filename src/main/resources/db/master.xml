@@ -48,4 +48,7 @@
 	<!-- Data model update : new implementation for communication requests -->
 	<include file="changelog/541_alter_communication_request.xml" relativeToChangelogFile="true" />
 
+	<!-- delete communication option on campaign and put it in visibility -->
+	<include file="changelog/542_update_communication_configuration.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

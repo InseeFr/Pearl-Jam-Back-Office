@@ -70,7 +70,6 @@ class CampaignControllerUpdateTest {
         CampaignUpdateDto campaign = generateCampaign("    ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(),
                 List.of());
         mockMvc.perform(put(updatePath)
@@ -133,7 +132,6 @@ class CampaignControllerUpdateTest {
         CampaignUpdateDto campaign = generateCampaign("campaignLabel",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(visibility),
                 List.of());
         mockMvc.perform(put(updatePath)
@@ -160,7 +158,6 @@ class CampaignControllerUpdateTest {
         return generateCampaign("An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(firstVisibility, secondVisibility),
                 List.of(firstReferent, secondReferent));
     }
@@ -169,7 +166,6 @@ class CampaignControllerUpdateTest {
                                                String email, IdentificationConfiguration identificationConfiguration,
                                                ContactOutcomeConfiguration contactOutcomeConfiguration,
                                                ContactAttemptConfiguration contactAttemptConfiguration,
-                                               Boolean communicationRequestConfiguration,
                                                List<VisibilityCampaignUpdateDto> visibilities,
                                                List<ReferentDto> referents) {
         return new CampaignUpdateDto(
@@ -179,8 +175,7 @@ class CampaignControllerUpdateTest {
                 email,
                 identificationConfiguration,
                 contactOutcomeConfiguration,
-                contactAttemptConfiguration,
-                communicationRequestConfiguration
+                contactAttemptConfiguration
         );
 
     }

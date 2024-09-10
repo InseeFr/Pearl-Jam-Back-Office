@@ -30,7 +30,7 @@ class SurveyUnitDetailDtoTest {
         SampleIdentifier sampleIdentifier = new InseeSampleIdentifier(1, "ec", 2, 3, 4, 5, 6,
                 7, 8, "autre", "nograp");
         Campaign campaign = new Campaign("id", "label", null,
-                null, null, "email", true);
+                null, null, "email");
         surveyUnit = new SurveyUnit("id", true, true, address,
                 sampleIdentifier, campaign, null, null, new HashSet<>());
 
