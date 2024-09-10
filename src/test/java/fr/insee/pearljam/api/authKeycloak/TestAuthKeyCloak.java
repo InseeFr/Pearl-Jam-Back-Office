@@ -280,8 +280,6 @@ class TestAuthKeyCloak {
 						checkJsonPath(campaignJsonPath, "email", "first.email@test.com"),
 						checkJsonPath(campaignJsonPath, "toReview", 3L),
 						checkJsonPath(campaignJsonPath, "preference", true),
-						checkJsonPath(campaignJsonPath, "communicationRequestConfiguration",
-								false),
 						checkJsonPath(campaignJsonPath, "identificationConfiguration",
 								IdentificationConfiguration.IASCO.name()),
 						checkJsonPath(campaignJsonPath, "contactAttemptConfiguration",

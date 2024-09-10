@@ -20,7 +20,6 @@ import java.util.List;
  * @param identificationConfiguration The identification configuration of the campaign.
  * @param contactOutcomeConfiguration The contact outcome configuration of the campaign.
  * @param contactAttemptConfiguration The contact attempt configuration of the campaign.
- * @param communicationRequestConfiguration The communication request configuration of the campaign.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record CampaignResponseDto(
@@ -31,8 +30,7 @@ public record CampaignResponseDto(
         String email,
         IdentificationConfiguration identificationConfiguration,
         ContactOutcomeConfiguration contactOutcomeConfiguration,
-        ContactAttemptConfiguration contactAttemptConfiguration,
-        Boolean communicationRequestConfiguration
+        ContactAttemptConfiguration contactAttemptConfiguration
 ) {
     public static CampaignResponseDto fromModel(Campaign campaignDB, List<ReferentDto> referents, List<VisibilityCampaignDto> visibilities) {
         return new CampaignResponseDto(campaignDB.getId(),
@@ -42,8 +40,7 @@ public record CampaignResponseDto(
                 campaignDB.getEmail(),
                 campaignDB.getIdentificationConfiguration(),
                 campaignDB.getContactOutcomeConfiguration(),
-                campaignDB.getContactAttemptConfiguration(),
-                campaignDB.getCommunicationConfiguration()
+                campaignDB.getContactAttemptConfiguration()
                 );
     }
 }

@@ -216,7 +216,7 @@ public class CampaignController {
 	 * @param id campaign id
 	 * @param campaign campaign to update
 	 */
-	@Operation(summary = "Update campaign (label, email, configurations, visibilities")
+	@Operation(summary = "Update campaign (label, email, configurations, visibilities, referents)")
 	@PutMapping(path = Constants.API_CAMPAIGN_ID)
 	public void updateCampaign(@NotBlank @PathVariable(value = "id") String id,
 			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {

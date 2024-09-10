@@ -29,6 +29,5 @@ public record CampaignCreateDto (
 	String email,
 	IdentificationConfiguration identificationConfiguration,
 	ContactOutcomeConfiguration contactOutcomeConfiguration,
-	ContactAttemptConfiguration contactAttemptConfiguration,
-	Boolean communicationRequestConfiguration) {
+	ContactAttemptConfiguration contactAttemptConfiguration) {
 }

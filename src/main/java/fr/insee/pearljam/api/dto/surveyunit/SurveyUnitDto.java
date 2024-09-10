@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -68,7 +67,6 @@ public class SurveyUnitDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
-	private boolean communicationRequestConfiguration;
 
 	private List<PersonDto> persons;
 
@@ -90,8 +88,6 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
 		this.contactAttemptConfiguration = su.getCampaign().getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = su.getCampaign().getContactOutcomeConfiguration();
-		this.communicationRequestConfiguration = Optional.ofNullable(su.getCampaign().getCommunicationConfiguration())
-				.orElse(false);
 		if (Boolean.TRUE.equals(extended)) {
 			this.persons = su.getPersons().stream()
 					.map(PersonDto::new)
@@ -113,7 +109,5 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = campaign.getIdentificationConfiguration();
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();
-		this.communicationRequestConfiguration = Optional.of(campaign.getCommunicationRequestConfiguration())
-				.orElse(false);
 	}
 }

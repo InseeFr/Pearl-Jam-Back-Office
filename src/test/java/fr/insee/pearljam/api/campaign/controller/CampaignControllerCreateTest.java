@@ -101,14 +101,12 @@ class CampaignControllerCreateTest {
         CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(visibility),
                 List.of(),
                 List.of());
         CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(visibility),
                 List.of(),
                 List.of());
@@ -154,7 +152,6 @@ class CampaignControllerCreateTest {
            CampaignCreateDto campaign = generateCampaign("campId", "campaignLabel",
                     "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                     ContactAttemptConfiguration.F2F,
-                    true,
                     invalidCampaignVisibilities,
                     List.of(),
                     List.of());
@@ -191,7 +188,6 @@ class CampaignControllerCreateTest {
         CampaignCreateDto campaign = generateCampaign("campId", "label",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
-                true,
                 List.of(visibility),
                 List.of(),
                 List.of(communicationTemplate, duplicatedCommunicationTemplate));
@@ -226,7 +222,6 @@ class CampaignControllerCreateTest {
         return generateCampaign("campId", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.NOIDENT, ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL,
-                true,
                 List.of(firstVisibility, secondVisibility),
                 List.of(firstReferent, secondReferent),
                 List.of(communicationTemplate1, communicationTemplate2));
@@ -237,7 +232,6 @@ class CampaignControllerCreateTest {
             String email, IdentificationConfiguration identificationConfiguration,
             ContactOutcomeConfiguration contactOutcomeConfiguration,
             ContactAttemptConfiguration contactAttemptConfiguration,
-            Boolean communicationRequestConfiguration,
             List<VisibilityCampaignCreateDto> visibilities,
             List<ReferentDto> referents,
             List<CommunicationTemplateCreateDto> communicationTemplates) {
@@ -250,8 +244,7 @@ class CampaignControllerCreateTest {
                 email,
                 identificationConfiguration,
                 contactOutcomeConfiguration,
-                contactAttemptConfiguration,
-                communicationRequestConfiguration
+                contactAttemptConfiguration
         );
     }
 
