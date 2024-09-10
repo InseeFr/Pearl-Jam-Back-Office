@@ -60,7 +60,8 @@ class VisibilityIT {
                       "identificationPhaseStartDate":1719138954303,
                       "collectionStartDate":1719225354304,
                       "collectionEndDate":1721903754305,
-                      "endDate":1724582154306
+                      "endDate":1724582154306,
+                      "useLetterCommunication": true
                    },
                    {
                       "organizationalUnit":"OU-SOUTH",
@@ -69,7 +70,8 @@ class VisibilityIT {
                       "identificationPhaseStartDate":1719138954310,
                       "collectionStartDate":1719225354314,
                       "collectionEndDate":1721903754315,
-                      "endDate":1724582154316
+                      "endDate":1724582154316,
+                      "useLetterCommunication": false
                    }
                 ]
                 """;
@@ -90,7 +92,8 @@ class VisibilityIT {
             "identificationPhaseStartDate":1719138954308,
             "collectionStartDate":null,
             "collectionEndDate":1921903754308,
-            "endDate":2024582154308
+            "endDate":2024582154308,
+            "useLetterCommunication": true
         }""";
 
         mockMvc.perform(put(updatePath)
@@ -109,5 +112,6 @@ class VisibilityIT {
         assertThat(visibilityDBToCheck.getCollectionStartDate()).isEqualTo(1719225354304L);
         assertThat(visibilityDBToCheck.getCollectionEndDate()).isEqualTo(1921903754308L);
         assertThat(visibilityDBToCheck.getEndDate()).isEqualTo(2024582154308L);
+        assertThat(visibilityDBToCheck.isUseLetterCommunication()).isTrue();
     }
 }

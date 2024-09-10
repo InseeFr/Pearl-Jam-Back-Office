@@ -68,7 +68,8 @@ class CampaignIT {
                          "identificationPhaseStartDate":1719138954303,
                          "collectionStartDate":1719225354304,
                          "collectionEndDate":1721903754305,
-                         "endDate":1724582154306
+                         "endDate":1724582154306,
+                         "useLetterCommunication": true
                       },
                       {
                          "organizationalUnit":"OU-SOUTH",
@@ -77,7 +78,8 @@ class CampaignIT {
                          "identificationPhaseStartDate":1719138954310,
                          "collectionStartDate":1719225354314,
                          "collectionEndDate":1721903754315,
-                         "endDate":1724582154316
+                         "endDate":1724582154316,
+                         "useLetterCommunication": false
                       }
                    ],
                    "communicationInformations":[
@@ -121,7 +123,8 @@ class CampaignIT {
                          "collectionStartDate":1721683253000,
                          "collectionEndDate":1721683254000,
                          "endDate":1721683255000,
-                         "organizationalUnit":"OU-NORTH"
+                         "organizationalUnit":"OU-NORTH",
+                         "useLetterCommunication": true
                       },
                       {
                          "managementStartDate":1721683260000,
@@ -130,7 +133,8 @@ class CampaignIT {
                          "collectionStartDate":1721683263000,
                          "collectionEndDate":1721683264000,
                          "endDate":1721683265000,
-                         "organizationalUnit":"OU-SOUTH"
+                         "organizationalUnit":"OU-SOUTH",
+                         "useLetterCommunication": false
                       }
                    ],
                    "referents":[
@@ -198,10 +202,10 @@ class CampaignIT {
         assertThat(campaignCreated.getVisibilities())
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
                         1721683250000L, 1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L))
+                        1721683253000L, 1721683254000L, 1721683255000L, true))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-SOUTH",
                         1721683260000L, 1721683261000L, 1721683262000L,
-                        1721683263000L, 1721683264000L, 1721683265000L));
+                        1721683263000L, 1721683264000L, 1721683265000L, false));
 
         assertThat(campaignCreated.getCommunicationTemplates()).hasSize(3);
         assertThat(campaignCreated.getCommunicationTemplates())
@@ -270,7 +274,8 @@ class CampaignIT {
                          "collectionStartDate":1721683253000,
                          "collectionEndDate":1721683254000,
                          "endDate":1721683255000,
-                         "organizationalUnit":"OU-NORTH"
+                         "organizationalUnit":"OU-NORTH",
+                         "useLetterCommunication": false
                       },
                       {
                          "managementStartDate":1721683260000,
@@ -279,7 +284,8 @@ class CampaignIT {
                          "collectionStartDate":1721683263000,
                          "collectionEndDate":1721683264000,
                          "endDate":1721683265000,
-                         "organizationalUnit":"OU-SOUTH"
+                         "organizationalUnit":"OU-SOUTH",
+                         "useLetterCommunication": true
                       }
                    ],
                    "communicationInformations": [
@@ -332,11 +338,11 @@ class CampaignIT {
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
                         1721683250000L, 1721683251000L,
                         1721683252000L, 1721683253000L,
-                        1721683254000L, 1721683255000L))
+                        1721683254000L, 1721683255000L, false))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-SOUTH",
                         1721683260000L, 1721683261000L,
                         1721683262000L, 1721683263000L,
-                        1721683264000L, 1721683265000L));
+                        1721683264000L, 1721683265000L, true));
         assertThat(campaignUpdated.getCommunicationInformations()).hasSize(2);
         assertThat(campaignUpdated.getCommunicationInformations())
                 .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
@@ -376,7 +382,7 @@ class CampaignIT {
     private void assertVisibility(VisibilityDB visibilityToCheck, String campaignId, String organizationUnitId,
                                   long managementStartDate, long interviewerStartDate,
                                   long identificationPhaseStartDate, long collectionStartDate,
-                                  long collectionEndDate, long endDate) {
+                                  long collectionEndDate, long endDate, boolean useLetterCommunication) {
         assertThat(visibilityToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(visibilityToCheck.getOrganizationUnit().getId()).isEqualTo(organizationUnitId);
         assertThat(visibilityToCheck.getManagementStartDate()).isEqualTo(managementStartDate);
@@ -385,6 +391,7 @@ class CampaignIT {
         assertThat(visibilityToCheck.getCollectionStartDate()).isEqualTo(collectionStartDate);
         assertThat(visibilityToCheck.getCollectionEndDate()).isEqualTo(collectionEndDate);
         assertThat(visibilityToCheck.getEndDate()).isEqualTo(endDate);
+        assertThat(visibilityToCheck.isUseLetterCommunication()).isEqualTo(useLetterCommunication);
     }
 
     private void assertReferent(Referent referentToCheck, String campaignId, String role, String lastName,

@@ -56,11 +56,11 @@ class VisibilityControllerTest {
         Visibility visibility1 =
                 new Visibility(campaignId, organizationalUnitId, 1721683250000L,
                         1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L);
+                        1721683253000L, 1721683254000L, 1721683255000L, true);
         Visibility visibility2 =
                 new Visibility(campaignId, "ou-id2", 1721683250000L,
                         1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L);
+                        1721683253000L, 1721683254000L, 1721683255000L, true);
         List<Visibility> visibilities = List.of(visibility1, visibility2);
         visibilityService.save(visibility1);
         visibilityService.save(visibility2);
@@ -95,7 +95,7 @@ class VisibilityControllerTest {
         Visibility visibility =
                 new Visibility(campaignId, organizationalUnitId, 1721683250000L,
                         1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L);
+                        1721683253000L, 1721683254000L, 1721683255000L, true);
         visibilityService.save(visibility);
 
         VisibilityUpdateDto visibilityToUpdate = generateUpdateVisibility();
@@ -158,6 +158,6 @@ class VisibilityControllerTest {
             Long identificationDate, Long collectionStartDate,
             Long collectionEndDate, Long endDate) {
         return new VisibilityUpdateDto(managementDate,
-                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate);
+                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, true);
     }
 }

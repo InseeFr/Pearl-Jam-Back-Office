@@ -16,10 +16,10 @@ class VisibilityTest {
     void testMergeAndDateValidation() throws VisibilityHasInvalidDatesException {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                1617933000000L, 1627933000000L, 1627934000000L, 1627935000000L, 1627936000000L, 1628277601000L);
+                1617933000000L, 1627933000000L, 1627934000000L, 1627935000000L, 1627936000000L, 1628277601000L, false);
 
         // When
         Visibility mergedVisibility = Visibility.merge(currentVisibility, updateVisibility);
@@ -33,17 +33,18 @@ class VisibilityTest {
         assertThat(mergedVisibility.collectionStartDate()).isEqualTo(1627935000000L);
         assertThat(mergedVisibility.collectionEndDate()).isEqualTo(1627936000000L);
         assertThat(mergedVisibility.endDate()).isEqualTo(1628277601000L);
+        assertThat(mergedVisibility.useLetterCommunication()).isFalse();
     }
 
     @Test
-    @DisplayName("Should merge 2 visibilities and keep original dates when updated dates are null")
-    void testMergeNullDates() throws VisibilityHasInvalidDatesException {
+    @DisplayName("Should merge 2 visibilities and keep original values when updated values are null")
+    void testMergeNull() throws VisibilityHasInvalidDatesException {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
 
         // When
         Visibility mergedVisibility = Visibility.merge(currentVisibility, updateVisibility);
@@ -64,10 +65,10 @@ class VisibilityTest {
     void testMergeThrowsExceptionForInvalidDates() {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                1227845600000L, 1327932000001L, 1327932000002L, 1327932000003L, 1327932000004L, 1327932000004L);
+                1227845600000L, 1327932000001L, 1327932000002L, 1327932000003L, 1327932000004L, 1327932000004L, true);
 
         // When & Then
         assertThatThrownBy(() -> Visibility.merge(currentVisibility, updateVisibility))
@@ -87,12 +88,12 @@ class VisibilityTest {
     void testMergeThrowsExceptionForInvalidDates2(String managementStartDate, String interviwerStartDate, String identificationPhaseStartDate, String collectionStartDate, String collectionEndDate, String endDate) {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
                 getLong(managementStartDate), getLong(interviwerStartDate),
                 getLong(identificationPhaseStartDate), getLong(collectionStartDate),
-                getLong(collectionEndDate), getLong(endDate));
+                getLong(collectionEndDate), getLong(endDate), true);
 
         // When & Then
         assertThatThrownBy(() -> Visibility.merge(currentVisibility, updateVisibility))

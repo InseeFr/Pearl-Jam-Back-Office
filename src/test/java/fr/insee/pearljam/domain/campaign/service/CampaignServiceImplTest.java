@@ -46,11 +46,11 @@ class CampaignServiceImplTest {
     private final Visibility existingVisibility1 =
             new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(), 1721683250000L,
                     1721683251000L, 1721683252000L,
-                    1721683253000L, 1721683254000L, 1721683255000L);
+                    1721683253000L, 1721683254000L, 1721683255000L, true);
     private final Visibility existingVisibility2 =
             new Visibility(existingCampaign.getId(), "OU2", 1721683250000L,
                     1721683251000L, 1721683252000L,
-                    1721683253000L, 1721683254000L, 1721683255000L);
+                    1721683253000L, 1721683254000L, 1721683255000L, true);
 
     @BeforeEach
     void setup() {
@@ -96,7 +96,7 @@ class CampaignServiceImplTest {
 
         CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId());
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
         CampaignCreateDto campaignCreateDto = new CampaignCreateDto(
                 campaignId,
                 "Campaign 1",
@@ -135,7 +135,7 @@ class CampaignServiceImplTest {
     void shouldThrowCampaignAlreadyExistExceptionWhenCreatingExistingCampaign() {
         String campaignId = existingCampaign.getId();
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId());
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
         CampaignCreateDto existingCampaignDto = new CampaignCreateDto(
                 campaignId,
                 "Existing campaign",
@@ -162,7 +162,7 @@ class CampaignServiceImplTest {
 
         // Given
         VisibilityCampaignUpdateDto visibilityDto = new VisibilityCampaignUpdateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId());
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 List.of(visibilityDto),
@@ -287,11 +287,11 @@ class CampaignServiceImplTest {
         Visibility ongoingVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().plusSeconds(10000).toEpochMilli());
+                1628191200000L, Instant.now().plusSeconds(10000).toEpochMilli(), true);
         Visibility closedVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli());
+                1628191200000L, Instant.now().toEpochMilli(), true);
 
         visibilityService.save(ongoingVisibility);
         visibilityService.save(closedVisibility);
@@ -306,11 +306,11 @@ class CampaignServiceImplTest {
         Visibility closedVisibility1 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().minusSeconds(3600).toEpochMilli());
+                1628191200000L, Instant.now().minusSeconds(3600).toEpochMilli(), true);
         Visibility closedVisibility2 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli());
+                1628191200000L, Instant.now().toEpochMilli(), true);
 
         visibilityService.save(closedVisibility1);
         visibilityService.save(closedVisibility2);
