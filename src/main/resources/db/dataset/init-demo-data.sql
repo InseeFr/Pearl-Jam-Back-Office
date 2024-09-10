@@ -84,7 +84,8 @@ INSERT INTO visibility (
     end_date,
     identification_phase_start_date,
     interviewer_start_date,
-    management_start_date
+    management_start_date,
+    use_letter_communication
 ) VALUES
     ('OU-NORTH', 'SIMPSONS2020X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
@@ -92,7 +93,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+    true),
 
     ('OU-NORTH', 'VQS2021X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
@@ -100,7 +102,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+    true),
 
     ('OU-SOUTH', 'VQS2021X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
@@ -108,7 +111,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+    true),
 
     ('OU-SOUTH', 'SIMPSONS2020X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
@@ -116,7 +120,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+    true),
 
     ('OU-SOUTH', 'ZCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
@@ -124,7 +129,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '5 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '6 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000,
+    true),
 
     ('OU-WEST', 'ZCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
@@ -132,7 +138,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '5 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '6 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000),
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000,
+    true),
 
     ('OU-SOUTH', 'XCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
@@ -140,7 +147,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '5 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '6 days') * 1000,
-    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000);
+    EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000,
+    true);
 
 INSERT INTO communication_information (
     organization_unit_id,

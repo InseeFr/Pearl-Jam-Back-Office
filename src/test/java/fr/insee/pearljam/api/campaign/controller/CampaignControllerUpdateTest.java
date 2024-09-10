@@ -90,7 +90,7 @@ class CampaignControllerUpdateTest {
         VisibilityCampaignUpdateDto visibility = generateVisibility("   ", 1721683250000L,
                 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L,
-                1721683255000L);
+                1721683255000L, true);
         testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -114,7 +114,7 @@ class CampaignControllerUpdateTest {
         VisibilityCampaignUpdateDto visibility = generateVisibility("ou-id",
                 null, null,
                 null, null,
-                null, null);
+                null, null, true);
         testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -155,7 +155,8 @@ class CampaignControllerUpdateTest {
                 1721683262000L,
                 1721683263000L,
                 1721683264000L,
-                1721683265000L);
+                1721683265000L,
+                true);
 
         CommunicationInformationCampaignUpdateDto firstCommunication = generateCommunicationInformation("OU-SOUTH",
                 "mail",
@@ -197,14 +198,15 @@ class CampaignControllerUpdateTest {
     private VisibilityCampaignUpdateDto generateDefaultVisibility() {
         return generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L,
                 1721683252000L, 1721683253000L,
-                1721683254000L, 1721683255000L);
+                1721683254000L, 1721683255000L, true);
     }
 
     private VisibilityCampaignUpdateDto generateVisibility(
             String organizationalUnit, Long managementDate,
             Long interviewerDate, Long identificationDate,
-            Long collectionStartDate, Long collectionEndDate, Long endDate) {
+            Long collectionStartDate, Long collectionEndDate, Long endDate, Boolean useLetterCommunication) {
         return new VisibilityCampaignUpdateDto(managementDate,
-                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit);
+                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate,
+                organizationalUnit, useLetterCommunication);
     }
 }

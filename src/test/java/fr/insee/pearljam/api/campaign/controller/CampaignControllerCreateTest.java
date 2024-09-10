@@ -95,7 +95,7 @@ class CampaignControllerCreateTest {
     void testCreateCampaign04() throws Exception {
 
         VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L);
+                1721683253000L, 1721683254000L, 1721683255000L, true);
         CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
@@ -128,19 +128,25 @@ class CampaignControllerCreateTest {
     void testCreateCampaign05() throws Exception {
         List<VisibilityCampaignCreateDto> invalidVisibilities = new ArrayList<>(Arrays.asList(
                 generateVisibility("   ", 1721683250000L, 1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L),
+                        1721683253000L, 1721683254000L, 1721683255000L, true),
                 generateVisibility("OU-NORTH", null, 1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L),
+                        1721683253000L, 1721683254000L, 1721683255000L, true),
                 generateVisibility("OU-NORTH", 1721683250000L, null, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L),
+                        1721683253000L, 1721683254000L, 1721683255000L, true),
                 generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, null,
-                        1721683253000L, 1721683254000L, 1721683255000L),
+                        1721683253000L, 1721683254000L, 1721683255000L, true),
                 generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
-                        null, 1721683254000L, 1721683255000L),
+                        null, 1721683254000L, 1721683255000L, true),
                 generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
-                        1721683253000L, null, 1721683255000L),
+                        1721683253000L, null, 1721683255000L, true),
                 generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, null)
+                        1721683253000L, 1721683254000L, null, true),
+                generateVisibility("OU-NORTH", 1721683250000L,
+                        1721683251000L,
+                        1721683252000L,
+                        1721683253000L,
+                        1721683254000L,
+                        1721683255000L, null)
         ));
         invalidVisibilities.add(null);
 
@@ -183,7 +189,7 @@ class CampaignControllerCreateTest {
     @DisplayName("Should return conflict when duplicate medium/type on communication configurations")
     void testCreateCampaign07() throws Exception {
         VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L);
+                1721683253000L, 1721683254000L, 1721683255000L, true);
         CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto("messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto("messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
 
@@ -213,13 +219,13 @@ class CampaignControllerCreateTest {
                 1721683252000L,
                 1721683253000L,
                 1721683254000L,
-                1721683255000L);
+                1721683255000L, true);
         VisibilityCampaignCreateDto secondVisibility = generateVisibility("OU-SOUTH", 1721683260L,
                 1721683261000L,
                 1721683262000L,
                 1721683263000L,
                 1721683264000L,
-                1721683265000L);
+                1721683265000L, true);
         CommunicationInformationCampaignCreateDto communicationInformation = new CommunicationInformationCampaignCreateDto("OU-SOUTH",
                 "mail",
                 "tel");
@@ -260,8 +266,8 @@ class CampaignControllerCreateTest {
     private VisibilityCampaignCreateDto generateVisibility(String organizationalUnit,
                                                            Long managementDate, Long interviewerDate,
                                                            Long identificationDate, Long collectionStartDate,
-                                                           Long collectionEndDate, Long endDate) {
+                                                           Long collectionEndDate, Long endDate, Boolean useLetterCommunication) {
         return new VisibilityCampaignCreateDto(managementDate,
-                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit);
+                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit, useLetterCommunication);
     }
 }

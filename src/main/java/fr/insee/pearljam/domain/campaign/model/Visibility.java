@@ -11,6 +11,7 @@ import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
  * @param collectionStartDate          The start date of collection
  * @param collectionEndDate            The end date of collection
  * @param endDate                      The end date of visibility
+ * @param useLetterCommunication       The usage of letter communications (can we send letters for this visibility)
  */
 public record Visibility(
         String campaignId,
@@ -20,7 +21,8 @@ public record Visibility(
         Long identificationPhaseStartDate,
         Long collectionStartDate,
         Long collectionEndDate,
-        Long endDate
+        Long endDate,
+        Boolean useLetterCommunication
 ) {
     public static Visibility merge(Visibility currentVisibility, Visibility visibilityToUpdate) throws VisibilityHasInvalidDatesException {
         Long managementStartDate = visibilityToUpdate.managementStartDate() != null ?
@@ -35,6 +37,8 @@ public record Visibility(
                 visibilityToUpdate.collectionEndDate() : currentVisibility.collectionEndDate();
         Long endDate = visibilityToUpdate.endDate() != null ?
                 visibilityToUpdate.endDate() : currentVisibility.endDate();
+        Boolean useCommunication = visibilityToUpdate.useLetterCommunication() != null ?
+                visibilityToUpdate.useLetterCommunication() : currentVisibility.useLetterCommunication();
 
         Visibility updatedVisibility = new Visibility(
                 currentVisibility.campaignId(),
@@ -44,7 +48,9 @@ public record Visibility(
                 identificationPhaseStartDate,
                 collectionStartDate,
                 collectionEndDate,
-                endDate);
+                endDate,
+                useCommunication
+                );
 
         if(isValid(updatedVisibility)) {
             return updatedVisibility;

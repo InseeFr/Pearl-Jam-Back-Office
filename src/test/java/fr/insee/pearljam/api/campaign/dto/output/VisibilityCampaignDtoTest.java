@@ -14,8 +14,8 @@ class VisibilityCampaignDtoTest {
     @DisplayName("Should return dto objects from models")
     void testFromModel() {
         // Given
-        Visibility visibility1 = new Visibility("campaign-id", "OU1", 1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
-        Visibility visibility2 = new Visibility("campaign-id", "OU2", 1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L);
+        Visibility visibility1 = new Visibility("campaign-id", "OU1", 1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+        Visibility visibility2 = new Visibility("campaign-id", "OU2", 1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
         List<Visibility> visibilityList = List.of(visibility1, visibility2);
 
         // When

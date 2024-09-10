@@ -25,7 +25,7 @@ class VisibilityDBTest {
     void testToModel01() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
 
         Visibility visibility = VisibilityDB.toModel(visibilityDB);
         assertThat(visibility.campaignId()).isEqualTo(visibilityDB.getVisibilityId().getCampaignId());
@@ -36,13 +36,14 @@ class VisibilityDBTest {
         assertThat(visibility.collectionStartDate()).isEqualTo(visibilityDB.getCollectionStartDate());
         assertThat(visibility.collectionEndDate()).isEqualTo(visibilityDB.getCollectionEndDate());
         assertThat(visibility.endDate()).isEqualTo(visibilityDB.getEndDate());
+        assertThat(visibility.useLetterCommunication().booleanValue()).isEqualTo(visibilityDB.isUseLetterCommunication());
     }
 
     @Test
     @DisplayName("Should return entity object")
     void testFromModel01() {
         Visibility visibility = generateVisibility(1L, 2L, 3L,
-                4L, 5L, 6L);
+                4L, 5L, 6L, true);
 
         VisibilityDB visibilityDB = VisibilityDB.fromModel(visibility, campaign, organizationUnit);
         assertThat(visibilityDB.getVisibilityId().getCampaignId()).isEqualTo(visibility.campaignId());
@@ -55,72 +56,76 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibility.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibility.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibility.endDate());
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibility.useLetterCommunication().booleanValue());
     }
 
     @Test
     @DisplayName("Should update dates from entity object")
-    void testUpdateDates01() {
+    void testUpdate01() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, 15L, 16L);
+                14L, 15L, 16L, false);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
     }
 
     @Test
     @DisplayName("Should not update management start date")
-    void testUpdateDates02() {
+    void testUpdate02() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(null, 12L, 13L,
-                14L, 15L, 16L);
+                14L, 15L, 16L, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isNotNull();
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
     }
 
     @Test
     @DisplayName("Should not update interviewer start date")
-    void testUpdateDates03() {
+    void testUpdate03() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, null, 13L,
-                14L, 15L, 16L);
+                14L, 15L, 16L, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isNotNull();
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
     }
 
     @Test
     @DisplayName("Should not update identification start date")
-    void testUpdateDates04() {
+    void testUpdate04() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, null,
-                14L, 15L, 16L);
+                14L, 15L, 16L, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isNotNull();
@@ -131,14 +136,14 @@ class VisibilityDBTest {
 
     @Test
     @DisplayName("Should not update collection start date")
-    void testUpdateDates05() {
+    void testUpdate05() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                null, 15L, 16L);
+                null, 15L, 16L, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
@@ -149,44 +154,65 @@ class VisibilityDBTest {
 
     @Test
     @DisplayName("Should not update collection end date")
-    void testUpdateDates06() {
+    void testUpdate06() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, null, 16L);
+                14L, null, 16L, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isNotNull();
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
     }
 
     @Test
     @DisplayName("Should not update end date")
-    void testUpdateDates07() {
+    void testUpdate07() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L);
+                3L, 4L, 5L, 6L, true);
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, 15L, null);
+                14L, 15L, null, true);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
         assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
         assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isNotNull();
+        assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+    }
+
+    @Test
+    @DisplayName("Should not update communication usage")
+    void testUpdate08() {
+        VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
+                1L, 2L,
+                3L, 4L, 5L, 6L, false);
+        Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
+                14L, 15L, null, null);
+
+        visibilityDB.update(visibilityToUpdate);
+        assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
+        assertThat(visibilityDB.getInterviewerStartDate()).isEqualTo(visibilityToUpdate.interviewerStartDate());
+        assertThat(visibilityDB.getIdentificationPhaseStartDate()).isEqualTo(visibilityToUpdate.identificationPhaseStartDate());
+        assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
+        assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
+        assertThat(visibilityDB.getEndDate()).isNotNull();
+        assertThat(visibilityDB.isUseLetterCommunication()).isFalse();
     }
 
     private Visibility generateVisibility(Long managementStartDate, Long interviewerStartDate, Long identificationPhaseStartDate,
-                                          Long collectionStartDate, Long collectionEndDate, Long endDate) {
+                                          Long collectionStartDate, Long collectionEndDate, Long endDate, Boolean useCommunication) {
         return new Visibility(campaign.getId(), organizationUnit.getId(), managementStartDate, interviewerStartDate,
-                identificationPhaseStartDate, collectionStartDate, collectionEndDate, endDate);
+                identificationPhaseStartDate, collectionStartDate, collectionEndDate, endDate, useCommunication);
 
     }
 }

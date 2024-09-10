@@ -6,7 +6,7 @@ import fr.insee.pearljam.domain.campaign.model.Visibility;
 import java.util.List;
 
 @JsonPropertyOrder({ "organizationalUnit", "managementStartDate", "interviewerStartDate",
-        "identificationPhaseStartDate", "collectionStartDate", "collectionEndDate", "endDate"})
+        "identificationPhaseStartDate", "collectionStartDate", "collectionEndDate", "endDate", "useLetterCommunication"})
 public record VisibilityCampaignDto(
         String organizationalUnit,
         Long managementStartDate,
@@ -14,7 +14,8 @@ public record VisibilityCampaignDto(
         Long identificationPhaseStartDate,
         Long collectionStartDate,
         Long collectionEndDate,
-        Long endDate) {
+        Long endDate,
+        boolean useLetterCommunication) {
 
     public static List<VisibilityCampaignDto> fromModel(List<Visibility> visibilities) {
         return visibilities.stream()
@@ -25,7 +26,8 @@ public record VisibilityCampaignDto(
                     visibility.identificationPhaseStartDate(),
                     visibility.collectionStartDate(),
                     visibility.collectionEndDate(),
-                    visibility.endDate()
+                    visibility.endDate(),
+                    visibility.useLetterCommunication()
                 ))
                 .toList();
     }

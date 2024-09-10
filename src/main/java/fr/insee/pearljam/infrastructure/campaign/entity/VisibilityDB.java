@@ -41,8 +41,9 @@ public class VisibilityDB implements Serializable {
 	private Long collectionStartDate;
 	private Long collectionEndDate;
 	private Long endDate;
+	private boolean useLetterCommunication;
 
-	public void updateDates(Visibility visibilityToUpdate) {
+	public void update(Visibility visibilityToUpdate) {
 		String ouId = visibilityToUpdate.organizationalUnitId();
 		String campaignId = visibilityToUpdate.campaignId();
 		if (visibilityToUpdate.managementStartDate() != null) {
@@ -69,6 +70,11 @@ public class VisibilityDB implements Serializable {
 			log.info("Updating end date for campaign {} and Organizational Unit {}", campaignId, ouId);
 			this.setEndDate(visibilityToUpdate.endDate());
 		}
+
+		if (visibilityToUpdate.useLetterCommunication() != null) {
+			log.info("Updating letter communication usage for campaign {} and Organizational Unit {}", campaignId, ouId);
+			this.setUseLetterCommunication(visibilityToUpdate.useLetterCommunication());
+		}
 	}
 
 	public static VisibilityDB fromModel(Visibility visibility, Campaign campaign, OrganizationUnit organizationUnit) {
@@ -76,7 +82,7 @@ public class VisibilityDB implements Serializable {
 		return new VisibilityDB(id,
 				organizationUnit, campaign,
 				visibility.managementStartDate(), visibility.interviewerStartDate(), visibility.identificationPhaseStartDate(),
-				visibility.collectionStartDate(), visibility.collectionEndDate(), visibility.endDate());
+				visibility.collectionStartDate(), visibility.collectionEndDate(), visibility.endDate(), visibility.useLetterCommunication());
 	}
 
 	public static Visibility toModel(VisibilityDB visibilityDB) {
@@ -88,7 +94,8 @@ public class VisibilityDB implements Serializable {
 				visibilityDB.getIdentificationPhaseStartDate(),
 				visibilityDB.getCollectionStartDate(),
 				visibilityDB.getCollectionEndDate(),
-				visibilityDB.getEndDate());
+				visibilityDB.getEndDate(),
+				visibilityDB.isUseLetterCommunication());
 	}
 
 	public static List<Visibility> toModel(List<VisibilityDB> visibilityDBs) {

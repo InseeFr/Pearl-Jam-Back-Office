@@ -23,7 +23,8 @@ public record VisibilityUpdateDto(
         Long identificationPhaseStartDate,
         Long collectionStartDate,
         Long collectionEndDate,
-        Long endDate
+        Long endDate,
+        Boolean useLetterCommunication
 ) {
 
     public static Visibility toModel(@NonNull VisibilityUpdateDto visibilityDto,
@@ -35,6 +36,7 @@ public record VisibilityUpdateDto(
                 visibilityDto.identificationPhaseStartDate(),
                 visibilityDto.collectionStartDate(),
                 visibilityDto.collectionEndDate(),
-                visibilityDto.endDate());
+                visibilityDto.endDate(),
+                visibilityDto.useLetterCommunication());
     }
 }

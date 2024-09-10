@@ -25,7 +25,7 @@ class VisibilityCampaignCreateDtoTest {
 
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(
                 managementStartDate, interviewerStartDate, identificationPhaseStartDate,
-                collectionStartDate, collectionEndDate, endDate, organizationalUnit);
+                collectionStartDate, collectionEndDate, endDate, organizationalUnit, true);
 
         // When
         Visibility visibility = VisibilityCampaignCreateDto
@@ -41,5 +41,6 @@ class VisibilityCampaignCreateDtoTest {
         assertThat(visibility.collectionStartDate()).isEqualTo(collectionStartDate);
         assertThat(visibility.collectionEndDate()).isEqualTo(collectionEndDate);
         assertThat(visibility.endDate()).isEqualTo(endDate);
+        assertThat(visibility.useLetterCommunication()).isTrue();
     }
 }

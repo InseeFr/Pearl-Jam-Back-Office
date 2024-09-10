@@ -23,7 +23,7 @@ class VisibilityUpdateDtoTest {
 
         VisibilityUpdateDto dto = new VisibilityUpdateDto(
                 managementStartDate, interviewerStartDate, identificationPhaseStartDate,
-                collectionStartDate, collectionEndDate, endDate);
+                collectionStartDate, collectionEndDate, endDate, true);
 
         // When
         Visibility model = VisibilityUpdateDto.toModel(dto, campaignId, ouId);

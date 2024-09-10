@@ -43,7 +43,7 @@ public class VisibilityDaoAdapter implements VisibilityRepository {
                         visibilityToUpdate.campaignId(), visibilityToUpdate.organizationalUnitId())
                 .orElseThrow(VisibilityNotFoundException::new);
 
-        visibilityDB.updateDates(visibilityToUpdate);
+        visibilityDB.update(visibilityToUpdate);
         crudRepository.save(visibilityDB);
     }
 

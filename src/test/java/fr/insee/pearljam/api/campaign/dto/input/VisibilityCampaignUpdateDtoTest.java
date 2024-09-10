@@ -15,8 +15,8 @@ class VisibilityCampaignUpdateDtoTest {
     void testToModel() {
         // Given
         String campaignId = "campaign1";
-        VisibilityCampaignUpdateDto dto1 = new VisibilityCampaignUpdateDto(1L, 2L, 3L, 4L, 5L, 6L, "OU1");
-        VisibilityCampaignUpdateDto dto2 = new VisibilityCampaignUpdateDto(11L, 12L, 13L, 14L, 15L, 16L, "OU2");
+        VisibilityCampaignUpdateDto dto1 = new VisibilityCampaignUpdateDto(1L, 2L, 3L, 4L, 5L, 6L, "OU1", true);
+        VisibilityCampaignUpdateDto dto2 = new VisibilityCampaignUpdateDto(11L, 12L, 13L, 14L, 15L, 16L, "OU2", null);
         List<VisibilityCampaignUpdateDto> dtoList = List.of(dto1, dto2);
 
         // When
@@ -34,6 +34,7 @@ class VisibilityCampaignUpdateDtoTest {
         assertThat(firstVisibility.collectionStartDate()).isEqualTo(4L);
         assertThat(firstVisibility.collectionEndDate()).isEqualTo(5L);
         assertThat(firstVisibility.endDate()).isEqualTo(6L);
+        assertThat(firstVisibility.useLetterCommunication()).isTrue();
 
         Visibility lastVisibility = modelList.getLast();
         assertThat(lastVisibility.campaignId()).isEqualTo(campaignId);
@@ -44,5 +45,6 @@ class VisibilityCampaignUpdateDtoTest {
         assertThat(lastVisibility.collectionStartDate()).isEqualTo(14L);
         assertThat(lastVisibility.collectionEndDate()).isEqualTo(15L);
         assertThat(lastVisibility.endDate()).isEqualTo(16L);
+        assertThat(lastVisibility.useLetterCommunication()).isNull();
     }
 }

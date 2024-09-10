@@ -69,10 +69,10 @@ class VisibilityDaoAdapterTest {
         organizationUnit2 = organizationUnitRepository.save(organizationUnit2);
         visibilityDB1 = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 10L, 20L,
-                11L, 30L, 12L, 40L);
+                11L, 30L, 12L, 40L, true);
         visibilityDB2 = new VisibilityDB(new VisibilityDBId(organizationUnit2.getId(), campaign.getId()), organizationUnit2, campaign,
                  11L, 12L,
-                13L, 14L, 15L, 16L);
+                13L, 14L, 15L, 16L, true);
         List<VisibilityDB> visibilities = new ArrayList<>();
         visibilities.add(visibilityDB1);
         visibilities.add(visibilityDB2);
@@ -85,7 +85,7 @@ class VisibilityDaoAdapterTest {
     void testUpdateDatesVisibilities01() throws VisibilityNotFoundException {
         Visibility visibilityToUpdate = new Visibility(campaign.getId(), organizationUnit.getId(),
                 21L, 22L, 23L,
-                24L, 25L, 26L);
+                24L, 25L, 26L, true);
         visibilityDaoAdapter.updateDates(visibilityToUpdate);
 
         Optional<Campaign> campaignOptional = campaignRepository.findById(campaign.getId());
@@ -109,7 +109,7 @@ class VisibilityDaoAdapterTest {
     void testUpdateDatesVisibility02() {
         Visibility visibilityToUpdate = new Visibility(campaign.getId(), "invalid-id",
                 21L, 22L, 23L,
-                24L, 25L, 26L);
+                24L, 25L, 26L, true);
 
         assertThatThrownBy(() -> visibilityDaoAdapter.updateDates(visibilityToUpdate))
                 .isInstanceOf(VisibilityNotFoundException.class)
