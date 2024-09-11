@@ -101,21 +101,21 @@ class SurveyUnitDetailDtoTest {
         SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
 
         List<CommunicationRequestStatusDto> status1Expected = List.of(
-                new CommunicationRequestStatusDto(null, 1233456789L, CommunicationStatusType.INITIATED),
-                new CommunicationRequestStatusDto(2L, 123345678910L, CommunicationStatusType.FAILED)
+                new CommunicationRequestStatusDto(1233456789L, CommunicationStatusType.INITIATED),
+                new CommunicationRequestStatusDto(123345678910L, CommunicationStatusType.FAILED)
         );
 
         List<CommunicationRequestStatusDto> status2Expected = List.of(
-                new CommunicationRequestStatusDto(3L, 123345678911L, CommunicationStatusType.READY),
-                new CommunicationRequestStatusDto(4L, 123345678912L, CommunicationStatusType.CANCELLED)
+                new CommunicationRequestStatusDto(123345678911L, CommunicationStatusType.READY),
+                new CommunicationRequestStatusDto(123345678912L, CommunicationStatusType.CANCELLED)
         );
 
         assertThat(surveyUnitDetailDto.getCommunicationRequests())
                 .containsExactlyInAnyOrder(
-                        new CommunicationRequestResponseDto(10L, 1L,
+                        new CommunicationRequestResponseDto(1L,
                                 CommunicationRequestReason.UNREACHABLE,
                                 CommunicationRequestEmitter.INTERVIEWER, status1Expected),
-                        new CommunicationRequestResponseDto(11L, 2L,
+                        new CommunicationRequestResponseDto(2L,
                                 CommunicationRequestReason.REFUSAL,
                                 CommunicationRequestEmitter.TOOL, status2Expected)
                 );

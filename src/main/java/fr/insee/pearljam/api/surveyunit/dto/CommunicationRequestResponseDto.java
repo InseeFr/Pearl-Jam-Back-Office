@@ -7,14 +7,12 @@ import java.util.Set;
 
 /**
  * Record representing a CommunicationRequestResponseDto
- * @param id The ID of the communication request
  * @param communicationTemplateId configuration id of the communication
  * @param reason The reason for the communication request
  * @param emitter The emitter of the communication request
  * @param status The status of the communication request
  */
 public record CommunicationRequestResponseDto(
-        Long id,
         Long communicationTemplateId,
         CommunicationRequestReason reason,
         CommunicationRequestEmitter emitter,
@@ -31,7 +29,7 @@ public record CommunicationRequestResponseDto(
                     List<CommunicationRequestStatusDto> status = request.status().stream()
                             .map(CommunicationRequestStatusDto::fromModel)
                             .toList();
-                    return new CommunicationRequestResponseDto(request.id(),
+                    return new CommunicationRequestResponseDto(
                             request.communicationTemplateId(),
                             request.reason(),
                             request.emitter(),
