@@ -2,10 +2,13 @@ package fr.insee.pearljam.integration.surveyunit;
 
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import org.json.JSONException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -471,7 +475,7 @@ class SurveyUnitIT {
                    "type":"VIC"
                 },
                 {
-                   "id":13,
+                   "id":14,
                    "date":1590504459838,
                    "type":"AOC"
                 }
@@ -551,5 +555,85 @@ class SurveyUnitIT {
              ]
           }""";
         JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when communication template not found")
+    void testPutSurveyUnitDetailException() throws Exception {
+        String updateJson = """
+        {
+            "id":"20",
+            "persons":[
+               {
+                  "id":10,
+                  "title":"MISTER",
+                  "firstName":"Harriette",
+                  "lastName":"Raymond",
+                  "email":"test@test.com",
+                  "birthdate":11111111,
+                  "favoriteEmail":true,
+                  "privileged":true,
+                  "phoneNumbers":[
+                  ]
+               }
+            ],
+            "address":{
+               "l1":"test1",
+               "l2":"test2",
+               "l3":"test3",
+               "l4":"test4",
+               "l5":"test5",
+               "l6":"test6",
+               "l7":"test7",
+               "elevator":true,
+               "building":"testBuilding",
+               "floor":"testFloor",
+               "door":"testDoor",
+               "staircase":"testStaircase",
+               "cityPriorityDistrict":true
+            },
+            "priority":false,
+            "campaign":"VQS2021X00",
+            "comments":[],
+            "sampleIdentifiers":{
+               "bs":20,
+               "ec":"2",
+               "le":20,
+               "noi":20,
+               "numfa":20,
+               "rges":20,
+               "ssech":1,
+               "nolog":20,
+               "nole":20,
+               "autre":"20",
+               "nograp":"20"
+            },
+            "states":[
+               {
+                  "date":1590504459838,
+                  "type":"AOC"
+               }
+            ],
+            "contactAttempts":[],
+            "contactOutcome":{
+               "date":1589268626000,
+               "type":"IMP",
+               "totalNumberOfContactAttempts":2
+            },
+            "communicationRequests":[
+               {
+                  "communicationTemplateId":6,
+                  "reason":"UNREACHABLE",
+                  "creationTimestamp": 1721903754405
+               }
+            ]
+         }""";
+        String putUrl = "/api/survey-unit/20";
+        mockMvc.perform(put(putUrl)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(updateJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));;
     }
 }

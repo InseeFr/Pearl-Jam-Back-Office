@@ -55,10 +55,10 @@ public class CommunicationTemplateDB implements Serializable {
             return null;
         }
         return new CommunicationTemplate(
-                        communicationTemplate.getId(),
-                        communicationTemplate.getMeshuggahId(),
-                        communicationTemplate.getMedium(),
-                        communicationTemplate.getType());
+                communicationTemplate.getId(),
+                communicationTemplate.getMeshuggahId(),
+                communicationTemplate.getMedium(),
+                communicationTemplate.getType());
     }
 
     public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, Campaign campaign) {

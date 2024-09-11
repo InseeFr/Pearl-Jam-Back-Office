@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VisibilityService {
 
@@ -35,4 +36,12 @@ public interface VisibilityService {
      * @return the campaign visibility
      */
     CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds);
+
+    /**
+     *
+     * @param campaignId campaign id
+     * @param organizationalUnitId ou id
+     * @return the visibility for the campaign/ou
+     */
+    Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId);
 }

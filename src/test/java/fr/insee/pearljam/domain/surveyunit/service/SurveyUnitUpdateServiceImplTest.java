@@ -1,14 +1,20 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
+import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
@@ -26,23 +32,37 @@ import static org.assertj.core.api.Assertions.tuple;
 
 class SurveyUnitUpdateServiceImplTest {
     private CommunicationRequestFakeRepository communicationRequestFakeRepository;
+    private VisibilityFakeService visibilityFakeService;
     private SurveyUnitUpdateServiceImpl surveyUnitService;
     private SurveyUnit surveyUnit;
     private SurveyUnitUpdateDto surveyUnitDto;
-    private CommunicationTemplateDB communicationTemplate;
     private DateService dateService;
+    private CommunicationTemplateDB communicationTemplateDB;
+    private CommunicationTemplate communicationTemplate;
+    private CommunicationTemplateFakeRepository communicationTemplateFakeRepository;
+    private Campaign campaign;
+    private OrganizationUnit ou;
 
     @BeforeEach
     void setup() {
+        visibilityFakeService = new VisibilityFakeService();
+        communicationTemplateFakeRepository = new CommunicationTemplateFakeRepository();
         dateService = new FixedDateService();
         communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
-        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository, dateService);
+        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository, communicationTemplateFakeRepository, visibilityFakeService, dateService);
+        campaign = new Campaign("campaignId", "label", null, null, null,null);
+        ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
+        Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
+                null, null, null, null, true);
+        visibilityFakeService.save(visibility);
         surveyUnit = new SurveyUnit("id", true, true, null,
-                null, null, null, null, null);
+                null, campaign, null, ou, null);
 
-        communicationTemplate = new CommunicationTemplateDB(3L, null, null, null, null);
+        communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        communicationTemplateFakeRepository.save(communicationTemplate);
+        communicationTemplateDB = new CommunicationTemplateDB(3L, "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
         Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplate,
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplateDB,
                 CommunicationRequestReason.REFUSAL,
                 CommunicationRequestEmitter.TOOL,
                 surveyUnit, null));
@@ -53,9 +73,9 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("Should add communication requests for survey unit")
     void testUpdateCommunication01() {
         List<CommunicationRequestCreateDto> communicationRequests = List.of(
-                new CommunicationRequestCreateDto(1L, 12345678910L,
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
                         CommunicationRequestReason.UNREACHABLE),
-                new CommunicationRequestCreateDto(2L, 1234567891011L,
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
                         CommunicationRequestReason.REFUSAL)
         );
 
@@ -75,7 +95,7 @@ class SurveyUnitUpdateServiceImplTest {
                         )
                 .containsExactlyInAnyOrder(
                         tuple(null,
-                                1L,
+                                communicationTemplate.id(),
                                 CommunicationRequestReason.UNREACHABLE,
                                 CommunicationRequestEmitter.INTERVIEWER,
                                 List.of(
@@ -84,13 +104,64 @@ class SurveyUnitUpdateServiceImplTest {
                                 )
                         ),
                         tuple(null,
-                                2L,
+                                communicationTemplate.id(),
                                 CommunicationRequestReason.REFUSAL,
                                 CommunicationRequestEmitter.INTERVIEWER,
                                 List.of(
                                         tuple(null, 1234567891011L, CommunicationStatusType.INITIATED),
                                         tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
                                 )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("Should add CANCELLED letter communication request if visibility doesn't allow letter communications")
+    void testUpdateCommunication02() {
+        visibilityFakeService.clearVisibilities();
+        communicationTemplateFakeRepository.clearCommunicationTemplates();
+        Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
+                null, null, null, null, false);
+        communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.LETTER, CommunicationType.NOTICE);
+        communicationTemplateFakeRepository.save(communicationTemplate);
+        visibilityFakeService.save(visibility);
+        List<CommunicationRequestCreateDto> communicationRequests = List.of(
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
+                        CommunicationRequestReason.UNREACHABLE),
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
+                        CommunicationRequestReason.REFUSAL)
+        );
+
+        surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
+        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+
+        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
+        assertThat(communicationRequestResults)
+                .hasSize(2)
+                .extracting(CommunicationRequest::id,
+                        CommunicationRequest::communicationTemplateId,
+                        CommunicationRequest::reason,
+                        CommunicationRequest::emitter,
+                        communicationRequest -> communicationRequest.status().stream()
+                                .map(status -> tuple(status.id(), status.date(), status.status()))
+                                .toList()
+                )
+                .containsExactlyInAnyOrder(
+                        tuple(null,
+                                3L,
+                                CommunicationRequestReason.UNREACHABLE,
+                                CommunicationRequestEmitter.INTERVIEWER,
+                                List.of(
+                                        tuple(null, 12345678910L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.CANCELLED))
+                        ),
+                        tuple(null,
+                                3L,
+                                CommunicationRequestReason.REFUSAL,
+                                CommunicationRequestEmitter.INTERVIEWER,
+                                List.of(
+                                        tuple(null, 1234567891011L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.CANCELLED))
                         )
                 );
     }

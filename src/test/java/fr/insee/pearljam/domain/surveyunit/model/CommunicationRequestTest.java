@@ -4,7 +4,8 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CommunicationRequestTest {
 
@@ -20,14 +21,13 @@ class CommunicationRequestTest {
         CommunicationRequest communicationRequest = CommunicationRequest.create(communicationTemplateId, creationDate, readyDate, reason);
 
         // Then
-        assertNotNull(communicationRequest);
-        assertNull(communicationRequest.id());
-        assertEquals(communicationTemplateId, communicationRequest.communicationTemplateId());
-        assertEquals(reason, communicationRequest.reason());
-        assertEquals(CommunicationRequestEmitter.INTERVIEWER, communicationRequest.emitter());
-        assertNotNull(communicationRequest.status());
-        assertEquals(2, communicationRequest.status().size());
-        assertEquals(creationDate, communicationRequest.status().getFirst().date());
-        assertEquals(readyDate, communicationRequest.status().getLast().date());
+        assertThat(communicationRequest).isNotNull();
+        assertThat(communicationRequest.id()).isNull();
+        assertThat(communicationTemplateId).isEqualTo(communicationRequest.communicationTemplateId());
+        assertThat(reason).isEqualTo(communicationRequest.reason());
+        assertThat(communicationRequest.emitter()).isEqualTo(CommunicationRequestEmitter.INTERVIEWER);
+        assertThat(communicationRequest.status()).hasSize(2);
+        assertThat(communicationRequest.status().getFirst().date()).isEqualTo(creationDate);
+        assertThat(communicationRequest.status().getLast().date()).isEqualTo(readyDate);
     }
 }

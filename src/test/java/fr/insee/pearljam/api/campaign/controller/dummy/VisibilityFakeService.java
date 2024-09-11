@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VisibilityFakeService implements VisibilityService {
 
@@ -52,7 +53,18 @@ public class VisibilityFakeService implements VisibilityService {
         return null;
     }
 
+    @Override
+    public Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId) {
+        return visibilities.stream()
+                .filter(visibility -> visibility.campaignId().equals(campaignId) && visibility.organizationalUnitId().equals(organizationalUnitId))
+                .findFirst();
+    }
+
     public void save(Visibility visibility) {
         visibilities.add(visibility);
+    }
+
+    public void clearVisibilities() {
+        visibilities.clear();
     }
 }
