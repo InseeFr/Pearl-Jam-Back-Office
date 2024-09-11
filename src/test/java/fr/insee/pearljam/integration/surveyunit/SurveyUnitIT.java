@@ -227,41 +227,34 @@ class SurveyUnitIT {
            },
            "communicationRequests":[
               {
-                 "id":2,
                  "communicationTemplateId":2,
                  "reason":"UNREACHABLE",
                  "emitter":"INTERVIEWER",
                  "status":[
                     {
-                       "id":4,
                        "date":1721903754305,
                        "status":"INITIATED"
                     },
                     {
-                       "id":5,
                        "date":1721903756310,
                        "status":"READY"
                     }
                  ]
               },
               {
-                 "id":1,
                  "communicationTemplateId":1,
                  "reason":"REFUSAL",
                  "emitter":"INTERVIEWER",
                  "status":[
                     {
-                       "id":1,
                        "date":1721903754305,
                        "status":"INITIATED"
                     },
                     {
-                       "id":2,
                        "date":1721903755305,
                        "status":"READY"
                     },
                     {
-                       "id":3,
                        "date":1721903756305,
                        "status":"SUBMITTED"
                     }
@@ -393,139 +386,143 @@ class SurveyUnitIT {
 
         String resultJson = result.getResponse().getContentAsString();
         String expectedJson = """
+        {
+             "id":"20",
+             "persons":[
                 {
-                   "id":"20",
-                   "persons":[
+                   "id":10,
+                   "title":"MISTER",
+                   "firstName":"Harriette",
+                   "lastName":"Raymond",
+                   "email":"test@test.com",
+                   "birthdate":11111111,
+                   "favoriteEmail":true,
+                   "privileged":true,
+                   "phoneNumbers":[
                       {
-                         "id":10,
-                         "title":"MISTER",
-                         "firstName":"Harriette",
-                         "lastName":"Raymond",
-                         "email":"test@test.com",
-                         "birthdate":11111111,
-                         "favoriteEmail":true,
-                         "privileged":true,
-                         "phoneNumbers":[
-                            {
-                               "source":"FISCAL",
-                               "favorite":true,
-                               "number":"test"
-                            }
-                         ]
-                      }
-                   ],
-                   "address":{
-                      "l1":"test1",
-                      "l2":"test2",
-                      "l3":"test3",
-                      "l4":"test4",
-                      "l5":"test5",
-                      "l6":"test6",
-                      "l7":"test7",
-                      "elevator":true,
-                      "building":"testBuilding",
-                      "floor":"testFloor",
-                      "door":"testDoor",
-                      "staircase":"testStaircase",
-                      "cityPriorityDistrict":true
-                   },
-                   "priority":false,
-                   "campaign":"VQS2021X00",
-                   "comments":[
-                      {
-                         "type":"MANAGEMENT",
-                         "value":"test-management-comment"
-                      },
-                      {
-                         "type":"INTERVIEWER",
-                         "value":"test-interviewer-comment"
-                      }
-                   ],
-                   "sampleIdentifiers":{
-                      "bs":20,
-                      "ec":"2",
-                      "le":20,
-                      "noi":20,
-                      "numfa":20,
-                      "rges":20,
-                      "ssech":1,
-                      "nolog":20,
-                      "nole":20,
-                      "autre":"20",
-                      "nograp":"20"
-                   },
-                   "states":[
-                      {
-                         "id":9,
-                         "date":1590504478334,
-                         "type":"VIC"
-                      },
-                      {
-                          "id":13,
-                          "date":1590504459838,
-                          "type":"AOC"
-                       }
-                   ],
-                   "contactAttempts":[
-                      {
-                         "date":1589268626000,
-                         "status":"NOC",
-                         "medium":"TEL"
-                      },
-                      {
-                         "date":1589268800000,
-                         "status":"INA",
-                         "medium":"TEL"
-                      }
-                   ],
-                   "contactOutcome":{
-                      "date":1589268626000,
-                      "type":"IMP",
-                      "totalNumberOfContactAttempts":2
-                   },
-                   "communicationRequests":[
-                      {
-                         "id":4,
-                         "communicationTemplateId":4,
-                         "reason":"UNREACHABLE",
-                         "emitter":"INTERVIEWER",
-                         "status":[
-                            {
-                               "id":7,
-                               "date":1721903754205,
-                               "status":"INITIATED"
-                            }
-                         ]
-                      },
-                      {
-                         "id":3,
-                         "communicationTemplateId":3,
-                         "reason":"REFUSAL",
-                         "emitter":"INTERVIEWER",
-                         "status":[
-                            {
-                               "id":6,
-                               "date":1721903754205,
-                               "status":"INITIATED"
-                            }
-                         ]
-                      },
-                      {
-                         "id":5,
-                         "communicationTemplateId":5,
-                         "reason":"UNREACHABLE",
-                         "emitter":"INTERVIEWER",
-                         "status":[
-                            {
-                               "id":8,
-                               "date":1721903754405,
-                               "status":"INITIATED"
-                            }
-                         ]
+                         "source":"FISCAL",
+                         "favorite":true,
+                         "number":"test"
                       }
                    ]
                 }
-        """;
+             ],
+             "address":{
+                "l1":"test1",
+                "l2":"test2",
+                "l3":"test3",
+                "l4":"test4",
+                "l5":"test5",
+                "l6":"test6",
+                "l7":"test7",
+                "elevator":true,
+                "building":"testBuilding",
+                "floor":"testFloor",
+                "door":"testDoor",
+                "staircase":"testStaircase",
+                "cityPriorityDistrict":true
+             },
+             "priority":false,
+             "campaign":"VQS2021X00",
+             "comments":[
+                {
+                   "type":"INTERVIEWER",
+                   "value":"test-interviewer-comment"
+                },
+                {
+                   "type":"MANAGEMENT",
+                   "value":"test-management-comment"
+                }
+             ],
+             "sampleIdentifiers":{
+                "bs":20,
+                "ec":"2",
+                "le":20,
+                "noi":20,
+                "numfa":20,
+                "rges":20,
+                "ssech":1,
+                "nolog":20,
+                "nole":20,
+                "autre":"20",
+                "nograp":"20"
+             },
+             "states":[
+                {
+                   "id":9,
+                   "date":1590504478334,
+                   "type":"VIC"
+                },
+                {
+                   "id":13,
+                   "date":1590504459838,
+                   "type":"AOC"
+                }
+             ],
+             "contactAttempts":[
+                {
+                   "date":1589268626000,
+                   "status":"NOC",
+                   "medium":"TEL"
+                },
+                {
+                   "date":1589268800000,
+                   "status":"INA",
+                   "medium":"TEL"
+                }
+             ],
+             "contactOutcome":{
+                "date":1589268626000,
+                "type":"IMP",
+                "totalNumberOfContactAttempts":2
+             },
+             "communicationRequests":[
+                {
+                   "communicationTemplateId":4,
+                   "reason":"REFUSAL",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754305,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
+                {
+                   "communicationTemplateId":4,
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754205,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
+                {
+                   "communicationTemplateId":5,
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754405,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
+                {
+                   "communicationTemplateId":3,
+                   "reason":"REFUSAL",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754205,
+                         "status":"INITIATED"
+                      }
+                   ]
+                }
+             ]
+          }""";
         JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
     }
 }
