@@ -140,6 +140,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(VisibilityNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(VisibilityNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
     @ExceptionHandler(VisibilityHasInvalidDatesException.class)
     public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.CONFLICT, request);

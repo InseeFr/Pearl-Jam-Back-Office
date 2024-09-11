@@ -7,6 +7,7 @@ import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRep
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.List;
 
 @Repository
@@ -20,5 +21,12 @@ public class CommunicationTemplateDaoAdapter implements CommunicationTemplateRep
         List<CommunicationTemplateDB> communicationTemplates = communicationTemplateRepository
                 .findCommunicationTemplates(campaignId);
         return CommunicationTemplateDB.toModel(communicationTemplates);
+    }
+
+    @Override
+    public Optional<CommunicationTemplate> findCommunicationTemplate(Long communicationTemplateId, String campaignId) {
+        return communicationTemplateRepository
+                .findCommunicationTemplate(communicationTemplateId, campaignId)
+                .map(CommunicationTemplateDB::toModel);
     }
 }

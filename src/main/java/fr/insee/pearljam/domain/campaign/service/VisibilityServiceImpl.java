@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,11 @@ import java.util.List;
 public class VisibilityServiceImpl implements VisibilityService {
 
     private final VisibilityRepository visibilityRepository;
+
+    @Override
+    public Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId) {
+        return visibilityRepository.findVisibility(campaignId, organizationalUnitId);
+    }
 
     @Override
     public List<Visibility> findVisibilities(String campaignId) {

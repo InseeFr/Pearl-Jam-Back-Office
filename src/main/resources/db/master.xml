@@ -58,5 +58,5 @@
 	<include file="changelog/544_update_communication_information.xml" relativeToChangelogFile="true" />
 
 	<!-- add use letter communication on visibility -->
-	<include file="changelog/544_add_letter_communication_visibility.xml" relativeToChangelogFile="true" />
+	<include file="changelog/545_add_letter_communication_visibility.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
