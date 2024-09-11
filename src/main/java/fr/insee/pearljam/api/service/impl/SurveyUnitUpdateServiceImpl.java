@@ -10,7 +10,6 @@ import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,20 +37,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         }
         if(surveyUnitUpdateDto.communicationRequests() != null) {
             List<CommunicationRequest> communicationRequestsToCreate = CommunicationRequestCreateDto.toModel(surveyUnitUpdateDto.communicationRequests());
-            Set<CommunicationRequestDB> currentCommunicationRequests = surveyUnit.getCommunicationRequests();
-            List<CommunicationRequest> newCommunicationsRequests = communicationRequestsToCreate.stream()
-                    .filter(newCommunicationRequest -> {
-                        for (CommunicationRequestDB currentCommunicationRequest : currentCommunicationRequests) {
-                            // if survey unit has already this communication request, skip it
-                            if(currentCommunicationRequest.getCommunicationTemplate().getId()
-                                    .equals(newCommunicationRequest.communicationTemplateId())) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    })
-                    .toList();
-            communicationRequestRepository.addCommunicationRequests(surveyUnit, newCommunicationsRequests);
+            communicationRequestRepository.addCommunicationRequests(surveyUnit, communicationRequestsToCreate);
         }
 
         Identification identification = IdentificationDto.toModel(surveyUnitUpdateDto.identification());
