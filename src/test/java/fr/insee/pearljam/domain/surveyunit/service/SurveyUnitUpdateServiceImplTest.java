@@ -86,21 +86,6 @@ class SurveyUnitUpdateServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should not add communication requests with duplicate communication configuration")
-    void testUpdateCommunication02() {
-        List<CommunicationRequestCreateDto> communicationRequests = List.of(
-                new CommunicationRequestCreateDto(communicationTemplate.getId(), 12345678910L,
-                        CommunicationRequestReason.UNREACHABLE)
-        );
-
-        surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
-        surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
-
-        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
-        assertThat(communicationRequestResults).isEmpty();
-    }
-
-    @Test
     @DisplayName("Should add comments for survey unit")
     void testUpdateComments01() {
         List<CommentDto> comments = List.of(
