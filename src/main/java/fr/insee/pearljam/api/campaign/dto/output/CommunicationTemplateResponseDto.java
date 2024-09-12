@@ -8,7 +8,6 @@ import java.util.List;
 
 public record CommunicationTemplateResponseDto(
         Long id,
-        String messhugahId,
         CommunicationMedium medium,
         CommunicationType type
 ) {
@@ -17,7 +16,6 @@ public record CommunicationTemplateResponseDto(
                 .map(communicationTemplate ->
                         new CommunicationTemplateResponseDto(
                                 communicationTemplate.id(),
-                                communicationTemplate.meshuggahId(),
                                 communicationTemplate.medium(),
                                 communicationTemplate.type()))
                 .toList();

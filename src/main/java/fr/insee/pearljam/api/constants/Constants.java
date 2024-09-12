@@ -55,6 +55,7 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES = "/api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes";
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility";
 	public static final String API_CAMPAIGN_ID_VISIBILITIES = "/api/campaign/{id}/visibilities";
+	public static final String API_CAMPAIGN_ID_COMMUNICATION_TEMPLATES = "/api/campaign/{id}/communication-templates";
 	public static final String API_CAMPAIGN_ID_REFERENTS = "/api/campaigns/{id}/referents";
 	public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
 
