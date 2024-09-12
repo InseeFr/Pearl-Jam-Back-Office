@@ -4,6 +4,7 @@ import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommunicationTemplateJpaRepository extends JpaRepository<CommunicationTemplateDB, Long> {
@@ -13,4 +14,9 @@ public interface CommunicationTemplateJpaRepository extends JpaRepository<Commun
         WHERE c.id = ?1
         AND c.campaign.id = ?2""")
     Optional<CommunicationTemplateDB> findCommunicationTemplate(Long communicationTemplateId, String campaignId);
+
+    @Query("""
+        SELECT c FROM CommunicationTemplateDB c
+        WHERE c.campaign.id = ?1""")
+    List<CommunicationTemplateDB> findCommunicationTemplates(String campaignId);
 }

@@ -176,6 +176,8 @@ public class OidcSecurityConfiguration {
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_VISIBILITIES)
 						.hasRole(adminRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_COMMUNICATION_TEMPLATES)
+						.hasRole(adminRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_REFERENTS)
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING)
