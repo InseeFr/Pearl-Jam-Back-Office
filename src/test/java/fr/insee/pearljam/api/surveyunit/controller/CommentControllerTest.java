@@ -108,7 +108,7 @@ class CommentControllerTest {
                 .andExpectAll(status().isNotFound(),
                         jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()),
                         jsonPath("$.path").value(updatePath),
-                        jsonPath("$.message").value(SurveyUnitNotFoundException.MESSAGE),
+                        jsonPath("$.message").value(String.format(SurveyUnitNotFoundException.MESSAGE, "1")),
                         jsonPath("$.timestamp", new StructureDateMatcher()));
         assertThat(commentService.getCommentUpdated()).isNull();
     }

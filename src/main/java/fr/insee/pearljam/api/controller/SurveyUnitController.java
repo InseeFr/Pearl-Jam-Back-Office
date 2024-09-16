@@ -1,15 +1,14 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import jakarta.validation.Valid;
@@ -31,8 +30,6 @@ import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,11 +51,8 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class SurveyUnitController {
 
-	private static final String GUEST = "GUEST";
 	private final SurveyUnitService surveyUnitService;
 	private final AuthenticatedUserService authenticatedUserService;
-
-	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
 
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
@@ -113,42 +107,17 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is used to get the detail of surveyUnit for current interviewer
+	 * This method is used to get the detail of survey unit for current interviewer
 	 * 
-	 * @param id the id of reporting unit
+	 * @param surveyUnitId the id of reporting unit
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
-	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(@PathVariable(value = "id") String id) {
+	@GetMapping(path = "/interviewer/survey-unit/{id}")
+	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		Optional<SurveyUnit> su = surveyUnitService.findById(id);
-		if (!su.isPresent()) {
-			log.error("{} : Survey unit with id {} was not found in database", userId, id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
-			log.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-		SurveyUnitDetailDto surveyUnit;
-		try {
-			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
-		} catch (NotFoundException | SurveyUnitException e) {
-			log.error(e.getMessage());
-			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.INTERNAL_SERVER_ERROR);
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.OK);
-
-		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
-
+		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 
 	/**
@@ -373,23 +342,16 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to delete a survey-unit
 	 * 
-	 * @param id the id of survey-unit
+	 * @param surveyUnitId the id of survey-unit
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> deleteSurveyUnit(@PathVariable(value = "id") String id) {
+	public void deleteSurveyUnit(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to DELETE survey-unit {}", userId, id);
-
-		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
-		if (!surveyUnitOptional.isPresent()) {
-			log.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		surveyUnitService.delete(surveyUnitOptional.get());
-		log.info("DELETE survey-unit with id {} resulting in 200", id);
-		return ResponseEntity.ok().build();
+		log.info("{} try to DELETE survey-unit {}", userId, surveyUnitId);
+		surveyUnitService.delete(surveyUnitId);
+		log.info("DELETE survey-unit with id {} resulting in 200", surveyUnitId);
 	}
 
 	/**

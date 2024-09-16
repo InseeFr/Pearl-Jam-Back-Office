@@ -513,8 +513,8 @@ class TestAuthKeyCloak {
 	 */
 	@Test
 	@Order(13)
-	void testGetSurveyUnitDetailNotFound() throws Exception {
-		mockMvc.perform(get("/api/survey-unit/123456789")
+	void testGetSurveyUnitInterviewerDetailNotFound() throws Exception {
+		mockMvc.perform(get("/api/interviewer/survey-unit/123456789")
 				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
@@ -1148,7 +1148,7 @@ class TestAuthKeyCloak {
 				.content(comment))
 				.andExpect(status().isOk());
 
-		mockMvc.perform(get("/api/survey-unit/11")
+		mockMvc.perform(get("/api/interviewer/survey-unit/11")
 				.with(authentication(INTERVIEWER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(

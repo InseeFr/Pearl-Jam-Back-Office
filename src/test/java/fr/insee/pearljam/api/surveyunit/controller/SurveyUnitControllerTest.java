@@ -111,7 +111,7 @@ class SurveyUnitControllerTest {
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(surveyUnitJson))
-                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updatePath, SurveyUnitNotFoundException.MESSAGE));
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updatePath, String.format(SurveyUnitNotFoundException.MESSAGE,1)));
         assertThat(surveyUnitService.getSurveyUnitUpdated()).isNull();
     }
 

@@ -79,10 +79,11 @@ class CommentDaoAdapterTest {
     @Test
     @DisplayName("Should throw exception when survey unit doesn't exist")
     void testUpdateComment02() {
-        Comment comment = new Comment(CommentType.INTERVIEWER, "value4", "marvelous-id");
+        String invalidSurveyUnitId = "invalid-id";
+        Comment comment = new Comment(CommentType.INTERVIEWER, "value4", invalidSurveyUnitId);
         assertThatThrownBy(() -> commentDaoAdapter.updateComment(comment))
                 .isInstanceOf(SurveyUnitNotFoundException.class)
-                .hasMessage(SurveyUnitNotFoundException.MESSAGE);
+                .hasMessage(String.format(SurveyUnitNotFoundException.MESSAGE, invalidSurveyUnitId));
     }
 }
 

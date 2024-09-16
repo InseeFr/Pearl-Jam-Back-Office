@@ -130,6 +130,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(SurveyUnitNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(SurveyUnitNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
     @ExceptionHandler(VisibilityHasInvalidDatesException.class)
     public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.CONFLICT, request);
