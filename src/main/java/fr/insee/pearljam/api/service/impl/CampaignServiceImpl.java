@@ -197,7 +197,8 @@ public class CampaignServiceImpl implements CampaignService {
 		if (!force && isCampaignOngoing(campaignId)) {
 			throw new CampaignOnGoingException();
 		}
-		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(surveyUnitService::delete);
+		surveyUnitRepository.findByCampaignId(campaign.getId())
+				.forEach(surveyunit -> surveyUnitService.delete(surveyunit.getId()));
 		userRepository.findAll()
 				.forEach(user -> {
 					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(Campaign::getId)

@@ -103,7 +103,7 @@ class SurveyUnitIT {
      */
     @Test
     void testGetSurveyUnitDetail() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/survey-unit/11")
+        MvcResult result = mockMvc.perform(get("/api/interviewer/survey-unit/11")
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpectAll(status().isOk())
@@ -114,6 +114,28 @@ class SurveyUnitIT {
         {
            "id":"11",
            "persons":[
+              {
+                 "id":1,
+                 "title":"MISTER",
+                 "firstName":"Ted",
+                 "lastName":"Farmer",
+                 "email":"test@test.com",
+                 "birthdate":11111111,
+                 "favoriteEmail":true,
+                 "privileged":true,
+                 "phoneNumbers":[
+                    {
+                       "source":"FISCAL",
+                       "favorite":false,
+                       "number":"+33677542802"
+                    },
+                    {
+                       "source":"FISCAL",
+                       "favorite":true,
+                       "number":"+33677542802"
+                    }
+                 ]
+              },
               {
                  "id":6,
                  "title":"MISS",
@@ -141,28 +163,6 @@ class SurveyUnitIT {
                  "favoriteEmail":true,
                  "privileged":false,
                  "phoneNumbers":[
-                    {
-                       "source":"FISCAL",
-                       "favorite":true,
-                       "number":"+33677542802"
-                    }
-                 ]
-              },
-              {
-                 "id":1,
-                 "title":"MISTER",
-                 "firstName":"Ted",
-                 "lastName":"Farmer",
-                 "email":"test@test.com",
-                 "birthdate":11111111,
-                 "favoriteEmail":true,
-                 "privileged":true,
-                 "phoneNumbers":[
-                    {
-                       "source":"FISCAL",
-                       "favorite":false,
-                       "number":"+33677542802"
-                    },
                     {
                        "source":"FISCAL",
                        "favorite":true,
@@ -222,22 +222,19 @@ class SurveyUnitIT {
               "category":"PRIMARY",
               "occupant":"IDENTIFIED"
            },
-           "communicationRequests":[
+           "communicationTemplates":[
               {
-                 "communicationTemplateId":2,
-                 "reason":"UNREACHABLE",
-                 "emitter":"INTERVIEWER",
-                 "status":[
-                    {
-                       "date":1721903754305,
-                       "status":"INITIATED"
-                    },
-                    {
-                       "date":1721903756310,
-                       "status":"READY"
-                    }
-                 ]
+                 "id":1,
+                 "medium":"EMAIL",
+                 "type":"REMINDER"
               },
+              {
+                 "id":2,
+                 "medium":"LETTER",
+                 "type":"NOTICE"
+              }
+           ],
+           "communicationRequests":[
               {
                  "communicationTemplateId":1,
                  "reason":"REFUSAL",
@@ -254,6 +251,21 @@ class SurveyUnitIT {
                     {
                        "date":1721903756305,
                        "status":"SUBMITTED"
+                    }
+                 ]
+              },
+              {
+                 "communicationTemplateId":2,
+                 "reason":"UNREACHABLE",
+                 "emitter":"INTERVIEWER",
+                 "status":[
+                    {
+                       "date":1721903754305,
+                       "status":"INITIATED"
+                    },
+                    {
+                       "date":1721903756310,
+                       "status":"READY"
                     }
                  ]
               }

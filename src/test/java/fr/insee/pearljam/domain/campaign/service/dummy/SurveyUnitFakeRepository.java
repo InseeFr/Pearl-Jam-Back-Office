@@ -27,7 +27,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String id, String userId) {
+    public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String surveyUnitId, String userId) {
         return Optional.empty();
     }
 

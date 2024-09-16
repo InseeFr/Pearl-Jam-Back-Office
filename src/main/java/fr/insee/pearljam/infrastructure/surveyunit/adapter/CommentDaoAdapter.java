@@ -23,7 +23,7 @@ public class CommentDaoAdapter implements CommentRepository {
     public void updateComment(Comment comment) throws SurveyUnitNotFoundException {
         SurveyUnit surveyUnit = surveyUnitRepository
                 .findById(comment.surveyUnitId())
-                .orElseThrow(SurveyUnitNotFoundException::new);
+                .orElseThrow(() -> new SurveyUnitNotFoundException(comment.surveyUnitId()));
 
         Set<CommentDB> existingComments = surveyUnit.getComments();
 

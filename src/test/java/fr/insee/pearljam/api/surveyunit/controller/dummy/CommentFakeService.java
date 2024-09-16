@@ -16,7 +16,7 @@ public class CommentFakeService implements CommentService {
     @Override
     public void updateSurveyUnitComment(Comment comment) throws SurveyUnitNotFoundException {
         if(shouldThrowException) {
-            throw new SurveyUnitNotFoundException();
+            throw new SurveyUnitNotFoundException(comment.surveyUnitId());
         }
         commentUpdated = comment;
     }

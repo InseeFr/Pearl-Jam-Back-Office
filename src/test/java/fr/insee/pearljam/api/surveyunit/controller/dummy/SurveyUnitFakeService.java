@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
@@ -16,7 +15,6 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class SurveyUnitFakeService implements SurveyUnitService {
@@ -31,19 +29,14 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     private SurveyUnitUpdateDto surveyUnitUpdated = null;
 
     @Override
-    public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
     public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
     @Override
-    public SurveyUnitDetailDto updateSurveyUnit(String userId, String id, SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
+    public SurveyUnitDetailDto updateSurveyUnit(String userId, String surveyUnitId, SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
         if(shouldThrowSurveyUnitException) {
-            throw new SurveyUnitNotFoundException();
+            throw new SurveyUnitNotFoundException(surveyUnitId);
         }
 
         if(shouldThrowPersonException) {
@@ -69,12 +62,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
-    public Optional<SurveyUnit> findById(String id) {
+    public SurveyUnit getSurveyUnit(String surveyUnitId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -124,7 +112,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public void delete(SurveyUnit surveyUnit) {
+    public void delete(String surveyUnitId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -161,5 +149,10 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     @Override
     public void removeInterviewerLink(List<String> ids) {
         throw new IllegalArgumentException("not implemented yet");
+    }
+
+    @Override
+    public SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId) {
+        return null;
     }
 }

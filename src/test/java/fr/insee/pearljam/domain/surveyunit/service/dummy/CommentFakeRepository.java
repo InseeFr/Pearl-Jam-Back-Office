@@ -19,7 +19,7 @@ public class CommentFakeRepository implements CommentRepository {
     @Override
     public void updateComment(Comment comment) throws SurveyUnitNotFoundException {
         if(shouldThrowException) {
-            throw new SurveyUnitNotFoundException();
+            throw new SurveyUnitNotFoundException(comment.surveyUnitId());
         }
         commentUpdated = comment;
     }

@@ -12,13 +12,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
+import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,8 +42,6 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.exception.BadRequestException;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -75,6 +77,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final UserService userService;
 	private final UtilsService utilsService;
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
+	private final CommunicationTemplateService communicationTemplateService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -90,25 +93,32 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return !surveyUnitRepository.findByIdInOrganizationalUnit(id, userOUs).isEmpty();
 	}
 
-	public Optional<SurveyUnit> findById(String id) {
-		return surveyUnitRepository.findById(id);
+	@Override
+	public SurveyUnit getSurveyUnit(String surveyUnitId) {
+		return surveyUnitRepository
+				.findById(surveyUnitId)
+				.orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
 	}
 
-	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id) {
-		return surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(userId, id);
-	}
+	@Override
+	public SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId) {
+		SurveyUnit surveyUnit = surveyUnitRepository
+				.findByIdAndInterviewerIdIgnoreCase(surveyUnitId, userId)
+				.orElseThrow(() -> {
+					log.error("Survey unit with id {} is not associated to the interviewer {}", surveyUnitId, userId);
+					return new SurveyUnitNotFoundException(surveyUnitId);
+				});
 
-	public SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id)
-			throws SurveyUnitException, NotFoundException {
-		Optional<SurveyUnit> surveyUnit = surveyUnitRepository.findById(id);
-		if (!surveyUnit.isPresent()) {
-			throw new NotFoundException(String.format("Survey unit with id %s was not found in database", id));
+		if (!canBeSeenByInterviewer(surveyUnit.getId())) {
+			log.error(String.format("Survey unit with id %s is not associated to the interviewer %s anymore", surveyUnitId, userId));
+			throw new SurveyUnitNotFoundException(surveyUnitId);
 		}
-		if (!canBeSeenByInterviewer(surveyUnit.get().getId())) {
-			throw new SurveyUnitException(
-					String.format("Survey unit with id %s is not associated to the interviewer %s", id, userId));
-		}
-		return new SurveyUnitDetailDto(surveyUnit.get());
+
+		List<CommunicationTemplate> communicationTemplates = communicationTemplateService.findCommunicationTemplates(surveyUnit.getCampaign().getId());
+		SurveyUnitForInterviewer surveyUnitForInterviewer = new SurveyUnitForInterviewer(surveyUnit, communicationTemplates);
+		// TODO: when refacto survey unit, return model object instead of dto here
+		// cannot do this now as the hibernate session is not propagated to the controller
+		return SurveyUnitInterviewerResponseDto.fromModel(surveyUnitForInterviewer);
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
@@ -138,17 +148,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Transactional
-	public SurveyUnitDetailDto updateSurveyUnit(String userId, String id,
-												SurveyUnitUpdateDto surveyUnitUpdate) throws SurveyUnitNotFoundException, PersonNotFoundException {
-		log.info("Update Survey Unit {}", id);
+	public SurveyUnitDetailDto updateSurveyUnit(String userId, String surveyUnitId,
+												SurveyUnitUpdateDto surveyUnitUpdate) throws PersonNotFoundException {
+		log.info("Update Survey Unit {}", surveyUnitId);
 
 		Optional<SurveyUnit> surveyUnitOpt;
 		if (userId.equals(GUEST)) {
-			surveyUnitOpt = surveyUnitRepository.findById(id);
+			surveyUnitOpt = surveyUnitRepository.findById(surveyUnitId);
 		} else {
-			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(id, userId);
+			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(surveyUnitId, userId);
 		}
-		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(SurveyUnitNotFoundException::new);
+		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
 		surveyUnit.setMove(surveyUnitUpdate.move());
 		updateAddress(surveyUnit, surveyUnitUpdate);
 		updatePersons(surveyUnitUpdate);
@@ -160,8 +170,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitUpdateService.updateSurveyUnitInfos(surveyUnit, surveyUnitUpdate);
 		surveyUnitRepository.save(surveyUnit);
 
-		log.info("Survey Unit {} - update complete", id);
-		return new SurveyUnitDetailDto(surveyUnitRepository.findById(id).get());
+		log.info("Survey Unit {} - update complete", surveyUnitId);
+		return new SurveyUnitDetailDto(surveyUnitRepository.findById(surveyUnitId).get());
 	}
 
 	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
@@ -466,8 +476,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	@Transactional
-	public void addOrModifyClosingCause(SurveyUnit surveyUnit, ClosingCauseType type) {
+	private void addOrModifyClosingCause(SurveyUnit surveyUnit, ClosingCauseType type) {
 		ClosingCause cc;
 		if (surveyUnit.getClosingCause() != null) {
 			cc = surveyUnit.getClosingCause();
@@ -602,9 +611,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Override
-	public void delete(SurveyUnit surveyUnit) {
+	public void delete(String surveyUnitId) {
+		SurveyUnit surveyUnit = getSurveyUnit(surveyUnitId);
 		surveyUnitTempZoneRepository.deleteBySurveyUnitId(surveyUnit.getId());
-		surveyUnitRepository.delete(surveyUnit);
+		surveyUnitRepository.deleteById(surveyUnit.getId());
 	}
 
 	@Override
