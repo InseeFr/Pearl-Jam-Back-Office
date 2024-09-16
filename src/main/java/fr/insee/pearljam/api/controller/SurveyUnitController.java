@@ -114,7 +114,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
-	@GetMapping(path = "/interviewer/survey-unit/{id}")
+	@GetMapping(path = {"/interviewer/survey-unit/{id}", "/survey-unit/{id}"})
 	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
