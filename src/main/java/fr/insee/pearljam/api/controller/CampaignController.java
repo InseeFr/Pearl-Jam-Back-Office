@@ -119,7 +119,7 @@ public class CampaignController {
 	 * This method is used to get the list of interviewers associated with the
 	 * campaign {id} for current user
 	 * 
-	 * @param id
+	 * @param id campaign id
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
@@ -146,7 +146,7 @@ public class CampaignController {
 	 * This method is used to count survey units that are abandoned by campaign
 	 * Return the sum of survey units states by campaign as a list
 	 *
-	 * @param id
+	 * @param id campaign id
 	 * @return
 	 */
 	@Operation(summary = "Get numberSUAbandoned")
@@ -216,10 +216,10 @@ public class CampaignController {
 	 * @param id campaign id
 	 * @param campaign campaign to update
 	 */
-	@Operation(summary = "Update campaign (label, email, configurations, visibilities, referents)")
+	@Operation(summary = "Update campaign (label, email, configurations, visibilities, communication-informations, referents)")
 	@PutMapping(path = Constants.API_CAMPAIGN_ID)
 	public void updateCampaign(@NotBlank @PathVariable(value = "id") String id,
-			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to update campaign {} collection dates", userId, id);
 
@@ -230,7 +230,7 @@ public class CampaignController {
 	/**
 	 * This method returns campaign ongoing status
 	 * 
-	 * @param id
+	 * @param id campaign id
 	 * @return {@link OngoingDto} , {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */

@@ -23,6 +23,8 @@ public record CampaignCreateDto (
 	@Valid
 	List<VisibilityCampaignCreateDto> visibilities,
 	@Valid
+	List<CommunicationInformationCampaignCreateDto> communicationInformations,
+	@Valid
 	@NoDuplicateMediumAndType
 	List<CommunicationTemplateCreateDto> communications,
 	List<ReferentDto> referents,

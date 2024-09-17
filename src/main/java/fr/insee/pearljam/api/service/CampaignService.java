@@ -58,7 +58,7 @@ public interface CampaignService {
 
 	void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException;
 
-	void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException;
+	void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException;
 
 	boolean isCampaignOngoing(String id) throws CampaignNotFoundException;
 

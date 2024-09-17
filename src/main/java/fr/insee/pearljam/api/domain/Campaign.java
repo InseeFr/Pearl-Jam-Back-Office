@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationInformationDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import jakarta.persistence.CascadeType;
@@ -74,6 +75,9 @@ public class Campaign implements Serializable {
 
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CommunicationTemplateDB> communicationTemplates;
+
+	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CommunicationInformationDB> communicationInformations;
 
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
 			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email) {
