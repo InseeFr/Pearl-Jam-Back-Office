@@ -26,6 +26,7 @@ TRUNCATE TABLE public.comment;
 TRUNCATE TABLE public.closing_cause;
 TRUNCATE TABLE public.organization_unit;
 TRUNCATE TABLE public.address;
+TRUNCATE TABLE public.communication_information;
 
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
@@ -119,6 +120,16 @@ INSERT INTO visibility (
     ('OU-SOUTH', 'XCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308),
     ('OU-SOUTH', 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308),
     ('OU-WEST' , 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308);
+
+INSERT INTO communication_information (
+    organization_unit_id,
+    campaign_id,
+    address,
+    mail,
+    tel
+) VALUES
+    ('OU-NORTH', 'SIMPSONS2020X00','50 beverly hills street, north region', 'north-simpsons@nooneknows.fr', '0321234567'),
+    ('OU-SOUTH', 'VQS2021X00', NULL, 'north-vqs@nooneknows.fr', '');
 
 
 

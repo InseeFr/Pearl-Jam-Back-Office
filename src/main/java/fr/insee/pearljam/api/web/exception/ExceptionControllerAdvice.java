@@ -135,6 +135,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(CommunicationInformationNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(CommunicationInformationNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
     @ExceptionHandler(VisibilityHasInvalidDatesException.class)
     public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.CONFLICT, request);

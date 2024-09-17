@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.campaign.service;
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.campaign.dto.input.*;
+import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.CampaignServiceImpl;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
@@ -79,13 +80,15 @@ class CampaignServiceImplTest {
         SurveyUnitFakeService surveyUnitService = new SurveyUnitFakeService();
         PreferenceFakeService preferenceService = new PreferenceFakeService();
         ReferentFakeService referentService = new ReferentFakeService();
+        CommunicationInformationFakeService communicationInformationService = new CommunicationInformationFakeService();
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
+                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService,
+                communicationInformationService);
     }
 
-    // TODO : handle referent
+    // TODO : handle referent & communication informations
     @Test
     @DisplayName("Should create a new campaign successfully")
     void shouldCreateNewCampaign() throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
@@ -98,6 +101,7 @@ class CampaignServiceImplTest {
                 campaignId,
                 "Campaign 1",
                 List.of(visibilityDto),
+                null,
                 List.of(communicationTemplateDto),
                 null,
                 null,
@@ -139,6 +143,7 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
+                null,
                 IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F
@@ -149,10 +154,10 @@ class CampaignServiceImplTest {
                 .hasMessage(CampaignAlreadyExistException.MESSAGE);
     }
 
-    // TODO : handle referents
+    // TODO : handle referents & communication infos
     @Test
     @DisplayName("Should update an existing campaign successfully")
-    void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+    void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
         String campaignId = existingCampaign.getId();
 
         // Given
@@ -161,6 +166,7 @@ class CampaignServiceImplTest {
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 List.of(visibilityDto),
+                List.of(),
                 null, "emailUpdated@email.com",
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
@@ -189,12 +195,13 @@ class CampaignServiceImplTest {
     @ValueSource(strings = {"", "  "})
     @NullSource
     @DisplayName("Should not update email if empty")
-    void shouldNotUpdateEmailIfNull(String emailToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+    void shouldNotUpdateEmailIfNull(String emailToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
         String campaignId = existingCampaign.getId();
 
         // Given
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
+                null,
                 null,
                 null, emailToUpdate,
                 IdentificationConfiguration.NOIDENT,
@@ -211,14 +218,16 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should not update visibilities if null")
-    void shouldNotUpdateVisibilitiesIfNull() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+    void shouldNotUpdateVisibilitiesIfNull() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
         String campaignId = existingCampaign.getId();
 
         // Given
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
-                null, null,
+                null,
+                null,
+                null,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -233,13 +242,15 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should not update referents if null")
-    void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException {
+    void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException, OrganizationalUnitNotFoundException {
         String campaignId = existingCampaign.getId();
 
         // Given
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
-                null, null,
+                null,
+                null,
+                null,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -259,7 +270,9 @@ class CampaignServiceImplTest {
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
-                null, null,
+                null,
+                null,
+                null,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);

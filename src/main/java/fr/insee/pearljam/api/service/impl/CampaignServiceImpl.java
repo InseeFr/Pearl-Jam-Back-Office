@@ -1,7 +1,9 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.campaign.dto.input.*;
+import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.campaign.dto.output.CommunicationInformationResponseDto;
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
@@ -17,10 +19,13 @@ import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationInformation;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.port.userside.CommunicationInformationService;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
 import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationInformationDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import lombok.NonNull;
@@ -62,6 +67,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ReferentService referentService;
 	private final VisibilityService visibilityService;
 	private final DateService dateService;
+	private final CommunicationInformationService communicationInformationService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -172,6 +178,17 @@ public class CampaignServiceImpl implements CampaignService {
 			visibilitiesDBToCreate.add(VisibilityDB.fromModel(visibility, campaign, organizationUnit));
 		}
 		campaign.setVisibilities(visibilitiesDBToCreate);
+
+		List<CommunicationInformation> communicationInformations = CommunicationInformationCampaignCreateDto.toModel(campaignDto.communicationInformations(), campaignDto.campaign());
+		List<CommunicationInformationDB> communicationInformationsDBToCreate = new ArrayList<>();
+		for (CommunicationInformation communicationInformation : communicationInformations) {
+			OrganizationUnit organizationUnit = organizationUnitRepository.findById(communicationInformation.organizationalUnitId())
+					.orElseThrow(OrganizationalUnitNotFoundException::new);
+			communicationInformationsDBToCreate.add(CommunicationInformationDB.fromModel(communicationInformation, campaign, organizationUnit));
+		}
+		campaign.setCommunicationInformations(communicationInformationsDBToCreate);
+
+
 		if(campaignDto.referents() != null) {
 			updateReferents(campaign, campaignDto.referents());
 		}
@@ -213,7 +230,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, OrganizationalUnitNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
@@ -222,6 +239,13 @@ public class CampaignServiceImpl implements CampaignService {
 			for (Visibility visibilityToUpdate : visibilitiesToUpdate) {
 				visibilityService.updateVisibility(visibilityToUpdate);
 			}
+		}
+
+		if(campaignToUpdate.communicationInformations() != null) {
+			List<CommunicationInformation> communicationInformations = CommunicationInformationCampaignUpdateDto.toModel(
+					campaignToUpdate.communicationInformations(),
+					campaignId);
+			communicationInformationService.setCommunicationInformations(communicationInformations, currentCampaign);
 		}
 
 		currentCampaign.setLabel(campaignToUpdate.campaignLabel());
@@ -302,6 +326,9 @@ public class CampaignServiceImpl implements CampaignService {
 		List<VisibilityCampaignDto> visibilities = VisibilityCampaignDto.fromModel(
 				visibilityService.findVisibilities(campaignId)
 		);
-		return CampaignResponseDto.fromModel(campaignDB, referents, visibilities);
+		List<CommunicationInformationResponseDto> communicationInformations = CommunicationInformationResponseDto.fromModel(
+				communicationInformationService.findCommunicationInformations(campaignId)
+		);
+		return CampaignResponseDto.fromModel(campaignDB, referents, visibilities, communicationInformations);
 	}
 }

@@ -1,8 +1,6 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.input.*;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.CampaignController;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
@@ -103,11 +101,13 @@ class CampaignControllerCreateTest {
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
+                List.of(),
                 List.of());
         CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
+                List.of(),
                 List.of(),
                 List.of());
         List<CampaignCreateDto> campaigns = List.of(campaign1, campaign2);
@@ -154,6 +154,7 @@ class CampaignControllerCreateTest {
                     ContactAttemptConfiguration.F2F,
                     invalidCampaignVisibilities,
                     List.of(),
+                    List.of(),
                     List.of());
             mockMvc.perform(post(Constants.API_CAMPAIGN)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -185,10 +186,12 @@ class CampaignControllerCreateTest {
                 1721683253000L, 1721683254000L, 1721683255000L);
         CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto("messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto("messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+
         CampaignCreateDto campaign = generateCampaign("campId", "label",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
+                List.of(),
                 List.of(),
                 List.of(communicationTemplate, duplicatedCommunicationTemplate));
 
@@ -217,12 +220,17 @@ class CampaignControllerCreateTest {
                 1721683263000L,
                 1721683264000L,
                 1721683265000L);
+        CommunicationInformationCampaignCreateDto communicationInformation = new CommunicationInformationCampaignCreateDto("OU-SOUTH",
+                "address",
+                "mail",
+                "tel");
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("campId", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.NOIDENT, ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL,
                 List.of(firstVisibility, secondVisibility),
+                List.of(communicationInformation),
                 List.of(firstReferent, secondReferent),
                 List.of(communicationTemplate1, communicationTemplate2));
     }
@@ -233,12 +241,14 @@ class CampaignControllerCreateTest {
             ContactOutcomeConfiguration contactOutcomeConfiguration,
             ContactAttemptConfiguration contactAttemptConfiguration,
             List<VisibilityCampaignCreateDto> visibilities,
+            List<CommunicationInformationCampaignCreateDto> communicationInformations,
             List<ReferentDto> referents,
             List<CommunicationTemplateCreateDto> communicationTemplates) {
 
         return new CampaignCreateDto(campaignId,
                 campaignLabel,
                 visibilities,
+                communicationInformations,
                 communicationTemplates,
                 referents,
                 email,

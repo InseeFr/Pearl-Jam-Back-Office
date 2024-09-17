@@ -142,6 +142,17 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '6 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000);
 
+INSERT INTO communication_information (
+    organization_unit_id,
+    campaign_id,
+    address,
+    mail,
+    tel
+) VALUES
+    ('OU-NORTH', 'SIMPSONS2020X00','50 beverly hills street, north region', 'north-simpsons@nooneknows.fr', '0321234567'),
+    ('OU-SOUTH', 'SIMPSONS2020X00','60 rue des clopinettes, south region', 'south-simpsons@nooneknows.fr', NULL),
+    ('OU-NORTH', 'VQS2021X00', NULL, 'north-vqs@nooneknows.fr', '');
+
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '11', TRUE,  a.id, 'SIMPSONS2020X00', 'GUEST', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Ted Farmer' AND s.bs='11';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '12', TRUE,  a.id, 'SIMPSONS2020X00', 'GUEST', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Cecilia Ortega' AND s.bs='12';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '13', FALSE, a.id, 'SIMPSONS2020X00', 'GUEST', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Claude Watkins' AND s.bs='13';

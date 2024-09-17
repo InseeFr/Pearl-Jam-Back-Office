@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.input.CommunicationInformationCampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.api.controller.CampaignController;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
@@ -71,6 +72,7 @@ class CampaignControllerUpdateTest {
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(),
+                List.of(),
                 List.of());
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -133,6 +135,7 @@ class CampaignControllerUpdateTest {
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
+                List.of(),
                 List.of());
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -153,13 +156,23 @@ class CampaignControllerUpdateTest {
                 1721683263000L,
                 1721683264000L,
                 1721683265000L);
+
+        CommunicationInformationCampaignUpdateDto firstCommunication = generateCommunicationInformation("OU-SOUTH",
+                "address",
+                "mail",
+                "tel");
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(firstVisibility, secondVisibility),
+                List.of(firstCommunication),
                 List.of(firstReferent, secondReferent));
+    }
+
+    private CommunicationInformationCampaignUpdateDto generateCommunicationInformation(String ouId, String address, String mail, String tel) {
+        return new CommunicationInformationCampaignUpdateDto(ouId, address, mail, tel);
     }
 
     private CampaignUpdateDto generateCampaign(String campaignLabel,
@@ -167,10 +180,12 @@ class CampaignControllerUpdateTest {
                                                ContactOutcomeConfiguration contactOutcomeConfiguration,
                                                ContactAttemptConfiguration contactAttemptConfiguration,
                                                List<VisibilityCampaignUpdateDto> visibilities,
+                                               List<CommunicationInformationCampaignUpdateDto> communicationInformations,
                                                List<ReferentDto> referents) {
         return new CampaignUpdateDto(
                 campaignLabel,
                 visibilities,
+                communicationInformations,
                 referents,
                 email,
                 identificationConfiguration,
