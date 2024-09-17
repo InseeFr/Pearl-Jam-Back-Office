@@ -4,11 +4,16 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationInformation;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationInformationService;
 import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.CommunicationInformationNotFoundException;
 import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
+import lombok.Setter;
 
 import java.util.List;
 
 public class CommunicationInformationFakeService implements CommunicationInformationService {
+    @Setter
+    private boolean shouldThrowCommunicationInformationNotFoundException = false;
+
     @Override
     public List<CommunicationInformation> findCommunicationInformations(String campaignId) throws CampaignNotFoundException {
         return List.of();
@@ -21,6 +26,8 @@ public class CommunicationInformationFakeService implements CommunicationInforma
 
     @Override
     public void updateCommunicationInformation(CommunicationInformation communicationInformationToUpdate) {
-        // not used at this moment
+        if(shouldThrowCommunicationInformationNotFoundException) {
+            throw new CommunicationInformationNotFoundException();
+        }
     }
 }
