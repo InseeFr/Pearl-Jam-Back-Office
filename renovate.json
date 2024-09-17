@@ -1,0 +1,44 @@
+{
+  "extends": ["config:best-practices", ":semanticCommits", ":disableRateLimiting"],
+  "baseBranches": ["develop", "main"],
+  "packageRules": [
+    {
+      "enabled": false,
+      "matchPackagePatterns": ["*"],
+      "matchBaseBranches": ["main"]
+    },
+    {
+      "matchPackagePatterns": ["*"],
+      "matchBaseBranches": ["develop"],
+      "labels": ["dependencies"],
+      "bumpVersion": "patch",
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "spring",
+      "groupSlug": "spring",
+      "matchPackagePatterns": ["org.springframework.*"],
+      "matchBaseBranches": ["develop"],
+      "bumpVersion": "minor",
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "all minor dependencies",
+      "groupSlug": "all-minor-patch",
+      "matchPackagePatterns": ["*"],
+      "matchBaseBranches": ["develop"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "bumpVersion": "patch",
+      "dependencyDashboardApproval": false
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "baseBranches": ["main"],
+    "addLabels": ["security"],
+    "bumpVersion": "patch",
+    "schedule": ["before 5:00am"]
+  },
+  "schedule": ["every weekend"],
+  "timezone": "Europe/Paris"
+}
