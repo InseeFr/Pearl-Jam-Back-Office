@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface CommunicationInformationJpaRepository extends JpaRepository<CommunicationInformationDB, CommunicationInformationDBId> {
 
 	@Query(value = """
-		SELECT * FROM communication_information
-		WHERE campaign_id=?1
-		AND organization_unit_id=?2""", nativeQuery = true)
+		SELECT ci FROM CommunicationInformationDB ci
+		WHERE ci.campaign.id=?1
+		AND ci.organizationUnit.id=?2""")
 	Optional<CommunicationInformationDB> findCommunicationInformation(String campaignId, String organizationalUnitId);
 
 	List<CommunicationInformationDB> findByCampaignId(String campaignId);
