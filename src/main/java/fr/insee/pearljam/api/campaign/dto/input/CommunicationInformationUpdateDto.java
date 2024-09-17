@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationInformation;
 import lombok.NonNull;
 
-import java.util.List;
-
 public record CommunicationInformationUpdateDto(
         @JsonProperty(required = true)
         String address,
@@ -26,13 +24,5 @@ public record CommunicationInformationUpdateDto(
                 communicationInformation.address(),
                 communicationInformation.mail(),
                 communicationInformation.tel());
-    }
-
-    public static List<CommunicationInformation> toModel(List<CommunicationInformationUpdateDto> communicationsInformations,
-                                                         @NonNull String campaignId,
-                                                         @NonNull String ouId) {
-        return communicationsInformations.stream()
-                .map(communicationInformations -> toModel(communicationInformations, campaignId, ouId))
-                .toList();
     }
 }

@@ -5,17 +5,8 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationInform
 import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CommunicationInformationRepository {
-
-    /**
-     *
-     * @param campaignId campaign id
-     * @param organizationalUnitId organizational unit id
-     * @return the communication information for a campaign and an organizational unit
-     */
-    Optional<CommunicationInformation> findCommunicationInformation(String campaignId, String organizationalUnitId);
 
     /**
      *
@@ -26,9 +17,9 @@ public interface CommunicationInformationRepository {
 
     /**
      * Update a communication information
-     * @param communicatioInformationToUpdate the communication information to update
+     * @param communicationInformationToUpdate the communication information to update
      */
-    void update(CommunicationInformation communicatioInformationToUpdate);
+    void update(CommunicationInformation communicationInformationToUpdate);
 
     /**
      * set the communication informations to a campaign
