@@ -12,23 +12,17 @@ import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationInformation
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationInformationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
- import java.util.List;
-import java.util.Optional;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
+@Transactional
 public class CommunicationInformationDaoAdapter implements CommunicationInformationRepository {
     private final CommunicationInformationJpaRepository crudRepository;
     private final OrganizationUnitRepository organizationUnitRepository;
     private final CampaignRepository campaignRepository;
-
-    @Override
-    public Optional<CommunicationInformation> findCommunicationInformation(String campaignId, String organizationalUnitId) {
-        return crudRepository
-                .findCommunicationInformation(campaignId, organizationalUnitId)
-                .map(CommunicationInformationDB::toModel);
-    }
 
     @Override
     public List<CommunicationInformation> findCommunicationInformations(String campaignId) {
@@ -57,20 +51,7 @@ public class CommunicationInformationDaoAdapter implements CommunicationInformat
                     .findById(communicationInformationToUpdate.organizationalUnitId())
                     .orElseThrow(OrganizationalUnitNotFoundException::new);
 
-            CommunicationInformationDB communicationConfigurationDB =
-                    crudRepository
-                            .findCommunicationInformation(
-                                    communicationInformationToUpdate.campaignId(),
-                                    communicationInformationToUpdate.organizationalUnitId()
-                            )
-                            .map(communicationInformationDB -> {
-                                communicationInformationDB.setMail(communicationInformationToUpdate.mail());
-                                communicationInformationDB.setTel(communicationInformationToUpdate.tel());
-                                communicationInformationDB.setAddress(communicationInformationToUpdate.address());
-                                return communicationInformationDB;
-                            })
-                            .orElse(CommunicationInformationDB.fromModel(communicationInformationToUpdate, campaign, organizationUnit));
-
+            CommunicationInformationDB communicationConfigurationDB = CommunicationInformationDB.fromModel(communicationInformationToUpdate, campaign, organizationUnit);
             currentCommunicationInformations.add(communicationConfigurationDB);
         }
         campaignRepository.save(campaign);
