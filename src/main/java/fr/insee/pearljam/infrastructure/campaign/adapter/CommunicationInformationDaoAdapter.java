@@ -33,7 +33,7 @@ public class CommunicationInformationDaoAdapter implements CommunicationInformat
 
     @Override
     public void update(CommunicationInformation communicationInformationToUpdate) {
-        CommunicationInformationDB currentCommunicationInformationDB = crudRepository.findCommunicationInformation(
+        CommunicationInformationDB currentCommunicationInformationDB = crudRepository.findByCampaignIdAndOrganizationUnitId(
                         communicationInformationToUpdate.campaignId(), communicationInformationToUpdate.organizationalUnitId())
                 .orElseThrow(CommunicationInformationNotFoundException::new);
         currentCommunicationInformationDB.setMail(communicationInformationToUpdate.mail());
