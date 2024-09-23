@@ -193,7 +193,7 @@ public class CampaignServiceImpl implements CampaignService {
 			updateReferents(campaign, campaignDto.referents());
 		}
 
-		List<CommunicationTemplate> communicationTemplatesToCreate = CommunicationTemplateCreateDto.toModel(campaignDto.communications());
+		List<CommunicationTemplate> communicationTemplatesToCreate = CommunicationTemplateCreateDto.toModel(campaignDto.communicationTemplates());
 		if(communicationTemplatesToCreate != null) {
 			List<CommunicationTemplateDB> communicationsDBToCreate = CommunicationTemplateDB.fromModel(communicationTemplatesToCreate, campaign);
 			campaign.setCommunicationTemplates(communicationsDBToCreate);
