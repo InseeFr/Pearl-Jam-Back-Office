@@ -26,7 +26,7 @@ public record CampaignCreateDto (
 	List<CommunicationInformationCampaignCreateDto> communicationInformations,
 	@Valid
 	@NoDuplicateMediumAndType
-	List<CommunicationTemplateCreateDto> communications,
+	List<CommunicationTemplateCreateDto> communicationTemplates,
 	List<ReferentDto> referents,
 	String email,
 	IdentificationConfiguration identificationConfiguration,

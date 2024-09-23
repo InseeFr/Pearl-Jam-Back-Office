@@ -158,7 +158,7 @@ class CampaignIT {
                          "mail": "mail2"
                       }
                    ],
-                   "communications": [
+                   "communicationTemplates": [
                       {
                          "meshuggahId": "meshId1",
                          "medium": "LETTER",
