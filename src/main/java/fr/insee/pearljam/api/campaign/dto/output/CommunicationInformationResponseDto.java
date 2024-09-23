@@ -6,7 +6,6 @@ import java.util.List;
 
 public record CommunicationInformationResponseDto(
         String organizationalUnit,
-        String address,
         String mail,
         String tel) {
 
@@ -14,7 +13,6 @@ public record CommunicationInformationResponseDto(
         return communications.stream()
                 .map(communicationInformation -> new CommunicationInformationResponseDto(
                         communicationInformation.organizationalUnitId(),
-                        communicationInformation.address(),
                         communicationInformation.mail(),
                         communicationInformation.tel()
                 ))

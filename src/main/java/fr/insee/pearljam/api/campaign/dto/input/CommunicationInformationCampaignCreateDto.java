@@ -10,14 +10,12 @@ import java.util.List;
 public record CommunicationInformationCampaignCreateDto(
         @NotBlank
         String organizationalUnit,
-        String address,
         String mail,
         String tel) {
     public static CommunicationInformation toModel(@NonNull CommunicationInformationCampaignCreateDto communicationInformation,
                                                    String campaignId) {
         return new CommunicationInformation(campaignId,
                 communicationInformation.organizationalUnit(),
-                communicationInformation.address(),
                 communicationInformation.mail(),
                 communicationInformation.tel());
     }

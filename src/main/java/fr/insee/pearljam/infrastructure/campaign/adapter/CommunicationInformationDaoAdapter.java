@@ -38,7 +38,6 @@ public class CommunicationInformationDaoAdapter implements CommunicationInformat
                 .orElseThrow(CommunicationInformationNotFoundException::new);
         currentCommunicationInformationDB.setMail(communicationInformationToUpdate.mail());
         currentCommunicationInformationDB.setTel(communicationInformationToUpdate.tel());
-        currentCommunicationInformationDB.setAddress(communicationInformationToUpdate.address());
         crudRepository.save(currentCommunicationInformationDB);
     }
 

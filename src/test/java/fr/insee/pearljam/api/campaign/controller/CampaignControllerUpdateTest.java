@@ -158,7 +158,6 @@ class CampaignControllerUpdateTest {
                 1721683265000L);
 
         CommunicationInformationCampaignUpdateDto firstCommunication = generateCommunicationInformation("OU-SOUTH",
-                "address",
                 "mail",
                 "tel");
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
@@ -171,8 +170,8 @@ class CampaignControllerUpdateTest {
                 List.of(firstReferent, secondReferent));
     }
 
-    private CommunicationInformationCampaignUpdateDto generateCommunicationInformation(String ouId, String address, String mail, String tel) {
-        return new CommunicationInformationCampaignUpdateDto(ouId, address, mail, tel);
+    private CommunicationInformationCampaignUpdateDto generateCommunicationInformation(String ouId, String mail, String tel) {
+        return new CommunicationInformationCampaignUpdateDto(ouId, mail, tel);
     }
 
     private CampaignUpdateDto generateCampaign(String campaignLabel,

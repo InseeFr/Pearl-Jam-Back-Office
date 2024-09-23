@@ -51,7 +51,11 @@
 	<!-- delete communication option on visibility -->
 	<include file="changelog/542_update_communication_configuration.xml" relativeToChangelogFile="true" />
 
-	<!-- add  -->
+	<!-- add  communication informations -->
 	<include file="changelog/543_create_communication_information.xml" relativeToChangelogFile="true" />
+
+	<!-- delete addr from communication information  -->
+	<include file="changelog/544_update_communication_information.xml" relativeToChangelogFile="true" />
+
 
 </databaseChangeLog>

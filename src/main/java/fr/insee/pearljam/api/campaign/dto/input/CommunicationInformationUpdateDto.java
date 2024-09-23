@@ -6,8 +6,6 @@ import lombok.NonNull;
 
 public record CommunicationInformationUpdateDto(
         @JsonProperty(required = true)
-        String address,
-        @JsonProperty(required = true)
         String mail,
         @JsonProperty(required = true)
         String tel) {
@@ -21,7 +19,6 @@ public record CommunicationInformationUpdateDto(
         return new CommunicationInformation(
                 campaignId,
                 ouId,
-                communicationInformation.address(),
                 communicationInformation.mail(),
                 communicationInformation.tel());
     }

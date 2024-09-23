@@ -10,8 +10,6 @@ public record CommunicationInformationCampaignUpdateDto(
         @NotBlank
         String organizationalUnit,
         @JsonProperty(required = true)
-        String address,
-        @JsonProperty(required = true)
         String mail,
         @JsonProperty(required = true)
         String tel) {
@@ -23,7 +21,6 @@ public record CommunicationInformationCampaignUpdateDto(
         return new CommunicationInformation(
                 campaignId,
                 communicationInformation.organizationalUnit(),
-                communicationInformation.address(),
                 communicationInformation.mail(),
                 communicationInformation.tel());
     }
