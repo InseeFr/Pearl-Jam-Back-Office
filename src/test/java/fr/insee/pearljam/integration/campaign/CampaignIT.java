@@ -83,7 +83,6 @@ class CampaignIT {
                    "communicationInformations":[
                       {
                           "organizationalUnit":"OU-NORTH",
-                          "address":"50 beverly hills street, north region",
                           "mail":"north-simpsons@nooneknows.fr",
                           "tel":"0321234567"
                       }
@@ -151,13 +150,11 @@ class CampaignIT {
                    "communicationInformations": [
                       {
                         "organizationalUnit": "OU-NORTH",
-                         "address": "addr1",
                          "mail": "mail1",
                          "tel": "tel1"
                       },
                       {
                          "organizationalUnit":"OU-SOUTH",
-                         "address": "addr2",
                          "mail": "mail2"
                       }
                    ],
@@ -220,13 +217,11 @@ class CampaignIT {
                 .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
                         campaignId,
                         "OU-NORTH",
-                        "addr1",
                         "mail1",
                         "tel1"))
                 .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
                         campaignId,
                         "OU-SOUTH",
-                        "addr2",
                         "mail2",
                         null));
 
@@ -250,13 +245,11 @@ class CampaignIT {
     private void assertCommunicationInformation(CommunicationInformationDB communicationInformationToCheck,
                                                 String campaignId,
                                                 String organizationalUnitId,
-                                                String address,
                                                 String mail,
                                                 String tel) {
         assertThat(communicationInformationToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(communicationInformationToCheck.getOrganizationUnit().getId()).isEqualTo(organizationalUnitId);
         assertThat(communicationInformationToCheck.getTel()).isEqualTo(tel);
-        assertThat(communicationInformationToCheck.getAddress()).isEqualTo(address);
         assertThat(communicationInformationToCheck.getMail()).isEqualTo(mail);
     }
 
@@ -292,13 +285,11 @@ class CampaignIT {
                    "communicationInformations": [
                       {
                          "organizationalUnit": "OU-NORTH",
-                         "address": "addr1",
                          "mail": "mail1",
                          "tel": "tel1"
                       },
                       {
                          "organizationalUnit": "OU-SOUTH",
-                         "address": "addr2",
                          "mail": "mail2",
                          "tel": "tel2"
                       }
@@ -351,13 +342,11 @@ class CampaignIT {
                 .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
                         campaignId,
                         "OU-NORTH",
-                        "addr1",
                         "mail1",
                         "tel1"))
                 .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
                         campaignId,
                         "OU-SOUTH",
-                        "addr2",
                         "mail2",
                         "tel2"));
 

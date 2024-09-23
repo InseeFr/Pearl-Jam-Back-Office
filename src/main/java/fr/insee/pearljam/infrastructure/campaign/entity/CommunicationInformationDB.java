@@ -38,7 +38,6 @@ public class CommunicationInformationDB implements Serializable {
     private Campaign campaign;
 
     private String mail;
-    private String address;
     private String tel;
 
     public static CommunicationInformationDB fromModel(CommunicationInformation communicationInformation, Campaign campaign, OrganizationUnit organizationUnit) {
@@ -46,7 +45,6 @@ public class CommunicationInformationDB implements Serializable {
         return new CommunicationInformationDB(id,
                 organizationUnit, campaign,
                 communicationInformation.mail(),
-                communicationInformation.address(),
                 communicationInformation.tel());
     }
 
@@ -54,7 +52,6 @@ public class CommunicationInformationDB implements Serializable {
         return new CommunicationInformation(
                 communicationInformationDB.getCommunicationInformationId().getCampaignId(),
                 communicationInformationDB.getCommunicationInformationId().getOrganizationUnitId(),
-                communicationInformationDB.getAddress(),
                 communicationInformationDB.getMail(),
                 communicationInformationDB.getTel());
     }

@@ -124,12 +124,11 @@ INSERT INTO visibility (
 INSERT INTO communication_information (
     organization_unit_id,
     campaign_id,
-    address,
     mail,
     tel
 ) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00','50 beverly hills street, north region', 'north-simpsons@nooneknows.fr', '0321234567'),
-    ('OU-SOUTH', 'VQS2021X00', NULL, 'north-vqs@nooneknows.fr', '');
+    ('OU-NORTH', 'SIMPSONS2020X00', 'north-simpsons@nooneknows.fr', '0321234567'),
+    ('OU-SOUTH', 'VQS2021X00', 'north-vqs@nooneknows.fr', '');
 
 
 

@@ -221,7 +221,6 @@ class CampaignControllerCreateTest {
                 1721683264000L,
                 1721683265000L);
         CommunicationInformationCampaignCreateDto communicationInformation = new CommunicationInformationCampaignCreateDto("OU-SOUTH",
-                "address",
                 "mail",
                 "tel");
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");

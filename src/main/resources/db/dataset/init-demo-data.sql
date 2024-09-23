@@ -145,13 +145,12 @@ INSERT INTO visibility (
 INSERT INTO communication_information (
     organization_unit_id,
     campaign_id,
-    address,
     mail,
     tel
 ) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00','50 beverly hills street, north region', 'north-simpsons@nooneknows.fr', '0321234567'),
-    ('OU-SOUTH', 'SIMPSONS2020X00','60 rue des clopinettes, south region', 'south-simpsons@nooneknows.fr', NULL),
-    ('OU-NORTH', 'VQS2021X00', NULL, 'north-vqs@nooneknows.fr', '');
+    ('OU-NORTH', 'SIMPSONS2020X00', 'north-simpsons@nooneknows.fr', '0321234567'),
+    ('OU-SOUTH', 'SIMPSONS2020X00', 'south-simpsons@nooneknows.fr', NULL),
+    ('OU-NORTH', 'VQS2021X00', 'north-vqs@nooneknows.fr', '');
 
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '11', TRUE,  a.id, 'SIMPSONS2020X00', 'GUEST', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Ted Farmer' AND s.bs='11';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '12', TRUE,  a.id, 'SIMPSONS2020X00', 'GUEST', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Cecilia Ortega' AND s.bs='12';

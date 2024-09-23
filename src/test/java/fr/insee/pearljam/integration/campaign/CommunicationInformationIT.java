@@ -53,7 +53,6 @@ class CommunicationInformationIT {
                 [
                   {
                      "organizationalUnit": "OU-NORTH",
-                     "address": "50 beverly hills street, north region",
                      "mail": "north-simpsons@nooneknows.fr",
                      "tel": "0321234567"
                   }
@@ -70,7 +69,6 @@ class CommunicationInformationIT {
         String updatePath = String.format("/api/campaign/%s/organizational-unit/%s/communication-information", campaignId, organizationalUnitId);
         String content = """
         {
-            "address": "newAddr",
             "mail": "newMail",
             "tel": "newTel"
         }""";
@@ -85,7 +83,6 @@ class CommunicationInformationIT {
 
         assertThat(communicationDBToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(communicationDBToCheck.getOrganizationUnit().getId()).isEqualTo(organizationalUnitId);
-        assertThat(communicationDBToCheck.getAddress()).isEqualTo("newAddr");
         assertThat(communicationDBToCheck.getMail()).isEqualTo("newMail");
         assertThat(communicationDBToCheck.getTel()).isEqualTo("newTel");
     }

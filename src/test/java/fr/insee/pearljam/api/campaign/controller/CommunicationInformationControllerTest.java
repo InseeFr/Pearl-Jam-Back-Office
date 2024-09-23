@@ -42,7 +42,7 @@ class CommunicationInformationControllerTest {
     void testUpdateCommunicationInformation01() throws Exception {
         communicationInformationService.setShouldThrowCommunicationInformationNotFoundException(true);
         CommunicationInformationUpdateDto communicationInformationToUpdate =
-                new CommunicationInformationUpdateDto("addr", "mail", "0123456789");
+                new CommunicationInformationUpdateDto("mail", "0123456789");
         mockMvc.perform(put(updatePath)
                         .content(JsonTestHelper.toJson(communicationInformationToUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
