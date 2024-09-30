@@ -8,7 +8,7 @@ import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;
-import fr.insee.pearljam.config.DateServiceConfiguration;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @RequiredArgsConstructor
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(DateServiceConfiguration.class)
+@Import(FixedDateServiceConfiguration.class)
 class TestNoAuth {
 
 	private final MessageRepository messageRepository;

@@ -28,12 +28,13 @@ public record CommunicationRequestCreateDto(
      * Converts a list of communication request DTOs into a list of communication request models.
      *
      * @param requests the list of communication request DTOs
+     * @param readyTimestamp ready timestamp of the communication requests (when does the communication request are created in the back)
      * @return the list of communication request models
      */
-    public static List<CommunicationRequest> toModel(List<CommunicationRequestCreateDto> requests) {
+    public static List<CommunicationRequest> toModel(List<CommunicationRequestCreateDto> requests, Long readyTimestamp) {
         return requests.stream()
                 .map(request ->
-                        CommunicationRequest.create(request.communicationTemplateId(), request.creationTimestamp(), request.reason()))
+                        CommunicationRequest.create(request.communicationTemplateId(), request.creationTimestamp(), readyTimestamp, request.reason()))
                 .toList();
     }
 }

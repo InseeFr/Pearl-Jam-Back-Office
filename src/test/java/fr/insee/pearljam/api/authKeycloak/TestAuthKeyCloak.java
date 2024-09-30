@@ -25,7 +25,7 @@ import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
-import fr.insee.pearljam.config.DateServiceConfiguration;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
@@ -77,7 +77,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @RequiredArgsConstructor
-@Import(DateServiceConfiguration.class)
+@Import(FixedDateServiceConfiguration.class)
 class TestAuthKeyCloak {
 
 	private final SurveyUnitService surveyUnitService;

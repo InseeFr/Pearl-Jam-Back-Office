@@ -3,6 +3,8 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
@@ -28,11 +30,13 @@ class SurveyUnitUpdateServiceImplTest {
     private SurveyUnit surveyUnit;
     private SurveyUnitUpdateDto surveyUnitDto;
     private CommunicationTemplateDB communicationTemplate;
+    private DateService dateService;
 
     @BeforeEach
     void setup() {
+        dateService = new FixedDateService();
         communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
-        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository);
+        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository, dateService);
         surveyUnit = new SurveyUnit("id", true, true, null,
                 null, null, null, null, null);
 
@@ -74,13 +78,19 @@ class SurveyUnitUpdateServiceImplTest {
                                 1L,
                                 CommunicationRequestReason.UNREACHABLE,
                                 CommunicationRequestEmitter.INTERVIEWER,
-                                List.of(tuple(null, 12345678910L, CommunicationStatusType.INITIATED))
+                                List.of(
+                                        tuple(null, 12345678910L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
+                                )
                         ),
                         tuple(null,
                                 2L,
                                 CommunicationRequestReason.REFUSAL,
                                 CommunicationRequestEmitter.INTERVIEWER,
-                                List.of(tuple(null, 1234567891011L, CommunicationStatusType.INITIATED))
+                                List.of(
+                                        tuple(null, 1234567891011L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
+                                )
                         )
                 );
     }

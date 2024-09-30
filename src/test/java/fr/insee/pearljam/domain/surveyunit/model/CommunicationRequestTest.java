@@ -13,10 +13,11 @@ class CommunicationRequestTest {
         // Given
         Long communicationTemplateId = 1L;
         Long creationDate = System.currentTimeMillis();
+        Long readyDate = System.currentTimeMillis();
         CommunicationRequestReason reason = CommunicationRequestReason.REFUSAL;
 
         // When
-        CommunicationRequest communicationRequest = CommunicationRequest.create(communicationTemplateId, creationDate, reason);
+        CommunicationRequest communicationRequest = CommunicationRequest.create(communicationTemplateId, creationDate, readyDate, reason);
 
         // Then
         assertNotNull(communicationRequest);
@@ -25,7 +26,8 @@ class CommunicationRequestTest {
         assertEquals(reason, communicationRequest.reason());
         assertEquals(CommunicationRequestEmitter.INTERVIEWER, communicationRequest.emitter());
         assertNotNull(communicationRequest.status());
-        assertEquals(1, communicationRequest.status().size());
+        assertEquals(2, communicationRequest.status().size());
         assertEquals(creationDate, communicationRequest.status().getFirst().date());
+        assertEquals(readyDate, communicationRequest.status().getLast().date());
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 
 @TestConfiguration
 @Profile("test")
-public class DateServiceConfiguration {
+public class FixedDateServiceConfiguration {
 
     @Bean
     @Primary
