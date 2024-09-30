@@ -3,6 +3,8 @@ package fr.insee.pearljam.integration.surveyunit;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -10,6 +12,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,10 +27,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("auth")
+@ActiveProfiles(profiles = {"auth", "test"})
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(FixedDateServiceConfiguration.class)
 @Transactional
 class SurveyUnitIT {
 
@@ -36,6 +40,9 @@ class SurveyUnitIT {
 
     @Autowired
     private SurveyUnitService surveyUnitService;
+
+    @Autowired
+    private DateService dateService;
 
     @Test
     void testGetAllSurveyUnits() throws Exception {
@@ -283,6 +290,7 @@ class SurveyUnitIT {
     @Test
     @Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
     void testPutSurveyUnitDetail() throws Exception {
+        long currentTimestamp = dateService.getCurrentTimestamp();
         String updateJson = """
         {
             "id":"20",
@@ -494,6 +502,11 @@ class SurveyUnitIT {
                       {
                          "date":1721903754305,
                          "status":"INITIATED"
+                      },
+                      {
+                         "date":""" + currentTimestamp + """
+                         ,
+                         "status":"READY"
                       }
                    ]
                 },
@@ -516,6 +529,11 @@ class SurveyUnitIT {
                       {
                          "date":1721903754405,
                          "status":"INITIATED"
+                      },
+                      {
+                         "date":""" + currentTimestamp + """
+                         ,
+                         "status":"READY"
                       }
                    ]
                 },

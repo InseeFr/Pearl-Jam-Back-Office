@@ -8,9 +8,10 @@ public record CommunicationRequestStatus(
     /**
      * Create a CommunicationRequestStatus
      * @param timestamp status creation date
+     * @param statusType status type
      * @return {@link CommunicationRequestStatus} communication request status object
      */
-    public static CommunicationRequestStatus create(Long timestamp) {
-        return new CommunicationRequestStatus(null, timestamp, CommunicationStatusType.INITIATED);
+    public static CommunicationRequestStatus create(Long timestamp, CommunicationStatusType statusType) {
+        return new CommunicationRequestStatus(null, timestamp, statusType);
     }
 }
