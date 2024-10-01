@@ -11,7 +11,7 @@ public record CommunicationRequest(
         List<CommunicationRequestStatus> status) {
 
     /**
-     * Create a communication request for messhugah
+     * Create a communication request for meshuggah
      * @param communicationTemplateId communication configuration id
      * @param creationTimestamp creation date of the communication request (coming from the front)
      * @param readyTimestamp ready timestamp of the communication request (when does the communication request is created in the back)
@@ -26,7 +26,7 @@ public record CommunicationRequest(
     }
 
     /**
-     * Create a communication request for messhugah
+     * Create a communication request for meshuggah
      * @param communicationTemplateId communication configuration id
      * @param creationTimestamp creation date of the communication request (coming from the front)
      * @param readyTimestamp ready timestamp of the communication request (when does the communication request is created in the back)

@@ -634,6 +634,6 @@ class SurveyUnitIT {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(updateJson)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));;
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));
     }
 }
