@@ -20,7 +20,8 @@ public record SurveyUnitVisibilityDto(
 		Long identificationPhaseStartDate,
 		Long collectionStartDate,
 		Long collectionEndDate,
-		Long endDate
+		Long endDate,
+		boolean useLetterCommunication
 ) {
 
 	public static SurveyUnitVisibilityDto fromModel(Visibility visibility) {
@@ -30,6 +31,7 @@ public record SurveyUnitVisibilityDto(
 				visibility.identificationPhaseStartDate(),
 				visibility.collectionStartDate(),
 				visibility.collectionEndDate(),
-				visibility.endDate());
+				visibility.endDate(),
+				visibility.useLetterCommunication());
 	}
 }

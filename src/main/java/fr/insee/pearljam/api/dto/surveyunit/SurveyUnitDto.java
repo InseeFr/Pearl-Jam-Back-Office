@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
@@ -67,34 +66,11 @@ public class SurveyUnitDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private boolean useLetterCommunication;
 
 	private List<PersonDto> persons;
 
 	private AddressDto address;
-
-	public SurveyUnitDto() {
-	}
-
-	public SurveyUnitDto(SurveyUnit su, SurveyUnitVisibilityDto visibility, Boolean extended) {
-		this.id = su.getId();
-		this.campaign = su.getCampaign().getId();
-		this.campaignLabel = su.getCampaign().getLabel();
-		this.managementStartDate = visibility.managementStartDate();
-		this.interviewerStartDate = visibility.interviewerStartDate();
-		this.identificationPhaseStartDate = visibility.identificationPhaseStartDate();
-		this.collectionStartDate = visibility.collectionStartDate();
-		this.collectionEndDate = visibility.collectionEndDate();
-		this.endDate = visibility.endDate();
-		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
-		this.contactAttemptConfiguration = su.getCampaign().getContactAttemptConfiguration();
-		this.contactOutcomeConfiguration = su.getCampaign().getContactOutcomeConfiguration();
-		if (Boolean.TRUE.equals(extended)) {
-			this.persons = su.getPersons().stream()
-					.map(PersonDto::new)
-					.toList();
-			this.address = new AddressDto(su.getAddress());
-		}
-	}
 
 	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, SurveyUnitVisibilityDto visibility) {
 		this.id = idSurveyUnit;
@@ -106,6 +82,7 @@ public class SurveyUnitDto {
 		this.collectionStartDate = visibility.collectionStartDate();
 		this.collectionEndDate = visibility.collectionEndDate();
 		this.endDate = visibility.endDate();
+		this.useLetterCommunication = visibility.useLetterCommunication();
 		this.identificationConfiguration = campaign.getIdentificationConfiguration();
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();

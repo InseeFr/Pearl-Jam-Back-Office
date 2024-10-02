@@ -70,7 +70,8 @@ class SurveyUnitIT {
                   "endDate":1724582154306,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"F2F",
-                  "contactAttemptConfiguration":"F2F"
+                  "contactAttemptConfiguration":"F2F",
+                  "useLetterCommunication": true
                },
                {
                   "id":"12",
@@ -84,7 +85,8 @@ class SurveyUnitIT {
                   "endDate":1724582154306,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"F2F",
-                  "contactAttemptConfiguration":"F2F"
+                  "contactAttemptConfiguration":"F2F",
+                  "useLetterCommunication": true
                },
                {
                   "id":"20",
@@ -98,7 +100,8 @@ class SurveyUnitIT {
                   "endDate":1724582154308,
                   "identificationConfiguration":"IASCO",
                   "contactOutcomeConfiguration":"TEL",
-                  "contactAttemptConfiguration":"TEL"
+                  "contactAttemptConfiguration":"TEL",
+                  "useLetterCommunication": false
                }
             ]
         """;
@@ -387,7 +390,7 @@ class SurveyUnitIT {
             },
             "communicationRequests":[
                {
-                  "communicationTemplateId":4,
+                  "communicationTemplateId":5,
                   "reason":"REFUSAL",
                   "creationTimestamp": 1721903754305
                },
@@ -499,7 +502,7 @@ class SurveyUnitIT {
              },
              "communicationRequests":[
                 {
-                   "communicationTemplateId":4,
+                   "communicationTemplateId":5,
                    "reason":"REFUSAL",
                    "emitter":"INTERVIEWER",
                    "status":[
