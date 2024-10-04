@@ -52,7 +52,7 @@ class CampaignControllerTest {
     @Test
     @DisplayName("Should retrieve campaign")
     void testGetCampaign01() throws Exception {
-        CampaignResponseDto campaign = new CampaignResponseDto("campaign-id", "label", null, null, null, "email",
+        CampaignResponseDto campaign = new CampaignResponseDto("campaign-id", "label", null, null, "email",
                 IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.TEL, ContactAttemptConfiguration.F2F);
         campaignService.setCampaignToRetrieve(campaign);
 

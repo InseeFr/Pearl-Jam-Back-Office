@@ -101,13 +101,11 @@ class CampaignControllerCreateTest {
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
-                List.of(),
                 List.of());
         CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
-                List.of(),
                 List.of(),
                 List.of());
         List<CampaignCreateDto> campaigns = List.of(campaign1, campaign2);
@@ -160,7 +158,6 @@ class CampaignControllerCreateTest {
                     ContactAttemptConfiguration.F2F,
                     invalidCampaignVisibilities,
                     List.of(),
-                    List.of(),
                     List.of());
             mockMvc.perform(post(Constants.API_CAMPAIGN)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -198,7 +195,6 @@ class CampaignControllerCreateTest {
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
-                List.of(),
                 List.of(communicationTemplate, duplicatedCommunicationTemplate));
 
         mockMvc.perform(post(Constants.API_CAMPAIGN)
@@ -226,16 +222,12 @@ class CampaignControllerCreateTest {
                 1721683263000L,
                 1721683264000L,
                 1721683265000L, true);
-        CommunicationInformationCampaignCreateDto communicationInformation = new CommunicationInformationCampaignCreateDto("OU-SOUTH",
-                "mail",
-                "tel");
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("campId", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.NOIDENT, ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL,
                 List.of(firstVisibility, secondVisibility),
-                List.of(communicationInformation),
                 List.of(firstReferent, secondReferent),
                 List.of(communicationTemplate1, communicationTemplate2));
     }
@@ -246,14 +238,12 @@ class CampaignControllerCreateTest {
             ContactOutcomeConfiguration contactOutcomeConfiguration,
             ContactAttemptConfiguration contactAttemptConfiguration,
             List<VisibilityCampaignCreateDto> visibilities,
-            List<CommunicationInformationCampaignCreateDto> communicationInformations,
             List<ReferentDto> referents,
             List<CommunicationTemplateCreateDto> communicationTemplates) {
 
         return new CampaignCreateDto(campaignId,
                 campaignLabel,
                 visibilities,
-                communicationInformations,
                 communicationTemplates,
                 referents,
                 email,
@@ -268,6 +258,7 @@ class CampaignControllerCreateTest {
                                                            Long identificationDate, Long collectionStartDate,
                                                            Long collectionEndDate, Long endDate, Boolean useLetterCommunication) {
         return new VisibilityCampaignCreateDto(managementDate,
-                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit, useLetterCommunication);
+                interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate, organizationalUnit,
+                useLetterCommunication, "mail", "tel");
     }
 }

@@ -135,11 +135,6 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(CommunicationInformationNotFoundException.class)
-    public ResponseEntity<ApiError> exceptions(CommunicationInformationNotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
-    }
-
     @ExceptionHandler(VisibilityNotFoundException.class)
     public ResponseEntity<ApiError> exceptions(VisibilityNotFoundException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);

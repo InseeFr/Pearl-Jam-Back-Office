@@ -26,7 +26,6 @@ public record CampaignResponseDto(
         String campaign,
         String campaignLabel,
         List<VisibilityCampaignDto> visibilities,
-        List<CommunicationInformationResponseDto> communicationInformations,
         List<ReferentDto> referents,
         String email,
         IdentificationConfiguration identificationConfiguration,
@@ -35,12 +34,10 @@ public record CampaignResponseDto(
 ) {
     public static CampaignResponseDto fromModel(Campaign campaignDB,
                                                 List<ReferentDto> referents,
-                                                List<VisibilityCampaignDto> visibilities,
-                                                List<CommunicationInformationResponseDto> communicationInformations) {
+                                                List<VisibilityCampaignDto> visibilities) {
         return new CampaignResponseDto(campaignDB.getId(),
                 campaignDB.getLabel(),
                 visibilities,
-                communicationInformations,
                 referents,
                 campaignDB.getEmail(),
                 campaignDB.getIdentificationConfiguration(),

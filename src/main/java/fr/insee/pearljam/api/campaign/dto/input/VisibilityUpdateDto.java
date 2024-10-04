@@ -24,7 +24,9 @@ public record VisibilityUpdateDto(
         Long collectionStartDate,
         Long collectionEndDate,
         Long endDate,
-        Boolean useLetterCommunication
+        Boolean useLetterCommunication,
+        String mail,
+        String tel
 ) {
 
     public static Visibility toModel(@NonNull VisibilityUpdateDto visibilityDto,
@@ -37,6 +39,8 @@ public record VisibilityUpdateDto(
                 visibilityDto.collectionStartDate(),
                 visibilityDto.collectionEndDate(),
                 visibilityDto.endDate(),
-                visibilityDto.useLetterCommunication());
+                visibilityDto.useLetterCommunication(),
+                visibilityDto.mail(),
+                visibilityDto.tel());
     }
 }

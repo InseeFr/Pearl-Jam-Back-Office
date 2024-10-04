@@ -53,7 +53,7 @@ class SurveyUnitUpdateServiceImplTest {
         campaign = new Campaign("campaignId", "label", null, null, null,null);
         ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
         Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
-                null, null, null, null, true);
+                null, null, null, null, true, "mail", "tel");
         visibilityFakeService.save(visibility);
         surveyUnit = new SurveyUnit("id", true, true, null,
                 null, campaign, null, ou, null);
@@ -121,7 +121,7 @@ class SurveyUnitUpdateServiceImplTest {
         visibilityFakeService.clearVisibilities();
         communicationTemplateFakeRepository.clearCommunicationTemplates();
         Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
-                null, null, null, null, false);
+                null, null, null, null, false, "mail", "tel");
         communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.LETTER, CommunicationType.NOTICE);
         communicationTemplateFakeRepository.save(communicationTemplate);
         visibilityFakeService.save(visibility);

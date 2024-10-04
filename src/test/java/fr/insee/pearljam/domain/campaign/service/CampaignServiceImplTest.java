@@ -46,11 +46,13 @@ class CampaignServiceImplTest {
     private final Visibility existingVisibility1 =
             new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(), 1721683250000L,
                     1721683251000L, 1721683252000L,
-                    1721683253000L, 1721683254000L, 1721683255000L, true);
+                    1721683253000L, 1721683254000L, 1721683255000L,
+                    true, "mail1", "tel1");
     private final Visibility existingVisibility2 =
             new Visibility(existingCampaign.getId(), "OU2", 1721683250000L,
                     1721683251000L, 1721683252000L,
-                    1721683253000L, 1721683254000L, 1721683255000L, true);
+                    1721683253000L, 1721683254000L, 1721683255000L,
+                    true, "mail2", "tel2");
 
     @BeforeEach
     void setup() {
@@ -80,15 +82,13 @@ class CampaignServiceImplTest {
         SurveyUnitFakeService surveyUnitService = new SurveyUnitFakeService();
         PreferenceFakeService preferenceService = new PreferenceFakeService();
         ReferentFakeService referentService = new ReferentFakeService();
-        CommunicationInformationFakeService communicationInformationService = new CommunicationInformationFakeService();
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService,
-                communicationInformationService);
+                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
     }
 
-    // TODO : handle referent & communication informations
+    // TODO : handle referent
     @Test
     @DisplayName("Should create a new campaign successfully")
     void shouldCreateNewCampaign() throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
@@ -96,12 +96,12 @@ class CampaignServiceImplTest {
 
         CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
+                true, "mail", "tel");
         CampaignCreateDto campaignCreateDto = new CampaignCreateDto(
                 campaignId,
                 "Campaign 1",
                 List.of(visibilityDto),
-                null,
                 List.of(communicationTemplateDto),
                 null,
                 null,
@@ -135,12 +135,12 @@ class CampaignServiceImplTest {
     void shouldThrowCampaignAlreadyExistExceptionWhenCreatingExistingCampaign() {
         String campaignId = existingCampaign.getId();
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
+                true, "mail", "tel");
         CampaignCreateDto existingCampaignDto = new CampaignCreateDto(
                 campaignId,
                 "Existing campaign",
                 List.of(visibilityDto),
-                null,
                 null,
                 null,
                 null,
@@ -154,7 +154,7 @@ class CampaignServiceImplTest {
                 .hasMessage(CampaignAlreadyExistException.MESSAGE);
     }
 
-    // TODO : handle referents & communication infos
+    // TODO : handle referents
     @Test
     @DisplayName("Should update an existing campaign successfully")
     void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
@@ -162,12 +162,13 @@ class CampaignServiceImplTest {
 
         // Given
         VisibilityCampaignUpdateDto visibilityDto = new VisibilityCampaignUpdateDto(1721683250000L, 1721683251000L, 1721683252000L,
-                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(), true);
+                1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
+                true, "mail1", "tel1");
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 List.of(visibilityDto),
                 List.of(),
-                null, "emailUpdated@email.com",
+                "emailUpdated@email.com",
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -203,7 +204,7 @@ class CampaignServiceImplTest {
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
                 null,
-                null, emailToUpdate,
+                emailToUpdate,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -224,7 +225,6 @@ class CampaignServiceImplTest {
         // Given
 
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
-                null,
                 null,
                 null,
                 null,
@@ -250,7 +250,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
-                null,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -272,7 +271,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
-                null,
                 IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
@@ -287,11 +285,13 @@ class CampaignServiceImplTest {
         Visibility ongoingVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().plusSeconds(10000).toEpochMilli(), true);
+                1628191200000L, Instant.now().plusSeconds(10000).toEpochMilli(),
+                true, "mail", "tel");
         Visibility closedVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli(), true);
+                1628191200000L, Instant.now().toEpochMilli(),
+                true, "mail", "tel");
 
         visibilityService.save(ongoingVisibility);
         visibilityService.save(closedVisibility);
@@ -306,11 +306,13 @@ class CampaignServiceImplTest {
         Visibility closedVisibility1 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().minusSeconds(3600).toEpochMilli(), true);
+                1628191200000L, Instant.now().minusSeconds(3600).toEpochMilli(),
+                true, "mail", "tel");
         Visibility closedVisibility2 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli(), true);
+                1628191200000L, Instant.now().toEpochMilli(),
+                true, "mail", "tel");
 
         visibilityService.save(closedVisibility1);
         visibilityService.save(closedVisibility2);

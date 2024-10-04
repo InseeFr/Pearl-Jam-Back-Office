@@ -20,10 +20,13 @@ class VisibilityUpdateDtoTest {
         Long endDate = 1628277600000L;
         String campaignId = "campaign1";
         String ouId = "OU1";
+        String mail = "mail";
+        String tel= "tel";
 
         VisibilityUpdateDto dto = new VisibilityUpdateDto(
                 managementStartDate, interviewerStartDate, identificationPhaseStartDate,
-                collectionStartDate, collectionEndDate, endDate, true);
+                collectionStartDate, collectionEndDate, endDate,
+                true, mail, tel);
 
         // When
         Visibility model = VisibilityUpdateDto.toModel(dto, campaignId, ouId);
@@ -37,5 +40,7 @@ class VisibilityUpdateDtoTest {
         assertThat(model.collectionStartDate()).isEqualTo(collectionStartDate);
         assertThat(model.collectionEndDate()).isEqualTo(collectionEndDate);
         assertThat(model.endDate()).isEqualTo(endDate);
+        assertThat(model.mail()).isEqualTo(mail);
+        assertThat(model.tel()).isEqualTo(tel);
     }
 }

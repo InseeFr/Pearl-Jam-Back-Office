@@ -42,6 +42,8 @@ public class VisibilityDB implements Serializable {
 	private Long collectionEndDate;
 	private Long endDate;
 	private boolean useLetterCommunication;
+	private String mail;
+	private String tel;
 
 	public void update(Visibility visibilityToUpdate) {
 		String ouId = visibilityToUpdate.organizationalUnitId();
@@ -75,6 +77,16 @@ public class VisibilityDB implements Serializable {
 			log.info("Updating letter communication usage for campaign {} and Organizational Unit {}", campaignId, ouId);
 			this.setUseLetterCommunication(visibilityToUpdate.useLetterCommunication());
 		}
+
+		if (visibilityToUpdate.mail() != null) {
+			log.info("Updating mail communication usage for campaign {} and Organizational Unit {}", campaignId, ouId);
+			this.setMail(visibilityToUpdate.mail());
+		}
+
+		if (visibilityToUpdate.tel() != null) {
+			log.info("Updating tel communication usage for campaign {} and Organizational Unit {}", campaignId, ouId);
+			this.setTel(visibilityToUpdate.tel());
+		}
 	}
 
 	public static VisibilityDB fromModel(Visibility visibility, Campaign campaign, OrganizationUnit organizationUnit) {
@@ -82,7 +94,8 @@ public class VisibilityDB implements Serializable {
 		return new VisibilityDB(id,
 				organizationUnit, campaign,
 				visibility.managementStartDate(), visibility.interviewerStartDate(), visibility.identificationPhaseStartDate(),
-				visibility.collectionStartDate(), visibility.collectionEndDate(), visibility.endDate(), visibility.useLetterCommunication());
+				visibility.collectionStartDate(), visibility.collectionEndDate(), visibility.endDate(), visibility.useLetterCommunication(),
+				visibility.mail(), visibility.tel());
 	}
 
 	public static Visibility toModel(VisibilityDB visibilityDB) {
@@ -95,7 +108,9 @@ public class VisibilityDB implements Serializable {
 				visibilityDB.getCollectionStartDate(),
 				visibilityDB.getCollectionEndDate(),
 				visibilityDB.getEndDate(),
-				visibilityDB.isUseLetterCommunication());
+				visibilityDB.isUseLetterCommunication(),
+				visibilityDB.getMail(),
+				visibilityDB.getTel());
 	}
 
 	public static List<Visibility> toModel(List<VisibilityDB> visibilityDBs) {

@@ -22,7 +22,9 @@ public record Visibility(
         Long collectionStartDate,
         Long collectionEndDate,
         Long endDate,
-        Boolean useLetterCommunication
+        Boolean useLetterCommunication,
+        String mail,
+        String tel
 ) {
     public static Visibility merge(Visibility currentVisibility, Visibility visibilityToUpdate) throws VisibilityHasInvalidDatesException {
         Long managementStartDate = visibilityToUpdate.managementStartDate() != null ?
@@ -39,6 +41,8 @@ public record Visibility(
                 visibilityToUpdate.endDate() : currentVisibility.endDate();
         Boolean useCommunication = visibilityToUpdate.useLetterCommunication() != null ?
                 visibilityToUpdate.useLetterCommunication() : currentVisibility.useLetterCommunication();
+        String mail = visibilityToUpdate.mail() != null ? visibilityToUpdate.mail() : currentVisibility.mail();
+        String tel = visibilityToUpdate.tel() != null ? visibilityToUpdate.tel() : currentVisibility.tel();
 
         Visibility updatedVisibility = new Visibility(
                 currentVisibility.campaignId(),
@@ -49,8 +53,9 @@ public record Visibility(
                 collectionStartDate,
                 collectionEndDate,
                 endDate,
-                useCommunication
-                );
+                useCommunication,
+                mail,
+                tel);
 
         if(isValid(updatedVisibility)) {
             return updatedVisibility;

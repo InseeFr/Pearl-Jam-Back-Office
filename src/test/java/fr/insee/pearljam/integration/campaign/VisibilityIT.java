@@ -61,7 +61,9 @@ class VisibilityIT {
                       "collectionStartDate":1719225354304,
                       "collectionEndDate":1721903754305,
                       "endDate":1724582154306,
-                      "useLetterCommunication": true
+                      "useLetterCommunication": true,
+                      "mail": "north-simpsons@nooneknows.fr",
+                      "tel": "0321234567"
                    },
                    {
                       "organizationalUnit":"OU-SOUTH",
@@ -71,7 +73,9 @@ class VisibilityIT {
                       "collectionStartDate":1719225354314,
                       "collectionEndDate":1721903754315,
                       "endDate":1724582154316,
-                      "useLetterCommunication": false
+                      "useLetterCommunication": false,
+                      "mail": "south-simpsons@nooneknows.fr",
+                      "tel": ""
                    }
                 ]
                 """;
@@ -93,7 +97,9 @@ class VisibilityIT {
             "collectionStartDate":null,
             "collectionEndDate":1921903754308,
             "endDate":2024582154308,
-            "useLetterCommunication": true
+            "useLetterCommunication": true,
+            "mail": "mail1",
+            "tel": "tel1"
         }""";
 
         mockMvc.perform(put(updatePath)
@@ -113,5 +119,7 @@ class VisibilityIT {
         assertThat(visibilityDBToCheck.getCollectionEndDate()).isEqualTo(1921903754308L);
         assertThat(visibilityDBToCheck.getEndDate()).isEqualTo(2024582154308L);
         assertThat(visibilityDBToCheck.isUseLetterCommunication()).isTrue();
+        assertThat(visibilityDBToCheck.getMail()).isEqualTo("mail1");
+        assertThat(visibilityDBToCheck.getTel()).isEqualTo("tel1");
     }
 }
