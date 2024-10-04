@@ -59,4 +59,7 @@
 
 	<!-- add use letter communication on visibility -->
 	<include file="changelog/545_add_letter_communication_visibility.xml" relativeToChangelogFile="true" />
+
+	<!-- move mail/tel to visibility  -->
+	<include file="changelog/546_update_communication_information.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

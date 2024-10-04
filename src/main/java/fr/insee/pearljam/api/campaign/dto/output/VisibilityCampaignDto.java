@@ -15,7 +15,9 @@ public record VisibilityCampaignDto(
         Long collectionStartDate,
         Long collectionEndDate,
         Long endDate,
-        boolean useLetterCommunication) {
+        boolean useLetterCommunication,
+        String mail,
+        String tel) {
 
     public static List<VisibilityCampaignDto> fromModel(List<Visibility> visibilities) {
         return visibilities.stream()
@@ -27,7 +29,9 @@ public record VisibilityCampaignDto(
                     visibility.collectionStartDate(),
                     visibility.collectionEndDate(),
                     visibility.endDate(),
-                    visibility.useLetterCommunication()
+                    visibility.useLetterCommunication(),
+                    visibility.mail(),
+                    visibility.tel()
                 ))
                 .toList();
     }

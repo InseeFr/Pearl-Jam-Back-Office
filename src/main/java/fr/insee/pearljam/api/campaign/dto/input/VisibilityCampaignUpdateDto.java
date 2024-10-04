@@ -29,7 +29,9 @@ public record VisibilityCampaignUpdateDto(
 		Long endDate,
 		@NotBlank
 		String organizationalUnit,
-		Boolean useLetterCommunication
+		Boolean useLetterCommunication,
+		String mail,
+		String tel
 ) {
 	public static Visibility toModel(@NonNull VisibilityCampaignUpdateDto visibility, String campaignId) {
 		return new Visibility(campaignId,
@@ -40,7 +42,9 @@ public record VisibilityCampaignUpdateDto(
 				visibility.collectionStartDate(),
 				visibility.collectionEndDate(),
 				visibility.endDate(),
-				visibility.useLetterCommunication());
+				visibility.useLetterCommunication(),
+				visibility.mail(),
+				visibility.tel());
 	}
 
 	public static List<Visibility> toModel(List<VisibilityCampaignUpdateDto> visibilitiesDto, String campaignId) {

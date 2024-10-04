@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationInformationCampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.api.controller.CampaignController;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
@@ -72,7 +71,6 @@ class CampaignControllerUpdateTest {
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(),
-                List.of(),
                 List.of());
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +88,8 @@ class CampaignControllerUpdateTest {
         VisibilityCampaignUpdateDto visibility = generateVisibility("   ", 1721683250000L,
                 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L,
-                1721683255000L, true);
+                1721683255000L,
+                true, "mail", "tel");
         testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -114,7 +113,8 @@ class CampaignControllerUpdateTest {
         VisibilityCampaignUpdateDto visibility = generateVisibility("ou-id",
                 null, null,
                 null, null,
-                null, null, true);
+                null, null,
+                true, "mail", "tel");
         testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
     }
 
@@ -135,7 +135,6 @@ class CampaignControllerUpdateTest {
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
-                List.of(),
                 List.of());
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,23 +155,17 @@ class CampaignControllerUpdateTest {
                 1721683263000L,
                 1721683264000L,
                 1721683265000L,
-                true);
-
-        CommunicationInformationCampaignUpdateDto firstCommunication = generateCommunicationInformation("OU-SOUTH",
+                true,
                 "mail",
                 "tel");
+
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(firstVisibility, secondVisibility),
-                List.of(firstCommunication),
                 List.of(firstReferent, secondReferent));
-    }
-
-    private CommunicationInformationCampaignUpdateDto generateCommunicationInformation(String ouId, String mail, String tel) {
-        return new CommunicationInformationCampaignUpdateDto(ouId, mail, tel);
     }
 
     private CampaignUpdateDto generateCampaign(String campaignLabel,
@@ -180,12 +173,10 @@ class CampaignControllerUpdateTest {
                                                ContactOutcomeConfiguration contactOutcomeConfiguration,
                                                ContactAttemptConfiguration contactAttemptConfiguration,
                                                List<VisibilityCampaignUpdateDto> visibilities,
-                                               List<CommunicationInformationCampaignUpdateDto> communicationInformations,
                                                List<ReferentDto> referents) {
         return new CampaignUpdateDto(
                 campaignLabel,
                 visibilities,
-                communicationInformations,
                 referents,
                 email,
                 identificationConfiguration,
@@ -198,15 +189,17 @@ class CampaignControllerUpdateTest {
     private VisibilityCampaignUpdateDto generateDefaultVisibility() {
         return generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L,
                 1721683252000L, 1721683253000L,
-                1721683254000L, 1721683255000L, true);
+                1721683254000L, 1721683255000L,
+                true, "mail", "tel");
     }
 
     private VisibilityCampaignUpdateDto generateVisibility(
             String organizationalUnit, Long managementDate,
             Long interviewerDate, Long identificationDate,
-            Long collectionStartDate, Long collectionEndDate, Long endDate, Boolean useLetterCommunication) {
+            Long collectionStartDate, Long collectionEndDate, Long endDate,
+            Boolean useLetterCommunication, String mail, String tel) {
         return new VisibilityCampaignUpdateDto(managementDate,
                 interviewerDate, identificationDate, collectionStartDate, collectionEndDate, endDate,
-                organizationalUnit, useLetterCommunication);
+                organizationalUnit, useLetterCommunication, mail, tel);
     }
 }

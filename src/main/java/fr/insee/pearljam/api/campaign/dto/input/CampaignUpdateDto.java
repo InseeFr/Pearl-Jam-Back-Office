@@ -25,8 +25,6 @@ public record CampaignUpdateDto(
         String campaignLabel,
         @Valid
         List<VisibilityCampaignUpdateDto> visibilities,
-        @Valid
-        List<CommunicationInformationCampaignUpdateDto> communicationInformations,
         List<ReferentDto> referents,
         String email,
         IdentificationConfiguration identificationConfiguration,

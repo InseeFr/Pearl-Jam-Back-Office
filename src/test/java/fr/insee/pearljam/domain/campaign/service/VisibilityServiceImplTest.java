@@ -26,11 +26,17 @@ class VisibilityServiceImplTest {
         visibilityRepository = new VisibilityFakeRepository();
         visibilityService = new VisibilityServiceImpl(visibilityRepository);
         visibility1 = new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L,
+                1628104800000L, 1628191200000L, 1628277600000L,
+                true, "mail1", "tel1");
         visibility2 = new Visibility("campaign2", "OU2",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L,
+                1628104800000L, 1628191200000L, 1628277600000L,
+                true, "mail2", "tel2");
         visibility3 = new Visibility("campaign1", "OU2",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L,
+                1628104800000L, 1628191200000L, 1628277600000L,
+                true, "mail3", "tel3");
         visibilityRepository.save(visibility1);
         visibilityRepository.save(visibility2);
         visibilityRepository.save(visibility3);
@@ -52,7 +58,8 @@ class VisibilityServiceImplTest {
     void shouldUpdateVisibilityWithValidData() throws VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         Visibility visibilityToUpdate = new Visibility(visibility1.campaignId(), visibility1.organizationalUnitId(),
                 1627845600001L, 1627932000001L, 1628018400001L,
-                1628104800001L, 1628191200001L, 1628277600001L, false);
+                1628104800001L, 1628191200001L, 1628277600001L,
+                false, "mailUpdate", "telUpdate");
 
         visibilityService.updateVisibility(visibilityToUpdate);
 
@@ -67,7 +74,8 @@ class VisibilityServiceImplTest {
     void shouldThrowVisibilityNotFoundExceptionIfVisibilityToUpdateDoesNotExist() {
         Visibility visibilityToUpdate = new Visibility("invalid-campaign", "invalid-ou",
                 1627845600000L, 1627932000000L, 1628018400000L,
-                1628104800000L, 1628191200000L, 1628277600000L, true);
+                1628104800000L, 1628191200000L, 1628277600000L,
+                true, "mailUpdate", "telUpdate");
 
         assertThatThrownBy(() -> visibilityService.updateVisibility(visibilityToUpdate))
                 .isInstanceOf(VisibilityNotFoundException.class)

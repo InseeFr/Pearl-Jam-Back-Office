@@ -22,10 +22,13 @@ class VisibilityCampaignCreateDtoTest {
         Long endDate = 1628277600000L;
         String organizationalUnit = "OU1";
         String campaignId = "campaign-id";
+        String mail = "mail";
+        String tel = "tel";
 
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(
                 managementStartDate, interviewerStartDate, identificationPhaseStartDate,
-                collectionStartDate, collectionEndDate, endDate, organizationalUnit, true);
+                collectionStartDate, collectionEndDate, endDate, organizationalUnit,
+                true, mail, tel);
 
         // When
         Visibility visibility = VisibilityCampaignCreateDto
@@ -42,5 +45,7 @@ class VisibilityCampaignCreateDtoTest {
         assertThat(visibility.collectionEndDate()).isEqualTo(collectionEndDate);
         assertThat(visibility.endDate()).isEqualTo(endDate);
         assertThat(visibility.useLetterCommunication()).isTrue();
+        assertThat(visibility.mail()).isEqualTo(mail);
+        assertThat(visibility.tel()).isEqualTo(tel);
     }
 }

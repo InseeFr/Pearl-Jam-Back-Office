@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationInformationDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +68,9 @@ class CampaignIT {
                          "collectionStartDate":1719225354304,
                          "collectionEndDate":1721903754305,
                          "endDate":1724582154306,
-                         "useLetterCommunication": true
+                         "useLetterCommunication": true,
+                         "mail": "north-simpsons@nooneknows.fr",
+                         "tel": "0321234567"
                       },
                       {
                          "organizationalUnit":"OU-SOUTH",
@@ -79,14 +80,9 @@ class CampaignIT {
                          "collectionStartDate":1719225354314,
                          "collectionEndDate":1721903754315,
                          "endDate":1724582154316,
-                         "useLetterCommunication": false
-                      }
-                   ],
-                   "communicationInformations":[
-                      {
-                          "organizationalUnit":"OU-NORTH",
-                          "mail":"north-simpsons@nooneknows.fr",
-                          "tel":"0321234567"
+                         "useLetterCommunication": false,
+                         "mail": "south-simpsons@nooneknows.fr",
+                         "tel": ""
                       }
                    ],
                    "referents":[
@@ -124,7 +120,9 @@ class CampaignIT {
                          "collectionEndDate":1721683254000,
                          "endDate":1721683255000,
                          "organizationalUnit":"OU-NORTH",
-                         "useLetterCommunication": true
+                         "useLetterCommunication": true,
+                         "mail": "mail1",
+                         "tel": "tel1"
                       },
                       {
                          "managementStartDate":1721683260000,
@@ -134,7 +132,9 @@ class CampaignIT {
                          "collectionEndDate":1721683264000,
                          "endDate":1721683265000,
                          "organizationalUnit":"OU-SOUTH",
-                         "useLetterCommunication": false
+                         "useLetterCommunication": false,
+                         "mail": "mail2",
+                         "tel": "tel2"
                       }
                    ],
                    "referents":[
@@ -149,17 +149,6 @@ class CampaignIT {
                          "lastName":"Mikoton",
                          "phoneNumber":"2345678901",
                          "role":"PRIMARY"
-                      }
-                   ],
-                   "communicationInformations": [
-                      {
-                        "organizationalUnit": "OU-NORTH",
-                         "mail": "mail1",
-                         "tel": "tel1"
-                      },
-                      {
-                         "organizationalUnit":"OU-SOUTH",
-                         "mail": "mail2"
                       }
                    ],
                    "communicationTemplates": [
@@ -202,10 +191,10 @@ class CampaignIT {
         assertThat(campaignCreated.getVisibilities())
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
                         1721683250000L, 1721683251000L, 1721683252000L,
-                        1721683253000L, 1721683254000L, 1721683255000L, true))
+                        1721683253000L, 1721683254000L, 1721683255000L, true, "mail1", "tel1"))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-SOUTH",
                         1721683260000L, 1721683261000L, 1721683262000L,
-                        1721683263000L, 1721683264000L, 1721683265000L, false));
+                        1721683263000L, 1721683264000L, 1721683265000L, false, "mail2", "tel2"));
 
         assertThat(campaignCreated.getCommunicationTemplates()).hasSize(3);
         assertThat(campaignCreated.getCommunicationTemplates())
@@ -215,19 +204,6 @@ class CampaignIT {
                         CommunicationMedium.EMAIL, CommunicationType.NOTICE))
                 .anySatisfy(communicationTemplateToCheck -> assertCommunicationTemplate(communicationTemplateToCheck, campaignId, "meshId3",
                         CommunicationMedium.LETTER, CommunicationType.NOTICE));
-
-        assertThat(campaignCreated.getCommunicationInformations()).hasSize(2);
-        assertThat(campaignCreated.getCommunicationInformations())
-                .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
-                        campaignId,
-                        "OU-NORTH",
-                        "mail1",
-                        "tel1"))
-                .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
-                        campaignId,
-                        "OU-SOUTH",
-                        "mail2",
-                        null));
 
         assertThat(campaignCreated.getReferents()).hasSize(2);
 
@@ -244,17 +220,6 @@ class CampaignIT {
         assertThat(communicationTemplateToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(communicationTemplateToCheck.getType()).isEqualTo(type);
         assertThat(communicationTemplateToCheck.getMedium()).isEqualTo(medium);
-    }
-
-    private void assertCommunicationInformation(CommunicationInformationDB communicationInformationToCheck,
-                                                String campaignId,
-                                                String organizationalUnitId,
-                                                String mail,
-                                                String tel) {
-        assertThat(communicationInformationToCheck.getCampaign().getId()).isEqualTo(campaignId);
-        assertThat(communicationInformationToCheck.getOrganizationUnit().getId()).isEqualTo(organizationalUnitId);
-        assertThat(communicationInformationToCheck.getTel()).isEqualTo(tel);
-        assertThat(communicationInformationToCheck.getMail()).isEqualTo(mail);
     }
 
     @Test
@@ -275,7 +240,9 @@ class CampaignIT {
                          "collectionEndDate":1721683254000,
                          "endDate":1721683255000,
                          "organizationalUnit":"OU-NORTH",
-                         "useLetterCommunication": false
+                         "useLetterCommunication": false,
+                         "mail": "mail1",
+                         "tel": "tel1"
                       },
                       {
                          "managementStartDate":1721683260000,
@@ -285,17 +252,7 @@ class CampaignIT {
                          "collectionEndDate":1721683264000,
                          "endDate":1721683265000,
                          "organizationalUnit":"OU-SOUTH",
-                         "useLetterCommunication": true
-                      }
-                   ],
-                   "communicationInformations": [
-                      {
-                         "organizationalUnit": "OU-NORTH",
-                         "mail": "mail1",
-                         "tel": "tel1"
-                      },
-                      {
-                         "organizationalUnit": "OU-SOUTH",
+                         "useLetterCommunication": true,
                          "mail": "mail2",
                          "tel": "tel2"
                       }
@@ -338,23 +295,11 @@ class CampaignIT {
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-NORTH",
                         1721683250000L, 1721683251000L,
                         1721683252000L, 1721683253000L,
-                        1721683254000L, 1721683255000L, false))
+                        1721683254000L, 1721683255000L, false, "mail1", "tel1"))
                 .anySatisfy(visibilityToCheck -> assertVisibility(visibilityToCheck, campaignId, "OU-SOUTH",
                         1721683260000L, 1721683261000L,
                         1721683262000L, 1721683263000L,
-                        1721683264000L, 1721683265000L, true));
-        assertThat(campaignUpdated.getCommunicationInformations()).hasSize(2);
-        assertThat(campaignUpdated.getCommunicationInformations())
-                .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
-                        campaignId,
-                        "OU-NORTH",
-                        "mail1",
-                        "tel1"))
-                .anySatisfy(communicationInformationToCheck -> assertCommunicationInformation(communicationInformationToCheck,
-                        campaignId,
-                        "OU-SOUTH",
-                        "mail2",
-                        "tel2"));
+                        1721683264000L, 1721683265000L, true, "mail2", "tel2"));
 
         assertThat(campaignUpdated.getReferents()).hasSize(2);
         assertThat(campaignUpdated.getReferents())
@@ -382,7 +327,7 @@ class CampaignIT {
     private void assertVisibility(VisibilityDB visibilityToCheck, String campaignId, String organizationUnitId,
                                   long managementStartDate, long interviewerStartDate,
                                   long identificationPhaseStartDate, long collectionStartDate,
-                                  long collectionEndDate, long endDate, boolean useLetterCommunication) {
+                                  long collectionEndDate, long endDate, boolean useLetterCommunication, String mail, String tel) {
         assertThat(visibilityToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(visibilityToCheck.getOrganizationUnit().getId()).isEqualTo(organizationUnitId);
         assertThat(visibilityToCheck.getManagementStartDate()).isEqualTo(managementStartDate);
@@ -392,6 +337,8 @@ class CampaignIT {
         assertThat(visibilityToCheck.getCollectionEndDate()).isEqualTo(collectionEndDate);
         assertThat(visibilityToCheck.getEndDate()).isEqualTo(endDate);
         assertThat(visibilityToCheck.isUseLetterCommunication()).isEqualTo(useLetterCommunication);
+        assertThat(visibilityToCheck.getMail()).isEqualTo(mail);
+        assertThat(visibilityToCheck.getTel()).isEqualTo(tel);
     }
 
     private void assertReferent(Referent referentToCheck, String campaignId, String role, String lastName,

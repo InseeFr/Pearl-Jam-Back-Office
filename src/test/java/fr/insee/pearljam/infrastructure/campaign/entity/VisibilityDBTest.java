@@ -25,7 +25,7 @@ class VisibilityDBTest {
     void testToModel01() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
 
         Visibility visibility = VisibilityDB.toModel(visibilityDB);
         assertThat(visibility.campaignId()).isEqualTo(visibilityDB.getVisibilityId().getCampaignId());
@@ -37,13 +37,15 @@ class VisibilityDBTest {
         assertThat(visibility.collectionEndDate()).isEqualTo(visibilityDB.getCollectionEndDate());
         assertThat(visibility.endDate()).isEqualTo(visibilityDB.getEndDate());
         assertThat(visibility.useLetterCommunication().booleanValue()).isEqualTo(visibilityDB.isUseLetterCommunication());
+        assertThat(visibility.mail()).isEqualTo(visibilityDB.getMail());
+        assertThat(visibility.tel()).isEqualTo(visibilityDB.getTel());
     }
 
     @Test
     @DisplayName("Should return entity object")
     void testFromModel01() {
         Visibility visibility = generateVisibility(1L, 2L, 3L,
-                4L, 5L, 6L, true);
+                4L, 5L, 6L, true, "mail", "tel");
 
         VisibilityDB visibilityDB = VisibilityDB.fromModel(visibility, campaign, organizationUnit);
         assertThat(visibilityDB.getVisibilityId().getCampaignId()).isEqualTo(visibility.campaignId());
@@ -57,16 +59,18 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibility.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibility.endDate());
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibility.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibility.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibility.tel());
     }
 
     @Test
-    @DisplayName("Should update dates from entity object")
+    @DisplayName("Should update infos from entity object")
     void testUpdate01() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, 15L, 16L, false);
+                14L, 15L, 16L, false, "mailUpdate", "telUpdate");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -76,6 +80,8 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
@@ -83,9 +89,9 @@ class VisibilityDBTest {
     void testUpdate02() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(null, 12L, 13L,
-                14L, 15L, 16L, true);
+                14L, 15L, 16L, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isNotNull();
@@ -95,6 +101,8 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
@@ -102,9 +110,9 @@ class VisibilityDBTest {
     void testUpdate03() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, null, 13L,
-                14L, 15L, 16L, true);
+                14L, 15L, 16L, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -114,6 +122,8 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
@@ -121,9 +131,9 @@ class VisibilityDBTest {
     void testUpdate04() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, null,
-                14L, 15L, 16L, true);
+                14L, 15L, 16L, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -132,6 +142,8 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionStartDate()).isEqualTo(visibilityToUpdate.collectionStartDate());
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
@@ -139,9 +151,9 @@ class VisibilityDBTest {
     void testUpdate05() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                null, 15L, 16L, true);
+                null, 15L, 16L, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -157,9 +169,9 @@ class VisibilityDBTest {
     void testUpdate06() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, null, 16L, true);
+                14L, null, 16L, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -169,6 +181,8 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isNotNull();
         assertThat(visibilityDB.getEndDate()).isEqualTo(visibilityToUpdate.endDate());
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
@@ -176,9 +190,9 @@ class VisibilityDBTest {
     void testUpdate07() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, true);
+                3L, 4L, 5L, 6L, true, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, 15L, null, true);
+                14L, 15L, null, true, "mail", "tel");
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -188,16 +202,18 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isNotNull();
         assertThat(visibilityDB.isUseLetterCommunication()).isEqualTo(visibilityToUpdate.useLetterCommunication().booleanValue());
+        assertThat(visibilityDB.getMail()).isEqualTo(visibilityToUpdate.mail());
+        assertThat(visibilityDB.getTel()).isEqualTo(visibilityToUpdate.tel());
     }
 
     @Test
-    @DisplayName("Should not update communication usage")
+    @DisplayName("Should not update communication informations")
     void testUpdate08() {
         VisibilityDB visibilityDB = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 1L, 2L,
-                3L, 4L, 5L, 6L, false);
+                3L, 4L, 5L, 6L, false, "mail", "tel");
         Visibility visibilityToUpdate = generateVisibility(11L, 12L, 13L,
-                14L, 15L, null, null);
+                14L, 15L, null, null, null, null);
 
         visibilityDB.update(visibilityToUpdate);
         assertThat(visibilityDB.getManagementStartDate()).isEqualTo(visibilityToUpdate.managementStartDate());
@@ -207,12 +223,15 @@ class VisibilityDBTest {
         assertThat(visibilityDB.getCollectionEndDate()).isEqualTo(visibilityToUpdate.collectionEndDate());
         assertThat(visibilityDB.getEndDate()).isNotNull();
         assertThat(visibilityDB.isUseLetterCommunication()).isFalse();
+        assertThat(visibilityDB.getMail()).isEqualTo("mail");
+        assertThat(visibilityDB.getTel()).isEqualTo("tel");
     }
 
     private Visibility generateVisibility(Long managementStartDate, Long interviewerStartDate, Long identificationPhaseStartDate,
-                                          Long collectionStartDate, Long collectionEndDate, Long endDate, Boolean useCommunication) {
+                                          Long collectionStartDate, Long collectionEndDate, Long endDate, Boolean useLetterCommunication,
+                                          String mail, String tel) {
         return new Visibility(campaign.getId(), organizationUnit.getId(), managementStartDate, interviewerStartDate,
-                identificationPhaseStartDate, collectionStartDate, collectionEndDate, endDate, useCommunication);
+                identificationPhaseStartDate, collectionStartDate, collectionEndDate, endDate, useLetterCommunication, mail, tel);
 
     }
 }

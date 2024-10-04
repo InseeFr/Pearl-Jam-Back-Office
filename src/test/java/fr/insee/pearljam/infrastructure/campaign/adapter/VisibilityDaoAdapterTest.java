@@ -69,10 +69,10 @@ class VisibilityDaoAdapterTest {
         organizationUnit2 = organizationUnitRepository.save(organizationUnit2);
         visibilityDB1 = new VisibilityDB(new VisibilityDBId(organizationUnit.getId(), campaign.getId()), organizationUnit, campaign,
                 10L, 20L,
-                11L, 30L, 12L, 40L, true);
+                11L, 30L, 12L, 40L, true, "mail1", "tel1");
         visibilityDB2 = new VisibilityDB(new VisibilityDBId(organizationUnit2.getId(), campaign.getId()), organizationUnit2, campaign,
                  11L, 12L,
-                13L, 14L, 15L, 16L, true);
+                13L, 14L, 15L, 16L, true, "mail2", "tel2");
         List<VisibilityDB> visibilities = new ArrayList<>();
         visibilities.add(visibilityDB1);
         visibilities.add(visibilityDB2);
@@ -85,7 +85,7 @@ class VisibilityDaoAdapterTest {
     void testUpdateDatesVisibilities01() throws VisibilityNotFoundException {
         Visibility visibilityToUpdate = new Visibility(campaign.getId(), organizationUnit.getId(),
                 21L, 22L, 23L,
-                24L, 25L, 26L, true);
+                24L, 25L, 26L, true, "mail", "tel");
         visibilityDaoAdapter.updateDates(visibilityToUpdate);
 
         Optional<Campaign> campaignOptional = campaignRepository.findById(campaign.getId());
@@ -109,7 +109,7 @@ class VisibilityDaoAdapterTest {
     void testUpdateDatesVisibility02() {
         Visibility visibilityToUpdate = new Visibility(campaign.getId(), "invalid-id",
                 21L, 22L, 23L,
-                24L, 25L, 26L, true);
+                24L, 25L, 26L, true, "mail", "tel");
 
         assertThatThrownBy(() -> visibilityDaoAdapter.updateDates(visibilityToUpdate))
                 .isInstanceOf(VisibilityNotFoundException.class)
@@ -186,6 +186,8 @@ class VisibilityDaoAdapterTest {
         assertThat(visibilityToCheck.collectionStartDate()).isEqualTo(visibilityDBExpected.getCollectionStartDate());
         assertThat(visibilityToCheck.collectionEndDate()).isEqualTo(visibilityDBExpected.getCollectionEndDate());
         assertThat(visibilityToCheck.endDate()).isEqualTo(visibilityDBExpected.getEndDate());
+        assertThat(visibilityToCheck.mail()).isEqualTo(visibilityDBExpected.getMail());
+        assertThat(visibilityToCheck.tel()).isEqualTo(visibilityDBExpected.getTel());
     }
 
     private void assertEquals(VisibilityDB visibilityDBToCheck, Visibility visibilityExpected) {
@@ -197,6 +199,8 @@ class VisibilityDaoAdapterTest {
         assertThat(visibilityDBToCheck.getCollectionStartDate()).isEqualTo(visibilityExpected.collectionStartDate());
         assertThat(visibilityDBToCheck.getCollectionEndDate()).isEqualTo(visibilityExpected.collectionEndDate());
         assertThat(visibilityDBToCheck.getEndDate()).isEqualTo(visibilityExpected.endDate());
+        assertThat(visibilityDBToCheck.getMail()).isEqualTo(visibilityExpected.mail());
+        assertThat(visibilityDBToCheck.getTel()).isEqualTo(visibilityExpected.tel());
     }
 
     private void assertEquals(VisibilityDB visibilityDBToCheck, VisibilityDB visibilityExpected) {
@@ -208,5 +212,7 @@ class VisibilityDaoAdapterTest {
         assertThat(visibilityDBToCheck.getCollectionStartDate()).isEqualTo(visibilityExpected.getCollectionStartDate());
         assertThat(visibilityDBToCheck.getCollectionEndDate()).isEqualTo(visibilityExpected.getCollectionEndDate());
         assertThat(visibilityDBToCheck.getEndDate()).isEqualTo(visibilityExpected.getEndDate());
+        assertThat(visibilityDBToCheck.getMail()).isEqualTo(visibilityExpected.getMail());
+        assertThat(visibilityDBToCheck.getTel()).isEqualTo(visibilityExpected.getTel());
     }
 }

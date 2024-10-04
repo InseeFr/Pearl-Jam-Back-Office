@@ -26,7 +26,6 @@ TRUNCATE TABLE public.comment;
 TRUNCATE TABLE public.closing_cause;
 TRUNCATE TABLE public.organization_unit;
 TRUNCATE TABLE public.address;
-TRUNCATE TABLE public.communication_information;
 
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
@@ -112,26 +111,17 @@ INSERT INTO visibility (
     identification_phase_start_date,
     interviewer_start_date,
     management_start_date,
-    use_letter_communication
-) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00',1721903754305, 1719225354304, 1724582154306, 1719138954303, 1719052554302, 1718966154301, true),
-    ('OU-SOUTH', 'SIMPSONS2020X00',1721903754315, 1719225354314, 1724582154316, 1719138954310, 1719052554309, 1718966154308, false),
-    ('OU-NORTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308, false),
-    ('OU-SOUTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308, true),
-    ('OU-SOUTH', 'XCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true),
-    ('OU-SOUTH', 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true),
-    ('OU-WEST' , 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true);
-
-INSERT INTO communication_information (
-    organization_unit_id,
-    campaign_id,
+    use_letter_communication,
     mail,
     tel
 ) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00', 'north-simpsons@nooneknows.fr', '0321234567'),
-    ('OU-SOUTH', 'VQS2021X00', 'north-vqs@nooneknows.fr', '');
-
-
+    ('OU-NORTH', 'SIMPSONS2020X00',1721903754305, 1719225354304, 1724582154306, 1719138954303, 1719052554302, 1718966154301, true, 'north-simpsons@nooneknows.fr', '0321234567'),
+    ('OU-SOUTH', 'SIMPSONS2020X00',1721903754315, 1719225354314, 1724582154316, 1719138954310, 1719052554309, 1718966154308, false, 'south-simpsons@nooneknows.fr', ''),
+    ('OU-NORTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308, false, 'north-vqs@nooneknows.fr', ''),
+    ('OU-SOUTH', 'VQS2021X00',1721903754308, 1719225354308, 1724582154308, 1719138954308, 1719052554308, 1718966154308, true, 'north-vqs@nooneknows.fr', ''),
+    ('OU-SOUTH', 'XCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true, 'north-vqs@nooneknows.fr', ''),
+    ('OU-SOUTH', 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true, 'north-vqs@nooneknows.fr', ''),
+    ('OU-WEST' , 'ZCLOSEDX00',1719052554308, 1718966154308, 1719225354308, 1718879754308, 1718789354308, 1718706954308, true, 'north-vqs@nooneknows.fr', '');
 
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT '11', TRUE, a.id, 'SIMPSONS2020X00', 'INTW1', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Ted Farmer' AND s.bs='11';
 INSERT INTO public.survey_unit (id, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '12', TRUE, a.id, 'SIMPSONS2020X00', 'INTW1', s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Cecilia Ortega' AND s.bs='12';

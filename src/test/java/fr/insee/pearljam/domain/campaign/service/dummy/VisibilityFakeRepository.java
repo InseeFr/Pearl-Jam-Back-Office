@@ -50,7 +50,9 @@ public class VisibilityFakeRepository implements VisibilityRepository {
     @Override
     public Visibility getVisibilityBySurveyUnitId(String surveyUnitId) {
         return new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L,
+                1628104800000L, 1628191200000L, 1628277600000L,
+                true, "mail", "tel");
     }
 
     // Additional methods for testing purposes

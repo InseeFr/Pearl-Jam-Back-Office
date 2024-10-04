@@ -16,10 +16,10 @@ class VisibilityTest {
     void testMergeAndDateValidation() throws VisibilityHasInvalidDatesException {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true, "mail", "tel");
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                1617933000000L, 1627933000000L, 1627934000000L, 1627935000000L, 1627936000000L, 1628277601000L, false);
+                1617933000000L, 1627933000000L, 1627934000000L, 1627935000000L, 1627936000000L, 1628277601000L, false, "mail1", "tel1");
 
         // When
         Visibility mergedVisibility = Visibility.merge(currentVisibility, updateVisibility);
@@ -34,6 +34,8 @@ class VisibilityTest {
         assertThat(mergedVisibility.collectionEndDate()).isEqualTo(1627936000000L);
         assertThat(mergedVisibility.endDate()).isEqualTo(1628277601000L);
         assertThat(mergedVisibility.useLetterCommunication()).isFalse();
+        assertThat(mergedVisibility.mail()).isEqualTo("mail1");
+        assertThat(mergedVisibility.tel()).isEqualTo("tel1");
     }
 
     @Test
@@ -41,10 +43,11 @@ class VisibilityTest {
     void testMergeNull() throws VisibilityHasInvalidDatesException {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1627845600000L, 1627932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true, "mail1", "tel1");
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                null, null, null, null, null, null, null);
+                null, null, null, null,
+                null, null, null, null, null);
 
         // When
         Visibility mergedVisibility = Visibility.merge(currentVisibility, updateVisibility);
@@ -58,6 +61,8 @@ class VisibilityTest {
         assertThat(mergedVisibility.collectionStartDate()).isEqualTo(1628104800000L);
         assertThat(mergedVisibility.collectionEndDate()).isEqualTo(1628191200000L);
         assertThat(mergedVisibility.endDate()).isEqualTo(1628277600000L);
+        assertThat(mergedVisibility.mail()).isEqualTo("mail1");
+        assertThat(mergedVisibility.tel()).isEqualTo("tel1");
     }
 
     @Test
@@ -65,10 +70,10 @@ class VisibilityTest {
     void testMergeThrowsExceptionForInvalidDates() {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true, "mail", "tel");
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
-                1227845600000L, 1327932000001L, 1327932000002L, 1327932000003L, 1327932000004L, 1327932000004L, true);
+                1227845600000L, 1327932000001L, 1327932000002L, 1327932000003L, 1327932000004L, 1327932000004L, true, null, null);
 
         // When & Then
         assertThatThrownBy(() -> Visibility.merge(currentVisibility, updateVisibility))
@@ -88,12 +93,12 @@ class VisibilityTest {
     void testMergeThrowsExceptionForInvalidDates2(String managementStartDate, String interviwerStartDate, String identificationPhaseStartDate, String collectionStartDate, String collectionEndDate, String endDate) {
         // Given
         Visibility currentVisibility = new Visibility("campaign1", "OU1",
-                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true);
+                1327845600000L, 1327932000000L, 1628018400000L, 1628104800000L, 1628191200000L, 1628277600000L, true, "mail", "tel");
 
         Visibility updateVisibility = new Visibility("campaign1", "OU1",
                 getLong(managementStartDate), getLong(interviwerStartDate),
                 getLong(identificationPhaseStartDate), getLong(collectionStartDate),
-                getLong(collectionEndDate), getLong(endDate), true);
+                getLong(collectionEndDate), getLong(endDate), true, null, null);
 
         // When & Then
         assertThatThrownBy(() -> Visibility.merge(currentVisibility, updateVisibility))
