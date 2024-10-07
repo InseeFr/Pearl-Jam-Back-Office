@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.web.annotation.AtLeastOneDateValid;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import lombok.NonNull;
 
@@ -16,7 +15,6 @@ import lombok.NonNull;
  * @param endDate                     End date of the visibility
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@AtLeastOneDateValid
 public record VisibilityUpdateDto(
         Long managementStartDate,
         Long interviewerStartDate,

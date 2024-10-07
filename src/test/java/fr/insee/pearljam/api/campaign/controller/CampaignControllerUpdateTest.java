@@ -108,17 +108,6 @@ class CampaignControllerUpdateTest {
     }
 
     @Test
-    @DisplayName("Should return bad request when visibility has no date set")
-    void testUpdateCampaign06() throws Exception {
-        VisibilityCampaignUpdateDto visibility = generateVisibility("ou-id",
-                null, null,
-                null, null,
-                null, null,
-                true, "mail", "tel");
-        testUpdateExceptions(visibility, HttpStatus.BAD_REQUEST, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE);
-    }
-
-    @Test
     @DisplayName("Should return conflict when invalidating update")
     void testUpdateCampaign07() throws Exception {
         campaignService.setShouldThrowVisibilityHasInvalidDatesException(true);
