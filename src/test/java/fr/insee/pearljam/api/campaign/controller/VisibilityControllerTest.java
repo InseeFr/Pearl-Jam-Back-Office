@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
-import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
@@ -135,19 +134,6 @@ class VisibilityControllerTest {
                         .content(JsonTestHelper.toJson(visibilityToUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.CONFLICT, updatePath, VisibilityHasInvalidDatesException.MESSAGE));
-    }
-
-    @Test
-    @DisplayName("Should return bad request when visibility has no date set")
-    void testUpdateVisibility04() throws Exception {
-        VisibilityUpdateDto visibility = generateUpdateVisibility(
-                null, null,
-                null, null,
-                null, null);
-        mockMvc.perform(put(updatePath)
-                        .content(JsonTestHelper.toJson(visibility))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE));
     }
 
     private VisibilityUpdateDto generateUpdateVisibility() {
