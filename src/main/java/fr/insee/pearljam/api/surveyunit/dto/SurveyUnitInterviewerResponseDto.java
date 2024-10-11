@@ -19,6 +19,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
 	String id,
+	String displayName,
 	List<PersonDto> persons,
 	AddressDto address,
 	Boolean priority,
@@ -62,7 +63,7 @@ public record SurveyUnitInterviewerResponseDto(
 		if (surveyUnit.getSampleIdentifier() != null) {
 			sampleIdentifiers = new SampleIdentifiersDto(surveyUnit.getSampleIdentifier());
 		}
-		return new SurveyUnitInterviewerResponseDto(surveyUnit.getId(), persons, address,
+		return new SurveyUnitInterviewerResponseDto(surveyUnit.getId(), surveyUnit.getDisplayName(), persons, address,
 				surveyUnit.isPriority(), surveyUnit.getMove(), surveyUnit.getCampaign().getId(),
 				comments, sampleIdentifiers, states, contactAttempts, contactOutcome,
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),

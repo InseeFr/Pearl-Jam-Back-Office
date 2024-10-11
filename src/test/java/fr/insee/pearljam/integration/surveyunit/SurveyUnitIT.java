@@ -127,6 +127,7 @@ class SurveyUnitIT {
         String expectedJson = """
         {
            "id":"11",
+           "displayName":"business-id-11",
            "persons":[
               {
                  "id":1,
