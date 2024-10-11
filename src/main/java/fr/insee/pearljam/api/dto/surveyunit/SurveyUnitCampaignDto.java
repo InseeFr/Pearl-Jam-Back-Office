@@ -26,6 +26,7 @@ import lombok.Setter;
 @Setter
 public class SurveyUnitCampaignDto {
 	private String id;
+	private String displayName;
 	private Integer ssech;
 	private String location;
 	private String city;
@@ -47,10 +48,11 @@ public class SurveyUnitCampaignDto {
 		super();
 	}
 
-	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate,
+	public SurveyUnitCampaignDto(String id, String displayName, Integer ssech, String location, String city, Long finalizationDate,
 			Boolean reading, Boolean viewed, InterviewerDto interviewer) {
 		super();
 		this.id = id;
+		this.displayName = displayName;
 		this.ssech = ssech;
 		this.location = location;
 		this.city = city;
@@ -65,6 +67,7 @@ public class SurveyUnitCampaignDto {
 		super();
 
 		this.id = su.getId();
+		this.displayName = su.getDisplayName();
 		this.reading = false;
 		this.viewed = su.getViewed();
 		if (su.getSampleIdentifier() instanceof InseeSampleIdentifier) {
