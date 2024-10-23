@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.0.4</version>
+	<version>5.1.8</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.1</version>
+		<version>3.3.3</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 
@@ -22,7 +22,7 @@
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<postgresql.version>42.7.3</postgresql.version>
+		<postgresql.version>42.7.4</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.5.0</version>
+			<version>2.6.0</version>
 		</dependency>
 
 		<!-- Security -->
@@ -127,7 +127,7 @@
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>
 			<artifactId>janino</artifactId>
-			<version>3.1.8</version>
+			<version>3.1.12</version>
 		</dependency>
 	</dependencies>
 
@@ -223,7 +223,7 @@
 						<dependency>
 							<groupId>jakarta.xml.bind</groupId>
 							<artifactId>jakarta.xml.bind-api</artifactId>
-							<version>4.0.1</version>
+							<version>4.0.2</version>
 						</dependency>
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
@@ -250,7 +250,15 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.2.5</version>
+					<version>3.5.0</version>
+					<configuration>
+						<includes>
+							<include>**/TestAuthKeyCloak</include>
+							<include>**/TestNoAuth</include>
+                        	<include>**/*Test</include>
+                        	<include>**/*IT</include>
+						</includes>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

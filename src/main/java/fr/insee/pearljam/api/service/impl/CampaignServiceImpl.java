@@ -1,52 +1,41 @@
 package fr.insee.pearljam.api.service.impl;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.campaign.dto.input.*;
+import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
+import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Referent;
-import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.Visibility;
-import fr.insee.pearljam.api.domain.VisibilityId;
-import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
-import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.VisibilityException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.ReferentRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
-import fr.insee.pearljam.api.service.CampaignService;
-import fr.insee.pearljam.api.service.PreferenceService;
-import fr.insee.pearljam.api.service.ReferentService;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
+import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
+import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -56,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 @Slf4j
 public class CampaignServiceImpl implements CampaignService {
 
@@ -65,15 +54,15 @@ public class CampaignServiceImpl implements CampaignService {
 	private final CampaignRepository campaignRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
-	private final VisibilityRepository visibilityRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final MessageRepository messageRepository;
-	private final ReferentRepository referentRepository;
 	private final UserService userService;
 	private final UtilsService utilsService;
 	private final SurveyUnitService surveyUnitService;
 	private final PreferenceService preferenceService;
 	private final ReferentService referentService;
+	private final VisibilityService visibilityService;
+	private final DateService dateService;
 
 	@Override
 	public List<CampaignDto> getListCampaign(String userId) {
@@ -84,21 +73,22 @@ public class CampaignServiceImpl implements CampaignService {
 				.map(OrganizationUnitDto::getId)
 				.flatMap(ouId -> campaignRepository.findIdsByOuId(ouId).stream())
 				.distinct()
-				.collect(Collectors.toList());
+				.toList();
 
-		List<String> lstOuId = (userId.equals(Constants.GUEST)) ? Collections.singletonList(Constants.GUEST)
-				: organizationUnits.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
+		List<String> lstOuId = organizationUnits.stream()
+				.map(OrganizationUnitDto::getId).toList();
 
 		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
 		for (String idCampaign : campaignDtoIds) {
 			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-			VisibilityDto visibility = visibilityRepository.findVisibilityByCampaignId(idCampaign, lstOuId);
-			campaign.setManagementStartDate(visibility.getManagementStartDate());
-			campaign.setInterviewerStartDate(visibility.getInterviewerStartDate());
-			campaign.setIdentificationPhaseStartDate(visibility.getIdentificationPhaseStartDate());
-			campaign.setCollectionStartDate(visibility.getCollectionStartDate());
-			campaign.setCollectionEndDate(visibility.getCollectionEndDate());
-			campaign.setEndDate(visibility.getEndDate());
+
+			CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(idCampaign, lstOuId);
+			campaign.setManagementStartDate(campaignVisibility.managementStartDate());
+			campaign.setInterviewerStartDate(campaignVisibility.interviewerStartDate());
+			campaign.setIdentificationPhaseStartDate(campaignVisibility.identificationPhaseStartDate());
+			campaign.setCollectionStartDate(campaignVisibility.collectionStartDate());
+			campaign.setCollectionEndDate(campaignVisibility.collectionEndDate());
+			campaign.setEndDate(campaignVisibility.endDate());
 			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(idCampaign, lstOuId));
 			campaign.setPreference(isUserPreference(userId, idCampaign));
 			campaign.setReferents(referentService.findByCampaignId(idCampaign));
@@ -116,7 +106,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
 		List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 
 		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
 			if (userOrgUnitIds.contains(orgId)) {
@@ -128,96 +118,6 @@ public class CampaignServiceImpl implements CampaignService {
 			log.warn("No interviewers found for the campaign {}", campaignId);
 		}
 		return interviewersDtoReturned;
-	}
-
-	@Override
-	public HttpStatus updateVisibility(String idCampaign, String idOu, VisibilityDto updatedVisibility) {
-		if (idCampaign == null || idOu == null || !updatedVisibility.isOneDateFilled()) {
-			log.error("Required fields missing in input body");
-			return HttpStatus.BAD_REQUEST;
-		}
-		Optional<Visibility> visibility = visibilityRepository.findVisibilityByCampaignIdAndOuId(idCampaign, idOu);
-		if (!visibility.isPresent()) {
-			String errorMessage = String.format("No visibility found for campaign %s", idCampaign);
-			log.error(errorMessage);
-			return HttpStatus.NOT_FOUND;
-		}
-		VisibilityDto expectedVisibility = mergeVisibilities(visibility.get(), updatedVisibility);
-		if (!checkDateConsistency(expectedVisibility)) {
-			log.warn("Invalid Visibility dates : should be strictly increasing");
-			return HttpStatus.CONFLICT;
-		}
-		setVisibilityDates(visibility.get(), updatedVisibility, idOu, idCampaign);
-		return HttpStatus.OK;
-	}
-
-	private VisibilityDto mergeVisibilities(Visibility initialVisibility, VisibilityDto updatedVisibility) {
-		VisibilityDto expectedVisibility = new VisibilityDto(initialVisibility.getManagementStartDate(),
-				initialVisibility.getInterviewerStartDate(),
-				initialVisibility.getIdentificationPhaseStartDate(),
-				initialVisibility.getCollectionStartDate(),
-				initialVisibility.getCollectionEndDate(),
-				initialVisibility.getEndDate());
-
-		if (updatedVisibility.getManagementStartDate() != null) {
-			expectedVisibility.setManagementStartDate(updatedVisibility.getManagementStartDate());
-		}
-		if (updatedVisibility.getInterviewerStartDate() != null) {
-			expectedVisibility.setInterviewerStartDate(updatedVisibility.getInterviewerStartDate());
-		}
-		if (updatedVisibility.getIdentificationPhaseStartDate() != null) {
-			expectedVisibility.setIdentificationPhaseStartDate(updatedVisibility.getIdentificationPhaseStartDate());
-		}
-		if (updatedVisibility.getCollectionStartDate() != null) {
-			expectedVisibility.setCollectionStartDate(updatedVisibility.getCollectionStartDate());
-		}
-		if (updatedVisibility.getCollectionEndDate() != null) {
-			expectedVisibility.setCollectionEndDate(updatedVisibility.getCollectionEndDate());
-		}
-		if (updatedVisibility.getEndDate() != null) {
-			expectedVisibility.setEndDate(updatedVisibility.getEndDate());
-		}
-		return expectedVisibility;
-	}
-
-	private boolean checkDateConsistency(VisibilityDto visibility) {
-		return visibility.getManagementStartDate() < visibility.getInterviewerStartDate()
-				&& visibility.getInterviewerStartDate() < visibility.getIdentificationPhaseStartDate()
-				&& visibility.getIdentificationPhaseStartDate() < visibility.getCollectionStartDate()
-				&& visibility.getCollectionStartDate() < visibility.getCollectionEndDate()
-				&& visibility.getCollectionEndDate() < visibility.getEndDate();
-	}
-
-	private void setVisibilityDates(Visibility visibility, VisibilityDto updatedVisibility, String idOu,
-			String idCampaign) {
-		if (updatedVisibility.getManagementStartDate() != null) {
-			log.info("Updating management start date for campaign {} and Organizational Unit {}", idCampaign,
-					idOu);
-			visibility.setManagementStartDate(updatedVisibility.getManagementStartDate());
-		}
-		if (updatedVisibility.getInterviewerStartDate() != null) {
-			log.info("Updating interviewer start date for campaign {} and Organizational Unit {}",
-					idCampaign, idOu);
-			visibility.setInterviewerStartDate(updatedVisibility.getInterviewerStartDate());
-		}
-		if (updatedVisibility.getIdentificationPhaseStartDate() != null) {
-			log.info("Updating identification phase start date for campaign {} and Organizational Unit {}",
-					idCampaign, idOu);
-			visibility.setIdentificationPhaseStartDate(updatedVisibility.getIdentificationPhaseStartDate());
-		}
-		if (updatedVisibility.getCollectionStartDate() != null) {
-			log.info("Updating collection start date for campaign {} and Organizational Unit {}", idCampaign, idOu);
-			visibility.setCollectionStartDate(updatedVisibility.getCollectionStartDate());
-		}
-		if (updatedVisibility.getCollectionEndDate() != null) {
-			log.info("Updating collection end date for campaign {} and Organizational Unit {}", idCampaign,
-					idOu);
-			visibility.setCollectionEndDate(updatedVisibility.getCollectionEndDate());
-		}
-		if (updatedVisibility.getEndDate() != null) {
-			log.info("Updating end date for campaign {} and Organizational Unit {}", idCampaign, idOu);
-			visibility.setEndDate(updatedVisibility.getEndDate());
-		}
 	}
 
 	@Override
@@ -244,80 +144,67 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public Response postCampaign(CampaignContextDto campaignDto)
-			throws NoOrganizationUnitException, VisibilityException {
-		if (campaignDto.getCampaign() == null) {
-			return new Response("Campaign id is missing in request", HttpStatus.BAD_REQUEST);
-		}
-		if (campaignDto.getCampaignLabel() == null) {
-			return new Response("Campaign label is missing in request", HttpStatus.BAD_REQUEST);
-		}
-		if (campaignDto.getVisibilities() == null) {
-			return new Response("Campaign visibilities are missing in request", HttpStatus.BAD_REQUEST);
-		}
-		String campaignId = campaignDto.getCampaign().toUpperCase();
+	public void createCampaign(CampaignCreateDto campaignDto)
+            throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
+
+		String campaignId = campaignDto.campaign().toUpperCase();
 		Optional<Campaign> campOpt = campaignRepository.findById(campaignId);
 		if (campOpt.isPresent()) {
-			return new Response(String.format("Campaign with id '%s' already exists", campaignId),
-					HttpStatus.BAD_REQUEST);
+			throw new CampaignAlreadyExistException();
 		}
+
 		// Creating campaign
-		Campaign campaign = new Campaign(campaignId, campaignDto.getCampaignLabel(),
-				campaignDto.getIdentificationConfiguration(), campaignDto.getContactOutcomeConfiguration(),
+		Campaign campaign = new Campaign(campaignId, campaignDto.campaignLabel(),
+				campaignDto.identificationConfiguration(),
+				campaignDto.contactOutcomeConfiguration(),
+				campaignDto.contactAttemptConfiguration(),
+				campaignDto.email());
+		campaign.setReferents(new ArrayList<>());
+		campaign.setCommunicationTemplates(new ArrayList<>());
 
-				campaignDto.getContactAttemptConfiguration(), campaignDto.getEmail(),
-				campaignDto.getCommunicationRequestConfiguration());
-		campaignRepository.save(campaign);
-
-		for (VisibilityContextDto dto : campaignDto.getVisibilities()) {
-			if (!verifyVisibilityContextDto(dto)) {
-
-				throw new VisibilityException("Some of the fields of a visibility are missing");
+		List<VisibilityDB> visibilitiesDBToCreate = new ArrayList<>();
+		List<Visibility> visibilities = VisibilityCampaignCreateDto.toModel(campaignDto.visibilities(), campaignDto.campaign());
+		for (Visibility visibility : visibilities) {
+			if(!Visibility.isValid(visibility)) {
+				throw new VisibilityHasInvalidDatesException();
 			}
-			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(dto.getOrganizationalUnit());
-			if (ouOpt.isPresent()) {
-				Visibility visi = new Visibility();
-				visi.setVisibilityId(new VisibilityId(dto.getOrganizationalUnit(), campaign.getId()));
-				visi.setCampaign(campaign);
-				visi.setOrganizationUnit(ouOpt.get());
-				visi.setCollectionStartDate(dto.getCollectionStartDate());
-				visi.setCollectionEndDate(dto.getCollectionEndDate());
-				visi.setIdentificationPhaseStartDate(dto.getIdentificationPhaseStartDate());
-				visi.setInterviewerStartDate(dto.getInterviewerStartDate());
-				visi.setManagementStartDate(dto.getManagementStartDate());
-				visi.setEndDate(dto.getEndDate());
-
-				visibilityRepository.save(visi);
-			} else {
-				throw new NoOrganizationUnitException(
-						String.format("Organizational unit '%s' does not exist", dto.getOrganizationalUnit()));
-			}
+			OrganizationUnit organizationUnit = organizationUnitRepository.findById(visibility.organizationalUnitId())
+					.orElseThrow(OrganizationalUnitNotFoundException::new);
+			visibilitiesDBToCreate.add(VisibilityDB.fromModel(visibility, campaign, organizationUnit));
 		}
-		persistReferents(campaignDto, campaign);
+		campaign.setVisibilities(visibilitiesDBToCreate);
 
-		return new Response("", HttpStatus.OK);
-	}
+		if(campaignDto.referents() != null) {
+			updateReferents(campaign, campaignDto.referents());
+		}
 
-	public boolean verifyVisibilityContextDto(VisibilityContextDto dto) {
-		return dto.getOrganizationalUnit() != null && dto.getCollectionStartDate() != null
-				&& dto.getCollectionEndDate() != null && dto.getIdentificationPhaseStartDate() != null
-				&& dto.getInterviewerStartDate() != null && dto.getManagementStartDate() != null
-				&& dto.getEndDate() != null;
-	}
-
-	@Override
-	public Optional<Campaign> findById(String id) {
-		return campaignRepository.findById(id);
+		List<CommunicationTemplate> communicationTemplatesToCreate = CommunicationTemplateCreateDto.toModel(campaignDto.communicationTemplates());
+		if(communicationTemplatesToCreate != null) {
+			List<CommunicationTemplateDB> communicationsDBToCreate = CommunicationTemplateDB.fromModel(communicationTemplatesToCreate, campaign);
+			campaign.setCommunicationTemplates(communicationsDBToCreate);
+		}
+		campaignRepository.save(campaign);
 	}
 
 	@Override
-	public void delete(Campaign campaign) {
-		surveyUnitRepository.findByCampaignId(campaign.getId()).stream().forEach(surveyUnitService::delete);
-		userRepository.findAll().stream()
+	public Optional<Campaign> findById(String campaignId) {
+		return campaignRepository.findById(campaignId);
+	}
+
+	@Override
+	public void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException {
+		Campaign campaign = findById(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+
+		if (!force && isCampaignOngoing(campaignId)) {
+			throw new CampaignOnGoingException();
+		}
+		surveyUnitRepository.findByCampaignId(campaign.getId())
+				.forEach(surveyunit -> surveyUnitService.delete(surveyunit.getId()));
+		userRepository.findAll()
 				.forEach(user -> {
-					List<String> lstCampaignId = user.getCampaigns().stream().map(Campaign::getId)
-							.collect(Collectors.toList());
+					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(Campaign::getId)
+							.toList());
 					if (lstCampaignId.contains(campaign.getId())) {
 						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
 						preferenceService.setPreferences(lstCampaignId, user.getId());
@@ -328,77 +215,40 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public HttpStatus updateCampaign(String id, CampaignContextDto campaign) {
-		Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(id);
-		if (!camp.isPresent()) {
-			log.error("Campaign {} does not exist in db", id);
-			return HttpStatus.NOT_FOUND;
+	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, OrganizationalUnitNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+
+		if(campaignToUpdate.visibilities() != null) {
+			List<Visibility> visibilitiesToUpdate = VisibilityCampaignUpdateDto.toModel(campaignToUpdate.visibilities(), campaignId);
+			for (Visibility visibilityToUpdate : visibilitiesToUpdate) {
+				visibilityService.updateVisibility(visibilityToUpdate);
+			}
 		}
 
-		if (campaign.getCampaignLabel() == null || campaign.getCampaignLabel().isEmpty()
-				|| campaign.getCampaignLabel().isBlank()
-				|| !campaign.getVisibilities().stream().allMatch(VisibilityDto::isOneDateFilled)) {
-			log.warn("Can't update campaign {} : invalid input", id);
-			return HttpStatus.BAD_REQUEST;
+		currentCampaign.setLabel(campaignToUpdate.campaignLabel());
+		if (!StringUtils.isBlank(campaignToUpdate.email())) {
+			currentCampaign.setEmail(campaignToUpdate.email());
 		}
 
-		boolean visibilitiesArePresent = campaign.getVisibilities().stream()
-				.map(VisibilityContextDto::getOrganizationalUnit)
-				.allMatch(ouId -> visibilityRepository
-						.findByCampaignIdIgnoreCaseAndOrganizationUnitIdIgnoreCase(id, ouId).isPresent());
-		if (!visibilitiesArePresent) {
-			log.warn("Can't update missing visibility for campaign {}", id);
-			return HttpStatus.NOT_FOUND;
+		updateConfiguration(currentCampaign, campaignToUpdate);
+		if(campaignToUpdate.referents() != null) {
+			updateReferents(currentCampaign, campaignToUpdate.referents());
 		}
 
-		boolean visibilitiesAreValid = campaign.getVisibilities().stream().allMatch(this::checkDateConsistency);
-		if (!visibilitiesAreValid) {
-			log.warn("Invalid Visibility dates : should be strictly increasing");
-			return HttpStatus.CONFLICT;
-		}
-
-		Campaign currentCampaign = camp.get();
-		currentCampaign.setLabel(campaign.getCampaignLabel());
-		if (!StringUtils.isBlank(campaign.getEmail())) {
-			currentCampaign.setEmail(campaign.getEmail());
-		}
-
-		updateConfiguration(currentCampaign, campaign);
-		updateReferents(currentCampaign, campaign);
-
-		campaign.getVisibilities().stream().forEach(v -> this.updateVisibility(
-				id,
-				v.getOrganizationalUnit(),
-				new VisibilityDto(
-						v.getManagementStartDate(),
-						v.getInterviewerStartDate(),
-						v.getIdentificationPhaseStartDate(),
-						v.getCollectionStartDate(),
-						v.getCollectionEndDate(),
-						v.getEndDate())));
-		return HttpStatus.OK;
+		campaignRepository.save(currentCampaign);
 	}
 
-	private void updateReferents(Campaign currentCampaign, CampaignContextDto campDto) {
-		if (campDto.getReferents() != null) {
-			referentRepository.deleteAll(currentCampaign.getReferents());
-			persistReferents(campDto, currentCampaign);
-		}
-	}
+	private void updateConfiguration(Campaign currentCampaign, CampaignUpdateDto campDto) {
 
-	private void updateConfiguration(Campaign currentCampaign, CampaignContextDto campDto) {
-
-		if (campDto.getIdentificationConfiguration() != null) {
-			currentCampaign.setIdentificationConfiguration(campDto.getIdentificationConfiguration());
+		if (campDto.identificationConfiguration() != null) {
+			currentCampaign.setIdentificationConfiguration(campDto.identificationConfiguration());
 		}
-		if (campDto.getContactOutcomeConfiguration() != null) {
-			currentCampaign.setContactOutcomeConfiguration(campDto.getContactOutcomeConfiguration());
+		if (campDto.contactOutcomeConfiguration() != null) {
+			currentCampaign.setContactOutcomeConfiguration(campDto.contactOutcomeConfiguration());
 		}
-		if (campDto.getContactAttemptConfiguration() != null) {
-			currentCampaign.setContactAttemptConfiguration(campDto.getContactAttemptConfiguration());
-		}
-		if (campDto.getCommunicationRequestConfiguration() != null) {
-			currentCampaign.setCommunicationConfiguration(campDto.getCommunicationRequestConfiguration());
+		if (campDto.contactAttemptConfiguration() != null) {
+			currentCampaign.setContactAttemptConfiguration(campDto.contactAttemptConfiguration());
 		}
 	}
 
@@ -408,7 +258,7 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignRepository.findAllDto().stream().map(camp -> {
 			camp.setCampaignStats(surveyUnitRepository.getCampaignStats(camp.getId(), lstOuId));
 			return camp;
-		}).collect(Collectors.toList());
+		}).toList();
 	}
 
 	@Override
@@ -424,68 +274,36 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public boolean isCampaignOngoing(String campaignId) {
-		List<Visibility> visibilities = visibilityRepository.findByCampaignId(campaignId);
-		return visibilities.stream().anyMatch(visibility -> visibility.getEndDate() > Instant.now().toEpochMilli());
+	public boolean isCampaignOngoing(String campaignId) throws CampaignNotFoundException {
+		Campaign campaign = findById(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+		List<Visibility> visibilities = visibilityService.findVisibilities(campaign.getId());
+		return visibilities.stream()
+				.anyMatch(visibility -> visibility.endDate() > dateService.getCurrentTimestamp());
 	}
 
-	@Override
-	public List<VisibilityContextDto> findAllVisiblitiesByCampaign(String campaignId) {
-		return visibilityRepository.findByCampaignId(campaignId).stream().map(v -> {
-			VisibilityContextDto vcd = new VisibilityContextDto();
-			vcd.setCollectionEndDate(v.getCollectionEndDate());
-			vcd.setCollectionStartDate(v.getCollectionStartDate());
-			vcd.setEndDate(v.getEndDate());
-			vcd.setInterviewerStartDate(v.getInterviewerStartDate());
-			vcd.setIdentificationPhaseStartDate(v.getIdentificationPhaseStartDate());
-			vcd.setManagementStartDate(v.getManagementStartDate());
-			vcd.setOrganizationalUnit(v.getOrganizationUnit().getId());
-
-			return vcd;
-		}).collect(Collectors.toList());
-	}
-
-	@Override
-
-	public void persistReferents(CampaignContextDto campaignDto, Campaign campaign) {
-
-		campaignDto.getReferents().stream().forEach(refDto -> {
+	private void updateReferents(Campaign campaign, @NonNull List<ReferentDto> referentDtos) {
+		List<Referent> referents = campaign.getReferents();
+		referents.clear();
+		referentDtos.forEach(refDto -> {
 			Referent ref = new Referent();
 			ref.setCampaign(campaign);
 			ref.setFirstName(refDto.getFirstName());
 			ref.setLastName(refDto.getLastName());
 			ref.setPhoneNumber(refDto.getPhoneNumber());
 			ref.setRole(refDto.getRole());
-			referentRepository.save(ref);
+			referents.add(ref);
 		});
 	}
 
 	@Override
-	public CampaignContextDto getCampaignDtoById(String id) {
-		CampaignContextDto campaign = new CampaignContextDto();
-		CampaignDto campdto = campaignRepository.findDtoById(id);
-		campaign.setCampaign(campdto.getId());
-		campaign.setCampaignLabel(campdto.getLabel());
-		campaign.setEmail(campdto.getEmail());
-		campaign.setContactAttemptConfiguration(campdto.getContactAttemptConfiguration());
-		campaign.setContactOutcomeConfiguration(campdto.getContactOutcomeConfiguration());
-		campaign.setIdentificationConfiguration(campdto.getIdentificationConfiguration());
-		campaign.setCommunicationRequestConfiguration(
-				Optional.ofNullable(campdto.getCommunicationRequestConfiguration()).orElse(false));
-		List<VisibilityContextDto> visibilities = visibilityRepository.findByCampaignId(id).stream()
-				.map(VisibilityContextDto::new).collect(Collectors.toList());
-		campaign.setVisibilities(visibilities);
-
-		List<ReferentDto> referents = referentService.findByCampaignId(id);
-		campaign.setReferents(referents);
-
-		return campaign;
+	public CampaignResponseDto getCampaignDtoById(String campaignId) throws CampaignNotFoundException {
+		Campaign campaignDB = campaignRepository.findById(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+		List<ReferentDto> referents = referentService.findByCampaignId(campaignId);
+		List<VisibilityCampaignDto> visibilities = VisibilityCampaignDto.fromModel(
+				visibilityService.findVisibilities(campaignId)
+		);
+		return CampaignResponseDto.fromModel(campaignDB, referents, visibilities);
 	}
-
-	@Override
-	public boolean existsAny() {
-
-		return !campaignRepository.findAllIds().isEmpty();
-	}
-
 }

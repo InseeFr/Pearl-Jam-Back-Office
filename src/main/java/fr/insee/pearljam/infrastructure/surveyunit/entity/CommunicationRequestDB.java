@@ -3,9 +3,12 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,12 +38,8 @@ public class CommunicationRequestDB implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String messhugahId;
-
-    @Enumerated(EnumType.STRING)
-    @Column
-    private CommunicationRequestType type;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private CommunicationTemplateDB communicationTemplate;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -48,11 +47,7 @@ public class CommunicationRequestDB implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private CommunicationRequestMedium medium;
-
-    @Enumerated(EnumType.STRING)
-    @Column
-    private CommunicationRequestEmiter emiter;
+    private CommunicationRequestEmitter emitter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyUnit surveyUnit;
@@ -66,11 +61,11 @@ public class CommunicationRequestDB implements Serializable {
      * @param request model object
      * @return entity object
      */
-    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit) {
+    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, CommunicationTemplateDB communicationTemplate) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), request.messhugahId(), request.type(),
-                request.reason(), request.medium(), request.emiter(), surveyUnit, status);
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), communicationTemplate,
+                request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {
             status.addAll(request.status().stream()
@@ -93,7 +88,18 @@ public class CommunicationRequestDB implements Serializable {
                     .map(CommunicationRequestStatusDB::toModel).toList();
         }
 
-        return new CommunicationRequest(request.getId(), request.getMesshugahId(), request.getType(),
-                request.getReason(), request.getMedium(), request.getEmiter(), status);
+        return new CommunicationRequest(request.getId(), request.getCommunicationTemplate().getId(),
+                request.getReason(), request.getEmitter(), status);
+    }
+
+    /**
+     * Converts a set of CommunicationRequestDB entities to a set of CommunicationRequest models.
+     * @param requests set of CommunicationRequestDB entities
+     * @return set of CommunicationRequest models
+     */
+    public static Set<CommunicationRequest> toModel(Set<CommunicationRequestDB> requests) {
+        return requests.stream()
+                .map(CommunicationRequestDB::toModel)
+                .collect(Collectors.toSet());
     }
 }

@@ -1,15 +1,21 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestStatusDto;
-import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
+import fr.insee.pearljam.domain.campaign.model.Visibility;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
@@ -25,112 +31,139 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 class SurveyUnitUpdateServiceImplTest {
+    private CommunicationRequestFakeRepository communicationRequestFakeRepository;
+    private VisibilityFakeService visibilityFakeService;
     private SurveyUnitUpdateServiceImpl surveyUnitService;
     private SurveyUnit surveyUnit;
-    private SurveyUnitDetailDto surveyUnitDto;
+    private SurveyUnitUpdateDto surveyUnitDto;
+    private DateService dateService;
+    private CommunicationTemplateDB communicationTemplateDB;
+    private CommunicationTemplate communicationTemplate;
+    private CommunicationTemplateFakeRepository communicationTemplateFakeRepository;
+    private Campaign campaign;
+    private OrganizationUnit ou;
 
     @BeforeEach
     void setup() {
-        surveyUnitService = new SurveyUnitUpdateServiceImpl();
+        visibilityFakeService = new VisibilityFakeService();
+        communicationTemplateFakeRepository = new CommunicationTemplateFakeRepository();
+        dateService = new FixedDateService();
+        communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
+        surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository, communicationTemplateFakeRepository, visibilityFakeService, dateService);
+        campaign = new Campaign("campaignId", "label", null, null, null,null);
+        ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
+        Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
+                null, null, null, null, true, "mail", "tel");
+        visibilityFakeService.save(visibility);
         surveyUnit = new SurveyUnit("id", true, true, null,
-                null, null, null, null, null);
-        Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, "mid", null, null, null, null, surveyUnit, null));
-        surveyUnit.setCommunicationRequests(communicationRequestDBs);
+                null, campaign, null, ou, null);
 
-        surveyUnitDto = new SurveyUnitDetailDto();
+        communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        communicationTemplateFakeRepository.save(communicationTemplate);
+        communicationTemplateDB = new CommunicationTemplateDB(3L, "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
+        Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplateDB,
+                CommunicationRequestReason.REFUSAL,
+                CommunicationRequestEmitter.TOOL,
+                surveyUnit, null));
+        surveyUnit.setCommunicationRequests(communicationRequestDBs);
     }
 
     @Test
     @DisplayName("Should add communication requests for survey unit")
     void testUpdateCommunication01() {
-        List<CommunicationRequestStatusDto> status1 = List.of(
-                new CommunicationRequestStatusDto(null, 1233456789L, CommunicationStatusType.INITIATED),
-                new CommunicationRequestStatusDto(2L, 123345678910L, CommunicationStatusType.FAILED)
+        List<CommunicationRequestCreateDto> communicationRequests = List.of(
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
+                        CommunicationRequestReason.UNREACHABLE),
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
+                        CommunicationRequestReason.REFUSAL)
         );
 
-        List<CommunicationRequestStatusDto> status2 = List.of(
-                new CommunicationRequestStatusDto(3L, 123345678911L, CommunicationStatusType.READY),
-                new CommunicationRequestStatusDto(4L, 123345678912L, CommunicationStatusType.CANCELLED)
-        );
-
-        List<CommunicationRequestDto> communicationRequests = List.of(
-                new CommunicationRequestDto(null, "messhugahid1", CommunicationRequestType.NOTICE,
-                        CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                        CommunicationRequestEmiter.INTERVIEWER, status1),
-                new CommunicationRequestDto(null, "messhugahid2", CommunicationRequestType.REMINDER,
-                        CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                        CommunicationRequestEmiter.TOOL, status2)
-        );
-
-        surveyUnitDto.setCommunicationRequests(communicationRequests);
+        surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
-        Set<CommunicationRequestDB> communicationRequestResults = surveyUnit.getCommunicationRequests();
+        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
         assertThat(communicationRequestResults)
-                .hasSize(3)
-                .extracting(CommunicationRequestDB::getId,
-                        CommunicationRequestDB::getMesshugahId,
-                        CommunicationRequestDB::getType,
-                        CommunicationRequestDB::getReason,
-                        CommunicationRequestDB::getMedium,
-                        CommunicationRequestDB::getEmiter,
-                        CommunicationRequestDB::getSurveyUnit,
-                        communicationRequestDB -> communicationRequestDB.getStatus() == null ? null : communicationRequestDB.getStatus().stream()
-                                .map(status -> tuple(status.getId(), status.getDate(), status.getStatus()))
+                .hasSize(2)
+                .extracting(CommunicationRequest::id,
+                        CommunicationRequest::communicationTemplateId,
+                        CommunicationRequest::reason,
+                        CommunicationRequest::emitter,
+                        communicationRequest -> communicationRequest.status().stream()
+                                .map(status -> tuple(status.id(), status.date(), status.status()))
                                 .toList()
                         )
                 .containsExactlyInAnyOrder(
-                        tuple(null, "messhugahid1", CommunicationRequestType.NOTICE,
-                                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                                CommunicationRequestEmiter.INTERVIEWER, surveyUnit,
+                        tuple(null,
+                                communicationTemplate.id(),
+                                CommunicationRequestReason.UNREACHABLE,
+                                CommunicationRequestEmitter.INTERVIEWER,
                                 List.of(
-                                        tuple(null, 1233456789L, CommunicationStatusType.INITIATED),
-                                        tuple(2L, 123345678910L, CommunicationStatusType.FAILED)
-                                )),
-                        tuple(null, "messhugahid2", CommunicationRequestType.REMINDER,
-                                CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                                CommunicationRequestEmiter.TOOL, surveyUnit,
+                                        tuple(null, 12345678910L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
+                                )
+                        ),
+                        tuple(null,
+                                communicationTemplate.id(),
+                                CommunicationRequestReason.REFUSAL,
+                                CommunicationRequestEmitter.INTERVIEWER,
                                 List.of(
-                                        tuple(3L, 123345678911L, CommunicationStatusType.READY),
-                                        tuple(4L, 123345678912L, CommunicationStatusType.CANCELLED)
-                                )),
-                        tuple(10L, "mid", null, null, null, null, surveyUnit, null)
+                                        tuple(null, 1234567891011L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
+                                )
+                        )
                 );
-
-        // Check that CommunicationRequestStatusDB has the correct parent
-        communicationRequestResults.forEach(request -> {
-            if (request.getStatus() != null) {
-                request.getStatus().forEach(status -> assertThat(status.getCommunicationRequest()).isEqualTo(request));
-            }
-        });
     }
 
     @Test
-    @DisplayName("Should not add existing requests (with id != null) for survey unit")
+    @DisplayName("Should add CANCELLED letter communication request if visibility doesn't allow letter communications")
     void testUpdateCommunication02() {
-        List<CommunicationRequestStatusDto> status = List.of(
-                new CommunicationRequestStatusDto(null, 1233456789L, CommunicationStatusType.INITIATED),
-                new CommunicationRequestStatusDto(2L, 123345678910L, CommunicationStatusType.FAILED)
+        visibilityFakeService.clearVisibilities();
+        communicationTemplateFakeRepository.clearCommunicationTemplates();
+        Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
+                null, null, null, null, false, "mail", "tel");
+        communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.LETTER, CommunicationType.NOTICE);
+        communicationTemplateFakeRepository.save(communicationTemplate);
+        visibilityFakeService.save(visibility);
+        List<CommunicationRequestCreateDto> communicationRequests = List.of(
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
+                        CommunicationRequestReason.UNREACHABLE),
+                new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
+                        CommunicationRequestReason.REFUSAL)
         );
 
-        List<CommunicationRequestDto> communicationRequests = List.of(
-                new CommunicationRequestDto(1L, "messhugahid1", CommunicationRequestType.NOTICE,
-                        CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                        CommunicationRequestEmiter.INTERVIEWER, status),
-                new CommunicationRequestDto(null, "messhugahid2", CommunicationRequestType.REMINDER,
-                        CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                        CommunicationRequestEmiter.TOOL, null)
-        );
-
-        surveyUnitDto.setCommunicationRequests(communicationRequests);
+        surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests);
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
-        Set<CommunicationRequestDB> communicationRequestResults = surveyUnit.getCommunicationRequests();
+        List<CommunicationRequest> communicationRequestResults = communicationRequestFakeRepository.getCommunicationRequestsAdded();
         assertThat(communicationRequestResults)
                 .hasSize(2)
-                .extracting(CommunicationRequestDB::getId)
-                .containsExactlyInAnyOrder(10L, null);
+                .extracting(CommunicationRequest::id,
+                        CommunicationRequest::communicationTemplateId,
+                        CommunicationRequest::reason,
+                        CommunicationRequest::emitter,
+                        communicationRequest -> communicationRequest.status().stream()
+                                .map(status -> tuple(status.id(), status.date(), status.status()))
+                                .toList()
+                )
+                .containsExactlyInAnyOrder(
+                        tuple(null,
+                                3L,
+                                CommunicationRequestReason.UNREACHABLE,
+                                CommunicationRequestEmitter.INTERVIEWER,
+                                List.of(
+                                        tuple(null, 12345678910L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.CANCELLED))
+                        ),
+                        tuple(null,
+                                3L,
+                                CommunicationRequestReason.REFUSAL,
+                                CommunicationRequestEmitter.INTERVIEWER,
+                                List.of(
+                                        tuple(null, 1234567891011L, CommunicationStatusType.INITIATED),
+                                        tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.CANCELLED))
+                        )
+                );
     }
 
     @Test
@@ -141,7 +174,7 @@ class SurveyUnitUpdateServiceImplTest {
                 new CommentDto(CommentType.MANAGEMENT, "value2")
         );
 
-        surveyUnitDto.setComments(comments);
+        surveyUnitDto = createSurveyUnitDto(null, comments, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
         assertThat(surveyUnit.getComments())
@@ -169,7 +202,7 @@ class SurveyUnitUpdateServiceImplTest {
                 new CommentDto(CommentType.INTERVIEWER, "value4")
         );
 
-        surveyUnitDto.setComments(comments);
+        surveyUnitDto = createSurveyUnitDto(null, comments, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
         assertThat(surveyUnit.getComments())
@@ -201,7 +234,7 @@ class SurveyUnitUpdateServiceImplTest {
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
                 OccupantQuestionValue.UNIDENTIFIED);
-        surveyUnitDto.setIdentification(identification);
+        surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
         IdentificationDB identificationResult = surveyUnit.getIdentification();
@@ -225,7 +258,7 @@ class SurveyUnitUpdateServiceImplTest {
                 OccupantQuestionValue.IDENTIFIED,
                 surveyUnit);
         surveyUnit.setIdentification(identificationDB);
-        surveyUnitDto.setIdentification(null);
+        surveyUnitDto = createSurveyUnitDto(null, null, null);
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
         assertThat(surveyUnit.getIdentification()).isEqualTo(identificationDB);
     }
@@ -239,7 +272,7 @@ class SurveyUnitUpdateServiceImplTest {
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
                 OccupantQuestionValue.UNIDENTIFIED);
-        surveyUnitDto.setIdentification(identification);
+        surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
@@ -251,5 +284,10 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
         assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
         assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
+    }
+
+    private SurveyUnitUpdateDto createSurveyUnitDto(IdentificationDto identification, List<CommentDto> comments, List<CommunicationRequestCreateDto> communicationRequests) {
+        return new SurveyUnitUpdateDto("su-id", null, null, true,
+                comments, null, null, null, identification, communicationRequests);
     }
 }

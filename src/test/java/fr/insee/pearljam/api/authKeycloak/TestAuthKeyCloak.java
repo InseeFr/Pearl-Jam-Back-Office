@@ -1,42 +1,40 @@
 package fr.insee.pearljam.api.authKeycloak;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.controller.WsText;
+import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.dto.address.AddressDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.api.dto.message.MessageDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
+import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
+import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.dto.user.UserContextDto;
+import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import fr.insee.pearljam.domain.surveyunit.model.CommentType;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,83 +42,42 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.controller.WsText;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.ClosingCause;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.domain.Medium;
-import fr.insee.pearljam.api.domain.Message;
-import fr.insee.pearljam.api.domain.MessageStatusType;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.OrganizationUnitType;
-import fr.insee.pearljam.api.domain.Source;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.Status;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.domain.Title;
-import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.domain.Visibility;
-import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignContextDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
-import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
-import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
-import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.dto.user.UserContextDto;
-import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.dto.visibility.VisibilityContextDto;
-import fr.insee.pearljam.api.dto.visibility.VisibilityDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import lombok.RequiredArgsConstructor;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for Keycloak Authentication */
-@ActiveProfiles("auth")
+@ActiveProfiles(profiles = {"auth", "test"})
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @RequiredArgsConstructor
+@Import(FixedDateServiceConfiguration.class)
 class TestAuthKeyCloak {
 
 	private final SurveyUnitService surveyUnitService;
@@ -129,7 +86,7 @@ class TestAuthKeyCloak {
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final CampaignRepository campaignRepository;
-	private final VisibilityRepository visibilityRepository;
+	private final VisibilityJpaRepository visibilityRepository;
 	private final MessageRepository messageRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final InterviewerRepository interviewerRepository;
@@ -185,7 +142,7 @@ class TestAuthKeyCloak {
 		return mvcResult -> {
 			String content = mvcResult.getResponse().getContentAsString();
 			long timestamp = JsonPath.read(content, expression);
-			LocalDate localDateNow = LocalDate.now();
+			LocalDate localDateNow = MockMvcTestUtils.getDate();
 			Instant instant = Instant.ofEpochMilli(timestamp);
 			LocalDate dateToCheck = LocalDate.ofInstant(instant, ZoneId.systemDefault());
 			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
@@ -323,8 +280,6 @@ class TestAuthKeyCloak {
 						checkJsonPath(campaignJsonPath, "email", "first.email@test.com"),
 						checkJsonPath(campaignJsonPath, "toReview", 3L),
 						checkJsonPath(campaignJsonPath, "preference", true),
-						checkJsonPath(campaignJsonPath, "communicationRequestConfiguration",
-								false),
 						checkJsonPath(campaignJsonPath, "identificationConfiguration",
 								IdentificationConfiguration.IASCO.name()),
 						checkJsonPath(campaignJsonPath, "contactAttemptConfiguration",
@@ -548,164 +503,21 @@ class TestAuthKeyCloak {
 
 	/* SurveyUnitController */
 
-	/**
-	 * Test that the GET endpoint "api/survey-unit/{id}"
-	 * return 200.
-	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
-	 */
-	@Test
-	@Order(11)
-	void testGetSurveyUnitDetail() throws Exception {
-		String personJsonPath = "$.persons.[?(@.firstName == 'Christine')].%s";
-
-		mockMvc.perform(get("/api/survey-unit/11")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.id").value("11"),
-						jsonPath("$.priority", equalTo(true)),
-						checkJsonPath(personJsonPath, "lastName", "Aguilar"),
-						checkJsonPath(personJsonPath, "favoriteEmail", true),
-						checkJsonPath(personJsonPath, "privileged", false),
-						checkJsonPath(personJsonPath, "birthdate", 11111111L),
-						checkJsonPath(personJsonPath, "phoneNumbers[0].number", "+33677542802"),
-						jsonPath("$.address.l1", equalTo("Ted Farmer")),
-						jsonPath("$.address.l2", equalTo("")),
-						jsonPath("$.address.l3", equalTo("")),
-						jsonPath("$.address.l4", equalTo("1 rue de la gare")),
-						jsonPath("$.address.l5", equalTo("")),
-						jsonPath("$.address.l6", equalTo("29270 Carhaix")),
-						jsonPath("$.address.l7", equalTo("France")),
-						jsonPath("$.address.elevator", equalTo(true)),
-						jsonPath("$.address.building", equalTo("Bat. C")),
-						jsonPath("$.address.floor", equalTo("Etg 4")),
-						jsonPath("$.address.door", equalTo("Porte 48")),
-						jsonPath("$.address.staircase", equalTo("Escalier B")),
-						jsonPath("$.address.cityPriorityDistrict", equalTo(true)),
-						jsonPath("$.campaign", equalTo("SIMPSONS2020X00")),
-						jsonPath("$.contactOutcome").doesNotHaveJsonPath(),
-						jsonPath("$.comments", empty()),
-						jsonPath("$.states[0].type", equalTo("VIN")),
-						jsonPath("$.contactAttempts", empty()),
-						jsonPath("$.identification.identification", equalTo("IDENTIFIED")),
-						jsonPath("$.identification.access", equalTo("ACC")),
-						jsonPath("$.identification.situation", equalTo("ORDINARY")),
-						jsonPath("$.identification.category", equalTo("PRIMARY")),
-						jsonPath("$.identification.occupant", equalTo("IDENTIFIED")));
-	}
-
-	/**
-	 * Test that the GET endpoint "api/survey-unit/"
-	 * return 200
-	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
-	 */
-	@Test
-	@Order(12)
-	void testGetAllSurveyUnit() throws Exception {
-		mockMvc.perform(get("/api/survey-units")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.[?(@.id == '11')]").exists(),
-						jsonPath("$.[?(@.id == '11')].campaign").value("SIMPSONS2020X00"),
-						jsonPath("$.[?(@.id == '11')].campaignLabel").value("Survey on the Simpsons tv show 2020"));
-
-		mockMvc.perform(get(Constants.API_CAMPAIGNS)
-				.with(authentication(LOCAL_USER))
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						expectValidManagementStartDate(),
-						expectValidIdentificationPhaseStartDate(),
-						expectValidInterviewerStartDate(),
-						expectValidCollectionStartDate(),
-						expectValidCollectionEndDate(),
-						expectValidEndDate());
-	}
 
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 404 when survey-unit is false
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws JSONException
 	 */
 	@Test
 	@Order(13)
-	void testGetSurveyUnitDetailNotFound() throws Exception {
-		mockMvc.perform(get("/api/survey-unit/123456789")
+	void testGetSurveyUnitInterviewerDetailNotFound() throws Exception {
+		mockMvc.perform(get("/api/interviewer/survey-unit/123456789")
 				.with(authentication(ADMIN))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
-	}
-
-	/**
-	 * Test that the PUT endpoint "api/survey-unit/{id}"
-	 * return 200
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	@Order(14)
-	void testPutSurveyUnitDetail() throws Exception {
-		SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("GUEST", "20");
-		surveyUnitDetailDto.getPersons().get(0).getPhoneNumbers().get(0).setNumber("test");
-		surveyUnitDetailDto.getAddress().setL1("test");
-		surveyUnitDetailDto.getAddress().setL2("test");
-		surveyUnitDetailDto.getAddress().setL3("test");
-		surveyUnitDetailDto.getAddress().setL4("test");
-		surveyUnitDetailDto.getAddress().setL5("test");
-		surveyUnitDetailDto.getAddress().setL6("test");
-		surveyUnitDetailDto.getAddress().setL7("test");
-		surveyUnitDetailDto.getAddress().setBuilding("testBuilding");
-		surveyUnitDetailDto.getAddress().setDoor("testDoor");
-		surveyUnitDetailDto.getAddress().setFloor("testFloor");
-		surveyUnitDetailDto.getAddress().setStaircase("testStaircase");
-		surveyUnitDetailDto.getAddress().setElevator(true);
-		surveyUnitDetailDto.getAddress().setCityPriorityDistrict(true);
-		surveyUnitDetailDto.setComments(List.of(new CommentDto(CommentType.INTERVIEWER, "test"),
-				new CommentDto(CommentType.MANAGEMENT, "test")));
-		surveyUnitDetailDto.setStates(List.of(new StateDto(1L, 1590504459838L, StateType.NNS)));
-		surveyUnitDetailDto.setContactAttempts(List.of(new ContactAttemptDto(1589268626000L, Status.NOC, Medium.TEL),
-				new ContactAttemptDto(1589268800000L, Status.INA, Medium.TEL)));
-		surveyUnitDetailDto.setContactOutcome(new ContactOutcomeDto(1589268626000L, ContactOutcomeType.IMP, 2));
-
-		mockMvc.perform(put("/api/survey-unit/20")
-				.with(authentication(INTERVIEWER))
-				.accept(MediaType.APPLICATION_JSON)
-				.content(asJsonString(surveyUnitDetailDto))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.id", equalTo("20")),
-						jsonPath("$.persons[0].phoneNumbers[0].number", equalTo("test")),
-						jsonPath("$.address.l1", equalTo("test")),
-						jsonPath("$.address.l2", equalTo("test")),
-						jsonPath("$.address.l3", equalTo("test")),
-						jsonPath("$.address.l4", equalTo("test")),
-						jsonPath("$.address.l5", equalTo("test")),
-						jsonPath("$.address.l6", equalTo("test")),
-						jsonPath("$.address.l7", equalTo("test")),
-						jsonPath("$.address.building", equalTo("testBuilding")),
-						jsonPath("$.address.door", equalTo("testDoor")),
-						jsonPath("$.address.floor", equalTo("testFloor")),
-						jsonPath("$.address.staircase", equalTo("testStaircase")),
-						jsonPath("$.address.elevator", equalTo(true)),
-						jsonPath("$.address.cityPriorityDistrict", equalTo(true)),
-						jsonPath("$.contactOutcome.type", equalTo(ContactOutcomeType.IMP.toString())),
-						jsonPath("$.contactOutcome.date", equalTo(Long.valueOf(1589268626000L))),
-						jsonPath("$.contactOutcome.totalNumberOfContactAttempts", is(2)),
-						jsonPath("$.comments[1].value", equalTo("test")),
-						jsonPath("comments[1].type",
-								is(oneOf(CommentType.MANAGEMENT.toString(), CommentType.INTERVIEWER.toString()))),
-						jsonPath("contactAttempts[1].status", is(oneOf(Status.NOC.toString(), Status.INA.toString())))
-
-				);
-
 	}
 
 	/**
@@ -716,6 +528,7 @@ class TestAuthKeyCloak {
 	 */
 	@Test
 	@Order(15)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutSurveyUnitState() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/12/state/WFT")
 				.with(authentication(LOCAL_USER))
@@ -804,8 +617,8 @@ class TestAuthKeyCloak {
 				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
-						jsonPath("$.npaCount").value("1"),
-						jsonPath("$.npiCount").value("0"),
+						jsonPath("$.npaCount").value("0"),
+						jsonPath("$.npiCount").value("1"),
 						jsonPath("$.rowCount").value("0"),
 						jsonPath("$.npxCount").value("0"),
 						jsonPath("$.total").value("2"));
@@ -927,147 +740,6 @@ class TestAuthKeyCloak {
 				.with(authentication(LOCAL_USER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying all dates
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(29)
-	void testPutVisibilityModifyAllDates() throws Exception {
-		String campaignInput = """
-				{
-					"managementStartDate": 1575937000000,
-					"interviewerStartDate": 1576801000000,
-					"identificationPhaseStartDate": 1577233000000,
-					"collectionStartDate": 1577837800000,
-					"collectionEndDate": 1640996200000,
-					"endDate": 1641514600000
-				}
-				""";
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(campaignInput))
-				.andExpect(status().isOk());
-
-		Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(1575937000000L, visi.get().getManagementStartDate());
-		assertEquals(1576801000000L, visi.get().getInterviewerStartDate());
-		assertEquals(1577233000000L, visi.get().getIdentificationPhaseStartDate());
-		assertEquals(1577837800000L, visi.get().getCollectionStartDate());
-		assertEquals(1640996200000L, visi.get().getCollectionEndDate());
-		assertEquals(1641514600000L, visi.get().getEndDate());
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying start date
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Disabled("Need Clock injection refactor")
-	@Order(30)
-	void testPutVisibilityModifyCollectionStartDate()
-			throws Exception {
-
-		long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		String jsonContent = String.format("{\"collectionStartDate\": %d}", now);
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonContent))
-				.andExpectAll(
-						status().isOk(),
-						expectValidCollectionStartDate());
-
-		Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(now, visi.get().getCollectionStartDate());
-
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 200 when modifying end date
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Disabled("Need Clock injection refactor")
-	@Order(31)
-	void testPutVisibilityModifyCollectionEndDate()
-			throws Exception {
-		long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		String jsonContent = String.format("{\"collectionEndDate\": %d}", now);
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonContent))
-				.andExpect(status().isOk());
-		Optional<Visibility> visi = visibilityRepository.findVisibilityByCampaignIdAndOuId("SIMPSONS2020X00",
-				"OU-NORTH");
-		assertEquals(true, visi.isPresent());
-		assertEquals(now, visi.get().getCollectionEndDate());
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 400 when empty body
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(32)
-	void testPutVisibilityEmptyBody() throws Exception {
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("{}"))
-				.andExpect(status().isBadRequest());
-
-	}
-
-	/**
-	 * Test that the PUT endpoint
-	 * "api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility"
-	 * return 400 when bad format
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(33)
-	void testPutVisibilityBadFormat() throws Exception {
-		String requestBody = """
-				{
-					"managementStartDate": 1640996200000,
-					"interviewerStartDate": "10/10/2020",
-					"identificationPhaseStartDate": 1641514600000,
-					"collectionStartDate": 1577233000000,
-					"collectionEndDate": 1576801000000,
-					"endDate": 1575937000000
-				}""";
-
-		mockMvc.perform(put("/api/campaign/SIMPSONS2020X00/organizational-unit/OU-NORTH/visibility")
-				.with(authentication(LOCAL_USER))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestBody))
-				.andExpect(status().isBadRequest());
-
 	}
 
 	/**
@@ -1286,7 +958,6 @@ class TestAuthKeyCloak {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@Disabled("Need Clock injection refactor")
 	@Order(45)
 	void testGetInterviewerRelatedCampaigns() throws Exception {
 		mockMvc.perform(get("/api/interviewer/INTW1/campaigns")
@@ -1294,8 +965,8 @@ class TestAuthKeyCloak {
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
-						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')").exists(),
-						jsonPath("$.[?(@.id == 'SIMPSONS2020X00' ).label").value("Survey on the Simpsons tv show 2020"),
+						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')]").exists(),
+						jsonPath("$.[?(@.id == 'SIMPSONS2020X00')].label").value("Survey on the Simpsons tv show 2020"),
 						expectValidManagementStartDate(),
 						expectValidEndDate());
 	}
@@ -1343,12 +1014,12 @@ class TestAuthKeyCloak {
 						.contentType(MediaType.APPLICATION_JSON)
 						.body(expectedBody));
 
-		Optional<Visibility> visiOpt = visibilityRepository.findVisibilityByCampaignIdAndOuId("VQS2021X00", "OU-NORTH");
+		Optional<VisibilityDB> visiOpt = visibilityRepository.findVisibilityByCampaignIdAndOuId("VQS2021X00", "OU-NORTH");
 		if (visiOpt.isEmpty()) {
 			fail("No visibility found for VQS2021X00  and OU-NORTH");
 		}
 
-		Visibility visi = visiOpt.get();
+		VisibilityDB visi = visiOpt.get();
 		Long collectionEndDate = visi.getCollectionEndDate();
 		Long endDate = visi.getEndDate();
 
@@ -1477,7 +1148,7 @@ class TestAuthKeyCloak {
 				.content(comment))
 				.andExpect(status().isOk());
 
-		mockMvc.perform(get("/api/survey-unit/11")
+		mockMvc.perform(get("/api/interviewer/survey-unit/11")
 				.with(authentication(INTERVIEWER))
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
@@ -1559,128 +1230,6 @@ class TestAuthKeyCloak {
 						jsonPath("$[?(@.id == 'OU-NORTH')].label").value("North region organizational unit"),
 						jsonPath("$[?(@.id == 'OU-SOUTH')].label").value("South region organizational unit"),
 						jsonPath("$[?(@.id == 'OU-NATIONAL')].label").value("National organizational unit"));
-
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 200
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(100)
-	void testPostCampaignContext() throws Exception {
-		CampaignContextDto campDto = new CampaignContextDto();
-		campDto.setCampaign("campId");
-		campDto.setCampaignLabel("An other campaign");
-		campDto.setReferents(List.of(new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY")));
-		campDto.setIdentificationConfiguration(IdentificationConfiguration.IASCO);
-		campDto.setContactOutcomeConfiguration(ContactOutcomeConfiguration.F2F);
-		campDto.setContactAttemptConfiguration(ContactAttemptConfiguration.F2F);
-
-		VisibilityContextDto visi1 = generateDumbVisibilityContextDto("OU-NORTH");
-		VisibilityContextDto visi2 = generateDumbVisibilityContextDto("OU-SOUTH");
-
-		campDto.setVisibilities(List.of(visi1, visi2));
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isOk());
-
-		Optional<Campaign> campOpt = campaignRepository.findById("CAMPID");
-		assertTrue(campOpt.isPresent());
-		assertEquals("An other campaign", campOpt.get().getLabel());
-
-		Optional<Visibility> visi1Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("CAMPID", "OU-NORTH");
-		Optional<Visibility> visi2Opt = visibilityRepository.findVisibilityByCampaignIdAndOuId("CAMPID", "OU-SOUTH");
-
-		assertTrue(visi1Opt.isPresent());
-		assertTrue(visi2Opt.isPresent());
-
-		Visibility visi = visi1Opt.get();
-		assertEquals(1111L, visi.getCollectionStartDate());
-		assertEquals(2222L, visi.getCollectionEndDate());
-		assertEquals(3333L, visi.getIdentificationPhaseStartDate());
-		assertEquals(4444L, visi.getInterviewerStartDate());
-		assertEquals(5555L, visi.getManagementStartDate());
-		assertEquals(6666L, visi.getEndDate());
-
-		List<ReferentDto> refs = referentservice.findByCampaignId("CAMPID");
-		assertEquals(1, refs.size());
-		assertEquals("Bob", refs.get(0).getFirstName());
-		assertEquals("Marley", refs.get(0).getLastName());
-		assertEquals("0123456789", refs.get(0).getPhoneNumber());
-		assertEquals("PRIMARY", refs.get(0).getRole());
-
-		assertEquals(IdentificationConfiguration.IASCO, campOpt.get().getIdentificationConfiguration());
-		assertEquals(ContactAttemptConfiguration.F2F, campOpt.get().getContactAttemptConfiguration());
-		assertEquals(ContactOutcomeConfiguration.F2F, campOpt.get().getContactOutcomeConfiguration());
-		assertEquals(false, campOpt.get().getCommunicationConfiguration());
-
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 400
-	 * when an attribute is missing
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(101)
-	void testPostCampaignContextNoLabel() throws Exception {
-		CampaignContextDto campDto = new CampaignContextDto();
-		campDto.setCampaign("campId2");
-		// Campaign label unset
-
-		VisibilityContextDto visi1 = generateDumbVisibilityContextDto("OU-NORTH");
-		VisibilityContextDto visi2 = generateDumbVisibilityContextDto("OU-SOUTH");
-
-		campDto.setVisibilities(List.of(visi1, visi2));
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isBadRequest());
-
-		// Campaign should not have been created
-		Optional<Campaign> campOpt = campaignRepository.findById("campId2");
-		assertTrue(!campOpt.isPresent());
-
-	}
-
-	/**
-	 * Test that the Post endpoint
-	 * "/campaign" returns 400
-	 * when an an organizational unit does not exist
-	 * 
-	 * @throws InterruptedException
-	 */
-	@Test
-	@Order(102)
-	void testPostCampaignContextMissingOU() throws Exception {
-
-		CampaignContextDto campDto = new CampaignContextDto();
-		campDto.setCampaign("campId3");
-		// Campaign label unset
-
-		VisibilityContextDto visi1 = generateDumbVisibilityContextDto("OU-NORTH");
-		VisibilityContextDto visi2 = generateDumbVisibilityContextDto("AN-OU-THAT-DOESNT-EXIST");
-		campDto.setVisibilities(List.of(visi1, visi2));
-
-		mockMvc.perform(post(Constants.API_CAMPAIGN)
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campDto)))
-				.andExpect(status().isBadRequest());
-
-		// Campaign should not have been created
-		Optional<Campaign> campOpt = campaignRepository.findById("campId3");
-		assertTrue(!campOpt.isPresent());
 
 	}
 
@@ -2224,6 +1773,7 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(202)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteCampaign() throws Exception {
 		mockMvc.perform(delete("/api/campaign/XCLOSEDX00")
 				.with(authentication(ADMIN))
@@ -2281,6 +1831,7 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(206)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteOrganizationUnit() throws Exception {
 		// Delete all Survey Units before deleting Organization Unit
 		surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"))
@@ -2485,147 +2036,6 @@ class TestAuthKeyCloak {
 				.andExpect(status().isNotFound());
 	}
 
-	@Test
-	@Order(220)
-	void testPutCampaign() throws Exception {
-		CampaignContextDto campaignContext = new CampaignContextDto();
-		campaignContext.setCampaign("ZCLOSEDX00");
-		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
-
-		VisibilityContextDto wvcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
-		wvcd.setOrganizationalUnit("OU-WEST");
-		wvcd.setEndDate(wvcd.getEndDate() + 1);
-
-		VisibilityContextDto svcd = generateVisibilityContextDto("OU-SOUTH", "ZCLOSEDX00");
-		svcd.setOrganizationalUnit("OU-SOUTH");
-
-		VisibilityContextDto emptyVcd = new VisibilityContextDto();
-		emptyVcd.setOrganizationalUnit("OU-WEST");
-
-		VisibilityContextDto missingVcd = generateVisibilityContextDto("OU-SOUTH", "ZCLOSEDX00");
-		missingVcd.setOrganizationalUnit("OU-TEAPOT");
-
-		VisibilityContextDto invalidVcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
-		invalidVcd.setOrganizationalUnit("OU-WEST");
-		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
-
-		// path variable campaignId not found in DB
-		mockMvc.perform(put("/api/campaign/MISSING")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isNotFound());
-
-		// BAD REQUESTS
-		campaignContext.setCampaignLabel(null);
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isBadRequest());
-
-		campaignContext.setCampaignLabel("  ");
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isBadRequest());
-
-		campaignContext.setCampaignLabel("");
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isBadRequest());
-
-		campaignContext.setCampaignLabel("Everyday life and health survey 2021");
-		campaignContext.setVisibilities(List.of(emptyVcd));
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isBadRequest());
-
-		// NOT FOUND VISIBILITY
-		campaignContext.setVisibilities(List.of(missingVcd));
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isNotFound());
-
-		// CONFLICT due to visibilities
-		campaignContext.setVisibilities(List.of(invalidVcd));
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isConflict());
-
-		// 200
-		campaignContext.setVisibilities(List.of(wvcd, svcd));
-		campaignContext.setEmail("updated.email@test.com");
-		campaignContext.setContactAttemptConfiguration(ContactAttemptConfiguration.TEL);
-		campaignContext.setContactOutcomeConfiguration(ContactOutcomeConfiguration.TEL);
-		campaignContext.setIdentificationConfiguration(IdentificationConfiguration.NOIDENT);
-
-		mockMvc.perform(put("/api/campaign/ZCLOSEDX00")
-				.with(authentication(ADMIN))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(campaignContext)))
-				.andExpect(status().isOk());
-
-		assertEquals(wvcd.getEndDate(),
-				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
-		CampaignDto updatedCampaign = campaignRepository.findDtoById("ZCLOSEDX00");
-		assertEquals("updated.email@test.com", updatedCampaign.getEmail());
-		assertEquals(ContactAttemptConfiguration.TEL, updatedCampaign.getContactAttemptConfiguration());
-		assertEquals(ContactOutcomeConfiguration.TEL, updatedCampaign.getContactOutcomeConfiguration());
-		assertEquals(IdentificationConfiguration.NOIDENT, updatedCampaign.getIdentificationConfiguration());
-	}
-
-	@Test
-	@Order(221)
-	void testUpdateVisibilityByOu() throws Exception {
-		VisibilityDto visibility = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
-		visibility.setEndDate(visibility.getEndDate() + 1);
-		VisibilityDto invalidVcd = generateVisibilityContextDto("OU-WEST", "ZCLOSEDX00");
-		invalidVcd.setInterviewerStartDate(invalidVcd.getIdentificationPhaseStartDate());
-
-		String visibilityJson = asJsonString(visibility);
-		String emptyVisibilityJson = asJsonString(new VisibilityDto());
-		String invalidVisibilityJson = asJsonString(invalidVcd);
-
-		// BAD REQUEST
-		updateVisibility("ZCLOSEDX00", "OU-WEST", emptyVisibilityJson).andExpect(status().isBadRequest());
-
-		// NOT FOUND
-		updateVisibility("ZCLOSEDX00", "MISSING", visibilityJson).andExpect(status().isNotFound());
-
-		// CONFLICT
-		updateVisibility("ZCLOSEDX00", "OU-WEST", invalidVisibilityJson).andExpect(status().isConflict());
-
-		// OK
-		updateVisibility("ZCLOSEDX00", "OU-WEST", visibilityJson).andExpect(status().isOk());
-		assertEquals(visibility.getEndDate(),
-				visibilityRepository.findVisibilityByCampaignIdAndOuId("ZCLOSEDX00", "OU-WEST").get().getEndDate());
-	}
-
-	private ResultActions updateVisibility(String campaignId, String OuId, String visibility) throws Exception {
-		return mockMvc.perform(
-				put(updateVisibilityUrl(campaignId, OuId))
-						.with(authentication(LOCAL_USER))
-						.content(visibility)
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON));
-	}
-
-	private static String updateVisibilityFormat = "/api/campaign/%s/organizational-unit/%s/visibility";
-
-	private String updateVisibilityUrl(String campaignId, String OuId) {
-		return String.format(updateVisibilityFormat, campaignId, OuId);
-	}
-
 	private static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);
@@ -2678,31 +2088,6 @@ class TestAuthKeyCloak {
 				"clara.legouanec@insee.fr",
 				"06 XX XX XX XX",
 				Title.MISS);
-	}
-
-	private VisibilityContextDto generateDumbVisibilityContextDto(String ouId) {
-		VisibilityContextDto vcd = new VisibilityContextDto();
-		vcd.setOrganizationalUnit(ouId);
-		vcd.setCollectionStartDate(1111L);
-		vcd.setCollectionEndDate(2222L);
-		vcd.setIdentificationPhaseStartDate(3333L);
-		vcd.setInterviewerStartDate(4444L);
-		vcd.setManagementStartDate(5555L);
-		vcd.setEndDate(6666L);
-		return vcd;
-	}
-
-	private VisibilityContextDto generateVisibilityContextDto(String OuId, String campaignId) {
-		Visibility vis = visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, OuId).get();
-		VisibilityContextDto vcd = new VisibilityContextDto();
-		vcd.setOrganizationalUnit(vis.getOrganizationUnit().getId());
-		vcd.setCollectionEndDate(vis.getCollectionEndDate());
-		vcd.setCollectionStartDate(vis.getCollectionStartDate());
-		vcd.setEndDate(vis.getEndDate());
-		vcd.setIdentificationPhaseStartDate(vis.getIdentificationPhaseStartDate());
-		vcd.setInterviewerStartDate(vis.getInterviewerStartDate());
-		vcd.setManagementStartDate(vis.getManagementStartDate());
-		return vcd;
 	}
 
 	private UserDto generateValidUser() {

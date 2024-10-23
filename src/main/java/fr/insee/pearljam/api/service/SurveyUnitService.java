@@ -1,11 +1,14 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,13 +16,6 @@ import fr.insee.pearljam.api.domain.*;
 import org.springframework.http.HttpStatus;
 
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.SurveyUnitException;
 
 /**
  * Service for the SurveyUnit entity
@@ -31,14 +27,12 @@ public interface SurveyUnitService {
 
 	/**
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
-	 * 
-	 * @param userId
-	 * @param id
-	 * @return {@link SurveyUnitDetailDto}
-	 * @throws SurveyUnitException
-	 * @throws NotFoundException
+	 *
+	 * @param userId       user id
+	 * @param surveyUnitId survey unit id
+	 * @return {@link SurveyUnitForInterviewer}
 	 */
-	SurveyUnitDetailDto getSurveyUnitDetail(String userId, String id) throws SurveyUnitException, NotFoundException;
+	SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId);
 
 	/**
 	 * Retrieve all the SurveyUnit entity by userId
@@ -54,11 +48,11 @@ public interface SurveyUnitService {
 	 * 
 	 * @param userId
 	 * @param id
-	 * @param surveyUnitDetailDto
+	 * @param surveyUnitUpdateDto
 	 * @return {@link SurveyUnitDetailDto}
 	 */
-	SurveyUnitDetailDto updateSurveyUnitDetail(String userId, String id,
-			SurveyUnitDetailDto surveyUnitDetailDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
+	SurveyUnitDetailDto updateSurveyUnit(String userId, String id,
+										 SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
 
 	/**
 	 * @param userId
@@ -81,9 +75,12 @@ public interface SurveyUnitService {
 	 */
 	List<StateDto> getListStatesBySurveyUnitId(String suId);
 
-	public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String userId, String id);
-
-	public Optional<SurveyUnit> findById(String id);
+	/**
+	 *
+	 * @param surveyUnitId survey unit id
+	 * @return {@link SurveyUnit} the survey unit
+	 */
+	SurveyUnit getSurveyUnit(String surveyUnitId);
 
 	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
 
@@ -103,7 +100,7 @@ public interface SurveyUnitService {
 
 	boolean checkHabilitationReviewer(String userId, String id);
 
-	void delete(SurveyUnit surveyUnit);
+	void delete(String surveyUnitId);
 
 	void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit);
 

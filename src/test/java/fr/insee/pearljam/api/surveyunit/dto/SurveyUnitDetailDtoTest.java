@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestStatusDB;
@@ -29,7 +30,7 @@ class SurveyUnitDetailDtoTest {
         SampleIdentifier sampleIdentifier = new InseeSampleIdentifier(1, "ec", 2, 3, 4, 5, 6,
                 7, 8, "autre", "nograp");
         Campaign campaign = new Campaign("id", "label", null,
-                null, null, "email", true);
+                null, null, "email");
         surveyUnit = new SurveyUnit("id", true, true, address,
                 sampleIdentifier, campaign, null, null, new HashSet<>());
 
@@ -85,34 +86,38 @@ class SurveyUnitDetailDtoTest {
                 new CommunicationRequestStatusDB(4L, 123345678912L, CommunicationStatusType.CANCELLED, null)
         );
 
-        communicationRequestDBs.add(new CommunicationRequestDB(10L, "messhugahid1", CommunicationRequestType.NOTICE,
-                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                CommunicationRequestEmiter.INTERVIEWER, surveyUnit, status1));
-        communicationRequestDBs.add(new CommunicationRequestDB(11L, "messhugahid2", CommunicationRequestType.REMINDER,
-                CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                CommunicationRequestEmiter.TOOL, surveyUnit, status2));
+        CommunicationTemplateDB communicationTemplate1 = new CommunicationTemplateDB(1L, null, null, null, null);
+        CommunicationTemplateDB communicationTemplate2 = new CommunicationTemplateDB(2L, null, null, null, null);
+
+
+        communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplate1,
+                CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.INTERVIEWER, surveyUnit, status1));
+        communicationRequestDBs.add(new CommunicationRequestDB(11L, communicationTemplate2,
+                CommunicationRequestReason.REFUSAL,
+                CommunicationRequestEmitter.TOOL, surveyUnit, status2));
         surveyUnit.setCommunicationRequests(communicationRequestDBs);
 
         SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
 
         List<CommunicationRequestStatusDto> status1Expected = List.of(
-                new CommunicationRequestStatusDto(null, 1233456789L, CommunicationStatusType.INITIATED),
-                new CommunicationRequestStatusDto(2L, 123345678910L, CommunicationStatusType.FAILED)
+                new CommunicationRequestStatusDto(1233456789L, CommunicationStatusType.INITIATED),
+                new CommunicationRequestStatusDto(123345678910L, CommunicationStatusType.FAILED)
         );
 
         List<CommunicationRequestStatusDto> status2Expected = List.of(
-                new CommunicationRequestStatusDto(3L, 123345678911L, CommunicationStatusType.READY),
-                new CommunicationRequestStatusDto(4L, 123345678912L, CommunicationStatusType.CANCELLED)
+                new CommunicationRequestStatusDto(123345678911L, CommunicationStatusType.READY),
+                new CommunicationRequestStatusDto(123345678912L, CommunicationStatusType.CANCELLED)
         );
 
         assertThat(surveyUnitDetailDto.getCommunicationRequests())
                 .containsExactlyInAnyOrder(
-                        new CommunicationRequestDto(10L, "messhugahid1", CommunicationRequestType.NOTICE,
-                                CommunicationRequestReason.UNREACHABLE, CommunicationRequestMedium.EMAIL,
-                                CommunicationRequestEmiter.INTERVIEWER, status1Expected),
-                        new CommunicationRequestDto(11L, "messhugahid2", CommunicationRequestType.REMINDER,
-                                CommunicationRequestReason.REFUSAL, CommunicationRequestMedium.MAIL,
-                                CommunicationRequestEmiter.TOOL, status2Expected)
+                        new CommunicationRequestResponseDto(1L,
+                                CommunicationRequestReason.UNREACHABLE,
+                                CommunicationRequestEmitter.INTERVIEWER, status1Expected),
+                        new CommunicationRequestResponseDto(2L,
+                                CommunicationRequestReason.REFUSAL,
+                                CommunicationRequestEmitter.TOOL, status2Expected)
                 );
     }
 }

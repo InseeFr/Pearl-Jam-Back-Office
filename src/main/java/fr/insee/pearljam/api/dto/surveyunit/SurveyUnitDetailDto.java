@@ -3,10 +3,8 @@ package fr.insee.pearljam.api.dto.surveyunit;
 import java.util.Comparator;
 import java.util.List;
 
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import jakarta.validation.Valid;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
 import lombok.Data;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -15,7 +13,6 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
@@ -32,15 +29,13 @@ public class SurveyUnitDetailDto {
 	private Boolean priority;
 	private Boolean move;
 	private String campaign;
-	@Valid
 	private List<CommentDto> comments;
 	private SampleIdentifiersDto sampleIdentifiers;
 	private List<StateDto> states;
 	private List<ContactAttemptDto> contactAttempts;
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
-	@Valid
-	private List<CommunicationRequestDto> communicationRequests;
+	private List<CommunicationRequestResponseDto> communicationRequests;
 
 	public SurveyUnitDetailDto() {
 	}
@@ -56,9 +51,7 @@ public class SurveyUnitDetailDto {
 		if (surveyUnit.getSampleIdentifier() != null) {
 			this.sampleIdentifiers = new SampleIdentifiersDto(surveyUnit.getSampleIdentifier());
 		}
-		this.comments = surveyUnit.getDomainComments().stream()
-				.map(CommentDto::fromModel)
-				.toList();
+		this.comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		this.contactAttempts = surveyUnit.getContactAttempts().stream().map(ContactAttemptDto::new)
 				.toList();
 		if (surveyUnit.getContactOucome() != null) {
@@ -69,13 +62,10 @@ public class SurveyUnitDetailDto {
 				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
 				.map(StateDto::new)
 				.toList();
-		if (surveyUnit.getIdentification() != null) {
-			this.identification = IdentificationDto.fromModel(IdentificationDB.toModel(surveyUnit.getIdentification()));
-		}
+
+		this.identification = IdentificationDto.fromModel(surveyUnit.getModelIdentification());
+
 		this.move = surveyUnit.getMove();
-		this.communicationRequests = surveyUnit.getCommunicationRequests().stream()
-				.map(CommunicationRequestDB::toModel)
-				.map(CommunicationRequestDto::fromModel)
-				.toList();
+		this.communicationRequests = CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests());
 	}
 }

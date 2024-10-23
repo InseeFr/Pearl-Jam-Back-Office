@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,7 +62,7 @@ public class OrganizationUnit implements Serializable {
 	 * The visibilites of the OrganizationUnit
 	 */
 	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Visibility> visibilities;
+	private List<VisibilityDB> visibilities;
 
 	public OrganizationUnit(String id, String label, OrganizationUnitType type) {
 		super();

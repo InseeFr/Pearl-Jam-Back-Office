@@ -1,26 +1,21 @@
 package fr.insee.pearljam.api.noAuth;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import com.jayway.jsonpath.JsonPath;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.insee.pearljam.api.domain.ClosingCause;
+import fr.insee.pearljam.api.domain.ClosingCauseType;
+import fr.insee.pearljam.api.dto.message.MessageDto;
+import fr.insee.pearljam.api.repository.ClosingCauseRepository;
+import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;
-import org.json.JSONException;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,99 +23,29 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 
-import fr.insee.pearljam.api.domain.ClosingCause;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.test.web.servlet.ResultMatcher;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for no Authentication */
-@ActiveProfiles("noauth")
+@ActiveProfiles(profiles = {"noauth", "test"})
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @RequiredArgsConstructor
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(FixedDateServiceConfiguration.class)
 class TestNoAuth {
 
 	private final MessageRepository messageRepository;
 	private final ClosingCauseRepository closingCauseRepository;
 	private final MockMvc mockMvc;
-
-	private ResultMatcher expectValidManagementStartDate() {
-		return expectTimestampFromCurrentDate("$[0].managementStartDate", -4, ChronoUnit.DAYS);
-	}
-
-	private ResultMatcher expectValidInterviewerStartDate() {
-		return expectTimestampFromCurrentDate("$[0].interviewerStartDate", -3, ChronoUnit.DAYS);
-	}
-
-	private ResultMatcher expectValidIdentificationPhaseStartDate() {
-		return expectTimestampFromCurrentDate("$[0].identificationPhaseStartDate", -2, ChronoUnit.DAYS);
-	}
-
-	private ResultMatcher expectValidCollectionStartDate() {
-		return expectTimestampFromCurrentDate("$[0].collectionStartDate", -1, ChronoUnit.DAYS);
-	}
-
-	private ResultMatcher expectValidCollectionEndDate() {
-		return expectTimestampFromCurrentDate("$[0].collectionEndDate", 1, ChronoUnit.MONTHS);
-	}
-
-	private ResultMatcher expectValidEndDate() {
-		return expectTimestampFromCurrentDate("$[0].endDate", 2, ChronoUnit.MONTHS);
-	}
-
-	private ResultMatcher expectTimestampFromCurrentDate(String expression, int unitToAdd, ChronoUnit chronoUnit) {
-		return mvcResult -> {
-			String content = mvcResult.getResponse().getContentAsString();
-			long timestamp = JsonPath.read(content, expression);
-			LocalDate localDateNow = LocalDate.now();
-			Instant instant = Instant.ofEpochMilli(timestamp);
-			LocalDate dateToCheck = LocalDate.ofInstant(instant, ZoneId.systemDefault());
-			assertEquals(dateToCheck, localDateNow.plus(unitToAdd, chronoUnit));
-		};
-	}
-
-	/* CampaignController */
-
-	/**
-	 * Test that the GET endpoint "api/campaigns"
-	 * return 404
-	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
-	 * @throws ParseException
-	 */
-
-	@Test
-	void testGetCampaign() throws Exception {
-		mockMvc.perform(get("/api/campaigns")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$[0].id").value("SIMPSONS2020X00"),
-						jsonPath("$[0].label").value("Survey on the Simpsons tv show 2020"),
-						jsonPath("$[0].allocated").value(4),
-						jsonPath("$[0].toAffect").value(0),
-						jsonPath("$[0].toFollowUp").value(0),
-						jsonPath("$[0].toReview").value(3),
-						jsonPath("$[0].finalized").value(0),
-						jsonPath("$[0].toProcessInterviewer").value(0),
-						jsonPath("$[0].preference").value(true),
-						expectValidManagementStartDate(),
-						expectValidIdentificationPhaseStartDate(),
-						expectValidInterviewerStartDate(),
-						expectValidCollectionStartDate(),
-						expectValidCollectionEndDate(),
-						expectValidEndDate());
-	}
 
 	@Test
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)

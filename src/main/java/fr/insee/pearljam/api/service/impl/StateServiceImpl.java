@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -99,7 +99,7 @@ public class StateServiceImpl implements StateService {
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
 			if (organizationUnitRepository.findChildren(id).isEmpty()
-					&& visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, id).isPresent()) {
+					&& visibilityRepository.findVisibility(campaignId, id).isPresent()) {
 				StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id),
 						stateRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
 				dto.addClosingCauseCount(

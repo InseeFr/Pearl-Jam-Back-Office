@@ -2,11 +2,12 @@ package fr.insee.pearljam.api.web.exception;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import fr.insee.pearljam.domain.exception.EntityNotFoundException;
+import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,12 +25,15 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 @ControllerAdvice
 @Slf4j
-@RequiredArgsConstructor
 public class ExceptionControllerAdvice {
 
     private final ApiExceptionComponent errorComponent;
 
-    private static final String ERROR_OCCURRED_LABEL = "An error has occurred";
+    public ExceptionControllerAdvice(ErrorAttributes errorAttributes) {
+        this.errorComponent = new ApiExceptionComponent(errorAttributes);
+    }
+
+    public static final String ERROR_OCCURRED_LABEL = "An error has occurred";
     public static final String INVALID_PARAMETERS_MESSAGE = "Invalid parameters";
 
     /**
@@ -114,6 +118,36 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(EntityAlreadyExistException.class)
     public ResponseEntity<ApiError> entityAlreadyExistException(EntityAlreadyExistException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(NoOrganizationUnitException.class)
+    public ResponseEntity<ApiError> exceptions(NoOrganizationUnitException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(CommunicationTemplateNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(CommunicationTemplateNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(SurveyUnitNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(SurveyUnitNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(VisibilityNotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(VisibilityNotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(VisibilityHasInvalidDatesException.class)
+    public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(CampaignOnGoingException.class)
+    public ResponseEntity<ApiError> exceptions(CampaignOnGoingException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)

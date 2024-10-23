@@ -8,7 +8,6 @@ import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
@@ -223,11 +222,6 @@ public class SurveyUnit implements Serializable {
 		identificationDB.update(identification);
 	}
 
-	public Set<Comment> getDomainComments() {
-		return comments.stream().map(CommentDB::toModel)
-				.collect(Collectors.toSet());
-	}
-
 	/**
 	 * update a list of comments for a survey unit
 	 * @param commentsToUpdate the comment to update
@@ -249,17 +243,15 @@ public class SurveyUnit implements Serializable {
 		existingComments.addAll(commentsDBToUpdate);
 	}
 
-	/**
-	 * update a list of communication requests for a survey unit
-	 * @param communicationRequestsToUpdate the communication requests to update
-	 */
-	public void updateCommunicationRequests(List<CommunicationRequest> communicationRequestsToUpdate) {
-		Set<CommunicationRequestDB> newCommunicationsRequests = communicationRequestsToUpdate.stream()
-				.filter(newCommunicationRequest -> newCommunicationRequest.id() == null)
-				.map(newCommunicationRequest -> CommunicationRequestDB.fromModel(newCommunicationRequest, this))
-				.collect(Collectors.toSet());
+	public Set<Comment> getModelComments() {
+		return CommentDB.toModel(this.getComments());
+	}
 
-		this.getCommunicationRequests()
-				.addAll(newCommunicationsRequests);
+	public Identification getModelIdentification() {
+		return IdentificationDB.toModel(this.getIdentification());
+	}
+
+	public Set<CommunicationRequest> getModelCommunicationRequests() {
+		return CommunicationRequestDB.toModel(this.getCommunicationRequests());
 	}
 }

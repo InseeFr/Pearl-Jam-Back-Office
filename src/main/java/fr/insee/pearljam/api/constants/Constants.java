@@ -21,7 +21,7 @@ public class Constants {
 	public static final String API_SURVEYUNITS = "/api/survey-units";
 	public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
 	public static final String API_SURVEYUNITS_CLOSABLE = "/api/survey-units/closable";
-
+	public static final String API_SURVEYUNIT_ID_INTERVIEWER = "/api/interviewer/survey-unit/{id}";
 	public static final String API_SURVEYUNIT_ID = "/api/survey-unit/{id}";
 	public static final String API_SURVEYUNIT_ID_STATE = "/api/survey-unit/{id}/state/{state}";
 	public static final String API_SURVEYUNIT_ID_STATES = "/api/survey-unit/{id}/states";
@@ -54,7 +54,10 @@ public class Constants {
 	public static final String API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES = "/api/campaign/{id}/survey-units/not-attributed/contact-outcomes";
 	public static final String API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES = "/api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes";
 	public static final String API_CAMPAIGN_ID_OU_ID_VISIBILITY = "/api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility";
+	public static final String API_CAMPAIGN_ID_OU_ID_COMMUNICATION_INFORMATION = "/api/campaign/{idCampaign}/organizational-unit/{idOu}/communication-information";
 	public static final String API_CAMPAIGN_ID_VISIBILITIES = "/api/campaign/{id}/visibilities";
+	public static final String API_CAMPAIGN_ID_COMMUNICATION_TEMPLATES = "/api/campaign/{id}/communication-templates";
+	public static final String API_CAMPAIGN_ID_COMMUNICATION_INFORMATIONS = "/api/campaign/{id}/communication-informations";
 	public static final String API_CAMPAIGN_ID_REFERENTS = "/api/campaigns/{id}/referents";
 	public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
 

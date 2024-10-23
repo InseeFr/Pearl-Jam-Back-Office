@@ -1,13 +1,14 @@
 package fr.insee.pearljam.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.domain.*;
 import jakarta.validation.Valid;
@@ -29,14 +30,6 @@ import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.SurveyUnitException;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,15 +51,12 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class SurveyUnitController {
 
-	private static final String GUEST = "GUEST";
 	private final SurveyUnitService surveyUnitService;
 	private final AuthenticatedUserService authenticatedUserService;
 
-	public static final String GET_SURVEY_UNIT_WITH_ID = "{} : GET SurveyUnit with id {} resulting in {}";
-
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
-	 * 
+	 * @param surveyUnits survey units to create
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -80,8 +70,8 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is used to post the list of links between suvey-unit and
-	 * intervewer defined in request body
+	 * This method is used to post the list of links between survey-unit and
+	 * interviewer defined in request body
 	 * 
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
@@ -117,47 +107,22 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is used to get the detail of surveyUnit for current interviewer
+	 * This method is used to get the detail of survey unit for current interviewer
 	 * 
-	 * @param id the id of reporting unit
+	 * @param surveyUnitId the id of reporting unit
 	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
-	@GetMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<SurveyUnitDetailDto> getSurveyUnitById(@PathVariable(value = "id") String id) {
+	@GetMapping(path = {"/interviewer/survey-unit/{id}", "/survey-unit/{id}"})
+	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		Optional<SurveyUnit> su = surveyUnitService.findById(id);
-		if (!su.isPresent()) {
-			log.error("{} : Survey unit with id {} was not found in database", userId, id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!userId.equals(GUEST) && !surveyUnitService.findByIdAndInterviewerIdIgnoreCase(id, userId).isPresent()) {
-			log.error("Survey unit with id {} is not associated to the interviewer {}", id, userId);
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-		SurveyUnitDetailDto surveyUnit;
-		try {
-			surveyUnit = surveyUnitService.getSurveyUnitDetail(userId, id);
-		} catch (NotFoundException | SurveyUnitException e) {
-			log.error(e.getMessage());
-			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.INTERNAL_SERVER_ERROR);
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		log.info(GET_SURVEY_UNIT_WITH_ID, userId, id, HttpStatus.OK);
-
-		return new ResponseEntity<>(surveyUnit, HttpStatus.OK);
-
+		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 
 	/**
 	 * This method is used to update a specific survey unit
-	 * @param surveyUnitDetails survey unit informations to update
+	 * @param surveyUnitUpdateDto survey unit informations to update
 	 * @param id survey unit id
 	 * @return {@link SurveyUnitDetailDto}
 	 * @throws EntityNotFoundException exception thrown if entity not found
@@ -165,11 +130,11 @@ public class SurveyUnitController {
 	@Operation(summary = "Update the Survey Unit")
 	@PutMapping(path = "/survey-unit/{id}")
 	public SurveyUnitDetailDto updateSurveyUnit(
-			@Valid @NotNull @RequestBody SurveyUnitDetailDto surveyUnitDetails,
+			@Valid @NotNull @RequestBody SurveyUnitUpdateDto surveyUnitUpdateDto,
 			@PathVariable(value = "id") String id) throws EntityNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnitDetail(userId,
-				id, surveyUnitDetails);
+		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnit(userId,
+				id, surveyUnitUpdateDto);
 		log.info("SurveyUnit {} updated", id);
 		return updatedSurveyUnit;
 	}
@@ -200,12 +165,10 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is used to update the state of Survey Units listed in request
-	 * body
-	 * 
-	 * @param request
-	 * @param listSU
-	 * @param state
+	 * This method is used to update the state of a survey unit
+	 *
+	 * @param surveyUnitId survey unit id
+	 * @param state state to set
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
@@ -223,9 +186,8 @@ public class SurveyUnitController {
 	 * This method closes the survey unit {id} with the closing cause {closingCause}
 	 * Updates the closing cause if the SU is already closed
 	 * 
-	 * @param request
-	 * @param id
-	 * @param closingCause
+	 * @param surveyUnitId survey unit id
+	 * @param closingCause closing cause to set/update
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Closes a survey unit")
@@ -244,10 +206,9 @@ public class SurveyUnitController {
 	/**
 	 * This method adds or updates the closing cause of the survey unit {id}
 	 * but does not modify its state
-	 * 
-	 * @param request
-	 * @param id
-	 * @param closingCause
+	 *
+	 * @param surveyUnitId survey unit id
+	 * @param closingCause closing cause to add
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Add Closing cause")
@@ -273,9 +234,8 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to get survey units of a specific campaign
 	 * 
-	 * @param request
-	 * @param id
-	 * @param state
+	 * @param id campaign id
+	 * @param state search survey unit with this state
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
@@ -296,11 +256,14 @@ public class SurveyUnitController {
 
 	/**
 	 * This method is used to check if a user has access to an SU
+	 * @param surveyUnitId survey unit id
+	 * @param role role to check
+	 * @return {@link HabilitationDto} the habilitation object
 	 */
 	@Operation(summary = "Check habilitation")
 	@GetMapping(path = "/check-habilitation")
 	public ResponseEntity<HabilitationDto> checkHabilitation(
-			@RequestParam(value = "id") String id,
+			@RequestParam(value = "id") String surveyUnitId,
 			@RequestParam(value = "role", required = false) String role) {
 
 		String userId = authenticatedUserService.getCurrentUserId();
@@ -310,7 +273,7 @@ public class SurveyUnitController {
 		if (role == null) {
 			log.info(
 					"Check habilitation of {} without role for accessing survey-unit {} is denied. Please provide a role in request.",
-					userId, id);
+					userId, surveyUnitId);
 			return new ResponseEntity<>(resp, HttpStatus.OK);
 		}
 		if (authenticatedUserService.hasRole(AuthorityRole.ADMIN)) {
@@ -318,30 +281,29 @@ public class SurveyUnitController {
 			log.info(
 					"Check habilitation of {} as {} for accessing survey-unit {} resulted in {} : Admin habilitation override",
 					userId,
-					role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
+					role.isBlank() ? "interviewer" : role, surveyUnitId, resp.isHabilitated());
 			return new ResponseEntity<>(resp, HttpStatus.OK);
 		}
 		if (role.isBlank()) {
 			// interviewer
-			boolean checkdataBase = surveyUnitService.checkHabilitationInterviewer(userId, id);
+			boolean checkdataBase = surveyUnitService.checkHabilitationInterviewer(userId, surveyUnitId);
 			boolean checkToken = authenticatedUserService.hasRole(AuthorityRole.INTERVIEWER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		} else if (role.equals(Constants.REVIEWER)) {
 			// local or national user
-			boolean checkdataBase = surveyUnitService.checkHabilitationReviewer(userId, id);
+			boolean checkdataBase = surveyUnitService.checkHabilitationReviewer(userId, surveyUnitId);
 			boolean checkToken = authenticatedUserService.hasAnyRole(AuthorityRole.LOCAL_USER, AuthorityRole.NATIONAL_USER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		}
 		log.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
-				role.isBlank() ? "interviewer" : role, id, resp.isHabilitated());
+				role.isBlank() ? "interviewer" : role, surveyUnitId, resp.isHabilitated());
 		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	/**
 	 * This method is used to get the list of states for a specific survey unit
 	 * 
-	 * @param request
-	 * @param id
+	 * @param id survey unit it
 	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
 	 *         or NOT_FOUND
 	 */
@@ -362,8 +324,7 @@ public class SurveyUnitController {
 	/**
 	 * This method returns the list of states for a specific survey unit
 	 * 
-	 * @param request
-	 * @param id
+	 * @param request http servlet request
 	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
 	 *         or NOT_FOUND
 	 */
@@ -381,29 +342,21 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to delete a survey-unit
 	 * 
-	 * @param id the id of survey-unit
+	 * @param surveyUnitId the id of survey-unit
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")
-	public ResponseEntity<Object> deleteSurveyUnit(@PathVariable(value = "id") String id) {
+	public void deleteSurveyUnit(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to DELETE survey-unit {}", userId, id);
-
-		Optional<SurveyUnit> surveyUnitOptional = surveyUnitService.findById(id);
-		if (!surveyUnitOptional.isPresent()) {
-			log.error("DELETE survey-unit with id {} resulting in 404 because it does not exists", id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		surveyUnitService.delete(surveyUnitOptional.get());
-		log.info("DELETE survey-unit with id {} resulting in 200", id);
-		return ResponseEntity.ok().build();
+		log.info("{} try to DELETE survey-unit {}", userId, surveyUnitId);
+		surveyUnitService.delete(surveyUnitId);
+		log.info("DELETE survey-unit with id {} resulting in 200", surveyUnitId);
 	}
 
 	/**
 	 * This method returns the list of all survey-unit ids
 	 * 
-	 * @param request
 	 * @return List of {@link String}
 	 */
 	@Operation(summary = "Get survey units id")
@@ -418,7 +371,6 @@ public class SurveyUnitController {
 	/**
 	 * This method returns the list of all survey-unit ids for specified campaign
 	 * 
-	 * @param request
 	 * @param id      the id of campaign
 	 * @return List of {@link String}
 	 */

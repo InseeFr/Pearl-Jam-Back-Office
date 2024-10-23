@@ -24,7 +24,6 @@ logging:
   level:
     root: INFO
     liquibase: WARN
-
 feature:
   oidc:
     enabled: true

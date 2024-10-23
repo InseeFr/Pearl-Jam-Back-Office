@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="davdar" id="541-1">
+        <createTable tableName="communication_template">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="communication_templatePK" />
+            </column>
+            <column name="meshuggah_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="medium" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="campaign_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="communication_template"
+                baseColumnNames="campaign_id"
+                constraintName="fk_campaign"
+                referencedTableName="campaign"
+                referencedColumnNames="id"/>
+
+        <addUniqueConstraint
+                columnNames="type, medium, campaign_id"
+                constraintName="uniq_constraint_type_medium"
+                tableName="communication_template"/>
+    </changeSet>
+</databaseChangeLog>

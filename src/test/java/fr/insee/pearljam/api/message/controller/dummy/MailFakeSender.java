@@ -18,7 +18,7 @@ public class MailFakeSender implements MailSender {
     @Override
     public void sendMail(String subject, String content) throws SendMailException {
         if(throwSendMailException) {
-            throw new SendMailException();
+            throw new SendMailException("error");
         }
         isMailSent = true;
     }

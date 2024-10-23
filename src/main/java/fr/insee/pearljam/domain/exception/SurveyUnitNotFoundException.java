@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.exception;
 
-public class SurveyUnitNotFoundException extends EntityNotFoundException {
+public class SurveyUnitNotFoundException extends RuntimeException {
 
-    public static final String MESSAGE = "Survey unit not found";
+    public static final String MESSAGE = "Survey unit %s not found";
 
-    public SurveyUnitNotFoundException() {
-        super(MESSAGE);
+    public SurveyUnitNotFoundException(String id) {
+        super(String.format(MESSAGE, id));
     }
 }

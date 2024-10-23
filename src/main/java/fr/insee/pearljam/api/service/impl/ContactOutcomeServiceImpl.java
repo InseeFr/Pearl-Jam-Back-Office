@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,6 @@ import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.VisibilityRepository;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -62,7 +62,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 		}
 		for (String id : organizationUnitRepository.findAllId()) {
 			if (organizationUnitRepository.findChildren(id).isEmpty()
-					&& visibilityRepository.findVisibilityByCampaignIdAndOuId(campaignId, id).isPresent()) {
+					&& visibilityRepository.findVisibility(campaignId, id).isPresent()) {
 				stateCountList.add(new ContactOutcomeTypeCountDto(id, organizationUnitRepository.findLabel(id),
 						contactOutcomeRepository.getContactOutcomeTypeCountByCampaignAndOU(campaignId, id, dateToUse)));
 			}

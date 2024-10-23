@@ -59,8 +59,11 @@ class CommentControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"{\"value\": \"5\"}", "{\"type\": \"INTERVIEWER\"}"})
-    @DisplayName("Should return bad request when comment type or value is null")
+    @ValueSource(strings = {
+            "{\"value\": \"5\"}",
+            "{\"type\": \"INTERVIEWER\"}"
+    })
+    @DisplayName("Should return bad request when comment type or value is invalid")
     void updateComment02(String invalidComment) throws Exception {
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +108,7 @@ class CommentControllerTest {
                 .andExpectAll(status().isNotFound(),
                         jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()),
                         jsonPath("$.path").value(updatePath),
-                        jsonPath("$.message").value(SurveyUnitNotFoundException.MESSAGE),
+                        jsonPath("$.message").value(String.format(SurveyUnitNotFoundException.MESSAGE, "1")),
                         jsonPath("$.timestamp", new StructureDateMatcher()));
         assertThat(commentService.getCommentUpdated()).isNull();
     }

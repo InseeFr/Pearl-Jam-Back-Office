@@ -46,11 +46,11 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 
 	/**
 	 * This method retrieve the SurveyUnit in DB by Id and UserId
-	 * @param id
-	 * @param userId
-	 * @return SurveyUnit
+	 * @param surveyUnitId survey unit id
+	 * @param userId user id
+	 * @return the survey unit
 	 */
-	Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String id, String userId);
+	Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String surveyUnitId, String userId);
 
 	/**
 	 * This method retrieve all the Ids of the SurveyUnits in db
@@ -69,7 +69,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	
 	
 	 @Query(value="SELECT su FROM SurveyUnit su " + 
-			"WHERE EXISTS (SELECT vi FROM Visibility vi " +
+			"WHERE EXISTS (SELECT vi FROM VisibilityDB vi " +
 			"WHERE vi.campaign.id = su.campaign.id " +
 			"AND vi.organizationUnit.id = su.organizationUnit.id " +
 			"AND vi.collectionEndDate < ?1 " +
@@ -86,7 +86,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	// in campaign with expected IdentificationConfiguration
 	"AND su.campaign.identificationConfiguration = :config " +
 	// in processing phase
-	"AND EXISTS (SELECT vi FROM Visibility vi " +
+	"AND EXISTS (SELECT vi FROM VisibilityDB vi " +
 		"WHERE vi.campaign.id = su.campaign.id " +
 		"AND vi.organizationUnit.id = su.organizationUnit.id " +
 		"AND vi.collectionEndDate < :date " +

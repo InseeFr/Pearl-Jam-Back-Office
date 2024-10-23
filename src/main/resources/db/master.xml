@@ -42,4 +42,24 @@
 	<!-- Data model update : add interviewer.title with default value to 'MISTER' -->
 	<include file="changelog/530_add_interviewer_title.xml" relativeToChangelogFile="true" />
 
+	<!-- Data model update : add communication template -->
+	<include file="changelog/540_add_communication_template.xml" relativeToChangelogFile="true" />
+
+	<!-- Data model update : new implementation for communication requests -->
+	<include file="changelog/541_alter_communication_request.xml" relativeToChangelogFile="true" />
+
+	<!-- delete communication option on visibility -->
+	<include file="changelog/542_update_communication_configuration.xml" relativeToChangelogFile="true" />
+
+	<!-- add  communication informations -->
+	<include file="changelog/543_create_communication_information.xml" relativeToChangelogFile="true" />
+
+	<!-- delete addr from communication information  -->
+	<include file="changelog/544_update_communication_information.xml" relativeToChangelogFile="true" />
+
+	<!-- add use letter communication on visibility -->
+	<include file="changelog/545_add_letter_communication_visibility.xml" relativeToChangelogFile="true" />
+
+	<!-- move mail/tel to visibility  -->
+	<include file="changelog/546_update_communication_information.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

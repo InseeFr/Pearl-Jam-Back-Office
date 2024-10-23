@@ -28,6 +28,9 @@ public record IdentificationDto(
     }
 
     public static IdentificationDto fromModel(Identification identification) {
+        if(identification == null) {
+            return null;
+        }
         return new IdentificationDto(identification.identification(),
                 identification.access(),
                 identification.situation(),

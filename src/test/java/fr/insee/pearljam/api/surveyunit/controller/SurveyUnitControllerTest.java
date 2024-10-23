@@ -1,10 +1,10 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.controller.SurveyUnitController;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
@@ -16,13 +16,13 @@ import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -85,8 +85,8 @@ class SurveyUnitControllerTest {
                         .content(surveyUnitJson))
                 .andExpect(status().isOk());
 
-        SurveyUnitDetailDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitUpdated();
-        assertThat(surveyUnitDetailDto.getId()).isEqualTo("su-id");
+        SurveyUnitUpdateDto surveyUnitUpdated = surveyUnitService.getSurveyUnitUpdated();
+        assertThat(surveyUnitUpdated.id()).isEqualTo("su-id");
 
         IdentificationDto identificationExpected = new IdentificationDto(IdentificationQuestionValue.IDENTIFIED,
                 AccessQuestionValue.ACC,
@@ -94,14 +94,14 @@ class SurveyUnitControllerTest {
                 CategoryQuestionValue.OCCASIONAL,
                 OccupantQuestionValue.IDENTIFIED);
 
-        assertThat(surveyUnitDetailDto.getIdentification()).isEqualTo(identificationExpected);
+        assertThat(surveyUnitUpdated.identification()).isEqualTo(identificationExpected);
 
         CommentDto commentExpected1 = new CommentDto(CommentType.MANAGEMENT, "5");
         CommentDto commentExpected2 = new CommentDto(CommentType.INTERVIEWER, "value");
-        assertThat(surveyUnitDetailDto.getComments())
+        assertThat(surveyUnitUpdated.comments())
                 .hasSize(2)
                 .containsExactlyInAnyOrder(commentExpected1, commentExpected2);
-        assertThat(surveyUnitDetailDto.getIdentification()).isEqualTo(identificationExpected);
+        assertThat(surveyUnitUpdated.identification()).isEqualTo(identificationExpected);
     }
 
     @Test
@@ -111,7 +111,7 @@ class SurveyUnitControllerTest {
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(surveyUnitJson))
-                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updatePath, SurveyUnitNotFoundException.MESSAGE));
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, updatePath, String.format(SurveyUnitNotFoundException.MESSAGE,1)));
         assertThat(surveyUnitService.getSurveyUnitUpdated()).isNull();
     }
 
@@ -126,34 +126,21 @@ class SurveyUnitControllerTest {
         assertThat(surveyUnitService.getSurveyUnitUpdated()).isNull();
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "\"comments\": [{\"value\": \"5\"}]",
+            "\"comments\": [{\"type\": \"INTERVIEWER\"}]"
+    })
     @DisplayName("Should return bad request when comment are invalid")
-    void updateSurveyUnit04() throws Exception {
-        List<String> invalidComments = List.of(
-                """
-                "comments": [
-                    {
-                        "type": "MANAGEMENT"
-                    }
-                ]""",
-                """
-                "comments": [
-                    {
-                        "value": "value"
-                    }
-                ]"""
-        );
-
-        for(String invalidComment : invalidComments) {
-            surveyUnitJson = String.format(surveyUnitTemplate, invalidComment, identification);
-            System.out.println(surveyUnitJson);
-            mockMvc.perform(put(updatePath)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(surveyUnitJson))
-                    .andExpect(
-                            MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE)
-                    );
-            assertThat(surveyUnitService.getSurveyUnitUpdated()).isNull();
-        }
+    void updateSurveyUnit04(String invalidComment) throws Exception {
+         surveyUnitJson = String.format(surveyUnitTemplate, invalidComment, identification);
+        System.out.println(surveyUnitJson);
+        mockMvc.perform(put(updatePath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(surveyUnitJson))
+                .andExpect(
+                        MockMvcTestUtils.apiErrorMatches(HttpStatus.BAD_REQUEST, updatePath, ExceptionControllerAdvice.INVALID_PARAMETERS_MESSAGE)
+                );
+        assertThat(surveyUnitService.getSurveyUnitUpdated()).isNull();
     }
 }

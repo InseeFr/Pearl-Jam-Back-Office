@@ -2,8 +2,9 @@ package fr.insee.pearljam.api.domain;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,9 +60,6 @@ public class Campaign implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 
-	@Column
-	private Boolean communicationConfiguration;
-
 	@Column(length = 255)
 	private String email;
 
@@ -69,14 +67,16 @@ public class Campaign implements Serializable {
 	 * The reference to visibility table
 	 */
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Visibility> visibilities;
+	private List<VisibilityDB> visibilities;
 
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Referent> referents;
 
+	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CommunicationTemplateDB> communicationTemplates;
+
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email,
-			Boolean communicationConfiguration) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -84,7 +84,5 @@ public class Campaign implements Serializable {
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.identificationConfiguration = identConfig;
 		this.email = email;
-		this.communicationConfiguration = Optional.ofNullable(communicationConfiguration).orElse(false);
 	}
-
 }
