@@ -1,44 +1,80 @@
 {
-  "extends": ["config:best-practices", ":semanticCommits", ":disableRateLimiting"],
-  "baseBranches": ["develop", "main"],
+  "extends": [
+    "config:best-practices",
+    ":semanticCommits",
+    ":disableRateLimiting"
+  ],
+  "baseBranches": [
+    "develop",
+    "main"
+  ],
   "packageRules": [
     {
       "enabled": false,
-      "matchPackagePatterns": ["*"],
-      "matchBaseBranches": ["main"]
+      "matchBaseBranches": [
+        "main"
+      ],
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
-      "matchPackagePatterns": ["*"],
-      "matchBaseBranches": ["develop"],
-      "labels": ["dependencies"],
+      "matchBaseBranches": [
+        "develop"
+      ],
+      "labels": [
+        "dependencies"
+      ],
       "bumpVersion": "patch",
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "groupName": "spring",
       "groupSlug": "spring",
-      "matchPackagePatterns": ["org.springframework.*"],
-      "matchBaseBranches": ["develop"],
+      "matchBaseBranches": [
+        "develop"
+      ],
       "bumpVersion": "minor",
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "matchPackageNames": [
+        "/org.springframework.*/"
+      ]
     },
     {
       "groupName": "all minor dependencies",
       "groupSlug": "all-minor-patch",
-      "matchPackagePatterns": ["*"],
-      "matchBaseBranches": ["develop"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchBaseBranches": [
+        "develop"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "bumpVersion": "patch",
-      "dependencyDashboardApproval": false
+      "dependencyDashboardApproval": false,
+      "matchPackageNames": [
+        "*"
+      ]
     }
   ],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "baseBranches": ["main"],
-    "addLabels": ["security"],
+    "baseBranches": [
+      "main"
+    ],
+    "addLabels": [
+      "security"
+    ],
     "bumpVersion": "patch",
-    "schedule": ["before 5:00am"]
+    "schedule": [
+      "before 5:00am"
+    ]
   },
-  "schedule": ["every weekend"],
+  "schedule": [
+    "every weekend"
+  ],
   "timezone": "Europe/Paris"
 }
