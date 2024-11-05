@@ -44,25 +44,6 @@ public class SurveyUnitCampaignDto {
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
 
-	public SurveyUnitCampaignDto() {
-		super();
-	}
-
-	public SurveyUnitCampaignDto(String id, String displayName, Integer ssech, String location, String city, Long finalizationDate,
-			Boolean reading, Boolean viewed, InterviewerDto interviewer) {
-		super();
-		this.id = id;
-		this.displayName = displayName;
-		this.ssech = ssech;
-		this.location = location;
-		this.city = city;
-		this.finalizationDate = finalizationDate;
-		this.interviewer = interviewer;
-		this.reading = reading;
-		this.viewed = viewed;
-
-	}
-
 	public SurveyUnitCampaignDto(SurveyUnit su) {
 		super();
 
