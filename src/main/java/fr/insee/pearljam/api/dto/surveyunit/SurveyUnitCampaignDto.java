@@ -26,6 +26,7 @@ import lombok.Setter;
 @Setter
 public class SurveyUnitCampaignDto {
 	private String id;
+	private String displayName;
 	private Integer ssech;
 	private String location;
 	private String city;
@@ -43,28 +44,11 @@ public class SurveyUnitCampaignDto {
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
 
-	public SurveyUnitCampaignDto() {
-		super();
-	}
-
-	public SurveyUnitCampaignDto(String id, Integer ssech, String location, String city, Long finalizationDate,
-			Boolean reading, Boolean viewed, InterviewerDto interviewer) {
-		super();
-		this.id = id;
-		this.ssech = ssech;
-		this.location = location;
-		this.city = city;
-		this.finalizationDate = finalizationDate;
-		this.interviewer = interviewer;
-		this.reading = reading;
-		this.viewed = viewed;
-
-	}
-
 	public SurveyUnitCampaignDto(SurveyUnit su) {
 		super();
 
 		this.id = su.getId();
+		this.displayName = su.getDisplayName();
 		this.reading = false;
 		this.viewed = su.getViewed();
 		if (su.getSampleIdentifier() instanceof InseeSampleIdentifier) {

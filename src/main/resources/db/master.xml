@@ -62,4 +62,7 @@
 
 	<!-- move mail/tel to visibility  -->
 	<include file="changelog/546_update_communication_information.xml" relativeToChangelogFile="true" />
+
+	<!-- add survey-unit business id  -->
+	<include file="changelog/550_add_business_id.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
