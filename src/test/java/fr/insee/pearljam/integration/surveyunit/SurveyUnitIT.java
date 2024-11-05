@@ -49,7 +49,8 @@ class SurveyUnitIT {
     private DateService dateService;
 
     @Test
-    void testGetAllSurveyUnits() throws Exception {
+    @DisplayName("Should return survey units associated to the interviewer")
+    void testGetSurveyUnits() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/survey-units")
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,6 +128,7 @@ class SurveyUnitIT {
         String expectedJson = """
         {
            "id":"11",
+           "displayName":"business-id-11",
            "persons":[
               {
                  "id":1,
@@ -638,5 +640,146 @@ class SurveyUnitIT {
                         .content(updateJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Should return all survey-units for a campaign")
+    void testGetAllSurveyUnitsByCampaign() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units")
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        String expectedResult = """
+        [
+           {
+              "id":"12",
+              "displayName":"business-id-12",
+              "ssech":1,
+              "location":"90000",
+              "city":"Belfort",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "state":"TBR",
+              "reading":true,
+              "viewed":false,
+              "comments":[],
+              "interviewer":{
+                 "id":"INTW1",
+                 "interviewerFirstName":"Margie",
+                 "interviewerLastName":"Lucas"
+              }
+           },
+           {
+              "id":"13",
+              "displayName":"business-id-13",
+              "ssech":2,
+              "location":"32230",
+              "city":"Marciac",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "state":"TBR",
+              "reading":true,
+              "viewed":false,
+              "comments":[
+                 {
+                    "type":"INTERVIEWER",
+                    "value":"un commentaire"
+                 }
+              ],
+              "interviewer":{
+                 "id":"INTW2",
+                 "interviewerFirstName":"Carlton",
+                 "interviewerLastName":"Campbell"
+              }
+           },
+           {
+              "id":"24",
+              "displayName":"business-id-24",
+              "ssech":1,
+              "location":"35000",
+              "city":"Rennes",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "state":"TBR",
+              "reading":true,
+              "viewed":false,
+              "contactOutcome":{
+                 "date":1590504478334,
+                 "type":"DUK",
+                 "totalNumberOfContactAttempts":null
+              },
+              "comments":[]
+           },
+           {
+              "id":"14",
+              "displayName":"business-id-14",
+              "ssech":3,
+              "location":"44190",
+              "city":"Clisson",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "state":"TBR",
+              "reading":true,
+              "viewed":false,
+              "comments":[],
+              "interviewer":{
+                 "id":"INTW3",
+                 "interviewerFirstName":"Gerald",
+                 "interviewerLastName":"Edwards"
+              }
+           },
+           {
+              "id":"11",
+              "displayName":"business-id-11",
+              "ssech":1,
+              "location":"29270",
+              "city":"Carhaix",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "closingCause":"NPI",
+              "state":"VIN",
+              "reading":true,
+              "viewed":false,
+              "comments":[],
+              "interviewer":{
+                 "id":"INTW1",
+                 "interviewerFirstName":"Margie",
+                 "interviewerLastName":"Lucas"
+              }
+           }
+        ]
+        """;
+        JSONAssert.assertEquals(expectedResult, contentResult, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    @DisplayName("Should return survey units for a campaign filtered by state")
+    void testGetSurveyUnitsByCampaign02() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units?state=VIN")
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        String expectedResult = """
+        [
+           {
+              "id":"11",
+              "displayName":"business-id-11",
+              "ssech":1,
+              "location":"29270",
+              "city":"Carhaix",
+              "campaign":"Survey on the Simpsons tv show 2020",
+              "closingCause":"NPI",
+              "state":"VIN",
+              "reading":true,
+              "viewed":false,
+              "comments":[],
+              "interviewer":{
+                 "id":"INTW1",
+                 "interviewerFirstName":"Margie",
+                 "interviewerLastName":"Lucas"
+              }
+           }
+        ]
+        """;
+        JSONAssert.assertEquals(expectedResult, contentResult, JSONCompareMode.NON_EXTENSIBLE);
     }
 }

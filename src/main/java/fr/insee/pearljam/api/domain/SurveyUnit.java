@@ -70,6 +70,12 @@ public class SurveyUnit implements Serializable {
 	private Boolean move = false;
 
 	/**
+	 * display name (business id)
+	 */
+	@Column
+	private String displayName;
+
+	/**
 	 * The address of SurveyUnit
 	 */
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -137,20 +143,13 @@ public class SurveyUnit implements Serializable {
 		this.persons = persons;
 	}
 
-	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
-			Campaign campaign, Interviewer interviewer) {
-		super();
-		this.id = id;
-		this.priority = priority;
-		this.viewed = viewed;
-		this.address = address;
-		this.sampleIdentifier = sampleIdentifier;
-		this.campaign = campaign;
-		this.interviewer = interviewer;
-	}
-
 	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign) {
 		this.id = su.getId();
+		this.displayName = su.getDisplayName();
+		//TODO: delete this test when displayName becomes mandatory in creation endpoint
+		if(this.displayName == null) {
+			this.displayName = this.id;
+		}
 		this.priority = su.getPriority();
 		this.viewed = false;
 		this.address = new InseeAddress(su.getAddress());
