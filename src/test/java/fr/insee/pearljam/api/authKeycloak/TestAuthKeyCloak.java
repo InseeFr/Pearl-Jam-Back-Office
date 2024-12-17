@@ -18,7 +18,6 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
@@ -100,9 +99,9 @@ class TestAuthKeyCloak {
 
 	private MockRestServiceServer mockServer;
 
-	static Authentication LOCAL_USER = AuthenticatedUserTestHelper.AUTH_LOCAL_USER;
-	static Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
-	static Authentication ADMIN = AuthenticatedUserTestHelper.AUTH_ADMIN;
+	private static final Authentication LOCAL_USER = AuthenticatedUserTestHelper.AUTH_LOCAL_USER;
+	private static final Authentication INTERVIEWER = AuthenticatedUserTestHelper.AUTH_INTERVIEWER;
+	private static final Authentication ADMIN = AuthenticatedUserTestHelper.AUTH_ADMIN;
 
 	/**
 	 * This method set up the dataBase content
@@ -155,7 +154,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/user"
 	 * return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(1)
@@ -233,9 +232,6 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/user"
 	 * return null
 	 * 
-	 * @throws InterruptedException
-	 * @throws NotFoundException
-	 * @throws JSONException
 	 */
 	@Test
 	@Order(2)
@@ -259,7 +255,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaigns"
 	 * return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(3)
@@ -298,7 +294,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(4)
@@ -318,7 +314,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
 	 * return 404 when campaign Id is false
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(5)
@@ -333,7 +329,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(6)
@@ -377,7 +373,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
 
 	}
 
@@ -385,7 +381,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(7)
@@ -405,7 +401,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPA, closingCauses.get(0).getType());
+		assertEquals(ClosingCauseType.NPA, closingCauses.getFirst().getType());
 
 	}
 
@@ -438,7 +434,7 @@ class TestAuthKeyCloak {
 	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(8)
@@ -473,7 +469,7 @@ class TestAuthKeyCloak {
 	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when campaign Id is false
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(9)
@@ -489,8 +485,8 @@ class TestAuthKeyCloak {
 	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when interviewer Id is false
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws InterruptedException ie
+	 * @throws JSONException jsone
 	 */
 	@Test
 	@Order(10)
@@ -508,8 +504,8 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 404 when survey-unit is false
 	 *
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws InterruptedException ie
+	 * @throws JSONException jsone
 	 */
 	@Test
 	@Order(13)
@@ -524,7 +520,7 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/survey-unit/{id}/state/{state}"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(15)
@@ -542,7 +538,7 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/survey-unit/{id}"
 	 * return 400 with unknown state
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(16)
@@ -557,7 +553,7 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/survey-unit/{id}"
 	 * return 403 when not allowed to pass to this state
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(17)
@@ -572,7 +568,7 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/preferences"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(18)
@@ -589,7 +585,7 @@ class TestAuthKeyCloak {
 	 * Test that the PUT endpoint "api/preferences"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(19)
@@ -606,7 +602,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint
 	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(19)
@@ -627,7 +623,7 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(20)
@@ -643,7 +639,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(20)
@@ -672,7 +668,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/campaign/survey-units/contact-outcomes[?date={date}]" return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(20)
@@ -701,7 +697,7 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(21)
@@ -715,7 +711,7 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(22)
@@ -730,8 +726,8 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws InterruptedException ie
+	 * @throws JSONException jsone
 	 */
 	@Test
 	@Order(23)
@@ -745,7 +741,7 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the POST endpoint "api/message" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(34)
@@ -762,14 +758,14 @@ class TestAuthKeyCloak {
 
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
-		assertEquals("TEST", messages.get(0).getText());
+		assertEquals("TEST", messages.getFirst().getText());
 
 	}
 
 	/**
 	 * Test that the POST endpoint "api/message" return 400 when bad format
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(35)
@@ -785,7 +781,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint
 	 * "api/messages/{id}" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(36)
@@ -803,7 +799,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint
 	 * "api/messages/{id}" return empty body with a wrong id
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(37)
@@ -820,12 +816,12 @@ class TestAuthKeyCloak {
 	 * Test that the put endpoint "api/message/{id}/interviewer/{idep}/read"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(38)
 	void testPutMessageAsRead() throws Exception {
-		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").getFirst();
 		mockMvc.perform(put("/api/message/" + messageId + "/interviewer/INTW1/read")
 				.with(authentication(INTERVIEWER))
 				.contentType(MediaType.APPLICATION_JSON))
@@ -837,12 +833,12 @@ class TestAuthKeyCloak {
 	 * Test that the put endpoint "api/message/{id}/interviewer/{idep}/delete"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(39)
 	void testPutMessageAsDelete() throws Exception {
-		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").getFirst();
 
 		String url = String.format("/api/message/%d/interviewer/INTW1/delete", messageId);
 
@@ -852,19 +848,19 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		Optional<Message> message = messageRepository.findById(messageId);
-		assertEquals(MessageStatusType.DEL, message.get().getMessageStatus().get(0).getStatus());
+		assertEquals(MessageStatusType.DEL, message.get().getMessageStatus().getFirst().getStatus());
 	}
 
 	/**
 	 * Test that the PUT endpoint
 	 * "/message/{id}/interviewer/{idep}/read" return 404 with a wrong Id
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(40)
 	void testPutMessageAsReadWrongId() throws Exception {
-		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").get(0);
+		Long messageId = messageRepository.getMessageIdsByInterviewer("INTW1").getFirst();
 		String url = String.format("/api/message/%d/interviewer/Test/read", messageId);
 
 		mockMvc.perform(put(url)
@@ -878,7 +874,7 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint
 	 * "/message-history" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(41)
@@ -895,7 +891,7 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/verify-name" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(42)
@@ -914,7 +910,7 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the POST endpoint "api/message" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(43)
@@ -934,7 +930,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/interviewers" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(44)
@@ -955,7 +951,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/interviewer/{id}/campaigns" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(45)
@@ -976,7 +972,7 @@ class TestAuthKeyCloak {
 	 * "/interviewer/{id}/campaigns" return 404
 	 * when interviewer not exist
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(46)
@@ -991,7 +987,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/survey-units/closable" return 200
 	 * 
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	@Test
 	@Order(47)
@@ -1051,7 +1047,7 @@ class TestAuthKeyCloak {
 	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(48)
@@ -1080,7 +1076,7 @@ class TestAuthKeyCloak {
 	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
 	 * return 404
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(49)
@@ -1099,7 +1095,7 @@ class TestAuthKeyCloak {
 	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
 	 * return 404
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(50)
@@ -1117,7 +1113,7 @@ class TestAuthKeyCloak {
 	 * Test that the Get endpoint
 	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 404
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(52)
@@ -1135,7 +1131,7 @@ class TestAuthKeyCloak {
 	 * Test that the Put endpoint
 	 * "/survey-unit/{id}/comment" return 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(54)
@@ -1163,7 +1159,7 @@ class TestAuthKeyCloak {
 	 * "/survey-unit/{id}/comment" return 404
 	 * when id not exist
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(55)
@@ -1182,7 +1178,7 @@ class TestAuthKeyCloak {
 	 * Test that the Put endpoint
 	 * "/survey-unit/{id}/viewed" return 200 and viewed attribut set to true
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(56)
@@ -1201,7 +1197,7 @@ class TestAuthKeyCloak {
 	 * "/survey-unit/{id}/viewed" return 404
 	 * when id not exist
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(57)
@@ -1216,8 +1212,8 @@ class TestAuthKeyCloak {
 	 * Test that the GET endpoint "api/campaigns"
 	 * return 200
 	 * 
-	 * @throws InterruptedException
-	 * @throws JSONException
+	 * @throws InterruptedException ie
+	 * @throws JSONException jsone
 	 */
 	@Test
 	@Order(58)
@@ -1237,7 +1233,7 @@ class TestAuthKeyCloak {
 	 * Test that the Post endpoint
 	 * "/organization-unit/context" returns 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(103)
@@ -1298,7 +1294,7 @@ class TestAuthKeyCloak {
 	 * "/organization-unit/context" returns 400
 	 * when there is a duplicate user
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(104)
@@ -1333,7 +1329,7 @@ class TestAuthKeyCloak {
 	 * "/organization-unit/context" returns 400
 	 * when a child organization unit does not exist
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(105)
@@ -1367,7 +1363,7 @@ class TestAuthKeyCloak {
 	 * Test that the Post endpoint
 	 * "api/interviewers" returns 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(106)
@@ -1406,7 +1402,7 @@ class TestAuthKeyCloak {
 	 * "api/interviewers" returns 400
 	 * when an email is missing
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(107)
@@ -1433,7 +1429,7 @@ class TestAuthKeyCloak {
 	 * "api/interviewers" returns 400
 	 * when an iterviewer id is present twice
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(108)
@@ -1458,7 +1454,7 @@ class TestAuthKeyCloak {
 	 * "api/interviewers" returns 200
 	 * and provide default title MISTER if no title provided
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(109)
@@ -1483,9 +1479,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 200
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(111)
@@ -1503,9 +1499,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 400 when id dupliate in DB
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(112)
@@ -1521,9 +1517,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 400 when id dupliate in body
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(113)
@@ -1541,9 +1537,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 400 when OrganizationUnitId does not exist
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(114)
@@ -1563,9 +1559,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 400 when campaignId does not exist
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(115)
@@ -1585,9 +1581,9 @@ class TestAuthKeyCloak {
 	 * Test that the POST endpoint
 	 * "/survey-units returns 400 when surveyUnit body is not valid
 	 * 
-	 * @throws JsonProcessingException
-	 * @throws JSONException
-	 * @throws InterruptedException
+	 * @throws JsonProcessingException jpe
+	 * @throws JSONException jsone
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(117)
@@ -1624,7 +1620,7 @@ class TestAuthKeyCloak {
 	 * Test that the Post endpoint
 	 * "/survey-units/interviewers" returns 200
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(118)
@@ -1662,7 +1658,7 @@ class TestAuthKeyCloak {
 	 * "/survey-units/interviewers" returns 400
 	 * when an iterviewer is not present
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(119)
@@ -1697,9 +1693,9 @@ class TestAuthKeyCloak {
 	 * Test that the Post endpoint
 	 * "/orgaization-unit/id/users" returns 200
 	 * 
-	 * @throws JSONException
-	 * @throws JsonProcessingException
-	 * @throws InterruptedException
+	 * @throws JSONException jsone
+	 * @throws JsonProcessingException jpe
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(120)
@@ -1726,9 +1722,9 @@ class TestAuthKeyCloak {
 	 * Test that the Post endpoint
 	 * "/orgaization-unit/id/users" returns 200
 	 * 
-	 * @throws JSONException
-	 * @throws JsonProcessingException
-	 * @throws InterruptedException
+	 * @throws JSONException jsone
+	 * @throws JsonProcessingException jpe
+	 * @throws InterruptedException ie
 	 */
 	@Test
 	@Order(121)
@@ -1835,7 +1831,7 @@ class TestAuthKeyCloak {
 	void testDeleteOrganizationUnit() throws Exception {
 		// Delete all Survey Units before deleting Organization Unit
 		surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"))
-				.forEach(su -> surveyUnitRepository.delete(su));
+				.forEach(surveyUnitRepository::delete);
 
 		// Delete all Users before deleting Organization Unit
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")

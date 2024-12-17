@@ -33,7 +33,7 @@ class CampaignServiceImplTest {
     private CampaignFakeRepository campaignRepository;
     private VisibilityFakeService visibilityService;
     private CampaignServiceImpl campaignService;
-    private CurrentDateService dateService = new CurrentDateService();
+    private final CurrentDateService dateService = new CurrentDateService();
     private final OrganizationUnit existingOrganizationUnit = new OrganizationUnit("OU-NORTH", "label-ou", OrganizationUnitType.LOCAL);
     private final Campaign existingCampaign =  new Campaign(
             "CAMPAIGN-ID",
