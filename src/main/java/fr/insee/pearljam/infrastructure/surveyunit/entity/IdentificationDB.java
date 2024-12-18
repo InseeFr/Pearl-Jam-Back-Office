@@ -48,6 +48,27 @@ public class IdentificationDB implements Serializable {
     @Enumerated(EnumType.STRING)
     private OccupantQuestionValue occupant;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    IndividualStatusQuestionValue individualStatus;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    InterviewerCanProcessQuestionValue interviewerCanProcess;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    NumberOfRespondentsQuestionValue numberOfRespondents;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    PresentInPreviousHomeQuestionValue presentInPreviousHome;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    HouseholdCompositionQuestionValue householdComposition;
+
+
     /**
      * The SurveyUnit associated to Identification
      */
@@ -62,16 +83,22 @@ public class IdentificationDB implements Serializable {
             this.situation = identification.situation();
             this.category = identification.category();
             this.occupant = identification.occupant();
+            this.individualStatus = identification.individualStatus();
+            this.interviewerCanProcess = identification.interviewerCanProcess();
+            this.numberOfRespondents = identification.numberOfRespondents();
+            this.presentInPreviousHome = identification.presentInPreviousHome();
+            this.householdComposition = identification.householdComposition();
         }
     }
 
     /**
      * return model of the db entity
+     *
      * @param identificationDB identification DB entity
      * @return the model object of the db entity
      */
     public static Identification toModel(IdentificationDB identificationDB) {
-        if(identificationDB == null) {
+        if (identificationDB == null) {
             return null;
         }
         return new Identification(
@@ -79,12 +106,19 @@ public class IdentificationDB implements Serializable {
                 identificationDB.getAccess(),
                 identificationDB.getSituation(),
                 identificationDB.getCategory(),
-                identificationDB.getOccupant());
+                identificationDB.getOccupant(),
+                identificationDB.getIndividualStatus(),
+                identificationDB.getInterviewerCanProcess(),
+                identificationDB.getNumberOfRespondents(),
+                identificationDB.getPresentInPreviousHome(),
+                identificationDB.getHouseholdComposition()
+        );
     }
 
 
     /**
      * update the db entity from the model object
+     *
      * @param identification model object
      */
     public void update(Identification identification) {
@@ -97,5 +131,10 @@ public class IdentificationDB implements Serializable {
         this.setSituation(identification.situation());
         this.setCategory(identification.category());
         this.setOccupant(identification.occupant());
+        this.setIndividualStatus(identification.individualStatus());
+        this.setInterviewerCanProcess(identification.interviewerCanProcess());
+        this.setNumberOfRespondents(identification.numberOfRespondents());
+        this.setPresentInPreviousHome(identification.presentInPreviousHome());
+        this.setHouseholdComposition(identification.householdComposition());
     }
 }

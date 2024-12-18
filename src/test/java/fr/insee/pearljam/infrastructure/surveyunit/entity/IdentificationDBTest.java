@@ -25,7 +25,7 @@ class IdentificationDBTest {
                 AccessQuestionValue.ACC,
                 SituationQuestionValue.ABSORBED,
                 CategoryQuestionValue.SECONDARY,
-                OccupantQuestionValue.IDENTIFIED,
+                OccupantQuestionValue.IDENTIFIED, null, null, null, null, null,
                 surveyUnitDB);
     }
 
@@ -36,7 +36,7 @@ class IdentificationDBTest {
                 AccessQuestionValue.NACC,
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
-                OccupantQuestionValue.UNIDENTIFIED);
+                OccupantQuestionValue.UNIDENTIFIED, null, null, null, null, null);
         identificationDB.update(identification);
         assertThat(identificationDB.getId()).isEqualTo(identificationId);
         assertThat(identificationDB.getIdentification()).isEqualTo(identification.identification());

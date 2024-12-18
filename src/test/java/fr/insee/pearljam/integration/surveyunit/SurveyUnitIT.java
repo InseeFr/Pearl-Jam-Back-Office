@@ -4,9 +4,9 @@ import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
-import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import org.json.JSONException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,8 +113,8 @@ class SurveyUnitIT {
      * Test that the GET endpoint "api/survey-unit/{id}"
      * return 200.
      *
-     * @throws InterruptedException
-     * @throws JSONException
+     * @throws InterruptedException ie
+     * @throws JSONException jse
      */
     @Test
     void testGetSurveyUnitDetail() throws Exception {
@@ -236,7 +236,12 @@ class SurveyUnitIT {
               "access":"ACC",
               "situation":"ORDINARY",
               "category":"PRIMARY",
-              "occupant":"IDENTIFIED"
+                      "occupant":"IDENTIFIED",
+                      "individual_status":"SAMEADDRESS",
+                      "interviewer_can_process":"YES",
+                      "number_of_respondents":"MANY",
+                      "present_in_previous_home":"ATLEASTONE",
+                      "household_composition":"SAMECOMPO"
            },
            "communicationTemplates":[
               {
@@ -294,7 +299,7 @@ class SurveyUnitIT {
      * Test that the PUT endpoint "api/survey-unit/{id}"
      * return 200
      *
-     * @throws Exception
+     * @throws Exception e
      */
     @Test
     @Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)

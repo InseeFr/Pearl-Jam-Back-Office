@@ -1,17 +1,20 @@
 package fr.insee.pearljam.api.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
+import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.exception.BadRequestException;
+import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
+import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
@@ -21,32 +24,19 @@ import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateServ
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
-import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.repository.*;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.insee.pearljam.api.bussinessrules.BussinessRules;
-import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
-import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.exception.BadRequestException;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.service.UtilsService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author scorcaud
@@ -303,7 +293,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Transactional
 	public HttpStatus updateSurveyUnitViewed(String userId, String suId) {
 		Optional<SurveyUnit> surveyUnitOpt = surveyUnitRepository.findById(suId);
-		if (!surveyUnitOpt.isPresent()) {
+		if (surveyUnitOpt.isEmpty()) {
 			log.error(SU_ID_NOT_FOUND_FOR_INTERVIEWER, suId, userId);
 			return HttpStatus.NOT_FOUND;
 		}
@@ -367,7 +357,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
-			IdentificationState identificationResult = IdentificationState.getState(su.getModelIdentification());
+					IdentificationState identificationResult =
+							IdentificationState.getState(su.getModelIdentification(),
+									sudto.getIdentificationConfiguration());
 			sudto.setIdentificationState(identificationResult);
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
@@ -493,7 +485,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	public List<StateDto> getListStatesBySurveyUnitId(String suId) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(suId);
-		if (!su.isPresent()) {
+		if (su.isEmpty()) {
 			log.error("SU {} not found in database", suId);
 			return List.of();
 		}

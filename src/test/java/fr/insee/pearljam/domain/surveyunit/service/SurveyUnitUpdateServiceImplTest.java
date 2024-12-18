@@ -1,17 +1,26 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.OrganizationUnitType;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
-import fr.insee.pearljam.api.surveyunit.dto.*;
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
-import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
+import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
@@ -220,20 +229,20 @@ class SurveyUnitUpdateServiceImplTest {
     @Test
     @DisplayName("Should update identification")
     void testUpdateIdentification01() {
-        IdentificationDB identificationDB = new IdentificationDB(2L,
-                IdentificationQuestionValue.IDENTIFIED,
-                AccessQuestionValue.ACC,
-                SituationQuestionValue.ORDINARY,
-                CategoryQuestionValue.SECONDARY,
-                OccupantQuestionValue.IDENTIFIED,
-                surveyUnit);
+        IdentificationDB identificationDB = createIdentificationDB();
         surveyUnit.setIdentification(identificationDB);
 
         IdentificationDto identification = new IdentificationDto(IdentificationQuestionValue.UNIDENTIFIED,
                 AccessQuestionValue.NACC,
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
-                OccupantQuestionValue.UNIDENTIFIED);
+                OccupantQuestionValue.UNIDENTIFIED,
+                IndividualStatusQuestionValue.OTHERADDRESS,
+                InterviewerCanProcessQuestionValue.NO,
+                NumberOfRespondentsQuestionValue.MANY,
+                PresentInPreviousHomeQuestionValue.NONE,
+                HouseholdCompositionQuestionValue.OTHERCOMPO
+        );
         surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
@@ -244,19 +253,18 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(identificationResult.getSituation()).isEqualTo(SituationQuestionValue.NOORDINARY);
         assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
         assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
+        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHERADDRESS);
+        assertThat(identificationResult.getInterviewerCanProcess()).isEqualTo(InterviewerCanProcessQuestionValue.NO);
+        assertThat(identificationResult.getNumberOfRespondents()).isEqualTo(NumberOfRespondentsQuestionValue.MANY);
+        assertThat(identificationResult.getPresentInPreviousHome()).isEqualTo(PresentInPreviousHomeQuestionValue.NONE);
+        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHERCOMPO);
         assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
     }
 
     @Test
     @DisplayName("Should not update identification entity when identification model is null")
     void testUpdateIdentification02() {
-        IdentificationDB identificationDB = new IdentificationDB(2L,
-                IdentificationQuestionValue.IDENTIFIED,
-                AccessQuestionValue.ACC,
-                SituationQuestionValue.ABSORBED,
-                CategoryQuestionValue.SECONDARY,
-                OccupantQuestionValue.IDENTIFIED,
-                surveyUnit);
+        IdentificationDB identificationDB = createIdentificationDB();
         surveyUnit.setIdentification(identificationDB);
         surveyUnitDto = createSurveyUnitDto(null, null, null);
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
@@ -271,7 +279,12 @@ class SurveyUnitUpdateServiceImplTest {
                 AccessQuestionValue.NACC,
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
-                OccupantQuestionValue.UNIDENTIFIED);
+                OccupantQuestionValue.UNIDENTIFIED,
+                IndividualStatusQuestionValue.OTHERADDRESS,
+                InterviewerCanProcessQuestionValue.NO,
+                NumberOfRespondentsQuestionValue.MANY,
+                PresentInPreviousHomeQuestionValue.NONE,
+                HouseholdCompositionQuestionValue.OTHERCOMPO);
         surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
@@ -284,10 +297,30 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
         assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
         assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
+        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHERADDRESS);
+        assertThat(identificationResult.getInterviewerCanProcess()).isEqualTo(InterviewerCanProcessQuestionValue.NO);
+        assertThat(identificationResult.getNumberOfRespondents()).isEqualTo(NumberOfRespondentsQuestionValue.MANY);
+        assertThat(identificationResult.getPresentInPreviousHome()).isEqualTo(PresentInPreviousHomeQuestionValue.NONE);
+        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHERCOMPO);
     }
 
     private SurveyUnitUpdateDto createSurveyUnitDto(IdentificationDto identification, List<CommentDto> comments, List<CommunicationRequestCreateDto> communicationRequests) {
         return new SurveyUnitUpdateDto("su-id", null, null, true,
                 comments, null, null, null, identification, communicationRequests);
+    }
+
+    private IdentificationDB createIdentificationDB() {
+        return new IdentificationDB(2L,
+                IdentificationQuestionValue.IDENTIFIED,
+                AccessQuestionValue.ACC,
+                SituationQuestionValue.ORDINARY,
+                CategoryQuestionValue.SECONDARY,
+                OccupantQuestionValue.IDENTIFIED,
+                IndividualStatusQuestionValue.SAMEADDRESS,
+                InterviewerCanProcessQuestionValue.YES,
+                NumberOfRespondentsQuestionValue.ONE,
+                PresentInPreviousHomeQuestionValue.ATLEASTONE,
+                HouseholdCompositionQuestionValue.SAMECOMPO,
+                surveyUnit);
     }
 }

@@ -3,7 +3,9 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.domain.surveyunit.model.communication.*;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
@@ -50,6 +52,7 @@ class SurveyUnitDetailDtoTest {
                 SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.SECONDARY,
                 OccupantQuestionValue.IDENTIFIED,
+                null, null, null, null, null,
                 surveyUnit);
         surveyUnit.setIdentification(identificationDB);
         SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);

@@ -196,9 +196,9 @@ INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
     (DATEDIFF('SECOND', TIMESTAMP '1970-01-01 00:00:00', DATEADD('DAY', -3, CURRENT_TIMESTAMP)) * 1000, 'NPI', '11');
 
 
-INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES
-    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant,individual_status,interviewer_can_process,number_of_respondents,present_in_previous_home,household_composition) VALUES
+    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED','SAMEADDRESS','YES','MANY','ATLEASTONE','SAMECOMPO'),
+    ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', null, null, null, null, null);
 
 INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
     ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
