@@ -237,11 +237,11 @@ class SurveyUnitIT {
               "situation":"ORDINARY",
               "category":"PRIMARY",
                       "occupant":"IDENTIFIED",
-                      "individual_status":"SAMEADDRESS",
-                      "interviewer_can_process":"YES",
-                      "number_of_respondents":"MANY",
-                      "present_in_previous_home":"ATLEASTONE",
-                      "household_composition":"SAMECOMPO"
+                              "individualStatus":"SAME_ADDRESS",
+                              "interviewerCanProcess":"YES",
+                              "numberOfRespondents":"MANY",
+                              "presentInPreviousHome":"AT_LEAST_ONE",
+                              "householdComposition":"SAME_COMPO"
            },
            "communicationTemplates":[
               {

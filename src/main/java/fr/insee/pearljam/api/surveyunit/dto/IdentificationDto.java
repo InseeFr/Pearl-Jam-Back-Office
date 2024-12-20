@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 
@@ -10,15 +9,10 @@ public record IdentificationDto(
         SituationQuestionValue situation,
         CategoryQuestionValue category,
         OccupantQuestionValue occupant,
-        @JsonProperty("individual_status")
         IndividualStatusQuestionValue individualStatus,
-        @JsonProperty("interviewer_can_process")
         InterviewerCanProcessQuestionValue interviewerCanProcess,
-        @JsonProperty("number_of_respondents")
         NumberOfRespondentsQuestionValue numberOfRespondents,
-        @JsonProperty("present_in_previous_home")
         PresentInPreviousHomeQuestionValue presentInPreviousHome,
-        @JsonProperty("household_composition")
         HouseholdCompositionQuestionValue householdComposition
 ) {
 

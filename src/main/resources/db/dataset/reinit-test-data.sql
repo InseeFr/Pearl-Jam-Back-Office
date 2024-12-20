@@ -197,7 +197,7 @@ INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
 
 
 INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant,individual_status,interviewer_can_process,number_of_respondents,present_in_previous_home,household_composition) VALUES
-    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED','SAMEADDRESS','YES','MANY','ATLEASTONE','SAMECOMPO'),
+    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED','SAME_ADDRESS','YES','MANY','AT_LEAST_ONE','SAME_COMPO'),
     ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', null, null, null, null, null);
 
 INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES

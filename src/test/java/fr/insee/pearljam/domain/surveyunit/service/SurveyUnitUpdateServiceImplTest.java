@@ -237,11 +237,11 @@ class SurveyUnitUpdateServiceImplTest {
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
                 OccupantQuestionValue.UNIDENTIFIED,
-                IndividualStatusQuestionValue.OTHERADDRESS,
+                IndividualStatusQuestionValue.OTHER_ADDRESS,
                 InterviewerCanProcessQuestionValue.NO,
                 NumberOfRespondentsQuestionValue.MANY,
                 PresentInPreviousHomeQuestionValue.NONE,
-                HouseholdCompositionQuestionValue.OTHERCOMPO
+                HouseholdCompositionQuestionValue.OTHER_COMPO
         );
         surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
@@ -253,11 +253,11 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(identificationResult.getSituation()).isEqualTo(SituationQuestionValue.NOORDINARY);
         assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
         assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
-        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHERADDRESS);
+        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHER_ADDRESS);
         assertThat(identificationResult.getInterviewerCanProcess()).isEqualTo(InterviewerCanProcessQuestionValue.NO);
         assertThat(identificationResult.getNumberOfRespondents()).isEqualTo(NumberOfRespondentsQuestionValue.MANY);
         assertThat(identificationResult.getPresentInPreviousHome()).isEqualTo(PresentInPreviousHomeQuestionValue.NONE);
-        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHERCOMPO);
+        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHER_COMPO);
         assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
     }
 
@@ -280,11 +280,11 @@ class SurveyUnitUpdateServiceImplTest {
                 SituationQuestionValue.NOORDINARY,
                 CategoryQuestionValue.VACANT,
                 OccupantQuestionValue.UNIDENTIFIED,
-                IndividualStatusQuestionValue.OTHERADDRESS,
+                IndividualStatusQuestionValue.OTHER_ADDRESS,
                 InterviewerCanProcessQuestionValue.NO,
                 NumberOfRespondentsQuestionValue.MANY,
                 PresentInPreviousHomeQuestionValue.NONE,
-                HouseholdCompositionQuestionValue.OTHERCOMPO);
+                HouseholdCompositionQuestionValue.OTHER_COMPO);
         surveyUnitDto = createSurveyUnitDto(identification, null, null);
 
         surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
@@ -297,11 +297,11 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(identificationResult.getCategory()).isEqualTo(CategoryQuestionValue.VACANT);
         assertThat(identificationResult.getOccupant()).isEqualTo(OccupantQuestionValue.UNIDENTIFIED);
         assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
-        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHERADDRESS);
+        assertThat(identificationResult.getIndividualStatus()).isEqualTo(IndividualStatusQuestionValue.OTHER_ADDRESS);
         assertThat(identificationResult.getInterviewerCanProcess()).isEqualTo(InterviewerCanProcessQuestionValue.NO);
         assertThat(identificationResult.getNumberOfRespondents()).isEqualTo(NumberOfRespondentsQuestionValue.MANY);
         assertThat(identificationResult.getPresentInPreviousHome()).isEqualTo(PresentInPreviousHomeQuestionValue.NONE);
-        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHERCOMPO);
+        assertThat(identificationResult.getHouseholdComposition()).isEqualTo(HouseholdCompositionQuestionValue.OTHER_COMPO);
     }
 
     private SurveyUnitUpdateDto createSurveyUnitDto(IdentificationDto identification, List<CommentDto> comments, List<CommunicationRequestCreateDto> communicationRequests) {
@@ -316,11 +316,11 @@ class SurveyUnitUpdateServiceImplTest {
                 SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.SECONDARY,
                 OccupantQuestionValue.IDENTIFIED,
-                IndividualStatusQuestionValue.SAMEADDRESS,
+                IndividualStatusQuestionValue.SAME_ADDRESS,
                 InterviewerCanProcessQuestionValue.YES,
                 NumberOfRespondentsQuestionValue.ONE,
-                PresentInPreviousHomeQuestionValue.ATLEASTONE,
-                HouseholdCompositionQuestionValue.SAMECOMPO,
+                PresentInPreviousHomeQuestionValue.AT_LEAST_ONE,
+                HouseholdCompositionQuestionValue.SAME_COMPO,
                 surveyUnit);
     }
 }
