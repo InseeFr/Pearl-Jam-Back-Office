@@ -66,8 +66,10 @@
 	<!-- add survey-unit business id  -->
 	<include file="changelog/550_add_business_id.xml" relativeToChangelogFile="true" />
 
-    <!-- add identification attributes -->
-    <include file="changelog/560_extend_identification.xml" relativeToChangelogFile="true"/>
+	<!-- add identification attributes -->
+	<include file="changelog/560_extend_identification.xml" relativeToChangelogFile="true"/>
 
+	<!-- identification inheritance -->
+	<include file="changelog/561_identification_inheritance.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

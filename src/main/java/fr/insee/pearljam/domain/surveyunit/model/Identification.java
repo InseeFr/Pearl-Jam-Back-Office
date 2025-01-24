@@ -5,6 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record Identification(
+		Long id,
+		IdentificationType identificationType,
         IdentificationQuestionValue identification,
         AccessQuestionValue access,
         SituationQuestionValue situation,

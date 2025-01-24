@@ -18,7 +18,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return MISSING when identification is null")
     void testState01() {
-        Identification identification1 = new Identification(
+        Identification identification1 = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 null,
                 AccessQuestionValue.NACC,
                 SituationQuestionValue.ORDINARY,
@@ -36,9 +37,11 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return FINISHED when identification question value is destroy or unidentified")
     void testState02() {
-        Identification identificationDestroy = new Identification(
+        Identification identificationDestroy = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.DESTROY, null, null, null, null, null, null, null, null, null);
-        Identification identificationUnidentified = new Identification(
+        Identification identificationUnidentified = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.UNIDENTIFIED, null, null, null, null, null, null, null, null, null);
 
         List<Identification> identifications = List.of(identificationDestroy, identificationUnidentified);
@@ -49,7 +52,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return ONGOING state when access is null")
     void testState03() {
-        Identification identificationToCheck = new Identification(
+        Identification identificationToCheck = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, null, null, null, null, null, null, null, null, null);
 
         assertThat(IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F)).isEqualTo(IdentificationState.ONGOING);
@@ -58,7 +62,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return ONGOING when situation question value is null")
     void testState04() {
-        Identification identificationToCheck = new Identification(
+        Identification identificationToCheck = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, null, null, null, null, null, null,
                 null, null);
 
@@ -68,10 +73,12 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return FINISHED when situation question value is absorbed or no ordinary")
     void testState05() {
-        Identification identificationAbsorbed = new Identification(
+        Identification identificationAbsorbed = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ABSORBED,
                 null, null, null, null, null, null, null);
-        Identification identificationNoOrdinary = new Identification(
+        Identification identificationNoOrdinary = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.NACC, SituationQuestionValue.NOORDINARY,
                 null, null, null, null, null, null, null);
 
@@ -83,7 +90,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return ONGOING when category question value is null")
     void testState06() {
-        Identification identificationToCheck = new Identification(
+        Identification identificationToCheck = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
                 null, null, null, null, null, null, null);
 
@@ -93,10 +101,12 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return FINISHED when category question value is vacant or secondary")
     void testState07() {
-        Identification identificationVacant = new Identification(
+        Identification identificationVacant = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.VACANT, null, null, null, null, null, null);
-        Identification identificationSecondary = new Identification(
+        Identification identificationSecondary = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.NACC, SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.SECONDARY, null, null, null, null, null, null);
 
@@ -108,7 +118,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return FINISHED when occupant is not null")
     void testState08() {
-        Identification identificationToCheck = new Identification(
+        Identification identificationToCheck = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.OCCASIONAL, OccupantQuestionValue.IDENTIFIED, null, null, null, null, null);
 
@@ -118,7 +129,8 @@ class IdentificationStateTest {
     @Test
     @DisplayName("Should return ONGOING state")
     void testState09() {
-        Identification identificationToCheck = new Identification(
+        Identification identificationToCheck = new Identification(1L,
+                IdentificationType.HOUSEF2F,
                 IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
                 CategoryQuestionValue.OCCASIONAL, null, null, null, null, null, null);
 
@@ -161,64 +173,64 @@ class IdentificationStateTest {
 
                 // Cases 4-5: HOUSEF2F + `identification`[DESTROY / UNIDENTIFIED] => state FINISHED
                 new TestCase(
-                        iascoIdentBuilder(IdentificationQuestionValue.DESTROY).build(),
+                        houseF2FIdentBuilder(IdentificationQuestionValue.DESTROY).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
                 new TestCase(
-                        iascoIdentBuilder(IdentificationQuestionValue.UNIDENTIFIED).build(),
+                        houseF2FIdentBuilder(IdentificationQuestionValue.UNIDENTIFIED).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
 
                 // Case 6: HOUSEF2F + `identification`[IDENTIFIED] + `access`[null] => ONGOING
                 new TestCase(
-                        iascoIdentBuilder(IdentificationQuestionValue.IDENTIFIED).build(),
+                        houseF2FIdentBuilder(IdentificationQuestionValue.IDENTIFIED).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING
                 ),
 
                 // Case 7-8: HOUSEF2F + `identification`[IDENTIFIED] + `access`[ACC / NACC] => ONGOING
                 new TestCase(
-                        iascoAccessBuilder(AccessQuestionValue.ACC).build(),
+                        houseF2FAccessBuilder(AccessQuestionValue.ACC).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING
                 ),
                 new TestCase(
-                        iascoAccessBuilder(AccessQuestionValue.NACC).build(),
+                        houseF2FAccessBuilder(AccessQuestionValue.NACC).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING
                 ),
 
 
                 // Case 9-10: HOUSEF2F previous +  `situation`[ABSORBED/NOORDINARY] => FINISHED
                 new TestCase(
-                        iascoSituationBuilder(SituationQuestionValue.ABSORBED).build(),
+                        houseF2FSituationBuilder(SituationQuestionValue.ABSORBED).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
                 new TestCase(
-                        iascoSituationBuilder(SituationQuestionValue.NOORDINARY).build(),
+                        houseF2FSituationBuilder(SituationQuestionValue.NOORDINARY).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
 
                 // Case 11-12: HOUSEF2F previous + `category`[SECONDARY / VACANT] => FINISHED
                 new TestCase(
-                        iascoCategoryBuilder(CategoryQuestionValue.SECONDARY).build(),
+                        houseF2FCategoryBuilder(CategoryQuestionValue.SECONDARY).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
                 new TestCase(
-                        iascoCategoryBuilder(CategoryQuestionValue.VACANT).build(),
+                        houseF2FCategoryBuilder(CategoryQuestionValue.VACANT).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
 
                 // Case 13: HOUSEF2F previous + `category`[PRIMARY] with null occupant => ONGOING
                 new TestCase(
-                        iascoCategoryBuilder(CategoryQuestionValue.PRIMARY).build(),
+                        houseF2FCategoryBuilder(CategoryQuestionValue.PRIMARY).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING
                 ),
 
                 // HOUSEF2F 14-15 questions completed
                 new TestCase(
-                        iascoOccupantBuilder(OccupantQuestionValue.IDENTIFIED).build(),
+                        houseF2FOccupantBuilder(OccupantQuestionValue.IDENTIFIED).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
                 new TestCase(
-                        iascoOccupantBuilder(OccupantQuestionValue.UNIDENTIFIED).build(),
+                        houseF2FOccupantBuilder(OccupantQuestionValue.UNIDENTIFIED).build(),
                         IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED
                 ),
 
@@ -233,24 +245,24 @@ class IdentificationStateTest {
 
     // Builders
 
-    private static Identification.IdentificationBuilder iascoIdentBuilder(IdentificationQuestionValue identification) {
+    private static Identification.IdentificationBuilder houseF2FIdentBuilder(IdentificationQuestionValue identification) {
         return Identification.builder().identification(identification);
     }
 
-    private static Identification.IdentificationBuilder iascoAccessBuilder(AccessQuestionValue access) {
-        return iascoIdentBuilder(IdentificationQuestionValue.IDENTIFIED).access(access);
+    private static Identification.IdentificationBuilder houseF2FAccessBuilder(AccessQuestionValue access) {
+        return houseF2FIdentBuilder(IdentificationQuestionValue.IDENTIFIED).access(access);
     }
 
-    private static Identification.IdentificationBuilder iascoSituationBuilder(SituationQuestionValue situation) {
-        return iascoAccessBuilder(AccessQuestionValue.ACC).situation(situation);
+    private static Identification.IdentificationBuilder houseF2FSituationBuilder(SituationQuestionValue situation) {
+        return houseF2FAccessBuilder(AccessQuestionValue.ACC).situation(situation);
     }
 
-    private static Identification.IdentificationBuilder iascoCategoryBuilder(CategoryQuestionValue category) {
-        return iascoSituationBuilder(SituationQuestionValue.ORDINARY).category(category);
+    private static Identification.IdentificationBuilder houseF2FCategoryBuilder(CategoryQuestionValue category) {
+        return houseF2FSituationBuilder(SituationQuestionValue.ORDINARY).category(category);
     }
 
-    private static Identification.IdentificationBuilder iascoOccupantBuilder(OccupantQuestionValue occupant) {
-        return iascoCategoryBuilder(CategoryQuestionValue.PRIMARY).occupant(occupant);
+    private static Identification.IdentificationBuilder houseF2FOccupantBuilder(OccupantQuestionValue occupant) {
+        return houseF2FCategoryBuilder(CategoryQuestionValue.PRIMARY).occupant(occupant);
     }
 
 

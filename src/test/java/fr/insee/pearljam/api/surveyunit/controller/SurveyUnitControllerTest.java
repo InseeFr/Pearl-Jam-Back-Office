@@ -3,8 +3,8 @@ package fr.insee.pearljam.api.surveyunit.controller;
 import fr.insee.pearljam.api.controller.SurveyUnitController;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
@@ -88,12 +88,12 @@ class SurveyUnitControllerTest {
         SurveyUnitUpdateDto surveyUnitUpdated = surveyUnitService.getSurveyUnitUpdated();
         assertThat(surveyUnitUpdated.id()).isEqualTo("su-id");
 
-        IdentificationDto identificationExpected = new IdentificationDto(IdentificationQuestionValue.IDENTIFIED,
+        RawIdentificationDto identificationExpected = new RawIdentificationDto(IdentificationQuestionValue.IDENTIFIED,
                 AccessQuestionValue.ACC,
                 SituationQuestionValue.ABSORBED,
                 CategoryQuestionValue.OCCASIONAL,
                 OccupantQuestionValue.IDENTIFIED
-                , null, null, null, null, null
+				,null, null, null, null, null
         );
 
         assertThat(surveyUnitUpdated.identification()).isEqualTo(identificationExpected);
