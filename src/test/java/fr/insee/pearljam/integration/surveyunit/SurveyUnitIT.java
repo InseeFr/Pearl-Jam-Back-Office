@@ -1,6 +1,5 @@
 package fr.insee.pearljam.integration.surveyunit;
 
-import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
@@ -41,9 +40,6 @@ class SurveyUnitIT {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private SurveyUnitService surveyUnitService;
 
 	@Autowired
 	private DateService dateService;
@@ -632,7 +628,7 @@ class SurveyUnitIT {
 	@DisplayName("Should return all survey-units for a campaign")
 	void testGetAllSurveyUnitsByCampaign() throws Exception {
 		MvcResult mvcResult =
-				mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units").with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN)).accept(MediaType.APPLICATION_JSON)).andReturn();
+				mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units").with(authentication(AuthenticatedUserTestHelper.AUTH_LOCAL_USER)).accept(MediaType.APPLICATION_JSON)).andReturn();
 
 		String contentResult = mvcResult.getResponse().getContentAsString();
 		String expectedResult = """
@@ -737,7 +733,7 @@ class SurveyUnitIT {
 	@DisplayName("Should return survey units for a campaign filtered by state")
 	void testGetSurveyUnitsByCampaign02() throws Exception {
 		MvcResult mvcResult =
-				mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units?state=VIN").with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN)).accept(MediaType.APPLICATION_JSON)).andReturn();
+				mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units?state=VIN").with(authentication(AuthenticatedUserTestHelper.AUTH_LOCAL_USER)).accept(MediaType.APPLICATION_JSON)).andReturn();
 
 		String contentResult = mvcResult.getResponse().getContentAsString();
 		String expectedResult = """

@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 
 public class AuthenticatedUserTestHelper {
 
-        public final static Authentication AUTH_LOCAL_USER = getAuthenticatedUser("abc",
+        public static final Authentication AUTH_LOCAL_USER = getAuthenticatedUser("abc",
                         AuthorityRole.LOCAL_USER);
-        public final static Authentication AUTH_INTERVIEWER = getAuthenticatedUser("INTW1",
+        public static final Authentication AUTH_INTERVIEWER = getAuthenticatedUser("INTW1",
                 AuthorityRole.INTERVIEWER);
-        public final static Authentication AUTH_ADMIN = getAuthenticatedUser("GUEST",
+        public static final Authentication AUTH_ADMIN = getAuthenticatedUser("ADMIN",
                 AuthorityRole.ADMIN);
-        public final static Authentication NOT_AUTHENTICATED = getNotAuthenticatedUser();
+        public static final Authentication NOT_AUTHENTICATED = getNotAuthenticatedUser();
 
         public static Authentication getAuthenticatedUser(String id, AuthorityRole... roles) {
                 List<? extends GrantedAuthority> authorities = Stream.of(roles)
