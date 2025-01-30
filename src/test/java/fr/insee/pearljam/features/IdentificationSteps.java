@@ -6,18 +6,27 @@ import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.dto.address.AddressDto;
+import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
+import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.JsonTestHelper;
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -34,6 +43,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -54,7 +64,9 @@ public class IdentificationSteps {
 	ObjectMapper objectMapper = new ObjectMapper();
 
 	private Authentication securityRole;
+	private IdentificationConfiguration identificationConfiguration;
 	private MvcResult createdCampaign;
+	private SurveyUnit surveyUnit;
 	private String surveyUnitId;
 	private String campaignId;
 	private ResultActions result;
@@ -97,18 +109,21 @@ public class IdentificationSteps {
 	@And("this survey-unit is affected to this interviewer")
 	public void this_survey_unit_is_affected_to_this_interviewer() throws Exception {
 		surveyUnitId = "SURVEYUNIT_" + System.currentTimeMillis();
-		SurveyUnit su = null;
+
 		Address addressDB = new InseeAddress("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
 				"building", "floor", "door", "staircase", true);
 		Campaign campaignDB = campaignService.findById(campaignId).orElseThrow();
 		Interviewer interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
 		OrganizationUnit ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
 		Set<Person> personsDB = Set.of(new Person(Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", true, true,
-				537535032000L, su));
+				537535032000L, surveyUnit));
+		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
+				, null, null, null, null, null, null);
+		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, personsDB);
 
-		su = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, personsDB);
-		su.getStates().add(new State(System.currentTimeMillis(), su, StateType.VIN));
-		surveyUnitRepository.save(su);
+		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
+		surveyUnit.getStates().add(new State(System.currentTimeMillis(), surveyUnit, StateType.VIN));
+		surveyUnitRepository.save(surveyUnit);
 
 		List<SurveyUnitInterviewerLinkDto> link = List.of(new SurveyUnitInterviewerLinkDto(surveyUnitId, "INTW1"));
 
@@ -123,11 +138,13 @@ public class IdentificationSteps {
 
 		String surveyUnitReturned =
 				mockMvc.perform(get(String.join("/", "/api/survey-unit", surveyUnitId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		SurveyUnitInterviewerResponseDto inputSurveyUnit = objectMapper.readValue(surveyUnitReturned,
-				SurveyUnitInterviewerResponseDto.class);
-		SurveyUnitUpdateDto editedSurveyUnit = updateIdentification(inputSurveyUnit,
-				new RawIdentificationDto(IdentificationQuestionValue.UNIDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.SAME_ADDRESS,InterviewerCanProcessQuestionValue.YES,
-						NumberOfRespondentsQuestionValue.ONE, PresentInPreviousHomeQuestionValue.AT_LEAST_ONE, HouseholdCompositionQuestionValue.SAME_COMPO));
+		SurveyUnitUpdateDto editedSurveyUnit = updateIdentification(
+				new RawIdentificationDto(IdentificationQuestionValue.UNIDENTIFIED, AccessQuestionValue.ACC,
+						SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY,
+						OccupantQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.SAME_ADDRESS,
+						InterviewerCanProcessQuestionValue.YES,
+						NumberOfRespondentsQuestionValue.ONE, PresentInPreviousHomeQuestionValue.AT_LEAST_ONE,
+						HouseholdCompositionQuestionValue.SAME_COMPO));
 
 		result =
 				mockMvc.perform(put(String.join("/", "/api/survey-unit", surveyUnitId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON).content(JsonTestHelper.toJson(editedSurveyUnit)).accept(MediaType.APPLICATION_JSON));
@@ -146,17 +163,16 @@ public class IdentificationSteps {
 	}
 
 
-	private SurveyUnitUpdateDto updateIdentification(SurveyUnitInterviewerResponseDto original,
-													 RawIdentificationDto newIdentification) {
+	private SurveyUnitUpdateDto updateIdentification(RawIdentificationDto newIdentification) {
 		return new SurveyUnitUpdateDto(
-				original.id(),
-				original.persons(),
-				original.address(),
-				original.move(),
-				original.comments(),
-				original.states(),
-				original.contactAttempts(),
-				original.contactOutcome(),
+				surveyUnit.getId(),
+				surveyUnit.getPersons().stream().map(PersonDto::new).toList(),
+				new AddressDto(surveyUnit.getAddress()),
+				surveyUnit.getMove(),
+				CommentDto.fromModel(surveyUnit.getComments().stream().map(CommentDB::toModel).collect(Collectors.toSet())),
+				surveyUnit.getStates().stream().map(StateDto::new).toList(),
+				surveyUnit.getContactAttempts().stream().map(ContactAttemptDto::new).toList(),
+				null,
 				newIdentification, // New identification
 				List.of()
 		);
@@ -164,13 +180,13 @@ public class IdentificationSteps {
 
 	private void createACampaignWithAuthenticationAndIdentificationConfiguration(Authentication authentication,
 																				 String inputIdentificationConfiguration) throws Exception {
-		IdentificationConfiguration identificationConfiguration =
+		identificationConfiguration =
 				IdentificationConfiguration.fromName(inputIdentificationConfiguration);
 		campaignId = "CAMPAIGN_" + System.currentTimeMillis();
 		CampaignCreateDto inputCampaign = new CampaignCreateDto(campaignId, "campaign_label",
 				List.of(new VisibilityCampaignCreateDto(1L
 						, 2L, 3L, 4L, 5L, 6L, "OU-NORTH", false, "mail", "tel")), List.of(), List.of(new ReferentDto(
-								"Bob",
+				"Bob",
 				"Marley"
 				, "0123456789", "PRIMARY")), "campaign@e.mail", identificationConfiguration,
 				ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F);
