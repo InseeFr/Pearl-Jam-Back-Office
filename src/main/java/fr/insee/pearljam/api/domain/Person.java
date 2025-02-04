@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class Person implements Serializable {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -105,8 +107,8 @@ public class Person implements Serializable {
 		this.firstName = p.getFirstName();
 		this.lastName = p.getLastName();
 		this.email = p.getEmail();
-		this.favoriteEmail = p.isFavoriteEmail();
-		this.privileged = p.isPrivileged();
+		this.favoriteEmail = p.getFavoriteEmail();
+		this.privileged = p.getPrivileged();
 		this.birthdate = p.getBirthdate();
 		this.phoneNumbers = p.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, this))
 				.collect(Collectors.toSet());

@@ -249,11 +249,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (person.getEmail() != null) {
 			pers.setEmail(person.getEmail());
 		}
-		if (person.isFavoriteEmail() != null) {
-			pers.setFavoriteEmail(person.isFavoriteEmail());
+		if (person.getFavoriteEmail() != null) {
+			pers.setFavoriteEmail(person.getFavoriteEmail());
 		}
-		if (person.isPrivileged() != null) {
-			pers.setPrivileged(person.isPrivileged());
+		if (person.getPrivileged() != null) {
+			pers.setPrivileged(person.getPrivileged());
 		}
 		if (person.getPhoneNumbers() != null) {
 			Set<PhoneNumber> phoneNumbers = person.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, pers))
