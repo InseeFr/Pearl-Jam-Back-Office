@@ -17,7 +17,6 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
@@ -89,7 +88,6 @@ public class IdentificationSteps {
 				mockMvc.perform(get(String.join("/", Constants.API_CAMPAIGN, campaignId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 	}
 
-
 	@Then("the created campaign should have the identification configuration {string}")
 	public void the_created_campaign_should_have_the_identification_configuration(String expectedIdentificationType) throws IOException {
 		String contentResult = createdCampaign.getResponse().getContentAsString();
@@ -136,8 +134,6 @@ public class IdentificationSteps {
 	@When("the interviewer update the survey-unit with identification value")
 	public void the_interviewer_update_the_survey_unit_with_identification_value() throws Exception {
 
-		String surveyUnitReturned =
-				mockMvc.perform(get(String.join("/", "/api/survey-unit", surveyUnitId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 		SurveyUnitUpdateDto editedSurveyUnit = updateIdentification(
 				new RawIdentificationDto(IdentificationQuestionValue.UNIDENTIFIED, AccessQuestionValue.ACC,
 						SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY,
