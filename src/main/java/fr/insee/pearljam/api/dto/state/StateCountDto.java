@@ -71,7 +71,7 @@ public class StateCountDto {
 			if (nullOrEmpty) {
 				setLongField(str, 0L);
 			} else {
-				setLongField(str, Optional.ofNullable(obj.get(str)).orElse(0L));
+				setLongField(str, Optional.ofNullable(obj.get(str.toUpperCase())).orElse(0L));
 			}
 		}
 	}

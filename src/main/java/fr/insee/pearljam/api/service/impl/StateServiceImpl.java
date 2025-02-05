@@ -114,7 +114,7 @@ public class StateServiceImpl implements StateService {
           && visibilityRepository.findVisibility(campaignId, id).isPresent()) {
 
         Map<String, Long> stateCountsByCampaign = new HashMap<>(
-            getStateCountByCampaignAndOU(campaignId, id, dateToUse));
+            stateRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
         stateCountsByCampaign.put(Constants.NOTICE_COUNT,
             communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationType(
                 campaignId, CommunicationType.NOTICE));
@@ -122,8 +122,7 @@ public class StateServiceImpl implements StateService {
             communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationType(
                 campaignId, CommunicationType.REMINDER));
 
-        StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id),
-            stateCountsByCampaign);
+        StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id), stateCountsByCampaign);
         dto.addClosingCauseCount(
             closingCauseRepository.getClosingCauseCountByCampaignAndOU(campaignId, id, dateToUse));
         stateCountList.add(dto);
@@ -150,11 +149,6 @@ public class StateServiceImpl implements StateService {
           campaignId));
     }
     return stateCountCampaignDto;
-  }
-
-  private Map<String, Long> getStateCountByCampaignAndOU(String campaignId, String id,
-      Long dateToUse) {
-    return stateRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse);
   }
 
   public List<StateCountDto> getStateCountByCampaigns(String userId, Long date) {
