@@ -1,20 +1,38 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
+import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
+@Getter
 @RequiredArgsConstructor
 public class CommunicationRequestFakeRepository implements CommunicationRequestRepository {
-    @Getter
-    private List<CommunicationRequest> communicationRequestsAdded;
 
-    @Override
-    public void addCommunicationRequests(SurveyUnit surveyUnit, List<CommunicationRequest> communicationRequests) {
-        communicationRequestsAdded = communicationRequests;
-    }
+  private List<CommunicationRequest> communicationRequestsAdded;
+
+  @Override
+  public void addCommunicationRequests(SurveyUnit surveyUnit,
+      List<CommunicationRequest> communicationRequests) {
+    communicationRequestsAdded = communicationRequests;
+  }
+
+  @Override
+  public Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId,
+      CommunicationType type) {
+    return 0L;
+  }
+
+  @Override
+  public List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(
+      Set<String> interviewerId, CommunicationType type) {
+    return List.of();
+  }
+
+
 }
