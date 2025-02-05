@@ -1,18 +1,16 @@
 package fr.insee.pearljam.api.dto.state;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import static fr.insee.pearljam.api.constants.Constants.STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS;
+import static fr.insee.pearljam.api.constants.Constants.STATE_COUNT_FIELDS;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import static fr.insee.pearljam.api.constants.Constants.*;
-
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,6 +46,8 @@ public class StateCountDto {
 	private Long npiCount;
 	private Long npxCount;
 	private Long rowCount;
+	private Long noticeCount;
+	private Long reminderCount;
 	private Long total;
 
 	public StateCountDto(Map<String, Long> obj) {

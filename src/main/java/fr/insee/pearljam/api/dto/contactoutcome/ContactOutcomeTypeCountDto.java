@@ -1,12 +1,12 @@
 package fr.insee.pearljam.api.dto.contactoutcome;
 
+import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
+
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
