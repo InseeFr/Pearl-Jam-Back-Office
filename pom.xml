@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.2.0</version>
+	<version>5.3.0</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.5</version>
+		<version>3.3.8</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 
@@ -25,6 +25,7 @@
 		<postgresql.version>42.7.4</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<cucumber.version>7.20.1</cucumber.version>
 	</properties>
 
 	<dependencies>
@@ -123,6 +124,30 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!--Cucumber-->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>${cucumber.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-spring</artifactId>
+			<version>${cucumber.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit-platform-engine</artifactId>
+			<version>${cucumber.version}</version>
+		</dependency>
+
+
 		<!-- For logback conditional logging -->
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>
@@ -155,6 +180,7 @@
 								<configuration>
 									<formats>
 										<format>XML</format>
+										<format>HTML</format>
 									</formats>
 								</configuration>
 							</execution>
@@ -256,6 +282,7 @@
 							<include>**/TestAuthKeyCloak</include>
 							<include>**/TestNoAuth</include>
                         	<include>**/*Test</include>
+                        	<include>**/*TestRunner</include>
                         	<include>**/*IT</include>
 						</includes>
 					</configuration>

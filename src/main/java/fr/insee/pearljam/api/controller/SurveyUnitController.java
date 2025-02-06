@@ -122,7 +122,7 @@ public class SurveyUnitController {
 
 	/**
 	 * This method is used to update a specific survey unit
-	 * @param surveyUnitUpdateDto survey unit informations to update
+	 * @param surveyUnitUpdateDto survey unit information to update
 	 * @param id survey unit id
 	 * @return {@link SurveyUnitDetailDto}
 	 * @throws EntityNotFoundException exception thrown if entity not found
@@ -343,7 +343,6 @@ public class SurveyUnitController {
 	 * This method is used to delete a survey-unit
 	 * 
 	 * @param surveyUnitId the id of survey-unit
-	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Delete survey-unit")
 	@DeleteMapping(path = "/survey-unit/{id}")

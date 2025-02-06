@@ -265,11 +265,11 @@ INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
     (EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '25');
 
 
-INSERT INTO public.identification (survey_unit_id, identification,access,situation,category,occupant) VALUES
-    ('11', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('21', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('25', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('30', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+INSERT INTO public.identification (survey_unit_id, identification_type, identification,access,situation,category,occupant) VALUES
+    ('11', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    ('21', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    ('25', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    ('30', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
 
 INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
     ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),

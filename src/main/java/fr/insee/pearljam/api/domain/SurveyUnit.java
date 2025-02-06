@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
+import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.IdentificationDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
@@ -147,7 +147,7 @@ public class SurveyUnit implements Serializable {
 		this.id = su.getId();
 		this.displayName = su.getDisplayName();
 		//TODO: delete this test when displayName becomes mandatory in creation endpoint
-		if(this.displayName == null) {
+		if (this.displayName == null) {
 			this.displayName = this.id;
 		}
 		this.priority = su.getPriority();
@@ -156,7 +156,9 @@ public class SurveyUnit implements Serializable {
 		this.sampleIdentifier = new InseeSampleIdentifier(su.getSampleIdentifiers());
 		this.campaign = campaign;
 		this.interviewer = null;
-		this.identification = new IdentificationDB(IdentificationDto.toModel(su.getIdentification()), this);
+
+		IdentificationConfiguration identificationType = safeGetIdentificationConfiguration(campaign);
+		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(), identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
@@ -212,13 +214,21 @@ public class SurveyUnit implements Serializable {
 		}
 
 		IdentificationDB identificationDB = getIdentification();
-		if(identificationDB == null) {
-			identificationDB = new IdentificationDB(identification, this);
+		if (identificationDB == null) {
+			IdentificationConfiguration identificationType = safeGetIdentificationConfiguration(campaign);
+			identificationDB = IdentificationDB.fromModel(this, identification, identificationType);
 			setIdentification(identificationDB);
 			return;
 		}
 
 		identificationDB.update(identification);
+	}
+
+	private IdentificationConfiguration safeGetIdentificationConfiguration (Campaign campaign){
+		if (campaign == null) {
+			return null;
+		}
+		return  campaign.getIdentificationConfiguration();
 	}
 
 	/**

@@ -6,6 +6,7 @@ import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public record SurveyUnitUpdateDto(
     List<StateDto> states,
     List<ContactAttemptDto> contactAttempts,
     ContactOutcomeDto contactOutcome,
-    IdentificationDto identification,
+    RawIdentificationDto identification,
     @Valid
     List<CommunicationRequestCreateDto> communicationRequests) {
 }

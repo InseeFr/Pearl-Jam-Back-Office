@@ -288,7 +288,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         Campaign campaignUpdated = campaignOptional.get();
         assertCampaignInfos(campaignUpdated, campaignId, "An other campaign", "test.test@sdf.com",
-                ContactAttemptConfiguration.F2F, IdentificationConfiguration.NOIDENT,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.TEL);
         assertThat(campaignUpdated.getVisibilities()).hasSize(2);
         assertThat(campaignUpdated.getVisibilities())

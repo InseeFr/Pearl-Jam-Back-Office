@@ -1,27 +1,27 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
-import java.util.Comparator;
-import java.util.List;
-
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
-import lombok.Data;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import fr.insee.pearljam.api.bussinessrules.BussinessRules;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Comparator;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@NoArgsConstructor
 public class SurveyUnitDetailDto {
 	private String id;
 	private List<PersonDto> persons;
@@ -36,9 +36,6 @@ public class SurveyUnitDetailDto {
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
 	private List<CommunicationRequestResponseDto> communicationRequests;
-
-	public SurveyUnitDetailDto() {
-	}
 
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
 		this.id = surveyUnit.getId();
