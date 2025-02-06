@@ -6,7 +6,6 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import java.util.List;
 import java.util.Set;
-import org.springframework.data.repository.query.Param;
 
 public interface CommunicationRequestRepository {
 
@@ -19,11 +18,7 @@ public interface CommunicationRequestRepository {
   void addCommunicationRequests(SurveyUnit surveyUnit,
       List<CommunicationRequest> communicationRequests);
 
-  Long getCommunicationRequestCountByCampaignAndCommunicationType(
-      @Param("campaignId") String campaignId,
-      @Param("type") CommunicationType type);
+  Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId, CommunicationType type);
 
-  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(
-      @Param("interviewersId") Set<String> interviewerId,
-      @Param("type") CommunicationType type);
+  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(Set<String> interviewerId, CommunicationType type);
 }

@@ -51,23 +51,17 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   public Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId,
       CommunicationType type) {
 
-    List<CommunicationStatusType> statusList = List.of(
-        CommunicationStatusType.SUBMITTED
-    );
 
     return communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationType(
-        campaignId, type, statusList);
+        campaignId, type);
   }
 
   @Override
   public List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(
       Set<String> interviewersId, CommunicationType type) {
-    List<CommunicationStatusType> statusList = List.of(
-        CommunicationStatusType.SUBMITTED
-    );
 
     return communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
-        interviewersId, type, statusList);
+        interviewersId, type);
   }
 
 }
