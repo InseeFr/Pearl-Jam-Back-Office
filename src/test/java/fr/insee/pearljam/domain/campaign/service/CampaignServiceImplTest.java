@@ -33,7 +33,7 @@ class CampaignServiceImplTest {
     private CampaignFakeRepository campaignRepository;
     private VisibilityFakeService visibilityService;
     private CampaignServiceImpl campaignService;
-    private CurrentDateService dateService = new CurrentDateService();
+    private final CurrentDateService dateService = new CurrentDateService();
     private final OrganizationUnit existingOrganizationUnit = new OrganizationUnit("OU-NORTH", "label-ou", OrganizationUnitType.LOCAL);
     private final Campaign existingCampaign =  new Campaign(
             "CAMPAIGN-ID",
@@ -169,7 +169,6 @@ class CampaignServiceImplTest {
                 List.of(visibilityDto),
                 List.of(),
                 "emailUpdated@email.com",
-                IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
 
@@ -181,7 +180,7 @@ class CampaignServiceImplTest {
         assertThat(updatedCampaign.getId()).isEqualTo(campaignId);
         assertThat(updatedCampaign.getLabel()).isEqualTo(updateDto.campaignLabel());
         assertThat(updatedCampaign.getEmail()).isEqualTo(updateDto.email());
-        assertThat(updatedCampaign.getIdentificationConfiguration()).isEqualTo(updateDto.identificationConfiguration());
+        assertThat(updatedCampaign.getIdentificationConfiguration()).isEqualTo(existingCampaign.getIdentificationConfiguration());
         assertThat(updatedCampaign.getContactAttemptConfiguration()).isEqualTo(updateDto.contactAttemptConfiguration());
         assertThat(updatedCampaign.getContactOutcomeConfiguration()).isEqualTo(updateDto.contactOutcomeConfiguration());
         assertThat(updatedCampaign.getVisibilities())
@@ -205,7 +204,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 emailToUpdate,
-                IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
 
@@ -228,7 +226,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
-                IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
 
@@ -250,7 +247,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
-                IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
 
@@ -271,7 +267,6 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 null,
-                IdentificationConfiguration.NOIDENT,
                 ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL);
 

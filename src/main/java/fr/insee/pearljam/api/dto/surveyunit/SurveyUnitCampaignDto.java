@@ -1,25 +1,20 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.InseeAddress;
-import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
-import fr.insee.pearljam.api.domain.State;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
-import lombok.Getter;
-import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
@@ -40,6 +35,9 @@ public class SurveyUnitCampaignDto {
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationState identificationState;
 	private List<CommentDto> comments;
+
+	@JsonIgnore // used to process identificationState server side, not exposed via API
+	private IdentificationConfiguration identificationConfiguration;
 
 	@JsonIgnoreProperties(value = { "surveyUnitCount" })
 	private InterviewerDto interviewer;
@@ -83,6 +81,7 @@ public class SurveyUnitCampaignDto {
 		}
 		this.state = currentState == null ? null : currentState.getType();
 		this.campaign = su.getCampaign().getLabel();
+		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
 		this.interviewer = su.getInterviewer() != null ? new InterviewerDto(su.getInterviewer()) : null;
 		this.comments = CommentDto.fromModel(su.getModelComments());
 		if (su.getContactOucome() != null) {

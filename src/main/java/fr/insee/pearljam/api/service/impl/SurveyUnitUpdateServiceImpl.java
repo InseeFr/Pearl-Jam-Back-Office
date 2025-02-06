@@ -3,8 +3,8 @@ package fr.insee.pearljam.api.service.impl;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
-import fr.insee.pearljam.api.surveyunit.dto.IdentificationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
@@ -55,8 +55,8 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
                             .toList();
             communicationRequestRepository.addCommunicationRequests(surveyUnit, communicationRequestsToCreate);
         }
-
-        Identification identification = IdentificationDto.toModel(surveyUnitUpdateDto.identification());
+        IdentificationConfiguration identificationConfiguration = surveyUnit.getCampaign().getIdentificationConfiguration();
+        Identification identification = IdentificationDto.toModel(surveyUnitUpdateDto.identification(),identificationConfiguration);
         surveyUnit.updateIdentification(identification);
     }
 

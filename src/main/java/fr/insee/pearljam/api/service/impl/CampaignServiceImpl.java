@@ -241,9 +241,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	private void updateConfiguration(Campaign currentCampaign, CampaignUpdateDto campDto) {
 
-		if (campDto.identificationConfiguration() != null) {
-			currentCampaign.setIdentificationConfiguration(campDto.identificationConfiguration());
-		}
+		// identificationConfiguration should not be updated anymore
 		if (campDto.contactOutcomeConfiguration() != null) {
 			currentCampaign.setContactOutcomeConfiguration(campDto.contactOutcomeConfiguration());
 		}

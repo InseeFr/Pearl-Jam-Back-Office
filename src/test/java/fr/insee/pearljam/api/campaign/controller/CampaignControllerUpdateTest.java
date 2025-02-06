@@ -5,7 +5,6 @@ import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.api.controller.CampaignController;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
@@ -68,7 +67,7 @@ class CampaignControllerUpdateTest {
     @DisplayName("Should return bad request when invalid campaign label")
     void testUpdateCampaign02() throws Exception {
         CampaignUpdateDto campaign = generateCampaign("    ",
-                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
+                "test.test@sdf.com", ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(),
                 List.of());
@@ -121,7 +120,7 @@ class CampaignControllerUpdateTest {
 
     private void testUpdateExceptions(VisibilityCampaignUpdateDto visibility, HttpStatus httpStatus, String message) throws Exception {
         CampaignUpdateDto campaign = generateCampaign("campaignLabel",
-                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
+                "test.test@sdf.com", ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of());
@@ -151,14 +150,14 @@ class CampaignControllerUpdateTest {
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
         return generateCampaign("An other campaign",
-                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
+                "test.test@sdf.com", ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(firstVisibility, secondVisibility),
                 List.of(firstReferent, secondReferent));
     }
 
     private CampaignUpdateDto generateCampaign(String campaignLabel,
-                                               String email, IdentificationConfiguration identificationConfiguration,
+                                               String email,
                                                ContactOutcomeConfiguration contactOutcomeConfiguration,
                                                ContactAttemptConfiguration contactAttemptConfiguration,
                                                List<VisibilityCampaignUpdateDto> visibilities,
@@ -168,7 +167,6 @@ class CampaignControllerUpdateTest {
                 visibilities,
                 referents,
                 email,
-                identificationConfiguration,
                 contactOutcomeConfiguration,
                 contactAttemptConfiguration
         );

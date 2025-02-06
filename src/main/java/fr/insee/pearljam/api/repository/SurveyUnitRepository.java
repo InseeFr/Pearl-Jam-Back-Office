@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -32,9 +31,9 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	List<String> findIdsByInterviewerId(String idInterviewer);
 	
 	/**
-	* This method retrieve all Id of SurveyUnits with a certain state and idInterviewer in DB 
+	* This method count SurveyUnits with contactOutcome = INA and states contains TBR
 	* 
-	* @return List of all {@link SurveyUnit}
+	* @return count of matching surveyUnits {@link Integer}
 	*/
 	@Query(value="SELECT COUNT(DISTINCT su.id) FROM state s " + 
 			"JOIN survey_unit su ON s.survey_unit_id=su.id " + 
@@ -60,28 +59,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
 
-	@Query(value="SELECT DISTINCT(su.id) as id FROM survey_unit su " + 
-			"INNER JOIN campaign camp on camp.id = su.campaign_id " +
-			"INNER JOIN visibility vi ON vi.campaign_id = camp.id "+
-			"INNER JOIN organization_unit ou ON ou.id = vi.organization_unit_id "+
-			"WHERE ou.id=su.organization_unit_id AND camp.id =?1 AND ou.id ILIKE ?2", nativeQuery=true)
-	List<String> findIdsByCampaignIdAndOu(String id, String ouId);
-	
-	
-	 @Query(value="SELECT su FROM SurveyUnit su " + 
-			"WHERE EXISTS (SELECT vi FROM VisibilityDB vi " +
-			"WHERE vi.campaign.id = su.campaign.id " +
-			"AND vi.organizationUnit.id = su.organizationUnit.id " +
-			"AND vi.collectionEndDate < ?1 " +
-			"AND vi.endDate > ?1) " +
-			"AND NOT EXISTS (" +
-			"SELECT st FROM State st WHERE " +
-			"st.surveyUnit.id = su.id " +
-			"AND st.type IN ('CLO', 'FIN', 'TBR') " +
-			")")
-	List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date);
-	 
-	@Query(value="SELECT su.id FROM SurveyUnit su " + 
+	@Query(value="SELECT su.id FROM SurveyUnit su " +
 	"WHERE su.organizationUnit.id IN (:lstOuId) " +
 	// in campaign with expected IdentificationConfiguration
 	"AND su.campaign.identificationConfiguration = :config " +
@@ -183,9 +161,6 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 
 	List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId);
 
-	@Modifying
-	@Query(value="UPDATE survey_unit SET interviewer_id=NULL", nativeQuery=true)
-	void updateAllinterviewersToNull();
 
 	@Query(value="SELECT su FROM SurveyUnit su WHERE "
 			+ "su.id=:id AND su.organizationUnit.id IN (:OUids)")

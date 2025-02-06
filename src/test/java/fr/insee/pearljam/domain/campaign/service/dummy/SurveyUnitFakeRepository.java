@@ -37,16 +37,6 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<String> findIdsByCampaignIdAndOu(String id, String ouId) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findAllSurveyUnitsInProcessingPhase(Long date) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(Long date, List<String> lstOuId, IdentificationConfiguration config) {
         return List.of();
     }
@@ -81,10 +71,6 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
         return List.of();
     }
 
-    @Override
-    public void updateAllinterviewersToNull() {
-
-    }
 
     @Override
     public List<SurveyUnit> findByIdInOrganizationalUnit(String id, List<String> organizationalUnitIds) {
@@ -108,12 +94,12 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public void setInterviewer(List<String> surveyUnitIds, String interviewerId) {
-
+        //not used yet
     }
 
     @Override
     public void flush() {
-
+        //not used yet
     }
 
     @Override
@@ -128,17 +114,17 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<SurveyUnit> entities) {
-
+        //not used yet
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<String> strings) {
-
+        //not used yet
     }
 
     @Override
     public void deleteAllInBatch() {
-
+        //not used yet
     }
 
     @Override
@@ -228,27 +214,27 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public void deleteById(String s) {
-
+        //not used yet
     }
 
     @Override
     public void delete(SurveyUnit entity) {
-
+        //not used yet
     }
 
     @Override
     public void deleteAllById(Iterable<? extends String> strings) {
-
+        //not used yet
     }
 
     @Override
     public void deleteAll(Iterable<? extends SurveyUnit> entities) {
-
+        //not used yet
     }
 
     @Override
     public void deleteAll() {
-
+        //not used yet
     }
 
     @Override

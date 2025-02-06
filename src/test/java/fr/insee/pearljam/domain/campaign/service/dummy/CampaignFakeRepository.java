@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class CampaignFakeRepository implements CampaignRepository {
 
-    private List<Campaign> campaigns = new ArrayList<>();
+    private final List<Campaign> campaigns = new ArrayList<>();
 
     @Getter
     private Campaign savedCampaign;
