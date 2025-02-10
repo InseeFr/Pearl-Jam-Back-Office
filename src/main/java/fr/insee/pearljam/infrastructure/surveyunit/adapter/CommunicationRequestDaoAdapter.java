@@ -49,19 +49,27 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
 
   @Override
   public Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId,
-      CommunicationType type) {
+      CommunicationType type, Long date) {
 
 
     return communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationType(
-        campaignId, type);
+        campaignId, type, date);
+  }
+
+  @Override
+  public Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId,
+      CommunicationType type, Long date, List<String> ouIds) {
+
+    return communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+        campaignId, type, date, ouIds);
   }
 
   @Override
   public List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(
-      Set<String> interviewersId, CommunicationType type) {
+      Set<String> interviewersId, CommunicationType type, List<String> ouIds, Long date) {
 
     return communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
-        interviewersId, type);
+        interviewersId, type, ouIds, date);
   }
 
 }

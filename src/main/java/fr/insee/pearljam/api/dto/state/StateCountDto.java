@@ -10,7 +10,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -67,14 +67,24 @@ public class StateCountDto {
 	@SuppressWarnings("null") // to refactor with typed input
 	private void dispatchAttributeValues(Map<String, Long> obj, List<String> fieldKeys) {
 		boolean nullOrEmpty = (obj == null || obj.isEmpty());
+
 		for (String str : fieldKeys) {
 			if (nullOrEmpty) {
 				setLongField(str, 0L);
 			} else {
-				setLongField(str, Optional.ofNullable(obj.get(str.toUpperCase())).orElse(0L));
+				// Recherche insensible à la casse
+				Long value = obj.entrySet().stream()
+						.filter(entry -> entry.getKey().equalsIgnoreCase(str))
+						.map(Map.Entry::getValue)
+						.filter(Objects::nonNull)
+						.findFirst()
+						.orElse(0L);
+
+				setLongField(str, value);
 			}
 		}
 	}
+
 
 	private void setLongField(String fieldName, Long value) {
 		try {
