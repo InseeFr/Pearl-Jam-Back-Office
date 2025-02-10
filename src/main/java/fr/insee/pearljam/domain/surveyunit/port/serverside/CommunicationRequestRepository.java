@@ -18,7 +18,9 @@ public interface CommunicationRequestRepository {
   void addCommunicationRequests(SurveyUnit surveyUnit,
       List<CommunicationRequest> communicationRequests);
 
-  Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId, CommunicationType type);
+  Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId, CommunicationType type, Long date);
 
-  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(Set<String> interviewerId, CommunicationType type);
+  Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId, CommunicationType type, Long date, List<String> ouIds);
+
+  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
 }
