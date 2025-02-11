@@ -220,13 +220,13 @@ public class StateServiceImpl implements StateService {
     Set<String> interviewerIds = interviewerRepository.findIdsByOrganizationUnits(userOrgUnitIds);
 
     Map<String, Long> noticeCounts = communicationRequestRepository
-        .getCommunicationRequestCountByInterviewersAndCommunicationType(interviewerIds,
+        .getCommunicationRequestCountByInterviewersAndCommunicationType(campaignIds, interviewerIds,
             CommunicationType.NOTICE, userOrgUnitIds, dateToUse)
         .stream()
         .collect(Collectors.toMap(InterviewerCountDto::interviewerId, InterviewerCountDto::count));
 
     Map<String, Long> reminderCounts = communicationRequestRepository
-        .getCommunicationRequestCountByInterviewersAndCommunicationType(interviewerIds,
+        .getCommunicationRequestCountByInterviewersAndCommunicationType(campaignIds, interviewerIds,
             CommunicationType.REMINDER, userOrgUnitIds, dateToUse)
         .stream()
         .collect(Collectors.toMap(InterviewerCountDto::interviewerId, InterviewerCountDto::count));
