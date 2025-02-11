@@ -22,5 +22,5 @@ public interface CommunicationRequestRepository {
 
   Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId, CommunicationType type, Long date, List<String> ouIds);
 
-  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
+  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(List<String> campaignIds, Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
 }
