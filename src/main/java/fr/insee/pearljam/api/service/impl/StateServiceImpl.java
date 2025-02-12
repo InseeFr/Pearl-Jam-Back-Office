@@ -86,14 +86,16 @@ public class StateServiceImpl implements StateService {
         Constants.GUEST)) {
       Map<String, Long> stateCounts = new HashMap<>(
           stateRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
-          stateCounts.put(Constants.NOTICE_COUNT,
-                  communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
-                      List.of(campaignId), Set.of(interviewerId),CommunicationType.NOTICE, userOuIds, dateToUse).getFirst()
-                      .count());
-          stateCounts.put(Constants.REMINDER_COUNT,
-                  communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
-                      List.of(campaignId), Set.of(interviewerId), CommunicationType.REMINDER, userOuIds, dateToUse).getFirst()
-                      .count());
+      stateCounts.put(Constants.NOTICE_COUNT,
+          communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
+                  List.of(campaignId), Set.of(interviewerId), CommunicationType.NOTICE, userOuIds, dateToUse)
+              .stream().findFirst().map(InterviewerCountDto::count).orElse(0L));
+
+      stateCounts.put(Constants.REMINDER_COUNT,
+          communicationRequestRepository.getCommunicationRequestCountByInterviewersAndCommunicationType(
+                  List.of(campaignId), Set.of(interviewerId), CommunicationType.REMINDER, userOuIds, dateToUse)
+              .stream().findFirst().map(InterviewerCountDto::count).orElse(0L));
+
 
 
       stateCountDto = new StateCountDto(stateCounts);
