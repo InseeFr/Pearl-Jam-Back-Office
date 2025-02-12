@@ -15,7 +15,7 @@ public interface CommunicationRequestJpaRepository extends
    * Compte le nombre de demandes de communication pour une campagne et un type donné.
    */
   @Query("""
-      SELECT COUNT(crs)
+       SELECT COUNT(DISTINCT cr.id)
       FROM communication_request cr
       INNER JOIN cr.surveyUnit su
       INNER JOIN su.campaign c
@@ -33,7 +33,7 @@ public interface CommunicationRequestJpaRepository extends
       CommunicationType type, Long date);
 
   @Query("""
-      SELECT COUNT(crs)
+      SELECT COUNT(DISTINCT cr.id)
       FROM communication_request cr
       INNER JOIN cr.surveyUnit su
       INNER JOIN su.campaign c
@@ -55,7 +55,7 @@ public interface CommunicationRequestJpaRepository extends
    * Compte le nombre de demandes de communication par enquêteur pour un type donné.
    */
   @Query("""
-    SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(crs))
+    SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(DISTINCT cr.id))
     FROM communication_request cr
     INNER JOIN cr.surveyUnit su
     INNER JOIN su.campaign c
