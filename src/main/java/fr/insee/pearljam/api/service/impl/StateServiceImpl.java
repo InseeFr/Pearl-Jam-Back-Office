@@ -84,8 +84,17 @@ public class StateServiceImpl implements StateService {
     }
     if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(
         Constants.GUEST)) {
-      stateCountDto = new StateCountDto(
+      Map<String, Long> stateCounts = new HashMap<>(
           stateRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
+          stateCounts.put(Constants.NOTICE_COUNT,
+                  communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+                      campaignId, CommunicationType.NOTICE, dateToUse, userOuIds));
+          stateCounts.put(Constants.REMINDER_COUNT,
+                  communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+                      campaignId, CommunicationType.REMINDER, dateToUse, userOuIds));
+
+
+      stateCountDto = new StateCountDto(stateCounts);
       stateCountDto.addClosingCauseCount(
           closingCauseRepository.getStateClosedByClosingCauseCount(campaignId,
               interviewerId, userOuIds, dateToUse));
