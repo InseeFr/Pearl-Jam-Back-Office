@@ -1,18 +1,35 @@
 package fr.insee.pearljam.api.controller;
 
-import java.util.List;
-import java.util.Set;
-
-import fr.insee.pearljam.api.dto.surveyunit.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.domain.ClosingCauseType;
+import fr.insee.pearljam.api.domain.Response;
+import fr.insee.pearljam.api.domain.StateType;
+import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.domain.SurveyUnitTempZone;
+import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
+import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.domain.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,19 +39,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import fr.insee.pearljam.domain.security.model.AuthorityRole;
-import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.service.SurveyUnitService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnit}
@@ -45,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @Tag(name = "02. Survey-units", description = "Endpoints for survey-units")
-@RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @Slf4j
 @Validated
@@ -61,7 +66,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Create survey-units")
-	@PostMapping(path = "/survey-units")
+	@PostMapping(Constants.API_SURVEYUNITS)
 	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitContextDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
@@ -77,7 +82,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Assign SurveyUnits to interviewers")
-	@PostMapping(path = "/survey-units/interviewers")
+	@PostMapping(Constants.API_SURVEYUNITS_INTERVIEWERS)
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
 		log.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(),
@@ -93,7 +98,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get SurveyUnits")
-	@GetMapping(path = "/survey-units")
+	@GetMapping(Constants.API_SURVEYUNITS)
 	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
 						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = authenticatedUserService.getCurrentUserId();
@@ -114,7 +119,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
-	@GetMapping(path = {"/interviewer/survey-unit/{id}", "/survey-unit/{id}"})
+	@GetMapping(path = {Constants.API_SURVEYUNIT_ID_INTERVIEWER, Constants.API_SURVEYUNIT_ID})
 	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
@@ -128,7 +133,7 @@ public class SurveyUnitController {
 	 * @throws EntityNotFoundException exception thrown if entity not found
 	 */
 	@Operation(summary = "Update the Survey Unit")
-	@PutMapping(path = "/survey-unit/{id}")
+	@PutMapping(Constants.API_SURVEYUNIT_ID)
 	public SurveyUnitDetailDto updateSurveyUnit(
 			@Valid @NotNull @RequestBody SurveyUnitUpdateDto surveyUnitUpdateDto,
 			@PathVariable(value = "id") String id) throws EntityNotFoundException {
@@ -143,7 +148,7 @@ public class SurveyUnitController {
 	 * This method is used to post a survey-unit by id to a temp-zone
 	 */
 	@Operation(summary = "Post survey-unit to temp-zone")
-	@PostMapping(path = "/survey-unit/{id}/temp-zone")
+	@PostMapping(Constants.API_SURVEYUNIT_ID_TEMP_ZONE)
 	public ResponseEntity<Object> postSurveyUnitByIdInTempZone(
 			@RequestBody JsonNode surveyUnit,
 			@PathVariable(value = "id") String id) {
@@ -157,7 +162,7 @@ public class SurveyUnitController {
 	 * This method is used to retrieve survey-units in temp-zone
 	 */
 	@Operation(summary = "GET all survey-units in temp-zone")
-	@GetMapping(path = "/survey-units/temp-zone")
+	@GetMapping(Constants.API_SURVEYUNITS_TEMP_ZONE)
 	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
 		List<SurveyUnitTempZone> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
 		log.info("GET survey-units in temp-zone resulting in 200");
@@ -172,7 +177,7 @@ public class SurveyUnitController {
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
-	@PutMapping(path = "/survey-unit/{id}/state/{state}")
+	@PutMapping(Constants.API_SURVEYUNIT_ID_STATE)
 	public ResponseEntity<Object> updateSurveyUnitState(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "state") StateType state) {
@@ -191,7 +196,7 @@ public class SurveyUnitController {
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Closes a survey unit")
-	@PutMapping(path = "/survey-unit/{id}/close/{closingCause}")
+	@PutMapping(Constants.API_SURVEYUNIT_ID_CLOSE)
 	public ResponseEntity<Object> closeSurveyUnit(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
@@ -212,7 +217,7 @@ public class SurveyUnitController {
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Add Closing cause")
-	@PutMapping(path = "/survey-unit/{id}/closing-cause/{closingCause}")
+	@PutMapping(Constants.API_SURVEYUNIT_ID_CLOSINGCAUSE)
 	public ResponseEntity<Object> updateClosingCause(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
@@ -223,7 +228,7 @@ public class SurveyUnitController {
 	}
 
 	@Operation(summary = "Update the state of Survey Units listed in request body")
-	@PutMapping(path = "/survey-unit/{id}/viewed")
+	@PutMapping(Constants.API_SURVEYUNIT_ID_VIEWED)
 	public ResponseEntity<Object> updateSurveyUnitViewed(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus returnCode = surveyUnitService.updateSurveyUnitViewed(userId, surveyUnitId);
@@ -240,7 +245,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
 	@Operation(summary = "Get Survey Units in target campaign")
-	@GetMapping(path = "/campaign/{id}/survey-units")
+	@GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(
 			@PathVariable(value = "id") String id, 
 			@RequestParam(value = "state", required = false) String state) {
@@ -261,7 +266,7 @@ public class SurveyUnitController {
 	 * @return {@link HabilitationDto} the habilitation object
 	 */
 	@Operation(summary = "Check habilitation")
-	@GetMapping(path = "/check-habilitation")
+	@GetMapping(Constants.API_CHECK_HABILITATION)
 	public ResponseEntity<HabilitationDto> checkHabilitation(
 			@RequestParam(value = "id") String surveyUnitId,
 			@RequestParam(value = "role", required = false) String role) {
@@ -308,7 +313,7 @@ public class SurveyUnitController {
 	 *         or NOT_FOUND
 	 */
 	@Operation(summary = "Get states of given survey unit")
-	@GetMapping(path = "/survey-unit/{id}/states")
+	@GetMapping(Constants.API_SURVEYUNIT_ID_STATES)
 	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(
 			@PathVariable(value = "id") String id) {
 
@@ -329,7 +334,7 @@ public class SurveyUnitController {
 	 *         or NOT_FOUND
 	 */
 	@Operation(summary = "Get closable survey units")
-	@GetMapping(path = "/survey-units/closable")
+	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
 	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
 
 		String userId = authenticatedUserService.getCurrentUserId();
@@ -345,7 +350,7 @@ public class SurveyUnitController {
 	 * @param surveyUnitId the id of survey-unit
 	 */
 	@Operation(summary = "Delete survey-unit")
-	@DeleteMapping(path = "/survey-unit/{id}")
+	@DeleteMapping(Constants.API_SURVEYUNIT_ID)
 	public void deleteSurveyUnit(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to DELETE survey-unit {}", userId, surveyUnitId);
@@ -359,7 +364,7 @@ public class SurveyUnitController {
 	 * @return List of {@link String}
 	 */
 	@Operation(summary = "Get survey units id")
-	@GetMapping(path = "/admin/survey-units")
+	@GetMapping(Constants.API_ADMIN_SURVEYUNITS)
 	public ResponseEntity<List<String>> getAllSurveyUnitsId() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> suIds = surveyUnitService.getAllIds();
@@ -374,7 +379,7 @@ public class SurveyUnitController {
 	 * @return List of {@link String}
 	 */
 	@Operation(summary = "Get survey units id by campaign")
-	@GetMapping(path = "/admin/campaign/{id}/survey-units")
+	@GetMapping(Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(@PathVariable(value = "id") String id) {
 		List<String> suIds = surveyUnitService.getAllIdsByCampaignId(id);
 		log.info("GET admin survey units for campaign {} resulting in 200", id);

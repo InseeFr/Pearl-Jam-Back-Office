@@ -86,8 +86,8 @@ class StateServiceImplTest {
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(Arrays.asList("campaign1", "campaign2"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
     when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
 
     // When
@@ -98,7 +98,7 @@ class StateServiceImplTest {
     verify(userService).getUserOUs(userId, true);
     verify(campaignRepository).findAllCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"));
     verify(stateRepository, times(2)).getStateCountSumByCampaign(anyString(), anyList(), eq(date));
-    verify(communicationRequestRepository, times(4)).getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(anyString(), any(), eq(date), anyList());
+    verify(communicationRequestRepository, times(4)).getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), any(), eq(date), anyList());
   }
 
   @Test
@@ -109,8 +109,8 @@ class StateServiceImplTest {
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
     when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
 
     // When

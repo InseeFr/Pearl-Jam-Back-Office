@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
@@ -15,12 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @Slf4j
 public class ContactOutcomeController {
@@ -37,7 +36,7 @@ public class ContactOutcomeController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get Contact-outcomes count for non attributted SUs")
-  @GetMapping(path = "/campaign/{id}/survey-units/not-attributed/contact-outcomes")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(
       @PathVariable(value = "id") String id,
       @RequestParam(required = false, name = "date") Long date) {
@@ -64,7 +63,7 @@ public class ContactOutcomeController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")
-  @GetMapping(path = "/campaigns/survey-units/contact-outcomes")
+  @GetMapping(Constants.API_CAMPAIGNS_SU_CONTACTOUTCOMES)
   public ResponseEntity<List<ContactOutcomeTypeCountDto>> getCampaignsContactOutcomeTypeCount(
       @RequestParam(required = false, name = "date") Long date) {
     String userId = authenticatedUserService.getCurrentUserId();
@@ -89,7 +88,7 @@ public class ContactOutcomeController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")
-  @GetMapping(path = "/campaign/{id}/survey-units/contact-outcomes")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(
       @PathVariable(value = "id") String id,
       @RequestParam(required = false, name = "date") Long date) {
@@ -117,7 +116,7 @@ public class ContactOutcomeController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get contact-outcome type for an interviewer on a specific campaign")
-  @GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/contact-outcomes")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) {

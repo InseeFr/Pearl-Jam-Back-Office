@@ -12,7 +12,12 @@ public interface CommunicationRequestJpaRepository extends
     JpaRepository<CommunicationRequestDB, Long> {
 
   /**
-   * Compte le nombre de demandes de communication pour une campagne et un type donné.
+   * Counts the number of communication requests for a given campaign and communication type.
+   *
+   * @param campaignId The ID of the campaign.
+   * @param type The type of communication.
+   * @param date The reference date for filtering requests.
+   * @return The number of communication requests matching the criteria.
    */
   @Query("""
        SELECT COUNT(DISTINCT cr.id)
@@ -32,6 +37,15 @@ public interface CommunicationRequestJpaRepository extends
   Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId,
       CommunicationType type, Long date);
 
+  /**
+   * Counts the number of communication requests for a campaign, communication type, and a given organization unit.
+   *
+   * @param campaignId The ID of the campaign.
+   * @param type The type of communication.
+   * @param date The reference date for filtering requests.
+   * @param ouIds The list of organization unit IDs.
+   * @return The number of communication requests matching the criteria.
+   */
   @Query("""
       SELECT COUNT(DISTINCT cr.id)
       FROM communication_request cr
@@ -48,11 +62,18 @@ public interface CommunicationRequestJpaRepository extends
       AND crs.status = SUBMITTED
       AND su.organizationUnit.id IN (:ouIds)
       """)
-  Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId,
+  Long getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(String campaignId,
       CommunicationType type, Long date, List<String> ouIds);
 
   /**
-   * Compte le nombre de demandes de communication par enquêteur pour un type donné.
+   * Counts the number of communication requests per interviewer for a given communication type.
+   *
+   * @param campaignIds The list of campaign IDs.
+   * @param interviewerIds The set of interviewer IDs.
+   * @param type The type of communication.
+   * @param ouIds The list of organization unit IDs.
+   * @param date The reference date for filtering requests.
+   * @return A list of {@link InterviewerCountDto} containing interviewer IDs and their respective request counts.
    */
   @Query("""
     SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(DISTINCT cr.id))

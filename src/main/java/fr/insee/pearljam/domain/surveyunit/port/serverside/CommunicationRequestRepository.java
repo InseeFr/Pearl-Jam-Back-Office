@@ -20,7 +20,7 @@ public interface CommunicationRequestRepository {
 
   Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId, CommunicationType type, Long date);
 
-  Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId, CommunicationType type, Long date, List<String> ouIds);
+  Long getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(String campaignId, CommunicationType type, Long date, List<String> ouIds);
 
   List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(List<String> campaignIds, Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
 }

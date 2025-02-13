@@ -130,10 +130,10 @@ public class StateServiceImpl implements StateService {
         Map<String, Long> stateCountsByCampaign = new HashMap<>(
             stateRepository.getStateCountByCampaignAndOU(campaignId, id, dateToUse));
         stateCountsByCampaign.put(Constants.NOTICE_COUNT,
-            communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+            communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(
                 campaignId, CommunicationType.NOTICE, dateToUse, List.of(id)));
         stateCountsByCampaign.put(Constants.REMINDER_COUNT,
-            communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+            communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(
                 campaignId, CommunicationType.REMINDER, dateToUse, List.of(id)));
 
         StateCountDto dto = new StateCountDto(id, organizationUnitRepository.findLabel(id), stateCountsByCampaign);
@@ -186,10 +186,10 @@ public class StateServiceImpl implements StateService {
       Map<String, Long> stateCountsByCampaign = new HashMap<>(
           stateRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse));
       stateCountsByCampaign.put(Constants.NOTICE_COUNT,
-          communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+          communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(
               id, CommunicationType.NOTICE, dateToUse, userOrgUnitIds));
       stateCountsByCampaign.put(Constants.REMINDER_COUNT,
-          communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(
+          communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(
               id, CommunicationType.REMINDER, dateToUse, userOrgUnitIds));
       StateCountDto campaignSum = new StateCountDto(stateCountsByCampaign);
       campaignSum.addClosingCauseCount(
@@ -209,7 +209,7 @@ public class StateServiceImpl implements StateService {
     List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(
         userService.getUserOUs(userId, true).stream()
             .map(OrganizationUnitDto::getId)
-            .collect(Collectors.toList())
+            .toList()
     );
     return getStateCountByInterviewerCommon(userId, campaignIds, date);
   }

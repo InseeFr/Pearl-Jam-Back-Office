@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
@@ -15,12 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api")
 @Tag(name = "07. State-count", description = "Endpoints for state counts")
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class StateController {
    * FORBIDDEN
    */
   @Operation(summary = "Get interviewerStateCount")
-  @GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/state-count")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT)
   public ResponseEntity<StateCountDto> getInterviewerStateCount(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) {
@@ -68,7 +67,7 @@ public class StateController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get interviewersStateCount")
-  @GetMapping(path = "/campaign/{id}/interviewers/state-count")
+  @GetMapping(Constants.API_CAMPAIGN_ID_INTERVIEWERS_STATECOUNT)
   public ResponseEntity<List<StateCountDto>> getInterviewersStateCountByCampaign(
       @PathVariable(value = "id") String id,
       @RequestParam(required = false, name = "date") Long date) {
@@ -92,7 +91,7 @@ public class StateController {
    * FORBIDDEN
    */
   @Operation(summary = "Get state count for non attributted SUs")
-  @GetMapping(path = "/campaign/{id}/survey-units/not-attributed/state-count")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT)
   public ResponseEntity<StateCountDto> getNbSUNotAttributedStateCount(
       @PathVariable(value = "id") String id,
       @RequestParam(required = false, name = "date") Long date) {
@@ -118,7 +117,7 @@ public class StateController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")
-  @GetMapping(path = "/campaign/{id}/survey-units/state-count")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_STATECOUNT)
   public ResponseEntity<StateCountCampaignDto> getCampaignStateCount(
       @PathVariable(value = "id") String id,
       @RequestParam(required = false, name = "date") Long date) {
@@ -143,7 +142,7 @@ public class StateController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get interviewersStateCount")
-  @GetMapping(path = "/interviewers/survey-units/state-count")
+  @GetMapping(Constants.API_INTERVIEWERS_SU_STATECOUNT)
   public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(
       @RequestParam(required = false, name = "date") Long date) {
     String userId = authenticatedUserService.getCurrentUserId();
@@ -165,7 +164,7 @@ public class StateController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")
-  @GetMapping(path = "/campaigns/survey-units/state-count")
+  @GetMapping(Constants.API_CAMPAIGNS_SU_STATECOUNT)
   public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(
       @RequestParam(required = false, name = "date") Long date) {
     String userId = authenticatedUserService.getCurrentUserId();
