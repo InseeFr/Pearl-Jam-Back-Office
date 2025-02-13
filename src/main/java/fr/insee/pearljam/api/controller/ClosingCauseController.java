@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ClosingCauseService;
@@ -14,12 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api")
 @Tag(name = "06. Closing causes", description = "Endpoints for closing causes")
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class ClosingCauseController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get interviewerStateCount")
-  @GetMapping(path = "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes")
+  @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES)
   public ResponseEntity<ClosingCauseCountDto> getClosingCauseCount(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) {

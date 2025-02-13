@@ -29,7 +29,7 @@ public class CommunicationRequestFakeRepository implements CommunicationRequestR
   }
 
   @Override
-  public Long getCommunicationRequestCountByCampaignAndCommunicationTypeByOU(String campaignId,
+  public Long getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(String campaignId,
       CommunicationType type, Long date, List<String> ouIds) {
     return 0L;
   }
