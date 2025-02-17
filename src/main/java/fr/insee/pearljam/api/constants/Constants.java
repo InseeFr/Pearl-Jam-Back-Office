@@ -9,7 +9,6 @@ public class Constants {
 
 	public static final String INTERVIEWER = "interviewer";
 	public static final String REVIEWER = "reviewer";
-	public static final String USER = "user";
 	public static final String GUEST = "GUEST";
 	public static final String AUTHORIZATION = "Authorization";
 
@@ -131,7 +130,6 @@ public class Constants {
 	public static final String UCD_COUNT = "ucdCount";
 	public static final String UTR_COUNT = "utrCount";
 	public static final String ALA_COUNT = "alaCount";
-	public static final String DCD_COUNT = "dcdCount";
 	public static final String NUH_COUNT = "nuhCount";
 	public static final String DUK_COUNT = "dukCount";
 	public static final String DUU_COUNT = "duuCount";
@@ -149,7 +147,7 @@ public class Constants {
 
 	public static final List<String> CONTACT_OUTCOME_FIELDS = List.of(INA_COUNT, REF_COUNT, IMP_COUNT, UCD_COUNT,
 			UTR_COUNT,
-			ALA_COUNT, DCD_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
+			ALA_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
 
 	public static final String UNAVAILABLE = "UNAVAILABLE";
 
