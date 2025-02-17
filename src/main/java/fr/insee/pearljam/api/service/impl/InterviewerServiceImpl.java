@@ -48,7 +48,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 
 	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
-		if (!intwOpt.isPresent()) {
+		if (intwOpt.isEmpty()) {
 			return Optional.empty();
 		}
 		Interviewer intw = intwOpt.get();
@@ -59,7 +59,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 			Optional<CampaignDto> dtoOpt = dtos.stream()
 					.filter(dto -> dto.getId().equals(vi.getCampaign().getId()))
 					.findFirst();
-			if (!dtoOpt.isPresent()) {
+			if (dtoOpt.isEmpty()) {
 				dtos.add(new CampaignDto(
 						vi.getCampaign().getId(),
 						vi.getCampaign().getLabel(),
@@ -120,7 +120,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Override
 	public Set<InterviewerDto> getListInterviewers(String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 		return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
 				.map(SurveyUnit::getInterviewer)
 				.filter(Objects::nonNull)
@@ -138,7 +138,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Override
 	public boolean delete(String id) {
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
-		if (!optInterviewer.isPresent()) {
+		if (optInterviewer.isEmpty()) {
 			return false;
 		}
 		List<String> ids = surveyUnitService.getAllIdsByInterviewerId(id);
@@ -153,7 +153,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	public Optional<InterviewerContextDto> update(String id, InterviewerContextDto interviewer) {
 
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
-		if (!optInterviewer.isPresent()) {
+		if (optInterviewer.isEmpty()) {
 			return Optional.empty();
 		}
 		Interviewer interviewerToUpdate = optInterviewer.get();

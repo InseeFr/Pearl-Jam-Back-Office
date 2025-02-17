@@ -52,7 +52,7 @@ public record SurveyUnitInterviewerResponseDto(
 				.getStates()
 				.stream()
 				.sorted(Comparator.comparing(State::getDate, Comparator.nullsLast(Comparator.reverseOrder())))
-				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
+				.filter(s -> BusinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
 				.map(StateDto::new)
 				.toList();
 		ContactOutcomeDto contactOutcome = null;

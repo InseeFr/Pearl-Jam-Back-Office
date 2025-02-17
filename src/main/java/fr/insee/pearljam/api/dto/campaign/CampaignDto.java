@@ -1,10 +1,6 @@
 package fr.insee.pearljam.api.dto.campaign;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
@@ -12,6 +8,8 @@ import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -38,18 +36,6 @@ public class CampaignDto {
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private List<ReferentDto> referents;
-
-	public CampaignDto(String id, String label) {
-		super();
-		this.id = id;
-		this.label = label;
-	}
-
-	public CampaignDto(Campaign camp) {
-		super();
-		this.id = camp.getId();
-		this.label = camp.getLabel();
-	}
 
 	public CampaignDto(String id, String label, Long managementStartDate, Long endDate) {
 		super();

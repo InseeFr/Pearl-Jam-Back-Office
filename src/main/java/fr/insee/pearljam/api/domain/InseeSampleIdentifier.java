@@ -1,18 +1,19 @@
 package fr.insee.pearljam.api.domain;
 
+import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
+
+import java.io.Serial;
 
 /**
  * Entity InseeSampleIdentifier : represent the entity table in DB
- * 
+ *
  * @author Claudel Benjamin
- * 
  */
 @Entity
 @Getter
@@ -20,9 +21,8 @@ import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InseeSampleIdentifier extends SampleIdentifier {
-	/**
-	 * 
-	 */
+
+	@Serial
 	private static final long serialVersionUID = 1044333540440142996L;
 	@Column
 	private Integer bs;

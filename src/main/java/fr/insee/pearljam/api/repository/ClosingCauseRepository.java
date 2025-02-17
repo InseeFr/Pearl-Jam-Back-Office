@@ -1,13 +1,12 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.List;
-import java.util.Map;
-
+import fr.insee.pearljam.api.domain.ClosingCause;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.ClosingCause;
+import java.util.List;
+import java.util.Map;
 
 public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long> {
 	
@@ -122,32 +121,6 @@ public interface ClosingCauseRepository extends JpaRepository<ClosingCause, Long
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds, @Param("date") Long date);
 	
 	@Query(value = "SELECT "
-			+ "SUM(CASE WHEN type='NPA' THEN 1 ELSE 0 END) AS npaCount, "
-			+ "SUM(CASE WHEN type='NPI' THEN 1 ELSE 0 END) AS npiCount, "
-			+ "SUM(CASE WHEN type='NPX' THEN 1 ELSE 0 END) AS npxCount, "
-			+ "SUM(CASE WHEN type='ROW' THEN 1 ELSE 0 END) AS rowCount " 
-		+ "FROM ( "
-			+ "SELECT DISTINCT(survey_unit_id), type, date FROM closing_cause WHERE (survey_unit_id, date) IN ("
-				+ "SELECT survey_unit_id, MAX(date) FROM closing_cause WHERE survey_unit_id IN (" 
-					+ "SELECT id FROM survey_unit su "
-					+ "WHERE campaign_id IN (:campaignIds) " 
-					+ "AND organization_unit_id IN (:ouIds) "
-					// SU state needs to be CLO
-					+ "AND 'CLO' IN ( "
-						+ "SELECT type FROM state WHERE (survey_unit_id, date) IN ( "
-							+ "SELECT survey_unit_id, MAX(date) "
-							+ "FROM state where survey_unit_id = su.id GROUP BY survey_unit_id"
-						+ ")"
-					+ ") "
-					+ "AND interviewer_id IS NULL "
-				+ ") "
-				+ "AND (date<=:date OR :date<0) GROUP BY survey_unit_id"
-			+ ") " 
-		+ ") as t", nativeQuery = true)
-	Map<String,Long> getClosingCauseCountNotAttributed(@Param("campaignIds") List<String> campaignId,
-			@Param("ouIds") List<String> ouIds, @Param("date") Long date);
-	
-	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='NPA' THEN 1 ELSE 0 END) AS npaCount, "
 			+ "SUM(CASE WHEN type='NPI' THEN 1 ELSE 0 END) AS npiCount, "
 			+ "SUM(CASE WHEN type='NPX' THEN 1 ELSE 0 END) AS npxCount, "

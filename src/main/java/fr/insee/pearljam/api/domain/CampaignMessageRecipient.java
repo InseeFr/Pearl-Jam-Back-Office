@@ -1,18 +1,12 @@
 package fr.insee.pearljam.api.domain;
 
-import java.io.Serializable;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.JoinColumn;
 
-import jakarta.persistence.FetchType;
-
-import jakarta.persistence.ManyToOne;
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Entity MessageRecipient : represent the entity table in DB
@@ -28,6 +22,7 @@ import jakarta.persistence.ManyToOne;
 @NoArgsConstructor
 public class CampaignMessageRecipient implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -46,11 +41,5 @@ public class CampaignMessageRecipient implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
 	private Campaign campaign;
-
-	public CampaignMessageRecipient(Message message, Campaign campaign) {
-		super();
-		this.message = message;
-		this.campaign = campaign;
-	}
 
 }

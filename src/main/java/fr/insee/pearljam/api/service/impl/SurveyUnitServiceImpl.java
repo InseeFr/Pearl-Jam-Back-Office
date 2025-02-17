@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
@@ -134,7 +134,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public boolean canBeSeenByInterviewer(String suId) {
 		StateDto dto = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(suId);
 		StateType currentState = dto != null ? dto.getType() : null;
-		return currentState != null && BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState);
+		return currentState != null && BusinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState);
 	}
 
 	@Transactional
@@ -202,7 +202,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (Boolean.TRUE.equals(BussinessRules.shouldFallBackToTbrOrFin(dbStates))) {
+		if (Boolean.TRUE.equals(BusinessRules.shouldFallBackToTbrOrFin(dbStates))) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -410,7 +410,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
-			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
+			if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
 					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
@@ -439,7 +439,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
-			} else if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
+			} else if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
