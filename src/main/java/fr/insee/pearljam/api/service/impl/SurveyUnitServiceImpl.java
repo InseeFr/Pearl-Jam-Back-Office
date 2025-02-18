@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -15,6 +14,7 @@ import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
@@ -155,28 +155,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		updateStates(surveyUnit, surveyUnitUpdate);
 		updateContactAttempt(surveyUnit, surveyUnitUpdate);
-		updateContactOutcome(surveyUnit, surveyUnitUpdate);
 
 		surveyUnitUpdateService.updateSurveyUnitInfos(surveyUnit, surveyUnitUpdate);
 		surveyUnitRepository.save(surveyUnit);
 
 		log.info("Survey Unit {} - update complete", surveyUnitId);
 		return new SurveyUnitDetailDto(surveyUnitRepository.findById(surveyUnitId).get());
-	}
-
-	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
-		if (surveyUnitUpdateDto.contactOutcome() != null) {
-			ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit)
-					.orElseGet(ContactOutcome::new);
-			contactOutcome.setDate(surveyUnitUpdateDto.contactOutcome().getDate());
-			contactOutcome.setType(surveyUnitUpdateDto.contactOutcome().getType());
-			contactOutcome.setTotalNumberOfContactAttempts(
-					surveyUnitUpdateDto.contactOutcome().getTotalNumberOfContactAttempts());
-			contactOutcome.setSurveyUnit(surveyUnit);
-			surveyUnit.setContactOucome(contactOutcome);
-			contactOutcomeRepository.save(contactOutcome);
-		}
-		log.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
 	}
 
 	private void updateContactAttempt(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
@@ -321,6 +305,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
+	// TODO : use future identification state in rules instead of specific identification attributes
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
@@ -377,7 +362,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		ContactOutcomeDto outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
-        return switch (outcome.getType()) {
+        return switch (outcome.type()) {
             case INA, NOA -> !hasQuestionnaire;
             default -> true;
         };

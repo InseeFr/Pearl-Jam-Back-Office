@@ -9,6 +9,6 @@ public enum MessageStatusType {
 
 	REA,//Read
 	DEL,//Deleted
-	NRD;//Not read
+	NRD//Not read
 
 }
