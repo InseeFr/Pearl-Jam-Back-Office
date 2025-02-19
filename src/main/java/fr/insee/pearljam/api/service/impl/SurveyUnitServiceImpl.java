@@ -133,7 +133,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public boolean canBeSeenByInterviewer(String suId) {
 		StateDto dto = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(suId);
-		StateType currentState = dto != null ? dto.getType() : null;
+		StateType currentState = dto != null ? dto.type() : null;
 		return currentState != null && BusinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState);
 	}
 
@@ -177,11 +177,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.states() != null) {
 			surveyUnitUpdateDto.states().stream()
-					.filter(s -> s.getId() == null || !stateRepository.existsById(s.getId()))
-					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
+					.filter(s -> s.id() == null || !stateRepository.existsById(s.id()))
+					.forEach(s -> stateRepository.save(new State(s.date(), surveyUnit, s.type())));
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
-				.getType();
+				.type();
 		if (currentState == StateType.WFS) {
 			addStateAuto(surveyUnit);
 		}
@@ -394,7 +394,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).type();
 			if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
 					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
@@ -420,7 +420,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (su.isPresent()) {
 			SurveyUnit surveyUnit = su.get();
 			log.info("{} -> {}", surveyUnitId, type);
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnitId).getType();
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnitId).type();
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;

@@ -131,11 +131,6 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public boolean isPresent(String interviewerId) {
-		return interviewerRepository.existsById(interviewerId);
-	}
-
-	@Override
 	public boolean delete(String id) {
 		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
 		if (optInterviewer.isEmpty()) {

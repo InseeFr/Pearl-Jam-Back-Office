@@ -23,8 +23,6 @@ public interface InterviewerService {
 
 	Set<InterviewerDto> getListInterviewers(String userId);
 
-	boolean isPresent(String interviewerId);
-
 	boolean delete(String id);
 
 	Optional<InterviewerContextDto> update(String id, InterviewerContextDto interviewer);

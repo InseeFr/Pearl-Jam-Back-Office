@@ -22,11 +22,11 @@ public class BusinessRules {
 			case ANV:
 				return currentState == StateType.NNS;
 			case VIN:
-				return currentState == StateType.NNS || currentState == StateType.ANV;
+				return List.of(StateType.NNS,StateType.ANV).contains(currentState);
 			case FIN:
 				return currentState == StateType.TBR;
 			case WFT:
-				return currentState == StateType.FIN || currentState == StateType.TBR;
+				return List.of(StateType.FIN, StateType.TBR).contains(currentState);
 			case CLO:
 				return true;
 			default:
@@ -60,15 +60,15 @@ public class BusinessRules {
 
 	public static Boolean shouldFallBackToTbrOrFin(List<StateDto> states) {
 		// If survey-unit has NVA 'Not Visible to All' => no fall-back
-		Set<StateType> presentTypes = states.stream().map(StateDto::getType).collect(Collectors.toSet());
+		Set<StateType> presentTypes = states.stream().map(StateDto::type).collect(Collectors.toSet());
 		if (presentTypes.contains(StateType.NVA))
 			return false;
 		// Survey-unit should not already be in TBR or FIN state
-		Optional<StateDto> optCurrentState = states.stream().max(Comparator.comparingLong(StateDto::getDate));
+		Optional<StateDto> optCurrentState = states.stream().max(Comparator.comparingLong(StateDto::date));
 		if (optCurrentState.isEmpty()) {
 			return false;
 		}
-		StateType currentState = optCurrentState.get().getType();
+		StateType currentState = optCurrentState.get().type();
 		StateType[] fallBackTypes = { StateType.FIN, StateType.TBR };
 		return Arrays.stream(fallBackTypes).noneMatch(currentState::equals);
 	}

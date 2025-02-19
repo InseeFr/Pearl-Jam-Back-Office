@@ -526,7 +526,7 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		assertSame(StateType.WFT, stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc("12").getType());
+		assertSame(StateType.WFT, stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc("12").type());
 	}
 
 	/**

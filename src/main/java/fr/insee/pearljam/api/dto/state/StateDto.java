@@ -11,17 +11,4 @@ public record StateDto(
 	public StateDto(State state) {
 		this(state.getId(), state.getDate(), state.getType());
 	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public Long getDate() {
-		return date;
-	}
-
-	public StateType getType() {
-		return type;
-	}
-
 }

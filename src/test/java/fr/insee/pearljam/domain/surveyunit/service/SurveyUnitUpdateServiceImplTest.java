@@ -25,6 +25,7 @@ import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFa
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import org.junit.jupiter.api.BeforeEach;
@@ -325,6 +326,7 @@ class SurveyUnitUpdateServiceImplTest {
 	void testUpdateContactOutcome01(ContactOutcomeType input, ContactOutcomeType expected) {
 		ContactOutcomeDto contactOutcome = new ContactOutcomeDto(dateService.getCurrentTimestamp(),
 				input, 5);
+		surveyUnit.setContactOutcome(new ContactOutcomeDB(5L,dateService.getCurrentTimestamp(),ContactOutcomeType.ALA, 3,surveyUnit));
 		surveyUnitDto = createSurveyUnitDto(null, null, null, contactOutcome);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
