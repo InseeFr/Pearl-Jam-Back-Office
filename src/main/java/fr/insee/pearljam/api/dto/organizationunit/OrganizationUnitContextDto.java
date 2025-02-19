@@ -37,7 +37,7 @@ public class OrganizationUnitContextDto {
 		this.label = ou.getLabel();
 		this.type = ou.getType();
 		this.users = lstUser.stream().map(u -> new UserContextDto(u.getId(), u.getFirstName(), u.getLastName(), null,
-				null)).collect(Collectors.toList());
+				null)).toList();
 		if (lstOURef.isEmpty()) {
 			this.organisationUnitRef = null;
 		} else {

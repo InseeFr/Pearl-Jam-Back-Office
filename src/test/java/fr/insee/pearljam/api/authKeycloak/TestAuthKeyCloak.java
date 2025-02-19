@@ -105,7 +105,7 @@ class TestAuthKeyCloak {
 	 * This method set up the dataBase content
 	 */
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 

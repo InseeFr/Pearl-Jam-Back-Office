@@ -52,7 +52,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 			return Optional.empty();
 		}
 		Interviewer intw = intwOpt.get();
-		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).collect(Collectors.toList());
+		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).toList();
 		List<VisibilityDB> visibilities = visibilityRepository.findAllVisibilityBySurveyUnitIds(suIds);
 		List<CampaignDto> dtos = new ArrayList<>();
 		for (VisibilityDB vi : visibilities) {
@@ -171,7 +171,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Override
 	public List<InterviewerContextDto> getCompleteListInterviewers() {
 
-		return interviewerRepository.findAll().stream().map(InterviewerContextDto::new).collect(Collectors.toList());
+		return interviewerRepository.findAll().stream().map(InterviewerContextDto::new).toList();
 	}
 
 }
