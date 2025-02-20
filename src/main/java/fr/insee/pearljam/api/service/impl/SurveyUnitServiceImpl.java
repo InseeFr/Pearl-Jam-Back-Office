@@ -1,10 +1,9 @@
 package fr.insee.pearljam.api.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
@@ -15,6 +14,7 @@ import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
@@ -133,8 +133,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public boolean canBeSeenByInterviewer(String suId) {
 		StateDto dto = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(suId);
-		StateType currentState = dto != null ? dto.getType() : null;
-		return currentState != null && BussinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState);
+		StateType currentState = dto != null ? dto.type() : null;
+		return currentState != null && BusinessRules.stateCanBeSeenByInterviewerBussinessRules(currentState);
 	}
 
 	@Transactional
@@ -155,28 +155,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		updateStates(surveyUnit, surveyUnitUpdate);
 		updateContactAttempt(surveyUnit, surveyUnitUpdate);
-		updateContactOutcome(surveyUnit, surveyUnitUpdate);
 
 		surveyUnitUpdateService.updateSurveyUnitInfos(surveyUnit, surveyUnitUpdate);
 		surveyUnitRepository.save(surveyUnit);
 
 		log.info("Survey Unit {} - update complete", surveyUnitId);
 		return new SurveyUnitDetailDto(surveyUnitRepository.findById(surveyUnitId).get());
-	}
-
-	private void updateContactOutcome(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
-		if (surveyUnitUpdateDto.contactOutcome() != null) {
-			ContactOutcome contactOutcome = contactOutcomeRepository.findBySurveyUnit(surveyUnit)
-					.orElseGet(ContactOutcome::new);
-			contactOutcome.setDate(surveyUnitUpdateDto.contactOutcome().getDate());
-			contactOutcome.setType(surveyUnitUpdateDto.contactOutcome().getType());
-			contactOutcome.setTotalNumberOfContactAttempts(
-					surveyUnitUpdateDto.contactOutcome().getTotalNumberOfContactAttempts());
-			contactOutcome.setSurveyUnit(surveyUnit);
-			surveyUnit.setContactOucome(contactOutcome);
-			contactOutcomeRepository.save(contactOutcome);
-		}
-		log.info("Survey-unit {} - Contact outcome updated", surveyUnit.getId());
 	}
 
 	private void updateContactAttempt(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
@@ -193,16 +177,16 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void updateStates(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.states() != null) {
 			surveyUnitUpdateDto.states().stream()
-					.filter(s -> s.getId() == null || !stateRepository.existsById(s.getId()))
-					.forEach(s -> stateRepository.save(new State(s.getDate(), surveyUnit, s.getType())));
+					.filter(s -> s.id() == null || !stateRepository.existsById(s.id()))
+					.forEach(s -> stateRepository.save(new State(s.date(), surveyUnit, s.type())));
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
-				.getType();
+				.type();
 		if (currentState == StateType.WFS) {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (Boolean.TRUE.equals(BussinessRules.shouldFallBackToTbrOrFin(dbStates))) {
+		if (Boolean.TRUE.equals(BusinessRules.shouldFallBackToTbrOrFin(dbStates))) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -321,6 +305,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
+	// TODO : use future identification state in rules instead of specific identification attributes
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
@@ -377,7 +362,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		ContactOutcomeDto outcome = sudto.getContactOutcome();
 		if (outcome == null)
 			return !hasQuestionnaire;
-        return switch (outcome.getType()) {
+        return switch (outcome.type()) {
             case INA, NOA -> !hasQuestionnaire;
             default -> true;
         };
@@ -409,8 +394,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).getType();
-			if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, state))) {
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).type();
+			if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, state))) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
 					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
@@ -435,11 +420,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (su.isPresent()) {
 			SurveyUnit surveyUnit = su.get();
 			log.info("{} -> {}", surveyUnitId, type);
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnitId).getType();
+			StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnitId).type();
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
-			} else if (Boolean.TRUE.equals(BussinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
+			} else if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;

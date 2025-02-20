@@ -1,16 +1,12 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.ContactOutcome;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
+import java.util.List;
+import java.util.Map;
 
 /**
 * ContactOutcomeRepository is the repository using to access to ContactOutcome table in DB
@@ -18,21 +14,8 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 * @author scorcaud
 * 
 */
-public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, Long> {
-	/**
-	 * Retrieve all the ContactOutcome in db by the SurveyUnit associated
-	 * @param surveyUnit
-	 * @return ContactOutcome
-	 */
-	ContactOutcomeDto findDtoBySurveyUnit(SurveyUnit surveyUnit);
+public interface ContactOutcomeRepository extends JpaRepository<ContactOutcomeDB, Long> {
 
-	/**
-	 * Retrieve the ContactOutcome in db by the SurveyUnit and the type of ContactOutcome
-	 * @param SurveyUnit
-	 * @return ContactOutcome
-	 */
-	Optional<ContactOutcome> findBySurveyUnit(SurveyUnit surveyUnit);
-	
 	@Query(value = "SELECT " 
 			+ "SUM(CASE WHEN type='INA' THEN 1 ELSE 0 END) AS inaCount, "
 			+ "SUM(CASE WHEN type='REF' THEN 1 ELSE 0 END) AS refCount, "
@@ -40,7 +23,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 			+ "SUM(CASE WHEN type='UCD' THEN 1 ELSE 0 END) AS ucdCount, "
 			+ "SUM(CASE WHEN type='UTR' THEN 1 ELSE 0 END) AS utrCount, "
 			+ "SUM(CASE WHEN type='ALA' THEN 1 ELSE 0 END) AS alaCount, "
-			+ "SUM(CASE WHEN type='DCD' THEN 1 ELSE 0 END) AS dcdCount, "
 			+ "SUM(CASE WHEN type='NUH' THEN 1 ELSE 0 END) AS nuhCount, "
 			+ "SUM(CASE WHEN type='DUK' THEN 1 ELSE 0 END) AS dukCount, "
 			+ "SUM(CASE WHEN type='DUU' THEN 1 ELSE 0 END) AS duuCount, "
@@ -78,7 +60,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 			+ "SUM(CASE WHEN type='UCD' THEN 1 ELSE 0 END) AS ucdCount, "
 			+ "SUM(CASE WHEN type='UTR' THEN 1 ELSE 0 END) AS utrCount, "
 			+ "SUM(CASE WHEN type='ALA' THEN 1 ELSE 0 END) AS alaCount, "
-			+ "SUM(CASE WHEN type='DCD' THEN 1 ELSE 0 END) AS dcdCount, "
 			+ "SUM(CASE WHEN type='NUH' THEN 1 ELSE 0 END) AS nuhCount, "
 			+ "SUM(CASE WHEN type='DUK' THEN 1 ELSE 0 END) AS dukCount, "
 			+ "SUM(CASE WHEN type='DUU' THEN 1 ELSE 0 END) AS duuCount, "
@@ -116,7 +97,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 			+ "SUM(CASE WHEN type='UCD' THEN 1 ELSE 0 END) AS ucdCount, "
 			+ "SUM(CASE WHEN type='UTR' THEN 1 ELSE 0 END) AS utrCount, "
 			+ "SUM(CASE WHEN type='ALA' THEN 1 ELSE 0 END) AS alaCount, "
-			+ "SUM(CASE WHEN type='DCD' THEN 1 ELSE 0 END) AS dcdCount, "
 			+ "SUM(CASE WHEN type='NUH' THEN 1 ELSE 0 END) AS nuhCount, "
 			+ "SUM(CASE WHEN type='DUK' THEN 1 ELSE 0 END) AS dukCount, "
 			+ "SUM(CASE WHEN type='DUU' THEN 1 ELSE 0 END) AS duuCount, "
@@ -150,7 +130,6 @@ public interface ContactOutcomeRepository extends JpaRepository<ContactOutcome, 
 			+ "SUM(CASE WHEN type='UCD' THEN 1 ELSE 0 END) AS ucdCount, "
 			+ "SUM(CASE WHEN type='UTR' THEN 1 ELSE 0 END) AS utrCount, "
 			+ "SUM(CASE WHEN type='ALA' THEN 1 ELSE 0 END) AS alaCount, "
-			+ "SUM(CASE WHEN type='DCD' THEN 1 ELSE 0 END) AS dcdCount, "
 			+ "SUM(CASE WHEN type='NUH' THEN 1 ELSE 0 END) AS nuhCount, "
 			+ "SUM(CASE WHEN type='DUK' THEN 1 ELSE 0 END) AS dukCount, "
 			+ "SUM(CASE WHEN type='DUU' THEN 1 ELSE 0 END) AS duuCount, "

@@ -3,7 +3,15 @@ package fr.insee.pearljam.api.dto.interviewer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.api.domain.Interviewer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InterviewerDto {
 	private String id;
@@ -11,15 +19,6 @@ public class InterviewerDto {
 	private String interviewerLastName;
 	private Long surveyUnitCount;
 
-	
-	public InterviewerDto(String id, String interviewerFirstName, String interviewerLastName, Long surveyUnitCount) {
-		super();
-		this.id = id;
-		this.interviewerFirstName = interviewerFirstName;
-		this.interviewerLastName = interviewerLastName;
-		this.surveyUnitCount = surveyUnitCount;
-	}
-	
 	public InterviewerDto(String id, String interviewerFirstName, String interviewerLastName) {
 		super();
 		this.id = id;
@@ -33,62 +32,6 @@ public class InterviewerDto {
 		this.interviewerFirstName = interviewer.getFirstName();
 		this.interviewerLastName = interviewer.getLastName();
 	}
-	
-	
-	public InterviewerDto() {
-		super();
-	}
 
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-	/**
-	 * @return the interviewerFirstName
-	 */
-	public String getInterviewerFirstName() {
-		return interviewerFirstName;
-	}
-	/**
-	 * @param interviewerFirstName the interviewerFirstName to set
-	 */
-	public void setInterviewerFirstName(String interviewerFirstName) {
-		this.interviewerFirstName = interviewerFirstName;
-	}
-	/**
-	 * @return the interviewerLastName
-	 */
-	public String getInterviewerLastName() {
-		return interviewerLastName;
-	}
-	/**
-	 * @param interviewerLastName the interviewerLastName to set
-	 */
-	public void setInterviewerLastName(String interviewerLastName) {
-		this.interviewerLastName = interviewerLastName;
-	}
-	/**
-	 * @return the collectionEndDate
-	 */
-	public Long getSurveyUnitCount() {
-		return surveyUnitCount;
-	}
-	/**
-	 * @param surveyUnitCount the collectionEndDate to set
-	 */
-	public void setSurveyUnitCount(Long surveyUnitCount) {
-		this.surveyUnitCount = surveyUnitCount;
-	}
-	
-	
 	
 }

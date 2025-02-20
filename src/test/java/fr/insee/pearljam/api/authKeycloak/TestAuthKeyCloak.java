@@ -105,7 +105,7 @@ class TestAuthKeyCloak {
 	 * This method set up the dataBase content
 	 */
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
@@ -217,7 +217,6 @@ class TestAuthKeyCloak {
 						jsonPath("$.ucdCount").value("0"),
 						jsonPath("$.utrCount").value("0"),
 						jsonPath("$.alaCount").value("0"),
-						jsonPath("$.dcdCount").value("0"),
 						jsonPath("$.nuhCount").value("0"),
 						jsonPath("$.dukCount").value("1"),
 						jsonPath("$.duuCount").value("0"),
@@ -237,7 +236,7 @@ class TestAuthKeyCloak {
 
 	private ResultMatcher checkJsonPath(String formattablePath, String nodeAttribute, Object expectedValue) {
 		if (expectedValue instanceof Boolean) {
-			return jsonPath(String.format(formattablePath, nodeAttribute)).value((Boolean) expectedValue);
+			return jsonPath(String.format(formattablePath, nodeAttribute)).value(expectedValue);
 		} else if (expectedValue instanceof Long) {
 			return jsonPath(String.format(formattablePath, nodeAttribute)).value(((Long) expectedValue).intValue());
 		} else {
@@ -527,7 +526,7 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		assertSame(StateType.WFT, stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc("12").getType());
+		assertSame(StateType.WFT, stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc("12").type());
 	}
 
 	/**
@@ -653,7 +652,6 @@ class TestAuthKeyCloak {
 						checkJsonPath(ouJsonPath, "ucdCount", 0L),
 						checkJsonPath(ouJsonPath, "utrCount", 0L),
 						checkJsonPath(ouJsonPath, "alaCount", 0L),
-						checkJsonPath(ouJsonPath, "dcdCount", 0L),
 						checkJsonPath(ouJsonPath, "nuhCount", 0L),
 						checkJsonPath(ouJsonPath, "dukCount", 1L),
 						checkJsonPath(ouJsonPath, "duuCount", 0L),
@@ -682,7 +680,6 @@ class TestAuthKeyCloak {
 						checkJsonPath(ouJsonPath, "ucdCount", 0L),
 						checkJsonPath(ouJsonPath, "utrCount", 0L),
 						checkJsonPath(ouJsonPath, "alaCount", 0L),
-						checkJsonPath(ouJsonPath, "dcdCount", 0L),
 						checkJsonPath(ouJsonPath, "nuhCount", 0L),
 						checkJsonPath(ouJsonPath, "nuhCount", 0L),
 						checkJsonPath(ouJsonPath, "dukCount", 1L),
@@ -1062,7 +1059,6 @@ class TestAuthKeyCloak {
 						jsonPath("$.ucdCount").value(0L),
 						jsonPath("$.utrCount").value(0L),
 						jsonPath("$.alaCount").value(0L),
-						jsonPath("$.dcdCount").value(0L),
 						jsonPath("$.nuhCount").value(0L),
 						jsonPath("$.dukCount").value(0L),
 						jsonPath("$.duuCount").value(0L),

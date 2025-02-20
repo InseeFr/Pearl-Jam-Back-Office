@@ -23,9 +23,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 	Optional<Campaign> findByIdIgnoreCase(String id);
 
-	@Query(value = "SELECT c.id FROM Campaign c")
-	List<String> findAllIds();
-
 	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
 			+ "organization_unit_id IN (:OuIds) "
 			+ "AND management_start_date <= :date "

@@ -133,13 +133,13 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 		return organizationUnitRepository.findAll().stream()
 				.map(ou -> new OrganizationUnitContextDto(ou, userRepository.findAllByOrganizationUnitId(ou.getId()),
 						organizationUnitRepository.findChildrenId(ou.getId())))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
 	public HttpStatus delete(String id) {
 		Optional<OrganizationUnit> ou = organizationUnitRepository.findById(id);
-		if (!ou.isPresent()) {
+		if (ou.isEmpty()) {
 			return HttpStatus.NOT_FOUND;
 		}
 		List<SurveyUnit> lstSu = surveyUnitRepository.findByOrganizationUnitIdIn(List.of(id));
