@@ -6,18 +6,18 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
-import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationRequestJpaRepository;
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor

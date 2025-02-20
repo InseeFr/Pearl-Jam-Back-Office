@@ -53,13 +53,11 @@ class StateServiceImplTest {
 
   private String userId;
   private Long date;
-  private String campaignId;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     userId = "user1";
-    campaignId = "campaign1";
     date = System.currentTimeMillis();
   }
 
