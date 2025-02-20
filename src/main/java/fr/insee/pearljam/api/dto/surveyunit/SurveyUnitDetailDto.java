@@ -1,17 +1,17 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.bussinessrules.BussinessRules;
+import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,12 +51,12 @@ public class SurveyUnitDetailDto {
 		this.comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		this.contactAttempts = surveyUnit.getContactAttempts().stream().map(ContactAttemptDto::new)
 				.toList();
-		if (surveyUnit.getContactOucome() != null) {
-			this.contactOutcome = new ContactOutcomeDto(surveyUnit.getContactOucome());
+		if (surveyUnit.getContactOutcome() != null) {
+			this.contactOutcome = ContactOutcomeDto.fromModel(surveyUnit.getModelContactOutcome());
 		}
 		this.states = surveyUnit.getStates().stream()
 				.sorted(Comparator.comparing(State::getDate, Comparator.nullsLast(Comparator.reverseOrder())))
-				.filter(s -> BussinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
+				.filter(s -> BusinessRules.stateCanBeSeenByInterviewerBussinessRules(s.getType()))
 				.map(StateDto::new)
 				.toList();
 

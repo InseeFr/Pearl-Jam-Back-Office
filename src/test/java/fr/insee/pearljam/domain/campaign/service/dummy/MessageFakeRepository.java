@@ -81,11 +81,6 @@ public class MessageFakeRepository implements MessageRepository {
     }
 
     @Override
-    public void deleteMessageStatusByMessageId(Long messageId) {
-
-    }
-
-    @Override
     public List<Message> findAllBySenderId(String userId) {
         return List.of();
     }

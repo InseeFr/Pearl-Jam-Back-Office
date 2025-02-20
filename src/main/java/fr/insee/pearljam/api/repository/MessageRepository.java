@@ -1,16 +1,15 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import fr.insee.pearljam.api.domain.Message;
+import fr.insee.pearljam.api.dto.message.MessageDto;
+import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.Message;
-import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
+import java.util.List;
+import java.util.Optional;
 
 /**
 * MessageRepository is the repository using to access to Message table in DB
@@ -96,12 +95,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	@Query(value="DELETE FROM oumessage_recipient as oumr "
 			+ " WHERE oumr.message_id = ?1 ", nativeQuery=true)
 	void deleteOUMessageRecipientByMessageId(Long messageId);
-	
-	@Modifying
-	@Query(value="DELETE FROM message_status as ms "
-			+ " WHERE ms.message_id = ?1 ", nativeQuery=true)
-	void deleteMessageStatusByMessageId(Long messageId);
-
 	
 	List<Message> findAllBySenderId(String userId);
 

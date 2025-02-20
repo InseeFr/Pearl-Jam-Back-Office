@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;

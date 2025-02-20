@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,8 +84,8 @@ public class SurveyUnitCampaignDto {
 		this.identificationConfiguration = su.getCampaign().getIdentificationConfiguration();
 		this.interviewer = su.getInterviewer() != null ? new InterviewerDto(su.getInterviewer()) : null;
 		this.comments = CommentDto.fromModel(su.getModelComments());
-		if (su.getContactOucome() != null) {
-			this.contactOutcome = new ContactOutcomeDto(su.getContactOucome());
+		if (su.getContactOutcome() != null) {
+			this.contactOutcome = ContactOutcomeDto.fromModel(su.getModelContactOutcome());
 		}
 	}
 

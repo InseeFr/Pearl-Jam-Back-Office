@@ -1,30 +1,18 @@
 package fr.insee.pearljam.api.domain;
 
-import java.io.Serializable;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * Entity Message : represent the entity table in DB
- * 
+ *
  * @author Paul Guillemet
- * 
  */
 
 @Entity
@@ -34,9 +22,7 @@ import lombok.Setter;
 @Setter
 public class Message implements Serializable {
 
-	/**
-	 * 
-	 */
+	@Serial
 	private static final long serialVersionUID = 1439604738865064692L;
 
 	/**
@@ -62,8 +48,8 @@ public class Message implements Serializable {
 	 * The List of campaign for the Interviewer
 	 */
 	@ManyToMany
-	@JoinTable(name = "ouMessageRecipient", joinColumns = { @JoinColumn(name = "message_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "organization_unit_id") })
+	@JoinTable(name = "ouMessageRecipient", joinColumns = {@JoinColumn(name = "message_id")}, inverseJoinColumns = {
+			@JoinColumn(name = "organization_unit_id")})
 	private List<OrganizationUnit> ouMessageRecipients;
 
 	/**
@@ -71,7 +57,7 @@ public class Message implements Serializable {
 	 */
 	@ManyToMany
 	@JoinTable(name = "campaignMessageRecipient", joinColumns = {
-			@JoinColumn(name = "message_id") }, inverseJoinColumns = { @JoinColumn(name = "campaign_id") })
+			@JoinColumn(name = "message_id")}, inverseJoinColumns = {@JoinColumn(name = "campaign_id")})
 	private List<Campaign> campaignMessageRecipients;
 
 	/**
@@ -90,15 +76,6 @@ public class Message implements Serializable {
 		super();
 		this.text = text;
 		this.sender = sender;
-		this.date = date;
-	}
-
-	public Message(String text, User sender, List<OrganizationUnit> ouMessageRecipients,
-			List<Interviewer> interviewerMessageRecipients, Long date) {
-		super();
-		this.text = text;
-		this.sender = sender;
-		this.ouMessageRecipients = ouMessageRecipients;
 		this.date = date;
 	}
 

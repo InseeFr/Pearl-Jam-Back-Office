@@ -8,47 +8,30 @@ import java.util.Optional;
 import static fr.insee.pearljam.api.constants.Constants.CONTACT_OUTCOME_FIELDS;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Slf4j
 public class ContactOutcomeTypeCountDto {
 
 	private String idDem;
-
 	private String labelDem;
-
 	private CampaignDto campaign;
-
 	private Long inaCount;
-
 	private Long refCount;
-
 	private Long impCount;
-
 	private Long ucdCount;
-
 	private Long utrCount;
-
 	private Long alaCount;
-
-	private Long dcdCount;
-
 	private Long nuhCount;
-
 	private Long dukCount;
-
 	private Long duuCount;
-
 	private Long noaCount;
-
 	private Long total;
-
-	public ContactOutcomeTypeCountDto() {
-		super();
-	}
 
 	public ContactOutcomeTypeCountDto(Map<String, Long> obj) {
 		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);

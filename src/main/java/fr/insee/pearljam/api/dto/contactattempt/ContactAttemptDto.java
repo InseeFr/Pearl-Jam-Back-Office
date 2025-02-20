@@ -3,77 +3,25 @@ package fr.insee.pearljam.api.dto.contactattempt;
 import fr.insee.pearljam.api.domain.ContactAttempt;
 import fr.insee.pearljam.api.domain.Medium;
 import fr.insee.pearljam.api.domain.Status;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
 public class ContactAttemptDto {
-	
-	/**
-	 * The date of the ContactAttemptDto
-	 */
-	private Long date;
-	
-	/**
-	 * The status of the ContactAttemptDto
-	 */
-	private Status status;
 
+	private Long date;
+	private Status status;
 	private Medium medium;
-    
-	public ContactAttemptDto(Long date, Status status, Medium medium) {
-		super();
-		this.date = date;
-		this.status = status;
-		this.medium = medium;
-	}
-	
+
 	public ContactAttemptDto(ContactAttempt contactAttempt) {
 		super();
 		this.date = contactAttempt.getDate();
 		this.status = contactAttempt.getStatus();
 		this.medium = contactAttempt.getMedium();
 	}
-	
-
-	public ContactAttemptDto() {
-		super();
-	}
-
-	/**
-	 * @return the date
-	 */
-	public Long getDate() {
-		return date;
-	}
-
-	/**
-	 * @param date the date to set
-	 */
-	public void setDate(Long date) {
-		this.date = date;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public Status getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-
-	public Medium getMedium() {
-		return this.medium;
-	}
-
-	public void setMedium(Medium medium) {
-		this.medium = medium;
-	}
-
 
 	@Override
 	public String toString() {
