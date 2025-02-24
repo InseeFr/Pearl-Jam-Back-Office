@@ -63,6 +63,8 @@ class IdentificationStateTest {
     return Stream.of(
         new TestCase(null, IdentificationConfiguration.NOIDENT, IdentificationState.MISSING),
         new TestCase(null, IdentificationConfiguration.HOUSEF2F, IdentificationState.MISSING),
+        new TestCase(null, IdentificationConfiguration.INDF2F, IdentificationState.MISSING),
+        new TestCase(null, IdentificationConfiguration.INDTEL, IdentificationState.MISSING),
         new TestCase(Identification.builder().build(), IdentificationConfiguration.NOIDENT, IdentificationState.MISSING),
         new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.DESTROY, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED), IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED),
         new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.UNIDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED), IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED),
@@ -99,7 +101,9 @@ class IdentificationStateTest {
         new TestCase(buildIndividuTelIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED), IdentificationConfiguration.INDTEL, IdentificationState.FINISHED),
         new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, null, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.YES), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING),
         new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.NOORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.NO), IdentificationConfiguration.INDF2F, IdentificationState.FINISHED),
-        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ABSORBED, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, null), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING)
+        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ABSORBED, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, null), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING),
+        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED,null, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.NO), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING)
+
     );
   }
 
