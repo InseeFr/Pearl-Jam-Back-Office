@@ -31,29 +31,32 @@ class IdentificationStateTest {
     ));
   }
 
-  /// | identification  | access     | situation             | category           | occupant              | IdentificationConfiguration | État attendu |
-  /// | --------------- | ---------- | --------------------- | ------------------ | --------------------- | ---------------------------- | ------------ |
-  /// | DESTROY         | ---        | ---                   | ---                | ---                   | HOUSEF2F                    | FINISHED     |
-  /// | UNIDENTIFIED    | ---        | ---                   | ---                | ---                   | HOUSEF2F                    | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ABSORBED / NOORDINARY| ---                | ---                   | HOUSEF2F                    | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | ---                   | HOUSEF2F                    | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED / UNIDENTIFIED | HOUSEF2F                  | FINISHED     |
-  /// | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED / null   | HOUSEF2F                    | ONGOING      |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | null                  | HOUSEF2F                    | ONGOING      |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | UNIDENTIFIED          | HOUSEF2F                    | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | HOUSEF2F                    | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | INDTEL                      | FINISHED     |
-  /// | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | INDTEL                      | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | ---        | ---                   | ---                | ---                   | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ABSORBED / NOORDINARY| ---                | ---                   | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | ---                   | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED / UNIDENTIFIED | INDF2F                    | FINISHED     |
-  /// | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED / null   | INDF2F                      | ONGOING      |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | null                  | INDF2F                      | ONGOING      |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | UNIDENTIFIED          | INDF2F                      | FINISHED     |
-  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | INDF2F                      | FINISHED     |
+  /// | identification  | access     | situation             | category           | occupant              | interviewer         | IdentificationConfiguration | État attendu |
+  /// | --------------- | ---------- | --------------------- | ------------------ | --------------------- | ------------------- | ---------------------------- | ------------ |
+  /// | DESTROY         | ---        | ---                   | ---                | ---                   | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | UNIDENTIFIED    | ---        | ---                   | ---                | ---                   | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ABSORBED / NOORDINARY| ---                | ---                   | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | ---                   | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED / UNIDENTIFIED | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED / null   | ---                 | HOUSEF2F                    | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | null                  | ---                 | HOUSEF2F                    | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | HOUSEF2F                    | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
+  /// | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | ---                 | INDTEL                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ---        | ---                   | ---                | ---                   | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ABSORBED / NOORDINARY| ---                | ---                   | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | ---                   | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED / UNIDENTIFIED | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED / null   | ---                 | INDF2F                      | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | null                  | ---                 | INDF2F                      | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | SECONDARY / VACANT | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
+  /// | IDENTIFIED      | ACC / NACC | ORDINARY              | PRIMARY            | UNIDENTIFIED          | YES                 | INDF2F                      | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | ONGOING      |
+  /// | IDENTIFIED      | ACC / NACC | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
 
   private static Stream<TestCase> provideTestCases() {
     return Stream.of(
@@ -89,12 +92,12 @@ class IdentificationStateTest {
         new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.NACC, SituationQuestionValue.ABSORBED, CategoryQuestionValue.VACANT, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.NO), IdentificationConfiguration.INDF2F, IdentificationState.FINISHED),
         new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, null, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.YES), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING),
         new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.SAME_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.NOORDINARY, CategoryQuestionValue.SECONDARY, OccupantQuestionValue.UNIDENTIFIED, null), IdentificationConfiguration.INDF2F, IdentificationState.FINISHED),
-        new TestCase(buildIndividuTelIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED), IdentificationConfiguration.INDTEL, IdentificationState.FINISHED)
+        new TestCase(buildIndividuTelIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED), IdentificationConfiguration.INDTEL, IdentificationState.FINISHED),
+        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, null, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.YES), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING),
+        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.NOORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, InterviewerCanProcessQuestionValue.NO), IdentificationConfiguration.INDF2F, IdentificationState.FINISHED),
+        new TestCase(buildIndividuF2FIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.OTHER_ADDRESS, AccessQuestionValue.ACC, SituationQuestionValue.ABSORBED, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED, null), IdentificationConfiguration.INDF2F, IdentificationState.ONGOING)
     );
   }
-
-
-
 
   private static Identification buildHouseF2FIdentification(
       IdentificationQuestionValue identification,
