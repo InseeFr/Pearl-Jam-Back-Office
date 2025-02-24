@@ -94,7 +94,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
         (
             EXISTS (
                 SELECT 1
-                FROM ContactOutcome co
+                FROM ContactOutcomeDB co
                 WHERE co.surveyUnit.id = su.id
                 AND co.type = 'IMP'
             )
@@ -108,7 +108,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
         (
             NOT EXISTS (
                 SELECT 1
-                FROM ContactOutcome co
+                FROM ContactOutcomeDB co
                 WHERE co.surveyUnit.id = su.id
                 AND co.type NOT IN ('INA','NOA')
             )
@@ -123,8 +123,6 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
     )
 """)
 	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
-
-
 
 
 

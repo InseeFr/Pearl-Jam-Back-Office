@@ -1,5 +1,8 @@
 package fr.insee.pearljam.api.dto.interviewer;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Title;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class InterviewerContextDto {
 	private String id;
 	private String firstName;
@@ -34,88 +40,6 @@ public class InterviewerContextDto {
 		this.email = interviewer.getEmail();
 		this.phoneNumber = interviewer.getPhoneNumber();
 		this.title = interviewer.getTitle();
-	}
-
-	public InterviewerContextDto() {
-		super();
-	}
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the firstName
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * @param firstName the firstName to set
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * @return the lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @param lastName the lastName to set
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * @return the phoneNumber
-	 */
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	/**
-	 * @param phoneNumber the phoneNumber to set
-	 */
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public Title getTitle() {
-		return title;
-	}
-
-	public void setTitle(Title title) {
-		this.title = title;
 	}
 
 	@JsonIgnore

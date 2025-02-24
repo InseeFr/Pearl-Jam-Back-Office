@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service.impl;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
@@ -14,6 +15,7 @@ import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
 import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
@@ -64,6 +66,26 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
             .orElseGet(() -> IdentificationDB.toModel(surveyUnit.getIdentification()));
 
         surveyUnit.updateIdentification(identification);
+
+        //update ContactOutcome
+        ContactOutcome contactOutcome = ContactOutcomeDto.toModel(surveyUnit.getId(),
+            surveyUnitUpdateDto.contactOutcome());
+        contactOutcome = convertDeprecatedContactOutcomeValue(contactOutcome);
+        surveyUnit.updateContactOutcome(contactOutcome);
+    }
+
+    // when DCD and DUU values are not used anymore => to be removed
+    private ContactOutcome convertDeprecatedContactOutcomeValue(ContactOutcome contactOutcome) {
+        if (contactOutcome == null) {
+            return null;
+        }
+        return switch (contactOutcome.type()) {
+            case DCD -> new ContactOutcome(contactOutcome.id(), contactOutcome.date(), ContactOutcomeType.NOA,
+                contactOutcome.totalNumberOfContactAttempts(), contactOutcome.surveyUnitId());
+            case DUU -> new ContactOutcome(contactOutcome.id(), contactOutcome.date(), ContactOutcomeType.DUK,
+                contactOutcome.totalNumberOfContactAttempts(), contactOutcome.surveyUnitId());
+            case INA, REF, IMP, UCD, UTR, ALA, DUK, NUH, NOA -> contactOutcome;
+        };
     }
 
     /**
