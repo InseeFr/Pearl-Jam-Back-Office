@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,12 +35,21 @@ public abstract class IdentificationDB implements Serializable {
 	@Enumerated(EnumType.STRING)
 	protected IdentificationType identificationType;
 
+	@Column(name = "identification_state", insertable = false)
+	@Enumerated(EnumType.STRING)
+	protected IdentificationState identificationState;
+
 	/**
 	 * The SurveyUnit associated to Identification
 	 */
 	@OneToOne
 	protected SurveyUnit surveyUnit;
 
+	protected IdentificationDB(Long id, IdentificationType identificationType, SurveyUnit surveyUnit) {
+		this.id = id;
+		this.identificationType = identificationType;
+		this.surveyUnit = surveyUnit;
+	}
 
 	/**
 	 * return model of the db entity
@@ -62,6 +72,12 @@ public abstract class IdentificationDB implements Serializable {
 	 * @param identification model object
 	 */
 	public abstract void update(Identification identification);
+
+	public void updateIdentificationState(Identification identification, IdentificationConfiguration configuration) {
+		if (identification != null && configuration != null) {
+			this.identificationState = IdentificationState.getState(identification, configuration);
+		}
+	}
 
 	public static IdentificationDB fromModel(SurveyUnit surveyUnit,
 											 Identification identification,

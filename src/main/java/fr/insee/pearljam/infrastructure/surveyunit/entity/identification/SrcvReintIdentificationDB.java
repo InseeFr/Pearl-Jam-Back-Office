@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -82,5 +83,7 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 		this.setHouseholdComposition(identification.householdComposition());
 		this.setPresentInPreviousHome(identification.presentInPreviousHome());
 		this.setSituation(identification.situation());
+
+		updateIdentificationState(identification, IdentificationConfiguration.SRCVREINT);
 	}
 }

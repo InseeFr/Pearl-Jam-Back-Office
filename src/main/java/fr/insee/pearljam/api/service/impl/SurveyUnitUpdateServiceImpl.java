@@ -18,6 +18,8 @@ import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,11 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
             communicationRequestRepository.addCommunicationRequests(surveyUnit, communicationRequestsToCreate);
         }
         IdentificationConfiguration identificationConfiguration = surveyUnit.getCampaign().getIdentificationConfiguration();
-        Identification identification = IdentificationDto.toModel(surveyUnitUpdateDto.identification(),identificationConfiguration);
+
+        Identification identification = Optional.ofNullable(surveyUnitUpdateDto.identification())
+            .map(idDto -> IdentificationDto.toModel(idDto, identificationConfiguration))
+            .orElseGet(() -> IdentificationDB.toModel(surveyUnit.getIdentification()));
+
         surveyUnit.updateIdentification(identification);
     }
 

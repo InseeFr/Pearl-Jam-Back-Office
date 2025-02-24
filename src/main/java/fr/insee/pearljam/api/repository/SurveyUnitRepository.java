@@ -85,45 +85,46 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	")")
 	List<SurveyUnit> findClosableNoIdentSurveyUnitId(@Param("ids") List<String> ids);
 
-	@Query(value="SELECT su FROM SurveyUnit su left join fetch su.identification ident " + 
-	"WHERE su.id IN (:ids) " +
-	"AND ( "+
-		// First case : Contact outcome is IMP and identification not finished
-		"( " +
-		"EXISTS ( " +
-			"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
-			"AND co.type = 'IMP' " +
-			") "+
-			// and missing/incomplete identification
-		"AND  ( "+
-			"(ident IS NULL ) " +
-			"OR (ident.identification IS NULL )" +
-			"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NULL ) " +
-			"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation IS NULL ) " +
-			"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category IS NULL ) " +
-			"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category IN ('PRIMARY', 'OCCASIONAL', 'UNKNOWN') AND ident.occupant IS NULL ) " +
-			") "+
-		") " +
-		"OR "+
-		"( " +
-		// Second case : contact outcome must be null or INA or NOA
-			"NOT EXISTS ( "+
-				"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
-				"AND co.type NOT IN('INA','NOA')"+
-				" ) " +
-			// and identification is not started / incomplete / and doesn't lead to Out_of_scope (business rule here, not an enum)
-			"AND  ( "+
-				"(ident IS NULL ) " +
-				"OR (ident.identification IS NULL )" +
-				"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NULL ) " +
-				"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation IS NULL ) " +
-				"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category IS NULL ) " +
-				"OR (ident.identification = 'IDENTIFIED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category NOT IN ('SECONDARY', 'VACANT') ) " +
-				") " +
-		") " +
-	" )"
-	)
+	@Query(value = """
+    SELECT su
+    FROM SurveyUnit su
+    LEFT JOIN FETCH su.identification ident
+    WHERE su.id IN (:ids)
+    AND (
+        (
+            EXISTS (
+                SELECT 1
+                FROM ContactOutcome co
+                WHERE co.surveyUnit.id = su.id
+                AND co.type = 'IMP'
+            )
+            AND (
+                ident IS NULL
+                OR ident.identificationState = 'MISSING'
+                OR ident.identificationState = 'ONGOING'
+            )
+        )
+        OR
+        (
+            NOT EXISTS (
+                SELECT 1
+                FROM ContactOutcome co
+                WHERE co.surveyUnit.id = su.id
+                AND co.type NOT IN ('INA','NOA')
+            )
+            AND (
+                ident IS NULL
+                OR ident.identificationState = 'MISSING'
+                OR ident.identificationState = 'ONGOING'
+                OR (ident.identificationState = 'FINISHED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category NOT IN ('SECONDARY', 'VACANT') )
+			
+            )
+        )
+    )
+""")
 	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
+
+
 
 
 

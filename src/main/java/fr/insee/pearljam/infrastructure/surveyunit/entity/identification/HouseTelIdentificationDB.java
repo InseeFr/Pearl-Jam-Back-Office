@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -59,5 +60,7 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 		}
 		this.setSituation(identification.situation());
 		this.setCategory(identification.category());
+
+		updateIdentificationState(identification, IdentificationConfiguration.HOUSETEL);
 	}
 }
