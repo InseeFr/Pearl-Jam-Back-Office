@@ -80,7 +80,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	"WHERE su.id IN (:ids) " +
 	// Contact outcome must be null or INA
 	"AND NOT EXISTS ( " +
-		"SELECT 1 FROM ContactOutcome co WHERE co.surveyUnit.id = su.id " +
+		"SELECT 1 FROM ContactOutcomeDB co WHERE co.surveyUnit.id = su.id " +
 		"AND co.type <> 'INA' " +
 	")")
 	List<SurveyUnit> findClosableNoIdentSurveyUnitId(@Param("ids") List<String> ids);
@@ -132,7 +132,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 		+" LEFT JOIN fetch su.address"
 		+" LEFT JOIN fetch su.sampleIdentifier "
 		+" LEFT JOIN fetch su.interviewer "
-		+" LEFT JOIN fetch su.contactOucome "
+		+" LEFT JOIN fetch su.contactOutcome "
 		+" LEFT JOIN fetch su.closingCause "
 		+" LEFT JOIN fetch su.identification "
 		+ "WHERE su.campaign.id=:id AND su.organizationUnit.id IN (:lstOuId)")
