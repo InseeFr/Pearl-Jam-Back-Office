@@ -151,6 +151,109 @@ class IdentificationStateTest {
         ));
     }
 
+
+    @Test
+    @DisplayName("Given IDENTIFIED status, when identification is set, then state should be ONGOING")
+    void testStateIDENTIFIED() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            IdentificationQuestionValue.IDENTIFIED, // IDENTIFIED status
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.ONGOING);
+    }
+
+    @Test
+    @DisplayName("Given DESTROY status, when identification is set, then state should be FINISHED")
+    void testStateDESTROY() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            IdentificationQuestionValue.DESTROY, // DESTROY status
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+    }
+
+    @Test
+    @DisplayName("Given UNIDENTIFIED status, when identification is set, then state should be FINISHED")
+    void testStateUNIDENTIFIED() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            IdentificationQuestionValue.UNIDENTIFIED, // UNIDENTIFIED status
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+    }
+
+    @Test
+    @DisplayName("Given NULL identification status, when processed, then state should be MISSING")
+    void testStateWithNullIdentification() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            null, // IdentificationQuestionValue is null
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.MISSING);
+    }
+
+    @Test
+    @DisplayName("Given VACANT category, when processed, then state should be FINISHED")
+    void testStateWithVacantCategory() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            IdentificationQuestionValue.UNIDENTIFIED, // UNIDENTIFIED status
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.VACANT, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+    }
+
+    @Test
+    @DisplayName("Given IDENTIFIED status, when configuration is NOIDENT, then state should be MISSING")
+    void testStateWithNoIdentConfiguration() {
+        // Given
+        Identification identificationToCheck = new Identification(1L,
+            IdentificationType.INDTEL,
+            IdentificationQuestionValue.IDENTIFIED, // IDENTIFIED status
+            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
+            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
+
+        // When
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.NOIDENT);
+
+        // Then
+        assertThat(result).isEqualTo(IdentificationState.MISSING);
+    }
+
     /// IASCO & HOUSEF2F cases table : --- mean identificationStatus = FINISHED and question should be null and won't
     ///  be evaluated
     ///
