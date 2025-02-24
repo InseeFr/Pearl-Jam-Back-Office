@@ -77,6 +77,8 @@ class IdentificationStateTest {
         new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED), IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED),
         new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.UNIDENTIFIED), IdentificationConfiguration.HOUSEF2F, IdentificationState.FINISHED),
         new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, null,null,null), IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING),
+        new TestCase(buildHouseF2FIdentification(IdentificationQuestionValue.IDENTIFIED, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,null,null), IdentificationConfiguration.HOUSEF2F, IdentificationState.ONGOING),
+
 
         new TestCase(Identification.builder().build(), IdentificationConfiguration.HOUSETEL, IdentificationState.MISSING),
         new TestCase(buildIndividuTelIdentification(IdentificationQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.DCD, AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY, OccupantQuestionValue.IDENTIFIED), IdentificationConfiguration.INDTEL, IdentificationState.FINISHED),
