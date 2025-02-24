@@ -151,109 +151,6 @@ class IdentificationStateTest {
         ));
     }
 
-
-    @Test
-    @DisplayName("Given IDENTIFIED status, when identification is set, then state should be ONGOING")
-    void testStateIDENTIFIED() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            IdentificationQuestionValue.IDENTIFIED, // IDENTIFIED status
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.ONGOING);
-    }
-
-    @Test
-    @DisplayName("Given DESTROY status, when identification is set, then state should be ONGOING")
-    void testStateDESTROY() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            IdentificationQuestionValue.DESTROY, // DESTROY status
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.ONGOING);
-    }
-
-    @Test
-    @DisplayName("Given UNIDENTIFIED status, when identification is set, then state should be ONGOING")
-    void testStateUNIDENTIFIED() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            IdentificationQuestionValue.UNIDENTIFIED, // UNIDENTIFIED status
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.ONGOING);
-    }
-
-    @Test
-    @DisplayName("Given NULL identification status, when processed, then state should be MISSING")
-    void testStateWithNullIdentification() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            null, // IdentificationQuestionValue is null
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.MISSING);
-    }
-
-    @Test
-    @DisplayName("Given VACANT category, when processed, then state should be ONGOING")
-    void testStateWithVacantCategory() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            IdentificationQuestionValue.UNIDENTIFIED, // UNIDENTIFIED status
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.VACANT, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.ONGOING);
-    }
-
-    @Test
-    @DisplayName("Given IDENTIFIED status, when configuration is NOIDENT, then state should be MISSING")
-    void testStateWithNoIdentConfiguration() {
-        // Given
-        Identification identificationToCheck = new Identification(1L,
-            IdentificationType.INDTEL,
-            IdentificationQuestionValue.IDENTIFIED, // IDENTIFIED status
-            AccessQuestionValue.ACC, SituationQuestionValue.ORDINARY,
-            CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
-
-        // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.NOIDENT);
-
-        // Then
-        assertThat(result).isEqualTo(IdentificationState.MISSING);
-    }
-
     /// IASCO & HOUSEF2F cases table : --- mean identificationStatus = FINISHED and question should be null and won't
     ///  be evaluated
     ///
@@ -342,7 +239,80 @@ class IdentificationStateTest {
                 new TestCase(
                         Identification.builder().build(), IdentificationConfiguration.HOUSETEL,
                         IdentificationState.MISSING
-                ));
+                ),
+                // Case 19:
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.DCD,
+                    AccessQuestionValue.ACC,
+                    SituationQuestionValue.ORDINARY,
+                    CategoryQuestionValue.PRIMARY,
+                    OccupantQuestionValue.IDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.FINISHED
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.DCD,
+                    AccessQuestionValue.NACC,
+                    SituationQuestionValue.ABSORBED,
+                    CategoryQuestionValue.SECONDARY,
+                    OccupantQuestionValue.UNIDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.FINISHED
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.NOIDENT,
+                    AccessQuestionValue.ACC,
+                    SituationQuestionValue.NOORDINARY,
+                    CategoryQuestionValue.VACANT,
+                    OccupantQuestionValue.IDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.FINISHED
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.NOFIELD,
+                    AccessQuestionValue.NACC,
+                    SituationQuestionValue.ORDINARY,
+                    CategoryQuestionValue.PRIMARY,
+                    OccupantQuestionValue.UNIDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.FINISHED
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.SAME_ADDRESS,
+                    AccessQuestionValue.ACC,
+                    SituationQuestionValue.ORDINARY,
+                    CategoryQuestionValue.PRIMARY,
+                    OccupantQuestionValue.IDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.FINISHED
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+                    IndividualStatusQuestionValue.SAME_ADDRESS,
+                    AccessQuestionValue.ACC,
+                    null,
+                    CategoryQuestionValue.VACANT,
+                    OccupantQuestionValue.UNIDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.ONGOING
+            ),
+            new TestCase(
+                buildIndividuTelIdentification(
+        null,
+                    AccessQuestionValue.NACC,
+                    SituationQuestionValue.ABSORBED,
+                    CategoryQuestionValue.SECONDARY,
+                    OccupantQuestionValue.IDENTIFIED
+                ),
+                IdentificationConfiguration.INDTEL, IdentificationState.ONGOING
+            )
+        );
+
     }
 
 
@@ -367,6 +337,25 @@ class IdentificationStateTest {
     private static Identification.IdentificationBuilder houseF2FOccupantBuilder(OccupantQuestionValue occupant) {
         return houseF2FCategoryBuilder(CategoryQuestionValue.PRIMARY).occupant(occupant);
     }
+
+
+    private static Identification buildIndividuTelIdentification(
+        IndividualStatusQuestionValue individualStatus,
+        AccessQuestionValue access,
+        SituationQuestionValue situation,
+        CategoryQuestionValue category,
+        OccupantQuestionValue occupant) {
+
+        return Identification.builder()
+            .individualStatus(individualStatus)
+            .access(access)
+            .situation(situation)
+            .category(category)
+            .occupant(occupant)
+            .identification(IdentificationQuestionValue.IDENTIFIED)
+            .build();
+    }
+
 
 
     // Helper class to represent a test case
