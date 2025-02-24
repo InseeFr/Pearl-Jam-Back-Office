@@ -163,14 +163,14 @@ class IdentificationStateTest {
             CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
 
         // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
 
         // Then
         assertThat(result).isEqualTo(IdentificationState.ONGOING);
     }
 
     @Test
-    @DisplayName("Given DESTROY status, when identification is set, then state should be FINISHED")
+    @DisplayName("Given DESTROY status, when identification is set, then state should be ONGOING")
     void testStateDESTROY() {
         // Given
         Identification identificationToCheck = new Identification(1L,
@@ -180,14 +180,14 @@ class IdentificationStateTest {
             CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
 
         // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
 
         // Then
-        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+        assertThat(result).isEqualTo(IdentificationState.ONGOING);
     }
 
     @Test
-    @DisplayName("Given UNIDENTIFIED status, when identification is set, then state should be FINISHED")
+    @DisplayName("Given UNIDENTIFIED status, when identification is set, then state should be ONGOING")
     void testStateUNIDENTIFIED() {
         // Given
         Identification identificationToCheck = new Identification(1L,
@@ -197,10 +197,10 @@ class IdentificationStateTest {
             CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
 
         // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
 
         // Then
-        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+        assertThat(result).isEqualTo(IdentificationState.ONGOING);
     }
 
     @Test
@@ -214,14 +214,14 @@ class IdentificationStateTest {
             CategoryQuestionValue.PRIMARY, null, null, null, null, null, null);
 
         // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
 
         // Then
         assertThat(result).isEqualTo(IdentificationState.MISSING);
     }
 
     @Test
-    @DisplayName("Given VACANT category, when processed, then state should be FINISHED")
+    @DisplayName("Given VACANT category, when processed, then state should be ONGOING")
     void testStateWithVacantCategory() {
         // Given
         Identification identificationToCheck = new Identification(1L,
@@ -231,10 +231,10 @@ class IdentificationStateTest {
             CategoryQuestionValue.VACANT, null, null, null, null, null, null);
 
         // When
-        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.HOUSEF2F);
+        IdentificationState result = IdentificationState.getState(identificationToCheck, IdentificationConfiguration.INDTEL);
 
         // Then
-        assertThat(result).isEqualTo(IdentificationState.FINISHED);
+        assertThat(result).isEqualTo(IdentificationState.ONGOING);
     }
 
     @Test
