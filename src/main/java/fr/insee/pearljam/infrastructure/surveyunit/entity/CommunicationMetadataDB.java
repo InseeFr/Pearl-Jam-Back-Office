@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Entity(name = "communication_metadata")
 @Table
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommunicationMetadataDB {
+public class CommunicationMetadataDB implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
