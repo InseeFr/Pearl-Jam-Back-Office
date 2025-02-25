@@ -75,13 +75,13 @@ public abstract class IdentificationDB implements Serializable {
 		updateIdentificationState(identification, getIdentificationConfiguration());
 	}
 
-	protected abstract void updateFields(Identification identification);
-
-	public void updateIdentificationState(Identification identification, IdentificationConfiguration configuration) {
+	private void updateIdentificationState(Identification identification, IdentificationConfiguration configuration) {
 		if (identification != null && configuration != null) {
 			this.identificationState = IdentificationState.getState(identification, configuration);
 		}
 	}
+
+	protected abstract void updateFields(Identification identification);
 
 	public static IdentificationDB fromModel(SurveyUnit surveyUnit,
 											 Identification identification,
