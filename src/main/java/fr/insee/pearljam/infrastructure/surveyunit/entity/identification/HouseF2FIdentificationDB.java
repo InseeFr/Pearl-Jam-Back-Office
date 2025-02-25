@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -38,6 +39,10 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private OccupantQuestionValue occupant;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.HOUSEF2F;
+	}
 
 	public HouseF2FIdentificationDB(
 			Long id,
@@ -68,8 +73,13 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 				.build();
 	}
 
+	/**
+	 * update the db entity from the model object
+	 *
+	 * @param identification model object
+	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}

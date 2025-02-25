@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -26,6 +27,11 @@ public class IndTelIdentificationDB extends IdentificationDB {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private SituationQuestionValue situation;
+
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.INDTEL;
+	}
 
 
 	public IndTelIdentificationDB(
@@ -54,7 +60,7 @@ public class IndTelIdentificationDB extends IdentificationDB {
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}

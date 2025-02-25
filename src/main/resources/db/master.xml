@@ -72,6 +72,12 @@
 	<!-- identification inheritance -->
 	<include file="changelog/561_identification_inheritance.xml" relativeToChangelogFile="true"/>
 
+	<!-- add identification state -->
+	<include file="changelog/562_add_identification_state.xml" relativeToChangelogFile="true"/>
+
+	<!-- initialisation of identification_state variable -->
+	<include file="changelog/563_init_identification_state_data.sql" relativeToChangelogFile="true"/>
+
 	<!-- contactOutcome deprecated values removal -->
 	<include file="changelog/570_remove_unused_contact_outcome_entries.xml" relativeToChangelogFile="true"/>
 

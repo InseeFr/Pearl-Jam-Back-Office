@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,6 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "identification_type", discriminatorType = DiscriminatorType.STRING)
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public abstract class IdentificationDB implements Serializable {
@@ -34,12 +34,23 @@ public abstract class IdentificationDB implements Serializable {
 	@Enumerated(EnumType.STRING)
 	protected IdentificationType identificationType;
 
+	@Column(name = "identification_state", insertable = false)
+	@Enumerated(EnumType.STRING)
+	protected IdentificationState identificationState;
+
+	protected abstract IdentificationConfiguration getIdentificationConfiguration();
+
 	/**
 	 * The SurveyUnit associated to Identification
 	 */
 	@OneToOne
 	protected SurveyUnit surveyUnit;
 
+	protected IdentificationDB(Long id, IdentificationType identificationType, SurveyUnit surveyUnit) {
+		this.id = id;
+		this.identificationType = identificationType;
+		this.surveyUnit = surveyUnit;
+	}
 
 	/**
 	 * return model of the db entity
@@ -56,12 +67,21 @@ public abstract class IdentificationDB implements Serializable {
 
 	protected abstract Identification toModel();
 
-	/**
-	 * update the db entity from the model object
-	 *
-	 * @param identification model object
-	 */
-	public abstract void update(Identification identification);
+	public void update(Identification identification) {
+		if (identification == null) {
+			return;
+		}
+		updateFields(identification);
+		updateIdentificationState(identification, getIdentificationConfiguration());
+	}
+
+	private void updateIdentificationState(Identification identification, IdentificationConfiguration configuration) {
+		if (identification != null && configuration != null) {
+			this.identificationState = IdentificationState.getState(identification, configuration);
+		}
+	}
+
+	protected abstract void updateFields(Identification identification);
 
 	public static IdentificationDB fromModel(SurveyUnit surveyUnit,
 											 Identification identification,
