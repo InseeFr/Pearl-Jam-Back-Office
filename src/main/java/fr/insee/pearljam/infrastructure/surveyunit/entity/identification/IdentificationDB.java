@@ -16,7 +16,6 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "identification_type", discriminatorType = DiscriminatorType.STRING)
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public abstract class IdentificationDB implements Serializable {
@@ -38,6 +37,8 @@ public abstract class IdentificationDB implements Serializable {
 	@Column(name = "identification_state", insertable = false)
 	@Enumerated(EnumType.STRING)
 	protected IdentificationState identificationState;
+
+	protected abstract IdentificationConfiguration getIdentificationConfiguration();
 
 	/**
 	 * The SurveyUnit associated to Identification
@@ -66,12 +67,15 @@ public abstract class IdentificationDB implements Serializable {
 
 	protected abstract Identification toModel();
 
-	/**
-	 * update the db entity from the model object
-	 *
-	 * @param identification model object
-	 */
-	public abstract void update(Identification identification);
+	public void update(Identification identification) {
+		if (identification == null) {
+			return;
+		}
+		updateFields(identification);
+		updateIdentificationState(identification, getIdentificationConfiguration());
+	}
+
+	protected abstract void updateFields(Identification identification);
 
 	public void updateIdentificationState(Identification identification, IdentificationConfiguration configuration) {
 		if (identification != null && configuration != null) {

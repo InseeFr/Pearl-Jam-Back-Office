@@ -27,6 +27,10 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private CategoryQuestionValue category;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.HOUSETEL;
+	}
 
 	public HouseTelIdentificationDB(
 			Long id,
@@ -54,13 +58,11 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}
 		this.setSituation(identification.situation());
 		this.setCategory(identification.category());
-
-		updateIdentificationState(identification, IdentificationConfiguration.HOUSETEL);
 	}
 }

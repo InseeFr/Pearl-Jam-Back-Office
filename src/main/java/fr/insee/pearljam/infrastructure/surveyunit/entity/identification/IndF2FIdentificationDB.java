@@ -33,6 +33,11 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private InterviewerCanProcessQuestionValue interviewerCanProcess;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.INDF2F;
+	}
+
 
 	public IndF2FIdentificationDB(
 			Long id,
@@ -57,15 +62,18 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 				.build();
 	}
 
+	/**
+	 * update the db entity from the model object
+	 *
+	 * @param identification model object
+	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}
 		this.setIndividualStatus(identification.individualStatus());
 		this.setInterviewerCanProcess(identification.interviewerCanProcess());
 		this.setSituation(identification.situation());
-
-		updateIdentificationState(identification, IdentificationConfiguration.INDF2F);
 	}
 }

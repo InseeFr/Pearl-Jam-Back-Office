@@ -39,6 +39,11 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private SituationQuestionValue situation;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.SRCVREINT;
+	}
+
 	public SrcvReintIdentificationDB(
 			Long id,
 			SurveyUnit surveyUnit,
@@ -67,23 +72,17 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 				.build();
 	}
 
-
 	/**
 	 * update the db entity from the model object
 	 *
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
-		if (identification == null) {
-			return;
-		}
+	protected void updateFields(Identification identification) {
 		this.setNumberOfRespondents(identification.numberOfRespondents());
 		this.setIndividualStatus(identification.individualStatus());
 		this.setHouseholdComposition(identification.householdComposition());
 		this.setPresentInPreviousHome(identification.presentInPreviousHome());
 		this.setSituation(identification.situation());
-
-		updateIdentificationState(identification, IdentificationConfiguration.SRCVREINT);
 	}
 }

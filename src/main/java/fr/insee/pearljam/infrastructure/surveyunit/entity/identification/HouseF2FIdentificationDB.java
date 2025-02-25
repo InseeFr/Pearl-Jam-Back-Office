@@ -39,6 +39,10 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private OccupantQuestionValue occupant;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.HOUSEF2F;
+	}
 
 	public HouseF2FIdentificationDB(
 			Long id,
@@ -69,8 +73,13 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 				.build();
 	}
 
+	/**
+	 * update the db entity from the model object
+	 *
+	 * @param identification model object
+	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}
@@ -80,7 +89,5 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 		this.setSituation(identification.situation());
 		this.setCategory(identification.category());
 		this.setOccupant(identification.occupant());
-
-		updateIdentificationState(identification, IdentificationConfiguration.HOUSEF2F);
 	}
 }

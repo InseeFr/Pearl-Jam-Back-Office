@@ -28,6 +28,11 @@ public class IndTelIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private SituationQuestionValue situation;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.INDTEL;
+	}
+
 
 	public IndTelIdentificationDB(
 			Long id,
@@ -55,13 +60,11 @@ public class IndTelIdentificationDB extends IdentificationDB {
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}
 		this.setIndividualStatus(identification.individualStatus());
 		this.setSituation(identification.situation());
-
-		updateIdentificationState(identification, IdentificationConfiguration.INDTEL);
 	}
 }
