@@ -20,7 +20,7 @@ public interface CommunicationRequestJpaRepository extends
    * @return The number of communication requests matching the criteria.
    */
   @Query("""
-       SELECT COUNT(DISTINCT cr.id)
+       SELECT COUNT(DISTINCT su.id)
       FROM communication_request cr
       INNER JOIN cr.surveyUnit su
       INNER JOIN su.campaign c
@@ -47,7 +47,7 @@ public interface CommunicationRequestJpaRepository extends
    * @return The number of communication requests matching the criteria.
    */
   @Query("""
-      SELECT COUNT(DISTINCT cr.id)
+      SELECT COUNT(DISTINCT su.id)
       FROM communication_request cr
       INNER JOIN cr.surveyUnit su
       INNER JOIN su.campaign c
@@ -76,7 +76,7 @@ public interface CommunicationRequestJpaRepository extends
    * @return A list of {@link InterviewerCountDto} containing interviewer IDs and their respective request counts.
    */
   @Query("""
-    SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(DISTINCT cr.id))
+    SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(DISTINCT su.id))
     FROM communication_request cr
     INNER JOIN cr.surveyUnit su
     INNER JOIN su.campaign c
