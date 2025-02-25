@@ -53,13 +53,11 @@ class StateServiceImplTest {
 
   private String userId;
   private Long date;
-  private String campaignId;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     userId = "user1";
-    campaignId = "campaign1";
     date = System.currentTimeMillis();
   }
 
@@ -86,8 +84,8 @@ class StateServiceImplTest {
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(Arrays.asList("campaign1", "campaign2"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
     when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
 
     // When
@@ -98,7 +96,7 @@ class StateServiceImplTest {
     verify(userService).getUserOUs(userId, true);
     verify(campaignRepository).findAllCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"));
     verify(stateRepository, times(2)).getStateCountSumByCampaign(anyString(), anyList(), eq(date));
-    verify(communicationRequestRepository, times(4)).getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), any(), eq(date), anyList());
+    verify(communicationRequestRepository, times(4)).getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), any(), eq(date), anyList());
   }
 
   @Test
@@ -109,8 +107,8 @@ class StateServiceImplTest {
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
+    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
     when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
 
     // When
@@ -127,7 +125,7 @@ class StateServiceImplTest {
   void shouldReturnEmptyListWhenUserHasNoOrganizationUnits() {
     // Given
     when(userService.getUserOUs(userId, true)).thenReturn(Collections.emptyList());
-    when(interviewerRepository.findIdsByOrganizationUnits(anyList())).thenReturn(Collections.emptySet()); // Mock de la méthode findIdsByOrganizationUnits
+    when(interviewerRepository.findIdsByOrganizationUnits(anyList())).thenReturn(Collections.emptySet());
 
     // When
     List<StateCountDto> result = stateService.getStateCountByInterviewer(userId, date);

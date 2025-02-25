@@ -133,7 +133,6 @@ public class Constants {
   public static final String UCD_COUNT = "ucdCount";
   public static final String UTR_COUNT = "utrCount";
   public static final String ALA_COUNT = "alaCount";
-  public static final String DCD_COUNT = "dcdCount";
   public static final String NUH_COUNT = "nuhCount";
   public static final String DUK_COUNT = "dukCount";
   public static final String DUU_COUNT = "duuCount";
@@ -142,23 +141,17 @@ public class Constants {
   public static final String REMINDER_COUNT = "reminderCount";
 
   public static final List<String> STATE_COUNT_FIELDS = List.of(NVM_COUNT, NNS_COUNT, ANV_COUNT,
-      VIN_COUNT, VIC_COUNT,
-      PRC_COUNT, AOC_COUNT, APS_COUNT, INS_COUNT, WFT_COUNT, WFS_COUNT, TBR_COUNT, FIN_COUNT,
-      CLO_COUNT,
-      NVA_COUNT, TOTAL_COUNT, NOTICE_COUNT, REMINDER_COUNT);
+      VIN_COUNT, VIC_COUNT, PRC_COUNT, AOC_COUNT, APS_COUNT, INS_COUNT, WFT_COUNT, WFS_COUNT, TBR_COUNT, FIN_COUNT,
+      CLO_COUNT, NVA_COUNT, TOTAL_COUNT, NOTICE_COUNT, REMINDER_COUNT);
 
   public static final List<String> STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS = List.of(NPA_COUNT,
-      NPI_COUNT, NPX_COUNT,
-      ROW_COUNT);
+      NPI_COUNT, NPX_COUNT, ROW_COUNT);
 
   public static final List<String> CLOSING_CAUSE_FIELDS = List.of(NPA_COUNT, NPI_COUNT, NPX_COUNT,
-      ROW_COUNT,
-      TOTAL_COUNT);
+      ROW_COUNT, TOTAL_COUNT);
 
   public static final List<String> CONTACT_OUTCOME_FIELDS = List.of(INA_COUNT, REF_COUNT, IMP_COUNT,
-      UCD_COUNT,
-      UTR_COUNT,
-      ALA_COUNT, DCD_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
+      UCD_COUNT, UTR_COUNT, ALA_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
 
   public static final String UNAVAILABLE = "UNAVAILABLE";
 

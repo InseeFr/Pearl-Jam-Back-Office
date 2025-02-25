@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,16 +12,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@ExtendWith(MockitoExtension.class)
 class StateControllerTest {
 
   @Mock
@@ -31,6 +32,11 @@ class StateControllerTest {
 
   @InjectMocks
   private StateController stateController;
+
+  @BeforeEach
+  void setup() {
+    MockitoAnnotations.openMocks(this); // Initialise les mocks
+  }
 
   @Test
   @DisplayName("Test successful retrieval of interviewers' state count by campaign")
@@ -214,9 +220,12 @@ class StateControllerTest {
     String userId = "user123";
 
     when(authenticatedUserService.getCurrentUserId()).thenReturn(userId);
-    when(stateService.getStateCountByInterviewer(userId, date)).thenThrow(new RuntimeException("Unexpected error"));
+    when(stateService.getStateCountByInterviewer(userId, date))
+        .thenThrow(new RuntimeException("Unexpected error"));
 
     // When / Then
-    assertThrows(RuntimeException.class, () -> stateController.getInterviewersStateCount(date));
+    assertThatThrownBy(() -> stateController.getInterviewersStateCount(date))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("Unexpected error");
   }
 }

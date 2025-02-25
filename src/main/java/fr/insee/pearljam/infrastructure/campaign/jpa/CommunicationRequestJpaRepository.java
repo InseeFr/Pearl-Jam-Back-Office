@@ -34,7 +34,7 @@ public interface CommunicationRequestJpaRepository extends
       AND vi.managementStartDate < :date
       AND crs.status = SUBMITTED
       """)
-  Long getCommunicationRequestCountByCampaignAndCommunicationType(String campaignId,
+  Long getCommRequestCountByCampaignAndType(String campaignId,
       CommunicationType type, Long date);
 
   /**
@@ -62,7 +62,7 @@ public interface CommunicationRequestJpaRepository extends
       AND crs.status = SUBMITTED
       AND su.organizationUnit.id IN (:ouIds)
       """)
-  Long getCommunicationRequestCountByCampaignAndCommunicationTypeAndOrgaUnitId(String campaignId,
+  Long getCommRequestCountByCampaignTypeAndOrgaUnit(String campaignId,
       CommunicationType type, Long date, List<String> ouIds);
 
   /**
@@ -94,7 +94,7 @@ public interface CommunicationRequestJpaRepository extends
     AND su.organizationUnit.id IN (:ouIds)
     GROUP BY i.id
     """)
-  List<InterviewerCountDto> getCommunicationRequestCountByInterviewersAndCommunicationType(
+  List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(
       List<String> campaignIds,
       Set<String> interviewerIds,
       CommunicationType type,
