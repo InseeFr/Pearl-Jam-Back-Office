@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Optional;
@@ -32,9 +33,7 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 @Setter
 public class Interviewer implements Serializable {
 
-	/**
-	 * 
-	 */
+	@Serial
 	private static final long serialVersionUID = -5488798660579904552L;
 
 	/**
@@ -74,18 +73,6 @@ public class Interviewer implements Serializable {
 	@Column(length = 25)
 	@Enumerated(EnumType.STRING)
 	private Title title = Title.MISTER;
-
-	public Interviewer(String id, String firstName, String lastName, String email, String phoneNumber,
-			Set<SurveyUnit> surveyUnits, Title title) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.surveyUnits = surveyUnits;
-		this.title = Optional.ofNullable(title).orElse(Title.MISTER);
-	}
 
 	public Interviewer(InterviewerContextDto interviewerDto) {
 		super();

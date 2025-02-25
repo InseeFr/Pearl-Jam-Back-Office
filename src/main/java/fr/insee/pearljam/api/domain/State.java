@@ -1,20 +1,13 @@
 package fr.insee.pearljam.api.domain;
 
-import java.io.Serializable;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import fr.insee.pearljam.api.dto.state.StateDto;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import fr.insee.pearljam.api.dto.state.StateDto;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Entity State : represent the entity table in DB
@@ -28,9 +21,8 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 @Getter
 @Setter
 public class State implements Serializable {
-	/**
-	 * 
-	 */
+
+	@Serial
 	private static final long serialVersionUID = 4610792644448862048L;
 
 	/**
@@ -70,9 +62,9 @@ public class State implements Serializable {
 
 	public State(StateDto s, SurveyUnit surveyUnit) {
 		super();
-		this.date = s.getDate();
+		this.date = s.date();
 		this.surveyUnit = surveyUnit;
-		this.type = s.getType();
+		this.type = s.type();
 	}
 
 }

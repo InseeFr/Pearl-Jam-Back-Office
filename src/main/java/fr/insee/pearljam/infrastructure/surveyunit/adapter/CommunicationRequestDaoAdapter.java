@@ -6,7 +6,6 @@ import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
-import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationRequestJpaRepository;

@@ -1,36 +1,30 @@
 package fr.insee.pearljam.api.domain;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
-import fr.insee.pearljam.domain.surveyunit.model.Identification;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
+import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Entity SurveyUnit : represent the entity table in DB
- * 
+ *
  * @author Claudel Benjamin
- * 
  */
 
 @Entity
@@ -39,9 +33,8 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 @Getter
 @Setter
 public class SurveyUnit implements Serializable {
-	/**
-	 * 
-	 */
+
+	@Serial
 	private static final long serialVersionUID = 8615711600423725468L;
 
 	/**
@@ -90,8 +83,9 @@ public class SurveyUnit implements Serializable {
 	/**
 	 * The contactOutcome of SurveyUnit
 	 */
-	@OneToOne(fetch = FetchType.LAZY, targetEntity = ContactOutcome.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
-	private ContactOutcome contactOucome;
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = ContactOutcomeDB.class, cascade = CascadeType.ALL, mappedBy =
+			"surveyUnit", orphanRemoval = true)
+	private ContactOutcomeDB contactOutcome;
 
 	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private ClosingCause closingCause;
@@ -158,35 +152,11 @@ public class SurveyUnit implements Serializable {
 		this.interviewer = null;
 
 		IdentificationConfiguration identificationType = safeGetIdentificationConfiguration(campaign);
-		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(), identificationType), identificationType);
+		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(),
+				identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
-		this.comments = new HashSet<>(
-				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
-						.map(commentDto -> CommentDto.toModel(this.getId(), commentDto))
-						.map(comment -> CommentDB.fromModel(this, comment))
-						.toList());
-
-		if (su.getContactOutcome() != null) {
-			this.contactOucome = new ContactOutcome(su.getContactOutcome(), this);
-		}
-		if (su.getContactAttempts() != null && !su.getContactAttempts().isEmpty()) {
-			this.contactAttempts = su.getContactAttempts().stream().map(c -> new ContactAttempt(c, this))
-					.collect(Collectors.toSet());
-		} else {
-			this.contactAttempts = new HashSet<>();
-		}
-		if (su.getStates() != null && !su.getStates().isEmpty()) {
-			this.states = su.getStates().stream().map(s -> new State(s, this)).collect(Collectors.toSet());
-		} else {
-			this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
-		}
-		if (su.getClosingCause() != null) {
-			this.closingCause = new ClosingCause(su.getClosingCause(), this);
-		} else {
-			this.closingCause = null;
-		}
 	}
 
 	public Boolean isAtLeastState(String state) {
@@ -224,15 +194,16 @@ public class SurveyUnit implements Serializable {
 		identificationDB.update(identification);
 	}
 
-	private IdentificationConfiguration safeGetIdentificationConfiguration (Campaign campaign){
+	private IdentificationConfiguration safeGetIdentificationConfiguration(Campaign campaign) {
 		if (campaign == null) {
 			return null;
 		}
-		return  campaign.getIdentificationConfiguration();
+		return campaign.getIdentificationConfiguration();
 	}
 
 	/**
 	 * update a list of comments for a survey unit
+	 *
 	 * @param commentsToUpdate the comment to update
 	 */
 	public void updateComments(Set<Comment> commentsToUpdate) {
@@ -262,5 +233,24 @@ public class SurveyUnit implements Serializable {
 
 	public Set<CommunicationRequest> getModelCommunicationRequests() {
 		return CommunicationRequestDB.toModel(this.getCommunicationRequests());
+	}
+
+	public ContactOutcome getModelContactOutcome() {
+		return ContactOutcomeDB.toModel(this.getContactOutcome());
+	}
+
+	public void updateContactOutcome(ContactOutcome contactOutcome) {
+		if (contactOutcome == null) {
+			return;
+		}
+		ContactOutcomeDB currentContactOutcome = getContactOutcome();
+		if (currentContactOutcome == null) {
+
+			ContactOutcomeDB newContactOutcome = ContactOutcomeDB.fromModel(this, contactOutcome);
+			setContactOutcome(newContactOutcome);
+			return;
+		}
+		currentContactOutcome.updateContactOutcome(contactOutcome);
+
 	}
 }

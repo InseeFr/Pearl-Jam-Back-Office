@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Slf4j
 public class ContactOutcomeTypeCountDto {
 
@@ -46,13 +48,9 @@ public class ContactOutcomeTypeCountDto {
 
   private Long total;
 
-  public ContactOutcomeTypeCountDto() {
-    super();
-  }
-
-  public ContactOutcomeTypeCountDto(Map<String, Long> obj) {
-    dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
-  }
+	public ContactOutcomeTypeCountDto(Map<String, Long> obj) {
+		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
+	}
 
   public ContactOutcomeTypeCountDto(Map<String, Long> obj, CampaignDto campaign) {
     this.campaign = campaign;
