@@ -79,6 +79,9 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 	 */
 	@Override
 	protected void updateFields(Identification identification) {
+		if (identification == null) {
+			return;
+		}
 		this.setNumberOfRespondents(identification.numberOfRespondents());
 		this.setIndividualStatus(identification.individualStatus());
 		this.setHouseholdComposition(identification.householdComposition());
