@@ -1,10 +1,20 @@
 package fr.insee.pearljam.api.controller;
 
+import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.service.MessageService;
+import fr.insee.pearljam.api.service.OrganizationUnitService;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collections;
 import java.util.Optional;
-
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,24 +23,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.service.MessageService;
-import fr.insee.pearljam.api.service.OrganizationUnitService;
-import fr.insee.pearljam.api.service.PreferenceService;
-import fr.insee.pearljam.api.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "03. Users", description = "Endpoints for users")
-@RequestMapping(path = "/api")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
@@ -49,7 +45,7 @@ public class UserController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get User")
-	@GetMapping(path = "/user")
+	@GetMapping(Constants.API_USER)
 	public ResponseEntity<UserDto> getUser() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		Optional<UserDto> user = userService.getUser(userId);
@@ -69,7 +65,7 @@ public class UserController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get User by id")
-	@GetMapping(path = "/user/{id}")
+	@GetMapping(Constants.API_USER_ID)
 	public ResponseEntity<UserDto> getUserById(
 						@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
@@ -89,7 +85,7 @@ public class UserController {
 	 * @param request
 	 */
 	@Operation(summary = "Create User")
-	@PostMapping(path = "/user")
+	@PostMapping(Constants.API_USER)
 	public ResponseEntity<Object> createUser(
 						@RequestBody UserDto user) {
 		String userId = authenticatedUserService.getCurrentUserId();
@@ -126,7 +122,7 @@ public class UserController {
 	 * @param request
 	 */
 	@Operation(summary = "Update User")
-	@PutMapping(path = "/user/{id}")
+	@PutMapping(Constants.API_USER_ID)
 	public ResponseEntity<Object> updateUser(
 			@PathVariable(value = "id") String id,
 			@RequestBody UserDto user) {
@@ -170,7 +166,7 @@ public class UserController {
 	 * @param request
 	 */
 	@Operation(summary = "Assign User to Organization Unit")
-	@PutMapping(path = "/user/{userId}/organization-unit/{ouId}")
+	@PutMapping(Constants.API_USER_ID_ORGANIZATION_ID_OUID)
 	public ResponseEntity<Object> assignUserToOU(
 			@PathVariable(value = "userId") String userId, 
 			@PathVariable(value = "ouId") String ouId) {
@@ -212,7 +208,7 @@ public class UserController {
 	 * @param request
 	 */
 	@Operation(summary = "Delete User")
-	@DeleteMapping(path = "/user/{id}")
+	@DeleteMapping(Constants.API_USER_ID)
 	public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to delete user {}", userId, id);

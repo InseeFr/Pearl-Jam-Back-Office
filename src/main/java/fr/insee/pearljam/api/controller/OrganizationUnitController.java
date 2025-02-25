@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import fr.insee.pearljam.api.constants.Constants;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "05. Organization-units", description = "Endpoints for organization-units")
-@RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @Slf4j
 public class OrganizationUnitController {
@@ -47,7 +47,7 @@ public class OrganizationUnitController {
 	 * @param idOu
 	 */
 	@Operation(summary = "Create Context with Organizational Unit and users associated")
-	@PostMapping(path = "/organization-units")
+	@PostMapping(Constants.API_ORGANIZATIONUNITS)
 	public ResponseEntity<Object> postContext(@RequestBody List<OrganizationUnitContextDto> organizationUnits) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		Response response;
@@ -68,7 +68,7 @@ public class OrganizationUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Create Organizational Unit and users associated")
-	@PostMapping(path = "/organization-unit")
+	@PostMapping(Constants.API_ORGANIZATIONUNIT)
 	public ResponseEntity<Object> postOrganizationUnit(@RequestBody OrganizationUnitContextDto organizationUnit) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to create a new OU", userId);
@@ -92,7 +92,7 @@ public class OrganizationUnitController {
 	 * @param idOu
 	 */
 	@Operation(summary = "Create users by organization-unit")
-	@PostMapping(path = "/organization-unit/{id}/users")
+	@PostMapping(Constants.API_ORGANIZATIONUNIT_ID_USERS)
 	public ResponseEntity<Object> postUsersByOrganizationUnit(@PathVariable(value = "id") String id, 
 															  @RequestBody List<UserContextDto> users) {
 		Response response;
@@ -114,7 +114,7 @@ public class OrganizationUnitController {
 	 * @param idOu
 	 */
 	@Operation(summary = "Get all organization-units")
-	@GetMapping(path = "/organization-units")
+	@GetMapping(Constants.API_ORGANIZATIONUNITS)
 	public ResponseEntity<List<OrganizationUnitContextDto>> getOrganizationUnits() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to get all OUs", userId);
@@ -129,7 +129,7 @@ public class OrganizationUnitController {
 	 * @param idOu
 	 */
 	@Operation(summary = "Delete an organization-unit")
-	@DeleteMapping(path = "/organization-unit/{id}")
+	@DeleteMapping(Constants.API_ORGANIZATIONUNIT_ID)
 	public ResponseEntity<Object> deleteOrganizationUnit(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus response = organizationUnitService.delete(id);

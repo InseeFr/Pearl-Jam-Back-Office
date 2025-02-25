@@ -1,10 +1,9 @@
 package fr.insee.pearljam.api.service;
 
-import java.util.List;
-
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
+import java.util.List;
 
 /**
  * Service for the Campaign entity
@@ -48,5 +47,19 @@ public interface StateService {
 	 */
 	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
 
+	/**
+	 * @param userId
+	 * @param campaignId
+	 * @param date
+	 * @return {@link List<StateCountDto>}
+	 */
+	List<StateCountDto> getInterviewersStateCountByCampaign(String userId, String campaignId, Long date);
+
+	/**
+	 * @param userId
+	 * @param id
+	 * @param date
+	 * @return {@link StateCountDto}
+	 */
 	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) throws NotFoundException;
 }
