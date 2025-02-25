@@ -81,4 +81,7 @@
 	<!-- contactOutcome deprecated values removal -->
 	<include file="changelog/570_remove_unused_contact_outcome_entries.xml" relativeToChangelogFile="true"/>
 
+	<!-- add communication metadata -->
+	<include file="changelog/580_add_communication_metadata.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
