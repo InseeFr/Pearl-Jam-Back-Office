@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -38,6 +39,11 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private SituationQuestionValue situation;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.SRCVREINT;
+	}
+
 	public SrcvReintIdentificationDB(
 			Long id,
 			SurveyUnit surveyUnit,
@@ -66,14 +72,13 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 				.build();
 	}
 
-
 	/**
 	 * update the db entity from the model object
 	 *
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
+	protected void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}

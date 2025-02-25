@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity.identification;
 
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
@@ -26,6 +27,10 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 	@Enumerated(EnumType.STRING)
 	private CategoryQuestionValue category;
 
+	@Override
+	protected IdentificationConfiguration getIdentificationConfiguration() {
+		return IdentificationConfiguration.HOUSETEL;
+	}
 
 	public HouseTelIdentificationDB(
 			Long id,
@@ -53,7 +58,7 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 	 * @param identification model object
 	 */
 	@Override
-	public void update(Identification identification) {
+	public void updateFields(Identification identification) {
 		if (identification == null) {
 			return;
 		}
