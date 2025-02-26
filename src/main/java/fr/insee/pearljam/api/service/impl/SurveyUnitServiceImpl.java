@@ -12,6 +12,7 @@ import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
+import java.util.function.Function;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
@@ -310,22 +311,32 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
-		List<String> noIdentSurveyUnitIds = surveyUnitRepository
-				.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
-						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.NOIDENT);
-		List<String> iascoSurveyUnitIds = surveyUnitRepository
-				.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
-						System.currentTimeMillis(), lstOuId, IdentificationConfiguration.IASCO);
+		// Récupération des SurveyUnitIds pour chaque configuration
+		Map<IdentificationConfiguration, List<String>> surveyUnitIdsByConfig = Arrays.stream(IdentificationConfiguration.values())
+				.collect(Collectors.toMap(
+						config -> config,
+						config -> surveyUnitRepository.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+								System.currentTimeMillis(), lstOuId, config)
+				));
 
-		// apply different business rules to select SU
-		List<SurveyUnit> noIdentSurveyUnitsToCheck = surveyUnitRepository
-				.findClosableNoIdentSurveyUnitId(noIdentSurveyUnitIds);
-		List<SurveyUnit> iascoSurveyUnitsToCheck = surveyUnitRepository
-				.findClosableIascoSurveyUnitId(iascoSurveyUnitIds);
+		// Mapping entre chaque configuration et la méthode appropriée pour récupérer les unités fermables
+		Map<IdentificationConfiguration, Function<List<String>, List<SurveyUnit>>> closableSurveyUnitMethods = Map.of(
+				IdentificationConfiguration.NOIDENT, surveyUnitRepository::findClosableNoIdentSurveyUnitId,
+				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableIascoSurveyUnitId,
+				IdentificationConfiguration.INDF2F, surveyUnitRepository::findClosableIndf2fFSurveyUnitId,
+				IdentificationConfiguration.INDF2FNOR, surveyUnitRepository::findClosableIndf2fnorFSurveyUnitId,
+				IdentificationConfiguration.INDTEL, surveyUnitRepository::findClosableIndtelFSurveyUnitId,
+				IdentificationConfiguration.INDTELNOR, surveyUnitRepository::findClosableIndtelnorFSurveyUnitId
+		);
 
-		// merge lists
-		List<SurveyUnit> suToCheck = Stream.concat(noIdentSurveyUnitsToCheck.stream(), iascoSurveyUnitsToCheck.stream())
-				.toList();
+
+		// Récupération des SurveyUnits à vérifier
+		List<SurveyUnit> suToCheck = surveyUnitIdsByConfig.entrySet().stream()
+				.flatMap(entry -> {
+					IdentificationConfiguration config = entry.getKey();
+					List<String> surveyUnitIds = entry.getValue();
+					return closableSurveyUnitMethods.getOrDefault(config, ids -> List.of()).apply(surveyUnitIds).stream();
+				}).toList();
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 

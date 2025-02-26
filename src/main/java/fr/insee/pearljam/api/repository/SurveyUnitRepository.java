@@ -124,7 +124,37 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 """)
 	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
 
+	@Query(value = """
+    SELECT su
+    FROM SurveyUnit su
+    LEFT JOIN FETCH su.identification ident
+    WHERE su.id IN (:ids)
+    """)
+	List<SurveyUnit> findClosableIndf2fFSurveyUnitId(@Param("ids") List<String> ids);
 
+	@Query(value = """
+    SELECT su
+    FROM SurveyUnit su
+    LEFT JOIN FETCH su.identification ident
+    WHERE su.id IN (:ids)
+    """)
+	List<SurveyUnit> findClosableIndf2fnorFSurveyUnitId(@Param("ids") List<String> ids);
+
+	@Query(value = """
+    SELECT su
+    FROM SurveyUnit su
+    LEFT JOIN FETCH su.identification ident
+    WHERE su.id IN (:ids)
+    """)
+	List<SurveyUnit> findClosableIndtelFSurveyUnitId(@Param("ids") List<String> ids);
+
+	@Query(value = """
+    SELECT su
+    FROM SurveyUnit su
+    LEFT JOIN FETCH su.identification ident
+    WHERE su.id IN (:ids)
+    """)
+	List<SurveyUnit> findClosableIndtelnorFSurveyUnitId(@Param("ids") List<String> ids);
 
 		@Query(value="SELECT su FROM SurveyUnit su "
 		+" LEFT JOIN fetch su.comments"
