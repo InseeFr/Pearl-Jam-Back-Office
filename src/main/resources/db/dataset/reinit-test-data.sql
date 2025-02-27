@@ -222,4 +222,8 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
     (3, 'INITIATED', 1721903754205),
     (4, 'INITIATED', 1721903754205);
 
+INSERT INTO public.communication_metadata (survey_unit_id, communication_template_id, metadata_key, metadata_value) VALUES
+    ('11',SELECT ct.id FROM communication_template ct WHERE ct.meshuggah_id='mesh1','recipient_full_name', 'Albert Einstein'),
+    ('11', SELECT ct.id FROM communication_template ct WHERE ct.meshuggah_id='mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
+
 SET REFERENTIAL_INTEGRITY TRUE;
