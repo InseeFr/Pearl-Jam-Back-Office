@@ -47,7 +47,27 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<SurveyUnit> findClosableIascoSurveyUnitId(List<String> ids) {
+    public List<SurveyUnit> findClosableHousef2fSurveyUnitId(List<String> ids) {
+        return List.of();
+    }
+
+    @Override
+    public List<SurveyUnit> findClosableIndf2fFSurveyUnitId(List<String> ids) {
+        return List.of();
+    }
+
+    @Override
+    public List<SurveyUnit> findClosableIndf2fnorFSurveyUnitId(List<String> ids) {
+        return List.of();
+    }
+
+    @Override
+    public List<SurveyUnit> findClosableIndtelFSurveyUnitId(List<String> ids) {
+        return List.of();
+    }
+
+    @Override
+    public List<SurveyUnit> findClosableIndtelnorFSurveyUnitId(List<String> ids) {
         return List.of();
     }
 
