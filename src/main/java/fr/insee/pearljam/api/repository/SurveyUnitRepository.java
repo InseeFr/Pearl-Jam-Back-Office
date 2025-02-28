@@ -122,7 +122,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
         )
     )
 """)
-	List<SurveyUnit> findClosableIascoSurveyUnitId(@Param("ids") List<String> ids);
+	List<SurveyUnit> findClosableHousef2fSurveyUnitId(@Param("ids") List<String> ids);
 
 	@Query(value = """
     SELECT su

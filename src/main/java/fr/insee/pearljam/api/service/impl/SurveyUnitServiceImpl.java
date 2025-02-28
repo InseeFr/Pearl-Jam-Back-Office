@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author scorcaud
@@ -57,7 +56,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
 	private final AddressRepository addressRepository;
-	private final ContactOutcomeRepository contactOutcomeRepository;
 	private final StateRepository stateRepository;
 	private final InterviewerRepository interviewerRepository;
 	private final CampaignRepository campaignRepository;
@@ -322,7 +320,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		// Mapping entre chaque configuration et la méthode appropriée pour récupérer les unités fermables
 		Map<IdentificationConfiguration, Function<List<String>, List<SurveyUnit>>> closableSurveyUnitMethods = Map.of(
 				IdentificationConfiguration.NOIDENT, surveyUnitRepository::findClosableNoIdentSurveyUnitId,
-				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableIascoSurveyUnitId,
+				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
+				IdentificationConfiguration.HOUSEF2F, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
 				IdentificationConfiguration.INDF2F, surveyUnitRepository::findClosableIndf2fFSurveyUnitId,
 				IdentificationConfiguration.INDF2FNOR, surveyUnitRepository::findClosableIndf2fnorFSurveyUnitId,
 				IdentificationConfiguration.INDTEL, surveyUnitRepository::findClosableIndtelFSurveyUnitId,
