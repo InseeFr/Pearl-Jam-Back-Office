@@ -309,7 +309,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
-		// Récupération des SurveyUnitIds pour chaque configuration
+		// Retrieve SurveyUnitIds for each configuration
 		Map<IdentificationConfiguration, List<String>> surveyUnitIdsByConfig = Arrays.stream(IdentificationConfiguration.values())
 				.collect(Collectors.toMap(
 						config -> config,
@@ -317,7 +317,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 								System.currentTimeMillis(), lstOuId, config)
 				));
 
-		// Mapping entre chaque configuration et la méthode appropriée pour récupérer les unités fermables
+		// Mapping between each configuration and the appropriate method to retrieve closable units
 		Map<IdentificationConfiguration, Function<List<String>, List<SurveyUnit>>> closableSurveyUnitMethods = Map.of(
 				IdentificationConfiguration.NOIDENT, surveyUnitRepository::findClosableNoIdentSurveyUnitId,
 				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
@@ -329,7 +329,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		);
 
 
-		// Récupération des SurveyUnits à vérifier
+		// Retrieving SurveyUnits to check
 		List<SurveyUnit> suToCheck = surveyUnitIdsByConfig.entrySet().stream()
 				.flatMap(entry -> {
 					IdentificationConfiguration config = entry.getKey();
