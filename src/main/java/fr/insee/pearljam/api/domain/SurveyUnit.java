@@ -9,6 +9,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationMetadataDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -122,6 +123,9 @@ public class SurveyUnit implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequestDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationRequestDB> communicationRequests = new HashSet<>();
+
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationMetadataDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<CommunicationMetadataDB> communicationMetadata = new HashSet<>();
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 			Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit, Set<Person> persons) {
