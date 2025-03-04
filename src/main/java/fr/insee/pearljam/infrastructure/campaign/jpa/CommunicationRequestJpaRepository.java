@@ -32,7 +32,7 @@ public interface CommunicationRequestJpaRepository extends
       AND crs.date < :date
       AND vi.endDate > :date
       AND vi.managementStartDate < :date
-      AND crs.status = SUBMITTED
+      AND crs.status = 'READY'
       """)
   Long getCommRequestCountByCampaignAndType(String campaignId,
       CommunicationType type, Long date);
@@ -59,7 +59,7 @@ public interface CommunicationRequestJpaRepository extends
       AND crs.date < :date
       AND vi.endDate > :date
       AND vi.managementStartDate < :date
-      AND crs.status = SUBMITTED
+      AND crs.status = 'READY'
       AND su.organizationUnit.id IN (:ouIds)
       """)
   Long getCommRequestCountByCampaignTypeAndOrgaUnit(String campaignId,
@@ -90,7 +90,7 @@ public interface CommunicationRequestJpaRepository extends
     AND crs.date < :date
     AND vi.endDate > :date
     AND vi.managementStartDate < :date
-    AND crs.status = 'SUBMITTED'
+    AND crs.status = 'READY'
     AND su.organizationUnit.id IN (:ouIds)
     GROUP BY i.id
     """)
