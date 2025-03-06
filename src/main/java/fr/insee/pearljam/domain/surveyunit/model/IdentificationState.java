@@ -41,8 +41,6 @@ public enum IdentificationState {
     }
 
     private static IdentificationState individuTel(Identification identification) {
-        if (identification.identification() == null) return IdentificationState.MISSING;
-
         IndividualStatusQuestionValue status = identification.individualStatus();
         if (status == null) return IdentificationState.ONGOING;
         if (EnumSet.of(IndividualStatusQuestionValue.DCD, IndividualStatusQuestionValue.NOIDENT, IndividualStatusQuestionValue.NOFIELD)
