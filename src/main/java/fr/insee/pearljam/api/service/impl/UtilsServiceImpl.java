@@ -98,7 +98,7 @@ public class UtilsServiceImpl implements UtilsService {
 	@Override
 	public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
 			List<String> ids) {
-		final String dataCollectionUri = String.join(externalServicesProperties.datacollectionUrl(),
+		final String dataCollectionUri = String.join("", externalServicesProperties.datacollectionUrl(),
 				Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
 
 		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
