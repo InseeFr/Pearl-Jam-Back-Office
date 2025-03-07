@@ -84,4 +84,7 @@
 	<!-- add communication metadata -->
 	<include file="changelog/580_add_communication_metadata.xml" relativeToChangelogFile="true"/>
 
+	<!-- update communication structure -->
+	<include file="changelog/590_update_communication_structure.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
