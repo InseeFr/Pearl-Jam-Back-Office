@@ -84,6 +84,21 @@ class SurveyUnitIT {
 				          "useLetterCommunication": true
 				       },
 				       {
+						 "id":"25",
+						 "campaign":"SIMPSONS2020X00",
+						 "campaignLabel":"Survey on the Simpsons tv show 2020",
+						 "managementStartDate":1718966154308,
+						 "interviewerStartDate":1719052554309,
+						 "identificationPhaseStartDate":1719138954310,
+						 "collectionStartDate":1719225354314,
+						 "collectionEndDate":1721903754315,
+						 "endDate":1724582154316,
+						 "identificationConfiguration":"IASCO",
+						 "contactOutcomeConfiguration":"F2F",
+						 "contactAttemptConfiguration":"F2F",
+						 "useLetterCommunication":false
+					   },
+				       {
 				          "id":"20",
 				          "campaign":"VQS2021X00",
 				          "campaignLabel":"Everyday life and health survey 2021",

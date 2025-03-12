@@ -1,34 +1,34 @@
 --changeset davdarras:reset-data context:test
 
-SET REFERENTIAL_INTEGRITY FALSE;
-TRUNCATE TABLE public.communication_request_status;
-TRUNCATE TABLE public.communication_request;
-TRUNCATE TABLE public.communication_template;
-TRUNCATE TABLE public.campaign_message_recipient;
-TRUNCATE TABLE public.contact_attempt;
-TRUNCATE TABLE public.message_status;
-TRUNCATE TABLE public.oumessage_recipient;
-TRUNCATE TABLE public.referent;
-TRUNCATE TABLE public.message;
-TRUNCATE TABLE public.interviewer;
-TRUNCATE TABLE public.sample_identifier;
-TRUNCATE TABLE public.user;
-TRUNCATE TABLE public.campaign;
-TRUNCATE TABLE public.preference;
-TRUNCATE TABLE public.visibility;
-TRUNCATE TABLE public.survey_unit;
-TRUNCATE TABLE public.identification;
-TRUNCATE TABLE public.person;
-TRUNCATE TABLE public.phone_number;
-TRUNCATE TABLE public.state;
-TRUNCATE TABLE public.contact_outcome;
-TRUNCATE TABLE public.comment;
-TRUNCATE TABLE public.closing_cause;
-TRUNCATE TABLE public.organization_unit;
-TRUNCATE TABLE public.address;
+TRUNCATE TABLE public.communication_request_status CASCADE;
+TRUNCATE TABLE public.communication_request CASCADE;
+TRUNCATE TABLE public.communication_template CASCADE;
+TRUNCATE TABLE public.campaign_message_recipient CASCADE;
+TRUNCATE TABLE public.contact_attempt CASCADE;
+TRUNCATE TABLE public.message_status CASCADE;
+TRUNCATE TABLE public.oumessage_recipient CASCADE;
+TRUNCATE TABLE public.referent CASCADE;
+TRUNCATE TABLE public.message CASCADE;
+TRUNCATE TABLE public.interviewer CASCADE;
+TRUNCATE TABLE public.sample_identifier CASCADE;
+TRUNCATE TABLE public.user CASCADE;
+TRUNCATE TABLE public.campaign CASCADE;
+TRUNCATE TABLE public.preference CASCADE;
+TRUNCATE TABLE public.visibility CASCADE;
+TRUNCATE TABLE public.survey_unit CASCADE;
+TRUNCATE TABLE public.identification CASCADE;
+TRUNCATE TABLE public.person CASCADE;
+TRUNCATE TABLE public.phone_number CASCADE;
+TRUNCATE TABLE public.state CASCADE;
+TRUNCATE TABLE public.contact_outcome CASCADE;
+TRUNCATE TABLE public.comment CASCADE;
+TRUNCATE TABLE public.closing_cause CASCADE;
+TRUNCATE TABLE public.organization_unit CASCADE;
+TRUNCATE TABLE public.address CASCADE;
 
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.communication_template ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.contact_attempt ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.referent ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.message ALTER COLUMN id RESTART WITH 1;
@@ -76,7 +76,8 @@ INSERT INTO public.sample_identifier (dtype, autre, bs, ec, le, nograp, noi, nol
     ('InseeSampleIdentifier', '21', 21, '2', 21, '21', 21, 21, 21, 21, 21, 1),
     ('InseeSampleIdentifier', '22', 22, '2', 22, '22', 22, 22, 22, 22, 22, 2),
     ('InseeSampleIdentifier', '23', 23, '2', 23, '23', 23, 23, 23, 23, 23, 1),
-    ('InseeSampleIdentifier', '24', 24, '2', 24, '24', 24, 24, 24, 24, 24, 1);
+    ('InseeSampleIdentifier', '24', 24, '2', 24, '24', 24, 24, 24, 24, 24, 1),
+    ('InseeSampleIdentifier', '25', 25, '2', 25, '25', 25, 25, 25, 25, 25, 1);
 
 INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('ABC', 'Melinda', 'Webb', 'OU-NORTH'),
@@ -191,8 +192,12 @@ INSERT INTO public.referent (campaign_id, first_name, last_name, role, phone_num
 INSERT INTO public.comment (type, value, survey_unit_id) VALUES
     ('INTERVIEWER', 'un commentaire', '13');
 
-INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
-    (DATEDIFF('SECOND', TIMESTAMP '1970-01-01 00:00:00', DATEADD('DAY', -3, CURRENT_TIMESTAMP)) * 1000, 'NPI', '11');
+INSERT INTO closing_cause ("date", type, survey_unit_id)
+VALUES (
+  EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - INTERVAL '3 day')) * 1000,
+  'NPI',
+  '11'
+);
 
 
 INSERT INTO public.identification (survey_unit_id, identification_type, identification,access,situation,category,occupant,individual_status,interviewer_can_process,number_of_respondents,present_in_previous_home,household_composition,identification_state) VALUES
@@ -224,5 +229,3 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
 INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
     ('11','SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
     ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
-
-SET REFERENTIAL_INTEGRITY TRUE;
