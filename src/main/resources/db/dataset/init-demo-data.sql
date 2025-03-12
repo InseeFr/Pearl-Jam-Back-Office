@@ -198,7 +198,7 @@ INSERT INTO visibility (
     mail,
     tel
 ) VALUES
-    ('OU-NORTH', 'SIMPSONS2020X00',
+        ('OU-NORTH', 'SIMPSONS2020X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
@@ -206,7 +206,8 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     true, 'north-simpsons@nooneknows.fr', '0321234567'),
-    ('OU-NORTH', 'VQS2021X00',
+
+        ('OU-NORTH', 'VQS2021X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
@@ -215,7 +216,7 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     true, 'north-vqs@nooneknows.fr', ''),
 
-    ('OU-SOUTH', 'VQS2021X00',
+        ('OU-SOUTH', 'VQS2021X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
@@ -224,7 +225,7 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     true, 'south-vqs@nooneknows.fr', ''),
 
-    ('OU-SOUTH', 'SIMPSONS2020X00',
+        ('OU-SOUTH', 'SIMPSONS2020X00',
     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
@@ -233,7 +234,7 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     true, 'south-simpsons@nooneknows.fr', '0123456789'),
 
-    ('OU-SOUTH', 'ZCLOSEDX00',
+        ('OU-SOUTH', 'ZCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
@@ -242,7 +243,7 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000,
     true, 'south-zclosed@nooneknows.fr', ''),
 
-    ('OU-WEST', 'ZCLOSEDX00',
+        ('OU-WEST', 'ZCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
@@ -251,7 +252,7 @@ INSERT INTO visibility (
     EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000,
     true, 'west-zclosed@nooneknows.fr', ''),
 
-    ('OU-SOUTH', 'XCLOSEDX00',
+        ('OU-SOUTH', 'XCLOSEDX00',
     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
@@ -502,130 +503,131 @@ INSERT INTO public.person (id, email, favorite_email, first_name, last_name, bir
     (66, 'test@test.com', TRUE, 'Père',        'Seval',       946684800050, 0, FALSE, 'PROTO06');
 
 
-INSERT INTO public.phone_number (favorite, number, source, person_id) VALUES
-    (TRUE, '+33677542802', 0,  1),
-    (FALSE,'+33677542803', 0,  1),
-    (TRUE, '+33677542804', 0,  2),
-    (TRUE, '+33677542805', 0,  3),
-    (TRUE, '+33677542806', 0,  4),
-    (TRUE, '+33677542807', 0,  5),
-    (TRUE, '+33677542808', 0,  6),
-    (TRUE, '+33677542809', 0,  7),
-    (TRUE, '+33677542810', 0,  8),
-    (TRUE, '+33677542811', 0,  9),
-    (TRUE, '+33677542812', 0, 10),
-    (TRUE, '+33677542813', 0, 11),
-    (TRUE, '+33677542814', 0, 12),
-    (TRUE, '+33677542815', 0, 13),
-    (TRUE, '+33677542816', 0, 14),
-    (FALSE,'+33677542817', 0, 15),
-    (TRUE, '+33677542818', 0, 16),
-    (TRUE, '+33677542819', 0, 17),
-    (TRUE, '+33677542820', 0, 18),
-    (TRUE, '+33677542821', 0, 19),
-    (TRUE, '+33677542822', 0, 20),
-    (TRUE, '+33677542823', 0, 21),
-    (TRUE, '+33677542824', 0, 22),
-    (TRUE, '+33677542825', 0, 23),
-    (TRUE, '+33677542826', 0, 24),
-    (TRUE, '+33677542827', 0, 25),
-    (TRUE, '+33677542828', 0, 26),
-    (TRUE, '+33677542829', 0, 27),
-    (TRUE, '+33677542830', 0, 28),
-    (TRUE, '+33677542831', 0, 29),
-    (TRUE, '+33677542832', 0, 30),
-    (TRUE, '+33677542833', 0, 31),
-    (TRUE, '+33677542834', 0, 32),
-    (TRUE, '+33677542835', 0, 33),
-    (TRUE, '+33677542836', 0, 34),
-    (TRUE, '+33677542837', 0, 35),
-    (TRUE, '+33677542838', 0, 36),
-    (TRUE, '+33677542839', 0, 37),
-    (TRUE, '+33677542840', 0, 38),
-    (TRUE, '+33677542841', 0, 39),
-    (TRUE, '+33677542842', 0, 40),
-    (TRUE, '+33677542843', 0, 41),
-    (TRUE, '+33677542844', 0, 42),
-    (TRUE, '+33677542845', 0, 43),
-    (TRUE, '+33677542846', 0, 44),
-    (TRUE, '+33677542847', 0, 45),
-    (TRUE, '+33677542848', 0, 46),
-    (TRUE, '+33677542849', 0, 47),
-    (TRUE, '+33677542850', 0, 48),
-    (TRUE, '+33677542851', 0, 49),
-    (TRUE, '+33677542852', 0, 50),
-    (TRUE, '+33677542853', 0, 51),
-    (TRUE, '+33677542854', 0, 52),
-    (TRUE, '+33677542855', 0, 53),
-    (TRUE, '+33677542856', 0, 54),
-    (TRUE, '+33677542857', 0, 55),
-    (TRUE, '+33677542858', 0, 56),
-    (TRUE, '+33677542859', 0, 57),
-    (TRUE, '+33677542860', 0, 58),
-    (TRUE, '+33677542861', 0, 59),
-    (TRUE, '+33677542862', 0, 60),
-    (TRUE, '+33677542863', 0, 61),
-    (TRUE, '+33677542864', 0, 62),
-    (TRUE, '+33677542865', 0, 63),
-    (TRUE, '+33677542866', 0, 64),
-    (TRUE, '+33677542867', 0, 65),
-    (TRUE, '+33677542868', 0, 66);
-
-INSERT INTO public.state (date, type, survey_unit_id) VALUES
-    (111112111,'VIN', '11'),
-    (110111111,'NNS', '11'),
-    (111111111,'TBR', '12'),
-    (111111111,'TBR', '13'),
-    (111111111,'TBR', '14'),
-    (101111111,'TBR', '11'),
-    (101111111,'TBR', '24'),
-    (1590504478334, 'VIC', '20'),
-    (1590504478334, 'VIC', '21'),
-    (1590504478334, 'FIN', '22'),
-    (1590504478334, 'VIC', '23'),
-    (111112111,'VIN', '25'),
-    (110111111,'NNS', '25'),
-    (111111111,'TBR', '26'),
-    (111111111,'TBR', '27'),
-    (111111111,'TBR', '28'),
-    (101111111,'TBR', '25'),
-    (101111111,'TBR', '33'),
-    (1590504478334, 'VIC', '29'),
-    (1590504478334, 'VIC', '30'),
-    (1590504478334, 'FIN', '31'),
-    (1590504478334, 'VIC', '32');
-
-INSERT INTO public.contact_outcome (date, type, survey_unit_id) VALUES
-    (1590504478334, 'DUK', '24'),
-    (1590504478334, 'DUK', '33');
-
-INSERT INTO public.comment (type, value, survey_unit_id) VALUES
-    ('INTERVIEWER', 'un commentaire', '13'),
-    ('INTERVIEWER', 'un commentaire', '27');
-
-INSERT INTO closing_cause (date, type, survey_unit_id) VALUES
-    (EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '11'),
-    (EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '25');
+INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
+    (1,  TRUE, '+33677542802', 0, 1),
+    (2,  FALSE,'+33677542803', 0, 1),
+    (3,  TRUE, '+33677542804', 0, 2),
+    (4,  TRUE, '+33677542805', 0, 3),
+    (5,  TRUE, '+33677542806', 0, 4),
+    (6,  TRUE, '+33677542807', 0, 5),
+    (7,  TRUE, '+33677542808', 0, 6),
+    (8,  TRUE, '+33677542809', 0, 7),
+    (9,  TRUE, '+33677542810', 0, 8),
+    (10, TRUE, '+33677542811', 0, 9),
+    (11, TRUE, '+33677542812', 0, 10),
+    (12, TRUE, '+33677542813', 0, 11),
+    (13, TRUE, '+33677542814', 0, 12),
+    (14, TRUE, '+33677542815', 0, 13),
+    (15, TRUE, '+33677542816', 0, 14),
+    (16, FALSE,'+33677542817', 0, 15),
+    (17, TRUE, '+33677542818', 0, 16),
+    (18, TRUE, '+33677542819', 0, 17),
+    (19, TRUE, '+33677542820', 0, 18),
+    (20, TRUE, '+33677542821', 0, 19),
+    (21, TRUE, '+33677542822', 0, 20),
+    (22, TRUE, '+33677542823', 0, 21),
+    (23, TRUE, '+33677542824', 0, 22),
+    (24, TRUE, '+33677542825', 0, 23),
+    (25, TRUE, '+33677542826', 0, 24),
+    (26, TRUE, '+33677542827', 0, 25),
+    (27, TRUE, '+33677542828', 0, 26),
+    (28, TRUE, '+33677542829', 0, 27),
+    (29, TRUE, '+33677542830', 0, 28),
+    (30, TRUE, '+33677542831', 0, 29),
+    (31, TRUE, '+33677542832', 0, 30),
+    (32, TRUE, '+33677542833', 0, 31),
+    (33, TRUE, '+33677542834', 0, 32),
+    (34, TRUE, '+33677542835', 0, 33),
+    (35, TRUE, '+33677542836', 0, 34),
+    (36, TRUE, '+33677542837', 0, 35),
+    (37, TRUE, '+33677542838', 0, 36),
+    (38, TRUE, '+33677542839', 0, 37),
+    (39, TRUE, '+33677542840', 0, 38),
+    (40, TRUE, '+33677542841', 0, 39),
+    (41, TRUE, '+33677542842', 0, 40),
+    (42, TRUE, '+33677542843', 0, 41),
+    (43, TRUE, '+33677542844', 0, 42),
+    (44, TRUE, '+33677542845', 0, 43),
+    (45, TRUE, '+33677542846', 0, 44),
+    (46, TRUE, '+33677542847', 0, 45),
+    (47, TRUE, '+33677542848', 0, 46),
+    (48, TRUE, '+33677542849', 0, 47),
+    (49, TRUE, '+33677542850', 0, 48),
+    (50, TRUE, '+33677542851', 0, 49),
+    (51, TRUE, '+33677542852', 0, 50),
+    (52, TRUE, '+33677542853', 0, 51),
+    (53, TRUE, '+33677542854', 0, 52),
+    (54, TRUE, '+33677542855', 0, 53),
+    (55, TRUE, '+33677542856', 0, 54),
+    (56, TRUE, '+33677542857', 0, 55),
+    (57, TRUE, '+33677542858', 0, 56),
+    (58, TRUE, '+33677542859', 0, 57),
+    (59, TRUE, '+33677542860', 0, 58),
+    (60, TRUE, '+33677542861', 0, 59),
+    (61, TRUE, '+33677542862', 0, 60),
+    (62, TRUE, '+33677542863', 0, 61),
+    (63, TRUE, '+33677542864', 0, 62),
+    (64, TRUE, '+33677542865', 0, 63),
+    (65, TRUE, '+33677542866', 0, 64),
+    (66, TRUE, '+33677542867', 0, 65),
+    (67, TRUE, '+33677542868', 0, 66);
 
 
-INSERT INTO public.identification (survey_unit_id, identification_type, identification,access,situation,category,occupant) VALUES
-    ('11', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('21', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('25', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
-    ('30', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
+    (1, 111112111,'VIN', '11'),
+    (2, 110111111,'NNS', '11'),
+    (3, 111111111,'TBR', '12'),
+    (4, 111111111,'TBR', '13'),
+    (5, 111111111,'TBR', '14'),
+    (6, 101111111,'TBR', '11'),
+    (7, 101111111,'TBR', '24'),
+    (8, 1590504478334, 'VIC', '20'),
+    (9, 1590504478334, 'VIC', '21'),
+    (10, 1590504478334, 'FIN', '22'),
+    (11, 1590504478334, 'VIC', '23'),
+    (12, 111112111,'VIN', '25'),
+    (13, 110111111,'NNS', '25'),
+    (14, 111111111,'TBR', '26'),
+    (15, 111111111,'TBR', '27'),
+    (16, 111111111,'TBR', '28'),
+    (17, 101111111,'TBR', '25'),
+    (18, 101111111,'TBR', '33'),
+    (19, 1590504478334, 'VIC', '29'),
+    (20, 1590504478334, 'VIC', '30'),
+    (21, 1590504478334, 'FIN', '31'),
+    (22, 1590504478334, 'VIC', '32');
 
-INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
-    ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
-    ('mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
-    ('mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
-    ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
-    ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
+INSERT INTO public.contact_outcome (id, date, type, survey_unit_id) VALUES
+    (1, 1590504478334, 'DUK', '24'),
+    (2, 1590504478334, 'DUK', '33');
+
+INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES
+    (1, 'INTERVIEWER', 'un commentaire', '13'),
+    (2, 'INTERVIEWER', 'un commentaire', '27');
+
+INSERT INTO closing_cause (id, date, type, survey_unit_id) VALUES
+    (1, EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '11'),
+    (2, EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '25');
+
+
+INSERT INTO public.identification (id, survey_unit_id, identification_type, identification,access,situation,category,occupant) VALUES
+    (1, '11', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    (2, '21', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    (3, '25', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED'),
+    (4, '30', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED');
+
+INSERT INTO public.communication_template (id, meshuggah_id, medium, type, campaign_id) VALUES
+    (1, 'mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
+    (2, 'mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
+    (3, 'mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
+    (4, 'mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
+    (5, 'mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
 
 INSERT INTO public.communication_request (survey_unit_id, emitter, reason, campaign_id, meshuggah_id) VALUES
-    ('11', 'INTERVIEWER', 'REFUSAL', 'SIMPSONS2020X00', 'mesh1'),
-    ('11', 'INTERVIEWER', 'UNREACHABLE', 'SIMPSONS2020X00', 'mesh2'),
-    ('20', 'INTERVIEWER', 'REFUSAL', 'VQS2021X00', 'mesh3'),
-    ('20', 'INTERVIEWER', 'UNREACHABLE', 'VQS2021X00', 'mesh4');
+    (1, '11', 'INTERVIEWER', 'REFUSAL', 'SIMPSONS2020X00', 'mesh1'),
+    (2, '11', 'INTERVIEWER', 'UNREACHABLE', 'SIMPSONS2020X00', 'mesh2'),
+    (3, '20', 'INTERVIEWER', 'REFUSAL', 'VQS2021X00', 'mesh3'),
+    (4, '20', 'INTERVIEWER', 'UNREACHABLE', 'VQS2021X00', 'mesh4');
 
 INSERT INTO public.communication_request_status (communication_request_id, status, date) VALUES
     (1, 'INITIATED', 1721903754305),
@@ -639,3 +641,99 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
 INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
     ('11','SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
     ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
+
+SELECT setval(
+    pg_get_serial_sequence('public.communication_request_status', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.communication_request_status), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.communication_request', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.communication_request), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.communication_template', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.communication_template), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.communication_metadata', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.communication_metadata), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.contact_attempt', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.contact_attempt), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.referent', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.referent), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.message', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.message), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.sample_identifier', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.sample_identifier), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.identification', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.identification), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.person', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.person), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.phone_number', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.phone_number), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.state', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.state), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.contact_outcome', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.contact_outcome), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.comment', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.comment), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.closing_cause', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.closing_cause), 0) + 1,
+    false
+);
+
+SELECT setval(
+    pg_get_serial_sequence('public.address', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.address), 0) + 1,
+    false
+);

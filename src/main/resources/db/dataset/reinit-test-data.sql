@@ -31,6 +31,7 @@ TRUNCATE TABLE
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_template ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE public.communication_metadata ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.contact_attempt ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.referent ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.message ALTER COLUMN id RESTART WITH 1;
