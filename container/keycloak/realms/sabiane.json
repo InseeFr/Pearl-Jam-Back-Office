@@ -7,7 +7,7 @@
       "enabled": true,
       "emailVerified": true,
       "firstName": "Gertrude",
-      "lastName": "Gestionnaire",
+      "lastName": "Gestionnaire1",
       "email": "gestion@insee.fr",
       "credentials": [
         {
@@ -23,7 +23,7 @@
       "enabled": true,
       "emailVerified": true,
       "firstName": "Gontrand",
-      "lastName": "Gestionnaire",
+      "lastName": "Gestionnaire2",
       "email": "gestion2@insee.fr",
       "credentials": [
         {
@@ -35,10 +35,42 @@
       "realmRoles": ["gestionnaire"]
     },
     {
+      "username": "gestio3",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Gerard",
+      "lastName": "Gestionnaire3",
+      "email": "gestion3@insee.fr",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "gestio3",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["gestionnaire"]
+    },
+    {
+      "username": "gestio4",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Gustave",
+      "lastName": "Gestionnaire4",
+      "email": "gestion4@insee.fr",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "gestio4",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["gestionnaire"]
+    },
+    {
       "username": "interv1",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Regine",
+      "firstName": "Isabelle",
       "lastName": "Interviewer 1",
       "email": "interviewer1@insee.fr",
       "credentials": [
@@ -54,7 +86,7 @@
       "username": "interv2",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Robert",
+      "firstName": "Ingrid",
       "lastName": "Interviewer 2",
       "email": "interviewer2@insee.fr",
       "credentials": [
@@ -70,7 +102,7 @@
       "username": "interv3",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Raoul",
+      "firstName": "Isaac",
       "lastName": "Interviewer 3",
       "email": "interviewer3@insee.fr",
       "credentials": [
@@ -86,7 +118,7 @@
       "username": "interv4",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Rico",
+      "firstName": "Isidore",
       "lastName": "Interviewer 4",
       "email": "interviewer4@insee.fr",
       "credentials": [
@@ -102,7 +134,7 @@
       "username": "interv5",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Rocco",
+      "firstName": "Irma",
       "lastName": "Interviewer 5",
       "email": "interviewer5@insee.fr",
       "credentials": [

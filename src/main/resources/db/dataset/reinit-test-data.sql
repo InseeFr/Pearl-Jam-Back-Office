@@ -1,30 +1,31 @@
 --changeset davdarras:reset-data context:test
 
-TRUNCATE TABLE public.communication_request_status CASCADE;
-TRUNCATE TABLE public.communication_request CASCADE;
-TRUNCATE TABLE public.communication_template CASCADE;
-TRUNCATE TABLE public.campaign_message_recipient CASCADE;
-TRUNCATE TABLE public.contact_attempt CASCADE;
-TRUNCATE TABLE public.message_status CASCADE;
-TRUNCATE TABLE public.oumessage_recipient CASCADE;
-TRUNCATE TABLE public.referent CASCADE;
-TRUNCATE TABLE public.message CASCADE;
-TRUNCATE TABLE public.interviewer CASCADE;
-TRUNCATE TABLE public.sample_identifier CASCADE;
-TRUNCATE TABLE public.user CASCADE;
-TRUNCATE TABLE public.campaign CASCADE;
-TRUNCATE TABLE public.preference CASCADE;
-TRUNCATE TABLE public.visibility CASCADE;
-TRUNCATE TABLE public.survey_unit CASCADE;
-TRUNCATE TABLE public.identification CASCADE;
-TRUNCATE TABLE public.person CASCADE;
-TRUNCATE TABLE public.phone_number CASCADE;
-TRUNCATE TABLE public.state CASCADE;
-TRUNCATE TABLE public.contact_outcome CASCADE;
-TRUNCATE TABLE public.comment CASCADE;
-TRUNCATE TABLE public.closing_cause CASCADE;
-TRUNCATE TABLE public.organization_unit CASCADE;
-TRUNCATE TABLE public.address CASCADE;
+TRUNCATE TABLE
+    public.communication_request_status,
+    public.communication_request,
+    public.communication_template,
+    public.contact_attempt,
+    public.oumessage_recipient,
+    public.referent,
+    public.message,
+    public.campaign_message_recipient,
+    public.message_status,
+    public.interviewer,
+    public.sample_identifier,
+    public.user,
+    public.campaign,
+    public.preference,
+    public.visibility,
+    public.survey_unit,
+    public.identification,
+    public.person,
+    public.phone_number,
+    public.state,
+    public.contact_outcome,
+    public.comment,
+    public.closing_cause,
+    public.organization_unit,
+    public.address;
 
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
