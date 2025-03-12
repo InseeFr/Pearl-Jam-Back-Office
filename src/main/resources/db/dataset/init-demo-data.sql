@@ -1,4 +1,4 @@
---changeset davdarras:init-demo-data
+--changeset davdarras:init-demo-data context:demo
 
 TRUNCATE TABLE
     public.communication_request_status,

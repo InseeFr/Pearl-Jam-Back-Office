@@ -12,6 +12,7 @@ spring:
     name: api
   liquibase:
     enabled: true
+    contexts: demo
     defaultSchema: public
     change-log: classpath:db/demo.xml
   docker:
