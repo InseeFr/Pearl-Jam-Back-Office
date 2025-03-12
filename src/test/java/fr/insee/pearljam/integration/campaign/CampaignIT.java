@@ -216,7 +216,8 @@ class CampaignIT {
 
     private void assertCommunicationTemplate(CommunicationTemplateDB communicationTemplateToCheck, String campaignId,
                                              String meshuggahId, CommunicationMedium medium, CommunicationType type) {
-        assertThat(communicationTemplateToCheck.getMeshuggahId()).isEqualTo(meshuggahId);
+        assertThat(communicationTemplateToCheck.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(meshuggahId);
+        assertThat(communicationTemplateToCheck.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(campaignId);
         assertThat(communicationTemplateToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(communicationTemplateToCheck.getType()).isEqualTo(type);
         assertThat(communicationTemplateToCheck.getMedium()).isEqualTo(medium);

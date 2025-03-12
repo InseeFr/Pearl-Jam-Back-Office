@@ -23,10 +23,9 @@ public class CommunicationTemplateDaoAdapter implements CommunicationTemplateRep
   }
 
   @Override
-  public Optional<CommunicationTemplate> findCommunicationTemplate(Long communicationTemplateId,
-      String campaignId) {
+  public Optional<CommunicationTemplate> findCommunicationTemplate(String campaignId, String meshuggahId) {
     return communicationTemplateRepository
-        .findCommunicationTemplate(communicationTemplateId, campaignId)
+        .findCommunicationTemplate(campaignId, meshuggahId)
         .map(CommunicationTemplateDB::toModel);
   }
 }

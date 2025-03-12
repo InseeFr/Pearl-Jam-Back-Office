@@ -27,13 +27,11 @@ class CommunicationTemplateCreateDtoTest {
         assertThat(modelList).hasSize(2);
 
         CommunicationTemplate firstTemplate = modelList.getFirst();
-        assertThat(firstTemplate.id()).isNull();
         assertThat(firstTemplate.meshuggahId()).isEqualTo("msg1");
         assertThat(firstTemplate.medium()).isEqualTo(CommunicationMedium.EMAIL);
         assertThat(firstTemplate.type()).isEqualTo(CommunicationType.NOTICE);
 
         CommunicationTemplate lastTemplate = modelList.getLast();
-        assertThat(lastTemplate.id()).isNull();
         assertThat(lastTemplate.meshuggahId()).isEqualTo("msg2");
         assertThat(lastTemplate.medium()).isEqualTo(CommunicationMedium.LETTER);
         assertThat(lastTemplate.type()).isEqualTo(CommunicationType.REMINDER);

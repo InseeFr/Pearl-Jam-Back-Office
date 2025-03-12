@@ -90,14 +90,10 @@ class SurveyUnitDetailDtoTest {
 				new CommunicationRequestStatusDB(4L, 123345678912L, CommunicationStatusType.CANCELLED, null)
 		);
 
-		CommunicationTemplateDB communicationTemplate1 = new CommunicationTemplateDB(1L, null, null, null, null);
-		CommunicationTemplateDB communicationTemplate2 = new CommunicationTemplateDB(2L, null, null, null, null);
-
-
-		communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplate1,
+		communicationRequestDBs.add(new CommunicationRequestDB(10L, "SIMPSONS2020X00", "mesh1",
 				CommunicationRequestReason.UNREACHABLE,
 				CommunicationRequestEmitter.INTERVIEWER, surveyUnit, status1));
-		communicationRequestDBs.add(new CommunicationRequestDB(11L, communicationTemplate2,
+		communicationRequestDBs.add(new CommunicationRequestDB(11L, "SIMPSONS2020X00", "mesh2",
 				CommunicationRequestReason.REFUSAL,
 				CommunicationRequestEmitter.TOOL, surveyUnit, status2));
 		surveyUnit.setCommunicationRequests(communicationRequestDBs);
@@ -116,10 +112,10 @@ class SurveyUnitDetailDtoTest {
 
 		assertThat(surveyUnitDetailDto.getCommunicationRequests())
 				.containsExactlyInAnyOrder(
-						new CommunicationRequestResponseDto(1L,
+						new CommunicationRequestResponseDto("SIMPSONS2020X00", "mesh1",
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER, status1Expected),
-						new CommunicationRequestResponseDto(2L,
+						new CommunicationRequestResponseDto("SIMPSONS2020X00", "mesh2",
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.TOOL, status2Expected)
 				);

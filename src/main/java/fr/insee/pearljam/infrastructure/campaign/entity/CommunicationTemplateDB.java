@@ -26,12 +26,8 @@ public class CommunicationTemplateDB implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
-    private String meshuggahId;
+    @EmbeddedId
+    private CommunicationTemplateDBId communicationTemplateDBId;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -42,6 +38,7 @@ public class CommunicationTemplateDB implements Serializable {
     private CommunicationType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("campaignId")
     private Campaign campaign;
 
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateDB> communicationTemplatesDB) {
@@ -55,19 +52,19 @@ public class CommunicationTemplateDB implements Serializable {
             return null;
         }
         return new CommunicationTemplate(
-                communicationTemplate.getId(),
-                communicationTemplate.getMeshuggahId(),
+                communicationTemplate.getCommunicationTemplateDBId().getMeshuggahId(),
                 communicationTemplate.getMedium(),
                 communicationTemplate.getType());
     }
 
+
     public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, Campaign campaign) {
         return communicationTemplates.stream()
-                .map(communicationTemplate -> new CommunicationTemplateDB(null,
-                        communicationTemplate.meshuggahId(),
-                        communicationTemplate.medium(),
-                        communicationTemplate.type(),
-                        campaign))
-                .toList();
+            .map(communicationTemplate -> new CommunicationTemplateDB(
+                new CommunicationTemplateDBId(communicationTemplate.meshuggahId(), campaign.getId()),
+                communicationTemplate.medium(),
+                communicationTemplate.type(),
+                campaign))
+            .toList();
     }
 }

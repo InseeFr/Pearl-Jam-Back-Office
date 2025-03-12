@@ -37,12 +37,12 @@ class CommunicationTemplateIT {
         String expectedResult = """
             [
                {
-                  "id":1,
+                  "meshuggahId":"mesh1",
                   "medium":"EMAIL",
                   "type":"REMINDER"
                },
                {
-                  "id":2,
+                  "meshuggahId":"mesh2",
                   "medium":"LETTER",
                   "type":"NOTICE"
                }

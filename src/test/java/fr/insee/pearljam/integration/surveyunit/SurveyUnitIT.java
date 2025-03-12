@@ -231,19 +231,20 @@ class SurveyUnitIT {
 				   },
 				   "communicationTemplates":[
 				      {
-				         "id":1,
+				         "meshuggahId":"mesh1",
 				         "medium":"EMAIL",
 				         "type":"REMINDER"
 				      },
 				      {
-				         "id":2,
+				         "meshuggahId":"mesh2",
 				         "medium":"LETTER",
 				         "type":"NOTICE"
 				      }
 				   ],
 				   "communicationRequests":[
 				      {
-				         "communicationTemplateId":1,
+				         "campaignId":"SIMPSONS2020X00",
+				         "meshuggahId": "mesh1",
 				         "reason":"REFUSAL",
 				         "emitter":"INTERVIEWER",
 				         "status":[
@@ -262,7 +263,8 @@ class SurveyUnitIT {
 				         ]
 				      },
 				      {
-				         "communicationTemplateId":2,
+				         "campaignId":"SIMPSONS2020X00",
+				         "meshuggahId": "mesh2",
 				         "reason":"UNREACHABLE",
 				         "emitter":"INTERVIEWER",
 				         "status":[
@@ -383,12 +385,12 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "communicationTemplateId":5,
+				          "meshuggahId":"mesh3",
 				          "reason":"REFUSAL",
 				          "creationTimestamp": 1721903754305
 				       },
 				       {
-				          "communicationTemplateId":5,
+				          "meshuggahId":"mesh4",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
@@ -467,7 +469,7 @@ class SurveyUnitIT {
 				           "type":"VIC"
 				        },
 				        {
-				           "id":14,
+				           "id":13,
 				           "date":1590504459838,
 				           "type":"AOC"
 				        }
@@ -491,7 +493,8 @@ class SurveyUnitIT {
 				     },
 				     "communicationRequests":[
 				        {
-				           "communicationTemplateId":5,
+				           "campaignId":"VQS2021X00",
+				           "meshuggahId": "mesh3",
 				           "reason":"REFUSAL",
 				           "emitter":"INTERVIEWER",
 				           "status":[
@@ -501,49 +504,51 @@ class SurveyUnitIT {
 				              },
 				              {
 				                 "date":""" + currentTimestamp + """
-				         ,
-				         "status":"READY"
-				      }
-				   ]
-				},
-				{
-				   "communicationTemplateId":4,
-				   "reason":"UNREACHABLE",
-				   "emitter":"INTERVIEWER",
-				   "status":[
-				      {
-				         "date":1721903754205,
-				         "status":"INITIATED"
-				      }
-				   ]
-				},
-				{
-				   "communicationTemplateId":5,
-				   "reason":"UNREACHABLE",
-				   "emitter":"INTERVIEWER",
-				   "status":[
-				      {
-				         "date":1721903754405,
-				         "status":"INITIATED"
-				      },
-				      {
-				         "date":""" + currentTimestamp + """
-				               ,
-				               "status":"READY"
-				            }
-				         ]
-				      },
-				      {
-				         "communicationTemplateId":3,
-				         "reason":"REFUSAL",
-				         "emitter":"INTERVIEWER",
-				         "status":[
-				            {
-				               "date":1721903754205,
-				               "status":"INITIATED"
-				            }
-				         ]
-				      }
+                         ,
+                         "status":"READY"
+                      }
+				           ]
+				        },
+                {
+                  "campaignId":"VQS2021X00",
+                   "meshuggahId": "mesh4",
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754205,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
+                {
+                   "campaignId":"VQS2021X00",
+                   "meshuggahId": "mesh4",
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754405,
+                         "status":"INITIATED"
+                      },
+                      {
+                         "date": 1719324512000,
+                         "status": "CANCELLED"
+                     }
+                   ]
+                },
+                {
+                   "campaignId":"VQS2021X00",
+                   "meshuggahId": "mesh4",
+                   "reason":"REFUSAL",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754205,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
 				   ]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
@@ -614,7 +619,7 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "communicationTemplateId":6,
+				          "meshuggahId":"NOT_EXIST",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }

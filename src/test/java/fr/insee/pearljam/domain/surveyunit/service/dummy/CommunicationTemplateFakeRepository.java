@@ -20,10 +20,11 @@ public class CommunicationTemplateFakeRepository implements CommunicationTemplat
     }
 
     @Override
-    public Optional<CommunicationTemplate> findCommunicationTemplate(Long communicationTemplateId, String campaignId) {
+    public Optional<CommunicationTemplate> findCommunicationTemplate(String campaignId, String meshuggahId) {
         return communicationTemplates.stream()
-                .filter(communicationTemplate -> communicationTemplate.id().equals(communicationTemplateId))
-                .findFirst();
+            .filter(communicationTemplate ->
+                communicationTemplate.meshuggahId().equals(meshuggahId))
+            .findFirst();
     }
 
     @Override

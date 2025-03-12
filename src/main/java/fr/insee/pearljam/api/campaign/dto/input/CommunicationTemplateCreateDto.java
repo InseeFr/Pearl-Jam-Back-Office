@@ -37,7 +37,6 @@ public record CommunicationTemplateCreateDto(
             return null;
         }
         return new CommunicationTemplate(
-                null,
                 communicationTemplate.meshuggahId(),
                 communicationTemplate.medium(),
                 communicationTemplate.type());

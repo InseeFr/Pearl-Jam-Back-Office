@@ -38,8 +38,11 @@ public class CommunicationRequestDB implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private CommunicationTemplateDB communicationTemplate;
+    @Column
+    private String campaignId;
+
+    @Column
+    private String meshuggahId;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -61,10 +64,10 @@ public class CommunicationRequestDB implements Serializable {
      * @param request model object
      * @return entity object
      */
-    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, CommunicationTemplateDB communicationTemplate) {
+    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, String campaignId, String meshuggahId) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), communicationTemplate,
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), campaignId, meshuggahId,
                 request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {
@@ -88,7 +91,7 @@ public class CommunicationRequestDB implements Serializable {
                     .map(CommunicationRequestStatusDB::toModel).toList();
         }
 
-        return new CommunicationRequest(request.getId(), request.getCommunicationTemplate().getId(),
+        return new CommunicationRequest(request.getId(), request.getCampaignId(), request.getMeshuggahId(),
                 request.getReason(), request.getEmitter(), status);
     }
 

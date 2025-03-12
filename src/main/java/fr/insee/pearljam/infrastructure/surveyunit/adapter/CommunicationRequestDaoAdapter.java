@@ -33,11 +33,11 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
     List<CommunicationRequestDB> newCommunicationRequests = new ArrayList<>();
     for (CommunicationRequest communicationRequest : communicationRequests) {
       CommunicationTemplateDB communicationTemplate = communicationTemplateRepository
-          .findCommunicationTemplate(communicationRequest.communicationTemplateId(),
-              surveyUnit.getCampaign().getId())
+          .findCommunicationTemplate(communicationRequest.campaignId(), communicationRequest.meshuggahId())
           .orElseThrow(CommunicationTemplateNotFoundException::new);
       CommunicationRequestDB newCommunicationRequest = CommunicationRequestDB.fromModel(
-          communicationRequest, surveyUnit, communicationTemplate);
+          communicationRequest, surveyUnit, communicationTemplate.getCampaign().getId(), communicationTemplate.getCommunicationTemplateDBId()
+              .getMeshuggahId());
       newCommunicationRequests.add(newCommunicationRequest);
     }
 

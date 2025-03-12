@@ -1,57 +1,36 @@
 BEGIN;
 
--- Ajouter les colonnes campaign_id et meshuggah_id dans communication_request
-ALTER TABLE communication_request
-    ADD COLUMN campaign_id VARCHAR(255),
-    ADD COLUMN meshuggah_id VARCHAR(255);
+-- 1. Ajouter les nouvelles colonnes dans communication_request (sans IF NOT EXISTS)
+ALTER TABLE communication_request ADD COLUMN campaign_id VARCHAR(255);
+ALTER TABLE communication_request ADD COLUMN meshuggah_id VARCHAR(255);
 
--- Mettre à jour les nouvelles colonnes avec les valeurs existantes
-UPDATE communication_request cr
-SET campaign_id = ct.campaign_id,
-    meshuggah_id = ct.meshuggah_id
-FROM communication_template ct
-WHERE cr.communication_template_id = ct.id;
+-- 2. Mettre à jour les nouvelles colonnes avec les valeurs existantes
+UPDATE communication_request
+SET campaign_id = (SELECT campaign_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id),
+    meshuggah_id = (SELECT meshuggah_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id)
+WHERE communication_template_id IS NOT NULL;
 
--- Ajouter la contrainte NOT NULL maintenant que les colonnes ne contiennent plus de NULL
-ALTER TABLE communication_request
-    ALTER COLUMN campaign_id SET NOT NULL,
-    ALTER COLUMN meshuggah_id SET NOT NULL;
+-- 3. Ajouter la contrainte NOT NULL maintenant que les valeurs sont renseignées
+ALTER TABLE communication_request ALTER COLUMN campaign_id SET NOT NULL;
+ALTER TABLE communication_request ALTER COLUMN meshuggah_id SET NOT NULL;
 
--- Vérifier qu'il n'y a pas de doublons avant de modifier la clé primaire
-SELECT campaign_id, meshuggah_id, COUNT(*)
-FROM communication_request
-GROUP BY campaign_id, meshuggah_id
-HAVING COUNT(*) > 1;
+-- 4. Supprimer la clé étrangère existante sur communication_template_id
+ALTER TABLE communication_request DROP CONSTRAINT IF EXISTS fk_comm_request_to_comm_request_template;
 
--- Supprimer la contrainte de clé primaire existante (communication_requestPK)
-ALTER TABLE communication_request DROP CONSTRAINT IF EXISTS communication_requestPK;
+-- 5. Ajouter un index pour optimiser les jointures
+CREATE INDEX idx_comm_request_campaign_meshuggah ON communication_request(campaign_id, meshuggah_id);
 
--- Ajouter la nouvelle clé primaire sur campaign_id et meshuggah_id
-ALTER TABLE communication_request ADD PRIMARY KEY (campaign_id, meshuggah_id);
+-- 6. Supprimer l'ancienne colonne communication_template_id dans communication_request
+ALTER TABLE communication_request DROP COLUMN communication_template_id;
 
--- Modifier la clé primaire de communication_template
-ALTER TABLE communication_template DROP CONSTRAINT IF EXISTS communication_templatePK;
-ALTER TABLE communication_template ADD PRIMARY KEY (campaign_id, meshuggah_id);
+-- 7. Supprimer communication_template_id dans communication_metadata
+ALTER TABLE communication_metadata DROP COLUMN communication_template_id;
 
--- Modifier la clé étrangère dans communication_request
--- Vérifier que la contrainte FK506gklsgdfiner7hc3vbo77ku existe avant de la supprimer
-ALTER TABLE communication_request DROP CONSTRAINT IF EXISTS FK506gklsgdfiner7hc3vbo77ku;
+-- 8. Ajouter les nouvelles colonnes dans communication_metadata
+ALTER TABLE communication_metadata ADD COLUMN campaign_id VARCHAR(255) NOT NULL;
+ALTER TABLE communication_metadata ADD COLUMN meshuggah_id VARCHAR(255) NOT NULL;
 
--- Ajouter la nouvelle contrainte de clé étrangère
-ALTER TABLE communication_request
-    ADD CONSTRAINT fk_comm_request_to_comm_request_template FOREIGN KEY (campaign_id, meshuggah_id)
-        REFERENCES communication_template (campaign_id, meshuggah_id);
-
--- Supprimer la colonne communication_template_id dans communication_metadata
-ALTER TABLE communication_metadata DROP COLUMN IF EXISTS communication_template_id;
-
--- Ajouter les nouvelles colonnes campaign_id et meshuggah_id dans communication_metadata
-ALTER TABLE communication_metadata
-    ADD COLUMN campaign_id VARCHAR(255) NOT NULL,
-    ADD COLUMN meshuggah_id VARCHAR(255) NOT NULL;
-
--- Supprimer la colonne id dans communication_template
--- Vérifier que communication_template a bien une nouvelle clé primaire avant de supprimer la colonne id
-ALTER TABLE communication_template DROP COLUMN IF EXISTS id;
+-- 9. Ajouter un index sur communication_metadata
+CREATE INDEX idx_comm_metadata_campaign_meshuggah ON communication_metadata(campaign_id, meshuggah_id);
 
 COMMIT;

@@ -23,8 +23,8 @@ class CommunicationTemplateDBTest {
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com");
-        CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(1L, "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
-        CommunicationTemplateDB templateDB2 = new CommunicationTemplateDB(2L, "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER, campaign);
+        CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(new CommunicationTemplateDBId("mesh1", "SIMPSONS2020X00"), CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
+        CommunicationTemplateDB templateDB2 = new CommunicationTemplateDB(new CommunicationTemplateDBId("mesh2", "SIMPSONS2020X00"), CommunicationMedium.LETTER, CommunicationType.REMINDER, campaign);
         List<CommunicationTemplateDB> dbList = List.of(templateDB1, templateDB2);
 
         // When
@@ -34,13 +34,11 @@ class CommunicationTemplateDBTest {
         assertThat(modelList)
                 .hasSize(2);
 
-        assertThat(modelList.getFirst().id()).isEqualTo(1L);
-        assertThat(modelList.getFirst().meshuggahId()).isEqualTo("msg1");
+        assertThat(modelList.getFirst().meshuggahId()).isEqualTo("mesh1");
         assertThat(modelList.getFirst().medium()).isEqualTo(CommunicationMedium.EMAIL);
         assertThat(modelList.getFirst().type()).isEqualTo(CommunicationType.NOTICE);
 
-        assertThat(modelList.getLast().id()).isEqualTo(2L);
-        assertThat(modelList.getLast().meshuggahId()).isEqualTo("msg2");
+        assertThat(modelList.getLast().meshuggahId()).isEqualTo("mesh2");
         assertThat(modelList.getLast().medium()).isEqualTo(CommunicationMedium.LETTER);
         assertThat(modelList.getLast().type()).isEqualTo(CommunicationType.REMINDER);
     }
@@ -52,8 +50,8 @@ class CommunicationTemplateDBTest {
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com");
-        CommunicationTemplate template1 = new CommunicationTemplate(1L, "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplate template2 = new CommunicationTemplate(2L, "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
+        CommunicationTemplate template1 = new CommunicationTemplate("msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplate template2 = new CommunicationTemplate("msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplate> modelList = List.of(template1, template2);
 
         // When
@@ -63,25 +61,25 @@ class CommunicationTemplateDBTest {
         assertThat(dbList)
                 .hasSize(2)
                 .anySatisfy(templateDB -> {
-                    verifyCommunicationTemplateDB(templateDB, null,
+                    verifyCommunicationTemplateDB(templateDB, "id",
                             "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
                 })
                 .anySatisfy(templateDB -> {
-                    verifyCommunicationTemplateDB(templateDB, null,
+                    verifyCommunicationTemplateDB(templateDB, "id",
                             "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER, campaign);
                 });
     }
 
     private void verifyCommunicationTemplateDB(
             CommunicationTemplateDB templateDB,
-            Long expectedId,
+            String campaignId,
             String expectedMesshugahId,
             CommunicationMedium expectedMedium,
             CommunicationType expectedType,
             Campaign expectedCampaign
     ) {
-        assertThat(templateDB.getId()).isEqualTo(expectedId);
-        assertThat(templateDB.getMeshuggahId()).isEqualTo(expectedMesshugahId);
+        assertThat(templateDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(campaignId);
+        assertThat(templateDB.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(expectedMesshugahId);
         assertThat(templateDB.getMedium()).isEqualTo(expectedMedium);
         assertThat(templateDB.getType()).isEqualTo(expectedType);
         assertThat(templateDB.getCampaign()).isEqualTo(expectedCampaign);

@@ -7,7 +7,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import java.util.List;
 
 public record CommunicationTemplateResponseDto(
-        Long id,
+        String meshuggahId,
         CommunicationMedium medium,
         CommunicationType type
 ) {
@@ -15,7 +15,7 @@ public record CommunicationTemplateResponseDto(
         return communicationTemplates.stream()
                 .map(communicationTemplate ->
                         new CommunicationTemplateResponseDto(
-                                communicationTemplate.id(),
+                                communicationTemplate.meshuggahId(),
                                 communicationTemplate.medium(),
                                 communicationTemplate.type()))
                 .toList();
