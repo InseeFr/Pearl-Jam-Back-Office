@@ -4,6 +4,7 @@ TRUNCATE TABLE
     public.communication_request_status,
     public.communication_request,
     public.communication_template,
+    public.communication_metadata,
     public.contact_attempt,
     public.oumessage_recipient,
     public.referent,
