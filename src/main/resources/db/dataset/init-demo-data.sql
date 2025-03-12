@@ -1,5 +1,33 @@
 --changeset davdarras:init-demo-data
 
+TRUNCATE TABLE
+    public.communication_request_status,
+    public.communication_request,
+    public.communication_template,
+    public.communication_metadata,
+    public.contact_attempt,
+    public.oumessage_recipient,
+    public.referent,
+    public.message,
+    public.campaign_message_recipient,
+    public.message_status,
+    public.interviewer,
+    public.sample_identifier,
+    public.user,
+    public.campaign,
+    public.preference,
+    public.visibility,
+    public.survey_unit,
+    public.identification,
+    public.person,
+    public.phone_number,
+    public.state,
+    public.contact_outcome,
+    public.comment,
+    public.closing_cause,
+    public.organization_unit,
+    public.address;
+
 INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, building, floor, door, staircase, city_priority_district) VALUES
     (1,  'InseeAddress', 'Ted Farmer',            '', '', '1 rue de la gare',              '', '29270 Carhaix',        'France', true,  'Bat. C', 'Etg 4', 'Porte 48',   'Escalier B', true),
     (2,  'InseeAddress', 'Cecilia Ortega',        '', '', '2 place de la mairie',          '', '90000 Belfort',       'France', false, null,     null,    null,         null,       false),
@@ -55,8 +83,6 @@ INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, bui
     (52, 'InseeAddress', 'Philippe Garnier',      '', '', '52 rue de l''Industrie',        '', '76000 Rouen',          'France', false, null,     null,    null,         null,       false),
     (53, 'InseeAddress', 'Catherine Renault',     '', '', '53 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,     null,    null,         null,       false),
     (54, 'InseeAddress', 'Jacques Faure',         '', '', '54 chemin des Acacias',         '', '33000 Bordeaux',       'France', false, null,     null,    null,         null,       false);
-
-
 
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
