@@ -87,4 +87,7 @@
 	<!-- update communication structure -->
 	<include file="changelog/590_update_communication_structure.sql" relativeToChangelogFile="true"/>
 
+	<!-- delete id in communication_template table -->
+	<include file="changelog/591_delete_id_in_communication_template.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
