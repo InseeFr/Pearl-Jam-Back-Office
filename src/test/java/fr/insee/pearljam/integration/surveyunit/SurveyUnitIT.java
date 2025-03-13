@@ -469,7 +469,7 @@ class SurveyUnitIT {
 				           "type":"VIC"
 				        },
 				        {
-				           "id":13,
+				           "id":14,
 				           "date":1590504459838,
 				           "type":"AOC"
 				        }
@@ -537,18 +537,18 @@ class SurveyUnitIT {
                      }
                    ]
                 },
-                {
-                   "campaignId":"VQS2021X00",
-                   "meshuggahId": "mesh4",
-                   "reason":"REFUSAL",
-                   "emitter":"INTERVIEWER",
-                   "status":[
-                      {
-                         "date":1721903754205,
-                         "status":"INITIATED"
-                      }
-                   ]
-                },
+            	  {
+									 "campaignId":"VQS2021X00",
+									 "meshuggahId": "mesh3",
+									 "reason":"REFUSAL",
+									 "emitter":"INTERVIEWER",
+									 "status":[
+											{
+												 "date":1721903754205,
+												 "status":"INITIATED"
+											}
+									 ]
+								}
 				   ]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
