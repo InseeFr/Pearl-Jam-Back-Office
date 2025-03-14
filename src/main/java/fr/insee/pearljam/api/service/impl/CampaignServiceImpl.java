@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Referent;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -158,7 +159,8 @@ public class CampaignServiceImpl implements CampaignService {
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
-				campaignDto.email());
+				campaignDto.email(),
+				campaignDto.sensitivity());
 		campaign.setReferents(new ArrayList<>());
 		campaign.setCommunicationTemplates(new ArrayList<>());
 
@@ -303,5 +305,15 @@ public class CampaignServiceImpl implements CampaignService {
 				visibilityService.findVisibilities(campaignId)
 		);
 		return CampaignResponseDto.fromModel(campaignDB, referents, visibilities);
+	}
+
+	@Override
+	public List<CampaignSensitivityDto> getCampaignOngoingDto() throws CampaignNotFoundException {
+		return Optional.of(campaignRepository.findAll())
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.stream()
+						.map(CampaignSensitivityDto::fromModel)
+						.toList())
+				.orElseThrow(CampaignNotFoundException::new);
 	}
 }

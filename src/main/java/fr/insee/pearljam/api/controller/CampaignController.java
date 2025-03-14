@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import jakarta.validation.Valid;
@@ -249,6 +250,12 @@ public class CampaignController {
 
 		log.info("{} checked if campaign {} is on-going : {}", userId, id, campaignOngoing.isOngoing());
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
+	}
+
+	@Operation(summary = "get ongoing campaigns")
+	@GetMapping(value = Constants.API_CAMPAIGNS_ON_GOING, produces = "application/json")
+	public List<CampaignSensitivityDto> getOngoingCampaigns() throws CampaignNotFoundException {
+		return campaignService.getCampaignOngoingDto();
 	}
 
 	/**

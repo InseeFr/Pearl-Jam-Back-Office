@@ -96,7 +96,8 @@ class CampaignIT {
                    "email":"first.email@test.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
-                   "contactAttemptConfiguration":"F2F"
+                   "contactAttemptConfiguration":"F2F",
+                   "sensitivity": false
                 }
                 """;
         JSONAssert.assertEquals(contentResult, expectedResult, JSONCompareMode.NON_EXTENSIBLE);
@@ -171,7 +172,8 @@ class CampaignIT {
                    "email": "test.email@plop.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
-                   "contactAttemptConfiguration":"F2F"
+                   "contactAttemptConfiguration":"F2F",
+                   "sensitivity": false
                 }
                 """;
         mockMvc.perform(post(Constants.API_CAMPAIGN)

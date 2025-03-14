@@ -29,5 +29,6 @@ public record CampaignCreateDto (
 	String email,
 	IdentificationConfiguration identificationConfiguration,
 	ContactOutcomeConfiguration contactOutcomeConfiguration,
-	ContactAttemptConfiguration contactAttemptConfiguration) {
+	ContactAttemptConfiguration contactAttemptConfiguration,
+	Boolean sensitivity) {
 }

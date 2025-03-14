@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 import lombok.RequiredArgsConstructor;
 
@@ -146,5 +147,10 @@ public class CampaignFakeService implements CampaignService {
             throw new CampaignNotFoundException();
         }
         return campaignToRetrieve;
+    }
+
+    @Override
+    public List<CampaignSensitivityDto> getCampaignOngoingDto() {
+        return List.of();
     }
 }
