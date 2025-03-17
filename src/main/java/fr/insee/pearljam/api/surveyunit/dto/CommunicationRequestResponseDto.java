@@ -12,6 +12,7 @@ import java.util.Set;
  * @param status The status of the communication request
  */
 public record CommunicationRequestResponseDto(
+        String communicationTemplateId,
         String campaignId,
         String meshuggahId,
         CommunicationRequestReason reason,
@@ -30,6 +31,7 @@ public record CommunicationRequestResponseDto(
                             .map(CommunicationRequestStatusDto::fromModel)
                             .toList();
                     return new CommunicationRequestResponseDto(
+                            request.meshuggahId(), //The communicationTemplateId field corresponds to the meshuggahId to prevent regression.
                             request.campaignId(),
                             request.meshuggahId(),
                             request.reason(),

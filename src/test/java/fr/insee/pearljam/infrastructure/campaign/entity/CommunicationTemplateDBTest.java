@@ -50,8 +50,8 @@ class CommunicationTemplateDBTest {
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com");
-        CommunicationTemplate template1 = new CommunicationTemplate("msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplate template2 = new CommunicationTemplate("msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
+        CommunicationTemplate template1 = new CommunicationTemplate("SIMPSONS2020X00", "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplate template2 = new CommunicationTemplate("SIMPSONS2020X00", "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplate> modelList = List.of(template1, template2);
 
         // When

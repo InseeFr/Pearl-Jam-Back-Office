@@ -1,17 +1,17 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.domain.surveyunit.model.communication.*;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
+import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 
 class CommunicationRequestDBTest {
 

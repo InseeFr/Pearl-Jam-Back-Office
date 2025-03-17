@@ -26,6 +26,7 @@ import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -72,7 +73,7 @@ class SurveyUnitUpdateServiceImplTest {
 		surveyUnit = new SurveyUnit("id", true, true, null,
 				null, campaign, null, ou, null);
 
-		communicationTemplate = new CommunicationTemplate("messhId", CommunicationMedium.EMAIL,
+		communicationTemplate = new CommunicationTemplate("SIMPSONS2020X00", "messhId", CommunicationMedium.EMAIL,
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
 		Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
@@ -100,8 +101,7 @@ class SurveyUnitUpdateServiceImplTest {
 				communicationRequestFakeRepository.getCommunicationRequestsAdded();
 		assertThat(communicationRequestResults)
 				.hasSize(2)
-				.extracting(CommunicationRequest::id,
-						CommunicationRequest::campaignId,
+				.extracting(CommunicationRequest::campaignId,
 						CommunicationRequest::meshuggahId,
 						CommunicationRequest::reason,
 						CommunicationRequest::emitter,
@@ -110,8 +110,7 @@ class SurveyUnitUpdateServiceImplTest {
 								.toList()
 				)
 				.containsExactlyInAnyOrder(
-						tuple(null,
-								"campaignId",
+						tuple("campaignId",
 								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER,
@@ -120,8 +119,7 @@ class SurveyUnitUpdateServiceImplTest {
 										tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
 								)
 						),
-						tuple(null,
-								"campaignId",
+						tuple("campaignId",
 								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.INTERVIEWER,
@@ -140,7 +138,7 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationTemplateFakeRepository.clearCommunicationTemplates();
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, false, "mail", "tel");
-		communicationTemplate = new CommunicationTemplate("messhId", CommunicationMedium.LETTER,
+		communicationTemplate = new CommunicationTemplate("SIMPSONS2020X00","messhId", CommunicationMedium.LETTER,
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
 		visibilityFakeService.save(visibility);
@@ -158,8 +156,7 @@ class SurveyUnitUpdateServiceImplTest {
 				communicationRequestFakeRepository.getCommunicationRequestsAdded();
 		assertThat(communicationRequestResults)
 				.hasSize(2)
-				.extracting(CommunicationRequest::id,
-						CommunicationRequest::campaignId,
+				.extracting(CommunicationRequest::campaignId,
 						CommunicationRequest::meshuggahId,
 						CommunicationRequest::reason,
 						CommunicationRequest::emitter,
@@ -168,8 +165,7 @@ class SurveyUnitUpdateServiceImplTest {
 								.toList()
 				)
 				.containsExactlyInAnyOrder(
-						tuple(null,
-								"campaignId",
+						tuple("campaignId",
 								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER,
@@ -178,8 +174,7 @@ class SurveyUnitUpdateServiceImplTest {
 										tuple(null, dateService.getCurrentTimestamp(),
 												CommunicationStatusType.CANCELLED))
 						),
-						tuple(null,
-								"campaignId",
+						tuple("campaignId",
 								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.INTERVIEWER,

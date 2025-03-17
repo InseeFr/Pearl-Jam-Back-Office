@@ -1,28 +1,34 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.domain.Address;
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
+import fr.insee.pearljam.api.domain.SampleIdentifier;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
-import fr.insee.pearljam.domain.surveyunit.model.question.*;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.domain.surveyunit.model.question.AccessQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.OccupantQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestStatusDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class SurveyUnitDetailDtoTest {
 	private SurveyUnit surveyUnit;
@@ -112,10 +118,10 @@ class SurveyUnitDetailDtoTest {
 
 		assertThat(surveyUnitDetailDto.getCommunicationRequests())
 				.containsExactlyInAnyOrder(
-						new CommunicationRequestResponseDto("SIMPSONS2020X00", "mesh1",
+						new CommunicationRequestResponseDto("mesh1", "SIMPSONS2020X00", "mesh1",
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER, status1Expected),
-						new CommunicationRequestResponseDto("SIMPSONS2020X00", "mesh2",
+						new CommunicationRequestResponseDto("mesh2", "SIMPSONS2020X00", "mesh2",
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.TOOL, status2Expected)
 				);

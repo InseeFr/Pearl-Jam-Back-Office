@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class Campaign implements Serializable {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**

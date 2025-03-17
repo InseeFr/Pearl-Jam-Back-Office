@@ -33,4 +33,7 @@ ALTER TABLE communication_metadata ADD COLUMN meshuggah_id VARCHAR(255) NOT NULL
 -- 9. Ajouter un index sur communication_metadata
 CREATE INDEX idx_comm_metadata_campaign_meshuggah ON communication_metadata(campaign_id, meshuggah_id);
 
+ALTER TABLE communication_template
+DROP COLUMN id;
+
 COMMIT;

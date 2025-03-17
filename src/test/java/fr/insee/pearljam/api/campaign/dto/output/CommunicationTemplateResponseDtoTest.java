@@ -16,8 +16,8 @@ class CommunicationTemplateResponseDtoTest {
     @DisplayName("Should return dto objects")
     void testFromModel() {
         // Given
-        CommunicationTemplate template1 = new CommunicationTemplate("msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplate template2 = new CommunicationTemplate("msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
+        CommunicationTemplate template1 = new CommunicationTemplate("SIMPSONS2020X00", "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplate template2 = new CommunicationTemplate("SIMPSONS2020X00", "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplate> communicationTemplates = List.of(template1, template2);
 
         // When

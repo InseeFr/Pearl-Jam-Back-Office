@@ -55,7 +55,7 @@ public interface CommunicationRequestJpaRepository extends
       INNER JOIN su.campaign c
       INNER JOIN c.visibilities vi
       INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.campaignId
-                                           AND ct.communicationTemplateDBId.meshuggahId = cr.meshuggahId
+                                           AND ct.communicationTemplateDBId.meshuggahId = cr.campaignId
       INNER JOIN cr.status crs
       WHERE cr.campaignId = :campaignId
       AND ct.type = :type

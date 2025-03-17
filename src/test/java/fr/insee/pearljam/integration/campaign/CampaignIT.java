@@ -153,16 +153,19 @@ class CampaignIT {
                    ],
                    "communicationTemplates": [
                       {
+                         "campaignId": "SIMPSONS2020X00",
                          "meshuggahId": "meshId1",
                          "medium": "LETTER",
                          "type": "REMINDER"
                       },
                       {
+                         "campaignId": "SIMPSONS2020X00",
                          "meshuggahId": "meshId2",
                          "medium": "EMAIL",
                          "type": "NOTICE"
                       },
                       {
+                         "campaignId": "SIMPSONS2020X00",
                          "meshuggahId": "meshId3",
                          "medium": "LETTER",
                          "type": "NOTICE"

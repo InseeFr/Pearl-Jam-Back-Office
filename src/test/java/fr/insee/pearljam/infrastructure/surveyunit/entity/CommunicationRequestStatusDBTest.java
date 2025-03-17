@@ -1,11 +1,12 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import fr.insee.pearljam.domain.surveyunit.model.communication.*;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CommunicationRequestStatusDBTest {
     @Test
@@ -14,7 +15,7 @@ class CommunicationRequestStatusDBTest {
         CommunicationRequestStatusDB communicationRequestStatusDB = new CommunicationRequestStatusDB(1L, 123456789L, CommunicationStatusType.INITIATED, null);
 
         CommunicationRequestStatus communicationRequestStatus = CommunicationRequestStatusDB.toModel(communicationRequestStatusDB);
-        assertThat(communicationRequestStatus.id()).isEqualTo(communicationRequestStatusDB.getId());
+
         assertThat(communicationRequestStatus.date()).isEqualTo(communicationRequestStatusDB.getDate());
         assertThat(communicationRequestStatus.status()).isEqualTo(communicationRequestStatusDB.getStatus());
     }

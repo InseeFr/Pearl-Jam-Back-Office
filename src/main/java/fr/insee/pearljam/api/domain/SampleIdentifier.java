@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.persistence.Entity;
@@ -22,6 +23,7 @@ public abstract class SampleIdentifier implements Serializable {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 5088394603526415418L;
 	/**
 	 * The id of SampleIdentifier

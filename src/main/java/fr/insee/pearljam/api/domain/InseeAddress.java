@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import java.io.Serial;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class InseeAddress extends Address {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = -4901950808854835782L;
 	/**
 	 * The line 1 of INSEE address

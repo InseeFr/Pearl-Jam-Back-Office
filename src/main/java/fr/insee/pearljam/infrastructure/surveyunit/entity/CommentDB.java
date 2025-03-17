@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class CommentDB implements Serializable {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 6363481673399032153L;
 	/**
 	 * The id of Address

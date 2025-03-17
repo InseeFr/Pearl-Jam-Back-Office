@@ -37,11 +37,15 @@ class CommunicationTemplateIT {
         String expectedResult = """
             [
                {
+                  "id": "mesh1",
+                  "campaignId": "SIMPSONS2020X00",
                   "meshuggahId":"mesh1",
                   "medium":"EMAIL",
                   "type":"REMINDER"
                },
                {
+                  "id": "mesh2",
+                  "campaignId": "SIMPSONS2020X00",
                   "meshuggahId":"mesh2",
                   "medium":"LETTER",
                   "type":"NOTICE"

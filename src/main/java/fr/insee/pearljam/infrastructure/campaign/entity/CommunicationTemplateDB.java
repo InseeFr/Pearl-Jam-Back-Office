@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import jakarta.persistence.*;
+import java.io.Serial;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommunicationTemplateDB implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -52,6 +54,7 @@ public class CommunicationTemplateDB implements Serializable {
             return null;
         }
         return new CommunicationTemplate(
+                communicationTemplate.getCommunicationTemplateDBId().getCampaignId(),
                 communicationTemplate.getCommunicationTemplateDBId().getMeshuggahId(),
                 communicationTemplate.getMedium(),
                 communicationTemplate.getType());

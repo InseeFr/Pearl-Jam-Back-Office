@@ -24,7 +24,6 @@ class CommunicationRequestTest {
 
         // Then
         assertThat(communicationRequest).isNotNull();
-        assertThat(communicationRequest.id()).isNull();
         assertThat(communicationRequest.campaignId()).isEqualTo(campaignId);
         assertThat(communicationRequest.meshuggahId()).isEqualTo(meshuggahId);
         assertThat(reason).isEqualTo(communicationRequest.reason());

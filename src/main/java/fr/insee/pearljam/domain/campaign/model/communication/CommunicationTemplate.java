@@ -9,6 +9,7 @@ package fr.insee.pearljam.domain.campaign.model.communication;
  * @param type         The type of communication
  */
 public record CommunicationTemplate(
+        String campaignId,
         String meshuggahId,
         CommunicationMedium medium,
         CommunicationType type

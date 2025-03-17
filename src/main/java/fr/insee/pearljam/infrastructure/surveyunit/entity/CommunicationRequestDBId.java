@@ -1,4 +1,4 @@
-package fr.insee.pearljam.infrastructure.campaign.entity;
+package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -17,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CommunicationTemplateDBId implements Serializable {
+public class CommunicationRequestDBId implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;

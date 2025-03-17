@@ -231,11 +231,15 @@ class SurveyUnitIT {
 				   },
 				   "communicationTemplates":[
 				      {
+								 "id": "mesh1",
+				      	 "campaignId": "SIMPSONS2020X00",
 				         "meshuggahId":"mesh1",
 				         "medium":"EMAIL",
 				         "type":"REMINDER"
 				      },
 				      {
+				      	 "id": "mesh2",
+								 "campaignId": "SIMPSONS2020X00",
 				         "meshuggahId":"mesh2",
 				         "medium":"LETTER",
 				         "type":"NOTICE"
@@ -243,6 +247,7 @@ class SurveyUnitIT {
 				   ],
 				   "communicationRequests":[
 				      {
+				         "communicationTemplateId":"mesh1",
 				         "campaignId":"SIMPSONS2020X00",
 				         "meshuggahId": "mesh1",
 				         "reason":"REFUSAL",
@@ -263,6 +268,7 @@ class SurveyUnitIT {
 				         ]
 				      },
 				      {
+				      	 "communicationTemplateId": "mesh2",
 				         "campaignId":"SIMPSONS2020X00",
 				         "meshuggahId": "mesh2",
 				         "reason":"UNREACHABLE",
@@ -493,6 +499,7 @@ class SurveyUnitIT {
 				     },
 				     "communicationRequests":[
 				        {
+				        	 "communicationTemplateId": "mesh3",
 				           "campaignId":"VQS2021X00",
 				           "meshuggahId": "mesh3",
 				           "reason":"REFUSAL",
@@ -510,7 +517,8 @@ class SurveyUnitIT {
 				           ]
 				        },
                 {
-                  "campaignId":"VQS2021X00",
+            			 "communicationTemplateId": "mesh4",
+                   "campaignId":"VQS2021X00",
                    "meshuggahId": "mesh4",
                    "reason":"UNREACHABLE",
                    "emitter":"INTERVIEWER",
@@ -522,6 +530,7 @@ class SurveyUnitIT {
                    ]
                 },
                 {
+            			 "communicationTemplateId": "mesh4",
                    "campaignId":"VQS2021X00",
                    "meshuggahId": "mesh4",
                    "reason":"UNREACHABLE",
@@ -538,6 +547,7 @@ class SurveyUnitIT {
                    ]
                 },
             	  {
+        	  			 "communicationTemplateId": "mesh3",
 									 "campaignId":"VQS2021X00",
 									 "meshuggahId": "mesh3",
 									 "reason":"REFUSAL",
