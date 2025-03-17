@@ -65,5 +65,5 @@ public interface CampaignService {
 
 	CampaignResponseDto getCampaignDtoById(String id) throws CampaignNotFoundException;
 
-	List<CampaignSensitivityDto> getCampaignOngoingDto() throws CampaignNotFoundException;
+	List<CampaignSensitivityDto> getCampaignSensitivityDto() throws CampaignNotFoundException;
 }

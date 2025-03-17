@@ -150,7 +150,7 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<CampaignSensitivityDto> getCampaignOngoingDto() {
+    public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
         return List.of();
     }
 }

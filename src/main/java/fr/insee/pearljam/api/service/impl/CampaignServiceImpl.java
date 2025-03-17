@@ -308,12 +308,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<CampaignSensitivityDto> getCampaignOngoingDto() throws CampaignNotFoundException {
-		return Optional.of(campaignRepository.findAll())
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.stream()
-						.map(CampaignSensitivityDto::fromModel)
-						.toList())
-				.orElseThrow(CampaignNotFoundException::new);
+	public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
+		return campaignRepository.findAll().stream().map(CampaignSensitivityDto::fromModel).toList();
 	}
 }

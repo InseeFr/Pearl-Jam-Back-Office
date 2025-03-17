@@ -252,10 +252,15 @@ public class CampaignController {
 		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
 	}
 
-	@Operation(summary = "get ongoing campaigns")
+	/**
+	 * This method returns campaign ongoing
+	 *
+	 * @return {@link CampaignSensitivityDto} the campaign
+	 */
+	@Operation(summary = "get ongoing sensitive campaigns")
 	@GetMapping(value = Constants.API_CAMPAIGNS_ON_GOING, produces = "application/json")
-	public List<CampaignSensitivityDto> getOngoingCampaigns() throws CampaignNotFoundException {
-		return campaignService.getCampaignOngoingDto();
+	public List<CampaignSensitivityDto> getCampaignSensitivityDto() throws CampaignNotFoundException {
+		return campaignService.getCampaignSensitivityDto();
 	}
 
 	/**
