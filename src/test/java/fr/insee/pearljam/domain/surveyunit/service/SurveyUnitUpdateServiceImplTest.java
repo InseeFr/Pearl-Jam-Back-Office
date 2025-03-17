@@ -38,6 +38,7 @@ import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFak
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -86,7 +87,7 @@ class SurveyUnitUpdateServiceImplTest {
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
 		Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-		communicationRequestDBs.add(new CommunicationRequestDB(10L, "SIMPSONS2020X00", "mesh1",
+		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationRequestDBId("mesh1","SIMPSONS2020X00"),
 				CommunicationRequestReason.REFUSAL,
 				CommunicationRequestEmitter.TOOL,
 				surveyUnit, null));

@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,11 +40,8 @@ public class CommunicationRequestDB implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String campaignId;
-
-    @Column
-    private String meshuggahId;
+    @Embedded
+    private CommunicationRequestDBId communicationRequestDBId;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -68,7 +66,7 @@ public class CommunicationRequestDB implements Serializable {
     public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, String campaignId, String meshuggahId) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), campaignId, meshuggahId,
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), new CommunicationRequestDBId(meshuggahId, campaignId),
                 request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {
@@ -92,7 +90,7 @@ public class CommunicationRequestDB implements Serializable {
                     .map(CommunicationRequestStatusDB::toModel).toList();
         }
 
-        return new CommunicationRequest(request.getId(), request.getCampaignId(), request.getMeshuggahId(),
+        return new CommunicationRequest(request.getId(), request.communicationRequestDBId.getCampaignId(), request.communicationRequestDBId.getMeshuggahId(),
                 request.getReason(), request.getEmitter(), status);
     }
 

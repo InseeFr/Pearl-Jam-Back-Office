@@ -31,7 +31,7 @@ class CommunicationRequestDBTest {
                 new CommunicationRequestStatusDB(null, 1233456789L, CommunicationStatusType.INITIATED, null),
                 new CommunicationRequestStatusDB(1L, 123345678910L, CommunicationStatusType.FAILED, null)
         );
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, "SIMPSONS2020X00", "mesh1",
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, new CommunicationRequestDBId("mesh1","SIMPSONS2020X00"),
                 CommunicationRequestReason.UNREACHABLE,
                 CommunicationRequestEmitter.INTERVIEWER,
                 surveyUnit,
@@ -39,8 +39,8 @@ class CommunicationRequestDBTest {
 
         CommunicationRequest communicationRequest = CommunicationRequestDB.toModel(communicationRequestDB);
         assertThat(communicationRequest.id()).isEqualTo(communicationRequestDB.getId());
-        assertThat(communicationRequest.meshuggahId()).isEqualTo(communicationRequestDB.getMeshuggahId());
-        assertThat(communicationRequest.campaignId()).isEqualTo(communicationRequestDB.getCampaignId());
+        assertThat(communicationRequest.meshuggahId()).isEqualTo(communicationRequestDB.getCommunicationRequestDBId().getMeshuggahId());
+        assertThat(communicationRequest.campaignId()).isEqualTo(communicationRequestDB.getCommunicationRequestDBId().getCampaignId());
         assertThat(communicationRequest.reason()).isEqualTo(communicationRequestDB.getReason());
         List<CommunicationRequestStatus> status = statusDB.stream()
                 .map(CommunicationRequestStatusDB::toModel)
@@ -64,8 +64,8 @@ class CommunicationRequestDBTest {
 
         CommunicationRequestDB communicationRequestDB = CommunicationRequestDB.fromModel(communicationRequest, surveyUnit, communicationRequest.campaignId(), communicationRequest.meshuggahId());
         assertThat(communicationRequestDB.getId()).isEqualTo(communicationRequest.id());
-        assertThat(communicationRequestDB.getCampaignId()).isEqualTo(communicationRequest.campaignId());
-        assertThat(communicationRequestDB.getMeshuggahId()).isEqualTo(communicationRequest.meshuggahId());
+        assertThat(communicationRequestDB.getCommunicationRequestDBId().getCampaignId()).isEqualTo(communicationRequest.campaignId());
+        assertThat(communicationRequestDB.getCommunicationRequestDBId().getMeshuggahId()).isEqualTo(communicationRequest.meshuggahId());
         assertThat(communicationRequestDB.getReason()).isEqualTo(communicationRequest.reason());
         assertThat(communicationRequestDB.getStatus())
                 .extracting(CommunicationRequestStatusDB::getId,
