@@ -11,7 +11,7 @@ class CampaignSensitivityDtoTest {
     @DisplayName("Test of creating a sensitive campaign")
     void testCreateCampaignSensitivity() {
         // Given
-        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com", false);
 
