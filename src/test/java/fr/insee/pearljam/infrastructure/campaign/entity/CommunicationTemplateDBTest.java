@@ -22,7 +22,7 @@ class CommunicationTemplateDBTest {
         // Given
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com");
+                "email@plop.com", false);
         CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(new CommunicationTemplateDBId("mesh1", "SIMPSONS2020X00"), CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
         CommunicationTemplateDB templateDB2 = new CommunicationTemplateDB(new CommunicationTemplateDBId("mesh2", "SIMPSONS2020X00"), CommunicationMedium.LETTER, CommunicationType.REMINDER, campaign);
         List<CommunicationTemplateDB> dbList = List.of(templateDB1, templateDB2);
@@ -49,7 +49,7 @@ class CommunicationTemplateDBTest {
         // Given
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com");
+                "email@plop.com", false);
         CommunicationTemplate template1 = new CommunicationTemplate("SIMPSONS2020X00", "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         CommunicationTemplate template2 = new CommunicationTemplate("SIMPSONS2020X00", "msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplate> modelList = List.of(template1, template2);

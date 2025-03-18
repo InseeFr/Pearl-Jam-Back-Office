@@ -94,6 +94,7 @@ public class OidcSecurityConfiguration {
 		final String localUserRole = AuthorityRole.LOCAL_USER.name();
 		final String nationalUserRole = AuthorityRole.NATIONAL_USER.name();
 		final String interviewerRole = AuthorityRole.INTERVIEWER.name();
+		final String webclientRole = AuthorityRole.WEBCLIENT.name();
 
 		http
 				.authorizeHttpRequests(configurer -> configurer
@@ -186,6 +187,8 @@ public class OidcSecurityConfiguration {
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ID_ON_GOING)
 						.hasRole(adminRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_ON_GOING)
+						.hasAnyRole(adminRole, webclientRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_INTERVIEWERS_STATECOUNT)
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS)

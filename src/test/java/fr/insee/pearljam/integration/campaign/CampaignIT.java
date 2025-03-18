@@ -9,6 +9,8 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -44,6 +47,24 @@ class CampaignIT {
 
     @Autowired
     private CampaignRepository campaignRepository;
+
+    @Test
+    @DisplayName("Should retrieve campaign")
+    void testGetSensitiveCampaign() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(Constants.API_CAMPAIGNS_ON_GOING)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        JSONArray jsonArray = new JSONArray(contentResult);
+
+        JSONObject expectedCampaign = new JSONObject();
+        expectedCampaign.put("id", "SIMPSONS2020X00");
+        expectedCampaign.put("sensitivity", false);
+        assertEquals(expectedCampaign.toString(), jsonArray.getJSONObject(0).toString(), "Unexpected campaign content");
+    }
 
     @Test
     @DisplayName("Should retrieve campaign")
@@ -96,7 +117,8 @@ class CampaignIT {
                    "email":"first.email@test.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
-                   "contactAttemptConfiguration":"F2F"
+                   "contactAttemptConfiguration":"F2F",
+                   "sensitivity": false
                 }
                 """;
         JSONAssert.assertEquals(contentResult, expectedResult, JSONCompareMode.NON_EXTENSIBLE);
@@ -174,7 +196,8 @@ class CampaignIT {
                    "email": "test.email@plop.com",
                    "identificationConfiguration":"IASCO",
                    "contactOutcomeConfiguration":"F2F",
-                   "contactAttemptConfiguration":"F2F"
+                   "contactAttemptConfiguration":"F2F",
+                   "sensitivity": false
                 }
                 """;
         mockMvc.perform(post(Constants.API_CAMPAIGN)
