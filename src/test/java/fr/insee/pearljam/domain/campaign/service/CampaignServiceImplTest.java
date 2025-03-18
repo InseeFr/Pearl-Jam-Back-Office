@@ -41,7 +41,8 @@ class CampaignServiceImplTest {
             IdentificationConfiguration.IASCO,
             ContactOutcomeConfiguration.F2F,
             ContactAttemptConfiguration.F2F,
-            "email@email.com");
+            "email@email.com",
+            false);
 
     private final Visibility existingVisibility1 =
             new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(), 1721683250000L,
@@ -107,7 +108,8 @@ class CampaignServiceImplTest {
                 null,
                 IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F,
-                ContactAttemptConfiguration.F2F
+                ContactAttemptConfiguration.F2F,
+                false
         );
 
         campaignService.createCampaign(campaignCreateDto);
@@ -146,7 +148,8 @@ class CampaignServiceImplTest {
                 null,
                 IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F,
-                ContactAttemptConfiguration.F2F
+                ContactAttemptConfiguration.F2F,
+                false
         );
 
         assertThatThrownBy(() -> campaignService.createCampaign(existingCampaignDto))
