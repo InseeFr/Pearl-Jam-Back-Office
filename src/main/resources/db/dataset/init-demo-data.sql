@@ -156,24 +156,24 @@ INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('GESTIO3', 'Gerard', 'Gestionnaire3', 'OU-SOUTH'),
     ('GESTIO4', 'Gustave', 'Gestionnaire4', 'OU-WEST');
 
-INSERT INTO public.campaign (id, label, email, identification_configuration, contact_attempt_configuration, contact_outcome_configuration) VALUES
-    ('SIMPSONS2020X00', 'Survey on the Simpsons tv show 2020', 'first.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('VQS2021X00', 'Everyday life and health survey 2021', 'second.email@test.com', 'IASCO', 'TEL', 'TEL'),
-    ('ZCLOSEDX00', 'Everyday life and health survey 2021', 'third.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('XCLOSEDX00', 'Everyday life and health survey 2021', 'fourth.email@test.com', 'IASCO', 'TEL', 'TEL'),
-    ('AQV2022X00', 'Campagne qualité volaille en 2022', 'second.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('AQV2023X00', 'Campagne qualité volaille en 2023', 'second.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('AQV2024X00', 'Campagne qualité volaille en 2024', 'second.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('INDTEL2025X00', 'INDTEL campaign', 'third.email@test.com', 'INDTEL', 'TEL', 'TEL'),
-    ('IASCO2025X00', 'IASCO campaign', 'third.email@test.com', 'IASCO', 'F2F', 'F2F'),
-    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', NULL, NULL),
-    ('HOUSEF2F2025X00', 'HOUSEF2F campaign', 'third.email@test.com', 'HOUSEF2F', 'F2F', 'F2F'),
-    ('HOUSETEL2025X00', 'HOUSETEL campaign', 'third.email@test.com', 'HOUSETEL', 'TEL', 'TEL'),
-    ('HOUSETELWSR2025X00', 'HOUSETELWSR campaign', 'third.email@test.com', 'HOUSETELWSR', 'TEL', 'TEL'),
-    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', NULL, NULL),
-    ('INDTELNOR2025X00', 'INDTELNOR campaign', 'third.email@test.com', 'INDTELNOR', 'TEL', 'TEL'),
-    ('INDF2F2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F'),
-    ('INDF2FNOR2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2FNOR', 'F2F', 'F2F');
+INSERT INTO public.campaign (id, label, email, identification_configuration, contact_attempt_configuration, contact_outcome_configuration, sensitivity) VALUES
+    ('SIMPSONS2020X00', 'Survey on the Simpsons tv show 2020', 'first.email@test.com', 'IASCO', 'F2F', 'F2F', false),
+    ('VQS2021X00', 'Everyday life and health survey 2021', 'second.email@test.com', 'IASCO', 'TEL', 'TEL', false),
+    ('ZCLOSEDX00', 'Everyday life and health survey 2021', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false),
+    ('XCLOSEDX00', 'Everyday life and health survey 2021', 'fourth.email@test.com', 'IASCO', 'TEL', 'TEL', false),
+    ('AQV2022X00', 'Campagne qualité volaille en 2022', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false),
+    ('AQV2023X00', 'Campagne qualité volaille en 2023', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', true),
+    ('AQV2024X00', 'Campagne qualité volaille en 2024', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false),
+    ('INDTEL2025X00', 'INDTEL campaign', 'third.email@test.com', 'INDTEL', 'TEL', 'TEL', false),
+    ('IASCO2025X00', 'IASCO campaign', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false),
+    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', NULL, NULL, false),
+    ('HOUSEF2F2025X00', 'HOUSEF2F campaign', 'third.email@test.com', 'HOUSEF2F', 'F2F', 'F2F', false),
+    ('HOUSETEL2025X00', 'HOUSETEL campaign', 'third.email@test.com', 'HOUSETEL', 'TEL', 'TEL', false),
+    ('HOUSETELWSR2025X00', 'HOUSETELWSR campaign', 'third.email@test.com', 'HOUSETELWSR', 'TEL', 'TEL', false),
+    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', NULL, NULL, false),
+    ('INDTELNOR2025X00', 'INDTELNOR campaign', 'third.email@test.com', 'INDTELNOR', 'TEL', 'TEL', false),
+    ('INDF2F2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false),
+    ('INDF2FNOR2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2FNOR', 'F2F', 'F2F', false);
 
 INSERT INTO public.preference (id_user, id_campaign) VALUES
     ('GESTIO1', 'SIMPSONS2020X00'),
