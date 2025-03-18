@@ -60,7 +60,7 @@ class VisibilityDaoAdapterTest {
     void setup() {
         campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com");
+                "email@plop.com", false);
 
         organizationUnit = new OrganizationUnit("OU-SOUTHWEST", "South west", OrganizationUnitType.LOCAL);
         organizationUnit2 = new OrganizationUnit("OU-NORTHWEST", "North west", OrganizationUnitType.NATIONAL);

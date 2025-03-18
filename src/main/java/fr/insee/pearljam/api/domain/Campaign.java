@@ -75,8 +75,11 @@ public class Campaign implements Serializable {
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CommunicationTemplateDB> communicationTemplates;
 
+	@Column
+	private Boolean sensitivity;
+
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email, boolean sensitivity) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -84,5 +87,6 @@ public class Campaign implements Serializable {
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.identificationConfiguration = identConfig;
 		this.email = email;
+		this.sensitivity = sensitivity;
 	}
 }

@@ -103,6 +103,8 @@ logging:
 - `GET /api/campaign/{id}/survey-units/not-attributed` : Get numberSUNotAttributed
 - `PUT /api/campaign/{idCampaign}/organizational-unit/{idOu}/visibility` : Change visibility of a campaign for an Organizational Unit
 - `GET /api/campaigns` : Get Campaigns
+- `GET /campaigns/{id}/ongoing` campaign is ongoing
+- `GET /api/campaigns/ongoing` : Campaigns is ongoing (BATCH extraction-transfert-synchronisation)
 
 ### Closing-Cause-Controller
 - `GET /api/campaign/{id}/survey-units/interviewer/{idep}/closing-causes` : Get interviewerStateCount

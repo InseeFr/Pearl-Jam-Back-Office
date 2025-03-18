@@ -30,7 +30,8 @@ public record CampaignResponseDto(
         String email,
         IdentificationConfiguration identificationConfiguration,
         ContactOutcomeConfiguration contactOutcomeConfiguration,
-        ContactAttemptConfiguration contactAttemptConfiguration
+        ContactAttemptConfiguration contactAttemptConfiguration,
+        Boolean sensitivity
 ) {
     public static CampaignResponseDto fromModel(Campaign campaignDB,
                                                 List<ReferentDto> referents,
@@ -42,7 +43,8 @@ public record CampaignResponseDto(
                 campaignDB.getEmail(),
                 campaignDB.getIdentificationConfiguration(),
                 campaignDB.getContactOutcomeConfiguration(),
-                campaignDB.getContactAttemptConfiguration()
+                campaignDB.getContactAttemptConfiguration(),
+                campaignDB.getSensitivity()
                 );
     }
 }
