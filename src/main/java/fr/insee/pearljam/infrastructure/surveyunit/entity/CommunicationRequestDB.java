@@ -5,6 +5,8 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -15,6 +17,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -41,7 +45,7 @@ public class CommunicationRequestDB implements Serializable {
     private Long id;
 
     @Embedded
-    private CommunicationRequestDBId communicationRequestDBId;
+    private CommunicationTemplateDBId communicationTemplateDBId;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -57,6 +61,22 @@ public class CommunicationRequestDB implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequestStatusDB.class, cascade = CascadeType.ALL, mappedBy = "communicationRequest", orphanRemoval = true)
     private List<CommunicationRequestStatusDB> status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campaign_id", referencedColumnName = "campaign_id", insertable = false, updatable = false)
+    @JoinColumn(name = "meshuggah_id", referencedColumnName = "meshuggah_id", insertable = false, updatable = false)
+    private CommunicationTemplateDB communicationTemplate;
+
+    public CommunicationRequestDB(Long id, CommunicationTemplateDBId communicationTemplateDBId,
+        CommunicationRequestReason reason, CommunicationRequestEmitter emitter,
+        SurveyUnit surveyUnit, List<CommunicationRequestStatusDB> status) {
+        this.id = id;
+        this.communicationTemplateDBId = communicationTemplateDBId;
+        this.reason = reason;
+        this.emitter = emitter;
+        this.surveyUnit = surveyUnit;
+        this.status = status;
+    }
+
     /**
      * Create entity object from model object
      * @param surveyUnit survey unit entity
@@ -66,7 +86,7 @@ public class CommunicationRequestDB implements Serializable {
     public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, String campaignId, String meshuggahId) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), new CommunicationRequestDBId(meshuggahId, campaignId),
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), new CommunicationTemplateDBId(meshuggahId, campaignId),
                 request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {
@@ -90,7 +110,7 @@ public class CommunicationRequestDB implements Serializable {
                     .map(CommunicationRequestStatusDB::toModel).toList();
         }
 
-        return new CommunicationRequest(request.getId(), request.communicationRequestDBId.getCampaignId(), request.communicationRequestDBId.getMeshuggahId(),
+        return new CommunicationRequest(request.getId(), request.communicationTemplateDBId.getCampaignId(), request.communicationTemplateDBId.getMeshuggahId(),
                 request.getReason(), request.getEmitter(), status);
     }
 

@@ -25,10 +25,10 @@ public interface CommunicationRequestJpaRepository extends
        INNER JOIN cr.surveyUnit su
        INNER JOIN su.campaign c
        INNER JOIN c.visibilities vi
-       INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationRequestDBId.campaignId
-                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationRequestDBId.meshuggahId
+       INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationTemplateDBId.campaignId
+                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationTemplateDBId.meshuggahId
        INNER JOIN cr.status crs
-       WHERE cr.communicationRequestDBId.campaignId = :campaignId
+       WHERE cr.communicationTemplateDBId.campaignId = :campaignId
        AND ct.type = :type
        AND crs.date < :date
        AND vi.endDate > :date
@@ -54,10 +54,10 @@ public interface CommunicationRequestJpaRepository extends
       INNER JOIN cr.surveyUnit su
       INNER JOIN su.campaign c
       INNER JOIN c.visibilities vi
-      INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationRequestDBId.campaignId
-                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationRequestDBId.campaignId
+      INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationTemplateDBId.campaignId
+                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationTemplateDBId.campaignId
       INNER JOIN cr.status crs
-      WHERE cr.communicationRequestDBId.campaignId = :campaignId
+      WHERE cr.communicationTemplateDBId.campaignId = :campaignId
       AND ct.type = :type
       AND crs.date < :date
       AND vi.endDate > :date
@@ -86,8 +86,8 @@ public interface CommunicationRequestJpaRepository extends
     INNER JOIN su.campaign c
     INNER JOIN c.visibilities vi
     INNER JOIN su.interviewer i
-    INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationRequestDBId.campaignId
-                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationRequestDBId.meshuggahId
+    INNER JOIN CommunicationTemplateDB ct ON ct.communicationTemplateDBId.campaignId = cr.communicationTemplateDBId.campaignId
+                                           AND ct.communicationTemplateDBId.meshuggahId = cr.communicationTemplateDBId.meshuggahId
     INNER JOIN cr.status crs
     WHERE c.id IN :campaignIds
     AND i.id IN :interviewerIds

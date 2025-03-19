@@ -11,8 +11,8 @@ public interface CommunicationTemplateJpaRepository extends
 
   @Query("""
       SELECT c FROM CommunicationTemplateDB c
-      WHERE c.communicationTemplateDBId.meshuggahId = ?2
-      AND c.communicationTemplateDBId.campaignId = ?1""")
+      WHERE c.communicationTemplateDBId.campaignId = ?1
+      AND c.communicationTemplateDBId.meshuggahId = ?2""")
   Optional<CommunicationTemplateDB> findCommunicationTemplate(String campaignId, String meshuggahId);
 
   @Query("""

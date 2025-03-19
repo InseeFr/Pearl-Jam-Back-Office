@@ -36,9 +36,9 @@ import fr.insee.pearljam.domain.surveyunit.model.question.PresentInPreviousHomeQ
 import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -87,7 +87,7 @@ class SurveyUnitUpdateServiceImplTest {
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
 		Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationRequestDBId("mesh1","SIMPSONS2020X00"),
+		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationTemplateDBId("mesh1","SIMPSONS2020X00"),
 				CommunicationRequestReason.REFUSAL,
 				CommunicationRequestEmitter.TOOL,
 				surveyUnit, null));

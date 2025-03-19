@@ -17,9 +17,9 @@ import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.OccupantQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestStatusDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -97,10 +97,10 @@ class SurveyUnitDetailDtoTest {
 				new CommunicationRequestStatusDB(4L, 123345678912L, CommunicationStatusType.CANCELLED, null)
 		);
 
-		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationRequestDBId("mesh1","SIMPSONS2020X00"),
+		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationTemplateDBId("mesh1","SIMPSONS2020X00"),
 				CommunicationRequestReason.UNREACHABLE,
 				CommunicationRequestEmitter.INTERVIEWER, surveyUnit, status1));
-		communicationRequestDBs.add(new CommunicationRequestDB(11L, new CommunicationRequestDBId("mesh2","SIMPSONS2020X00"),
+		communicationRequestDBs.add(new CommunicationRequestDB(11L, new CommunicationTemplateDBId("mesh2","SIMPSONS2020X00"),
 				CommunicationRequestReason.REFUSAL,
 				CommunicationRequestEmitter.TOOL, surveyUnit, status2));
 		surveyUnit.setCommunicationRequests(communicationRequestDBs);

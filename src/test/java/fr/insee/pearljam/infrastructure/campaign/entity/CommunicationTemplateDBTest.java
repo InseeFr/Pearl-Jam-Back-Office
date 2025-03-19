@@ -72,13 +72,13 @@ class CommunicationTemplateDBTest {
 
     private void verifyCommunicationTemplateDB(
             CommunicationTemplateDB templateDB,
-            String campaignId,
+            String expectedCampaignId,
             String expectedMesshugahId,
             CommunicationMedium expectedMedium,
             CommunicationType expectedType,
             Campaign expectedCampaign
     ) {
-        assertThat(templateDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(campaignId);
+        assertThat(templateDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(expectedCampaignId);
         assertThat(templateDB.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(expectedMesshugahId);
         assertThat(templateDB.getMedium()).isEqualTo(expectedMedium);
         assertThat(templateDB.getType()).isEqualTo(expectedType);

@@ -6,6 +6,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -31,7 +32,7 @@ class CommunicationRequestDBTest {
                 new CommunicationRequestStatusDB(null, 1233456789L, CommunicationStatusType.INITIATED, null),
                 new CommunicationRequestStatusDB(1L, 123345678910L, CommunicationStatusType.FAILED, null)
         );
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, new CommunicationRequestDBId("mesh1","SIMPSONS2020X00"),
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(1L, new CommunicationTemplateDBId("mesh1","SIMPSONS2020X00"),
                 CommunicationRequestReason.UNREACHABLE,
                 CommunicationRequestEmitter.INTERVIEWER,
                 surveyUnit,
@@ -39,8 +40,8 @@ class CommunicationRequestDBTest {
 
         CommunicationRequest communicationRequest = CommunicationRequestDB.toModel(communicationRequestDB);
         assertThat(communicationRequest.id()).isEqualTo(communicationRequestDB.getId());
-        assertThat(communicationRequest.meshuggahId()).isEqualTo(communicationRequestDB.getCommunicationRequestDBId().getMeshuggahId());
-        assertThat(communicationRequest.campaignId()).isEqualTo(communicationRequestDB.getCommunicationRequestDBId().getCampaignId());
+        assertThat(communicationRequest.meshuggahId()).isEqualTo(communicationRequestDB.getCommunicationTemplateDBId().getMeshuggahId());
+        assertThat(communicationRequest.campaignId()).isEqualTo(communicationRequestDB.getCommunicationTemplateDBId().getCampaignId());
         assertThat(communicationRequest.reason()).isEqualTo(communicationRequestDB.getReason());
         List<CommunicationRequestStatus> status = statusDB.stream()
                 .map(CommunicationRequestStatusDB::toModel)
@@ -64,8 +65,8 @@ class CommunicationRequestDBTest {
 
         CommunicationRequestDB communicationRequestDB = CommunicationRequestDB.fromModel(communicationRequest, surveyUnit, communicationRequest.campaignId(), communicationRequest.meshuggahId());
         assertThat(communicationRequestDB.getId()).isEqualTo(communicationRequest.id());
-        assertThat(communicationRequestDB.getCommunicationRequestDBId().getCampaignId()).isEqualTo(communicationRequest.campaignId());
-        assertThat(communicationRequestDB.getCommunicationRequestDBId().getMeshuggahId()).isEqualTo(communicationRequest.meshuggahId());
+        assertThat(communicationRequestDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(communicationRequest.campaignId());
+        assertThat(communicationRequestDB.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(communicationRequest.meshuggahId());
         assertThat(communicationRequestDB.getReason()).isEqualTo(communicationRequest.reason());
         assertThat(communicationRequestDB.getStatus())
                 .extracting(CommunicationRequestStatusDB::getId,

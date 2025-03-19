@@ -1,39 +1,39 @@
 BEGIN;
 
--- 1. Ajouter les nouvelles colonnes dans communication_request (sans IF NOT EXISTS)
+-- 1. Add new columns to communication_request (without IF NOT EXISTS)
 ALTER TABLE communication_request ADD COLUMN campaign_id VARCHAR(255);
 ALTER TABLE communication_request ADD COLUMN meshuggah_id VARCHAR(255);
 
--- 2. Mettre à jour les nouvelles colonnes avec les valeurs existantes
+-- 2. Update the new columns with existing values
 UPDATE communication_request
 SET campaign_id = (SELECT campaign_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id),
     meshuggah_id = (SELECT meshuggah_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id)
 WHERE communication_template_id IS NOT NULL;
 
--- 3. Ajouter la contrainte NOT NULL maintenant que les valeurs sont renseignées
+-- 3. Add the NOT NULL constraint now that values are populated
 ALTER TABLE communication_request ALTER COLUMN campaign_id SET NOT NULL;
 ALTER TABLE communication_request ALTER COLUMN meshuggah_id SET NOT NULL;
 
--- 4. Supprimer la clé étrangère existante sur communication_template_id
+-- 4. Remove the existing foreign key on communication_template_id
 ALTER TABLE communication_request DROP CONSTRAINT IF EXISTS fk_comm_request_to_comm_request_template;
 
--- 5. Ajouter un index pour optimiser les jointures
+-- 5. Add an index to optimize joins
 CREATE INDEX idx_comm_request_campaign_meshuggah ON communication_request(campaign_id, meshuggah_id);
 
--- 6. Supprimer l'ancienne colonne communication_template_id dans communication_request
+-- 6. Drop the old column communication_template_id from communication_request
 ALTER TABLE communication_request DROP COLUMN communication_template_id;
 
--- 7. Supprimer communication_template_id dans communication_metadata
+-- 7. Remove communication_template_id from communication_metadata
 ALTER TABLE communication_metadata DROP COLUMN communication_template_id;
 
--- 8. Ajouter les nouvelles colonnes dans communication_metadata
+-- 8. Add new columns to communication_metadata
 ALTER TABLE communication_metadata ADD COLUMN campaign_id VARCHAR(255) NOT NULL;
 ALTER TABLE communication_metadata ADD COLUMN meshuggah_id VARCHAR(255) NOT NULL;
 
--- 9. Ajouter un index sur communication_metadata
+-- 9. Add an index on communication_metadata
 CREATE INDEX idx_comm_metadata_campaign_meshuggah ON communication_metadata(campaign_id, meshuggah_id);
 
-ALTER TABLE communication_template
-DROP COLUMN id;
+-- 10. Drop the id column from communication_template
+ALTER TABLE communication_template DROP COLUMN id;
 
 COMMIT;
