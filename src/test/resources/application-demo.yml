@@ -58,11 +58,4 @@ fr:
       #Mail service config
       mail:
         service:
-          url:
-            scheme: http
-            host: localhost
-            port: 8082
-            login: pearljam
-            password: pearljam
-        recipients:
-          list: pearl@pearljam.fr,jam@pearljam.fr
+          enabled: false
