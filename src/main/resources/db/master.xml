@@ -87,4 +87,6 @@
 	<!-- add a sensitivity field -->
 	<include file="changelog/590_add_sensitivity_field.xml" relativeToChangelogFile="true"/>
 
+	<!-- update communication structure -->
+	<include file="changelog/600_update_communication_structure.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

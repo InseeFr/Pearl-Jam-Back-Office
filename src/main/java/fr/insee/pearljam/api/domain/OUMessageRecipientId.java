@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Getter
 public class OUMessageRecipientId implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**

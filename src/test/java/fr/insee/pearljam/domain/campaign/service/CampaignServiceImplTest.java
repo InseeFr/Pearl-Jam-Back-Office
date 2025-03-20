@@ -93,9 +93,9 @@ class CampaignServiceImplTest {
     @Test
     @DisplayName("Should create a new campaign successfully")
     void shouldCreateNewCampaign() throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
-        String campaignId = "CAMP1";
+        String campaignId = "SIMPSONS2020X00";
 
-        CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("SIMPSONS2020X00", "meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
                 true, "mail", "tel");

@@ -97,12 +97,13 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
     private CommunicationRequest getNewCommunicationRequest(CommunicationRequestCreateDto communicationRequestToCreate, SurveyUnit surveyUnit, Long readyTimestamp) {
         String campaignId = surveyUnit.getCampaign().getId();
         CommunicationTemplate communicationTemplate = communicationTemplateRepository
-                .findCommunicationTemplate(communicationRequestToCreate.communicationTemplateId(), campaignId)
+                .findCommunicationTemplate(campaignId, communicationRequestToCreate.meshuggahId())
                 .orElseThrow(CommunicationTemplateNotFoundException::new);
 
         if(!communicationTemplate.medium().equals(CommunicationMedium.LETTER)) {
             return CommunicationRequest.create(
-                    communicationRequestToCreate.communicationTemplateId(),
+                    campaignId,
+                    communicationRequestToCreate.meshuggahId(),
                     communicationRequestToCreate.creationTimestamp(),
                     readyTimestamp,
                     communicationRequestToCreate.reason());
@@ -115,7 +116,8 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
         if(visibility.useLetterCommunication() != null && visibility.useLetterCommunication()) {
             return CommunicationRequest.create(
-                    communicationRequestToCreate.communicationTemplateId(),
+                    campaignId,
+                    communicationRequestToCreate.meshuggahId(),
                     communicationRequestToCreate.creationTimestamp(),
                     readyTimestamp,
                     communicationRequestToCreate.reason());
@@ -124,7 +126,8 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         // if the communication request is a letter communication request, but the visibility doesn't admit it,
         // create a cancelled communication request
         return CommunicationRequest.createCancelled(
-                communicationRequestToCreate.communicationTemplateId(),
+                campaignId,
+                communicationRequestToCreate.meshuggahId(),
                 communicationRequestToCreate.creationTimestamp(),
                 dateService.getCurrentTimestamp(),
                 communicationRequestToCreate.reason());

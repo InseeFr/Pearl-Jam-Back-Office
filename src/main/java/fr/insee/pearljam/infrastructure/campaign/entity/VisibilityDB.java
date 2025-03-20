@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VisibilityDB implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
