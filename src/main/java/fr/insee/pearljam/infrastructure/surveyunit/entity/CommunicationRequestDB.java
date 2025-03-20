@@ -18,7 +18,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -83,10 +82,10 @@ public class CommunicationRequestDB implements Serializable {
      * @param request model object
      * @return entity object
      */
-    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, String campaignId, String meshuggahId) {
+    public static CommunicationRequestDB fromModel(CommunicationRequest request, SurveyUnit surveyUnit, CommunicationTemplateDB communicationTemplateDB) {
 
         List<CommunicationRequestStatusDB> status = new ArrayList<>();
-        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), new CommunicationTemplateDBId(meshuggahId, campaignId),
+        CommunicationRequestDB communicationRequestDB = new CommunicationRequestDB(request.id(), communicationTemplateDB.getCommunicationTemplateDBId(),
                 request.reason(), request.emitter(), surveyUnit, status);
 
         if(request.status() != null) {

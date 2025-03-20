@@ -16,7 +16,9 @@ public interface CommunicationTemplateJpaRepository extends
   Optional<CommunicationTemplateDB> findCommunicationTemplate(String campaignId, String meshuggahId);
 
   @Query("""
-      SELECT c FROM CommunicationTemplateDB c
-      WHERE c.communicationTemplateDBId.campaignId = ?1""")
+    SELECT c FROM CommunicationTemplateDB c
+    LEFT JOIN FETCH c.campaign
+    WHERE c.communicationTemplateDBId.campaignId = ?1
+    """)
   List<CommunicationTemplateDB> findCommunicationTemplates(String campaignId);
 }

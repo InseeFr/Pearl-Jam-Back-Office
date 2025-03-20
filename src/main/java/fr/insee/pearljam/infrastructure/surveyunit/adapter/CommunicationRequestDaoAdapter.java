@@ -36,8 +36,7 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
           .findCommunicationTemplate(communicationRequest.campaignId(), communicationRequest.meshuggahId())
           .orElseThrow(CommunicationTemplateNotFoundException::new);
       CommunicationRequestDB newCommunicationRequest = CommunicationRequestDB.fromModel(
-          communicationRequest, surveyUnit, communicationTemplate.getCampaign().getId(), communicationTemplate.getCommunicationTemplateDBId()
-              .getMeshuggahId());
+          communicationRequest, surveyUnit, communicationTemplate );
       newCommunicationRequests.add(newCommunicationRequest);
     }
 

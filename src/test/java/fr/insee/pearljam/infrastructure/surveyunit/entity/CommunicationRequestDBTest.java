@@ -1,15 +1,17 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import java.util.List;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +19,13 @@ import org.junit.jupiter.api.Test;
 class CommunicationRequestDBTest {
 
     private SurveyUnit surveyUnit;
+    private CommunicationTemplateDB communicationTemplateDB;
 
-    @BeforeEach
+  @BeforeEach
     void setup() {
         surveyUnit = new SurveyUnit();
         surveyUnit.setId("su-id");
+        communicationTemplateDB = new CommunicationTemplateDB();
 
     }
 
@@ -63,7 +67,9 @@ class CommunicationRequestDBTest {
                 CommunicationRequestEmitter.INTERVIEWER,
                 status);
 
-        CommunicationRequestDB communicationRequestDB = CommunicationRequestDB.fromModel(communicationRequest, surveyUnit, communicationRequest.campaignId(), communicationRequest.meshuggahId());
+        communicationTemplateDB.setCommunicationTemplateDBId(new CommunicationTemplateDBId("mesh1","SIMPSONS2020X00"));
+
+        CommunicationRequestDB communicationRequestDB = CommunicationRequestDB.fromModel(communicationRequest, surveyUnit, communicationTemplateDB);
         assertThat(communicationRequestDB.getId()).isEqualTo(communicationRequest.id());
         assertThat(communicationRequestDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(communicationRequest.campaignId());
         assertThat(communicationRequestDB.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(communicationRequest.meshuggahId());
