@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
@@ -31,6 +32,7 @@ public class ContactAttempt implements Serializable {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 2015739722235846385L;
 	/**
 	 * the id of ContactAttempt

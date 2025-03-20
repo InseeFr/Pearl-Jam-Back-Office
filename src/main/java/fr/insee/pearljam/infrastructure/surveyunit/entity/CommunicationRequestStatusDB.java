@@ -1,5 +1,13 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.CascadeType;
 import java.io.Serializable;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
@@ -8,9 +16,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,14 +42,23 @@ public class CommunicationRequestStatusDB implements Serializable {
     @Column
     private CommunicationStatusType status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // Ensures cascading behavior
     private CommunicationRequestDB communicationRequest;
 
     public static CommunicationRequestStatusDB fromModel(CommunicationRequestStatus requestStatus, CommunicationRequestDB communicationRequest) {
-        return new CommunicationRequestStatusDB(requestStatus.id(), requestStatus.date(), requestStatus.status(), communicationRequest);
+        return new CommunicationRequestStatusDB(
+            requestStatus.id(),
+            requestStatus.date(),
+            requestStatus.status(),
+            communicationRequest
+        );
     }
 
     public static CommunicationRequestStatus toModel(CommunicationRequestStatusDB requestStatus) {
-        return new CommunicationRequestStatus(requestStatus.getId(), requestStatus.getDate(), requestStatus.getStatus());
+        return new CommunicationRequestStatus(
+            requestStatus.getId(),
+            requestStatus.getDate(),
+            requestStatus.getStatus()
+        );
     }
 }

@@ -17,6 +17,8 @@ import java.util.List;
  */
 public record CommunicationTemplateCreateDto(
         @NotNull
+        String campaignId,
+        @NotNull
         String meshuggahId,
         @NotNull
         CommunicationMedium medium,
@@ -37,7 +39,7 @@ public record CommunicationTemplateCreateDto(
             return null;
         }
         return new CommunicationTemplate(
-                null,
+                communicationTemplate.campaignId(),
                 communicationTemplate.meshuggahId(),
                 communicationTemplate.medium(),
                 communicationTemplate.type());

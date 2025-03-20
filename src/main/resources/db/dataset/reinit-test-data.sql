@@ -29,7 +29,6 @@ TRUNCATE TABLE public.address;
 
 ALTER TABLE public.communication_request_status ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.communication_request ALTER COLUMN id RESTART WITH 1;
-ALTER TABLE public.communication_template ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.contact_attempt ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.referent ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE public.message ALTER COLUMN id RESTART WITH 1;
@@ -207,11 +206,11 @@ INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_
     ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
     ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
 
-INSERT INTO public.communication_request (survey_unit_id, emitter, reason, communication_template_id) VALUES
-    ('11', 'INTERVIEWER', 'REFUSAL', 1),
-    ('11', 'INTERVIEWER', 'UNREACHABLE', 2),
-    ('20', 'INTERVIEWER', 'REFUSAL', 3),
-    ('20', 'INTERVIEWER', 'UNREACHABLE', 4);
+INSERT INTO public.communication_request (survey_unit_id, emitter, reason, campaign_id, meshuggah_id) VALUES
+    ('11', 'INTERVIEWER', 'REFUSAL', 'SIMPSONS2020X00', 'mesh1'),
+    ('11', 'INTERVIEWER', 'UNREACHABLE', 'SIMPSONS2020X00', 'mesh2'),
+    ('20', 'INTERVIEWER', 'REFUSAL', 'VQS2021X00', 'mesh3'),
+    ('20', 'INTERVIEWER', 'UNREACHABLE', 'VQS2021X00', 'mesh4');
 
 INSERT INTO public.communication_request_status (communication_request_id, status, date) VALUES
     (1, 'INITIATED', 1721903754305),
@@ -222,8 +221,8 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
     (3, 'INITIATED', 1721903754205),
     (4, 'INITIATED', 1721903754205);
 
-INSERT INTO public.communication_metadata (survey_unit_id, communication_template_id, metadata_key, metadata_value) VALUES
-    ('11',SELECT ct.id FROM communication_template ct WHERE ct.meshuggah_id='mesh1','recipient_full_name', 'Albert Einstein'),
-    ('11', SELECT ct.id FROM communication_template ct WHERE ct.meshuggah_id='mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
+INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
+    ('11','SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
+    ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
 
 SET REFERENTIAL_INTEGRITY TRUE;

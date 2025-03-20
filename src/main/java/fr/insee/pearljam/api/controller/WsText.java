@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,6 +10,7 @@ public class WsText implements Serializable{
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@JsonProperty("text")
 	private String text;
