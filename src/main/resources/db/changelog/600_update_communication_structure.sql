@@ -45,12 +45,12 @@ ALTER TABLE communication_template
 -- Add foreign key constraints to communication_request and communication_metadata
 -- to enforce consistency with communication_template and maintain referential integrity
 ALTER TABLE communication_request
-    ADD CONSTRAINT fk_comm_request_campaign FOREIGN KEY (campaign_id, meshuggah_id)
+    ADD CONSTRAINT fk_comm_request_campaign_meshuggah FOREIGN KEY (campaign_id, meshuggah_id)
         REFERENCES communication_template (campaign_id, meshuggah_id)
         ON DELETE CASCADE;
 
 ALTER TABLE communication_metadata
-    ADD CONSTRAINT fk_comm_metadata_campaign FOREIGN KEY (campaign_id, meshuggah_id)
+    ADD CONSTRAINT fk_comm_metadata_campaign_meshuggah FOREIGN KEY (campaign_id, meshuggah_id)
         REFERENCES communication_template (campaign_id, meshuggah_id)
         ON DELETE CASCADE;
 
