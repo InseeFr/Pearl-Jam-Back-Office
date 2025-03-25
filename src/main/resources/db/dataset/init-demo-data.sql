@@ -926,7 +926,7 @@ INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_
     ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
     ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
 
-INSERT INTO public.communication_request (survey_unit_id, emitter, reason, campaign_id, meshuggah_id) VALUES
+INSERT INTO public.communication_request (id, survey_unit_id, emitter, reason, campaign_id, meshuggah_id) VALUES
     (1, '11', 'INTERVIEWER', 'REFUSAL', 'SIMPSONS2020X00', 'mesh1'),
     (2, '11', 'INTERVIEWER', 'UNREACHABLE', 'SIMPSONS2020X00', 'mesh2'),
     (3, '20', 'INTERVIEWER', 'REFUSAL', 'VQS2021X00', 'mesh3'),
