@@ -919,7 +919,7 @@ INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
     (229, 1741525164000, 'VIC', 'SABIANE15'),
     (230, 1741525170000, 'PRC', 'SABIANE15');
 
-INSERT INTO public.communication_template (id, meshuggah_id, medium, type, campaign_id) VALUES
+INSERT INTO public.communication_template (meshuggah_id, medium, type, campaign_id) VALUES
     ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
     ('mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
     ('mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
