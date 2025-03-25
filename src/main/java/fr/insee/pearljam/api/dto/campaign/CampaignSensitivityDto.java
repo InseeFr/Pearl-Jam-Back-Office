@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 public record CampaignSensitivityDto(
         @NotBlank
         String id,
-        @NotBlank
         Boolean sensitivity)
 {
     public static CampaignSensitivityDto fromModel(Campaign campaignDB) {

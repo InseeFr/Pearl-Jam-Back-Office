@@ -79,7 +79,6 @@ public class Campaign implements Serializable {
 	private List<CommunicationTemplateDB> communicationTemplates;
 
 	@Column
-	@Nullable
 	private Boolean sensitivity;
 
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
