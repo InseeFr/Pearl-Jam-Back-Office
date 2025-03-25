@@ -1,0 +1,94 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="600-update-communication-structure" author="yourname">
+
+        <!-- 1. Add columns to communication_request -->
+        <addColumn tableName="communication_request">
+            <column name="campaign_id" type="VARCHAR(255)"/>
+            <column name="meshuggah_id" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <!-- 2. Update new columns using subqueries -->
+        <update tableName="communication_request">
+            <column name="campaign_id"
+                    valueComputed="(SELECT campaign_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id)"/>
+            <where>communication_template_id IS NOT NULL</where>
+        </update>
+
+        <update tableName="communication_request">
+            <column name="meshuggah_id"
+                    valueComputed="(SELECT meshuggah_id FROM communication_template WHERE communication_template.id = communication_request.communication_template_id)"/>
+            <where>communication_template_id IS NOT NULL</where>
+        </update>
+
+        <!-- 3. Add NOT NULL constraint -->
+        <addNotNullConstraint tableName="communication_request" columnName="campaign_id" columnDataType="VARCHAR(255)"/>
+        <addNotNullConstraint tableName="communication_request" columnName="meshuggah_id" columnDataType="VARCHAR(255)"/>
+
+        <!-- 4. Drop old foreign key -->
+        <dropForeignKeyConstraint baseTableName="communication_request"
+                                  constraintName="FK506gklsgdfiner7hc3vbo77ku"/>
+
+        <!-- 5. Create index -->
+        <createIndex indexName="idx_comm_request_campaign_meshuggah"
+                     tableName="communication_request">
+            <column name="campaign_id"/>
+            <column name="meshuggah_id"/>
+        </createIndex>
+
+        <!-- 6. Drop old column -->
+        <dropColumn tableName="communication_request" columnName="communication_template_id"/>
+
+        <!-- 7. Drop from metadata -->
+        <dropColumn tableName="communication_metadata" columnName="communication_template_id"/>
+
+        <!-- 8. Add new columns to metadata -->
+        <addColumn tableName="communication_metadata">
+            <column name="campaign_id" type="VARCHAR(255)" />
+            <column name="meshuggah_id" type="VARCHAR(255)" />
+        </addColumn>
+
+        <!-- 8b. Set NOT NULL (after data import if needed) -->
+        <addNotNullConstraint tableName="communication_metadata" columnName="campaign_id" columnDataType="VARCHAR(255)"/>
+        <addNotNullConstraint tableName="communication_metadata" columnName="meshuggah_id" columnDataType="VARCHAR(255)"/>
+
+        <!-- 9. Create index on metadata -->
+        <createIndex indexName="idx_comm_metadata_campaign_meshuggah"
+                     tableName="communication_metadata">
+            <column name="campaign_id"/>
+            <column name="meshuggah_id"/>
+        </createIndex>
+
+        <!-- 10. Drop existing PK (real name may vary!) -->
+        <dropPrimaryKey tableName="communication_template"
+                        constraintName="communication_templatePK"/>
+
+        <!-- 10b. Add composite PK -->
+        <addPrimaryKey tableName="communication_template"
+                       constraintName="pk_communication_template"
+                       columnNames="campaign_id, meshuggah_id"/>
+
+        <!-- 10c. Add foreign keys -->
+        <addForeignKeyConstraint constraintName="fk_comm_request_campaign_meshuggah"
+                                 baseTableName="communication_request"
+                                 baseColumnNames="campaign_id, meshuggah_id"
+                                 referencedTableName="communication_template"
+                                 referencedColumnNames="campaign_id, meshuggah_id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_comm_metadata_campaign_meshuggah"
+                                 baseTableName="communication_metadata"
+                                 baseColumnNames="campaign_id, meshuggah_id"
+                                 referencedTableName="communication_template"
+                                 referencedColumnNames="campaign_id, meshuggah_id"
+                                 onDelete="CASCADE"/>
+
+        <!-- 11. Drop id column -->
+        <dropColumn tableName="communication_template" columnName="id"/>
+
+    </changeSet>
+</databaseChangeLog>

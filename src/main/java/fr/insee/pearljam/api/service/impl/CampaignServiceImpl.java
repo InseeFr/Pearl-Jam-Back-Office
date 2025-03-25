@@ -154,13 +154,18 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new CampaignAlreadyExistException();
 		}
 
+		boolean sensitivity=false;
+		if(campaignDto.sensitivity()!=null){
+			sensitivity=campaignDto.sensitivity();
+		}
+
 		// Creating campaign
 		Campaign campaign = new Campaign(campaignId, campaignDto.campaignLabel(),
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
 				campaignDto.email(),
-				campaignDto.sensitivity());
+				sensitivity);
 		campaign.setReferents(new ArrayList<>());
 		campaign.setCommunicationTemplates(new ArrayList<>());
 
