@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 /**
  * Entity Campaign : represent the entity table in DB
@@ -78,6 +79,7 @@ public class Campaign implements Serializable {
 	private List<CommunicationTemplateDB> communicationTemplates;
 
 	@Column
+	@Nullable
 	private Boolean sensitivity;
 
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,

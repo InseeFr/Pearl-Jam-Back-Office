@@ -5,15 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 
 
 public record CampaignSensitivityDto(
-    @NotBlank
-    String id,
-    @NotBlank
-    boolean sensitivity){
-
+        @NotBlank
+        String id,
+        @NotBlank
+        Boolean sensitivity)
+{
     public static CampaignSensitivityDto fromModel(Campaign campaignDB) {
         return new CampaignSensitivityDto(campaignDB.getId(),
                 campaignDB.getSensitivity()
         );
     }
 }
-
