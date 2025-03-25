@@ -920,11 +920,11 @@ INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
     (230, 1741525170000, 'PRC', 'SABIANE15');
 
 INSERT INTO public.communication_template (id, meshuggah_id, medium, type, campaign_id) VALUES
-    (1, 'mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
-    (2, 'mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
-    (3, 'mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
-    (4, 'mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
-    (5, 'mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
+    ('mesh1', 'EMAIL', 'REMINDER', 'SIMPSONS2020X00'),
+    ('mesh2', 'LETTER', 'NOTICE', 'SIMPSONS2020X00'),
+    ('mesh3', 'EMAIL', 'REMINDER', 'VQS2021X00'),
+    ('mesh4', 'LETTER', 'NOTICE', 'VQS2021X00'),
+    ('mesh5', 'EMAIL', 'NOTICE', 'VQS2021X00');
 
 INSERT INTO public.communication_request (survey_unit_id, emitter, reason, campaign_id, meshuggah_id) VALUES
     (1, '11', 'INTERVIEWER', 'REFUSAL', 'SIMPSONS2020X00', 'mesh1'),
@@ -954,12 +954,6 @@ SELECT setval(
 SELECT setval(
     pg_get_serial_sequence('public.communication_request', 'id'),
     COALESCE((SELECT MAX(id) FROM public.communication_request), 0) + 1,
-    false
-);
-
-SELECT setval(
-    pg_get_serial_sequence('public.communication_template', 'id'),
-    COALESCE((SELECT MAX(id) FROM public.communication_template), 0) + 1,
     false
 );
 
