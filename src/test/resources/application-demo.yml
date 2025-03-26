@@ -12,9 +12,9 @@ spring:
     name: api
   liquibase:
     enabled: true
-    contexts: test
+    contexts: demo
     defaultSchema: public
-    change-log: classpath:db/integration-test.xml
+    change-log: classpath:db/integration-demo.xml
   docker:
     compose:
       enabled: true
@@ -36,19 +36,14 @@ spring:
     hikari:
       minimum-idle: 1
       maximum-pool-size: 1
+
 logging:
   level:
     root: INFO
-    liquibase: WARN
+
 feature:
   oidc:
-    enabled: true
-    auth-server-host: https://auth.host
-    application-host: ${application.host}
-    auth-server-url: ${feature.oidc.auth-server-host}/auth
-    client-id:
-    realm:
-    principal-attribute: username
+    enabled: false
 
 fr:
   insee:
@@ -63,11 +58,4 @@ fr:
       #Mail service config
       mail:
         service:
-          url:
-            scheme: http
-            host: localhost
-            port: 8082
-            login: pearljam
-            password: pearljam
-        recipients:
-          list: pearl@pearljam.fr,jam@pearljam.fr
+          enabled: false
