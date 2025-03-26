@@ -40,6 +40,9 @@ feature:
       enabled: false
 
 spring:
+  docker:
+    compose:
+      enabled: false
   datasource:
     url:
     username:
