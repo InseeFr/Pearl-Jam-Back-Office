@@ -7,6 +7,8 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.controller.WsText;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.address.AddressDto;
+import fr.insee.pearljam.api.dto.closingcause.ClosingCauseDto;
+import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
@@ -21,6 +23,7 @@ import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
@@ -55,6 +58,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -1480,10 +1484,16 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(111)
 	void testPostSurveyUnits() throws Exception {
+		SurveyUnitContextDto surveyUnit = generateSurveyUnit("8");
+		surveyUnit.setComments(Set.of(new CommentDto(CommentType.INTERVIEWER, "interviewer comment")));
+		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L,ContactOutcomeType.INA,2));
+		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
+		surveyUnit.setClosingCause(new ClosingCauseDto(1843078880000L,ClosingCauseType.NPA));
+
 		mockMvc.perform(post(Constants.API_SURVEYUNITS)
 						.with(authentication(ADMIN))
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(asJsonString(List.of(generateSurveyUnit("8")))))
+						.content(asJsonString(List.of(surveyUnit))))
 				.andExpect(status().isOk());
 
 		assertTrue(surveyUnitRepository.findById("8").isPresent());
