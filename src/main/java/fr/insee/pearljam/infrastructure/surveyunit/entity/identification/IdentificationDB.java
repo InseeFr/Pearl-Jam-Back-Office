@@ -132,6 +132,7 @@ public abstract class IdentificationDB implements Serializable {
 			case INDF2F -> new IndF2FIdentificationDB(
 					identification.id(),
 					surveyUnit,
+					identification.identification(),
 					identification.individualStatus(),
 					identification.situation(),
 					identification.interviewerCanProcess()

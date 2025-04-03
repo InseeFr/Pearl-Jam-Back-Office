@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
+import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.IndividualStatusQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.InterviewerCanProcessQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
@@ -20,6 +21,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class IndF2FIdentificationDB extends IdentificationDB {
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	private IdentificationQuestionValue identification;
 
 	@Column
 	@Enumerated(EnumType.STRING)
@@ -42,10 +47,12 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 	public IndF2FIdentificationDB(
 			Long id,
 			SurveyUnit surveyUnit,
+			IdentificationQuestionValue identification,
 			IndividualStatusQuestionValue individualStatus,
 			SituationQuestionValue situation,
 			InterviewerCanProcessQuestionValue interviewerCanProcess) {
 		super(id, IdentificationType.INDF2F, surveyUnit);
+		this.identification = identification;
 		this.individualStatus = individualStatus;
 		this.situation = situation;
 		this.interviewerCanProcess = interviewerCanProcess;
@@ -72,6 +79,7 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 		if (identification == null) {
 			return;
 		}
+		this.setIdentification(identification.identification());
 		this.setIndividualStatus(identification.individualStatus());
 		this.setInterviewerCanProcess(identification.interviewerCanProcess());
 		this.setSituation(identification.situation());
