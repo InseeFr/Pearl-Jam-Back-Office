@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.domain;
 
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
@@ -18,7 +20,9 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -88,10 +92,12 @@ public class SurveyUnit implements Serializable {
 			"surveyUnit", orphanRemoval = true)
 	private ContactOutcomeDB contactOutcome;
 
-	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = ClosingCause.class, cascade = CascadeType.ALL, mappedBy =
+			"surveyUnit", orphanRemoval = true)
 	private ClosingCause closingCause;
 
-	@OneToOne(fetch = FetchType.LAZY, targetEntity = IdentificationDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToOne(fetch = FetchType.LAZY, targetEntity = IdentificationDB.class, cascade = CascadeType.ALL, mappedBy =
+			"surveyUnit", orphanRemoval = true)
 	private IdentificationDB identification;
 
 	/**
@@ -109,26 +115,33 @@ public class SurveyUnit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganizationUnit organizationUnit;
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = Person.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = Person.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
+			, orphanRemoval = true)
 	private Set<Person> persons = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactAttempt.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactAttempt.class, cascade = CascadeType.ALL, mappedBy =
+			"surveyUnit", orphanRemoval = true)
 	private Set<ContactAttempt> contactAttempts = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommentDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommentDB.class, cascade = CascadeType.ALL, mappedBy =
+			"surveyUnit", orphanRemoval = true)
 	private Set<CommentDB> comments = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = State.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit",
+			orphanRemoval = true)
 	private Set<State> states = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequestDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationRequestDB.class, cascade = CascadeType.ALL,
+			mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationRequestDB> communicationRequests = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationMetadataDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = CommunicationMetadataDB.class, cascade = CascadeType.ALL,
+			mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationMetadataDB> communicationMetadata = new HashSet<>();
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
-			Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit, Set<Person> persons) {
+					  Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
+					  Set<Person> persons) {
 		super();
 		this.id = id;
 		this.priority = priority;
@@ -160,6 +173,36 @@ public class SurveyUnit implements Serializable {
 				identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
 		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
+
+
+		this.comments = new HashSet<>(
+				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
+						.map(commentDto -> CommentDto.toModel(this.getId(), commentDto))
+						.map(comment -> CommentDB.fromModel(this, comment))
+						.toList());
+
+		if (su.getContactOutcome() != null) {
+			ContactOutcomeDto inputContactOutcome = su.getContactOutcome();
+			this.contactOutcome = ContactOutcomeDB.fromModel(this, new ContactOutcome(null, inputContactOutcome.date()
+					, inputContactOutcome.type(), inputContactOutcome.totalNumberOfContactAttempts(), su.getId()));
+		}
+		if (su.getContactAttempts() != null && !su.getContactAttempts().isEmpty()) {
+			this.contactAttempts = su.getContactAttempts().stream().map(c -> new ContactAttempt(c, this))
+					.collect(Collectors.toSet());
+		} else {
+			this.contactAttempts = new HashSet<>();
+		}
+		if (su.getStates() != null && !su.getStates().isEmpty()) {
+			this.states = su.getStates().stream().map(s -> new State(s, this)).collect(Collectors.toSet());
+		} else {
+			this.states = Set.of(new State(new Date().getTime(), this, StateType.VIN));
+		}
+		if (su.getClosingCause() != null) {
+			this.closingCause = new ClosingCause(su.getClosingCause(), this);
+		} else {
+			this.closingCause = null;
+		}
+
 
 	}
 

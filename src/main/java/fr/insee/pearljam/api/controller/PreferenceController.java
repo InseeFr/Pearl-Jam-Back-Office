@@ -25,13 +25,12 @@ public class PreferenceController {
 	 * This method is using to update the state of Survey Units listed in request
 	 * body
 	 * 
-	 * @param request
-	 * @param listPreference
-	 * @return
+	 * @param listPreference list
+	 * @return void
 	 */
-	@Operation(summary = "Update preferences with campaigns listed in request body")
+	@Operation(summary = "Update current user preferences with campaigns listed in request body")
 	@PutMapping(Constants.API_PREFERENCES)
-	public ResponseEntity<Object> updateSurveyUnit(@RequestBody List<String> listPreference) {
+	public ResponseEntity<Object> updatePreferences(@RequestBody List<String> listPreference) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
 		log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
