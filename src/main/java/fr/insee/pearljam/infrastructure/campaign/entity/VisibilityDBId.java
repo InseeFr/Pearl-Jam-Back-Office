@@ -1,5 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
@@ -22,6 +23,7 @@ import lombok.Setter;
 @Setter
 public class VisibilityDBId implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**

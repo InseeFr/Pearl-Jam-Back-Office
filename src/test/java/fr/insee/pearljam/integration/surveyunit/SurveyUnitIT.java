@@ -84,6 +84,21 @@ class SurveyUnitIT {
 				          "useLetterCommunication": true
 				       },
 				       {
+						 "id":"25",
+						 "campaign":"SIMPSONS2020X00",
+						 "campaignLabel":"Survey on the Simpsons tv show 2020",
+						 "managementStartDate":1718966154308,
+						 "interviewerStartDate":1719052554309,
+						 "identificationPhaseStartDate":1719138954310,
+						 "collectionStartDate":1719225354314,
+						 "collectionEndDate":1721903754315,
+						 "endDate":1724582154316,
+						 "identificationConfiguration":"IASCO",
+						 "contactOutcomeConfiguration":"F2F",
+						 "contactAttemptConfiguration":"F2F",
+						 "useLetterCommunication":false
+					   },
+				       {
 				          "id":"20",
 				          "campaign":"VQS2021X00",
 				          "campaignLabel":"Everyday life and health survey 2021",
@@ -231,19 +246,25 @@ class SurveyUnitIT {
 				   },
 				   "communicationTemplates":[
 				      {
-				         "id":1,
+								 "id": "mesh1",
+				      	 "campaignId": "SIMPSONS2020X00",
+				         "meshuggahId":"mesh1",
 				         "medium":"EMAIL",
 				         "type":"REMINDER"
 				      },
 				      {
-				         "id":2,
+				      	 "id": "mesh2",
+								 "campaignId": "SIMPSONS2020X00",
+				         "meshuggahId":"mesh2",
 				         "medium":"LETTER",
 				         "type":"NOTICE"
 				      }
 				   ],
 				   "communicationRequests":[
 				      {
-				         "communicationTemplateId":1,
+				         "communicationTemplateId":"mesh1",
+				         "campaignId":"SIMPSONS2020X00",
+				         "meshuggahId": "mesh1",
 				         "reason":"REFUSAL",
 				         "emitter":"INTERVIEWER",
 				         "status":[
@@ -262,7 +283,9 @@ class SurveyUnitIT {
 				         ]
 				      },
 				      {
-				         "communicationTemplateId":2,
+				      	 "communicationTemplateId": "mesh2",
+				         "campaignId":"SIMPSONS2020X00",
+				         "meshuggahId": "mesh2",
 				         "reason":"UNREACHABLE",
 				         "emitter":"INTERVIEWER",
 				         "status":[
@@ -383,12 +406,12 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "communicationTemplateId":5,
+				          "meshuggahId":"mesh3",
 				          "reason":"REFUSAL",
 				          "creationTimestamp": 1721903754305
 				       },
 				       {
-				          "communicationTemplateId":5,
+				          "meshuggahId":"mesh4",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
@@ -491,7 +514,9 @@ class SurveyUnitIT {
 				     },
 				     "communicationRequests":[
 				        {
-				           "communicationTemplateId":5,
+				        	 "communicationTemplateId": "mesh3",
+				           "campaignId":"VQS2021X00",
+				           "meshuggahId": "mesh3",
 				           "reason":"REFUSAL",
 				           "emitter":"INTERVIEWER",
 				           "status":[
@@ -501,49 +526,54 @@ class SurveyUnitIT {
 				              },
 				              {
 				                 "date":""" + currentTimestamp + """
-				         ,
-				         "status":"READY"
-				      }
-				   ]
-				},
-				{
-				   "communicationTemplateId":4,
-				   "reason":"UNREACHABLE",
-				   "emitter":"INTERVIEWER",
-				   "status":[
-				      {
-				         "date":1721903754205,
-				         "status":"INITIATED"
-				      }
-				   ]
-				},
-				{
-				   "communicationTemplateId":5,
-				   "reason":"UNREACHABLE",
-				   "emitter":"INTERVIEWER",
-				   "status":[
-				      {
-				         "date":1721903754405,
-				         "status":"INITIATED"
-				      },
-				      {
-				         "date":""" + currentTimestamp + """
-				               ,
-				               "status":"READY"
-				            }
-				         ]
-				      },
-				      {
-				         "communicationTemplateId":3,
-				         "reason":"REFUSAL",
-				         "emitter":"INTERVIEWER",
-				         "status":[
-				            {
-				               "date":1721903754205,
-				               "status":"INITIATED"
-				            }
-				         ]
-				      }
+                         ,
+                         "status":"READY"
+                      }
+				           ]
+				        },
+                {
+            			 "communicationTemplateId": "mesh4",
+                   "campaignId":"VQS2021X00",
+                   "meshuggahId": "mesh4",
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754205,
+                         "status":"INITIATED"
+                      }
+                   ]
+                },
+                {
+            			 "communicationTemplateId": "mesh4",
+                   "campaignId":"VQS2021X00",
+                   "meshuggahId": "mesh4",
+                   "reason":"UNREACHABLE",
+                   "emitter":"INTERVIEWER",
+                   "status":[
+                      {
+                         "date":1721903754405,
+                         "status":"INITIATED"
+                      },
+                      {
+                         "date": 1719324512000,
+                         "status": "CANCELLED"
+                     }
+                   ]
+                },
+            	  {
+        	  			 "communicationTemplateId": "mesh3",
+									 "campaignId":"VQS2021X00",
+									 "meshuggahId": "mesh3",
+									 "reason":"REFUSAL",
+									 "emitter":"INTERVIEWER",
+									 "status":[
+											{
+												 "date":1721903754205,
+												 "status":"INITIATED"
+											}
+									 ]
+								}
 				   ]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
@@ -614,7 +644,7 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "communicationTemplateId":6,
+				          "meshuggahId":"NOT_EXIST",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }

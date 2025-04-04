@@ -1,7 +1,12 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.api.domain.OrganizationUnitType;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
@@ -19,29 +24,36 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
-import fr.insee.pearljam.domain.surveyunit.model.question.*;
+import fr.insee.pearljam.domain.surveyunit.model.question.AccessQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.HouseholdCompositionQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.IndividualStatusQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.InterviewerCanProcessQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.NumberOfRespondentsQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.OccupantQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.PresentInPreviousHomeQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 
 class SurveyUnitUpdateServiceImplTest {
 	private CommunicationRequestFakeRepository communicationRequestFakeRepository;
@@ -50,7 +62,6 @@ class SurveyUnitUpdateServiceImplTest {
 	private SurveyUnit surveyUnit;
 	private SurveyUnitUpdateDto surveyUnitDto;
 	private DateService dateService;
-	private CommunicationTemplateDB communicationTemplateDB;
 	private CommunicationTemplate communicationTemplate;
 	private CommunicationTemplateFakeRepository communicationTemplateFakeRepository;
 	private Campaign campaign;
@@ -64,7 +75,7 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
 		surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository,
 				communicationTemplateFakeRepository, visibilityFakeService, dateService);
-		campaign = new Campaign("campaignId", "label", null, null, null, null);
+		campaign = new Campaign("campaignId", "label", null, null, null, null, false);
 		ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, true, "mail", "tel");
@@ -72,13 +83,11 @@ class SurveyUnitUpdateServiceImplTest {
 		surveyUnit = new SurveyUnit("id", true, true, null,
 				null, campaign, null, ou, null);
 
-		communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.EMAIL,
+		communicationTemplate = new CommunicationTemplate("SIMPSONS2020X00", "messhId", CommunicationMedium.EMAIL,
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
-		communicationTemplateDB = new CommunicationTemplateDB(3L, "messhId", CommunicationMedium.EMAIL,
-				CommunicationType.NOTICE, campaign);
 		Set<CommunicationRequestDB> communicationRequestDBs = new HashSet<>();
-		communicationRequestDBs.add(new CommunicationRequestDB(10L, communicationTemplateDB,
+		communicationRequestDBs.add(new CommunicationRequestDB(10L, new CommunicationTemplateDBId("mesh1","SIMPSONS2020X00"),
 				CommunicationRequestReason.REFUSAL,
 				CommunicationRequestEmitter.TOOL,
 				surveyUnit, null));
@@ -89,9 +98,9 @@ class SurveyUnitUpdateServiceImplTest {
 	@DisplayName("Should add communication requests for survey unit")
 	void testUpdateCommunication01() {
 		List<CommunicationRequestCreateDto> communicationRequests = List.of(
-				new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
+				new CommunicationRequestCreateDto(communicationTemplate.meshuggahId(), 12345678910L,
 						CommunicationRequestReason.UNREACHABLE),
-				new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
+				new CommunicationRequestCreateDto(communicationTemplate.meshuggahId(), 1234567891011L,
 						CommunicationRequestReason.REFUSAL)
 		);
 
@@ -102,8 +111,8 @@ class SurveyUnitUpdateServiceImplTest {
 				communicationRequestFakeRepository.getCommunicationRequestsAdded();
 		assertThat(communicationRequestResults)
 				.hasSize(2)
-				.extracting(CommunicationRequest::id,
-						CommunicationRequest::communicationTemplateId,
+				.extracting(CommunicationRequest::campaignId,
+						CommunicationRequest::meshuggahId,
 						CommunicationRequest::reason,
 						CommunicationRequest::emitter,
 						communicationRequest -> communicationRequest.status().stream()
@@ -111,8 +120,8 @@ class SurveyUnitUpdateServiceImplTest {
 								.toList()
 				)
 				.containsExactlyInAnyOrder(
-						tuple(null,
-								communicationTemplate.id(),
+						tuple("campaignId",
+								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER,
 								List.of(
@@ -120,8 +129,8 @@ class SurveyUnitUpdateServiceImplTest {
 										tuple(null, dateService.getCurrentTimestamp(), CommunicationStatusType.READY)
 								)
 						),
-						tuple(null,
-								communicationTemplate.id(),
+						tuple("campaignId",
+								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.INTERVIEWER,
 								List.of(
@@ -139,14 +148,14 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationTemplateFakeRepository.clearCommunicationTemplates();
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, false, "mail", "tel");
-		communicationTemplate = new CommunicationTemplate(3L, "messhId", CommunicationMedium.LETTER,
+		communicationTemplate = new CommunicationTemplate("SIMPSONS2020X00","messhId", CommunicationMedium.LETTER,
 				CommunicationType.NOTICE);
 		communicationTemplateFakeRepository.save(communicationTemplate);
 		visibilityFakeService.save(visibility);
 		List<CommunicationRequestCreateDto> communicationRequests = List.of(
-				new CommunicationRequestCreateDto(communicationTemplate.id(), 12345678910L,
+				new CommunicationRequestCreateDto(communicationTemplate.meshuggahId(), 12345678910L,
 						CommunicationRequestReason.UNREACHABLE),
-				new CommunicationRequestCreateDto(communicationTemplate.id(), 1234567891011L,
+				new CommunicationRequestCreateDto(communicationTemplate.meshuggahId(), 1234567891011L,
 						CommunicationRequestReason.REFUSAL)
 		);
 
@@ -157,8 +166,8 @@ class SurveyUnitUpdateServiceImplTest {
 				communicationRequestFakeRepository.getCommunicationRequestsAdded();
 		assertThat(communicationRequestResults)
 				.hasSize(2)
-				.extracting(CommunicationRequest::id,
-						CommunicationRequest::communicationTemplateId,
+				.extracting(CommunicationRequest::campaignId,
+						CommunicationRequest::meshuggahId,
 						CommunicationRequest::reason,
 						CommunicationRequest::emitter,
 						communicationRequest -> communicationRequest.status().stream()
@@ -166,8 +175,8 @@ class SurveyUnitUpdateServiceImplTest {
 								.toList()
 				)
 				.containsExactlyInAnyOrder(
-						tuple(null,
-								3L,
+						tuple("campaignId",
+								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.UNREACHABLE,
 								CommunicationRequestEmitter.INTERVIEWER,
 								List.of(
@@ -175,8 +184,8 @@ class SurveyUnitUpdateServiceImplTest {
 										tuple(null, dateService.getCurrentTimestamp(),
 												CommunicationStatusType.CANCELLED))
 						),
-						tuple(null,
-								3L,
+						tuple("campaignId",
+								communicationTemplate.meshuggahId(),
 								CommunicationRequestReason.REFUSAL,
 								CommunicationRequestEmitter.INTERVIEWER,
 								List.of(

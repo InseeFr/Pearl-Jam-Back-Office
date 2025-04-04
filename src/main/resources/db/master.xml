@@ -84,4 +84,9 @@
 	<!-- add communication metadata -->
 	<include file="changelog/580_add_communication_metadata.xml" relativeToChangelogFile="true"/>
 
+	<!-- add a sensitivity field -->
+	<include file="changelog/590_add_sensitivity_field.xml" relativeToChangelogFile="true"/>
+
+	<!-- update communication structure -->
+	<include file="changelog/600_update_communication_structure.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class Campaign implements Serializable {
 	/**
 	 * 
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -75,8 +77,11 @@ public class Campaign implements Serializable {
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CommunicationTemplateDB> communicationTemplates;
 
+	@Column
+	private Boolean sensitivity;
+
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email, boolean sensitivity) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -84,5 +89,6 @@ public class Campaign implements Serializable {
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.identificationConfiguration = identConfig;
 		this.email = email;
+		this.sensitivity = sensitivity;
 	}
 }

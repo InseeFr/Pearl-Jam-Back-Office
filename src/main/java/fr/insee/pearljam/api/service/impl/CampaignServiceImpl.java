@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Referent;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -153,12 +154,18 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new CampaignAlreadyExistException();
 		}
 
+		boolean sensitivity=false;
+		if(campaignDto.sensitivity()!=null){
+			sensitivity=campaignDto.sensitivity();
+		}
+
 		// Creating campaign
 		Campaign campaign = new Campaign(campaignId, campaignDto.campaignLabel(),
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
-				campaignDto.email());
+				campaignDto.email(),
+				sensitivity);
 		campaign.setReferents(new ArrayList<>());
 		campaign.setCommunicationTemplates(new ArrayList<>());
 
@@ -303,5 +310,10 @@ public class CampaignServiceImpl implements CampaignService {
 				visibilityService.findVisibilities(campaignId)
 		);
 		return CampaignResponseDto.fromModel(campaignDB, referents, visibilities);
+	}
+
+	@Override
+	public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
+		return campaignRepository.findAll().stream().map(CampaignSensitivityDto::fromModel).toList();
 	}
 }

@@ -1,0 +1,61 @@
+application:
+  corsOrigins: '*'
+  roles:
+    interviewer: interviewer_access
+    local_user: local_manager_access
+    national_user: national_manager_access
+    admin: admin_access
+    webclient: webclient_access
+
+spring:
+  application:
+    name: api
+  liquibase:
+    enabled: true
+    contexts: demo
+    defaultSchema: public
+    change-log: classpath:db/integration-demo.xml
+  docker:
+    compose:
+      enabled: true
+      file: compose.yml
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+        arguments: -v
+      skip:
+        in-tests: false
+  datasource:
+    url: jdbc:postgresql://localhost:5434/pearl
+    username: mypostgresuser
+    password: mypostgrespassword
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 1
+
+logging:
+  level:
+    root: INFO
+
+feature:
+  oidc:
+    enabled: false
+
+fr:
+  insee:
+    pearljam:
+      #Datacollection config
+      datacollection:
+        service:
+          url:
+            scheme: http
+            host: localhost
+            port: 8081
+      #Mail service config
+      mail:
+        service:
+          enabled: false

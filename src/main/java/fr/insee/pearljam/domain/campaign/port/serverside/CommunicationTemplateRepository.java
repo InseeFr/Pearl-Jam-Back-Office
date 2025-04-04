@@ -12,7 +12,7 @@ public interface CommunicationTemplateRepository {
      * @param campaignId campaign id
      * @return the communication template
      */
-    Optional<CommunicationTemplate> findCommunicationTemplate(Long communicationTemplateId, String campaignId);
+    Optional<CommunicationTemplate> findCommunicationTemplate(String campaignId, String meshuggahId);
 
     /**
      *

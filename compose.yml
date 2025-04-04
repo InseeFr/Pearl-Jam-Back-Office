@@ -1,0 +1,28 @@
+services:
+  pearl-db:
+    image: postgres:15.1
+    environment:
+      - POSTGRES_USER=${PEARL_DB_USER}
+      - POSTGRES_PASSWORD=${PEARL_DB_PASSWORD}
+      - POSTGRES_DB=${PEARL_DB}
+    command: ["postgres"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PEARL_DB_USER} -d ${PEARL_DB} -h localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ports:
+      - ${PEARL_DB_PORT}:5432
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    environment:
+      KEYCLOAK_ADMIN: administrator
+      KEYCLOAK_ADMIN_PASSWORD: administrator
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    command: ["start-dev", "--import-realm"]
+    ports:
+      - "${KEYCLOAK_PORT}:8080"
+    volumes:
+      - ./container/keycloak/realms:/opt/keycloak/data/import

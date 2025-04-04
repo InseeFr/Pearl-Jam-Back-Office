@@ -185,7 +185,7 @@ public class IdentificationSteps {
 				"Bob",
 				"Marley"
 				, "0123456789", "PRIMARY")), "campaign@e.mail", identificationConfiguration,
-				ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F);
+				ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F, false);
 		mockMvc.perform(post(Constants.API_CAMPAIGN).with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON).content(JsonTestHelper.toJson(inputCampaign)).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
 	}

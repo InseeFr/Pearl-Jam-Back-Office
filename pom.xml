@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.5.2</version>
+	<version>5.6.3</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.2</version>
+		<version>3.4.4</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 
@@ -97,6 +97,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-docker-compose</artifactId>
 		</dependency>
 
 		<dependency>

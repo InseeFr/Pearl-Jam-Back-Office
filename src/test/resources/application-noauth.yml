@@ -15,11 +15,27 @@ spring:
     contexts: test
     defaultSchema: public
     change-log: classpath:db/integration-test.xml
+  docker:
+    compose:
+      enabled: true
+      file: compose.yml
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+        arguments: -v
+      skip:
+        in-tests: false
   datasource:
-    url: jdbc:h2:mem:testnoauthdb;NON_KEYWORDS=user,value;DATABASE_TO_UPPER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=create domain if not exists jsonb as json;MODE=PostgreSQL
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:postgresql://localhost:5434/pearl
+    username: mypostgresuser
+    password: mypostgrespassword
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 1
 
 logging:
   level:
