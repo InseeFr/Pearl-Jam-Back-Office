@@ -246,7 +246,7 @@ class SurveyUnitIT {
 				   },
 				   "communicationTemplates":[
 				      {
-								 "id": "mesh1",
+						 "id": "mesh1",
 				      	 "campaignId": "SIMPSONS2020X00",
 				         "meshuggahId":"mesh1",
 				         "medium":"EMAIL",
@@ -254,7 +254,7 @@ class SurveyUnitIT {
 				      },
 				      {
 				      	 "id": "mesh2",
-								 "campaignId": "SIMPSONS2020X00",
+						 "campaignId": "SIMPSONS2020X00",
 				         "meshuggahId":"mesh2",
 				         "medium":"LETTER",
 				         "type":"NOTICE"
@@ -406,12 +406,12 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "meshuggahId":"mesh3",
+				          "communicationTemplateId":"mesh3",
 				          "reason":"REFUSAL",
 				          "creationTimestamp": 1721903754305
 				       },
 				       {
-				          "meshuggahId":"mesh4",
+				          "communicationTemplateId":"mesh4",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
@@ -644,7 +644,7 @@ class SurveyUnitIT {
 				    },
 				    "communicationRequests":[
 				       {
-				          "meshuggahId":"NOT_EXIST",
+				          "communicationTemplateId":"NOT_EXIST",
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
