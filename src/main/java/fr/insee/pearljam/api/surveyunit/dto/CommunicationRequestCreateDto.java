@@ -10,13 +10,13 @@ import jakarta.validation.constraints.NotNull;
  * communication request, including the configuration ID, the
  * creationTimestamp, and the reason for the request.</p>
  *
- * @param meshuggahId meshuggahId
+ * @param communicationTemplateId communicationTemplateId : AKA meshuggahId -> used for compatibility with interviewer app
  * @param creationTimestamp the creationTimestamp of the request, must not be null
  * @param reason the reason for the communication request, must not be null
  */
 public record CommunicationRequestCreateDto(
     @NotNull
-    String meshuggahId,
+    String communicationTemplateId,
     @NotNull
     Long creationTimestamp,
     @NotNull
