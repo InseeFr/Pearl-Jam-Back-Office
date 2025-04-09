@@ -97,13 +97,13 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
     private CommunicationRequest getNewCommunicationRequest(CommunicationRequestCreateDto communicationRequestToCreate, SurveyUnit surveyUnit, Long readyTimestamp) {
         String campaignId = surveyUnit.getCampaign().getId();
         CommunicationTemplate communicationTemplate = communicationTemplateRepository
-                .findCommunicationTemplate(campaignId, communicationRequestToCreate.meshuggahId())
+                .findCommunicationTemplate(campaignId, communicationRequestToCreate.communicationTemplateId())
                 .orElseThrow(CommunicationTemplateNotFoundException::new);
 
         if(!communicationTemplate.medium().equals(CommunicationMedium.LETTER)) {
             return CommunicationRequest.create(
                     campaignId,
-                    communicationRequestToCreate.meshuggahId(),
+                    communicationRequestToCreate.communicationTemplateId(),
                     communicationRequestToCreate.creationTimestamp(),
                     readyTimestamp,
                     communicationRequestToCreate.reason());
@@ -117,7 +117,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         if(visibility.useLetterCommunication() != null && visibility.useLetterCommunication()) {
             return CommunicationRequest.create(
                     campaignId,
-                    communicationRequestToCreate.meshuggahId(),
+                    communicationRequestToCreate.communicationTemplateId(),
                     communicationRequestToCreate.creationTimestamp(),
                     readyTimestamp,
                     communicationRequestToCreate.reason());
@@ -127,7 +127,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         // create a cancelled communication request
         return CommunicationRequest.createCancelled(
                 campaignId,
-                communicationRequestToCreate.meshuggahId(),
+                communicationRequestToCreate.communicationTemplateId(),
                 communicationRequestToCreate.creationTimestamp(),
                 dateService.getCurrentTimestamp(),
                 communicationRequestToCreate.reason());
