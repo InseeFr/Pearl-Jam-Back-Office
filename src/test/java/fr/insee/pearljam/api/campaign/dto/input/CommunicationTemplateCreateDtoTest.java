@@ -16,12 +16,12 @@ class CommunicationTemplateCreateDtoTest {
     @DisplayName("Should return model objects")
     void testToModel() {
         // Given
-        CommunicationTemplateCreateDto dto1 = new CommunicationTemplateCreateDto("SIMPSONS2020X00","msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplateCreateDto dto2 = new CommunicationTemplateCreateDto("SIMPSONS2020X00","msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
+        CommunicationTemplateCreateDto dto1 = new CommunicationTemplateCreateDto("msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto dto2 = new CommunicationTemplateCreateDto("msg2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         List<CommunicationTemplateCreateDto> dtoList = List.of(dto1, dto2);
 
         // When
-        List<CommunicationTemplate> modelList = CommunicationTemplateCreateDto.toModel(dtoList);
+        List<CommunicationTemplate> modelList = CommunicationTemplateCreateDto.toModel(dtoList, "SIMPSONS2020X00");
 
         // Then
         assertThat(modelList).hasSize(2);
