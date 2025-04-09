@@ -4,10 +4,8 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A class representing the communication template of a visibility.
