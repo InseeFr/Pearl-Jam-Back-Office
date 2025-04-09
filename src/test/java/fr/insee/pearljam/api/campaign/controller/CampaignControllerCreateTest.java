@@ -190,8 +190,8 @@ class CampaignControllerCreateTest {
     void testCreateCampaign07() throws Exception {
         VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, true);
-        CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto("SIMPSONS2020X00", "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto("SIMPSONS2020X00", "messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto( "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto( "messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
 
         CampaignCreateDto campaign = generateCampaign("campId", "label",
                 "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
@@ -212,8 +212,8 @@ class CampaignControllerCreateTest {
      * @return a pair of json string and dto object for the campaign
      */
     public CampaignCreateDto generateDefaultCampaign() {
-        CommunicationTemplateCreateDto communicationTemplate1 = new CommunicationTemplateCreateDto("SIMPSONS2020X00", "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
-        CommunicationTemplateCreateDto communicationTemplate2 = new CommunicationTemplateCreateDto("SIMPSONS2020X00", "messhId2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
+        CommunicationTemplateCreateDto communicationTemplate1 = new CommunicationTemplateCreateDto( "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto communicationTemplate2 = new CommunicationTemplateCreateDto( "messhId2", CommunicationMedium.LETTER, CommunicationType.REMINDER);
         VisibilityCampaignCreateDto firstVisibility = generateVisibility("OU-NORTH", 1721683250000L,
                 1721683251000L,
                 1721683252000L,
