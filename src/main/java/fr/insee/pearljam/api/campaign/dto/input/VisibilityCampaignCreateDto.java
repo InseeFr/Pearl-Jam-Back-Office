@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.campaign.dto.input;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fr.insee.pearljam.domain.campaign.model.Visibility;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
@@ -37,6 +38,7 @@ public record VisibilityCampaignCreateDto(
 		@NotBlank
 		String organizationalUnit,
 		@NotNull
+		@Schema(description = "Allow letter sending feature", defaultValue = "false")
 		Boolean useLetterCommunication,
 		@NotNull
 		String mail,
