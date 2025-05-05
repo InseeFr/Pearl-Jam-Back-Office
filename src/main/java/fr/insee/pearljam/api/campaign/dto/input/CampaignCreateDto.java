@@ -16,22 +16,24 @@ import jakarta.validation.constraints.NotEmpty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record CampaignCreateDto (
-	@NotBlank
-	String campaign,
-	@NotBlank
-	String campaignLabel,
-	@NotEmpty
-	@Valid
-	List<VisibilityCampaignCreateDto> visibilities,
-	@Valid
-	@NoDuplicateMediumAndType
-	@Schema(description = "List of communication templates", defaultValue = "[]")
-	List<CommunicationTemplateCreateDto> communicationTemplates,
-	List<ReferentDto> referents,
-	String email,
-	IdentificationConfiguration identificationConfiguration,
-	ContactOutcomeConfiguration contactOutcomeConfiguration,
-	ContactAttemptConfiguration contactAttemptConfiguration,
-	@Schema(description = "Is campaign data sensitive", defaultValue = "false")
-	Boolean sensitivity) {
+		@NotBlank
+		String id,
+		@NotBlank
+		String campaign,
+		@NotBlank
+		String campaignLabel,
+		@NotEmpty
+		@Valid
+		List<VisibilityCampaignCreateDto> visibilities,
+		@Valid
+		@NoDuplicateMediumAndType
+		@Schema(description = "List of communication templates", defaultValue = "[]")
+		List<CommunicationTemplateCreateDto> communicationTemplates,
+		List<ReferentDto> referents,
+		String email,
+		IdentificationConfiguration identificationConfiguration,
+		ContactOutcomeConfiguration contactOutcomeConfiguration,
+		ContactAttemptConfiguration contactAttemptConfiguration,
+		@Schema(description = "Is campaign data sensitive", defaultValue = "false")
+		Boolean sensitivity) {
 }

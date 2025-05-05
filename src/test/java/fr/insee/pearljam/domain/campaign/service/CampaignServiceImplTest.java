@@ -38,7 +38,7 @@ class CampaignServiceImplTest {
     private final Campaign existingCampaign =  new Campaign(
             "CAMPAIGN-ID",
             "label-campaign",
-            IdentificationConfiguration.IASCO,
+            IdentificationConfiguration.HOUSEF2F,
             ContactOutcomeConfiguration.F2F,
             ContactAttemptConfiguration.F2F,
             "email@email.com",
@@ -101,12 +101,13 @@ class CampaignServiceImplTest {
                 true, "mail", "tel");
         CampaignCreateDto campaignCreateDto = new CampaignCreateDto(
                 campaignId,
+                campaignId,
                 "Campaign 1",
                 List.of(visibilityDto),
                 List.of(communicationTemplateDto),
                 null,
                 null,
-                IdentificationConfiguration.IASCO,
+                IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 false
@@ -141,12 +142,13 @@ class CampaignServiceImplTest {
                 true, "mail", "tel");
         CampaignCreateDto existingCampaignDto = new CampaignCreateDto(
                 campaignId,
+                campaignId,
                 "Existing campaign",
                 List.of(visibilityDto),
                 null,
                 null,
                 null,
-                IdentificationConfiguration.IASCO,
+                IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 false

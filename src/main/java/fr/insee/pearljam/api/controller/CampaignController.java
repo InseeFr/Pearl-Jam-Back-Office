@@ -270,7 +270,7 @@ public class CampaignController {
 	 * @return {@link CampaignResponseDto} the campaign
 	 */
 	@Operation(summary = "Get target campaign")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID)
+	@GetMapping(path = {Constants.API_CAMPAIGN_ID, Constants.API_CAMPAIGNS_ID})
 	public CampaignResponseDto getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
 		return campaignService.getCampaignDtoById(campaignId);
 	}
