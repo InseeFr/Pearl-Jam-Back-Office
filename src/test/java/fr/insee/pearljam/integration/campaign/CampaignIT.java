@@ -213,7 +213,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         Campaign campaignCreated = campaignOptional.get();
         assertCampaignInfos(campaignCreated, campaignId, "An other campaign", "test.email@plop.com",
-                ContactAttemptConfiguration.F2F, IdentificationConfiguration.HOUSEF2F,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F);
         assertThat(campaignCreated.getVisibilities()).hasSize(2);
         assertThat(campaignCreated.getVisibilities())
@@ -317,7 +317,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         Campaign campaignUpdated = campaignOptional.get();
         assertCampaignInfos(campaignUpdated, campaignId, "An other campaign", "test.test@sdf.com",
-                ContactAttemptConfiguration.F2F, IdentificationConfiguration.HOUSEF2F,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.TEL);
         assertThat(campaignUpdated.getVisibilities()).hasSize(2);
         assertThat(campaignUpdated.getVisibilities())
