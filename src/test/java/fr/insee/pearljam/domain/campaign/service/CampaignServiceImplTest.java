@@ -101,7 +101,6 @@ class CampaignServiceImplTest {
                 true, "mail", "tel");
         CampaignCreateDto campaignCreateDto = new CampaignCreateDto(
                 campaignId,
-                campaignId,
                 "Campaign 1",
                 List.of(visibilityDto),
                 List.of(communicationTemplateDto),
@@ -141,7 +140,6 @@ class CampaignServiceImplTest {
                 1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
                 true, "mail", "tel");
         CampaignCreateDto existingCampaignDto = new CampaignCreateDto(
-                campaignId,
                 campaignId,
                 "Existing campaign",
                 List.of(visibilityDto),

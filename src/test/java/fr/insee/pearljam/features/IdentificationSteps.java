@@ -179,7 +179,7 @@ public class IdentificationSteps {
 		identificationConfiguration =
 				IdentificationConfiguration.fromName(inputIdentificationConfiguration);
 		campaignId = "CAMPAIGN_" + System.currentTimeMillis();
-		CampaignCreateDto inputCampaign = new CampaignCreateDto(campaignId, campaignId, "campaign_label",
+		CampaignCreateDto inputCampaign = new CampaignCreateDto(campaignId, "campaign_label",
 				List.of(new VisibilityCampaignCreateDto(1L
 						, 2L, 3L, 4L, 5L, 6L, "OU-NORTH", false, "mail", "tel")), List.of(), List.of(new ReferentDto(
 				"Bob",

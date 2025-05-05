@@ -132,7 +132,6 @@ class CampaignIT {
         String campaignId = "NEW-ONE";
         String content = """
                 {
-                   "id":"NEW-ONE",
                    "campaign":"NEW-ONE",
                    "campaignLabel":"An other campaign",
                    "visibilities":[

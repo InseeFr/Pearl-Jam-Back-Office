@@ -96,15 +96,15 @@ class CampaignControllerCreateTest {
 
         VisibilityCampaignCreateDto visibility = generateVisibility("OU-NORTH", 1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, true);
-        CampaignCreateDto campaign1 = generateCampaign("   ", "   ", "An other campaign",
-                "test.test@sdf.com", IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
+        CampaignCreateDto campaign1 = generateCampaign("   ", "An other campaign",
+                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
                 List.of(),
                 false);
-        CampaignCreateDto campaign2 = generateCampaign("campId", "campId", "   ",
-                "test.test@sdf.com", IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
+        CampaignCreateDto campaign2 = generateCampaign("campId", "   ",
+                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
@@ -155,8 +155,8 @@ class CampaignControllerCreateTest {
             if(invalidVisibility != null) {
                 invalidCampaignVisibilities = List.of(invalidVisibility);
             }
-           CampaignCreateDto campaign = generateCampaign("id", "campId", "campaignLabel",
-                    "test.test@sdf.com", IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
+           CampaignCreateDto campaign = generateCampaign("campId", "campaignLabel",
+                    "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                     ContactAttemptConfiguration.F2F,
                     invalidCampaignVisibilities,
                     List.of(),
@@ -193,8 +193,8 @@ class CampaignControllerCreateTest {
         CommunicationTemplateCreateDto communicationTemplate = new CommunicationTemplateCreateDto( "messhId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         CommunicationTemplateCreateDto duplicatedCommunicationTemplate = new CommunicationTemplateCreateDto( "messhId2", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
 
-        CampaignCreateDto campaign = generateCampaign("campId", "campId", "label",
-                "test.test@sdf.com", IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
+        CampaignCreateDto campaign = generateCampaign("campId", "label",
+                "test.test@sdf.com", IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
                 List.of(visibility),
                 List.of(),
@@ -228,7 +228,7 @@ class CampaignControllerCreateTest {
                 1721683265000L, true);
         ReferentDto firstReferent = new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY");
         ReferentDto secondReferent = new ReferentDto("Dupont", "Jean", "1234567890", "PRIMARY");
-        return generateCampaign("id", "campId", "An other campaign",
+        return generateCampaign("campId", "An other campaign",
                 "test.test@sdf.com", IdentificationConfiguration.NOIDENT, ContactOutcomeConfiguration.TEL,
                 ContactAttemptConfiguration.TEL,
                 List.of(firstVisibility, secondVisibility),
@@ -238,7 +238,7 @@ class CampaignControllerCreateTest {
     }
 
     private CampaignCreateDto generateCampaign(
-            String id, String campaignId, String campaignLabel,
+            String campaignId, String campaignLabel,
             String email, IdentificationConfiguration identificationConfiguration,
             ContactOutcomeConfiguration contactOutcomeConfiguration,
             ContactAttemptConfiguration contactAttemptConfiguration,
@@ -247,7 +247,7 @@ class CampaignControllerCreateTest {
             List<CommunicationTemplateCreateDto> communicationTemplates,
             boolean sensitivity) {
 
-        return new CampaignCreateDto(id,
+        return new CampaignCreateDto(
                 campaignId,
                 campaignLabel,
                 visibilities,
