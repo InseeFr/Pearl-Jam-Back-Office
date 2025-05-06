@@ -78,6 +78,7 @@ class CampaignIT {
         String contentResult = mvcResult.getResponse().getContentAsString();
         String expectedResult = """
                 {
+                   "id":"SIMPSONS2020X00",
                    "campaign":"SIMPSONS2020X00",
                    "campaignLabel":"Survey on the Simpsons tv show 2020",
                    "visibilities":[

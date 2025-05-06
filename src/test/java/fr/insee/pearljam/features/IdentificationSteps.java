@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
+import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -92,7 +93,7 @@ public class IdentificationSteps {
 	public void the_created_campaign_should_have_the_identification_configuration(String expectedIdentificationType) throws IOException {
 		String contentResult = createdCampaign.getResponse().getContentAsString();
 
-		CampaignCreateDto campaignDto = objectMapper.readValue(contentResult, CampaignCreateDto.class);
+		CampaignResponseDto campaignDto = objectMapper.readValue(contentResult, CampaignResponseDto.class);
 
 		assertThat(campaignDto.identificationConfiguration()).isEqualTo(IdentificationConfiguration.fromName(expectedIdentificationType));
 	}

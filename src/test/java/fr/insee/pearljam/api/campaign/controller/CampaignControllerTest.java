@@ -52,8 +52,8 @@ class CampaignControllerTest {
     @Test
     @DisplayName("Should retrieve campaign")
     void testGetCampaign01() throws Exception {
-        CampaignResponseDto campaign = new CampaignResponseDto("campaign-id", "label", null, null, "email",
-                IdentificationConfiguration.IASCO, ContactOutcomeConfiguration.TEL, ContactAttemptConfiguration.F2F, false);
+        CampaignResponseDto campaign = new CampaignResponseDto("id", "campaign-id", "label", null, null, "email",
+                IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.TEL, ContactAttemptConfiguration.F2F, false);
         campaignService.setCampaignToRetrieve(campaign);
 
         MvcResult mvcResult = mockMvc.perform(get(getPath)

@@ -23,6 +23,7 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record CampaignResponseDto(
+        String id,
         String campaign,
         String campaignLabel,
         List<VisibilityCampaignDto> visibilities,
@@ -37,6 +38,7 @@ public record CampaignResponseDto(
                                                 List<ReferentDto> referents,
                                                 List<VisibilityCampaignDto> visibilities) {
         return new CampaignResponseDto(campaignDB.getId(),
+                campaignDB.getId(),
                 campaignDB.getLabel(),
                 visibilities,
                 referents,

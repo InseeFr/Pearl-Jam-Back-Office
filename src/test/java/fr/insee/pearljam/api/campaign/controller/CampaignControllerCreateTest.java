@@ -247,7 +247,8 @@ class CampaignControllerCreateTest {
             List<CommunicationTemplateCreateDto> communicationTemplates,
             boolean sensitivity) {
 
-        return new CampaignCreateDto(campaignId,
+        return new CampaignCreateDto(
+                campaignId,
                 campaignLabel,
                 visibilities,
                 communicationTemplates,
