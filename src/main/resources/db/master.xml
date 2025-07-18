@@ -89,4 +89,7 @@
 
 	<!-- update communication structure -->
 	<include file="changelog/600_update_communication_structure.xml" relativeToChangelogFile="true"/>
+
+	<!-- add Not Null Constraint sensitivity -->
+	<include file="changelog/610_default_sensitity_to_false.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
