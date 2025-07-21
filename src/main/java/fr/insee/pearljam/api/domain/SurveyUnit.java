@@ -100,6 +100,8 @@ public class SurveyUnit implements Serializable {
 			"surveyUnit", orphanRemoval = true)
 	private IdentificationDB identification;
 
+	@OneToMany(fetch = FetchType.EAGER, targetEntity = OtherModeQuestionnaireState.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<OtherModeQuestionnaireState> otherModeQuestionnaireState;
 	/**
 	 * The Campaign of SurveyUnit
 	 */

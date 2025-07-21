@@ -32,7 +32,8 @@ public record SurveyUnitInterviewerResponseDto(
 	ContactOutcomeDto contactOutcome,
 	IdentificationDto identification,
 	List<CommunicationTemplateResponseDto> communicationTemplates,
-	List<CommunicationRequestResponseDto> communicationRequests) {
+	List<CommunicationRequestResponseDto> communicationRequests,
+	java.util.Set<fr.insee.pearljam.api.domain.OtherModeQuestionnaireState> otherModeQuestionnaireState) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
@@ -68,6 +69,7 @@ public record SurveyUnitInterviewerResponseDto(
 				comments, sampleIdentifiers, states, contactAttempts, contactOutcome,
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
-				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()));
+				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
+				surveyUnit.getOtherModeQuestionnaireState());
 	}
 }
