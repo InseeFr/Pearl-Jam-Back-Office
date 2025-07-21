@@ -4,7 +4,7 @@
     ":semanticCommits",
     ":disableRateLimiting"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "develop",
     "main"
   ],
@@ -62,7 +62,7 @@
   ],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "baseBranches": [
+    "baseBranchPatterns": [
       "main"
     ],
     "addLabels": [
