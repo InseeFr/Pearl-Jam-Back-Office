@@ -93,6 +93,10 @@ public enum IdentificationState {
             return IdentificationState.ONGOING;
         }
 
+        if (identification.access() == AccessQuestionValue.NACC) {
+            return IdentificationState.FINISHED;
+        }
+
         SituationQuestionValue situationQuestionValue = identification.situation();
         if (situationQuestionValue == null) {
             return IdentificationState.ONGOING;
@@ -110,11 +114,6 @@ public enum IdentificationState {
 
         if (categoryQuestionValue == CategoryQuestionValue.VACANT ||
                 categoryQuestionValue == CategoryQuestionValue.SECONDARY) {
-            return IdentificationState.FINISHED;
-        }
-
-        if (identification.access() == AccessQuestionValue.NACC &&
-                identification.identification() == IdentificationQuestionValue.IDENTIFIED) {
             return IdentificationState.FINISHED;
         }
 
