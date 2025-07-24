@@ -1,11 +1,8 @@
 package fr.insee.pearljam.domain.surveyunit.model;
 
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.IndividualStatusQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.InterviewerCanProcessQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.*;
+
 import java.util.EnumSet;
 
 public enum IdentificationState {
@@ -94,6 +91,10 @@ public enum IdentificationState {
 
         if (identification.access() == null) {
             return IdentificationState.ONGOING;
+        }
+
+        if (identification.access() == AccessQuestionValue.NACC) {
+            return IdentificationState.FINISHED;
         }
 
         SituationQuestionValue situationQuestionValue = identification.situation();

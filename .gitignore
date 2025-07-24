@@ -35,6 +35,8 @@ build/
 **/src/main/resources/application-*.yaml
 **/src/main/resources/application-*.yml
 **/src/main/resources/application-*.properties
+!**/src/main/resources/application-docker.yml
+
 
 *.DS_Store
 /.apt_generated_tests/

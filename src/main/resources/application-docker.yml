@@ -1,0 +1,51 @@
+# Content must be copied in application-default.yml if working with compose
+application:
+  corsOrigins: http://localhost:3000,http://localhost:5173
+  roles:
+    interviewer: interviewer
+    local_user:
+    national_user: gestionnaire
+    admin: admin
+    webclient:
+feature:
+  oidc:
+    enabled: true
+    auth-server-host: http://localhost:7080
+    auth-server-url: ${feature.oidc.auth-server-host}
+    client-id: myclient
+    realm: sabiane
+    principal-attribute: preferred_username
+  mail-service:
+    enabled: true
+    url:
+    login:
+    password:
+    mail-recipients:
+    mail-sender:
+  swagger:
+    enabled: true
+  logging:
+    file:
+      enabled: true
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pearl
+    username: dbuser
+    password: letmein
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 1
+  liquibase:
+    contexts: demo
+    changeLog: classpath:db/integration-demo.xml
+  messages:
+    cache-seconds: 1
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      indent-output: true
