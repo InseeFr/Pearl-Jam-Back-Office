@@ -125,6 +125,12 @@ public class SurveyUnitController {
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 
+	@Operation(summary = "Get detail as admin of specific survey unit ")
+	@GetMapping(path = {Constants.API_ADMIN_SURVEYUNIT_DETAILS, Constants.API_SURVEYUNIT_ID})
+	public SurveyUnitInterviewerResponseDto getAdminSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
+		return surveyUnitService.getSurveyUnitDetail(surveyUnitId);
+	}
+
 	/**
 	 * This method is used to update a specific survey unit
 	 * @param surveyUnitUpdateDto survey unit information to update

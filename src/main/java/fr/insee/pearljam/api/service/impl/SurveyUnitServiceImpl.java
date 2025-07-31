@@ -90,6 +90,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Override
+	public SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnit surveyUnit) {
+		List<CommunicationTemplate> communicationTemplates =
+				communicationTemplateService.findCommunicationTemplates(surveyUnit.getCampaign().getId());
+
+		SurveyUnitForInterviewer surveyUnitForInterviewer = new SurveyUnitForInterviewer(surveyUnit, communicationTemplates);
+
+		// TODO: when refacto survey unit, return model object instead of dto here
+		// cannot do this now as the hibernate session is not propagated to the controller
+		return SurveyUnitInterviewerResponseDto.fromModel(surveyUnitForInterviewer);
+	}
+
+
+	@Override
 	public SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId) {
 		SurveyUnit surveyUnit = surveyUnitRepository
 				.findByIdAndInterviewerIdIgnoreCase(surveyUnitId, userId)
@@ -103,11 +116,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			throw new SurveyUnitNotFoundException(surveyUnitId);
 		}
 
-		List<CommunicationTemplate> communicationTemplates = communicationTemplateService.findCommunicationTemplates(surveyUnit.getCampaign().getId());
-		SurveyUnitForInterviewer surveyUnitForInterviewer = new SurveyUnitForInterviewer(surveyUnit, communicationTemplates);
-		// TODO: when refacto survey unit, return model object instead of dto here
-		// cannot do this now as the hibernate session is not propagated to the controller
-		return SurveyUnitInterviewerResponseDto.fromModel(surveyUnitForInterviewer);
+		return buildSurveyUnitInterviewerResponse(surveyUnit);
+	}
+
+	@Override
+	public SurveyUnitInterviewerResponseDto getSurveyUnitDetail(String surveyUnitId) {
+		SurveyUnit surveyUnit = surveyUnitRepository
+				.findById(surveyUnitId)
+				.orElseThrow(() -> {
+					log.error("Survey unit with id {} does not exist", surveyUnitId);
+					return new SurveyUnitNotFoundException(surveyUnitId);
+				});
+
+		return buildSurveyUnitInterviewerResponse(surveyUnit);
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {

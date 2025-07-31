@@ -263,6 +263,8 @@ public class OidcSecurityConfiguration {
 						.hasRole(adminRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS)
 						.hasRole(adminRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_ADMIN_SURVEYUNIT_DETAILS)
+						.hasAnyRole(adminRole, webclientRole)
 						.anyRequest()
 						.denyAll());
 	}
