@@ -1,6 +1,7 @@
 application:
   host: http://localhost:8080
   corsOrigins:
+    - http://localhost:3000
   # Define Roles mapping here
   roles:
     interviewer:

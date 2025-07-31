@@ -22,6 +22,9 @@ public class OtherModeQuestionnaireState {
     @Column
     private String state;
 
+    @Column(name = "date", insertable = false, updatable = false)
+    private LocalDateTime date;
+
     @ManyToOne
     @JsonIgnore
     private SurveyUnit surveyUnit;
