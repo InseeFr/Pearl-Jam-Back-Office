@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="620" author="Simon Demazière">
+
+        <!--   create contact_history table and PK, FK constraints     -->
+        <createTable tableName="contact_history">
+            <column name="survey_unit_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_history_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_outcome_value" type="VARCHAR(10)"/>
+            <column name="comment" type="VARCHAR(999)"/>
+        </createTable>
+        <addPrimaryKey tableName="contact_history" columnNames="survey_unit_id, contact_history_type" constraintName="pk_contact_history"/>
+        <addForeignKeyConstraint baseTableName="contact_history" baseColumnNames="survey_unit_id" constraintName="fk_contact_history_survey_unit" referencedTableName="survey_unit" referencedColumnNames="id"/>
+
+        <!--  extend contact table  -->
+        <!--  remove favorite email column-->
+        <dropColumn tableName="person" columnName="favorite_email"/>
+
+        <!--  add panel column  -->
+        <addColumn tableName="person">
+            <column name="panel" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+</databaseChangeLog>
