@@ -115,7 +115,7 @@ public class SurveyUnitController {
 	 * This method is used to get the detail of survey unit for current interviewer
 	 * 
 	 * @param surveyUnitId the id of reporting unit
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
@@ -125,8 +125,15 @@ public class SurveyUnitController {
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 
+	/**
+	 * Admin way of getting any survey-unit
+	 *
+	 * @param surveyUnitId the id of expected survey-unit
+	 * @return {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
+	 * {@link HttpStatus} FORBIDDEN
+	 */
 	@Operation(summary = "Get detail as admin of specific survey unit ")
-	@GetMapping(path = {Constants.API_ADMIN_SURVEYUNIT_DETAILS, Constants.API_SURVEYUNIT_ID})
+	@GetMapping(Constants.API_ADMIN_SURVEYUNIT_DETAILS)
 	public SurveyUnitInterviewerResponseDto getAdminSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		return surveyUnitService.getSurveyUnitDetail(surveyUnitId);
 	}
