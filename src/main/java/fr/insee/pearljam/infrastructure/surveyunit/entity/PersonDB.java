@@ -40,7 +40,7 @@ public class PersonDB implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyUnit surveyUnit;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumberDB.class, cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
     private Set<PhoneNumberDB> phoneNumbers = new HashSet<>();
 
     private boolean panel;
