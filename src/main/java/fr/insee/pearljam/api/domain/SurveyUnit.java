@@ -19,7 +19,10 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +114,7 @@ public class SurveyUnit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganizationUnit organizationUnit;
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = Person.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = PersonDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
 			, orphanRemoval = true)
 	private Set<PersonDB> persons = new HashSet<>();
 
@@ -177,7 +180,7 @@ public class SurveyUnit implements Serializable {
 		this.organizationUnit = organizationUnit;
 		// move person to model
 		this.persons = su.getPersons().stream()
-				.map(person -> PersonDto.toModel( person))
+				.map(PersonDto::toModel)
 				.map(personModel -> PersonDB.fromModel(personModel, this))
 				.collect(Collectors.toSet());
 
