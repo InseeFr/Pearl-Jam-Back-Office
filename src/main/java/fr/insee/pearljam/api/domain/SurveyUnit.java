@@ -19,10 +19,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -180,7 +177,7 @@ public class SurveyUnit implements Serializable {
 		this.organizationUnit = organizationUnit;
 		// move person to model
 		this.persons = su.getPersons().stream()
-				.map(person -> PersonDto.toModel( person, this.id))
+				.map(person -> PersonDto.toModel( person))
 				.map(personModel -> PersonDB.fromModel(personModel, this))
 				.collect(Collectors.toSet());
 
@@ -312,7 +309,7 @@ public class SurveyUnit implements Serializable {
 	}
 
 	public void updatePersons(Set<Person> personsToUpdate) {
-		Set<PersonDB> existingPersons = this.getPersons();
+		Set<PersonDB> existingPersons = Optional.ofNullable(this.getPersons()).orElse(new HashSet<>());
 
 		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
 				.map(newPerson -> PersonDB.fromModel(newPerson, this))

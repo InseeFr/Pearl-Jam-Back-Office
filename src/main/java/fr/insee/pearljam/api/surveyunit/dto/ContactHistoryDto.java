@@ -14,7 +14,7 @@ public record ContactHistoryDto(
         return new ContactHistoryDto(contactHistory.comment(), contactHistory.contactOutcomeValue(), contactHistory.historyType());
     }
 
-    public static ContactHistory toModel(ContactHistoryDto contactHistoryDto, String surveyUnitId) {
-        return new ContactHistory(contactHistoryDto.contactHistoryType(), contactHistoryDto.comment(), contactHistoryDto.contactOutcomeValue(), surveyUnitId);
+    public static ContactHistory toModel(ContactHistoryDto contactHistoryDto) {
+        return new ContactHistory(contactHistoryDto.contactHistoryType(), contactHistoryDto.comment(), contactHistoryDto.contactOutcomeValue());
     }
 }

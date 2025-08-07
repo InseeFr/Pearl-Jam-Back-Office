@@ -108,7 +108,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				});
 
 		if (!canBeSeenByInterviewer(surveyUnit.getId())) {
-			log.error(String.format("Survey unit with id %s is not associated to the interviewer %s anymore", surveyUnitId, userId));
+			log.error("Survey unit with id {} is not associated to the interviewer {} anymore", surveyUnitId, userId);
 			throw new SurveyUnitNotFoundException(surveyUnitId);
 		}
 

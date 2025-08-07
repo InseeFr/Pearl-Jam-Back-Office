@@ -16,22 +16,15 @@ public class BusinessRules {
 	 * via a manager action
 	 */
 	public static Boolean stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
-		switch (targetState) {
-			case NVA:
-				return currentState != StateType.NVA;
-			case ANV:
-				return currentState == StateType.NNS;
-			case VIN:
-				return List.of(StateType.NNS,StateType.ANV).contains(currentState);
-			case FIN:
-				return currentState == StateType.TBR;
-			case WFT:
-				return List.of(StateType.FIN, StateType.TBR).contains(currentState);
-			case CLO:
-				return true;
-			default:
-				return false;
-		}
+        return switch (targetState) {
+            case NVA -> currentState != StateType.NVA;
+            case ANV -> currentState == StateType.NNS;
+            case VIN -> List.of(StateType.NNS, StateType.ANV).contains(currentState);
+            case FIN -> currentState == StateType.TBR;
+            case WFT -> List.of(StateType.FIN, StateType.TBR).contains(currentState);
+            case CLO -> true;
+            default -> false;
+        };
 	}
 
 

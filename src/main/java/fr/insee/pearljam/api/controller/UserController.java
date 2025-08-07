@@ -103,7 +103,7 @@ public class UserController {
 			return new ResponseEntity<>(alreadyPresentUserInfo, HttpStatus.CONFLICT);
 		}
 
-		UserDto createdUser = null;
+		UserDto createdUser;
 		try {
 			createdUser = userService.createUser(user);
 			log.info("User {} created", user.getId());

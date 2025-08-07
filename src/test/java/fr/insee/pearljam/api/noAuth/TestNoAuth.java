@@ -55,7 +55,7 @@ class TestNoAuth {
 				.andExpect(status().isOk());
 
 		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPI, closingCauses.get(0).getType());
+		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
 	}
 
 	/**
@@ -67,7 +67,7 @@ class TestNoAuth {
 	@Test
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPostMessage() throws Exception {
-		List<String> recipients = new ArrayList<String>();
+		List<String> recipients = new ArrayList<>();
 		recipients.add("SIMPSONS2020X00");
 		MessageDto message = new MessageDto("TEST", recipients);
 		message.setSender("GUEST");
@@ -79,6 +79,6 @@ class TestNoAuth {
 
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
-		assertEquals("TEST", messages.get(0).getText());
+		assertEquals("TEST", messages.getFirst().getText());
 	}
 }

@@ -24,9 +24,5 @@ public interface UtilsService {
 	 */
 	List<String> getRelatedOrganizationUnits(String userId);
 
-	boolean isDevProfile();
-
-	boolean isTestProfile();
-
 	ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
 }

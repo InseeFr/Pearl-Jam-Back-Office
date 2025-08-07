@@ -27,8 +27,8 @@ public record PersonDto(
 ) {
 
 
-    public static Person toModel(PersonDto person, String surveyUnitId) {
-        return new Person(person.id(), person.title(), person.firstName(), person.lastName(), person.email(), person.birthdate(), person.privileged(), person.panel(), person.phoneNumbers().stream().map(PhoneNumberDto::toModel).collect(Collectors.toSet()), ContactHistoryDto.toModel(person.contactHistory(), surveyUnitId));
+    public static Person toModel(PersonDto person) {
+        return new Person(person.id(), person.title(), person.firstName(), person.lastName(), person.email(), person.birthdate(), person.privileged(), person.panel(), person.phoneNumbers().stream().map(PhoneNumberDto::toModel).collect(Collectors.toSet()), ContactHistoryDto.toModel(person.contactHistory()));
     }
 
     public static PersonDto fromModel(Person person) {

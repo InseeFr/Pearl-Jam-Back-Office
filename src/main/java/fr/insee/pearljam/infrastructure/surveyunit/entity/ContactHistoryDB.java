@@ -24,11 +24,10 @@ public class ContactHistoryDB implements Serializable {
     @Serial
     private static final long serialVersionUID = 6363481673399032153L;
 
-    @ManyToOne
-    private SurveyUnit surveyUnit;
+    @EmbeddedId
+    private ContactHistoryPK id;  // The composite key
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 11)
     private ContactHistoryType contactHistoryType;
 
     @Column(length = 999)
@@ -38,11 +37,12 @@ public class ContactHistoryDB implements Serializable {
     private ContactOutcomeType contactOutcomeValue;
 
     public static ContactHistoryDB fromModel(ContactHistory contactHistory, SurveyUnit surveyUnit) {
-        return new ContactHistoryDB(surveyUnit, contactHistory.historyType(), contactHistory.comment(), contactHistory.contactOutcomeValue());
+
+        return new ContactHistoryDB(new ContactHistoryPK(surveyUnit,contactHistory.historyType()), contactHistory.historyType(), contactHistory.comment(), contactHistory.contactOutcomeValue());
     }
 
     public static ContactHistory toModel(ContactHistoryDB contactHistoryDB) {
-        return new ContactHistory(contactHistoryDB.getContactHistoryType(), contactHistoryDB.getComment(), contactHistoryDB.getContactOutcomeValue(), contactHistoryDB.getSurveyUnit().getId());
+        return new ContactHistory(contactHistoryDB.getContactHistoryType(), contactHistoryDB.getComment(), contactHistoryDB.getContactOutcomeValue());
     }
 
 

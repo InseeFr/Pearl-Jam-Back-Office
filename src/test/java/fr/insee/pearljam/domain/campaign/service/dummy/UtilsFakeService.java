@@ -19,16 +19,6 @@ public class UtilsFakeService implements UtilsService {
     }
 
     @Override
-    public boolean isDevProfile() {
-        return false;
-    }
-
-    @Override
-    public boolean isTestProfile() {
-        return false;
-    }
-
-    @Override
     public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id) {
         return null;
     }

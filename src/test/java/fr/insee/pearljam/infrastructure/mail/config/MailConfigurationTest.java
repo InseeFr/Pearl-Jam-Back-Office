@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 class MailConfigurationTest {

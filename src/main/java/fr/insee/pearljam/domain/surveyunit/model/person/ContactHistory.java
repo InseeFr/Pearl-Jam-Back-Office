@@ -5,6 +5,5 @@ import fr.insee.pearljam.api.domain.ContactOutcomeType;
 public record ContactHistory(
         ContactHistoryType historyType,
         String comment,
-        ContactOutcomeType contactOutcomeValue,
-        String surveyUnitId) {
+        ContactOutcomeType contactOutcomeValue) {
 }

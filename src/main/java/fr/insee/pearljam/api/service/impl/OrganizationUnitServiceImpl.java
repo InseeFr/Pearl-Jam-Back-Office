@@ -55,7 +55,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 		}
 		String alreadyPresentIds = organizationUnitDtos.stream().map(OrganizationUnitContextDto::getId)
 				.filter(id -> organizationUnitRepository.findById(id).isPresent()).collect(Collectors.joining(", "));
-		if (alreadyPresentIds != null && !alreadyPresentIds.isEmpty()) {
+		if (!alreadyPresentIds.isEmpty()) {
 			String errorMessage = String.format("The following Organizational units were already present: [%s]",
 					alreadyPresentIds);
 			log.error(errorMessage);
@@ -87,15 +87,14 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	private void addOrganizationalUnits(List<OrganizationUnitContextDto> organizationUnitDtos)
 			throws NoOrganizationUnitException {
 		// Adding OUs which children are already in db first, until all are added
-		List<OrganizationUnitContextDto> remainingToAdd = new ArrayList<>();
-		remainingToAdd.addAll(organizationUnitDtos);
-		Integer remainingNb = -1;
+        List<OrganizationUnitContextDto> remainingToAdd = new ArrayList<>(organizationUnitDtos);
+		int remainingNb = -1;
 		while (remainingNb > remainingToAdd.size() || remainingNb < 0) {
 			remainingNb = remainingToAdd.size();
 			List<OrganizationUnitContextDto> added = new ArrayList<>();
 			for (OrganizationUnitContextDto ouDto : remainingToAdd) {
 				if (ouDto.getOrganisationUnitRef() == null || ouDto.getOrganisationUnitRef().stream()
-						.noneMatch(ouId -> !organizationUnitRepository.findById(ouId).isPresent())) {
+						.noneMatch(ouId -> organizationUnitRepository.findById(ouId).isEmpty())) {
 					OrganizationUnit orgUnit = new OrganizationUnit(ouDto.getId(), ouDto.getLabel(), ouDto.getType());
 					organizationUnitRepository.save(orgUnit);
 					added.add(ouDto);
