@@ -9,7 +9,6 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
@@ -18,6 +17,7 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
@@ -26,6 +26,7 @@ import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -114,11 +115,11 @@ public class IdentificationSteps {
 		Campaign campaignDB = campaignService.findById(campaignId).orElseThrow();
 		Interviewer interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
 		OrganizationUnit ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
-		Set<Person> personsDB = Set.of(new Person(Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", true, true,
-				537535032000L, surveyUnit));
+		Set<PersonDB> persons = Set.of(new PersonDB(null,Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L,true, surveyUnit,null,
+				 false,null));
 		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
 				, null, null, null, null, null, null);
-		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, personsDB);
+		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, persons);
 
 		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
 		surveyUnit.getStates().add(new State(System.currentTimeMillis(), surveyUnit, StateType.VIN));
@@ -163,7 +164,7 @@ public class IdentificationSteps {
 	private SurveyUnitUpdateDto updateIdentification(RawIdentificationDto newIdentification) {
 		return new SurveyUnitUpdateDto(
 				surveyUnit.getId(),
-				surveyUnit.getPersons().stream().map(PersonDto::new).toList(),
+				surveyUnit.getPersons().stream().map(PersonDB::toModel).map(PersonDto::fromModel).toList(),
 				new AddressDto(surveyUnit.getAddress()),
 				surveyUnit.getMove(),
 				CommentDto.fromModel(surveyUnit.getComments().stream().map(CommentDB::toModel).collect(Collectors.toSet())),

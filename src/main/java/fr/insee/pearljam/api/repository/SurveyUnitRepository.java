@@ -85,6 +85,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	")")
 	List<SurveyUnit> findClosableNoIdentSurveyUnitId(@Param("ids") List<String> ids);
 
+	// ligne 120, ajouter des controles sur la réponse à la première question pour inclure les cas
 	@Query(value = """
     SELECT su
     FROM SurveyUnit su

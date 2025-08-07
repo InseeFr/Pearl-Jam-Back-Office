@@ -9,7 +9,7 @@ import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import lombok.Getter;
 import lombok.Setter;

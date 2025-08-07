@@ -5,14 +5,12 @@ import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
-import java.util.function.Function;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
@@ -22,9 +20,7 @@ import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
-import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +58,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final VisibilityRepository visibilityRepository;
-	private final PersonRepository personRepository;
 	private final ClosingCauseRepository closingCauseRepository;
 	private final UserService userService;
 	private final UtilsService utilsService;
@@ -159,7 +155,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Transactional
 	public SurveyUnitDetailDto updateSurveyUnit(String userId, String surveyUnitId,
-												SurveyUnitUpdateDto surveyUnitUpdate) throws PersonNotFoundException {
+												SurveyUnitUpdateDto surveyUnitUpdate)  {
 		log.info("Update Survey Unit {}", surveyUnitId);
 
 		Optional<SurveyUnit> surveyUnitOpt;
@@ -171,7 +167,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
 		surveyUnit.setMove(surveyUnitUpdate.move());
 		updateAddress(surveyUnit, surveyUnitUpdate);
-		updatePersons(surveyUnitUpdate);
 
 		updateStates(surveyUnit, surveyUnitUpdate);
 		updateContactAttempt(surveyUnit, surveyUnitUpdate);
@@ -206,7 +201,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (Boolean.TRUE.equals(BusinessRules.shouldFallBackToTbrOrFin(dbStates))) {
+		if (BusinessRules.shouldFallBackToTbrOrFin(dbStates)) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -224,46 +219,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		} else {
 			stateRepository.save(new State(new Date().getTime(), surveyUnit, StateType.FIN));
 			surveyUnit.setClosingCause(null);
-		}
-	}
-
-	private void updatePersons(SurveyUnitUpdateDto surveyUnitUpdateDto) throws PersonNotFoundException {
-		if (surveyUnitUpdateDto.persons() == null) {
-            return;
-        }
-        for (PersonDto personDto : surveyUnitUpdateDto.persons()) {
-            Person pers = personRepository.findById(personDto.getId()).orElseThrow(PersonNotFoundException::new);
-            updatePerson(personDto, pers);
-        }
-	}
-
-	private void updatePerson(PersonDto person, Person pers) {
-		if (person.getFirstName() != null) {
-			pers.setFirstName(person.getFirstName());
-		}
-		if (person.getLastName() != null) {
-			pers.setLastName(person.getLastName());
-		}
-		if (person.getBirthdate() != null) {
-			pers.setBirthdate(person.getBirthdate());
-		}
-		if (person.getTitle() != null) {
-			pers.setTitle(person.getTitle());
-		}
-		if (person.getEmail() != null) {
-			pers.setEmail(person.getEmail());
-		}
-		if (person.getFavoriteEmail() != null) {
-			pers.setFavoriteEmail(person.getFavoriteEmail());
-		}
-		if (person.getPrivileged() != null) {
-			pers.setPrivileged(person.getPrivileged());
-		}
-		if (person.getPhoneNumbers() != null) {
-			Set<PhoneNumber> phoneNumbers = person.getPhoneNumbers().stream().map(pn -> new PhoneNumber(pn, pers))
-					.collect(Collectors.toSet());
-			pers.getPhoneNumbers().clear();
-			pers.getPhoneNumbers().addAll(phoneNumbers);
 		}
 	}
 
@@ -325,7 +280,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
-	// TODO : use future identification state in rules instead of specific identification attributes
+	// TODO : maybe use simpler rules : only check last state in CLO/TBR/FIN ;)
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
@@ -373,10 +328,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
-					IdentificationState identificationResult =
-							IdentificationState.getState(su.getModelIdentification(),
-									sudto.getIdentificationConfiguration());
-			sudto.setIdentificationState(identificationResult);
+			sudto.setIdentificationState(su.getIdentification().getIdentificationState());
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
@@ -426,7 +378,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).type();
-			if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, state))) {
+			if (BusinessRules.stateCanBeModifiedByManager(currentState, state)) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
 					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
@@ -455,7 +407,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
-			} else if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
+			} else if (BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO)) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;

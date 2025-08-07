@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.insee.pearljam.api.domain.Person;
+import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 
 
 public interface PersonRepository extends JpaRepository<Person, Long> {

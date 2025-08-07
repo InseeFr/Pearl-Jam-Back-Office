@@ -7,11 +7,11 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +37,8 @@ public record SurveyUnitInterviewerResponseDto(
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
 		List<PersonDto> persons = surveyUnit.getPersons().stream()
-				.map(PersonDto::new)
+				.map(PersonDB::toModel)
+				.map(PersonDto::fromModel)
 				.toList();
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());

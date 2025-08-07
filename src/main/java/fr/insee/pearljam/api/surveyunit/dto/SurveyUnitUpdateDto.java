@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import jakarta.validation.Valid;
@@ -27,6 +26,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitUpdateDto(
     String id,
+    @Valid
     List<PersonDto> persons,
     AddressDto address,
     Boolean move,

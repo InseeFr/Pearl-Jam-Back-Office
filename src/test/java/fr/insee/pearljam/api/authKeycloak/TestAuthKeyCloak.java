@@ -13,7 +13,6 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
@@ -24,6 +23,7 @@ import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
@@ -920,7 +920,7 @@ class TestAuthKeyCloak {
 				.andExpectAll(status().isOk());
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
-		assertEquals("TEST", messages.get(0).getText());
+		assertEquals("TEST", messages.getFirst().getText());
 	}
 
 	/**
@@ -2087,15 +2087,18 @@ class TestAuthKeyCloak {
 		addr.setL2("1 rue test");
 		addr.setL3("TEST");
 		su.setAddress(addr);
-		PersonDto p = new PersonDto();
-		p.setFirstName("test");
-		p.setLastName("test");
-		p.setEmail("test@test.com");
-		p.setFavoriteEmail(true);
-		p.setBirthdate(1564656540L);
-		p.setPrivileged(true);
-		p.setTitle(Title.MISTER);
-		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		PersonDto p = new PersonDto(
+				null,
+				Title.MISTER,
+				"test",
+				"test",
+				"test@test.com",
+				1564656540L,
+				true,
+				true,
+				List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")),
+				null
+		);
 		List<PersonDto> lstPerson = List.of(p);
 		su.setPersons(lstPerson);
 		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));

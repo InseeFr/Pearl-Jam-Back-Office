@@ -3,15 +3,14 @@ package fr.insee.pearljam.api.domain;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationMetadataDB;
+import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -106,7 +105,7 @@ public class SurveyUnit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
 
-	/*
+	/**
 	 * The Interviewer of SurveyUnit
 	 */
 	@ManyToOne
@@ -117,7 +116,7 @@ public class SurveyUnit implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = Person.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
 			, orphanRemoval = true)
-	private Set<Person> persons = new HashSet<>();
+	private Set<PersonDB> persons = new HashSet<>();
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactAttempt.class, cascade = CascadeType.ALL, mappedBy =
 			"surveyUnit", orphanRemoval = true)
@@ -141,7 +140,7 @@ public class SurveyUnit implements Serializable {
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 					  Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
-					  Set<Person> persons) {
+					  Set<PersonDB> persons) {
 		super();
 		this.id = id;
 		this.priority = priority;
@@ -154,6 +153,13 @@ public class SurveyUnit implements Serializable {
 		this.persons = persons;
 	}
 
+	/**
+	 * Create a new survey-unit from dto
+	 *
+	 * @param su               surveyUnitDto
+	 * @param organizationUnit related organisationUnit
+	 * @param campaign         related campaign
+	 */
 	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign) {
 		this.id = su.getId();
 		this.displayName = su.getDisplayName();
@@ -172,7 +178,11 @@ public class SurveyUnit implements Serializable {
 		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(),
 				identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
-		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
+		// move person to model
+		this.persons = su.getPersons().stream()
+				.map(person -> PersonDto.toModel( person, this.id))
+				.map(personModel -> PersonDB.fromModel(personModel, this))
+				.collect(Collectors.toSet());
 
 
 		this.comments = new HashSet<>(
@@ -299,5 +309,16 @@ public class SurveyUnit implements Serializable {
 		}
 		currentContactOutcome.updateContactOutcome(contactOutcome);
 
+	}
+
+	public void updatePersons(Set<Person> personsToUpdate) {
+		Set<PersonDB> existingPersons = this.getPersons();
+
+		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
+				.map(newPerson -> PersonDB.fromModel(newPerson, this))
+				.collect(Collectors.toSet());
+
+		existingPersons.clear();
+		existingPersons.addAll(personsDBToUpdate);
 	}
 }

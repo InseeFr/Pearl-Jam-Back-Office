@@ -25,7 +25,7 @@
 		<postgresql.version>42.7.7</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<cucumber.version>7.27.0</cucumber.version>
+		<cucumber.version>7.21.1</cucumber.version>
 	</properties>
 
 	<dependencies>
