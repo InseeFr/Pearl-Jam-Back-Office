@@ -67,7 +67,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
         surveyUnit.updateIdentification(identification);
 
-        Set<Person> personsToUpdate = Optional.ofNullable(surveyUnitUpdateDto.persons()).orElse(Collections.emptyList()).stream().map(person -> PersonDto.toModel(person, surveyUnit.getId())).collect(Collectors.toSet());
+        Set<Person> personsToUpdate = Optional.ofNullable(surveyUnitUpdateDto.persons()).orElse(Collections.emptyList()).stream().map(PersonDto::toModel).collect(Collectors.toSet());
         surveyUnit.updatePersons(personsToUpdate);
 
         //update ContactOutcome
