@@ -2036,6 +2036,38 @@ class TestAuthKeyCloak {
 				.andExpect(status().isNotFound());
 	}
 
+	/**
+	 * Test that the GET endpoint "api/api/survey-unit/{id}"
+	 * return 200 and survey units interviewer details
+	 *
+	 * @throws InterruptedException ie
+	 * @throws JSONException        jsone
+	 */
+	@Test
+	@Order(220)
+	void testGetSurveyUnitInterviewerDetailAsAdmin() throws Exception {
+		mockMvc.perform(get("/api/admin/survey-unit/11")
+						.with(authentication(ADMIN))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(11));	}
+
+	/**
+	 * Test that the GET endpoint "api/api/survey-unit/{id}"
+	 * return 200 and survey units interviewer details
+	 *
+	 * @throws InterruptedException ie
+	 * @throws JSONException        jsone
+	 */
+	@Test
+	@Order(220)
+	void testGetSurveyUnitInterviewerDetailAsAdminNotFound() throws Exception {
+		mockMvc.perform(get("/api/admin/survey-unit/11111")
+						.with(authentication(ADMIN))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
+
 	private static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);

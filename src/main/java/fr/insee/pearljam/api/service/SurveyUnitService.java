@@ -25,6 +25,8 @@ import fr.insee.pearljam.api.dto.state.StateDto;
  */
 public interface SurveyUnitService {
 
+	SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnit surveyUnit);
+
 	/**
 	 * Retrieve the SurveyUnitDetail entity by Id and UserId
 	 *
@@ -33,6 +35,8 @@ public interface SurveyUnitService {
 	 * @return {@link SurveyUnitForInterviewer}
 	 */
 	SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId);
+
+	SurveyUnitInterviewerResponseDto getSurveyUnitDetail(String surveyUnitId);
 
 	/**
 	 * Retrieve all the SurveyUnit entity by userId

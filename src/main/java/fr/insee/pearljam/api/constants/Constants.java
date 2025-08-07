@@ -29,6 +29,8 @@ public class Constants {
   public static final String API_SURVEYUNIT_ID_VIEWED = "/api/survey-unit/{id}/viewed";
   public static final String API_SURVEYUNIT_ID_CLOSE = "/api/survey-unit/{id}/close/{closingCause}";
   public static final String API_SURVEYUNIT_ID_CLOSINGCAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
+  public static final String API_ADMIN_SURVEYUNIT_DETAILS = "/api/admin/survey-unit/{id}";
+
 
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
