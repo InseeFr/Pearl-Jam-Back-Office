@@ -2,8 +2,9 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
-import fr.insee.pearljam.domain.surveyunit.model.person.PhoneNumber;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,18 +38,35 @@ public class PersonDB implements Serializable {
     private Long birthdate;
     private boolean privileged;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "survey_unit_id", nullable = false) // this binding can write the column
     private SurveyUnit surveyUnit;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumberDB.class, cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = PhoneNumberDB.class,
+            cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
     private Set<PhoneNumberDB> phoneNumbers = new HashSet<>();
 
     private boolean panel;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "contact_history_type", length = 10, nullable = true) // this binding can write the column
+    private ContactHistoryType contactHistoryType;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "survey_unit_id", referencedColumnName = "survey_unit_id",
+                    insertable = false, updatable = false, nullable = true),// won't be null due to surveyUnit binding
+            @JoinColumn(name = "contact_history_type", referencedColumnName = "contact_history_type",
+                    insertable = false, updatable = false, nullable = true)
+    })
     private ContactHistoryDB contactHistory;
 
-    public static PersonDB fromModel(Person person, SurveyUnit surveyUnit) {
+    public static PersonDB fromModel(Person person, ContactHistoryDB contactHistoryDb, SurveyUnit surveyUnit) {
+
+        ContactHistoryType contactHistoryType = contactHistoryDb != null
+                ? contactHistoryDb.getId().getContactHistoryType()
+                : null;
 
         PersonDB personDB = new PersonDB(
                 person.id(),
@@ -61,16 +79,25 @@ public class PersonDB implements Serializable {
                 surveyUnit,
                 null,
                 person.isPanel(),
-                ContactHistoryDB.fromModel(person.contactHistory(), surveyUnit));
+                contactHistoryType,
+                contactHistoryDb);
         personDB.setPhoneNumbers(new HashSet<>(PhoneNumberDB.fromModel(person.phoneNumbers().stream().toList(), personDB)));
 
         return personDB;
     }
 
-    public static Person toModel(PersonDB person) {
-        return new Person(person.getId(), person.getTitle(), person.getFirstName(), person.getLastName(),
-                person.getEmail(), person.getBirthdate(), person.isPrivileged(), person.isPanel(),
-                PhoneNumberDB.toModel(person.getPhoneNumbers()), ContactHistoryDB.toModel(person.getContactHistory()));
+    public static Person toModel(PersonDB person, ContactHistory contactHistory) {
+
+        return new Person(person.getId(),
+                person.getTitle(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getEmail(),
+                person.getBirthdate(),
+                person.isPrivileged(),
+                person.isPanel(),
+                PhoneNumberDB.toModel(person.getPhoneNumbers()),
+                contactHistory);
     }
 
 }

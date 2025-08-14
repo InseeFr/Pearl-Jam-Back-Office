@@ -16,6 +16,8 @@ import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -67,7 +69,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
         surveyUnit.updateIdentification(identification);
 
-        Set<Person> personsToUpdate = Optional.ofNullable(surveyUnitUpdateDto.persons()).orElse(Collections.emptyList()).stream().map(PersonDto::toModel).collect(Collectors.toSet());
+        Set<Person> personsToUpdate = Optional.ofNullable(surveyUnitUpdateDto.persons()).orElse(Collections.emptyList()).stream().map(person -> PersonDto.toModel(person, null)).collect(Collectors.toSet());
         surveyUnit.updatePersons(personsToUpdate);
 
         //update ContactOutcome
@@ -75,6 +77,12 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
             surveyUnitUpdateDto.contactOutcome());
         contactOutcome = convertDeprecatedContactOutcomeValue(contactOutcome);
         surveyUnit.updateContactOutcome(contactOutcome);
+
+        //update ContactHistory : keep PREVIOUS if present and create/update NEXT History if present
+        Optional<ContactHistory> nextContactHistory = surveyUnitUpdateDto.contactHistory()
+                .stream().filter(ch-> ContactHistoryType.NEXT.equals(ch.contactHistoryType()))
+                .map(ContactHistoryDto::toModel).findFirst();
+        nextContactHistory.ifPresent(surveyUnit::updateNextContactHistory);
     }
 
     // when DCD and DUU values are not used anymore => to be removed

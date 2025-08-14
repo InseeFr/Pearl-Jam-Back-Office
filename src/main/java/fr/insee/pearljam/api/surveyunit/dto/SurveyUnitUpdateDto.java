@@ -37,5 +37,7 @@ public record SurveyUnitUpdateDto(
     ContactOutcomeDto contactOutcome,
     RawIdentificationDto identification,
     @Valid
-    List<CommunicationRequestCreateDto> communicationRequests) {
+    List<CommunicationRequestCreateDto> communicationRequests,
+    List<ContactHistoryDto> contactHistory
+) {
 }

@@ -62,7 +62,7 @@ public class IdentificationSteps {
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final InterviewerRepository interviewerRepository;
 	private final CampaignService campaignService;
-	ObjectMapper objectMapper = new ObjectMapper();
+	final ObjectMapper objectMapper = new ObjectMapper();
 
 	private Authentication securityRole;
 	private IdentificationConfiguration identificationConfiguration;
@@ -115,8 +115,8 @@ public class IdentificationSteps {
 		Campaign campaignDB = campaignService.findById(campaignId).orElseThrow();
 		Interviewer interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
 		OrganizationUnit ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
-		Set<PersonDB> persons = Set.of(new PersonDB(null,Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L,true, surveyUnit,null,
-				 false,null));
+		Set<PersonDB> persons = Set.of(new PersonDB(null, Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L, true, surveyUnit, null, false,
+				 null,null));
 		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
 				, null, null, null, null, null, null);
 		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, persons);
@@ -164,7 +164,7 @@ public class IdentificationSteps {
 	private SurveyUnitUpdateDto updateIdentification(RawIdentificationDto newIdentification) {
 		return new SurveyUnitUpdateDto(
 				surveyUnit.getId(),
-				surveyUnit.getPersons().stream().map(PersonDB::toModel).map(PersonDto::fromModel).toList(),
+				surveyUnit.getPersons().stream().map(person -> PersonDB.toModel(person, null)).map(PersonDto::fromModel).toList(),
 				new AddressDto(surveyUnit.getAddress()),
 				surveyUnit.getMove(),
 				CommentDto.fromModel(surveyUnit.getComments().stream().map(CommentDB::toModel).collect(Collectors.toSet())),
@@ -172,6 +172,7 @@ public class IdentificationSteps {
 				surveyUnit.getContactAttempts().stream().map(ContactAttemptDto::new).toList(),
 				null,
 				newIdentification, // New identification
+				List.of(),
 				List.of()
 		);
 	}

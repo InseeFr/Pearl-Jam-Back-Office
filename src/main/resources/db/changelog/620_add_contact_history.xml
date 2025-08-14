@@ -20,15 +20,16 @@
         <addPrimaryKey tableName="contact_history" columnNames="survey_unit_id, contact_history_type" constraintName="pk_contact_history"/>
         <addForeignKeyConstraint baseTableName="contact_history" baseColumnNames="survey_unit_id" constraintName="fk_contact_history_survey_unit" referencedTableName="survey_unit" referencedColumnNames="id"/>
 
-        <!--  extend contact table  -->
+        <!--  extend person table  -->
         <!--  remove favorite email column-->
         <dropColumn tableName="person" columnName="favorite_email"/>
 
-        <!--  add panel column  -->
+        <!--  add panel and contactHistoryType column  -->
         <addColumn tableName="person">
             <column name="panel" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
+            <column name="contact_history_type" type="VARCHAR(50)"/>
         </addColumn>
 
     </changeSet>

@@ -13,10 +13,7 @@ import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
@@ -467,7 +464,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	@Override
-	public Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits) {
+	public Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits) {
 		// Check duplicate line in interviewers to create
 		Map<String, Integer> duplicates = new HashMap<>();
 		List<String> surveyUnitErrors = new ArrayList<>();
@@ -475,12 +472,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> surveyUnitsDb = surveyUnitRepository.findAllIds();
 		Map<String, Campaign> mapCampaigns = campaignRepository.findAllById(
 				surveyUnits.stream()
-						.map(SurveyUnitContextDto::getCampaign)
+						.map(SurveyUnitCreationDto::getCampaign)
 						.toList())
 				.stream().collect(Collectors.toMap(Campaign::getId, c -> c));
 		Map<String, OrganizationUnit> mapOrganizationUnits = organizationUnitRepository.findAllById(
 				surveyUnits.stream()
-						.map(SurveyUnitContextDto::getOrganizationUnitId)
+						.map(SurveyUnitCreationDto::getOrganizationUnitId)
 						.toList())
 				.stream().collect(Collectors.toMap(OrganizationUnit::getId, gl -> gl));
 		surveyUnits.forEach(su -> {
@@ -514,8 +511,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return new Response(String.format("%s surveyUnits created", listSurveyUnits.size()), HttpStatus.OK);
 	}
 
-	private boolean checkValidity(SurveyUnitContextDto su, Map<String, OrganizationUnit> ous,
-			Map<String, Campaign> camps) {
+	private boolean checkValidity(SurveyUnitCreationDto su, Map<String, OrganizationUnit> ous,
+                                  Map<String, Campaign> camps) {
 		if (!su.isValid()) {
 			log.info("Su {} is not valid", su.getId());
 			return false;

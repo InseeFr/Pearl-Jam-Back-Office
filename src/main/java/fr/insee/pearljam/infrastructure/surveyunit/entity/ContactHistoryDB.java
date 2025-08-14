@@ -3,7 +3,6 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +11,8 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "contact_history")
 @Table
@@ -27,8 +28,10 @@ public class ContactHistoryDB implements Serializable {
     @EmbeddedId
     private ContactHistoryPK id;  // The composite key
 
-    @Enumerated(EnumType.STRING)
-    private ContactHistoryType contactHistoryType;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "survey_unit_id", nullable = false)
+    @MapsId("surveyUnitId")
+    private SurveyUnit surveyUnit;
 
     @Column(length = 999)
     private String comment;
@@ -36,14 +39,41 @@ public class ContactHistoryDB implements Serializable {
     @Enumerated(EnumType.STRING)
     private ContactOutcomeType contactOutcomeValue;
 
-    public static ContactHistoryDB fromModel(ContactHistory contactHistory, SurveyUnit surveyUnit) {
+    @OneToMany(mappedBy = "contactHistory", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PersonDB> persons = new HashSet<>();
 
-        return new ContactHistoryDB(new ContactHistoryPK(surveyUnit,contactHistory.historyType()), contactHistory.historyType(), contactHistory.comment(), contactHistory.contactOutcomeValue());
+    public static ContactHistoryDB fromModel(ContactHistory contactHistory, SurveyUnit surveyUnit) {
+        if (contactHistory == null) {
+            return null;
+        }
+
+        ContactHistoryDB contactHistoryDB = new ContactHistoryDB(new ContactHistoryPK(surveyUnit.getId(), contactHistory.historyType()),
+                surveyUnit,
+                contactHistory.comment(),
+                contactHistory.contactOutcomeValue(),
+                new HashSet<>());
+
+        contactHistory.persons().stream()
+                .map(person -> PersonDB.fromModel(person, contactHistoryDB, surveyUnit))
+                .forEach(person -> contactHistoryDB.getPersons().add(person));
+
+        return contactHistoryDB;
     }
 
     public static ContactHistory toModel(ContactHistoryDB contactHistoryDB) {
-        return new ContactHistory(contactHistoryDB.getContactHistoryType(), contactHistoryDB.getComment(), contactHistoryDB.getContactOutcomeValue());
-    }
+        if (contactHistoryDB == null) {
+            return null;
+        }
+        ContactHistory contactHistory = new ContactHistory(contactHistoryDB.getId().getContactHistoryType(),
+                contactHistoryDB.getComment(),
+                contactHistoryDB.getContactOutcomeValue(),
+                new HashSet<>());
+        contactHistoryDB.getPersons().stream()
+                .map(person -> PersonDB.toModel(person, contactHistory))
+                .forEach(person -> contactHistory.persons().add(person));
 
+        return contactHistory;
+    }
 
 }

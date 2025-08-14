@@ -8,10 +8,7 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.OrganizationUnitType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
@@ -104,7 +101,7 @@ class SurveyUnitUpdateServiceImplTest {
 						CommunicationRequestReason.REFUSAL)
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
 		List<CommunicationRequest> communicationRequestResults =
@@ -159,7 +156,7 @@ class SurveyUnitUpdateServiceImplTest {
 						CommunicationRequestReason.REFUSAL)
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
 		List<CommunicationRequest> communicationRequestResults =
@@ -204,7 +201,7 @@ class SurveyUnitUpdateServiceImplTest {
 				new CommentDto(CommentType.MANAGEMENT, "value2")
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, comments, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, comments, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getComments())
@@ -232,7 +229,7 @@ class SurveyUnitUpdateServiceImplTest {
 				new CommentDto(CommentType.INTERVIEWER, "value4")
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, comments, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, comments, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getComments())
@@ -268,7 +265,7 @@ class SurveyUnitUpdateServiceImplTest {
 				PresentInPreviousHomeQuestionValue.NONE,
 				HouseholdCompositionQuestionValue.OTHER_COMPO
 		);
-		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(identification, null, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		HouseF2FIdentificationDB identificationResult = (HouseF2FIdentificationDB) surveyUnit.getIdentification();
@@ -286,7 +283,7 @@ class SurveyUnitUpdateServiceImplTest {
 	void testUpdateIdentification02() {
 		IdentificationDB identificationDB = createHouseF2FIdentificationDB();
 		surveyUnit.setIdentification(identificationDB);
-		surveyUnitDto = createSurveyUnitDto(null, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, null, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getIdentification()).isEqualTo(identificationDB);
 	}
@@ -306,7 +303,7 @@ class SurveyUnitUpdateServiceImplTest {
 				NumberOfRespondentsQuestionValue.MANY,
 				PresentInPreviousHomeQuestionValue.NONE,
 				HouseholdCompositionQuestionValue.OTHER_COMPO);
-		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(identification, null, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
@@ -336,7 +333,7 @@ class SurveyUnitUpdateServiceImplTest {
 		ContactOutcomeDto contactOutcome = new ContactOutcomeDto(dateService.getCurrentTimestamp(),
 				input, 5);
 		surveyUnit.setContactOutcome(new ContactOutcomeDB(5L,dateService.getCurrentTimestamp(),ContactOutcomeType.ALA, 3,surveyUnit));
-		surveyUnitDto = createSurveyUnitDto(null, null, null, contactOutcome);
+		surveyUnitDto = createSurveyUnitDto(null, null, null, contactOutcome, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getContactOutcome().getType()).isEqualTo(expected);
@@ -344,9 +341,9 @@ class SurveyUnitUpdateServiceImplTest {
 
 	private SurveyUnitUpdateDto createSurveyUnitDto(RawIdentificationDto identification, List<CommentDto> comments,
 													List<CommunicationRequestCreateDto> communicationRequests,
-													ContactOutcomeDto contactOutcome) {
+													ContactOutcomeDto contactOutcome, List<ContactHistoryDto> contactHistory) {
 		return new SurveyUnitUpdateDto("su-id", null, null, true,
-				comments, null, null, contactOutcome, identification, communicationRequests);
+				comments, null, null, contactOutcome, identification, communicationRequests,contactHistory);
 	}
 
 	private IdentificationDB createHouseF2FIdentificationDB() {

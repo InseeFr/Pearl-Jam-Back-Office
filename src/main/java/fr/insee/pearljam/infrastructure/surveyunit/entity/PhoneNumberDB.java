@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author Corcaud Samuel
  */
 @Entity
-@Table
+@Table(name = "phone_number")
 @Getter
 @Setter
 @NoArgsConstructor

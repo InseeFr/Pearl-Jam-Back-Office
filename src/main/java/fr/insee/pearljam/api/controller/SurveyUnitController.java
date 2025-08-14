@@ -11,7 +11,7 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
@@ -67,7 +67,7 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Create survey-units")
 	@PostMapping(Constants.API_SURVEYUNITS)
-	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitContextDto> surveyUnits) {
+	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitCreationDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());

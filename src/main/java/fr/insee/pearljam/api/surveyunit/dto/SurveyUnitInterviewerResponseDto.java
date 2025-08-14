@@ -11,6 +11,7 @@ import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactHistoryDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 
 import java.util.Comparator;
@@ -32,14 +33,18 @@ public record SurveyUnitInterviewerResponseDto(
 	ContactOutcomeDto contactOutcome,
 	IdentificationDto identification,
 	List<CommunicationTemplateResponseDto> communicationTemplates,
-	List<CommunicationRequestResponseDto> communicationRequests) {
+	List<CommunicationRequestResponseDto> communicationRequests,
+	List<ContactHistoryDto> contactHistory) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
 		List<PersonDto> persons = surveyUnit.getPersons().stream()
-				.map(PersonDB::toModel)
+				.map(person -> PersonDB.toModel(person, null))
 				.map(PersonDto::fromModel)
 				.toList();
+		List<ContactHistoryDto> contactHistory = surveyUnit.getContactHistory()
+				.stream().map(ContactHistoryDB::toModel)
+				.map(ContactHistoryDto::fromModel).toList();
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		AddressDto address = new AddressDto(surveyUnit.getAddress());
@@ -69,6 +74,7 @@ public record SurveyUnitInterviewerResponseDto(
 				comments, sampleIdentifiers, states, contactAttempts, contactOutcome,
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
-				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()));
+				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
+				contactHistory);
 	}
 }

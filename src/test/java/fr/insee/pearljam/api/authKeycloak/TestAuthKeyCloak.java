@@ -15,7 +15,7 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
@@ -1484,7 +1484,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(111)
 	void testPostSurveyUnits() throws Exception {
-		SurveyUnitContextDto surveyUnit = generateSurveyUnit("8");
+		SurveyUnitCreationDto surveyUnit = generateSurveyUnit("8");
 		surveyUnit.setComments(Set.of(new CommentDto(CommentType.INTERVIEWER, "interviewer comment")));
 		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L,ContactOutcomeType.INA,2));
 		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
@@ -1528,7 +1528,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(113)
 	void testPostSurveyUnitsDuplicateInBody() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 
 		mockMvc.perform(post("/api/survey-units")
 						.with(authentication(ADMIN))
@@ -1548,7 +1548,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(114)
 	void testPostSurveyUnitsOUNotExist() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 		// Use an unknown organization unit
 		su.setOrganizationUnitId("OU-TEST");
 
@@ -1570,7 +1570,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(115)
 	void testPostSurveyUnitsCampaignNotExist() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 		su.setCampaign("campaignTest");
 
 		mockMvc.perform(post("/api/survey-units")
@@ -1592,7 +1592,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(117)
 	void testPostSurveyUnitsSUNotValid() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("");
+		SurveyUnitCreationDto su = generateSurveyUnit("");
 
 		// ID null
 		mockMvc.perform(post("/api/survey-units")
@@ -2076,8 +2076,8 @@ class TestAuthKeyCloak {
 		}
 	}
 
-	private SurveyUnitContextDto generateSurveyUnit(String id) {
-		SurveyUnitContextDto su = new SurveyUnitContextDto();
+	private SurveyUnitCreationDto generateSurveyUnit(String id) {
+		SurveyUnitCreationDto su = new SurveyUnitCreationDto();
 		su.setId(id);
 		su.setCampaign("SIMPSONS2020X00");
 		su.setOrganizationUnitId("OU-NORTH");
@@ -2096,8 +2096,7 @@ class TestAuthKeyCloak {
 				1564656540L,
 				true,
 				true,
-				List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")),
-				null
+				List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666"))
 		);
 		List<PersonDto> lstPerson = List.of(p);
 		su.setPersons(lstPerson);

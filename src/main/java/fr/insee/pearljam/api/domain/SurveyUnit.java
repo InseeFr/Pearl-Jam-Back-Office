@@ -1,28 +1,25 @@
 package fr.insee.pearljam.api.domain;
 
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -138,6 +135,10 @@ public class SurveyUnit implements Serializable {
 			mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationMetadataDB> communicationMetadata = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactHistoryDB.class, cascade = CascadeType.ALL,
+			mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<ContactHistoryDB> contactHistory = new HashSet<>();
+
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 					  Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
 					  Set<PersonDB> persons) {
@@ -160,7 +161,7 @@ public class SurveyUnit implements Serializable {
 	 * @param organizationUnit related organisationUnit
 	 * @param campaign         related campaign
 	 */
-	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign) {
+	public SurveyUnit(SurveyUnitCreationDto su, OrganizationUnit organizationUnit, Campaign campaign) {
 		this.id = su.getId();
 		this.displayName = su.getDisplayName();
 		//TODO: delete this test when displayName becomes mandatory in creation endpoint
@@ -178,12 +179,12 @@ public class SurveyUnit implements Serializable {
 		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(),
 				identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
-		// move person to model
-		this.persons = su.getPersons().stream()
-				.map(PersonDto::toModel)
-				.map(personModel -> PersonDB.fromModel(personModel, this))
-				.collect(Collectors.toSet());
 
+		this.persons = su.getPersons().stream()
+				.map(person -> PersonDto.toModel(person, null))
+				.map(personModel -> PersonDB.fromModel(personModel, null, this))
+				.collect(Collectors.toSet());
+		this.contactHistory = createContactHistory(su.getContactHistory());
 
 		this.comments = new HashSet<>(
 				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
@@ -214,6 +215,14 @@ public class SurveyUnit implements Serializable {
 		}
 
 
+	}
+
+	Set<ContactHistoryDB> createContactHistory(ContactHistoryDto contactHistory) {
+		if (contactHistory == null) {
+			return new HashSet<>();
+		}
+		return Set.of(
+				ContactHistoryDB.fromModel(ContactHistoryDto.toModel(contactHistory), this));
 	}
 
 	public Boolean isAtLeastState(String state) {
@@ -315,10 +324,21 @@ public class SurveyUnit implements Serializable {
 		Set<PersonDB> existingPersons = Optional.ofNullable(this.getPersons()).orElse(new HashSet<>());
 
 		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
-				.map(newPerson -> PersonDB.fromModel(newPerson, this))
+				.map(newPerson -> PersonDB.fromModel(newPerson, null, this))
 				.collect(Collectors.toSet());
 
 		existingPersons.clear();
 		existingPersons.addAll(personsDBToUpdate);
+	}
+
+	public List<ContactHistory> getModelContactHistory(){
+		return this.getContactHistory().stream().map(ContactHistoryDB::toModel).toList();
+	}
+
+	public void updateNextContactHistory(@NotNull ContactHistory nextContactHistory) {
+		this.contactHistory.removeIf(
+				ch -> ch.getId().getContactHistoryType() == ContactHistoryType.NEXT
+		);
+		this.contactHistory.add(ContactHistoryDB.fromModel(nextContactHistory, this));
 	}
 }
