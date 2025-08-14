@@ -17,7 +17,7 @@ TRUNCATE TABLE
     public.campaign,
     public.preference,
     public.visibility,
-    public.contact_history
+    public.contact_history,
     public.survey_unit,
     public.identification,
     public.person,
