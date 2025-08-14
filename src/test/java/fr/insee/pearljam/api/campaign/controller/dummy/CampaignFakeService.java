@@ -1,23 +1,21 @@
 package fr.insee.pearljam.api.campaign.controller.dummy;
 
-import java.util.List;
-import java.util.Optional;
-
+import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
-import fr.insee.pearljam.domain.exception.*;
-import lombok.RequiredArgsConstructor;
-
 import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.domain.exception.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CampaignFakeService implements CampaignService {

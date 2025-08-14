@@ -40,7 +40,6 @@ public class UserController {
 	/**
 	 * This method returns the current USER
 	 * 
-	 * @param request
 	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -60,7 +59,6 @@ public class UserController {
 	/**
 	 * This method returns user matching with the `id` param
 	 * 
-	 * @param request
 	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -82,7 +80,6 @@ public class UserController {
 	/**
 	 * This method creates a user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(Constants.API_USER)
@@ -119,7 +116,6 @@ public class UserController {
 	/**
 	 * This method updates a user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Update User")
 	@PutMapping(Constants.API_USER_ID)
@@ -163,7 +159,6 @@ public class UserController {
 	/**
 	 * This method assign a user to target Organization Unit
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Assign User to Organization Unit")
 	@PutMapping(Constants.API_USER_ID_ORGANIZATION_ID_OUID)
@@ -205,7 +200,6 @@ public class UserController {
 	/**
 	 * This method is used to delete an user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Delete User")
 	@DeleteMapping(Constants.API_USER_ID)

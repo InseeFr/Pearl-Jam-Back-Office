@@ -58,11 +58,11 @@ public class CampaignDto {
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
-		if (obj != null && !obj.isEmpty() && obj.get(0).length > 3 && obj.get(0)[0] != null) {
-			this.toProcessInterviewer = (Long) obj.get(0)[0];
-			this.toReview = (Long) (obj.get(0)[1]);
-			this.finalized = (Long) (obj.get(0)[2]);
-			this.allocated = (Long) (obj.get(0)[3]);
+		if (obj != null && !obj.isEmpty() && obj.getFirst().length > 3 && obj.getFirst()[0] != null) {
+			this.toProcessInterviewer = (Long) obj.getFirst()[0];
+			this.toReview = (Long) (obj.getFirst()[1]);
+			this.finalized = (Long) (obj.getFirst()[2]);
+			this.allocated = (Long) (obj.getFirst()[3]);
 			this.toAffect = 0L;
 			this.toFollowUp = 0L;
 		}
