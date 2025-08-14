@@ -222,7 +222,7 @@ public class MessageServiceImpl implements MessageService {
 		return returnValue.stream()
 				.collect(
 						collectingAndThen(
-								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
+								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::id))),
 								ArrayList::new));
 	}
 
