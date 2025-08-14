@@ -17,6 +17,7 @@ TRUNCATE TABLE
     public.campaign,
     public.preference,
     public.visibility,
+    public.contact_history
     public.survey_unit,
     public.identification,
     public.person,
@@ -137,21 +138,21 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
 INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '24', 'business-id-24', TRUE, a.id, 'SIMPSONS2020X00', NULL, s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Laurent Neville' AND s.bs='24';
 
 
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES
-    ('test@test.com',TRUE, 'Ted', 'Farmer', 11111111, 0, TRUE, '11'),
-    ('test@test.com', TRUE,'Cecilia', 'Ortega', 11111111, 1, TRUE, '12'),
-    ('test@test.com', TRUE,'Mylene', 'Mikoton', 11111111, 1, TRUE, '25'),
-    ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, TRUE, '13'),
-    ('test@test.com', TRUE,'Veronica', 'Baker', 11111111, 1, TRUE, '14'),
-    ('test@test.com', TRUE,'Christine', 'Aguilar', 11111111, 1, FALSE, '11'),
-    ('test@test.com', TRUE,'Louise', 'Walker', 11111111, 1, FALSE, '11'),
-    ('test@test.com', TRUE,'Anthony', 'Bennett', 11111111, 0, FALSE, '12'),
-    ('test@test.com', TRUE,'Christopher', 'Lewis', 11111111, 0, FALSE, '14'),
-    ('test@test.com', TRUE,'Harriette', 'Raymond', 11111111, 0, TRUE, '20'),
-    ('test@test.com', TRUE,'Aimée', 'Lamothe', 11111111, 0, TRUE, '21'),
-    ('test@test.com', TRUE,'Perrin', 'Blanchard', 11111111, 0, TRUE, '22'),
-    ('test@test.com', TRUE,'Artus', 'Arnoux', 11111111, 0, TRUE, '23'),
-    ('test@test.com', TRUE,'Laurent', 'Neville', 11111111, 0, TRUE, '24');
+INSERT INTO public.person (email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES
+    ('test@test.com', 'Ted', 'Farmer', 11111111, 0, TRUE, '11'),
+    ('test@test.com', 'Cecilia', 'Ortega', 11111111, 1, TRUE, '12'),
+    ('test@test.com', 'Mylene', 'Mikoton', 11111111, 1, TRUE, '25'),
+    ('test@test.com', 'Claude', 'Watkins', 11111111, 0, TRUE, '13'),
+    ('test@test.com', 'Veronica', 'Baker', 11111111, 1, TRUE, '14'),
+    ('test@test.com', 'Christine', 'Aguilar', 11111111, 1, FALSE, '11'),
+    ('test@test.com', 'Louise', 'Walker', 11111111, 1, FALSE, '11'),
+    ('test@test.com', 'Anthony', 'Bennett', 11111111, 0, FALSE, '12'),
+    ('test@test.com', 'Christopher', 'Lewis', 11111111, 0, FALSE, '14'),
+    ('test@test.com', 'Harriette', 'Raymond', 11111111, 0, TRUE, '20'),
+    ('test@test.com', 'Aimée', 'Lamothe', 11111111, 0, TRUE, '21'),
+    ('test@test.com', 'Perrin', 'Blanchard', 11111111, 0, TRUE, '22'),
+    ('test@test.com', 'Artus', 'Arnoux', 11111111, 0, TRUE, '23'),
+    ('test@test.com', 'Laurent', 'Neville', 11111111, 0, TRUE, '24');
 
 
 
