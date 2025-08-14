@@ -143,7 +143,6 @@ class SurveyUnitIT {
 				         "lastName":"Farmer",
 				         "email":"test@test.com",
 				         "birthdate":11111111,
-				         "favoriteEmail":true,
 				         "privileged":true,
 				         "phoneNumbers":[
 				            {
@@ -165,7 +164,6 @@ class SurveyUnitIT {
 				         "lastName":"Aguilar",
 				         "email":"test@test.com",
 				         "birthdate":11111111,
-				         "favoriteEmail":true,
 				         "privileged":false,
 				         "phoneNumbers":[
 				            {
@@ -182,7 +180,6 @@ class SurveyUnitIT {
 				         "lastName":"Walker",
 				         "email":"test@test.com",
 				         "birthdate":11111111,
-				         "favoriteEmail":true,
 				         "privileged":false,
 				         "phoneNumbers":[
 				            {
@@ -325,7 +322,6 @@ class SurveyUnitIT {
 				          "lastName":"Raymond",
 				          "email":"test@test.com",
 				          "birthdate":11111111,
-				          "favoriteEmail":true,
 				          "privileged":true,
 				          "phoneNumbers":[
 				             {
@@ -432,7 +428,6 @@ class SurveyUnitIT {
 				           "lastName":"Raymond",
 				           "email":"test@test.com",
 				           "birthdate":11111111,
-				           "favoriteEmail":true,
 				           "privileged":true,
 				           "phoneNumbers":[
 				              {
@@ -593,7 +588,6 @@ class SurveyUnitIT {
 				          "lastName":"Raymond",
 				          "email":"test@test.com",
 				          "birthdate":11111111,
-				          "favoriteEmail":true,
 				          "privileged":true,
 				          "phoneNumbers":[
 				          ]
