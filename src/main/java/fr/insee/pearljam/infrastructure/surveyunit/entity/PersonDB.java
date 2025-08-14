@@ -49,16 +49,16 @@ public class PersonDB implements Serializable {
     private boolean panel;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "contact_history_type", length = 10, nullable = true) // this binding can write the column
+    @Column(name = "contact_history_type", length = 10) // this binding can write the column
     private ContactHistoryType contactHistoryType;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "survey_unit_id", referencedColumnName = "survey_unit_id",
-                    insertable = false, updatable = false, nullable = true),// won't be null due to surveyUnit binding
+                    insertable = false, updatable = false),// won't be null due to surveyUnit binding
             @JoinColumn(name = "contact_history_type", referencedColumnName = "contact_history_type",
-                    insertable = false, updatable = false, nullable = true)
+                    insertable = false, updatable = false)
     })
     private ContactHistoryDB contactHistory;
 
