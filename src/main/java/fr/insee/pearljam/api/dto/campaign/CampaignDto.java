@@ -45,6 +45,7 @@ public class CampaignDto {
 		this.endDate = endDate;
 	}
 
+	// keep it for creation in SQL
 	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
 			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig) {
 		super();

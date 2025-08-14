@@ -98,7 +98,7 @@ public class UserController {
 
 		if (userService.userIsPresent(user.getId())) {
 			String alreadyPresentUserInfo = String.format("User %s can't be created : already present",
-					user.toString());
+					user);
 			log.warn(alreadyPresentUserInfo);
 			return new ResponseEntity<>(alreadyPresentUserInfo, HttpStatus.CONFLICT);
 		}

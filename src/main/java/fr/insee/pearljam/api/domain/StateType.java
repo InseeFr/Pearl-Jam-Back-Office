@@ -1,10 +1,15 @@
 package fr.insee.pearljam.api.domain;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * The possible types of a State entity
  * @author scorcaud
  *
  */
+@Getter
+@RequiredArgsConstructor
 public enum StateType {
 	
 	NVM("Not visible to management"),
@@ -22,27 +27,7 @@ public enum StateType {
 	FIN("Finalized"),
 	CLO("Closed"),
 	NVA("Not Available to All");
-	
-	/**
-	 * label of the State type
-	 */
-	private String label;
 
-	/**
-	 * Defaut constructor for a StateType
-	 * 
-	 * @param label
-	 */
-	StateType(String label) {
-		this.label = label;
-	}
+	private final String label;
 
-	/**
-	 * Get the label for a StateType
-	 * 
-	 * @return label
-	 */
-	public String getLabel() {
-		return label;
-	}
 }

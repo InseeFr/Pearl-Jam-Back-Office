@@ -213,7 +213,7 @@ public class CampaignServiceImpl implements CampaignService {
 					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(Campaign::getId)
 							.toList());
 					if (lstCampaignId.contains(campaign.getId())) {
-						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
+						lstCampaignId.remove(campaign.getId());
 						preferenceService.setPreferences(lstCampaignId, user.getId());
 					}
 				});

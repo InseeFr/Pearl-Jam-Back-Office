@@ -71,7 +71,7 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
+    public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getListInterviewers'");
     }
 
@@ -81,12 +81,12 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
+    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getNbSUAbandonedByCampaign'");
     }
 
     @Override
-    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
+    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getNbSUNotAttributedByCampaign'");
     }
 
