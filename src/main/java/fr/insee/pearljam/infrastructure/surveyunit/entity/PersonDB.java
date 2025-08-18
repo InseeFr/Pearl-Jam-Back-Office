@@ -54,12 +54,10 @@ public class PersonDB implements Serializable {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "survey_unit_id", referencedColumnName = "survey_unit_id",
-                    insertable = false, updatable = false),// won't be null due to surveyUnit binding
-            @JoinColumn(name = "contact_history_type", referencedColumnName = "contact_history_type",
-                    insertable = false, updatable = false)
-    })
+    @JoinColumn(name = "survey_unit_id", referencedColumnName = "survey_unit_id",
+            insertable = false, updatable = false)// won't be null due to surveyUnit binding
+    @JoinColumn(name = "contact_history_type", referencedColumnName = "contact_history_type",
+            insertable = false, updatable = false)
     private ContactHistoryDB contactHistory;
 
     public static PersonDB fromModel(Person person, ContactHistoryDB contactHistoryDb, SurveyUnit surveyUnit) {
