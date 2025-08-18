@@ -18,6 +18,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTempla
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -325,7 +326,9 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return suToCheck.stream().map(su -> {
 			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
-			sudto.setIdentificationState(su.getIdentification().getIdentificationState());
+					IdentificationState identificationResult = IdentificationState.getState(
+							su.getModelIdentification(), sudto.getIdentificationConfiguration());
+					sudto.setIdentificationState(identificationResult);
 			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
 			sudto.setQuestionnaireState(questionnaireState);
 			return sudto;
