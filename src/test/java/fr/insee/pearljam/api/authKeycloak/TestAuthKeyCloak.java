@@ -2095,7 +2095,6 @@ class TestAuthKeyCloak {
 				"test@test.com",
 				1564656540L,
 				true,
-				true,
 				List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666"))
 		);
 		List<PersonDto> lstPerson = List.of(p);

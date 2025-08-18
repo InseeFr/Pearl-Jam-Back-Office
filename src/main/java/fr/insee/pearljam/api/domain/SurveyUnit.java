@@ -320,6 +320,10 @@ public class SurveyUnit implements Serializable {
 
 	}
 
+	public List<Person> getModelPersons() {
+		return persons.stream().map(person -> PersonDB.toModel(person, null)).toList();
+	}
+
 	public void updatePersons(Set<Person> personsToUpdate) {
 		Set<PersonDB> existingPersons = Optional.ofNullable(this.getPersons()).orElse(new HashSet<>());
 

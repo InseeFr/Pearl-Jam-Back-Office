@@ -21,7 +21,6 @@ public record PersonDto(
         String email,
         Long birthdate,
         boolean privileged,
-        boolean panel,
         List<PhoneNumberDto> phoneNumbers
 ) {
 
@@ -34,12 +33,12 @@ public record PersonDto(
                 person.email(),
                 person.birthdate(),
                 person.privileged(),
-                person.panel(),
+                false,
                 person.phoneNumbers().stream().map(PhoneNumberDto::toModel).collect(Collectors.toSet()),
                 contactHistory);
     }
 
     public static PersonDto fromModel(Person person) {
-        return new PersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.email(), person.birthdate(), person.privileged(), person.isPanel(), person.phoneNumbers().stream().map(PhoneNumberDto::fromModel).toList());
+        return new PersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.email(), person.birthdate(), person.privileged(), person.phoneNumbers().stream().map(PhoneNumberDto::fromModel).toList());
     }
 }

@@ -11,8 +11,6 @@ import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactHistoryDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 
 import java.util.Comparator;
 import java.util.List;
@@ -38,13 +36,11 @@ public record SurveyUnitInterviewerResponseDto(
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
-		List<PersonDto> persons = surveyUnit.getPersons().stream()
-				.map(person -> PersonDB.toModel(person, null))
+		List<PersonDto> persons = surveyUnit.getModelPersons().stream()
 				.map(PersonDto::fromModel)
 				.toList();
-		List<ContactHistoryDto> contactHistory = surveyUnit.getContactHistory()
-				.stream().map(ContactHistoryDB::toModel)
-				.map(ContactHistoryDto::fromModel).toList();
+		List<ContactHistoryDto> contactHistory = surveyUnit.getModelContactHistory()
+				.stream().map(ContactHistoryDto::fromModel).toList();
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		AddressDto address = new AddressDto(surveyUnit.getAddress());

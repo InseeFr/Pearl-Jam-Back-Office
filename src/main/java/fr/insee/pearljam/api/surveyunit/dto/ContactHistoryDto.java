@@ -14,14 +14,14 @@ public record ContactHistoryDto(
         String comment,
         ContactOutcomeType contactOutcomeValue,
         ContactHistoryType contactHistoryType,
-        List<PersonDto> persons
+        List<ContactHistoryPersonDto> persons
 ) {
 
     public static ContactHistoryDto fromModel(ContactHistory contactHistory) {
         if (contactHistory == null) {
             return null;
         }
-        return new ContactHistoryDto(contactHistory.comment(), contactHistory.contactOutcomeValue(), contactHistory.historyType(), contactHistory.persons().stream().map(PersonDto::fromModel).toList());
+        return new ContactHistoryDto(contactHistory.comment(), contactHistory.contactOutcomeValue(), contactHistory.historyType(), contactHistory.persons().stream().map(ContactHistoryPersonDto::fromModel).toList());
     }
 
     public static ContactHistory toModel(ContactHistoryDto contactHistoryDto) {
@@ -36,7 +36,7 @@ public record ContactHistoryDto(
                 new HashSet<>()
         );
         Set<Person> chPersons = contactHistoryDto.persons().stream()
-                .map(person -> PersonDto.toModel(person, contactHistory)).collect(Collectors.toSet());
+                .map(person -> ContactHistoryPersonDto.toModel(person, contactHistory)).collect(Collectors.toSet());
         contactHistory.persons().addAll(chPersons);
 
         return contactHistory;

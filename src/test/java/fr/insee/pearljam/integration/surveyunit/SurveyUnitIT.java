@@ -296,7 +296,8 @@ class SurveyUnitIT {
 				            }
 				         ]
 				      }
-				   ]
+				   ],
+				   "contactHistory":[]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
@@ -411,7 +412,8 @@ class SurveyUnitIT {
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
-				    ]
+				    ],
+				    "contactHistory":[]
 				 }""";
 		MvcResult result =
 				mockMvc.perform(put("/api/survey-unit/20").with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON).content(updateJson).contentType(MediaType.APPLICATION_JSON)).andReturn();
@@ -509,7 +511,7 @@ class SurveyUnitIT {
 				     },
 				     "communicationRequests":[
 				        {
-				        	 "communicationTemplateId": "mesh3",
+				           "communicationTemplateId": "mesh3",
 				           "campaignId":"VQS2021X00",
 				           "meshuggahId": "mesh3",
 				           "reason":"REFUSAL",
@@ -521,55 +523,55 @@ class SurveyUnitIT {
 				              },
 				              {
 				                 "date":""" + currentTimestamp + """
-                         ,
-                         "status":"READY"
-                      }
+                         		,"status":"READY"
+                      		  }
 				           ]
 				        },
-                {
-            			 "communicationTemplateId": "mesh4",
-                   "campaignId":"VQS2021X00",
-                   "meshuggahId": "mesh4",
-                   "reason":"UNREACHABLE",
-                   "emitter":"INTERVIEWER",
-                   "status":[
-                      {
-                         "date":1721903754205,
-                         "status":"INITIATED"
-                      }
-                   ]
-                },
-                {
-            			 "communicationTemplateId": "mesh4",
-                   "campaignId":"VQS2021X00",
-                   "meshuggahId": "mesh4",
-                   "reason":"UNREACHABLE",
-                   "emitter":"INTERVIEWER",
-                   "status":[
-                      {
-                         "date":1721903754405,
-                         "status":"INITIATED"
-                      },
-                      {
-                         "date": 1719324512000,
-                         "status": "CANCELLED"
-                     }
-                   ]
-                },
-            	  {
-        	  			 "communicationTemplateId": "mesh3",
-									 "campaignId":"VQS2021X00",
-									 "meshuggahId": "mesh3",
-									 "reason":"REFUSAL",
-									 "emitter":"INTERVIEWER",
-									 "status":[
-											{
-												 "date":1721903754205,
-												 "status":"INITIATED"
-											}
-									 ]
-								}
-				   ]
+                		{
+            			   "communicationTemplateId": "mesh4",
+                   		   "campaignId":"VQS2021X00",
+                   		   "meshuggahId": "mesh4",
+                   		   "reason":"UNREACHABLE",
+                   		   "emitter":"INTERVIEWER",
+                   		   "status":[
+                      		    {
+                         		  "date":1721903754205,
+                         		  "status":"INITIATED"
+                      		    }
+				    		 ]
+               			 },
+                		 {
+            				 "communicationTemplateId": "mesh4",
+                  			 "campaignId":"VQS2021X00",
+                   			 "meshuggahId": "mesh4",
+                   			 "reason":"UNREACHABLE",
+                   			 "emitter":"INTERVIEWER",
+                   			 "status":[
+                      			 {
+                         			"date":1721903754405,
+                         			"status":"INITIATED"
+                      			 },
+                      			 {
+                       			   "date": 1719324512000,
+                         			"status": "CANCELLED"
+                     			 }
+                   			   ]
+                			 },
+            	 		 {
+				  			 "communicationTemplateId": "mesh3",
+							 "campaignId":"VQS2021X00",
+							 "meshuggahId": "mesh3",
+							 "reason":"REFUSAL",
+							 "emitter":"INTERVIEWER",
+							 "status":[
+									{
+										 "date":1721903754205,
+										 "status":"INITIATED"
+									}
+							 ]
+					     }
+				   ],
+				   "contactHistory":[]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
@@ -642,7 +644,8 @@ class SurveyUnitIT {
 				          "reason":"UNREACHABLE",
 				          "creationTimestamp": 1721903754405
 				       }
-				    ]
+				    ],
+				    "contactHistory":[]
 				 }""";
 		String putUrl = "/api/survey-unit/20";
 		mockMvc.perform(put(putUrl).with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON).content(updateJson).contentType(MediaType.APPLICATION_JSON)).andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));
