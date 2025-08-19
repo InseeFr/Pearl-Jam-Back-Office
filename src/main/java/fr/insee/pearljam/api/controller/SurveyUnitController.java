@@ -62,12 +62,13 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
 	 * @param surveyUnits survey units to create
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Create survey-units")
 	@PostMapping(Constants.API_SURVEYUNITS)
-	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitCreationDto> surveyUnits) {
+	public ResponseEntity<Object> postSurveyUnits(
+			@Valid @RequestBody List<SurveyUnitCreationDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
