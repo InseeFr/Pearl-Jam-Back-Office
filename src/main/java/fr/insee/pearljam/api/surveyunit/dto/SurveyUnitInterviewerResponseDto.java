@@ -14,6 +14,7 @@ import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
@@ -40,7 +41,9 @@ public record SurveyUnitInterviewerResponseDto(
 				.map(PersonDto::fromModel)
 				.toList();
 		List<ContactHistoryDto> contactHistory = surveyUnit.getModelContactHistory()
-				.stream().map(ContactHistoryDto::fromModel).toList();
+				.stream()
+				.filter(Objects::nonNull)
+				.map(ContactHistoryDto::fromModel).toList();
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		AddressDto address = new AddressDto(surveyUnit.getAddress());

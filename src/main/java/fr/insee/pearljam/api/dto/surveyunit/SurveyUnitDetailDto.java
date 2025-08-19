@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
@@ -64,6 +65,6 @@ public class SurveyUnitDetailDto {
 
 		this.move = surveyUnit.getMove();
 		this.communicationRequests = CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests());
-		this.contactHistory= surveyUnit.getModelContactHistory().stream().map(ContactHistoryDto::fromModel).toList();
+		this.contactHistory= surveyUnit.getModelContactHistory().stream().filter(Objects::nonNull).map(ContactHistoryDto::fromModel).toList();
 	}
 }

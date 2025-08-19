@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,17 +18,11 @@ public record ContactHistoryDto(
         List<ContactHistoryPersonDto> persons
 ) {
 
-    public static ContactHistoryDto fromModel(ContactHistory contactHistory) {
-        if (contactHistory == null) {
-            return null;
-        }
+    public static ContactHistoryDto fromModel(@NotNull ContactHistory contactHistory) {
         return new ContactHistoryDto(contactHistory.comment(), contactHistory.contactOutcomeValue(), contactHistory.historyType(), contactHistory.persons().stream().map(ContactHistoryPersonDto::fromModel).toList());
     }
 
-    public static ContactHistory toModel(ContactHistoryDto contactHistoryDto) {
-        if (contactHistoryDto == null) {
-            return null;
-        }
+    public static ContactHistory toModel(@NotNull ContactHistoryDto contactHistoryDto) {
 
         ContactHistory contactHistory = new ContactHistory(
                 contactHistoryDto.contactHistoryType(),

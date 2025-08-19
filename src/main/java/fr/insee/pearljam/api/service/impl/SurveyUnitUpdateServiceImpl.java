@@ -22,14 +22,13 @@ import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Set;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -80,7 +79,9 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
         //update ContactHistory : keep PREVIOUS if present and create/update NEXT History if present
         Optional<ContactHistory> nextContactHistory = surveyUnitUpdateDto.contactHistory()
-                .stream().filter(ch-> ContactHistoryType.NEXT.equals(ch.contactHistoryType()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(ch-> ContactHistoryType.NEXT.equals(ch.contactHistoryType()))
                 .map(ContactHistoryDto::toModel).findFirst();
         nextContactHistory.ifPresent(surveyUnit::updateNextContactHistory);
     }
