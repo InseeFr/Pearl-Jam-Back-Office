@@ -32,5 +32,15 @@
             <column name="contact_history_type" type="VARCHAR(50)"/>
         </addColumn>
 
+        <!--  extend campaign table with new column-->
+        <addColumn tableName="campaign">
+            <column name="collect_next_contacts" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <update tableName="campaign">
+            <column name="collect_next_contacts" valueBoolean="false"/>
+        </update>
+
     </changeSet>
 </databaseChangeLog>

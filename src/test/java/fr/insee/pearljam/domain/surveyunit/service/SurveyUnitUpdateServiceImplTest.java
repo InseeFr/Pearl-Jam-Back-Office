@@ -60,7 +60,7 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
 		surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository,
 				communicationTemplateFakeRepository, visibilityFakeService, dateService);
-		campaign = new Campaign("campaignId", "label", null, null, null, null, false);
+		campaign = new Campaign("campaignId", "label", null, null, null, null, false,false);
 		ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, true, "mail", "tel");

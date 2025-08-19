@@ -66,6 +66,7 @@ public class SurveyUnitDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private boolean collectNextContacts;
 	private boolean useLetterCommunication;
 
 	private List<PersonDto> persons;
@@ -86,5 +87,6 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = campaign.getIdentificationConfiguration();
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();
+		this.collectNextContacts = campaign.isCollectNextContacts();
 	}
 }

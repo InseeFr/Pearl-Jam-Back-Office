@@ -154,18 +154,14 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new CampaignAlreadyExistException();
 		}
 
-		boolean sensitivity=false;
-		if(campaignDto.sensitivity()!=null){
-			sensitivity=campaignDto.sensitivity();
-		}
-
 		// Creating campaign
 		Campaign campaign = new Campaign(campaignId, campaignDto.campaignLabel(),
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
 				campaignDto.email(),
-				sensitivity);
+				campaignDto.sensitivity(),
+				campaignDto.collectNextContacts());
 		campaign.setReferents(new ArrayList<>());
 		campaign.setCommunicationTemplates(new ArrayList<>());
 
@@ -186,10 +182,8 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		List<CommunicationTemplate> communicationTemplatesToCreate = CommunicationTemplateCreateDto.toModel(campaignDto.communicationTemplates(), campaignId);
-		if(communicationTemplatesToCreate != null) {
 			List<CommunicationTemplateDB> communicationsDBToCreate = CommunicationTemplateDB.fromModel(communicationTemplatesToCreate, campaign);
 			campaign.setCommunicationTemplates(communicationsDBToCreate);
-		}
 		campaignRepository.save(campaign);
 	}
 
@@ -242,6 +236,7 @@ public class CampaignServiceImpl implements CampaignService {
 		if(campaignToUpdate.referents() != null) {
 			updateReferents(currentCampaign, campaignToUpdate.referents());
 		}
+		currentCampaign.setCollectNextContacts(campaignToUpdate.collectNextContacts());
 
 		campaignRepository.save(currentCampaign);
 	}

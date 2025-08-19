@@ -35,6 +35,7 @@ public class CampaignDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
+	private boolean collectNextContacts;
 	private List<ReferentDto> referents;
 
 	public CampaignDto(String id, String label, Long managementStartDate, Long endDate) {
@@ -47,7 +48,7 @@ public class CampaignDto {
 
 	// keep it for creation in SQL
 	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -55,6 +56,7 @@ public class CampaignDto {
 		this.identificationConfiguration = identConfig;
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.contactAttemptConfiguration = contAttConfig;
+		this.collectNextContacts = collectNextContacts;
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
