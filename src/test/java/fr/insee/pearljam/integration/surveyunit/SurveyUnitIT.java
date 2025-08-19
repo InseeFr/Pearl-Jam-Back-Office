@@ -327,266 +327,301 @@ class SurveyUnitIT {
 	void testPutSurveyUnitDetail() throws Exception {
 		long currentTimestamp = dateService.getCurrentTimestamp();
 		String updateJson = """
+			{
+			  "id": "20",
+			  "persons": [
 				{
-				    "id":"20",
-				    "persons":[
-				       {
-				          "id":10,
-				          "title":"MISTER",
-				          "firstName":"Harriette",
-				          "lastName":"Raymond",
-				          "email":"test@test.com",
-				          "birthdate":11111111,
-				          "privileged":true,
-				          "phoneNumbers":[
-				             {
-				                "source":"FISCAL",
-				                "favorite":true,
-				                "number":"test"
-				             }
-				          ]
-				       }
-				    ],
-				    "address":{
-				       "l1":"test1",
-				       "l2":"test2",
-				       "l3":"test3",
-				       "l4":"test4",
-				       "l5":"test5",
-				       "l6":"test6",
-				       "l7":"test7",
-				       "elevator":true,
-				       "building":"testBuilding",
-				       "floor":"testFloor",
-				       "door":"testDoor",
-				       "staircase":"testStaircase",
-				       "cityPriorityDistrict":true
-				    },
-				    "priority":false,
-				    "campaign":"VQS2021X00",
-				    "comments":[
-				       {
-				          "type":"INTERVIEWER",
-				          "value":"test-interviewer-comment"
-				       },
-				       {
-				          "type":"MANAGEMENT",
-				          "value":"test-management-comment"
-				       }
-				    ],
-				    "sampleIdentifiers":{
-				       "bs":20,
-				       "ec":"2",
-				       "le":20,
-				       "noi":20,
-				       "numfa":20,
-				       "rges":20,
-				       "ssech":1,
-				       "nolog":20,
-				       "nole":20,
-				       "autre":"20",
-				       "nograp":"20"
-				    },
-				    "states":[
-				       {
-				          "date":1590504459838,
-				          "type":"AOC"
-				       },
-				       {
-				         "id":9,
-				         "date":1590504478334,
-				         "type":"VIC"
-				       }
-				    ],
-				    "contactAttempts":[
-				       {
-				          "date":1589268626000,
-				          "status":"NOC",
-				          "medium":"TEL"
-				       },
-				       {
-				          "date":1589268800000,
-				          "status":"INA",
-				          "medium":"TEL"
-				       }
-				    ],
-				    "contactOutcome":{
-				       "date":1589268626000,
-				       "type":"IMP",
-				       "totalNumberOfContactAttempts":2
-				    },
-				    "communicationRequests":[
-				       {
-				          "communicationTemplateId":"mesh3",
-				          "reason":"REFUSAL",
-				          "creationTimestamp": 1721903754305
-				       },
-				       {
-				          "communicationTemplateId":"mesh4",
-				          "reason":"UNREACHABLE",
-				          "creationTimestamp": 1721903754405
-				       }
-				    ],
-				    "contactHistory":[]
-				 }""";
+				  "id": 10,
+				  "title": "MISTER",
+				  "firstName": "Harriette",
+				  "lastName": "Raymond",
+				  "email": "test@test.com",
+				  "birthdate": 11111111,
+				  "privileged": true,
+				  "phoneNumbers": [
+					{
+					  "source": "FISCAL",
+					  "favorite": true,
+					  "number": "test"
+					}
+				  ]
+				}
+			  ],
+			  "address": {
+				"l1": "test1",
+				"l2": "test2",
+				"l3": "test3",
+				"l4": "test4",
+				"l5": "test5",
+				"l6": "test6",
+				"l7": "test7",
+				"elevator": true,
+				"building": "testBuilding",
+				"floor": "testFloor",
+				"door": "testDoor",
+				"staircase": "testStaircase",
+				"cityPriorityDistrict": true
+			  },
+			  "priority": false,
+			  "campaign": "VQS2021X00",
+			  "comments": [
+				{
+				  "type": "INTERVIEWER",
+				  "value": "test-interviewer-comment"
+				},
+				{
+				  "type": "MANAGEMENT",
+				  "value": "test-management-comment"
+				}
+			  ],
+			  "sampleIdentifiers": {
+				"bs": 20,
+				"ec": "2",
+				"le": 20,
+				"noi": 20,
+				"numfa": 20,
+				"rges": 20,
+				"ssech": 1,
+				"nolog": 20,
+				"nole": 20,
+				"autre": "20",
+				"nograp": "20"
+			  },
+			  "states": [
+				{
+				  "date": 1590504459838,
+				  "type": "AOC"
+				},
+				{
+				  "id": 9,
+				  "date": 1590504478334,
+				  "type": "VIC"
+				}
+			  ],
+			  "contactAttempts": [
+				{
+				  "date": 1589268626000,
+				  "status": "NOC",
+				  "medium": "TEL"
+				},
+				{
+				  "date": 1589268800000,
+				  "status": "INA",
+				  "medium": "TEL"
+				}
+			  ],
+			  "contactOutcome": {
+				"date": 1589268626000,
+				"type": "IMP",
+				"totalNumberOfContactAttempts": 2
+			  },
+			  "communicationRequests": [
+				{
+				  "communicationTemplateId": "mesh3",
+				  "reason": "REFUSAL",
+				  "creationTimestamp": 1721903754305
+				},
+				{
+				  "communicationTemplateId": "mesh4",
+				  "reason": "UNREACHABLE",
+				  "creationTimestamp": 1721903754405
+				}
+			  ],
+			  "contactHistory": [
+				{
+				  "comment": "nice comment",
+				  "contactOutcomeValue": "INA",
+				  "contactHistoryType": "NEXT",
+				  "persons": [
+					{
+					  "title": "MISS",
+					  "firstName": "Futur",
+					  "lastName": "Anna",
+					  "birthdate": -22222222,
+					  "panel": true
+					}
+				  ]
+				}
+			  ]
+			}
+			""";
 		MvcResult result =
 				mockMvc.perform(put("/api/survey-unit/20").with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON).content(updateJson).contentType(MediaType.APPLICATION_JSON)).andReturn();
 
 		String resultJson = result.getResponse().getContentAsString();
 		String expectedJson = """
-				{
-				     "id":"20",
-				     "persons":[
-				        {
-				           "id":10,
-				           "title":"MISTER",
-				           "firstName":"Harriette",
-				           "lastName":"Raymond",
-				           "email":"test@test.com",
-				           "birthdate":11111111,
-				           "privileged":true,
-				           "phoneNumbers":[
-				              {
-				                 "source":"FISCAL",
-				                 "favorite":true,
-				                 "number":"test"
-				              }
-				           ]
-				        }
-				     ],
-				     "address":{
-				        "l1":"test1",
-				        "l2":"test2",
-				        "l3":"test3",
-				        "l4":"test4",
-				        "l5":"test5",
-				        "l6":"test6",
-				        "l7":"test7",
-				        "elevator":true,
-				        "building":"testBuilding",
-				        "floor":"testFloor",
-				        "door":"testDoor",
-				        "staircase":"testStaircase",
-				        "cityPriorityDistrict":true
-				     },
-				     "priority":false,
-				     "campaign":"VQS2021X00",
-				     "comments":[
-				        {
-				           "type":"INTERVIEWER",
-				           "value":"test-interviewer-comment"
-				        },
-				        {
-				           "type":"MANAGEMENT",
-				           "value":"test-management-comment"
-				        }
-				     ],
-				     "sampleIdentifiers":{
-				        "bs":20,
-				        "ec":"2",
-				        "le":20,
-				        "noi":20,
-				        "numfa":20,
-				        "rges":20,
-				        "ssech":1,
-				        "nolog":20,
-				        "nole":20,
-				        "autre":"20",
-				        "nograp":"20"
-				     },
-				     "states":[
-				        {
-				           "id":9,
-				           "date":1590504478334,
-				           "type":"VIC"
-				        },
-				        {
-				           "id":14,
-				           "date":1590504459838,
-				           "type":"AOC"
-				        }
-				     ],
-				     "contactAttempts":[
-				        {
-				           "date":1589268626000,
-				           "status":"NOC",
-				           "medium":"TEL"
-				        },
-				        {
-				           "date":1589268800000,
-				           "status":"INA",
-				           "medium":"TEL"
-				        }
-				     ],
-				     "contactOutcome":{
-				        "date":1589268626000,
-				        "type":"IMP",
-				        "totalNumberOfContactAttempts":2
-				     },
-				     "communicationRequests":[
-				        {
-				           "communicationTemplateId": "mesh3",
-				           "campaignId":"VQS2021X00",
-				           "meshuggahId": "mesh3",
-				           "reason":"REFUSAL",
-				           "emitter":"INTERVIEWER",
-				           "status":[
-				              {
-				                 "date":1721903754305,
-				                 "status":"INITIATED"
-				              },
-				              {
-				                 "date":""" + currentTimestamp + """
-                         		,"status":"READY"
-                      		  }
-				           ]
-				        },
-                		{
-            			   "communicationTemplateId": "mesh4",
-                   		   "campaignId":"VQS2021X00",
-                   		   "meshuggahId": "mesh4",
-                   		   "reason":"UNREACHABLE",
-                   		   "emitter":"INTERVIEWER",
-                   		   "status":[
-                      		    {
-                         		  "date":1721903754205,
-                         		  "status":"INITIATED"
-                      		    }
-				    		 ]
-               			 },
-                		 {
-            				 "communicationTemplateId": "mesh4",
-                  			 "campaignId":"VQS2021X00",
-                   			 "meshuggahId": "mesh4",
-                   			 "reason":"UNREACHABLE",
-                   			 "emitter":"INTERVIEWER",
-                   			 "status":[
-                      			 {
-                         			"date":1721903754405,
-                         			"status":"INITIATED"
-                      			 },
-                      			 {
-                       			   "date": 1719324512000,
-                         			"status": "CANCELLED"
-                     			 }
-                   			   ]
-                			 },
-            	 		 {
-				  			 "communicationTemplateId": "mesh3",
-							 "campaignId":"VQS2021X00",
-							 "meshuggahId": "mesh3",
-							 "reason":"REFUSAL",
-							 "emitter":"INTERVIEWER",
-							 "status":[
-									{
-										 "date":1721903754205,
-										 "status":"INITIATED"
-									}
-							 ]
-					     }
-				   ],
-				   "contactHistory":[]
-				}""";
+        {
+          "id": "20",
+          "persons": [
+            {
+              "id": 10,
+              "title": "MISTER",
+              "firstName": "Harriette",
+              "lastName": "Raymond",
+              "email": "test@test.com",
+              "birthdate": 11111111,
+              "privileged": true,
+              "phoneNumbers": [
+                {
+                  "source": "FISCAL",
+                  "favorite": true,
+                  "number": "test"
+                }
+              ]
+            }
+          ],
+          "address": {
+            "l1": "test1",
+            "l2": "test2",
+            "l3": "test3",
+            "l4": "test4",
+            "l5": "test5",
+            "l6": "test6",
+            "l7": "test7",
+            "elevator": true,
+            "building": "testBuilding",
+            "floor": "testFloor",
+            "door": "testDoor",
+            "staircase": "testStaircase",
+            "cityPriorityDistrict": true
+          },
+          "priority": false,
+          "campaign": "VQS2021X00",
+          "comments": [
+            {
+              "type": "INTERVIEWER",
+              "value": "test-interviewer-comment"
+            },
+            {
+              "type": "MANAGEMENT",
+              "value": "test-management-comment"
+            }
+          ],
+          "sampleIdentifiers": {
+            "bs": 20,
+            "ec": "2",
+            "le": 20,
+            "noi": 20,
+            "numfa": 20,
+            "rges": 20,
+            "ssech": 1,
+            "nolog": 20,
+            "nole": 20,
+            "autre": "20",
+            "nograp": "20"
+          },
+          "states": [
+            {
+              "id": 9,
+              "date": 1590504478334,
+              "type": "VIC"
+            },
+            {
+              "id": 14,
+              "date": 1590504459838,
+              "type": "AOC"
+            }
+          ],
+          "contactAttempts": [
+            {
+              "date": 1589268626000,
+              "status": "NOC",
+              "medium": "TEL"
+            },
+            {
+              "date": 1589268800000,
+              "status": "INA",
+              "medium": "TEL"
+            }
+          ],
+          "contactOutcome": {
+            "date": 1589268626000,
+            "type": "IMP",
+            "totalNumberOfContactAttempts": 2
+          },
+          "communicationRequests": [
+            {
+              "communicationTemplateId": "mesh3",
+              "campaignId": "VQS2021X00",
+              "meshuggahId": "mesh3",
+              "reason": "REFUSAL",
+              "emitter": "INTERVIEWER",
+              "status": [
+                {
+                  "date": 1721903754305,
+                  "status": "INITIATED"
+                },
+                {
+                  "date": """ + currentTimestamp + """
+                  ,
+                  "status": "READY"
+                }
+              ]
+            },
+            {
+              "communicationTemplateId": "mesh4",
+              "campaignId": "VQS2021X00",
+              "meshuggahId": "mesh4",
+              "reason": "UNREACHABLE",
+              "emitter": "INTERVIEWER",
+              "status": [
+                {
+                  "date": 1721903754205,
+                  "status": "INITIATED"
+                }
+              ]
+            },
+            {
+              "communicationTemplateId": "mesh4",
+              "campaignId": "VQS2021X00",
+              "meshuggahId": "mesh4",
+              "reason": "UNREACHABLE",
+              "emitter": "INTERVIEWER",
+              "status": [
+                {
+                  "date": 1721903754405,
+                  "status": "INITIATED"
+                },
+                {
+                  "date": 1719324512000,
+                  "status": "CANCELLED"
+                }
+              ]
+            },
+            {
+              "communicationTemplateId": "mesh3",
+              "campaignId": "VQS2021X00",
+              "meshuggahId": "mesh3",
+              "reason": "REFUSAL",
+              "emitter": "INTERVIEWER",
+              "status": [
+                {
+                  "date": 1721903754205,
+                  "status": "INITIATED"
+                }
+              ]
+            }
+          ],
+          "contactHistory": [
+            {
+              "comment": "nice comment",
+              "contactOutcomeValue": "INA",
+              "contactHistoryType": "NEXT",
+              "persons": [
+                {
+                  "id": 16,
+                  "title": "MISS",
+                  "firstName": "Futur",
+                  "lastName": "Anna",
+                  "birthdate": -22222222,
+                  "panel": true
+                }
+              ]
+            }
+          ]
+        }
+        """;
+
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
 
