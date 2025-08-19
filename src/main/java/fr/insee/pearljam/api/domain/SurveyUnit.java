@@ -321,7 +321,9 @@ public class SurveyUnit implements Serializable {
 	}
 
 	public List<Person> getModelPersons() {
-		return persons.stream().map(person -> PersonDB.toModel(person, null)).toList();
+		return persons.stream()
+				.filter( person -> person.getContactHistoryType()==null)
+				.map(person -> PersonDB.toModel(person, null)).toList();
 	}
 
 	public void updatePersons(Set<Person> personsToUpdate) {

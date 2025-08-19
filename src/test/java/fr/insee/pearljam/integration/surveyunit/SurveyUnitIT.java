@@ -297,7 +297,21 @@ class SurveyUnitIT {
 				         ]
 				      }
 				   ],
-				   "contactHistory":[]
+				   "contactHistory":[
+				     {
+				      "comment":"nice comment",
+				      "contactOutcomeValue":"INA",
+				      "contactHistoryType":"NEXT",
+				      "persons":[
+				        {"id":15,
+				         "title":"MISTER",
+				         "firstName":"Futur",
+				         "lastName":"Ama",
+				         "birthdate":-11111111,
+				         "panel":true}
+				        ]
+				      }
+				    ]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
