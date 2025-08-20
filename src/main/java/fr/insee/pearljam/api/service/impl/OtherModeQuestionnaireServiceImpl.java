@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.domain.OtherModeQuestionnaireState;
-import fr.insee.pearljam.api.dto.otherModeQuestionnaire.OtherModeQuestionnaireDto;
 import fr.insee.pearljam.api.repository.OtherModeQuestionnaireRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.model.OtherModeQuestionnaire;
@@ -26,7 +25,9 @@ public class OtherModeQuestionnaireServiceImpl implements OtherModeQuestionnaire
         var surveyUnit = surveyUnitRepository.findById(otherModeQuestionnaire.surveyUnitId());
         var otherModeQuestionnaireState = new OtherModeQuestionnaireState();
         otherModeQuestionnaireState.setState(otherModeQuestionnaire.type());
-        otherModeQuestionnaireState.setSurveyUnit(surveyUnit.get());
-        this.repository.save(otherModeQuestionnaireState);
+        if(surveyUnit.isPresent()){
+            otherModeQuestionnaireState.setSurveyUnit(surveyUnit.get());
+            this.repository.save(otherModeQuestionnaireState);
+        }
     }
 }
