@@ -12,14 +12,9 @@
         </column>
         <column name="state" type="varchar(255)"/>
         <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
-        <column name="survey_unit_id" type="varchar(255)">
+        <column name="survey_unit_id" type="varchar(50)">
             <constraints nullable="true" foreignKeyName="fk_omqs_survey_unit" references="survey_unit(id)"/>
         </column>
     </createTable>
-
-    <createIndex tableName="other_mode_questionnaire_state"
-                 indexName="idx_omqs_survey_unit_id">
-        <column name="survey_unit_id"/>
-    </createIndex>
 </changeSet>
 </databaseChangeLog>

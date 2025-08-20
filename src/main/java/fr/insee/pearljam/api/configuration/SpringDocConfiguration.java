@@ -25,7 +25,7 @@ public class SpringDocConfiguration {
 	 * @param buildProperties properties for build
 	 * @return Open API configuration object
 	 */
-	/*@Bean
+	@Bean
 	public OpenAPI generateOpenAPI(BuildProperties buildProperties) {
 		OpenAPI openAPI = new OpenAPI().info(
 				new Info()
@@ -34,5 +34,5 @@ public class SpringDocConfiguration {
 						.version(buildProperties.getVersion()));
 		securityConfiguration.addSecurity(openAPI);
 		return openAPI;
-	}*/
+	}
 }

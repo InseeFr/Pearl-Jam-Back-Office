@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.campaign.dto.output.CommunicationTemplateResponseDto;
+import fr.insee.pearljam.api.domain.OtherModeQuestionnaireState;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -15,6 +16,7 @@ import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
@@ -33,7 +35,7 @@ public record SurveyUnitInterviewerResponseDto(
 	IdentificationDto identification,
 	List<CommunicationTemplateResponseDto> communicationTemplates,
 	List<CommunicationRequestResponseDto> communicationRequests,
-	java.util.Set<fr.insee.pearljam.api.domain.OtherModeQuestionnaireState> otherModeQuestionnaireState) {
+	Set<OtherModeQuestionnaireState> otherModeQuestionnaireState) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
