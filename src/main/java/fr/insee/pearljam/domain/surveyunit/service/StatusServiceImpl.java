@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.api.dto.otherModeQuestionnaire.OtherModeQuestionnaireDto;
-import fr.insee.pearljam.api.service.OtherModeQuestionnaireService;
+import fr.insee.pearljam.domain.surveyunit.model.OtherModeQuestionnaire;
+import fr.insee.pearljam.domain.surveyunit.port.serverside.OtherModeQuestionnaireService;
 import fr.insee.pearljam.domain.surveyunit.port.state.StatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,6 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     public void updateStatus(String surveyUnit, String type) {
-        otherModeQuestionnaireService.addOtherModeQuestionnaire(new OtherModeQuestionnaireDto(surveyUnit, type));
+        otherModeQuestionnaireService.addOtherModeQuestionnaire(new OtherModeQuestionnaire(surveyUnit, type));
     }
 }

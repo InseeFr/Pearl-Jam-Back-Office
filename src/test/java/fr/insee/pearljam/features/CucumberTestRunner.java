@@ -14,7 +14,7 @@ import static io.cucumber.core.options.Constants.PLUGIN_PROPERTY_NAME;
 
 @CucumberContextConfiguration
 @SpringBootTest
-@ActiveProfiles(profiles = {"auth", "test", "nobroker"})
+@ActiveProfiles(profiles = {"auth", "test"})
 @AutoConfigureMockMvc
 @Suite
 @IncludeEngines("cucumber")

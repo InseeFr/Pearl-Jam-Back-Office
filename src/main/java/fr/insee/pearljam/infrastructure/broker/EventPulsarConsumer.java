@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Profile("!nobroker")
+@Profile("broker")
 @Component
 @Slf4j
 @RequiredArgsConstructor

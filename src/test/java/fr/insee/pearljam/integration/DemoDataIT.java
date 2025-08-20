@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_CLASS;
 
-@ActiveProfiles(profiles = {"demo", "nobroker"})
+@ActiveProfiles(profiles = {"demo"})
 @ContextConfiguration
 @SpringBootTest
 @Transactional

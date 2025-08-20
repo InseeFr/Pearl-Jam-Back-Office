@@ -40,6 +40,8 @@ feature:
       enabled: false
 
 spring:
+  profiles:
+      active: broker
   docker:
     compose:
       enabled: false
