@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import fr.insee.pearljam.api.domain.SurveyUnit; // ← ajustez si nécessaire
+import fr.insee.pearljam.api.domain.SurveyUnit;
 
 @ExtendWith(MockitoExtension.class)
 class OtherModeQuestionnaireServiceImplTest {
