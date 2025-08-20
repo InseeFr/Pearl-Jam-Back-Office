@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.broker;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.domain.surveyunit.port.state.StatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +17,7 @@ public class StatusMessageConsumer implements MessageConsumer {
     }
 
     @Override
-    public void consume(String type, JsonNode payload) {
-        String id = payload.get("interrogationId").asText();
-        this.statusService.updateStatus(id, type);
+    public void consume(String type, Payload payload) {
+        this.statusService.updateStatus(payload.interrogationId(), type);
     }
 }

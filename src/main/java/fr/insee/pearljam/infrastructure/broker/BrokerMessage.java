@@ -1,4 +1,4 @@
 package fr.insee.pearljam.infrastructure.broker;
 
-public class BrokerMessage {
+public record BrokerMessage(String type, Payload payload) {
 }
