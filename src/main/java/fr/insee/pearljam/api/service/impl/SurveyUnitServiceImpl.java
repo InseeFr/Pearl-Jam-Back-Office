@@ -64,7 +64,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
 	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
 
-	private final OtherModeQuestionnaireService otherModeQuestionnaireService;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;
 	private final AddressRepository addressRepository;
