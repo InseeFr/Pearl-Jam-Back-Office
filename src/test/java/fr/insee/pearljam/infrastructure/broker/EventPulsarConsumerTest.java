@@ -31,14 +31,12 @@ class EventPulsarConsumerTest {
     }
 
     private String buildBusinessJson(String type, String interrogationId) throws Exception {
-        // {"type":"QUESTIONNAIRE_INIT","payload":{"interrogationId":"20"}}
-        var business = String.format("""
+        return String.format("""
             {"type":%s,"payload":{"interrogationId":%s}}
             """,
                 mapper.writeValueAsString(type),
                 mapper.writeValueAsString(interrogationId)
         );
-        return business;
     }
 
     private String buildEnvelopeWithAfter(String businessJson) throws Exception {
@@ -109,7 +107,7 @@ class EventPulsarConsumerTest {
     }
 
     @Test
-    void should_skip_when_after_missing() throws Exception {
+    void should_skip_when_after_missing() {
         String envelope = """
             { "before": null, "after": null, "op": "d" }
             """;
