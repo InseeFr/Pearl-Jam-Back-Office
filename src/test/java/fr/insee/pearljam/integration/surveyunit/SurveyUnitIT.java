@@ -299,7 +299,8 @@ class SurveyUnitIT {
 				            }
 				         ]
 				      }
-				   ]
+				   ],
+				   otherModeQuestionnaireState: []
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}

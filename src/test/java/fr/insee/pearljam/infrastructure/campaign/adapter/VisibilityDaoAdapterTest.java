@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@ActiveProfiles("auth")
+@ActiveProfiles(profiles = {"auth", "nobroker"})
 @Transactional
 @Slf4j
 class VisibilityDaoAdapterTest {
