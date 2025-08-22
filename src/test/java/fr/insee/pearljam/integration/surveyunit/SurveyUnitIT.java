@@ -303,8 +303,6 @@ class SurveyUnitIT {
 				   ],
 				   "nextContactHistory":
 				     {
-				      "comment":"nice comment",
-				      "contactOutcomeValue":"INA",
 				      "persons":[
 				        {"id":15,
 				         "title":"MISTER",
@@ -432,8 +430,6 @@ class SurveyUnitIT {
 			  ],
 			  "nextContactHistory":
 				{
-				  "comment": "nice comment",
-				  "contactOutcomeValue": "INA",
 				  "persons": [
 					{
 					  "title": "MISS",
@@ -605,8 +601,6 @@ class SurveyUnitIT {
           ],
           "nextContactHistory":
             {
-              "comment": "nice comment",
-              "contactOutcomeValue": "INA",
               "persons": [
                 {
                   "id": 16,

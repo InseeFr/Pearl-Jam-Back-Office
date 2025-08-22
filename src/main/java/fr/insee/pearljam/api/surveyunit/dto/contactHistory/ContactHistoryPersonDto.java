@@ -25,7 +25,7 @@ public record ContactHistoryPersonDto(
         String lastName,
         List<
                 @NotNull(message = "phone number cannot be null")
-                @Pattern(regexp = "\\d+", message = "phone number must contain digits 0–9 only")
+                @Pattern(regexp = "\\+?\\d+", message = "phone number must contain digits 0–9 only and can start with '+'")
                 String
                 >phoneNumbers,
         Long birthdate,

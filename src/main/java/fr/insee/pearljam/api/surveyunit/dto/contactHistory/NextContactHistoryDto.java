@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.surveyunit.dto.contactHistory;
 
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
@@ -12,8 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record NextContactHistoryDto(
-        String comment,
-        ContactOutcomeType contactOutcomeValue,
         List<@Valid ContactHistoryPersonDto> persons
 ) {
 
@@ -21,7 +18,7 @@ public record NextContactHistoryDto(
         if (contactHistory == null) {
             return null;
         }
-        return new NextContactHistoryDto(contactHistory.comment(), contactHistory.contactOutcomeValue(), contactHistory.persons().stream().map(ContactHistoryPersonDto::fromModel).toList());
+        return new NextContactHistoryDto(contactHistory.persons().stream().map(ContactHistoryPersonDto::fromModel).toList());
     }
 
     public static ContactHistory toModel(NextContactHistoryDto contactHistoryDto) {
@@ -30,8 +27,8 @@ public record NextContactHistoryDto(
         }
         ContactHistory contactHistory = new ContactHistory(
                 ContactHistoryType.NEXT,
-                contactHistoryDto.comment(),
-                contactHistoryDto.contactOutcomeValue(),
+                null,
+                null,
                 new HashSet<>()
         );
         Set<Person> chPersons = contactHistoryDto.persons().stream()
