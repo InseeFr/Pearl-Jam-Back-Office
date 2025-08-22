@@ -154,10 +154,14 @@ INSERT INTO public.person (email, first_name, last_name, birthdate, title, privi
     ('test@test.com', 'Artus', 'Arnoux', 11111111, 0, TRUE, '23', FALSE, NULL),
     ('test@test.com', 'Laurent', 'Neville', 11111111, 0, TRUE, '24', FALSE, NULL),
 -- contactHistory linked persons
-    ('test@ch.com', 'Futur', 'Ama', -11111111, 0, TRUE, '11', TRUE, 'NEXT');
+    ('test@ch.com', 'Futur', 'Ama', -11111111, 1, TRUE, '11', TRUE, 'NEXT'),
+    ('test@ch.com', 'Opre', 'Vious', 315532800000, 1, TRUE, '11', TRUE, 'PREVIOUS'),
+    ('test@ch.com', 'Agrippa', 'Nel', 1024815788000, 0, FALSE, '11', TRUE, 'PREVIOUS'),
+    ('test@ch.com', 'Isidore', 'Champ', 1070870588000, 0, FALSE, '11', FALSE, 'PREVIOUS');
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
-    ('11', 'NEXT', 'INA', 'nice comment');
+    ('11', 'NEXT', NULL, NULL),
+    ('11', 'PREVIOUS', 'INA', 'nice comment');
 
 
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Ted' and p.last_name='Farmer' and p.survey_unit_id='11';
@@ -175,6 +179,8 @@ INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRU
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Perrin' and p.last_name='Blanchard' and p.survey_unit_id='22';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Artus' and p.last_name='Arnoux' and p.survey_unit_id='23';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Laurent' and p.last_name='Neville' and p.survey_unit_id='24';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542866', 2,  p.id FROM person p WHERE p.first_name='Futur' and p.last_name='Ama' and p.survey_unit_id='11';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542867', 2,  p.id FROM person p WHERE p.first_name='Futur' and p.last_name='Ama' and p.survey_unit_id='11';
 
 INSERT INTO public.state (date, type, survey_unit_id) VALUES
     (111112111,'VIN', '11'),

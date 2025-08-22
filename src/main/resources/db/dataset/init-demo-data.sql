@@ -494,10 +494,15 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE, 'PROTO03', false, NULL),
     (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE, 'PROTO05', false, NULL),
     (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE, 'PROTO06',false, NULL),
-    (62, 'test@test.com', 'Fu',         'Ture',      315532800000, 0, TRUE,  '11', true, 'NEXT');
+    (62, 'test@test.com', 'Fu',         'Ture',      315532800000, 0, TRUE,  '11', true, 'NEXT'),
+    (63, 'test@test.com', 'Opre',         'Vious',      315532800000, 0, TRUE,  '11', true, 'PREVIOUS'),
+    (64, 'test@test.com', 'Agrippa',         'Nel',      1024815788000, 0, FALSE,  '11', true, 'PREVIOUS'),
+    (65, 'test@test.com', 'Isidore',         'Champ',      1070870588000, 0, FALSE,  '11', false, 'PREVIOUS');
+
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
-    ('11', 'NEXT', 'INA', 'nice comment');
+    ('11', 'NEXT', NULL, NULL),
+    ('11', 'PREVIOUS', 'INA', 'nice comment');
 
 INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (1,  TRUE, '+33677542802', 0, 1),
@@ -561,7 +566,9 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (73, TRUE, '+33677542865', 0, 58),
     (74, TRUE, '+33677542866', 0, 59),
     (75, TRUE, '+33677542866', 0, 60),
-    (76, TRUE, '+33677542866', 0, 61);
+    (76, TRUE, '+33677542866', 0, 61),
+    (77, TRUE, '+33778899110', 0, 62),
+    (78, FALSE, '+33778899111', 0, 62);
 
 
 INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES

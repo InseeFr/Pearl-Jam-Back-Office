@@ -301,14 +301,49 @@ class SurveyUnitIT {
 				         ]
 				      }
 				   ],
+				   "previousContactHistory":
+				     {
+				       "comment":"nice comment",
+				       "contactOutcomeValue":"INA",
+				       "persons":[
+				         {
+				           "id":16,
+				           "title":"MISS",
+				           "firstName":"Opre",
+				           "lastName":"Vious",
+				           "panel":true,
+				           "birthdate": 315532800000,
+				           "phoneNumbers":[]
+				         },{
+				           "id":17,
+				           "title":"MISTER",
+				           "firstName":"Agrippa",
+				           "lastName":"Nel",
+				           "panel":true,
+				           "birthdate": 1024815788000,
+				           "phoneNumbers":[]
+				         },{
+				           "id":18,
+				           "title":"MISTER",
+				           "firstName":"Isidore",
+				           "lastName":"Champ",
+				           "panel":false,
+				           "birthdate": 1070870588000,
+				           "phoneNumbers":[]
+				         }
+				        ]
+				     },
 				   "nextContactHistory":
 				     {
 				      "persons":[
 				        {"id":15,
-				         "title":"MISTER",
+				         "title":"MISS",
 				         "firstName":"Futur",
 				         "lastName":"Ama",
-				         "phoneNumbers":[],
+				         "phoneNumbers":[
+				           "+33677542866",
+				           "+33677542867"
+				         ],
 				         "birthdate":-11111111,
 				         "panel":true}
 				        ]
@@ -603,7 +638,7 @@ class SurveyUnitIT {
             {
               "persons": [
                 {
-                  "id": 16,
+                  "id": 19,
                   "title": "MISS",
                   "firstName": "Futur",
                   "lastName": "Anna",
