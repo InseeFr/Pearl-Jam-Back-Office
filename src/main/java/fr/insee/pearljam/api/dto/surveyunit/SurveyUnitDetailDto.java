@@ -8,7 +8,12 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 import lombok.Data;
@@ -16,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
@@ -35,7 +39,8 @@ public class SurveyUnitDetailDto {
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
 	private List<CommunicationRequestResponseDto> communicationRequests;
-	private List<ContactHistoryDto> contactHistory;
+	private PreviousContactHistoryDto previousContactHistory;
+	private NextContactHistoryDto nextContactHistory;
 
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
 		this.id = surveyUnit.getId();
@@ -65,6 +70,7 @@ public class SurveyUnitDetailDto {
 
 		this.move = surveyUnit.getMove();
 		this.communicationRequests = CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests());
-		this.contactHistory= surveyUnit.getModelContactHistory().stream().filter(Objects::nonNull).map(ContactHistoryDto::fromModel).toList();
+		this.previousContactHistory=PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
+		this.nextContactHistory=NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
 	}
 }

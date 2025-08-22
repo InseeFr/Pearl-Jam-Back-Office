@@ -15,18 +15,23 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
-import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.repository.*;
-import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.api.service.MessageService;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +63,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -1471,23 +1477,6 @@ class TestAuthKeyCloak {
 
 	}
 
-	@Test
-	@Order(110)
-	void testPostSurveyUnitsContactHistoryException() throws Exception {
-		SurveyUnitCreationDto surveyWithNextContactHistory = generateSurveyUnit("8");
-		surveyWithNextContactHistory.setContactHistory(new ContactHistoryDto("comment",
-				ContactOutcomeType.INA,
-				ContactHistoryType.NEXT,
-				List.of()
-				));
-
-		mockMvc.perform(post("/api/survey-units")
-						.with(authentication(ADMIN))
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(asJsonString(List.of(surveyWithNextContactHistory))))
-				.andExpect(status().isBadRequest());
-	}
-
 	/**
 	 * Test that the POST endpoint
 	 * "/survey-units returns 200
@@ -1504,9 +1493,8 @@ class TestAuthKeyCloak {
 		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L,ContactOutcomeType.INA,2));
 		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
 		surveyUnit.setClosingCause(new ClosingCauseDto(1843078880000L,ClosingCauseType.NPA));
-		surveyUnit.setContactHistory(new ContactHistoryDto("comment",
+		surveyUnit.setContactHistory(new PreviousContactHistoryDto("comment",
 				ContactOutcomeType.INA,
-				ContactHistoryType.PREVIOUS,
 				List.of()
 		));
 

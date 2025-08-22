@@ -301,21 +301,20 @@ class SurveyUnitIT {
 				         ]
 				      }
 				   ],
-				   "contactHistory":[
+				   "nextContactHistory":
 				     {
 				      "comment":"nice comment",
 				      "contactOutcomeValue":"INA",
-				      "contactHistoryType":"NEXT",
 				      "persons":[
 				        {"id":15,
 				         "title":"MISTER",
 				         "firstName":"Futur",
 				         "lastName":"Ama",
+				         "phoneNumbers":[],
 				         "birthdate":-11111111,
 				         "panel":true}
 				        ]
 				      }
-				    ]
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
@@ -431,11 +430,10 @@ class SurveyUnitIT {
 				  "creationTimestamp": 1721903754405
 				}
 			  ],
-			  "contactHistory": [
+			  "nextContactHistory":
 				{
 				  "comment": "nice comment",
 				  "contactOutcomeValue": "INA",
-				  "contactHistoryType": "NEXT",
 				  "persons": [
 					{
 					  "title": "MISS",
@@ -446,7 +444,6 @@ class SurveyUnitIT {
 					}
 				  ]
 				}
-			  ]
 			}
 			""";
 		MvcResult result =
@@ -606,23 +603,22 @@ class SurveyUnitIT {
               ]
             }
           ],
-          "contactHistory": [
+          "nextContactHistory":
             {
               "comment": "nice comment",
               "contactOutcomeValue": "INA",
-              "contactHistoryType": "NEXT",
               "persons": [
                 {
                   "id": 16,
                   "title": "MISS",
                   "firstName": "Futur",
                   "lastName": "Anna",
+                  "phoneNumbers":[],
                   "birthdate": -22222222,
                   "panel": true
                 }
               ]
             }
-          ]
         }
         """;
 

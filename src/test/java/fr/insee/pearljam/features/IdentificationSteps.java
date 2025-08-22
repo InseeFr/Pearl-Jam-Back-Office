@@ -173,7 +173,7 @@ public class IdentificationSteps {
 				null,
 				newIdentification, // New identification
 				List.of(),
-				List.of()
+				null
 		);
 	}
 

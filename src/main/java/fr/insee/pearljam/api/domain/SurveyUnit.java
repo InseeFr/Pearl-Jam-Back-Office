@@ -1,6 +1,10 @@
 package fr.insee.pearljam.api.domain;
 
-import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
@@ -12,7 +16,6 @@ import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -217,12 +220,12 @@ public class SurveyUnit implements Serializable {
 
 	}
 
-	Set<ContactHistoryDB> createContactHistory(ContactHistoryDto contactHistory) {
+	Set<ContactHistoryDB> createContactHistory(PreviousContactHistoryDto contactHistory) {
 		if (contactHistory == null) {
 			return new HashSet<>();
 		}
 		return Set.of(
-				ContactHistoryDB.fromModel(ContactHistoryDto.toModel(contactHistory), this));
+				ContactHistoryDB.fromModel(PreviousContactHistoryDto.toModel(contactHistory), this));
 	}
 
 	public Boolean isAtLeastState(String state) {
@@ -337,11 +340,19 @@ public class SurveyUnit implements Serializable {
 		existingPersons.addAll(personsDBToUpdate);
 	}
 
-	public List<ContactHistory> getModelContactHistory(){
-		return this.getContactHistory().stream().map(ContactHistoryDB::toModel).toList();
+	public ContactHistory getNextContactHistory(){
+		return this.contactHistory.stream()
+				.filter(ch -> ch.getId().getContactHistoryType()== ContactHistoryType.NEXT)
+				.findFirst().map(ContactHistoryDB::toModel).orElse(null);
 	}
 
-	public void updateNextContactHistory(@NotNull ContactHistory nextContactHistory) {
+	public ContactHistory getPreviousContactHistory(){
+		return this.contactHistory.stream()
+				.filter(ch -> ch.getId().getContactHistoryType()== ContactHistoryType.PREVIOUS)
+				.findFirst().map(ContactHistoryDB::toModel).orElse(null);
+	}
+
+	public void updateNextContactHistory(ContactHistory nextContactHistory) {
 		this.contactHistory.removeIf(
 				ch -> ch.getId().getContactHistoryType() == ContactHistoryType.NEXT
 		);

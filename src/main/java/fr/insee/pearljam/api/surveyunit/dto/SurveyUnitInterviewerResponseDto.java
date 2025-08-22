@@ -9,12 +9,13 @@ import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
@@ -33,17 +34,17 @@ public record SurveyUnitInterviewerResponseDto(
 	IdentificationDto identification,
 	List<CommunicationTemplateResponseDto> communicationTemplates,
 	List<CommunicationRequestResponseDto> communicationRequests,
-	List<ContactHistoryDto> contactHistory) {
+	PreviousContactHistoryDto previousContactHistory,
+	NextContactHistoryDto nextContactHistory
+) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
 		List<PersonDto> persons = surveyUnit.getModelPersons().stream()
 				.map(PersonDto::fromModel)
 				.toList();
-		List<ContactHistoryDto> contactHistory = surveyUnit.getModelContactHistory()
-				.stream()
-				.filter(Objects::nonNull)
-				.map(ContactHistoryDto::fromModel).toList();
+		PreviousContactHistoryDto previousContactHistory = PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
+		NextContactHistoryDto nextContactHistory = NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		AddressDto address = new AddressDto(surveyUnit.getAddress());
@@ -74,6 +75,6 @@ public record SurveyUnitInterviewerResponseDto(
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
 				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
-				contactHistory);
+				previousContactHistory, nextContactHistory);
 	}
 }

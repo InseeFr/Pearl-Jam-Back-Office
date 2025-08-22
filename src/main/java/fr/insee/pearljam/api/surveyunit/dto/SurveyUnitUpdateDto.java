@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import jakarta.validation.Valid;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * @param contactOutcome           The contact outcome of the survey unit
  * @param identification           The identification information of the survey unit
  * @param communicationRequests    The list of communication requests for the survey unit
+ * @param nextContactHistory       The contacts to be used for next campaign
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitUpdateDto(
@@ -38,6 +40,7 @@ public record SurveyUnitUpdateDto(
     RawIdentificationDto identification,
     @Valid
     List<CommunicationRequestCreateDto> communicationRequests,
-    List<ContactHistoryDto> contactHistory
+    @Valid
+    NextContactHistoryDto nextContactHistory
 ) {
 }

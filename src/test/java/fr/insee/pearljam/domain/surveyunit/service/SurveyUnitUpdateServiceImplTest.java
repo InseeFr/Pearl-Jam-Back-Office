@@ -3,7 +3,11 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
-import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
+import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
@@ -329,9 +333,9 @@ class SurveyUnitUpdateServiceImplTest {
 
 	private SurveyUnitUpdateDto createSurveyUnitDto(RawIdentificationDto identification, List<CommentDto> comments,
 													List<CommunicationRequestCreateDto> communicationRequests,
-													ContactOutcomeDto contactOutcome, List<ContactHistoryDto> contactHistory) {
+													ContactOutcomeDto contactOutcome, NextContactHistoryDto contactHistory) {
 		return new SurveyUnitUpdateDto("su-id", null, null, true,
-				comments, null, null, contactOutcome, identification, communicationRequests, contactHistory == null ? List.of() : contactHistory);
+				comments, null, null, contactOutcome, identification, communicationRequests, contactHistory );
 	}
 
 	private IdentificationDB createHouseF2FIdentificationDB() {

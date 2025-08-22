@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
@@ -16,8 +17,6 @@ import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
@@ -77,13 +76,10 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         contactOutcome = convertDeprecatedContactOutcomeValue(contactOutcome);
         surveyUnit.updateContactOutcome(contactOutcome);
 
-        //update ContactHistory : keep PREVIOUS if present and create/update NEXT History if present
-        Optional<ContactHistory> nextContactHistory = surveyUnitUpdateDto.contactHistory()
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(ch-> ContactHistoryType.NEXT.equals(ch.contactHistoryType()))
-                .map(ContactHistoryDto::toModel).findFirst();
-        nextContactHistory.ifPresent(surveyUnit::updateNextContactHistory);
+        //update ContactHistory
+        Optional.ofNullable(surveyUnitUpdateDto.nextContactHistory())
+                .map(NextContactHistoryDto::toModel)
+                .ifPresent(surveyUnit::updateNextContactHistory);
     }
 
     // when DCD and DUU values are not used anymore => to be removed
