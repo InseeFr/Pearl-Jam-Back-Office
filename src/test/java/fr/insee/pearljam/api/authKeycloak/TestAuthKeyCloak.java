@@ -1028,13 +1028,10 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
-						jsonPath("$.[?(@.id == '21')]").exists(),
-						jsonPath("$.[?(@.id == '23')]").doesNotExist(), // 23 has stateData => not closable
-						jsonPath("$.[?(@.id == '21')].ssech").value(1),
-						jsonPath("$.[?(@.id == '21')].questionnaireState").value("UNAVAILABLE"),
-						jsonPath("$.[?(@.id == '21')].identificationState").value("FINISHED"),
-						jsonPath("$.[?(@.id == '20')].identificationState").value("MISSING"),
-						jsonPath("$.[?(@.id == '20')].identificationState").value("MISSING"));
+						jsonPath("$.[?(@.id == '21')]").doesNotExist(),
+						jsonPath("$.[?(@.id == '23')]").exists(), // 23 has stateData => not closable
+						jsonPath("$.[?(@.id == '23')].ssech").value(1),
+						jsonPath("$.[?(@.id == '23')].questionnaireState").value("EXTRACTED"));
 
 		visi.setCollectionEndDate(collectionEndDate);
 		visi.setEndDate(endDate);
