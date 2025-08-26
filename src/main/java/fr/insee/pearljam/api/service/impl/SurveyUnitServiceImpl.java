@@ -330,33 +330,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
-		// Retrieve SurveyUnitIds for each configuration
-		Map<IdentificationConfiguration, List<String>> surveyUnitIdsByConfig = Arrays.stream(IdentificationConfiguration.values())
-				.collect(Collectors.toMap(
-						config -> config,
-						config -> surveyUnitRepository.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
-								System.currentTimeMillis(), lstOuId, config)
-				));
+    // Récupération directe des SurveyUnits en phase de traitement (plus besoin des closableXXX)
+    List<SurveyUnit> suToCheck = Arrays.stream(IdentificationConfiguration.values())
+        .flatMap(config ->
+            surveyUnitRepository
+                .findSurveyUnitsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+                    System.currentTimeMillis(), lstOuId, config)
+                .stream()
+        ).toList();
 
-		// Mapping between each configuration and the appropriate method to retrieve closable units
-		Map<IdentificationConfiguration, Function<List<String>, List<SurveyUnit>>> closableSurveyUnitMethods = Map.of(
-				IdentificationConfiguration.NOIDENT, surveyUnitRepository::findClosableNoIdentSurveyUnitId,
-				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
-				IdentificationConfiguration.HOUSEF2F, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
-				IdentificationConfiguration.INDF2F, surveyUnitRepository::findClosableIndf2fFSurveyUnitId,
-				IdentificationConfiguration.INDF2FNOR, surveyUnitRepository::findClosableIndf2fnorFSurveyUnitId,
-				IdentificationConfiguration.INDTEL, surveyUnitRepository::findClosableIndtelFSurveyUnitId,
-				IdentificationConfiguration.INDTELNOR, surveyUnitRepository::findClosableIndtelnorFSurveyUnitId
-		);
-
-
-		// Retrieving SurveyUnits to check
-		List<SurveyUnit> suToCheck = surveyUnitIdsByConfig.entrySet().stream()
-				.flatMap(entry -> {
-					IdentificationConfiguration config = entry.getKey();
-					List<String> surveyUnitIds = entry.getValue();
-					return closableSurveyUnitMethods.getOrDefault(config, ids -> List.of()).apply(surveyUnitIds).stream();
-				}).toList();
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 
@@ -386,18 +368,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	}
 
-	private boolean isClosable(SurveyUnitCampaignDto sudto) {
+  private boolean isClosable(SurveyUnitCampaignDto sudto) {
+    boolean questionnaireDefined = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+    ContactOutcomeDto outcome = sudto.getContactOutcome();
 
-		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+    if (outcome == null || outcome.type() == ContactOutcomeType.INA) {
+      return questionnaireDefined;
+    }
 
-		ContactOutcomeDto outcome = sudto.getContactOutcome();
-		if (outcome == null)
-			return !hasQuestionnaire;
-        return switch (outcome.type()) {
-            case INA, NOA -> !hasQuestionnaire;
-            default -> true;
-        };
-	}
+    return true;
+  }
+
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
 			List<String> lstSu) {

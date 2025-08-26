@@ -59,102 +59,31 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
 
-	@Query(value="SELECT su.id FROM SurveyUnit su " +
-	"WHERE su.organizationUnit.id IN (:lstOuId) " +
-	// in campaign with expected IdentificationConfiguration
-	"AND su.campaign.identificationConfiguration = :config " +
-	// in processing phase
-	"AND EXISTS (SELECT vi FROM VisibilityDB vi " +
-		"WHERE vi.campaign.id = su.campaign.id " +
-		"AND vi.organizationUnit.id = su.organizationUnit.id " +
-		"AND vi.collectionEndDate < :date " +
-		"AND vi.endDate > :date) " +
-	"AND NOT EXISTS (" +
-		"SELECT st FROM State st WHERE " +
-		"st.surveyUnit.id = su.id " +
-		"AND st.type IN ('CLO', 'FIN', 'TBR') " +
-	")")
-	List<String> findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(@Param("date") Long date,  @Param("lstOuId") List<String> lstOuId, @Param("config") IdentificationConfiguration config);
-
-	@Query(value="SELECT su FROM SurveyUnit su " + 
-	"WHERE su.id IN (:ids) " +
-	// Contact outcome must be null or INA
-	"AND NOT EXISTS ( " +
-		"SELECT 1 FROM ContactOutcomeDB co WHERE co.surveyUnit.id = su.id " +
-		"AND co.type <> 'INA' " +
-	")")
-	List<SurveyUnit> findClosableNoIdentSurveyUnitId(@Param("ids") List<String> ids);
-
-	@Query(value = """
+  @Query(value = """
     SELECT su
     FROM SurveyUnit su
-    LEFT JOIN FETCH su.identification ident
-    WHERE su.id IN (:ids)
-    AND (
-        (
-            EXISTS (
-                SELECT 1
-                FROM ContactOutcomeDB co
-                WHERE co.surveyUnit.id = su.id
-                AND co.type = 'IMP'
-            )
-            AND (
-                ident IS NULL
-                OR ident.identificationState = 'MISSING'
-                OR ident.identificationState = 'ONGOING'
-            )
-        )
-        OR
-        (
-            NOT EXISTS (
-                SELECT 1
-                FROM ContactOutcomeDB co
-                WHERE co.surveyUnit.id = su.id
-                AND co.type NOT IN ('INA','NOA')
-            )
-            AND (
-                ident IS NULL
-                OR ident.identificationState = 'MISSING'
-                OR ident.identificationState = 'ONGOING'
-                OR (ident.identificationState = 'FINISHED' AND ident.access IS NOT NULL AND ident.situation = 'ORDINARY' AND ident.category NOT IN ('SECONDARY', 'VACANT') )
-			
-            )
-        )
-    )
-""")
-	List<SurveyUnit> findClosableHousef2fSurveyUnitId(@Param("ids") List<String> ids);
-
-	@Query(value = """
-    SELECT su
-    FROM SurveyUnit su
-    LEFT JOIN FETCH su.identification ident
-    WHERE su.id IN (:ids)
+    WHERE su.organizationUnit.id IN (:lstOuId)
+      AND su.campaign.identificationConfiguration = :config
+      AND EXISTS (
+          SELECT vi
+          FROM VisibilityDB vi
+          WHERE vi.campaign.id = su.campaign.id
+            AND vi.organizationUnit.id = su.organizationUnit.id
+            AND vi.collectionEndDate < :date
+            AND vi.endDate > :date
+      )
+      AND NOT EXISTS (
+          SELECT st
+          FROM State st
+          WHERE st.surveyUnit.id = su.id
+            AND st.type IN ('CLO', 'FIN', 'TBR')
+      )
     """)
-	List<SurveyUnit> findClosableIndf2fFSurveyUnitId(@Param("ids") List<String> ids);
-
-	@Query(value = """
-    SELECT su
-    FROM SurveyUnit su
-    LEFT JOIN FETCH su.identification ident
-    WHERE su.id IN (:ids)
-    """)
-	List<SurveyUnit> findClosableIndf2fnorFSurveyUnitId(@Param("ids") List<String> ids);
-
-	@Query(value = """
-    SELECT su
-    FROM SurveyUnit su
-    LEFT JOIN FETCH su.identification ident
-    WHERE su.id IN (:ids)
-    """)
-	List<SurveyUnit> findClosableIndtelFSurveyUnitId(@Param("ids") List<String> ids);
-
-	@Query(value = """
-    SELECT su
-    FROM SurveyUnit su
-    LEFT JOIN FETCH su.identification ident
-    WHERE su.id IN (:ids)
-    """)
-	List<SurveyUnit> findClosableIndtelnorFSurveyUnitId(@Param("ids") List<String> ids);
+  List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+      @Param("date") Long date,
+      @Param("lstOuId") List<String> lstOuId,
+      @Param("config") IdentificationConfiguration config
+  );
 
 		@Query(value="SELECT su FROM SurveyUnit su "
 		+" LEFT JOIN fetch su.comments"
