@@ -313,7 +313,7 @@ class SurveyUnitIT {
 				           "lastName":"Vious",
 				           "panel":true,
 				           "birthdate": 315532800000,
-				           "phoneNumbers":[]
+				           "phoneNumber":null
 				         },{
 				           "id":17,
 				           "title":"MISTER",
@@ -321,7 +321,7 @@ class SurveyUnitIT {
 				           "lastName":"Nel",
 				           "panel":true,
 				           "birthdate": 1024815788000,
-				           "phoneNumbers":[]
+				           "phoneNumber":null
 				         },{
 				           "id":18,
 				           "title":"MISTER",
@@ -329,7 +329,7 @@ class SurveyUnitIT {
 				           "lastName":"Champ",
 				           "panel":false,
 				           "birthdate": 1070870588000,
-				           "phoneNumbers":[]
+				           "phoneNumber":null
 				         }
 				        ]
 				     },
@@ -340,10 +340,7 @@ class SurveyUnitIT {
 				         "title":"MISS",
 				         "firstName":"Futur",
 				         "lastName":"Ama",
-				         "phoneNumbers":[
-				           "+33677542866",
-				           "+33677542867"
-				         ],
+				         "phoneNumber":"+33677542866",
 				         "birthdate":-11111111,
 				         "panel":true}
 				        ]
@@ -642,7 +639,7 @@ class SurveyUnitIT {
                   "title": "MISS",
                   "firstName": "Futur",
                   "lastName": "Anna",
-                  "phoneNumbers":[],
+                  "phoneNumber": null,
                   "birthdate": -22222222,
                   "panel": true
                 }
