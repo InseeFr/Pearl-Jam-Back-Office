@@ -180,7 +180,6 @@ INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRU
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Artus' and p.last_name='Arnoux' and p.survey_unit_id='23';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Laurent' and p.last_name='Neville' and p.survey_unit_id='24';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542866', 2,  p.id FROM person p WHERE p.first_name='Futur' and p.last_name='Ama' and p.survey_unit_id='11';
-INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542867', 2,  p.id FROM person p WHERE p.first_name='Futur' and p.last_name='Ama' and p.survey_unit_id='11';
 
 INSERT INTO public.state (date, type, survey_unit_id) VALUES
     (111112111,'VIN', '11'),

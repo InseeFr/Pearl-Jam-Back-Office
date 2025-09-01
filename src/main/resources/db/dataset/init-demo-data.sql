@@ -567,8 +567,7 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (74, TRUE, '+33677542866', 0, 59),
     (75, TRUE, '+33677542866', 0, 60),
     (76, TRUE, '+33677542866', 0, 61),
-    (77, TRUE, '+33778899110', 0, 62),
-    (78, FALSE, '+33778899111', 0, 62);
+    (77, TRUE, '+33778899110', 0, 62);
 
 
 INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES
