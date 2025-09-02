@@ -63,7 +63,6 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
     SELECT su
     FROM SurveyUnit su
     WHERE su.organizationUnit.id IN (:lstOuId)
-      AND su.campaign.identificationConfiguration = :config
       AND EXISTS (
           SELECT vi
           FROM VisibilityDB vi
@@ -79,10 +78,9 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
             AND st.type IN ('CLO', 'FIN', 'TBR')
       )
     """)
-  List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
+  List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
       @Param("date") Long date,
-      @Param("lstOuId") List<String> lstOuId,
-      @Param("config") IdentificationConfiguration config
+      @Param("lstOuId") List<String> lstOuId
   );
 
 		@Query(value="SELECT su FROM SurveyUnit su "

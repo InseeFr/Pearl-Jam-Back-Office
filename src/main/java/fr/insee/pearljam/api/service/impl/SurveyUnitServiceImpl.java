@@ -325,20 +325,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
-	// TODO : use future identification state in rules instead of specific identification attributes
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
-    // Récupération directe des SurveyUnits en phase de traitement (plus besoin des closableXXX)
-    List<SurveyUnit> suToCheck = Arrays.stream(IdentificationConfiguration.values())
-        .flatMap(config ->
-            surveyUnitRepository
-                .findSurveyUnitsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
-                    System.currentTimeMillis(), lstOuId, config)
-                .stream()
-        ).toList();
-
+    List<SurveyUnit> suToCheck = surveyUnitRepository
+        .findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
+            System.currentTimeMillis(), lstOuId
+        );
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 
