@@ -37,7 +37,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(Long date, List<String> lstOuId, IdentificationConfiguration config) {
+    public List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(Long date, List<String> lstOuId) {
         return List.of();
     }
 
