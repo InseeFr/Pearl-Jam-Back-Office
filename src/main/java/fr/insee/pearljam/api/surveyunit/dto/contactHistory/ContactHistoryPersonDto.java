@@ -6,7 +6,6 @@ import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import fr.insee.pearljam.domain.surveyunit.model.person.PhoneNumber;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.Objects;
 import java.util.Set;
@@ -22,7 +21,6 @@ public record ContactHistoryPersonDto(
         String firstName,
         @NotNull
         String lastName,
-        @Pattern(regexp = "\\+?\\d+", message = "phone number must contain digits 0–9 only and can start with '+'")
         String phoneNumber,
         String email,
         Long birthdate,
