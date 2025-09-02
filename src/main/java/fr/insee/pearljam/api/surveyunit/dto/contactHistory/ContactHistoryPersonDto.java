@@ -24,20 +24,21 @@ public record ContactHistoryPersonDto(
         String lastName,
         @Pattern(regexp = "\\+?\\d+", message = "phone number must contain digits 0–9 only and can start with '+'")
         String phoneNumber,
+        String email,
         Long birthdate,
         boolean panel
 ) {
 
     public static Person toModel(ContactHistoryPersonDto chPerson, ContactHistory contactHistory) {
         Set<PhoneNumber> domainPhoneNumbers =
-                Stream.of(chPerson.phoneNumber)
+                Stream.of(chPerson.phoneNumber())
                         .filter(Objects::nonNull)
                         .map(phoneNumber -> new PhoneNumber(Source.INTERVIEWER, false, phoneNumber))
                         .collect(Collectors.toSet());
-        return new Person(chPerson.id(), chPerson.title(), chPerson.firstName(), chPerson.lastName(), null, chPerson.birthdate(), false, chPerson.panel(), domainPhoneNumbers, contactHistory);
+        return new Person(chPerson.id(), chPerson.title(), chPerson.firstName(), chPerson.lastName(), chPerson.email(), chPerson.birthdate(), false, chPerson.panel(), domainPhoneNumbers, contactHistory);
     }
 
     public static ContactHistoryPersonDto fromModel(Person person) {
-        return new ContactHistoryPersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.phoneNumbers().stream().findFirst().map(PhoneNumber::number).orElse(null), person.birthdate(), person.isPanel());
+        return new ContactHistoryPersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.phoneNumbers().stream().findFirst().map(PhoneNumber::number).orElse(null), person.email(), person.birthdate(), person.isPanel());
     }
 }

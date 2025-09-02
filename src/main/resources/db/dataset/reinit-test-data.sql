@@ -154,7 +154,7 @@ INSERT INTO public.person (email, first_name, last_name, birthdate, title, privi
     ('test@test.com', 'Artus', 'Arnoux', 11111111, 0, TRUE, '23', FALSE, NULL),
     ('test@test.com', 'Laurent', 'Neville', 11111111, 0, TRUE, '24', FALSE, NULL),
 -- contactHistory linked persons
-    ('test@ch.com', 'Futur', 'Ama', -11111111, 1, TRUE, '11', TRUE, 'NEXT'),
+    ('futur.ama@ch.com', 'Futur', 'Ama', -11111111, 1, TRUE, '11', TRUE, 'NEXT'),
     ('test@ch.com', 'Opre', 'Vious', 315532800000, 1, TRUE, '11', TRUE, 'PREVIOUS'),
     ('test@ch.com', 'Agrippa', 'Nel', 1024815788000, 0, FALSE, '11', TRUE, 'PREVIOUS'),
     ('test@ch.com', 'Isidore', 'Champ', 1070870588000, 0, FALSE, '11', FALSE, 'PREVIOUS');

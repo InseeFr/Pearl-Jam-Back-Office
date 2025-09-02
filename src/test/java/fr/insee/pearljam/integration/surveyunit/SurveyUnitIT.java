@@ -313,7 +313,8 @@ class SurveyUnitIT {
 				           "lastName":"Vious",
 				           "panel":true,
 				           "birthdate": 315532800000,
-				           "phoneNumber":null
+				           "phoneNumber":null,
+				           "email":"test@ch.com"
 				         },{
 				           "id":17,
 				           "title":"MISTER",
@@ -321,7 +322,8 @@ class SurveyUnitIT {
 				           "lastName":"Nel",
 				           "panel":true,
 				           "birthdate": 1024815788000,
-				           "phoneNumber":null
+				           "phoneNumber":null,
+				           "email":"test@ch.com"
 				         },{
 				           "id":18,
 				           "title":"MISTER",
@@ -329,7 +331,8 @@ class SurveyUnitIT {
 				           "lastName":"Champ",
 				           "panel":false,
 				           "birthdate": 1070870588000,
-				           "phoneNumber":null
+				           "phoneNumber":null,
+				           "email":"test@ch.com"
 				         }
 				        ]
 				     },
@@ -341,6 +344,7 @@ class SurveyUnitIT {
 				         "firstName":"Futur",
 				         "lastName":"Ama",
 				         "phoneNumber":"+33677542866",
+				         "email":"futur.ama@ch.com",
 				         "birthdate":-11111111,
 				         "panel":true}
 				        ]
@@ -468,6 +472,8 @@ class SurveyUnitIT {
 					  "firstName": "Futur",
 					  "lastName": "Anna",
 					  "birthdate": -22222222,
+					  "phoneNumber":"+1234567890",
+					  "email":"futur.ama@ch.upd",
 					  "panel": true
 					}
 				  ]
@@ -639,7 +645,8 @@ class SurveyUnitIT {
                   "title": "MISS",
                   "firstName": "Futur",
                   "lastName": "Anna",
-                  "phoneNumber": null,
+                  "phoneNumber": "+1234567890",
+                  "email":"futur.ama@ch.upd",
                   "birthdate": -22222222,
                   "panel": true
                 }
