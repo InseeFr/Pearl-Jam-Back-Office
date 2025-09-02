@@ -1022,18 +1022,22 @@ class TestAuthKeyCloak {
 		visi.setEndDate(System.currentTimeMillis() + 86400000);
 		visibilityRepository.save(visi);
 
-		mockMvc
-				.perform(get("/api/survey-units/closable")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.[?(@.id == '21')]").doesNotExist(),
-						jsonPath("$.[?(@.id == '23')]").exists(), // 23 has stateData => not closable
-						jsonPath("$.[?(@.id == '23')].ssech").value(1),
-						jsonPath("$.[?(@.id == '23')].questionnaireState").value("EXTRACTED"));
+    mockMvc
+        .perform(get("/api/survey-units/closable")
+            .with(authentication(LOCAL_USER))
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpectAll(
+            status().isOk(),
+            jsonPath("$.[?(@.id == '20')]").exists(),
+            jsonPath("$.[?(@.id == '21')]").exists(),
+            jsonPath("$.[?(@.id == '23')]").exists(),
+            jsonPath("$.[?(@.id == '20')].ssech").value(1),
+            jsonPath("$.[?(@.id == '20')].questionnaireState").value("UNAVAILABLE")
+        );
 
-		visi.setCollectionEndDate(collectionEndDate);
+
+    visi.setCollectionEndDate(collectionEndDate);
 		visi.setEndDate(endDate);
 		visibilityRepository.save(visi);
 	}

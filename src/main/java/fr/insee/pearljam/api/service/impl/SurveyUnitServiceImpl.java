@@ -329,6 +329,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
+    // Condition 1 : SU en phase de traitement
     List<SurveyUnit> suToCheck = surveyUnitRepository
         .findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
             System.currentTimeMillis(), lstOuId
@@ -363,14 +364,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
   private boolean isClosable(SurveyUnitCampaignDto sudto) {
-    boolean questionnaireDefined = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+    String questionnaireState = sudto.getQuestionnaireState();
     ContactOutcomeDto outcome = sudto.getContactOutcome();
 
-    if (outcome == null || outcome.type() == ContactOutcomeType.INA) {
-      return questionnaireDefined;
-    }
+    // Condition 2 : jamais transmise
+    boolean neverTransmitted = !Set.of("TBR", "FIN", "CLO").contains(sudto.getState().name());
 
-    return true;
+    // Condition 3 : contact = INA et questionnaire null
+    boolean inaWithoutQuestionnaire = outcome != null
+        && outcome.type() == ContactOutcomeType.INA
+        && (questionnaireState == null || Constants.UNAVAILABLE.equals(questionnaireState));
+
+    return neverTransmitted || inaWithoutQuestionnaire;
   }
 
 

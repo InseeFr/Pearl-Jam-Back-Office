@@ -71,12 +71,6 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
             AND vi.collectionEndDate < :date
             AND vi.endDate > :date
       )
-      AND NOT EXISTS (
-          SELECT st
-          FROM State st
-          WHERE st.surveyUnit.id = su.id
-            AND st.type IN ('CLO', 'FIN', 'TBR')
-      )
     """)
   List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
       @Param("date") Long date,
