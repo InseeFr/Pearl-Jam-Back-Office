@@ -352,6 +352,26 @@ class CampaignIT {
         assertThat(campaignOptional).isEmpty();
     }
 
+    @Test
+    @DisplayName("Should retrieve commons campaign")
+    void testGetCommonsCampaign() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/campaigns/commons/SIMPSONS2020X00")
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(contentResult);
+
+        JSONObject expectedCampaign = new JSONObject();
+        expectedCampaign.put("id", "SIMPSONS2020X00");
+        expectedCampaign.put("dataCollectionTarget", "LUNATIC_NORMAL");
+        expectedCampaign.put("sensitivity", false);
+        expectedCampaign.put("collectMode", "F2F");
+        assertEquals(expectedCampaign.toString(), jsonObject.toString(), "Unexpected campaign content");
+    }
+
     private void assertVisibility(VisibilityDB visibilityToCheck, String campaignId, String organizationUnitId,
                                   long managementStartDate, long interviewerStartDate,
                                   long identificationPhaseStartDate, long collectionStartDate,

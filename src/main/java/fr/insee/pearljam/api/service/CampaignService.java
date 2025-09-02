@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 
@@ -66,4 +67,6 @@ public interface CampaignService {
 	CampaignResponseDto getCampaignDtoById(String id) throws CampaignNotFoundException;
 
 	List<CampaignSensitivityDto> getCampaignSensitivityDto() throws CampaignNotFoundException;
+
+	CampaignCommonsDto findCampaignCommonsById(String id) throws CampaignNotFoundException;
 }
