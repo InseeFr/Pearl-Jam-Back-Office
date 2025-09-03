@@ -8,6 +8,7 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Referent;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
@@ -315,5 +316,16 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
 		return campaignRepository.findAll().stream().map(CampaignSensitivityDto::fromModel).toList();
+	}
+
+	@Override
+	public CampaignCommonsDto findCampaignCommonsById(String campaignId) throws CampaignNotFoundException {
+		Campaign campaign = campaignRepository.findById(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+		return new CampaignCommonsDto(
+				campaign.getId(),
+				"LUNATIC_NORMAL",
+				campaign.getSensitivity(),
+				campaign.getContactAttemptConfiguration().name());
 	}
 }
