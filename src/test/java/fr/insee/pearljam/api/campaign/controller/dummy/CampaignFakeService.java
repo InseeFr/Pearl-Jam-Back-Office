@@ -159,4 +159,9 @@ public class CampaignFakeService implements CampaignService {
     public CampaignCommonsDto findCampaignCommonsById(String id) throws CampaignNotFoundException {
         return null;
     }
+
+    @Override
+    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
+        return List.of();
+    }
 }

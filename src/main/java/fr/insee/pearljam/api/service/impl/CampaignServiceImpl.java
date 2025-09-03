@@ -328,4 +328,21 @@ public class CampaignServiceImpl implements CampaignService {
 				campaign.getSensitivity(),
 				campaign.getContactAttemptConfiguration().name());
 	}
+
+	@Override
+	public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
+		List<CampaignCommonsDto> campaignsCommonsOngoing = new ArrayList<>();
+		List<Campaign> campaigns = campaignRepository.findAll();
+		for (Campaign campaign : campaigns) {
+			if (isCampaignOngoing(campaign.getId())) {
+				campaignsCommonsOngoing.add(new CampaignCommonsDto(
+							campaign.getId(),
+							"LUNATIC_NORMAL",
+							campaign.getSensitivity(),
+							campaign.getContactAttemptConfiguration().name())
+				);
+			}
+		}
+		return campaignsCommonsOngoing;
+	}
 }
