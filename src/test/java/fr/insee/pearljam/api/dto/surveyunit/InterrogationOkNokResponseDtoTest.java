@@ -23,4 +23,11 @@ class InterrogationOkNokResponseDtoTest {
     assertThat(dto.id()).isEqualTo("testId");
     assertThat(dto.stateData()).isNull();
   }
+
+  @Test
+  void testConstructorEmpty() {
+    InterrogationOkNokResponseDto dto = new InterrogationOkNokResponseDto();
+    assertThat(dto.id()).isNull();
+    assertThat(dto.stateData()).isNull();
+  }
 }
