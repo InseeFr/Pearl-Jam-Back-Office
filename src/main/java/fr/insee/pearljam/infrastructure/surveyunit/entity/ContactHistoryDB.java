@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +12,9 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Entity(name = "contact_history")
 @Table
@@ -74,6 +76,53 @@ public class ContactHistoryDB implements Serializable {
                 .forEach(person -> contactHistory.persons().add(person));
 
         return contactHistory;
+    }
+
+    public void updateFrom(ContactHistoryDB next){
+        setComment(next.getComment());
+        setContactOutcomeValue(next.getContactOutcomeValue());
+        updatePersons( next.getPersons());
+
+    }
+
+    private void updatePersons(Set<PersonDB> nextPersons){
+        if (nextPersons == null) nextPersons = Collections.emptySet();
+
+        // Index existing persons by DB id
+        Map<Long, PersonDB> existingById = this.persons.stream()
+                .filter(p -> p.getId() != null)
+                .collect(Collectors.toMap(PersonDB::getId, Function.identity()));
+
+        // Incoming ids (those with id!=null)
+        Set<Long> incomingIds = nextPersons.stream()
+                .map(PersonDB::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+
+        Set<PersonDB> survivors = new HashSet<>();
+        // remove existing persons missing from incoming
+        this.persons.removeIf(p -> !incomingIds.contains(p.getId()));
+
+        for (PersonDB inc : nextPersons) {
+            PersonDB managed = (inc.getId() != null) ? existingById.get(inc.getId()) : null;
+
+            // create new persons
+            if (managed == null) {
+                Person modelPerson = PersonDB.toModel(inc, ContactHistoryDB.toModel(this));
+                PersonDB created = PersonDB.fromModel(modelPerson, this, this.getSurveyUnit());
+                this.persons.add(created);
+                survivors.add(created);
+            } else {
+                // update existing persons
+                managed.updateFrom(inc);
+                survivors.add(managed);
+            }
+        }
+
+        this.persons.removeIf(p -> !survivors.contains(p));
+
+
     }
 
 }
