@@ -310,6 +310,12 @@ public class CampaignController {
 		return campaignService.findCampaignCommonsById(id);
 	}
 
+	@Operation(summary = "Get commons ongoing campaigns")
+	@GetMapping(value = Constants.API_CAMPAIGNS_COMMONS_ONGOING, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<CampaignCommonsDto> getCommonsOngoingCampaigns() throws CampaignNotFoundException {
+		return campaignService.findCampaignsCommonsOngoing();
+	}
+
 
 
 }
