@@ -18,4 +18,13 @@ class InterrogationOkNokDtoTest {
     assertThat(dto.interrogationOK()).isEqualTo(okList);
     assertThat(dto.interrogationNOK()).isEqualTo(nokList);
   }
+
+  @Test
+  void testEmptyConstructorAndGetters() {
+
+    InterrogationOkNokDto dto = new InterrogationOkNokDto();
+
+    assertThat(dto.interrogationOK()).isNull();
+    assertThat(dto.interrogationNOK()).isNull();
+  }
 }
