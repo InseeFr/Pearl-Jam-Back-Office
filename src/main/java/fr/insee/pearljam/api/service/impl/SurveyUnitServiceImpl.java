@@ -401,10 +401,10 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
 			List<String> lstSu) {
-		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
+		ResponseEntity<InterrogationOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
 				lstSu);
 		log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
-		SurveyUnitOkNokDto object = result.getBody();
+		InterrogationOkNokDto object = result.getBody();
 		HttpStatusCode responseCode = result.getStatusCode();
 
 		if (!responseCode.equals(HttpStatus.OK)) {
@@ -416,8 +416,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();
-		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), Constants.UNAVAILABLE));
-		object.getSurveyUnitOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
+		object.getInterrogationNOK().forEach(su -> mapResult.put(su.getId(), Constants.UNAVAILABLE));
+		object.getInterrogationOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
 		return mapResult;
 	}
 

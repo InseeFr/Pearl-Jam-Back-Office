@@ -992,17 +992,17 @@ class TestAuthKeyCloak {
 	void testGetSUClosable() throws Exception {
 
 		String expectedBody = """
-				{"surveyUnitOK" :
+				{"interrogationOK" :
 					[{ "id" : "23",
 					  "stateData" : {"state" : "EXTRACTED", "date" : null, "currentPage" : null }
 					},
 					{ "id" : "20","stateData":{"state": null, "date": null, "currentPage": null }
 					}],
-				"surveyUnitNOK" : [	{"id":"21"}] }
+				"interrogationNOK" : [	{"id":"21"}] }
 				""";
 
 		mockServer.expect(ExpectedCount.once(),
-						requestTo(containsString(Constants.API_QUEEN_SURVEYUNITS_STATEDATA)))
+						requestTo(containsString(Constants.API_QUEEN_INTERROGATIONS_STATEDATA)))
 				.andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.OK)
 						.contentType(MediaType.APPLICATION_JSON)
