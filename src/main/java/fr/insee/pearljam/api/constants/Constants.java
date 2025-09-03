@@ -13,7 +13,7 @@ public class Constants {
 	public static final String AUTHORIZATION = "Authorization";
   public static final String USER = "user";
 
-  public static final String API_QUEEN_SURVEYUNITS_STATEDATA = "/api/survey-units/state-data";
+  public static final String API_QUEEN_INTERROGATIONS_STATEDATA = "/api/interrogations/state-data";
 
   // API
   public static final String API_ADMIN_SURVEYUNITS = "/api/admin/survey-units";
