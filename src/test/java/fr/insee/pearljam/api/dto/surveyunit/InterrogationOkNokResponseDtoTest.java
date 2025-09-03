@@ -9,30 +9,18 @@ class InterrogationOkNokResponseDtoTest {
 
   @Test
   void testDefaultConstructorAndSettersAndGetters() {
-    InterrogationOkNokResponseDto dto = new InterrogationOkNokResponseDto();
 
     StateDataDto stateData = new StateDataDto();
+    InterrogationOkNokResponseDto dto = new InterrogationOkNokResponseDto("testId", stateData);
 
-    dto.setId("testId");
-    dto.setStateData(stateData);
-
-    assertThat(dto.getId()).isEqualTo("testId");
-    assertThat(dto.getStateData()).isEqualTo(stateData);
+    assertThat(dto.id()).isEqualTo("testId");
+    assertThat(dto.stateData()).isEqualTo(stateData);
   }
 
   @Test
   void testConstructorWithIdOnly() {
     InterrogationOkNokResponseDto dto = new InterrogationOkNokResponseDto("testId");
-    assertThat(dto.getId()).isEqualTo("testId");
-    assertThat(dto.getStateData()).isNull();
-  }
-
-  @Test
-  void testConstructorWithIdAndStateData() {
-    StateDataDto stateData = new StateDataDto();
-    InterrogationOkNokResponseDto dto = new InterrogationOkNokResponseDto("testId", stateData);
-
-    assertThat(dto.getId()).isEqualTo("testId");
-    assertThat(dto.getStateData()).isEqualTo(stateData);
+    assertThat(dto.id()).isEqualTo("testId");
+    assertThat(dto.stateData()).isNull();
   }
 }

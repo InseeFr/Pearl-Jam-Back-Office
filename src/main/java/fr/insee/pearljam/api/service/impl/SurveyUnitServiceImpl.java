@@ -416,8 +416,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();
-		object.getInterrogationNOK().forEach(su -> mapResult.put(su.getId(), Constants.UNAVAILABLE));
-		object.getInterrogationOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
+		object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
+		object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));
 		return mapResult;
 	}
 
