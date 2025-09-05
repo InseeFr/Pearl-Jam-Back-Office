@@ -336,7 +336,11 @@ public class SurveyUnit implements Serializable {
 				.map(newPerson -> PersonDB.fromModel(newPerson, null, this))
 				.collect(Collectors.toSet());
 
-		existingPersons.clear();
+		List<Long> lastingPersons = personsDBToUpdate.stream().map(PersonDB::getId).toList();
+
+		// we remove persons not linked to contactHistory, handled appart
+		existingPersons.removeIf( current -> current.getContactHistoryType()==null);
+
 		existingPersons.addAll(personsDBToUpdate);
 	}
 

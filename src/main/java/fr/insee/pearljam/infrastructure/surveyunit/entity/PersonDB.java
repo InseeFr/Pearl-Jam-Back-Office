@@ -109,11 +109,11 @@ public class PersonDB implements Serializable {
         setPanel(next.isPanel());
 
         String nextPhoneNumber = next.getPhoneNumbers().stream().findFirst().map(PhoneNumberDB::getNumber).orElse(null);
-        updatePhoneNumbers(nextPhoneNumber);
+        updateContactHistoryPhoneNumbers(nextPhoneNumber);
     }
 
 
-    private void updatePhoneNumbers(String nextPhoneNumber) {
+    private void updateContactHistoryPhoneNumbers(String nextPhoneNumber) {
         Set<PhoneNumberDB> existing = this.getPhoneNumbers();
         PhoneNumberDB phone = existing.stream().findFirst().orElse(null);
 

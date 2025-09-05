@@ -66,5 +66,3 @@ public class PhoneNumberDB implements Serializable {
     }
 
 }
-
-
