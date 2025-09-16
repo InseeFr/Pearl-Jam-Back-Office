@@ -103,6 +103,8 @@ public class OidcSecurityConfiguration {
 						// configuration for endpoints
 						.requestMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS)
 						.hasAnyRole(adminRole, interviewerRole, localUserRole, nationalUserRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_INTERROGATIONS)
+						.hasAnyRole(adminRole, interviewerRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_TEMP_ZONE)
 						.hasAnyRole(adminRole, interviewerRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.POST, Constants.API_SURVEYUNITS)
