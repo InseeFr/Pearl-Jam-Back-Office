@@ -312,27 +312,21 @@ class SurveyUnitIT {
 				           "firstName":"Opre",
 				           "lastName":"Vious",
 				           "panel":true,
-				           "birthdate": 315532800000,
-				           "phoneNumber":null,
-				           "email":"test@ch.com"
+				           "birthdate": 315532800000
 				         },{
 				           "id":17,
 				           "title":"MISTER",
 				           "firstName":"Agrippa",
 				           "lastName":"Nel",
 				           "panel":true,
-				           "birthdate": 1024815788000,
-				           "phoneNumber":null,
-				           "email":"test@ch.com"
+				           "birthdate": 1024815788000
 				         },{
 				           "id":18,
 				           "title":"MISTER",
 				           "firstName":"Isidore",
 				           "lastName":"Champ",
 				           "panel":false,
-				           "birthdate": 1070870588000,
-				           "phoneNumber":null,
-				           "email":"test@ch.com"
+				           "birthdate": 1070870588000
 				         }
 				        ]
 				     },
@@ -345,8 +339,8 @@ class SurveyUnitIT {
 				         "lastName":"Ama",
 				         "phoneNumber":"+33677542866",
 				         "email":"futur.ama@ch.com",
-				         "birthdate":-11111111,
-				         "panel":true}
+				         "preferredContact": true
+				         }
 				        ]
 				      }
 				}""";
@@ -471,10 +465,10 @@ class SurveyUnitIT {
 					  "title": "MISS",
 					  "firstName": "Futur",
 					  "lastName": "Anna",
-					  "birthdate": -22222222,
 					  "phoneNumber":"+1234567890",
 					  "email":"futur.ama@ch.upd",
-					  "panel": true
+					  "panel": true,
+					  "preferredContact": true
 					}
 				  ]
 				}
@@ -641,14 +635,13 @@ class SurveyUnitIT {
             {
               "persons": [
                 {
-                  "id": 19,
+                  "id": 20,
                   "title": "MISS",
                   "firstName": "Futur",
                   "lastName": "Anna",
                   "phoneNumber": "+1234567890",
                   "email":"futur.ama@ch.upd",
-                  "birthdate": -22222222,
-                  "panel": true
+                  "preferredContact": true
                 }
               ]
             }

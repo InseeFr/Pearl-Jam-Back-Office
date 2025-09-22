@@ -154,14 +154,16 @@ INSERT INTO public.person (email, first_name, last_name, birthdate, title, privi
     ('test@test.com', 'Artus', 'Arnoux', 11111111, 0, TRUE, '23', FALSE, NULL),
     ('test@test.com', 'Laurent', 'Neville', 11111111, 0, TRUE, '24', FALSE, NULL),
 -- contactHistory linked persons
-    ('futur.ama@ch.com', 'Futur', 'Ama', -11111111, 1, TRUE, '11', TRUE, 'NEXT'),
+    ('futur.ama@ch.com', 'Futur', 'Ama', -11111111, 1, TRUE, '11', FALSE, 'NEXT'),
     ('test@ch.com', 'Opre', 'Vious', 315532800000, 1, TRUE, '11', TRUE, 'PREVIOUS'),
     ('test@ch.com', 'Agrippa', 'Nel', 1024815788000, 0, FALSE, '11', TRUE, 'PREVIOUS'),
-    ('test@ch.com', 'Isidore', 'Champ', 1070870588000, 0, FALSE, '11', FALSE, 'PREVIOUS');
+    ('test@ch.com', 'Isidore', 'Champ', 1070870588000, 0, FALSE, '11', FALSE, 'PREVIOUS'),
+    ('test@ch.com', 'Bowie', 'Ken', 898134738510, 0, FALSE, '20', FALSE, 'NEXT');
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
     ('11', 'NEXT', NULL, NULL),
-    ('11', 'PREVIOUS', 'INA', 'nice comment');
+    ('11', 'PREVIOUS', 'INA', 'nice comment'),
+    ('20', 'NEXT', NULL, NULL);
 
 
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Ted' and p.last_name='Farmer' and p.survey_unit_id='11';
@@ -239,5 +241,5 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
     (4, 'INITIATED', 1721903754205);
 
 INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
-    ('11','SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
+    ('11', 'SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
     ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');

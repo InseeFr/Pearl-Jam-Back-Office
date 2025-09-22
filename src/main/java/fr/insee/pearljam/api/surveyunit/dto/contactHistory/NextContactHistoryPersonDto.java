@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public record ContactHistoryPersonDto(
+public record NextContactHistoryPersonDto(
         Long id,
         @NotNull
         Title title,
@@ -23,20 +23,19 @@ public record ContactHistoryPersonDto(
         String lastName,
         String phoneNumber,
         String email,
-        Long birthdate,
-        boolean panel
+        boolean preferredContact
 ) {
 
-    public static Person toModel(ContactHistoryPersonDto chPerson, ContactHistory contactHistory) {
+    public static Person toModel(NextContactHistoryPersonDto chPerson, ContactHistory contactHistory) {
         Set<PhoneNumber> domainPhoneNumbers =
                 Stream.of(chPerson.phoneNumber())
                         .filter(Objects::nonNull)
                         .map(phoneNumber -> new PhoneNumber(Source.INTERVIEWER, false, phoneNumber))
                         .collect(Collectors.toSet());
-        return new Person(chPerson.id(), chPerson.title(), chPerson.firstName(), chPerson.lastName(), chPerson.email(), chPerson.birthdate(), false, chPerson.panel(), domainPhoneNumbers, contactHistory);
+        return new Person(chPerson.id(), chPerson.title(), chPerson.firstName(), chPerson.lastName(), chPerson.email(), null, chPerson.preferredContact(), false, domainPhoneNumbers, contactHistory);
     }
 
-    public static ContactHistoryPersonDto fromModel(Person person) {
-        return new ContactHistoryPersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.phoneNumbers().stream().findFirst().map(PhoneNumber::number).orElse(null), person.email(), person.birthdate(), person.isPanel());
+    public static NextContactHistoryPersonDto fromModel(Person person) {
+        return new NextContactHistoryPersonDto(person.id(), person.title(), person.firstName(), person.lastName(), person.phoneNumbers().stream().findFirst().map(PhoneNumber::number).orElse(null), person.email(), person.privileged());
     }
 }

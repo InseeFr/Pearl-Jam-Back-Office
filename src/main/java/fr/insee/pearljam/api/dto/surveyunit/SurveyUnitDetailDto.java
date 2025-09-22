@@ -45,6 +45,7 @@ public class SurveyUnitDetailDto {
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
 		this.id = surveyUnit.getId();
 		this.setPersons(surveyUnit.getPersons().stream()
+				.filter(person -> person.getContactHistoryType() == null)
 				.map(person -> PersonDB.toModel(person,null))
 				.map(PersonDto::fromModel)
 				.toList());
@@ -70,7 +71,7 @@ public class SurveyUnitDetailDto {
 
 		this.move = surveyUnit.getMove();
 		this.communicationRequests = CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests());
-		this.previousContactHistory=PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
-		this.nextContactHistory=NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
+		this.previousContactHistory = PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
+		this.nextContactHistory = NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
 	}
 }

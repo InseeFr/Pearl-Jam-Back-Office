@@ -53,16 +53,8 @@ public class PhoneNumberDB implements Serializable {
 
     }
 
-    public static PhoneNumber toModel(PhoneNumberDB phoneNumber) {
-        return  new PhoneNumber(phoneNumber.source, phoneNumber.isFavorite(), phoneNumber.getNumber());
-    }
-
     public static List<PhoneNumberDB> fromModel(List<PhoneNumber> phoneNumbers, PersonDB person) {
         return phoneNumbers.stream().map(phoneNumber -> new PhoneNumberDB(null,phoneNumber.source(),phoneNumber.favorite(), phoneNumber.number(),person)).toList();
-    }
-
-    public static PhoneNumberDB fromModel(PhoneNumber phoneNumber, PersonDB person) {
-        return  new PhoneNumberDB(null,phoneNumber.source(),phoneNumber.favorite(), phoneNumber.number(),person);
     }
 
 }

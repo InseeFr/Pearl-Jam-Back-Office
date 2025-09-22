@@ -330,13 +330,14 @@ public class SurveyUnit implements Serializable {
 	}
 
 	public void updatePersons(Set<Person> personsToUpdate) {
-		Set<PersonDB> existingPersons = Optional.ofNullable(this.getPersons()).orElse(new HashSet<>());
+		if (this.getPersons() == null) {
+			this.setPersons(new HashSet<>());
+		}
+		Set<PersonDB> existingPersons = this.getPersons();
 
 		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
 				.map(newPerson -> PersonDB.fromModel(newPerson, null, this))
 				.collect(Collectors.toSet());
-
-		List<Long> lastingPersons = personsDBToUpdate.stream().map(PersonDB::getId).toList();
 
 		// we remove persons not linked to contactHistory, handled appart
 		existingPersons.removeIf( current -> current.getContactHistoryType()==null);
@@ -357,7 +358,6 @@ public class SurveyUnit implements Serializable {
 	}
 
 	public void updateNextContactHistory(ContactHistory nextContactHistory) {
-
 		ContactHistoryDB current = this.contactHistory.stream()
 				.filter(ch -> ch.getId().getContactHistoryType() == ContactHistoryType.NEXT)
 				.findFirst()

@@ -11,14 +11,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record NextContactHistoryDto(
-        List<@Valid ContactHistoryPersonDto> persons
+        List<@Valid NextContactHistoryPersonDto> persons
 ) {
 
     public static NextContactHistoryDto fromModel(ContactHistory contactHistory) {
         if (contactHistory == null) {
             return null;
         }
-        return new NextContactHistoryDto(contactHistory.persons().stream().map(ContactHistoryPersonDto::fromModel).toList());
+        return new NextContactHistoryDto(contactHistory.persons().stream().map(NextContactHistoryPersonDto::fromModel).toList());
     }
 
     public static ContactHistory toModel(NextContactHistoryDto contactHistoryDto) {
@@ -32,7 +32,7 @@ public record NextContactHistoryDto(
                 new HashSet<>()
         );
         Set<Person> chPersons = contactHistoryDto.persons().stream()
-                .map(person -> ContactHistoryPersonDto.toModel(person, contactHistory)).collect(Collectors.toSet());
+                .map(person -> NextContactHistoryPersonDto.toModel(person, contactHistory)).collect(Collectors.toSet());
         contactHistory.persons().addAll(chPersons);
 
         return contactHistory;
