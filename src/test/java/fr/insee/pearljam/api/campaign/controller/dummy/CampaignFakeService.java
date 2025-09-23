@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
@@ -149,6 +150,16 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
+        return List.of();
+    }
+
+    @Override
+    public CampaignCommonsDto findCampaignCommonsById(String id) throws CampaignNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
         return List.of();
     }
 }

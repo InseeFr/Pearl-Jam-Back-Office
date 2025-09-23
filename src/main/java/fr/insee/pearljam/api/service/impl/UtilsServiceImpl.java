@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.service.impl;
 import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+import fr.insee.pearljam.api.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
@@ -68,16 +68,16 @@ public class UtilsServiceImpl implements UtilsService {
 	}
 
 	@Override
-	public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
+	public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
 			List<String> ids) {
 		final String dataCollectionUri = String.join("", externalServicesProperties.datacollectionUrl(),
-				Constants.API_QUEEN_SURVEYUNITS_STATEDATA);
+				Constants.API_QUEEN_INTERROGATIONS_STATEDATA);
 
 		String authTokenHeader = request.getHeader(Constants.AUTHORIZATION);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(Constants.AUTHORIZATION, authTokenHeader);
 		return restTemplate.exchange(dataCollectionUri, HttpMethod.POST, new HttpEntity<>(ids, headers),
-				SurveyUnitOkNokDto.class);
+				InterrogationOkNokDto.class);
 	}
 }

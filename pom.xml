@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.9.0</version>
+	<version>5.12.2</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.4</version>
+		<version>3.5.5</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 

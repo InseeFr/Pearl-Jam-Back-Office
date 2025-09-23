@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+import fr.insee.pearljam.api.dto.surveyunit.InterrogationOkNokDto;
 
 public interface UtilsService {
 
@@ -24,5 +24,5 @@ public interface UtilsService {
 	 */
 	List<String> getRelatedOrganizationUnits(String userId);
 
-	ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
+	ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
 }

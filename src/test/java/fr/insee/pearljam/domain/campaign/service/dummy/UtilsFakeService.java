@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitOkNokDto;
+import fr.insee.pearljam.api.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.api.service.UtilsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class UtilsFakeService implements UtilsService {
     }
 
     @Override
-    public ResponseEntity<SurveyUnitOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id) {
+    public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id) {
         return null;
     }
 }

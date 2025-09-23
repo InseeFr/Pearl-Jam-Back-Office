@@ -278,38 +278,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
-	// TODO : maybe use simpler rules : only check last state in CLO/TBR/FIN ;)
 	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 
-		// Retrieve SurveyUnitIds for each configuration
-		Map<IdentificationConfiguration, List<String>> surveyUnitIdsByConfig = Arrays.stream(IdentificationConfiguration.values())
-				.collect(Collectors.toMap(
-						config -> config,
-						config -> surveyUnitRepository.findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(
-								System.currentTimeMillis(), lstOuId, config)
-				));
-
-		// Mapping between each configuration and the appropriate method to retrieve closable units
-		Map<IdentificationConfiguration, Function<List<String>, List<SurveyUnit>>> closableSurveyUnitMethods = Map.of(
-				IdentificationConfiguration.NOIDENT, surveyUnitRepository::findClosableNoIdentSurveyUnitId,
-				IdentificationConfiguration.IASCO, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
-				IdentificationConfiguration.HOUSEF2F, surveyUnitRepository::findClosableHousef2fSurveyUnitId,
-				IdentificationConfiguration.INDF2F, surveyUnitRepository::findClosableIndf2fFSurveyUnitId,
-				IdentificationConfiguration.INDF2FNOR, surveyUnitRepository::findClosableIndf2fnorFSurveyUnitId,
-				IdentificationConfiguration.INDTEL, surveyUnitRepository::findClosableIndtelFSurveyUnitId,
-				IdentificationConfiguration.INDTELNOR, surveyUnitRepository::findClosableIndtelnorFSurveyUnitId
-		);
-
-
-		// Retrieving SurveyUnits to check
-		List<SurveyUnit> suToCheck = surveyUnitIdsByConfig.entrySet().stream()
-				.flatMap(entry -> {
-					IdentificationConfiguration config = entry.getKey();
-					List<String> surveyUnitIds = entry.getValue();
-					return closableSurveyUnitMethods.getOrDefault(config, ids -> List.of()).apply(surveyUnitIds).stream();
-				}).toList();
+    // Condition 1 : SU en phase de traitement
+    List<SurveyUnit> suToCheck = surveyUnitRepository
+        .findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
+            System.currentTimeMillis(), lstOuId
+        );
 
 		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
 
@@ -338,25 +315,28 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	}
 
-	private boolean isClosable(SurveyUnitCampaignDto sudto) {
+  private boolean isClosable(SurveyUnitCampaignDto sudto) {
+    String questionnaireState = sudto.getQuestionnaireState();
+    ContactOutcomeDto outcome = sudto.getContactOutcome();
 
-		boolean hasQuestionnaire = !Constants.UNAVAILABLE.equals(sudto.getQuestionnaireState());
+    // Condition 2 : jamais transmise
+    boolean neverTransmitted = !Set.of("TBR", "FIN", "CLO").contains(sudto.getState().name());
 
-		ContactOutcomeDto outcome = sudto.getContactOutcome();
-		if (outcome == null)
-			return !hasQuestionnaire;
-        return switch (outcome.type()) {
-            case INA, NOA -> !hasQuestionnaire;
-            default -> true;
-        };
-	}
+    // Condition 3 : contact = INA et questionnaire null
+    boolean inaWithoutQuestionnaire = outcome != null
+        && outcome.type() == ContactOutcomeType.INA
+        && (questionnaireState == null || Constants.UNAVAILABLE.equals(questionnaireState));
+
+    return neverTransmitted || inaWithoutQuestionnaire;
+  }
+
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
 			List<String> lstSu) {
-		ResponseEntity<SurveyUnitOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
+		ResponseEntity<InterrogationOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
 				lstSu);
 		log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
-		SurveyUnitOkNokDto object = result.getBody();
+		InterrogationOkNokDto object = result.getBody();
 		HttpStatusCode responseCode = result.getStatusCode();
 
 		if (!responseCode.equals(HttpStatus.OK)) {
@@ -368,8 +348,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();
-		object.getSurveyUnitNOK().forEach(su -> mapResult.put(su.getId(), Constants.UNAVAILABLE));
-		object.getSurveyUnitOK().forEach(su -> mapResult.put(su.getId(), su.getStateData().getState()));
+		object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
+		object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));
 		return mapResult;
 	}
 

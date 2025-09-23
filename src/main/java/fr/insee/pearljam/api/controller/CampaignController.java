@@ -4,13 +4,19 @@ import java.util.List;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -293,5 +299,23 @@ public class CampaignController {
 
 		return new ResponseEntity<>(referents, HttpStatus.OK);
 	}
+
+	@Operation(summary = "Get commons campaign")
+	@GetMapping(value = Constants.API_CAMPAIGNS_COMMONS_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CampaignCommonsDto.class))),
+			@ApiResponse(responseCode = "404", description = "Not found")
+	})
+	public CampaignCommonsDto getCommonsCampaignsById(@PathVariable("id") String id) throws CampaignNotFoundException {
+		return campaignService.findCampaignCommonsById(id);
+	}
+
+	@Operation(summary = "Get commons ongoing campaigns")
+	@GetMapping(value = Constants.API_CAMPAIGNS_COMMONS_ONGOING, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<CampaignCommonsDto> getCommonsOngoingCampaigns() throws CampaignNotFoundException {
+		return campaignService.findCampaignsCommonsOngoing();
+	}
+
+
 
 }

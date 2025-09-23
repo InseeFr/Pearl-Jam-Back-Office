@@ -13,12 +13,13 @@ public class Constants {
 	public static final String AUTHORIZATION = "Authorization";
   public static final String USER = "user";
 
-  public static final String API_QUEEN_SURVEYUNITS_STATEDATA = "/api/survey-units/state-data";
+  public static final String API_QUEEN_INTERROGATIONS_STATEDATA = "/api/interrogations/state-data";
 
   // API
   public static final String API_ADMIN_SURVEYUNITS = "/api/admin/survey-units";
   public static final String API_ADMIN_CAMPAIGN_ID_SURVEYUNITS = "/api/admin/campaign/{id}/survey-units";
   public static final String API_SURVEYUNITS = "/api/survey-units";
+  public static final String API_INTERROGATIONS = "/api/interrogations";
   public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
   public static final String API_SURVEYUNITS_CLOSABLE = "/api/survey-units/closable";
   public static final String API_SURVEYUNIT_ID_INTERVIEWER = "/api/interviewer/survey-unit/{id}";
@@ -44,6 +45,8 @@ public class Constants {
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
   public static final String API_CAMPAIGNS_ID = "/api/campaigns/{id}";
+  public static final String API_CAMPAIGNS_COMMONS_ID = "/api/campaigns/commons/{id}";
+  public static final String API_CAMPAIGNS_COMMONS_ONGOING = "/api/campaigns/commons/ongoing";
   public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
   public static final String API_CAMPAIGN_ID_INTERVIEWERS = "/api/campaign/{id}/interviewers";
   public static final String API_CAMPAIGN_ID_SURVEYUNITS = "/api/campaign/{id}/survey-units";

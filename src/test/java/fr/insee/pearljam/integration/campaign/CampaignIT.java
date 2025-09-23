@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
@@ -18,6 +19,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
+@Import(FixedDateServiceConfiguration.class)
 class CampaignIT {
 
     @Autowired
@@ -47,6 +50,7 @@ class CampaignIT {
 
     @Autowired
     private CampaignRepository campaignRepository;
+
 
     @Test
     @DisplayName("Should retrieve campaign")
@@ -350,6 +354,58 @@ class CampaignIT {
 
         Optional<Campaign> campaignOptional = campaignRepository.findById(campaignId);
         assertThat(campaignOptional).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should retrieve commons campaign")
+    void testGetCommonsCampaign() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/campaigns/commons/SIMPSONS2020X00")
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(contentResult);
+
+        JSONObject expectedCampaign = new JSONObject();
+        expectedCampaign.put("id", "SIMPSONS2020X00");
+        expectedCampaign.put("dataCollectionTarget", "LUNATIC_NORMAL");
+        expectedCampaign.put("sensitivity", false);
+        expectedCampaign.put("collectMode", "F2F");
+        assertEquals(expectedCampaign.toString(), jsonObject.toString(), "Unexpected campaign content");
+    }
+
+    @Test
+    @DisplayName("Should retrieve all commons campaigns ongoing")
+    void testGetCommonsCampaignsOngoing() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(Constants.API_CAMPAIGNS_COMMONS_ONGOING)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expectedCampaigns =
+                """
+                [
+                    {
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "id":"SIMPSONS2020X00",
+                        "sensitivity":false,
+                        "collectMode":"F2F"
+                     },
+                     {
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "id":"VQS2021X00",
+                        "sensitivity":false,
+                        "collectMode":"TEL"
+                    }
+                ]
+                """;
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+
+        JSONAssert.assertEquals(expectedCampaigns, contentResult, true);
     }
 
     private void assertVisibility(VisibilityDB visibilityToCheck, String campaignId, String organizationUnitId,
