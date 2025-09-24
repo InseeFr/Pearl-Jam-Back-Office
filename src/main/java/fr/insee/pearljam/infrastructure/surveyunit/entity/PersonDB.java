@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import fr.insee.pearljam.api.domain.Source;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
@@ -98,39 +97,4 @@ public class PersonDB implements Serializable {
                 PhoneNumberDB.toModel(person.getPhoneNumbers()),
                 contactHistory);
     }
-
-    public void updateFrom(PersonDB next) {
-        setTitle(next.getTitle());
-        setFirstName(next.getFirstName());
-        setLastName(next.getLastName());
-        setEmail(next.getEmail());
-        setBirthdate(next.getBirthdate());
-        setPrivileged(next.isPrivileged());
-        setPanel(next.isPanel());
-
-        String nextPhoneNumber = next.getPhoneNumbers().stream().findFirst().map(PhoneNumberDB::getNumber).orElse(null);
-        updateContactHistoryPhoneNumbers(nextPhoneNumber);
-    }
-
-
-    private void updateContactHistoryPhoneNumbers(String nextPhoneNumber) {
-        Set<PhoneNumberDB> existing = this.getPhoneNumbers();
-        PhoneNumberDB phone = existing.stream().findFirst().orElse(null);
-
-        if (nextPhoneNumber == null || nextPhoneNumber.isBlank()) {
-            existing.clear();                     // remove phone
-            return;
-        }
-        if (phone == null) {
-            phone = new PhoneNumberDB();
-            phone.setPerson(this);                // owning side!
-            existing.add(phone);
-        }
-        phone.setNumber(nextPhoneNumber);
-        phone.setFavorite(false);                  // or whatever default
-        phone.setSource(Source.INTERVIEWER);
-        phone.setPerson(this);
-
-    }
-
 }
