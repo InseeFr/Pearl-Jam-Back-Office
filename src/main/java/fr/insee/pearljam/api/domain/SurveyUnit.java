@@ -358,18 +358,9 @@ public class SurveyUnit implements Serializable {
 	}
 
 	public void updateNextContactHistory(ContactHistory nextContactHistory) {
-		ContactHistoryDB current = this.contactHistory.stream()
-				.filter(ch -> ch.getId().getContactHistoryType() == ContactHistoryType.NEXT)
-				.findFirst()
-				.orElse(null);
 		ContactHistoryDB next = ContactHistoryDB.fromModel(nextContactHistory, this);
-
-		if (current == null) {
-			// nothing to update -> create once
-			this.contactHistory.add(next);
-		} else{
-			current.updateFrom(next);
-		}
+		this.contactHistory.removeIf(contactHistory -> contactHistory.getId().getContactHistoryType() == ContactHistoryType.NEXT);
+		this.contactHistory.add(next);
 
 	}
 }

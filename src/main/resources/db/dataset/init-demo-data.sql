@@ -494,11 +494,11 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE, 'PROTO03', false, NULL),
     (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE, 'PROTO05', false, NULL),
     (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE, 'PROTO06',false, NULL),
-    (62, 'test@test.com', 'Fu',          'Ture',        315532800000, 0, TRUE,  '11', false, 'NEXT'),
+    (62, 'test@test.com', 'Fu',          'Ture',        null,         0, TRUE,  '11', false, 'NEXT'),
     (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true, 'PREVIOUS'),
     (64, 'test@test.com', 'Agrippa',     'Nel',         1024815788000, 0, FALSE,  '11', true, 'PREVIOUS'),
     (65, 'test@test.com', 'Isidore',     'Champ',       1070870588000, 0, FALSE,  '11', false, 'PREVIOUS'),
-    (66, 'test@test.com', 'Bowie',       'Ken',         898134738510, 0, FALSE,  '20', false, 'NEXT');
+    (66, 'test@test.com', 'Bowie',       'Ken',         null,          0, FALSE,  '20', false, 'NEXT');
 
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
