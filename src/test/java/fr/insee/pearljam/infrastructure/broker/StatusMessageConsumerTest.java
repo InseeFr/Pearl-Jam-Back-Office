@@ -33,19 +33,13 @@ class StatusMessageConsumerTest {
         assertTrue(sut.shouldConsume("QUESTIONNAIRE_COMPLETED"));
     }
 
-    @Test
-    void shouldConsume_returns_false_for_other_types() {
-        assertFalse(sut.shouldConsume("SOMETHING_ELSE"));
-        assertFalse(sut.shouldConsume(""));
-        assertFalse(sut.shouldConsume("questionnaire_init"));
-    }
 
     @Test
     void consume_delegates_to_statusService_for_INIT() {
         String type = "QUESTIONNAIRE_INIT";
         String interrogationId = "ABC-123";
 
-        Payload payload = mock(Payload.class);
+        BrokerMessage.Payload payload = mock(BrokerMessage.Payload.class);
         when(payload.interrogationId()).thenReturn(interrogationId);
 
         sut.consume(type, payload);
@@ -59,7 +53,7 @@ class StatusMessageConsumerTest {
         String type = "QUESTIONNAIRE_COMPLETED";
         String interrogationId = "XYZ-999";
 
-        Payload payload = mock(Payload.class);
+        BrokerMessage.Payload payload = mock(BrokerMessage.Payload.class);
         when(payload.interrogationId()).thenReturn(interrogationId);
 
         sut.consume(type, payload);

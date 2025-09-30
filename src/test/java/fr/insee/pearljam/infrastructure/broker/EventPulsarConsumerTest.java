@@ -127,6 +127,19 @@ class EventPulsarConsumerTest {
     }
 
     @Test
+    void should_manage_leafstate_message() throws Exception {
+        String businessJson = "{\"type\": \"LEAF_STATES_UPDATED\", \"payload\": {\"leafStates\": [{\"date\": 1758095472039, \"state\": \"INIT\"}, {\"date\": 1758095472039, \"state\": null}], \"interrogationId\": \"PROTO10\"}}";
+        String envelope = buildEnvelopeWithAfter(businessJson);
+
+        when(consumerA.shouldConsume("LEAF_STATES_UPDATED")).thenReturn(true);
+        when(consumerB.shouldConsume("LEAF_STATES_UPDATED")).thenReturn(true);
+
+        sut.listen(envelope, null);
+
+        verify(consumerA).consume(eq("LEAF_STATES_UPDATED"), any());
+        verify(consumerB).consume(eq("LEAF_STATES_UPDATED"), any());
+    }
+    @Test
     void should_skip_when_business_payload_is_invalid_json() throws Exception {
         String invalidBusinessJson = "{\"type\":\"QUESTIONNAIRE_INIT\",\"payload\":{invalid}";
         String envelope = buildEnvelopeWithAfter(invalidBusinessJson);

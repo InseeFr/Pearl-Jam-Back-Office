@@ -13,11 +13,11 @@ public class StatusMessageConsumer implements MessageConsumer {
 
     @Override
     public boolean shouldConsume(String type) {
-        return type.equals("QUESTIONNAIRE_INIT") || type.equals("QUESTIONNAIRE_COMPLETED");
+        return true;
     }
 
     @Override
-    public void consume(String type, Payload payload) {
+    public void consume(String type, BrokerMessage.Payload payload) {
         this.statusService.updateStatus(payload.interrogationId(), type);
     }
 }
