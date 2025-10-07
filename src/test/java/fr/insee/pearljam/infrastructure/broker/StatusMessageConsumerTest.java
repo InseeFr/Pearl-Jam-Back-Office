@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.broker;
 
-import fr.insee.pearljam.domain.surveyunit.port.state.StatusService;
+import fr.insee.pearljam.domain.surveyunit.port.userside.StatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

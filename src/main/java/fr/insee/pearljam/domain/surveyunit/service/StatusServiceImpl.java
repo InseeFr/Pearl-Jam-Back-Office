@@ -2,7 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.domain.surveyunit.model.OtherModeQuestionnaire;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.OtherModeQuestionnaireService;
-import fr.insee.pearljam.domain.surveyunit.port.state.StatusService;
+import fr.insee.pearljam.domain.surveyunit.port.userside.StatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
