@@ -35,6 +35,7 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.utils.SanitizationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -115,7 +116,8 @@ public class MessageServiceImpl implements MessageService {
 			log.warn("Message sender is null");
 			sender = null;
 		}
-		Message message = new Message(text, sender, System.currentTimeMillis());
+                String sanitizedText = SanitizationUtils.sanitize(text);
+                Message message = new Message(sanitizedText, sender, System.currentTimeMillis());
 
 		for (String recipient : recipients) {
 			if (recipient.equalsIgnoreCase("All") || recipient.equalsIgnoreCase("Tous")) {
@@ -175,7 +177,8 @@ public class MessageServiceImpl implements MessageService {
 				ids.add(id);
 			}
 		}
-		List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
+                List<MessageDto> messages = messageRepository.findMessagesDtoByIds(ids);
+                messages.forEach(message -> message.setText(SanitizationUtils.sanitize(message.getText())));
 		List<MessageDto> messagesDeleted = new ArrayList<>();
 		for (MessageDto message : messages) {
 			List<String> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
@@ -198,19 +201,21 @@ public class MessageServiceImpl implements MessageService {
 				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
 		List<Long> messageIds = messageRepository.getAllOrganizationMessagesIds(userOUIds);
 
-		List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
-		for (MessageDto message : messages) {
-			List<VerifyNameResponseDto> recipients = messageRepository.getCampaignRecipients(message.getId());
+                List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
+                messages.forEach(message -> message.setText(SanitizationUtils.sanitize(message.getText())));
+                for (MessageDto message : messages) {
+                        List<VerifyNameResponseDto> recipients = messageRepository.getCampaignRecipients(message.getId());
 
-			recipients.addAll(
-					messageRepository.getOuRecipients(message.getId()));
+                        recipients.addAll(
+                                        messageRepository.getOuRecipients(message.getId()));
+                        recipients.forEach(recipient -> recipient.setLabel(SanitizationUtils.sanitize(recipient.getLabel())));
 
-			message.setTypedRecipients(recipients);
+                        message.setTypedRecipients(recipients);
 
-		}
+                }
 
-		return messages;
-	}
+                return messages;
+        }
 
 	public List<VerifyNameResponseDto> verifyName(String text, String userId) {
 		List<VerifyNameResponseDto> returnValue = new ArrayList<>();
@@ -221,12 +226,14 @@ public class MessageServiceImpl implements MessageService {
 		returnValue.addAll(
 				campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
 
-		return returnValue.stream()
-				.collect(
-						collectingAndThen(
-								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
-								ArrayList::new));
-	}
+                List<VerifyNameResponseDto> sanitizedResults = returnValue.stream()
+                                .collect(
+                                                collectingAndThen(
+                                                                toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
+                                                                ArrayList::new));
+                sanitizedResults.forEach(result -> result.setLabel(SanitizationUtils.sanitize(result.getLabel())));
+                return sanitizedResults;
+        }
 
 	@Override
 	@Transactional

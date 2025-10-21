@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
+import fr.insee.pearljam.api.utils.SanitizationUtils;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import jakarta.validation.constraints.NotNull;
@@ -28,9 +29,9 @@ public record CommentDto(
 	 * @param commentDto   The CommentDto to convert.
 	 * @return A new Comment model instance.
 	 */
-	public static Comment toModel(String surveyUnitId, CommentDto commentDto) {
-		return new Comment(commentDto.type(), commentDto.value(), surveyUnitId);
-	}
+        public static Comment toModel(String surveyUnitId, CommentDto commentDto) {
+                return new Comment(commentDto.type(), SanitizationUtils.sanitize(commentDto.value()), surveyUnitId);
+        }
 
 	/**
 	 * Converts a Comment model to a CommentDto.
@@ -38,9 +39,9 @@ public record CommentDto(
 	 * @param comment The Comment model to convert.
 	 * @return A new CommentDto instance.
 	 */
-	public static CommentDto fromModel(Comment comment) {
-		return new CommentDto(comment.type(), comment.value());
-	}
+        public static CommentDto fromModel(Comment comment) {
+                return new CommentDto(comment.type(), SanitizationUtils.sanitize(comment.value()));
+        }
 
 	/**
 	 * Converts a set of Comment models to a list of CommentDto.
