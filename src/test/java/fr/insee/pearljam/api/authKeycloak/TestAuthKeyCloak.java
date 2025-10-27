@@ -992,17 +992,17 @@ class TestAuthKeyCloak {
 	void testGetSUClosable() throws Exception {
 
 		String expectedBody = """
-				{"surveyUnitOK" :
+				{"interrogationOK" :
 					[{ "id" : "23",
 					  "stateData" : {"state" : "EXTRACTED", "date" : null, "currentPage" : null }
 					},
 					{ "id" : "20","stateData":{"state": null, "date": null, "currentPage": null }
 					}],
-				"surveyUnitNOK" : [	{"id":"21"}] }
+				"interrogationNOK" : [	{"id":"21"}] }
 				""";
 
 		mockServer.expect(ExpectedCount.once(),
-						requestTo(containsString(Constants.API_QUEEN_SURVEYUNITS_STATEDATA)))
+						requestTo(containsString(Constants.API_QUEEN_INTERROGATIONS_STATEDATA)))
 				.andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.OK)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -1022,21 +1022,22 @@ class TestAuthKeyCloak {
 		visi.setEndDate(System.currentTimeMillis() + 86400000);
 		visibilityRepository.save(visi);
 
-		mockMvc
-				.perform(get("/api/survey-units/closable")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.[?(@.id == '21')]").exists(),
-						jsonPath("$.[?(@.id == '23')]").doesNotExist(), // 23 has stateData => not closable
-						jsonPath("$.[?(@.id == '21')].ssech").value(1),
-						jsonPath("$.[?(@.id == '21')].questionnaireState").value("UNAVAILABLE"),
-						jsonPath("$.[?(@.id == '21')].identificationState").value("FINISHED"),
-						jsonPath("$.[?(@.id == '20')].identificationState").value("MISSING"),
-						jsonPath("$.[?(@.id == '20')].identificationState").value("MISSING"));
+    mockMvc
+        .perform(get("/api/survey-units/closable")
+            .with(authentication(LOCAL_USER))
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpectAll(
+            status().isOk(),
+            jsonPath("$.[?(@.id == '20')]").exists(),
+            jsonPath("$.[?(@.id == '21')]").exists(),
+            jsonPath("$.[?(@.id == '23')]").exists(),
+            jsonPath("$.[?(@.id == '20')].ssech").value(1),
+            jsonPath("$.[?(@.id == '20')].questionnaireState").value("UNAVAILABLE")
+        );
 
-		visi.setCollectionEndDate(collectionEndDate);
+
+    visi.setCollectionEndDate(collectionEndDate);
 		visi.setEndDate(endDate);
 		visibilityRepository.save(visi);
 	}

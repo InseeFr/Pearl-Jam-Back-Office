@@ -37,37 +37,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<String> findSurveyUnitIdsOfOrganizationUnitsInProcessingPhaseByIdentificationConfiguration(Long date, List<String> lstOuId, IdentificationConfiguration config) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableNoIdentSurveyUnitId(List<String> ids) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableHousef2fSurveyUnitId(List<String> ids) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableIndf2fFSurveyUnitId(List<String> ids) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableIndf2fnorFSurveyUnitId(List<String> ids) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableIndtelFSurveyUnitId(List<String> ids) {
-        return List.of();
-    }
-
-    @Override
-    public List<SurveyUnit> findClosableIndtelnorFSurveyUnitId(List<String> ids) {
+    public List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(Long date, List<String> lstOuId) {
         return List.of();
     }
 
@@ -117,7 +87,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
         //not used yet
     }
 
-    @Override
+  @Override
     public void flush() {
         //not used yet
     }

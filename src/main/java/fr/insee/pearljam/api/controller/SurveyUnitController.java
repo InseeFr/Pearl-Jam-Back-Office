@@ -98,7 +98,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get SurveyUnits")
-	@GetMapping(Constants.API_SURVEYUNITS)
+	@GetMapping(path = {Constants.API_SURVEYUNITS, Constants.API_INTERROGATIONS})
 	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
 						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = authenticatedUserService.getCurrentUserId();
