@@ -80,8 +80,11 @@ public class Campaign implements Serializable {
 	@Column
 	private Boolean sensitivity;
 
+	@Column
+	private boolean collectNextContacts;
+
 	public Campaign(String id, String label, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email, boolean sensitivity) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email, boolean sensitivity, boolean collectNextContacts) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -90,5 +93,6 @@ public class Campaign implements Serializable {
 		this.identificationConfiguration = identConfig;
 		this.email = email;
 		this.sensitivity = sensitivity;
+		this.collectNextContacts = collectNextContacts;
 	}
 }

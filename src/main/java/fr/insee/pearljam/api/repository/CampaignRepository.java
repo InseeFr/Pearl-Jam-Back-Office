@@ -24,13 +24,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	Optional<Campaign> findByIdIgnoreCase(String id);
 
 	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
-			+ "organization_unit_id IN (:OuIds) "
-			+ "AND management_start_date <= :date "
-			+ "AND collection_start_date <= :date "
-			+ "AND collection_end_date > :date  ", nativeQuery = true)
-	List<String> findAllIdsVisible(@Param("OuIds") List<String> ouIds, @Param("date") Long date);
-
-	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
 			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
@@ -41,19 +34,19 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "WHERE ou.id ILIKE ?1", nativeQuery = true)
 	List<String> findIdsByOuId(String ouId);
 
-	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration) "
+	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM Campaign camp "
 			+ "WHERE camp.id=?1")
 	CampaignDto findDtoById(String id);
 
 	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration) "
+			+ "new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM SurveyUnit su "
 			+ "JOIN su.campaign camp "
 			+ "WHERE su.id=?1")
 	CampaignDto findDtoBySurveyUnitId(String id);
 
-	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration) "
+	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM Campaign camp")
 	List<CampaignDto> findAllDto();
 

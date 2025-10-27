@@ -1,6 +1,6 @@
 services:
   pearl-db:
-    image: postgres:15.1
+    image: postgres:15.13@sha256:5ab68e212eab9cd4a16ecbf40d9449c88e1073abdca3ecc3aa5514d4a1af2ed0
     environment:
       - POSTGRES_USER=${PEARL_DB_USER}
       - POSTGRES_PASSWORD=${PEARL_DB_PASSWORD}
@@ -18,7 +18,7 @@ services:
     image: quay.io/keycloak/keycloak:24.0
     environment:
       KEYCLOAK_ADMIN: administrator
-      KEYCLOAK_ADMIN_PASSWORD: administrator
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
     command: ["start-dev", "--import-realm"]

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
@@ -96,7 +97,7 @@ public interface SurveyUnitService {
 
 	List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId);
 
-	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
+	Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits);
 
 	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
 

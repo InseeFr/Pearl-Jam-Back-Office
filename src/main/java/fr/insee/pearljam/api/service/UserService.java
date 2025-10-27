@@ -53,7 +53,7 @@ public interface UserService {
 	 * @param userId
 	 * @return {@link Boolean}
 	 */
-	public boolean isUserAssocitedToCampaign(String campaignId, String userId);
+	boolean isUserAssocitedToCampaign(String campaignId, String userId);
 
 	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId)
 			throws UserAlreadyExistsException, NoOrganizationUnitException;

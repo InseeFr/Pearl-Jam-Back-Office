@@ -26,5 +26,12 @@ public record CampaignUpdateDto(
         List<ReferentDto> referents,
         String email,
         ContactOutcomeConfiguration contactOutcomeConfiguration,
-        ContactAttemptConfiguration contactAttemptConfiguration
-) {}
+        ContactAttemptConfiguration contactAttemptConfiguration,
+        Boolean collectNextContacts
+) {
+
+        public CampaignUpdateDto {
+                if (collectNextContacts == null) collectNextContacts = Boolean.FALSE;
+        }
+
+}

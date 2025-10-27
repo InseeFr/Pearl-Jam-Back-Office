@@ -32,7 +32,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return HttpStatus.BAD_REQUEST;
 		}
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		if (!user.isPresent()) {
+		if (user.isEmpty()) {
 			log.error("User {} not found", userId);
 			return HttpStatus.NOT_FOUND;
 		}
@@ -40,7 +40,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		for (String campaignId : listPreference) {
 			Optional<Campaign> campaign = campaignRepository.findById(campaignId);
-			if (!campaign.isPresent()) {
+			if (campaign.isEmpty()) {
 				log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
 				return HttpStatus.NOT_FOUND;
 			}
