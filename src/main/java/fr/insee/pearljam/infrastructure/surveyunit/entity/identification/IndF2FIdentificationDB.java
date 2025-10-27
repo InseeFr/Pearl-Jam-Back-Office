@@ -59,6 +59,8 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 				.individualStatus(individualStatus)
 				.situation(situation)
 				.interviewerCanProcess(interviewerCanProcess)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -75,5 +77,7 @@ public class IndF2FIdentificationDB extends IdentificationDB {
 		this.setIndividualStatus(identification.individualStatus());
 		this.setInterviewerCanProcess(identification.interviewerCanProcess());
 		this.setSituation(identification.situation());
+		this.setDemenagementWeb(identification.demenagementWeb());
+		this.setDemenagementEnqueteur(identification.demenagementEnqueteur());
 	}
 }

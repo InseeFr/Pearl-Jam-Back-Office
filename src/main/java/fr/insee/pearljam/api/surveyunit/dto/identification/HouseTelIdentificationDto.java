@@ -7,7 +7,9 @@ import fr.insee.pearljam.domain.surveyunit.model.question.*;
 public record HouseTelIdentificationDto
 		(
 		 SituationQuestionValue situation,
-		 CategoryQuestionValue category) implements IdentificationDto {
+		 CategoryQuestionValue category,
+		 Boolean demenagementWeb,
+		 Boolean demenagementEnqueteur) implements IdentificationDto {
 
 
 	/**
@@ -22,6 +24,8 @@ public record HouseTelIdentificationDto
 				.identificationType(IdentificationType.HOUSETEL)
 				.situation(situation)
 				.category(category)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -35,7 +39,9 @@ public record HouseTelIdentificationDto
 
 		return new HouseTelIdentificationDto(
 				identification.situation(),
-				identification.category()
+				identification.category(),
+				identification.demenagementWeb(),
+				identification.demenagementEnqueteur()
 		);
 	}
 }

@@ -92,4 +92,9 @@
 
 	<!-- add Not Null Constraint sensitivity -->
 	<include file="changelog/610_default_sensitity_to_false.xml" relativeToChangelogFile="true"/>
+
+	<include file="changelog/620_other_mode.xml" relativeToChangelogFile="true" />
+
+	<!-- add demenagement fields -->
+	<include file="changelog/630_add_demenagement_fields.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

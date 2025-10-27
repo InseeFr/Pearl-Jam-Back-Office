@@ -69,6 +69,8 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 				.householdComposition(householdComposition)
 				.presentInPreviousHome(presentInPreviousHome)
 				.situation(situation)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -87,5 +89,7 @@ public class SrcvReintIdentificationDB extends IdentificationDB {
 		this.setHouseholdComposition(identification.householdComposition());
 		this.setPresentInPreviousHome(identification.presentInPreviousHome());
 		this.setSituation(identification.situation());
+		this.setDemenagementWeb(identification.demenagementWeb());
+		this.setDemenagementEnqueteur(identification.demenagementEnqueteur());
 	}
 }

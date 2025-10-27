@@ -7,7 +7,9 @@ import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue
 
 public record IndividualTelIdentificationDto
 		(IndividualStatusQuestionValue individualStatus,
-		 SituationQuestionValue situation) implements IdentificationDto {
+		 SituationQuestionValue situation,
+		 Boolean demenagementWeb,
+		 Boolean demenagementEnqueteur) implements IdentificationDto {
 
 
 	/**
@@ -21,6 +23,8 @@ public record IndividualTelIdentificationDto
 				.identificationType(IdentificationType.INDTEL)
 				.individualStatus(individualStatus)
 				.situation(situation)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -34,7 +38,9 @@ public record IndividualTelIdentificationDto
 
 		return new IndividualTelIdentificationDto(
 				identification.individualStatus(),
-				identification.situation()
+				identification.situation(),
+				identification.demenagementWeb(),
+				identification.demenagementEnqueteur()
 		);
 	}
 }

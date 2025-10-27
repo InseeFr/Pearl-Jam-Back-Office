@@ -16,6 +16,8 @@ public record Identification(
         InterviewerCanProcessQuestionValue interviewerCanProcess,
         NumberOfRespondentsQuestionValue numberOfRespondents,
         PresentInPreviousHomeQuestionValue presentInPreviousHome,
-        HouseholdCompositionQuestionValue householdComposition
+        HouseholdCompositionQuestionValue householdComposition,
+        Boolean demenagementWeb,
+        Boolean demenagementEnqueteur
 ) {
 }

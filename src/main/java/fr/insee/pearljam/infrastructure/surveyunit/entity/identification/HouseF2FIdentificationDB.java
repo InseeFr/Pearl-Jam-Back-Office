@@ -70,6 +70,8 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 				.situation(situation)
 				.category(category)
 				.occupant(occupant)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -89,5 +91,7 @@ public class HouseF2FIdentificationDB extends IdentificationDB {
 		this.setSituation(identification.situation());
 		this.setCategory(identification.category());
 		this.setOccupant(identification.occupant());
+		this.setDemenagementWeb(identification.demenagementWeb());
+		this.setDemenagementEnqueteur(identification.demenagementEnqueteur());
 	}
 }

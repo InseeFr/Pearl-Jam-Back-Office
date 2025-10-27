@@ -1,6 +1,7 @@
 application:
   host: http://localhost:8080
   corsOrigins:
+    - http://localhost:3000
   # Define Roles mapping here
   roles:
     interviewer:
@@ -19,7 +20,7 @@ application:
 
 feature:
   oidc:
-    enabled: true
+    enabled: false
     auth-server-host:
     application-host: ${application.host}
     auth-server-url: ${feature.oidc.auth-server-host}/auth
@@ -40,17 +41,19 @@ feature:
       enabled: false
 
 spring:
+  profiles:
+      active: broker
   docker:
     compose:
       enabled: false
   datasource:
-    url:
-    username:
-    password:
+    url: jdbc:postgresql://localhost:5433/pearl
+    username: mypostgresuser
+    password: mypostgrespassword
     driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 2
-      maximum-pool-size: 2
+  liquibase:
+    contexts: dev
+    changeLog: classpath:db/integration-demo.xml
   jpa:
     open-in-view: false
     hibernate:
@@ -67,11 +70,7 @@ spring:
       generate_statistics: false
       hbm2ddl:
         auto: validate
-  liquibase:
-    enabled: true
-    contexts: prod
-    changeLog: classpath:db/master.xml
-    defaultSchema: public
+
   h2:
     console:
       enabled: false

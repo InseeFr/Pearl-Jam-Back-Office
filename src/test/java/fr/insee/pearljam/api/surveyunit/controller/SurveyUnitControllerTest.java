@@ -55,7 +55,9 @@ class SurveyUnitControllerTest {
                         "access": "ACC",
                         "situation": "ABSORBED",
                         "category": "OCCASIONAL",
-                        "occupant": "IDENTIFIED"
+                        "occupant": "IDENTIFIED",
+                        "demenagementWeb": false,
+                        "demenagementEnqueteur": false
                     }
                 """;
         surveyUnitTemplate = """
@@ -93,7 +95,7 @@ class SurveyUnitControllerTest {
                 SituationQuestionValue.ABSORBED,
                 CategoryQuestionValue.OCCASIONAL,
                 OccupantQuestionValue.IDENTIFIED
-				,null, null, null, null, null
+				,null, null, null, null, null, false, false
         );
 
         assertThat(surveyUnitUpdated.identification()).isEqualTo(identificationExpected);
