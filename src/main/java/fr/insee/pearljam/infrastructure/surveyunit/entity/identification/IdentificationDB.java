@@ -38,6 +38,12 @@ public abstract class IdentificationDB implements Serializable {
 	@Enumerated(EnumType.STRING)
 	protected IdentificationState identificationState;
 
+	@Column(name = "demenagement_web")
+	protected Boolean demenagementWeb;
+
+	@Column(name = "demenagement_enqueteur")
+	protected Boolean demenagementEnqueteur;
+
 	protected abstract IdentificationConfiguration getIdentificationConfiguration();
 
 	/**

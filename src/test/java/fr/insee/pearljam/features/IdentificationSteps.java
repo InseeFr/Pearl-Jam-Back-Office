@@ -117,7 +117,7 @@ public class IdentificationSteps {
 		Set<Person> personsDB = Set.of(new Person(Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", true, true,
 				537535032000L, surveyUnit));
 		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
-				, null, null, null, null, null, null);
+				, null, null, null, null, null, null, false, false);
 		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, personsDB);
 
 		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
@@ -141,7 +141,9 @@ public class IdentificationSteps {
 						OccupantQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.SAME_ADDRESS,
 						InterviewerCanProcessQuestionValue.YES,
 						NumberOfRespondentsQuestionValue.ONE, PresentInPreviousHomeQuestionValue.AT_LEAST_ONE,
-						HouseholdCompositionQuestionValue.SAME_COMPO));
+						HouseholdCompositionQuestionValue.SAME_COMPO,
+						false,
+						false));
 
 		result =
 				mockMvc.perform(put(String.join("/", "/api/survey-unit", surveyUnitId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON).content(JsonTestHelper.toJson(editedSurveyUnit)).accept(MediaType.APPLICATION_JSON));

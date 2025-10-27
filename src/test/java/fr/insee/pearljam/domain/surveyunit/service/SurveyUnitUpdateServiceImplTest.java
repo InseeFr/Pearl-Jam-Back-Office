@@ -266,7 +266,9 @@ class SurveyUnitUpdateServiceImplTest {
 				InterviewerCanProcessQuestionValue.NO,
 				NumberOfRespondentsQuestionValue.MANY,
 				PresentInPreviousHomeQuestionValue.NONE,
-				HouseholdCompositionQuestionValue.OTHER_COMPO
+				HouseholdCompositionQuestionValue.OTHER_COMPO,
+				false,
+				false
 		);
 		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
 
@@ -305,7 +307,9 @@ class SurveyUnitUpdateServiceImplTest {
 				InterviewerCanProcessQuestionValue.NO,
 				NumberOfRespondentsQuestionValue.MANY,
 				PresentInPreviousHomeQuestionValue.NONE,
-				HouseholdCompositionQuestionValue.OTHER_COMPO);
+				HouseholdCompositionQuestionValue.OTHER_COMPO,
+				false,
+				false);
 		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);

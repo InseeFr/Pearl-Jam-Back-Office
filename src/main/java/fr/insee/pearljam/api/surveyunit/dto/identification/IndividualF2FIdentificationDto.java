@@ -9,7 +9,9 @@ public record IndividualF2FIdentificationDto
 		(
 		 IndividualStatusQuestionValue individualStatus,
 		 InterviewerCanProcessQuestionValue interviewerCanProcess,
-		 SituationQuestionValue situation) implements IdentificationDto {
+		 SituationQuestionValue situation,
+		 Boolean demenagementWeb,
+		 Boolean demenagementEnqueteur) implements IdentificationDto {
 
 
 	/**
@@ -23,6 +25,8 @@ public record IndividualF2FIdentificationDto
 				.individualStatus(individualStatus)
 				.interviewerCanProcess(interviewerCanProcess)
 				.situation(situation)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -37,7 +41,9 @@ public record IndividualF2FIdentificationDto
 		return new IndividualF2FIdentificationDto(
 				identification.individualStatus(),
 				identification.interviewerCanProcess(),
-				identification.situation()
+				identification.situation(),
+				identification.demenagementWeb(),
+				identification.demenagementEnqueteur()
 		);
 	}
 }

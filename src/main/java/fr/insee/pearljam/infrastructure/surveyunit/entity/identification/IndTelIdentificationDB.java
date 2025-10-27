@@ -50,6 +50,8 @@ public class IndTelIdentificationDB extends IdentificationDB {
 				.identificationType(identificationType)
 				.individualStatus(individualStatus)
 				.situation(situation)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -66,5 +68,7 @@ public class IndTelIdentificationDB extends IdentificationDB {
 		}
 		this.setIndividualStatus(identification.individualStatus());
 		this.setSituation(identification.situation());
+		this.setDemenagementWeb(identification.demenagementWeb());
+		this.setDemenagementEnqueteur(identification.demenagementEnqueteur());
 	}
 }
