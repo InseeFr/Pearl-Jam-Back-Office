@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
@@ -92,7 +93,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits) {
+    public Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits) {
         throw new IllegalArgumentException("not implemented yet");
     }
 

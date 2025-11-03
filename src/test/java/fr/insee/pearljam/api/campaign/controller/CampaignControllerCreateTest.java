@@ -257,7 +257,8 @@ class CampaignControllerCreateTest {
                 identificationConfiguration,
                 contactOutcomeConfiguration,
                 contactAttemptConfiguration,
-                sensitivity
+                sensitivity,
+                false
         );
     }
 

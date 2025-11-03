@@ -15,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface SurveyUnitTempZoneRepository extends JpaRepository<SurveyUnitTempZone, UUID> {
 
-    public void deleteBySurveyUnitId(String id);
+    void deleteBySurveyUnitId(String id);
 }

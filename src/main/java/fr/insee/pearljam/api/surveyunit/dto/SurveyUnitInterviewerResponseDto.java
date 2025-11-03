@@ -7,9 +7,10 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 
@@ -32,13 +33,18 @@ public record SurveyUnitInterviewerResponseDto(
 	ContactOutcomeDto contactOutcome,
 	IdentificationDto identification,
 	List<CommunicationTemplateResponseDto> communicationTemplates,
-	List<CommunicationRequestResponseDto> communicationRequests) {
+	List<CommunicationRequestResponseDto> communicationRequests,
+	PreviousContactHistoryDto previousContactHistory,
+	NextContactHistoryDto nextContactHistory
+) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
 		SurveyUnit surveyUnit = surveyUnitForInterviewer.surveyUnit();
-		List<PersonDto> persons = surveyUnit.getPersons().stream()
-				.map(PersonDto::new)
+		List<PersonDto> persons = surveyUnit.getModelPersons().stream()
+				.map(PersonDto::fromModel)
 				.toList();
+		PreviousContactHistoryDto previousContactHistory = PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
+		NextContactHistoryDto nextContactHistory = NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
 
 		List<CommentDto> comments = CommentDto.fromModel(surveyUnit.getModelComments());
 		AddressDto address = new AddressDto(surveyUnit.getAddress());
@@ -68,6 +74,7 @@ public record SurveyUnitInterviewerResponseDto(
 				comments, sampleIdentifiers, states, contactAttempts, contactOutcome,
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
-				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()));
+				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
+				previousContactHistory, nextContactHistory);
 	}
 }
