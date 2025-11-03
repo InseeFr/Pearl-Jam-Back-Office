@@ -3,8 +3,6 @@ package fr.insee.pearljam.api.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
@@ -58,9 +56,7 @@ public interface UserService {
 	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId)
 			throws UserAlreadyExistsException, NoOrganizationUnitException;
 
-	HttpStatus delete(String id);
-
-	boolean checkValidity(UserDto user);
+	void delete(String id) throws NotFoundException;
 
 	UserDto createUser(UserDto user) throws NotFoundException;
 
