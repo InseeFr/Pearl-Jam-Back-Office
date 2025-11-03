@@ -1,27 +1,33 @@
 package fr.insee.pearljam.api.dto.user;
 
+import java.util.List;
+
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
-
-    private String id;
-    private String firstName;
-    private String lastName;
-    private OrganizationUnitDto organizationUnit;
-    private List<OrganizationUnitDto> localOrganizationUnits;
+	@NotNull
+	private String id;
+	@NotNull
+	private String firstName;
+	@NotNull
+	private String lastName;
+	@NotNull
+	@Valid
+	private OrganizationUnitDto organizationUnit;
+	private List<OrganizationUnitDto> localOrganizationUnits;
 
     public String toString() {
-		String ou = organizationUnit != null ? organizationUnit.toString() : "null";
-		return String.format("Id :%s - FirstName :%s - LastName :%s - Ou : %s", id, firstName, lastName, ou);
-	}
+        String ou = organizationUnit != null ? organizationUnit.toString() : "null";
+        return String.format("Id :%s - FirstName :%s - LastName :%s - Ou : %s", id, firstName, lastName, ou);
+    }
 }

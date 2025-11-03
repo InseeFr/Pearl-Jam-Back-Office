@@ -130,24 +130,12 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public HttpStatus delete(String id) {
+	public void delete(String id) throws NotFoundException {
 		Optional<User> user = userRepository.findById(id);
 		if (user.isEmpty()) {
-			return HttpStatus.NOT_FOUND;
+			throw new NotFoundException("User does not exist");
 		}
 		userRepository.delete(user.get());
-		return HttpStatus.OK;
-	}
-
-	@Override
-	public boolean checkValidity(UserDto user) {
-		if (user == null || user.getOrganizationUnit() == null)
-			return false;
-		String ouId = user.getOrganizationUnit().getId();
-		boolean attributesValidity = user.getFirstName() != null && user.getLastName() != null && user.getId() != null;
-		boolean ouValidity = ouId != null && organizationUnitRepository.findById(ouId).isPresent();
-
-		return ouValidity && attributesValidity;
 	}
 
 	@Override

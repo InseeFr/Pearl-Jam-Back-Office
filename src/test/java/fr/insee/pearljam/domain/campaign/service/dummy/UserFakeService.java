@@ -9,7 +9,6 @@ import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.UserService;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,13 +45,8 @@ public class UserFakeService implements UserService {
     }
 
     @Override
-    public HttpStatus delete(String id) {
-        return null;
-    }
-
-    @Override
-    public boolean checkValidity(UserDto user) {
-        return false;
+    public void delete(String id) {
+        return;
     }
 
     @Override

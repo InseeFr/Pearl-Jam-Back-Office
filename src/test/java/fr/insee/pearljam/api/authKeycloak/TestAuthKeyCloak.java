@@ -1846,12 +1846,12 @@ class TestAuthKeyCloak {
 				.forEach(surveyUnitRepository::delete);
 
 		// Delete all Users before deleting Organization Unit
-		userRepository.findAllByOrganizationUnitId("OU-NORTH")
-				.forEach(u -> {
-					messageService.deleteMessageByUserId(u.getId());
-					preferenceService.setPreferences(Collections.emptyList(), u.getId());
-					userService.delete(u.getId());
-				});
+		List<User> users = userRepository.findAllByOrganizationUnitId("OU-NORTH");
+		for(User user : users) {
+			messageService.deleteMessageByUserId(user.getId());
+			preferenceService.setPreferences(Collections.emptyList(), user.getId());
+			userService.delete(user.getId());
+		}
 
 		mockMvc.perform(delete("/api/organization-unit/OU-NORTH")
 						.with(authentication(ADMIN))

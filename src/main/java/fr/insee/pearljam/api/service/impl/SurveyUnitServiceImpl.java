@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
-import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
@@ -342,10 +341,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		if (!responseCode.equals(HttpStatus.OK)) {
 			String code = responseCode.toString();
 			log.error("Data collection API responded with error code {}", code);
-		}
-		if (object == null) {
-			log.error("Could not get response from data collection API");
-			throw new BadRequestException(404, "Could not get response from data collection API");
 		}
 		Map<String, String> mapResult = new HashMap<>();
 		object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
