@@ -1,0 +1,74 @@
+package fr.insee.pearljam.surveyunit.infrastructure.persistence.jpa.adapter;
+
+import fr.insee.pearljam.surveyunit.infrastructure.persistence.jpa.entity.SurveyUnit;
+import fr.insee.pearljam.surveyunit.infrastructure.rest.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.surveyunit.infrastructure.persistence.jpa.repository.SurveyUnitRepository;
+import fr.insee.pearljam.campaign.domain.model.communication.CommunicationType;
+import fr.insee.pearljam.campaign.domain.service.exception.CommunicationTemplateNotFoundException;
+import fr.insee.pearljam.surveyunit.domain.model.communication.CommunicationRequest;
+import fr.insee.pearljam.surveyunit.domain.port.serverside.CommunicationRequestRepository;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.repository.CommunicationRequestJpaRepository;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.repository.CommunicationTemplateJpaRepository;
+import fr.insee.pearljam.surveyunit.infrastructure.persistence.jpa.entity.CommunicationRequestDB;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@RequiredArgsConstructor
+public class CommunicationRequestDaoAdapter implements CommunicationRequestRepository {
+
+  private final SurveyUnitRepository surveyUnitRepository;
+  private final CommunicationTemplateJpaRepository communicationTemplateRepository;
+  private final CommunicationRequestJpaRepository communicationRequestRepository;
+
+  @Override
+  @Transactional
+  public void addCommunicationRequests(SurveyUnit surveyUnit,
+      List<CommunicationRequest> communicationRequests) {
+    List<CommunicationRequestDB> newCommunicationRequests = new ArrayList<>();
+    for (CommunicationRequest communicationRequest : communicationRequests) {
+      CommunicationTemplateDB communicationTemplate = communicationTemplateRepository
+          .findCommunicationTemplate(communicationRequest.campaignId(), communicationRequest.meshuggahId())
+          .orElseThrow(CommunicationTemplateNotFoundException::new);
+      CommunicationRequestDB newCommunicationRequest = CommunicationRequestDB.fromModel(
+          communicationRequest, surveyUnit, communicationTemplate );
+      newCommunicationRequests.add(newCommunicationRequest);
+    }
+
+    Set<CommunicationRequestDB> currentCommunicationRequests = surveyUnit.getCommunicationRequests();
+    currentCommunicationRequests.addAll(newCommunicationRequests);
+    surveyUnitRepository.save(surveyUnit);
+  }
+
+  @Override
+  public Long getCommRequestCountByCampaignAndType(String campaignId,
+      CommunicationType type, Long date) {
+
+
+    return communicationRequestRepository.getCommRequestCountByCampaignAndType(
+        campaignId, type, date);
+  }
+
+  @Override
+  public Long getCommRequestCountByCampaignTypeAndOrgaUnit(String campaignId,
+      CommunicationType type, Long date, List<String> ouIds) {
+
+    return communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(
+        campaignId, type, date, ouIds);
+  }
+
+  @Override
+  public List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(List<String> campaignIds,
+      Set<String> interviewersId, CommunicationType type, List<String> ouIds, Long date) {
+
+    return communicationRequestRepository.getCommRequestCountByInterviewersAndType(
+        campaignIds, interviewersId, type, ouIds, date);
+  }
+
+}

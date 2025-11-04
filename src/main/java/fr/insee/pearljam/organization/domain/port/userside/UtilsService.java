@@ -1,0 +1,28 @@
+package fr.insee.pearljam.organization.domain.port.userside;
+
+import java.util.List;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.http.ResponseEntity;
+
+import fr.insee.pearljam.surveyunit.infrastructure.rest.dto.surveyunit.InterrogationOkNokDto;
+
+public interface UtilsService {
+
+	/**
+	 * @param userId
+	 * @param campaignId
+	 * @return {@link Boolean}
+	 */
+	boolean checkUserCampaignOUConstraints(String userId, String campaignId);
+
+	/**
+	 * This method retreives the organizationUnit of the user as well as all of its children units as a list of String
+	 * @param userId
+	 * @return {@link List} of {@link String}
+	 */
+	List<String> getRelatedOrganizationUnits(String userId);
+
+	ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
+}

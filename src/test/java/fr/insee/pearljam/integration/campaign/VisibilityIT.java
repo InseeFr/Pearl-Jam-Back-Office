@@ -1,10 +1,10 @@
 package fr.insee.pearljam.integration.campaign;
 
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import fr.insee.pearljam.api.utils.ScriptConstants;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDBId;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
+import fr.insee.pearljam.helper.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.helper.ScriptConstants;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.entity.VisibilityDB;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.entity.VisibilityDBId;
+import fr.insee.pearljam.campaign.infrastructure.persistence.jpa.repository.VisibilityJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;

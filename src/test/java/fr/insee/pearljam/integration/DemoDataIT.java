@@ -1,6 +1,6 @@
 package fr.insee.pearljam.integration;
 
-import fr.insee.pearljam.api.utils.ScriptConstants;
+import fr.insee.pearljam.helper.ScriptConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

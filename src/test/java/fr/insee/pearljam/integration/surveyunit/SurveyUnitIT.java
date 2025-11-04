@@ -1,11 +1,11 @@
 package fr.insee.pearljam.integration.surveyunit;
 
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.api.utils.ScriptConstants;
-import fr.insee.pearljam.config.FixedDateServiceConfiguration;
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
-import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
+import fr.insee.pearljam.helper.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.helper.MockMvcTestUtils;
+import fr.insee.pearljam.helper.ScriptConstants;
+import fr.insee.pearljam.configuration.FixedDateServiceConfiguration;
+import fr.insee.pearljam.campaign.domain.port.userside.DateService;
+import fr.insee.pearljam.campaign.domain.service.exception.CommunicationTemplateNotFoundException;
 import org.json.JSONException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

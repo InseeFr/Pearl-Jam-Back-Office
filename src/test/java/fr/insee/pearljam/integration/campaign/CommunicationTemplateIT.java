@@ -1,6 +1,6 @@
 package fr.insee.pearljam.integration.campaign;
 
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.helper.AuthenticatedUserTestHelper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
