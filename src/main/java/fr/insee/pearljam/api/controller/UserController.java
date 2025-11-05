@@ -3,10 +3,7 @@ package fr.insee.pearljam.api.controller;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.exception.BadRequestException;
-import fr.insee.pearljam.api.exception.ConflictException;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.*;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.PreferenceService;
@@ -22,7 +19,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,15 +40,11 @@ public class UserController {
 	 */
 	@Operation(summary = "Get current user")
 	@GetMapping(Constants.API_USER)
-	public ResponseEntity<UserDto> getUser() {
+	public UserDto getCurrentUser() throws NotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
-		Optional<UserDto> user = userService.getUser(currentUserId);
-		if (user.isEmpty()) {
-			log.info("GET User resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		log.info("GET User resulting in 200");
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+		UserDto user = userService.getUser(currentUserId);
+		log.info("GET Current User resulting in 200");
+		return user;
 	}
 
 	/**
@@ -62,42 +54,29 @@ public class UserController {
 	 */
 	@Operation(summary = "Get User by id")
 	@GetMapping(Constants.API_USER_ID)
-	public ResponseEntity<UserDto> getUserById(
-						@PathVariable(value = "id") String userId) {
+	public UserDto getUserById(
+						@PathVariable(value = "id") String userId) throws NotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET user with id : {}", currentUserId, userId);
-		Optional<UserDto> user = userService.getUser(userId);
-		if (user.isEmpty()) {
-			log.info("GET User resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		UserDto user = userService.getUser(userId);
 		log.info("GET User resulting in 200");
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+		return user;
 	}
 
 	/**
 	 * Create a user
 	 * @param user user to created
 	 * @return the user created
-	 * @throws BadRequestException This is thrown when errors occurred during dto validation
+	 * @throws NotFoundException This is thrown when errors occurred during dto validation
+	 * @throws UserAlreadyExistsException This is thrown when errors occurred during dto validation
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(Constants.API_USER)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public UserDto createUser(
-						@RequestBody @NotNull @Valid UserDto user) throws ConflictException, BadRequestException, NotFoundException {
+						@RequestBody @NotNull @Valid UserDto user) throws NotFoundException, UserAlreadyExistsException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to create a new user", currentUserId);
-		String ouId = user.getOrganizationUnit().getId();
-		if (!organizationUnitService.isPresent(ouId)) {
-			log.info("Invalid organizational unit {}", ouId);
-			throw new BadRequestException("No organizational unit found with this id");
-		}
-
-		String userId = user.getId();
-		if (userService.userIsPresent(userId)) {
-			throw new ConflictException("User already exists", String.format("User %s can't be created : he already exists", userId));
-		}
 
 		UserDto createdUser = userService.createUser(user);
 		log.info("User {} created", user.getId());
@@ -119,21 +98,12 @@ public class UserController {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to update user {}", currentUserId, userId);
 
-		String ouId = user.getOrganizationUnit().getId();
-		if (!organizationUnitService.isPresent(ouId)) {
-			throw new NotFoundException("No organizational unit found with this id", String.format("Invalid organizational unit %s", ouId));
-		}
-
-		if (!userService.userIsPresent(userId)) {
-			throw new NotFoundException("No user found with this id", String.format("User %s can't be updated : not found", userId));
-		}
-
 		if (!userId.equals(user.getId())) {
 			throw new ConflictException("Path id and user id are different", String.format("User %s can't be updated : provided Id [%s] is different", userId, user.getId()));
 		}
 
 		UserDto updatedUser = userService.updateUser(user);
-		log.info("{} updated user {} - {} ", userId, userId, HttpStatus.OK.value());
+		log.info("{} updated user {}", userId, userId);
 		return updatedUser;
 	}
 
@@ -150,17 +120,13 @@ public class UserController {
 			@PathVariable(value = "ouId") String ouId) throws NotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to assign user {} to OU {}", currentUserId, userId, ouId);
-		Optional<UserDto> optUser = userService.getUser(userId);
-		if (optUser.isEmpty()) {
-			throw new NotFoundException("User not found");
-		}
+		UserDto user = userService.getUser(userId);
 
 		Optional<OrganizationUnitDto> ouOptional = organizationUnitService.findById(ouId);
 		if (ouOptional.isEmpty()) {
 			throw new NotFoundException("Organization unit not found");
 		}
 
-		UserDto user = optUser.get();
 		OrganizationUnitDto ou = ouOptional.get();
 		user.setOrganizationUnit(ou);
 		user = userService.updateUser(user);

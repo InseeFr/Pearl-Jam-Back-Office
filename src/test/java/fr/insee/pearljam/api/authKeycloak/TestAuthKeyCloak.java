@@ -18,6 +18,7 @@ import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.PreferenceService;
@@ -63,6 +64,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
@@ -239,7 +241,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(2)
 	void testGetUserNotFound() {
-		assertEquals(Optional.empty(), userService.getUser("test"));
+		assertThatThrownBy(() -> userService.getUser("test")).isInstanceOf(NotFoundException.class);
 	}
 
 	private ResultMatcher checkJsonPath(String formattablePath, String nodeAttribute, Object expectedValue) {
@@ -1881,6 +1883,16 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(209)
+	void testUpdateMissingUser() throws Exception {
+		mockMvc.perform(put("/api/user/XYZ")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(generateValidUser())))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(210)
 	void testCreateValidUser() throws Exception {
 		mockMvc.perform(post(Constants.API_USER)
 						.with(authentication(ADMIN))
@@ -1890,7 +1902,7 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
-	@Order(210)
+	@Order(211)
 	void testCreateAreadyPresentUser() throws Exception {
 		mockMvc.perform(post(Constants.API_USER)
 						.with(authentication(ADMIN))
@@ -1900,7 +1912,7 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
-	@Order(211)
+	@Order(212)
 	void testCreateInvalidUser() throws Exception {
 		// Null user object
 		mockMvc.perform(post(Constants.API_USER)
@@ -1944,16 +1956,6 @@ class TestAuthKeyCloak {
 						.with(authentication(ADMIN))
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(asJsonString(user)))
-				.andExpect(status().isBadRequest());
-	}
-
-	@Test
-	@Order(212)
-	void testUpdateMissingUser() throws Exception {
-		mockMvc.perform(put("/api/user/TEST")
-						.with(authentication(ADMIN))
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(asJsonString(generateValidUser())))
 				.andExpect(status().isNotFound());
 	}
 

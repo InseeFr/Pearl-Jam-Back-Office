@@ -44,7 +44,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 				log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
 				return HttpStatus.NOT_FOUND;
 			}
-			if (!userService.isUserAssocitedToCampaign(campaignId, userId) && !Constants.GUEST.equals(userId)) {
+			if (!userService.isUserAssociatedToCampaign(campaignId, userId) && !Constants.GUEST.equals(userId)) {
 				log.error(Constants.ERR_NO_OU_FOR_CAMPAIGN, campaignId, userId);
 				return HttpStatus.BAD_REQUEST;
 			}

@@ -2,10 +2,7 @@ package fr.insee.pearljam.api.web.exception;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import fr.insee.pearljam.api.exception.BadRequestException;
-import fr.insee.pearljam.api.exception.ConflictException;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.*;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
@@ -146,6 +143,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> exceptions(NotFoundException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request, e.getGlobalMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> exceptions(UserAlreadyExistsException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(ConflictException.class)
