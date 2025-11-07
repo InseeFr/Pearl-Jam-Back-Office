@@ -42,9 +42,7 @@ public class UserController {
 	@GetMapping(Constants.API_USER)
 	public UserDto getCurrentUser() throws NotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
-		UserDto user = userService.getUser(currentUserId);
-		log.info("GET Current User resulting in 200");
-		return user;
+		return userService.getUser(currentUserId);
 	}
 
 	/**
@@ -58,9 +56,7 @@ public class UserController {
 						@PathVariable(value = "id") String userId) throws NotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET user with id : {}", currentUserId, userId);
-		UserDto user = userService.getUser(userId);
-		log.info("GET User resulting in 200");
-		return user;
+		return userService.getUser(userId);
 	}
 
 	/**
