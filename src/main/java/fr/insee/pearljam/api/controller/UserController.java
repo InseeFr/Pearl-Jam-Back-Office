@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.controller;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.api.exception.*;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.PreferenceService;
@@ -13,22 +13,20 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collections;
 import java.util.Optional;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "03. Users", description = "Endpoints for users")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
 	private final UserService userService;
@@ -38,185 +36,113 @@ public class UserController {
 	private final AuthenticatedUserService authenticatedUserService;
 
 	/**
-	 * This method returns the current USER
-	 * 
-	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
-	 *         {@link HttpStatus} FORBIDDEN
+	 * @return the current authenticated user
 	 */
-	@Operation(summary = "Get User")
+	@Operation(summary = "Get current user")
 	@GetMapping(Constants.API_USER)
-	public ResponseEntity<UserDto> getUser() {
-		String userId = authenticatedUserService.getCurrentUserId();
-		Optional<UserDto> user = userService.getUser(userId);
-		if (user.isEmpty()) {
-			log.info("GET User resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		log.info("GET User resulting in 200");
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+	public UserDto getCurrentUser() throws NotFoundException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		return userService.getUser(currentUserId);
 	}
 
 	/**
-	 * This method returns user matching with the `id` param
-	 * 
-	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
-	 *         {@link HttpStatus} FORBIDDEN
+	 * Retrieve a user by its id
+	 * @param userId user to retrieve
+	 * @return the user corresponding to the id
 	 */
 	@Operation(summary = "Get User by id")
 	@GetMapping(Constants.API_USER_ID)
-	public ResponseEntity<UserDto> getUserById(
-						@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to GET user with id : {}", userId, id);
-		Optional<UserDto> user = userService.getUser(id);
-		if (user.isEmpty()) {
-			log.info("GET User resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		log.info("GET User resulting in 200");
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+	public UserDto getUserById(
+						@PathVariable(value = "id") String userId) throws NotFoundException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to GET user with id : {}", currentUserId, userId);
+		return userService.getUser(userId);
 	}
 
 	/**
-	 * This method creates a user
-	 * 
+	 * Create a user
+	 * @param user user to created
+	 * @return the user created
+	 * @throws NotFoundException This is thrown when errors occurred during dto validation
+	 * @throws UserAlreadyExistsException This is thrown when errors occurred during dto validation
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(Constants.API_USER)
-	public ResponseEntity<Object> createUser(
-						@RequestBody UserDto user) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to create a new user", userId);
-		if (!userService.checkValidity(user)) {
-			String invalidUserInfo = String.format("Invalid user : %s", user.toString());
-			log.info(invalidUserInfo);
-			return new ResponseEntity<>(invalidUserInfo, HttpStatus.BAD_REQUEST);
-		}
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public UserDto createUser(
+						@RequestBody @NotNull @Valid UserDto user) throws NotFoundException, UserAlreadyExistsException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		log.info("{} tries to create a new user", currentUserId);
 
-		if (userService.userIsPresent(user.getId())) {
-			String alreadyPresentUserInfo = String.format("User %s can't be created : already present",
-					user);
-			log.warn(alreadyPresentUserInfo);
-			return new ResponseEntity<>(alreadyPresentUserInfo, HttpStatus.CONFLICT);
-		}
+		UserDto createdUser = userService.createUser(user);
+		log.info("User {} created", user.getId());
 
-		UserDto createdUser;
-		try {
-			createdUser = userService.createUser(user);
-			log.info("User {} created", user.getId());
-		} catch (Exception e) {
-			String unexpectedError = String.format("Exception when creating User %s", user.getId());
-			log.warn(unexpectedError, e);
-			return new ResponseEntity<>(unexpectedError, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+		return createdUser;
 	}
 
 	/**
-	 * This method updates a user
-	 * 
+	 * Update a user
+	 * @param userId user id to update
+	 * @param user user to update
+	 * @return the updated user
 	 */
 	@Operation(summary = "Update User")
 	@PutMapping(Constants.API_USER_ID)
-	public ResponseEntity<Object> updateUser(
-			@PathVariable(value = "id") String id,
-			@RequestBody UserDto user) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to update user {}", userId, id);
+	public UserDto updateUser(
+			@PathVariable(value = "id") String userId,
+			@RequestBody @Valid @NotNull UserDto user) throws ConflictException, NotFoundException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		log.info("{} tries to update user {}", currentUserId, userId);
 
-		if (!userService.checkValidity(user)) {
-			String invalidUserInfo = String.format("Invalid user : %s", user.toString());
-			log.info(invalidUserInfo);
-			return new ResponseEntity<>(invalidUserInfo, HttpStatus.BAD_REQUEST);
+		if (!userId.equals(user.getId())) {
+			throw new ConflictException("Path id and user id are different", String.format("User %s can't be updated : provided Id [%s] is different", userId, user.getId()));
 		}
 
-		if (!userService.userIsPresent(id)) {
-			String noFoundUser = String.format("User %s can't be updated : not found", id);
-			log.warn(noFoundUser);
-			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
-		}
-
-		if (!id.equals(user.getId())) {
-			String differentUser = String.format("User %s can't be updated : provided Id [%s] is different", id,
-					user.getId());
-			log.warn(differentUser);
-			return new ResponseEntity<>(differentUser, HttpStatus.CONFLICT);
-		}
-
-		UserDto updatedUser;
-		try {
-			updatedUser = userService.updateUser(user);
-		} catch (NotFoundException e) {
-			String noFoundUser = String.format("User %s can't be updated : not found", id);
-			log.warn(noFoundUser);
-			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
-		}
-		log.info("{} updated user {} - {} ", userId, id, HttpStatus.OK.value());
-		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+		UserDto updatedUser = userService.updateUser(user);
+		log.info("{} updated user {}", userId, userId);
+		return updatedUser;
 	}
 
 	/**
 	 * This method assign a user to target Organization Unit
-	 * 
+	 * @param userId user to assign to the organization
+	 * @param ouId organization unit id
+	 * @return the updated user
 	 */
 	@Operation(summary = "Assign User to Organization Unit")
 	@PutMapping(Constants.API_USER_ID_ORGANIZATION_ID_OUID)
-	public ResponseEntity<Object> assignUserToOU(
+	public UserDto assignUserToOU(
 			@PathVariable(value = "userId") String userId, 
-			@PathVariable(value = "ouId") String ouId) {
-		String callerId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to assign user {} to OU {}", callerId, userId, ouId);
-		Optional<UserDto> optUser = userService.getUser(userId);
-		if (optUser.isEmpty()) {
-			String notFoundUser = String.format("User %s can't be assigned : user not found - %s", userId,
-					HttpStatus.NOT_FOUND.value());
-			log.warn(notFoundUser);
-			return new ResponseEntity<>(notFoundUser, HttpStatus.NOT_FOUND);
+			@PathVariable(value = "ouId") String ouId) throws NotFoundException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		log.info("{} tries to assign user {} to OU {}", currentUserId, userId, ouId);
+		UserDto user = userService.getUser(userId);
+
+		Optional<OrganizationUnitDto> ouOptional = organizationUnitService.findById(ouId);
+		if (ouOptional.isEmpty()) {
+			throw new NotFoundException("Organization unit not found");
 		}
 
-		if (!organizationUnitService.isPresent(ouId)) {
-			String notFoundOu = String.format("Organization Unit %s can't be targeted : not found - %s", ouId,
-					HttpStatus.NOT_FOUND.value());
-			log.warn(notFoundOu);
-			return new ResponseEntity<>(notFoundOu, HttpStatus.NOT_FOUND);
-		}
-
-		UserDto user = optUser.get();
-		OrganizationUnitDto ou = organizationUnitService.findById(ouId).get();
+		OrganizationUnitDto ou = ouOptional.get();
 		user.setOrganizationUnit(ou);
-		try {
-			user = userService.updateUser(user);
-		} catch (NotFoundException e) {
-			String error = String.format("Error when searching user %s", userId);
-			log.warn(error, e);
-			return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-		}
+		user = userService.updateUser(user);
 
-		log.info("{} affected user {} to ou {} - {} ", callerId, userId, ouId, HttpStatus.OK.value());
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		log.info("{} affected user {} to ou {}", currentUserId, userId, ouId);
+		return user;
 	}
 
 	/**
-	 * This method is used to delete an user
-	 * 
+	 * Delete a user
+	 * @param userId user id to delete
 	 */
 	@Operation(summary = "Delete User")
 	@DeleteMapping(Constants.API_USER_ID)
-	public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to delete user {}", userId, id);
-
-		if (!userService.userIsPresent(id)) {
-			String noFoundUser = String.format("User %s can't be deleted : not found", id);
-			log.warn(noFoundUser);
-			return new ResponseEntity<>(noFoundUser, HttpStatus.NOT_FOUND);
-		}
-		messageService.deleteMessageByUserId(id);
-		preferenceService.setPreferences(Collections.emptyList(), id);
-
-		HttpStatus response = userService.delete(id);
-		log.info("{} : DELETE User {} resulting in {}", userId, id, response.value());
-		return new ResponseEntity<>(response);
+	public void deleteUser(@PathVariable(value = "id") String userId) throws NotFoundException {
+		String currentUserId = authenticatedUserService.getCurrentUserId();
+		log.info("{} tries to delete user {}", currentUserId, userId);
+		messageService.deleteMessageByUserId(userId);
+		preferenceService.setPreferences(Collections.emptyList(), userId);
+		userService.delete(userId);
+		log.info("{} deleted user {}", currentUserId, userId);
 	}
 }

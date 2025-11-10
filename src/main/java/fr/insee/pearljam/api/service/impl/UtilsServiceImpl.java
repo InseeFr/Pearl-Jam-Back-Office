@@ -60,7 +60,7 @@ public class UtilsServiceImpl implements UtilsService {
 			log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
 			return false;
 		}
-		if (!userService.isUserAssocitedToCampaign(campaignId, userId) && !Constants.GUEST.equals(userId)) {
+		if (!userService.isUserAssociatedToCampaign(campaignId, userId) && !Constants.GUEST.equals(userId)) {
 			log.error(Constants.ERR_NO_OU_FOR_CAMPAIGN, campaignId, userId);
 			return false;
 		}
