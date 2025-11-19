@@ -508,23 +508,24 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (56, 'test@test.com', 'Catherine',   'Renault',     898134646200, 0, TRUE,  'SABIANE14', false, NULL),
     (57, 'test@test.com', 'Jacques',     'Faure',       907844676970, 0, TRUE,  'SABIANE15', false, NULL),
     (58, 'test@test.com', 'Marion',      'Cotille',     917554707740, 1, FALSE, 'PROTO01', false, NULL),
-    (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE, 'PROTO03', false, NULL),
-    (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE, 'PROTO05', false, NULL),
-    (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE, 'PROTO06',false, NULL),
+    (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE,  'PROTO03', false, NULL),
+    (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE,  'PROTO05', false, NULL),
+    (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE,  'PROTO06',false, NULL),
     (62, 'test@test.com', 'Fu',          'Ture',        null,         0, TRUE,  '11', false, 'NEXT'),
-    (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true, 'PREVIOUS'),
-    (64, 'test@test.com', 'Agrippa',     'Nel',         1024815788000, 0, FALSE,  '11', true, 'PREVIOUS'),
-    (65, 'test@test.com', 'Isidore',     'Champ',       1070870588000, 0, FALSE,  '11', false, 'PREVIOUS'),
-    (66, 'test@test.com', 'Robert',      'Diggs',       null,          0, FALSE,  '24', false, 'PREVIOUS'),
-    (67, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, FALSE,  '24', false, 'PREVIOUS'),
-    (68, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, FALSE,  '24', false, 'NEXT'),
-    (69, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE,  '24', false, 'NEXT');
+    (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true,  'PREVIOUS'),
+    (64, 'test@test.com', 'Agrippa',     'Nel',         102481578800, 0, FALSE, '11', true,  'PREVIOUS'),
+    (65, 'test@test.com', 'Isidore',     'Champ',       107087058800, 0, FALSE, '11', false, 'PREVIOUS'),
+    (66, 'test@test.com', 'Earl',      'Simmons',       383503015391,  0, FALSE,'24', TRUE,   NULL),
+    (67, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, TRUE, '24', FALSE, 'PREVIOUS'),
+    (68, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
+    (69, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT');
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
     ('11', 'NEXT', NULL, NULL),
     ('11', 'PREVIOUS', 'INA', 'nice comment'),
     ('20', 'NEXT', NULL, NULL),
-    ('24', 'NEXT', 'INA', 'nice comment');
+    ('24', 'NEXT', NULL, NULL),
+    ('24', 'PREVIOUS', 'INA', 'nice comment');
 
 INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (1,  TRUE, '+33677542802', 0, 1),
@@ -590,7 +591,8 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (75, TRUE, '+33677542866', 0, 60),
     (76, TRUE, '+33677542866', 0, 61),
     (77, TRUE, '+33778899110', 0, 62),
-    (78, TRUE, '+33778899111', 0, 63);
+    (78, TRUE, '+33778899111', 0, 67),
+    (79, TRUE, '+33778899112', 0, 68);
 
 
 
