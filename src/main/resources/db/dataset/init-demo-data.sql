@@ -151,7 +151,7 @@ INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi,
     (51, 'InseeSampleIdentifier', '51', 51, '1', 51,  '61', 51, 51, 51, 51, 51, 1),
     (52, 'InseeSampleIdentifier', '52', 52, '1', 52,  '62', 52, 52, 52, 52, 52, 1),
     (53, 'InseeSampleIdentifier', '53', 53, '1', 53,  '63', 53, 53, 53, 53, 53, 1),
-    (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '63', 54, 54, 54, 54, 54, 1);
+    (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1);
 
 
 INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
@@ -515,11 +515,12 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true,  'PREVIOUS'),
     (64, 'test@test.com', 'Agrippa',     'Nel',         102481578800, 0, FALSE, '11', true,  'PREVIOUS'),
     (65, 'test@test.com', 'Isidore',     'Champ',       107087058800, 0, FALSE, '11', false, 'PREVIOUS'),
-    (66, 'test@test.com', 'Earl',      'Simmons',       383503015391,  0, FALSE,'24', FALSE,   NULL),
-    (67, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, TRUE, '24', FALSE, 'PREVIOUS'),
-    (68, 'test@test.com', 'Corey',        'Woods',      1024815788003, 0, FALSE, '24', TRUE, 'PREVIOUS'),
-    (69, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
-    (70, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT');
+    (66, 'test@test.com', 'Bowie',       'Ken',         null,          0, FALSE,'20', false, 'NEXT'),
+    (67, 'test@test.com', 'Earl',      'Simmons',       383503015391,  0, FALSE,'24', FALSE,   NULL),
+    (68, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, TRUE, '24', FALSE, 'PREVIOUS'),
+    (69, 'test@test.com', 'Corey',        'Woods',      1024815788003, 0, FALSE, '24', TRUE, 'PREVIOUS'),
+    (70, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
+    (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT');
 
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
@@ -593,7 +594,7 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (75, TRUE, '+33677542866', 0, 60),
     (76, TRUE, '+33677542866', 0, 61),
     (77, TRUE, '+33778899110', 0, 62),
-    (78, TRUE, '+33778899112', 0, 69);
+    (78, TRUE, '+33778899112', 0, 70);
 
 
 
