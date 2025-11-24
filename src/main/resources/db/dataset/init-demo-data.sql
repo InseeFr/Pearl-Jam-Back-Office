@@ -82,7 +82,8 @@ INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, bui
     (50, 'InseeAddress', 'Véronique Petit',       '', '', '51 rue des Ecoles',             '', '14000 Caen',           'France', false, null,NULL, NULL, NULL,       false),
     (51, 'InseeAddress', 'Philippe Garnier',      '', '', '52 rue de l''Industrie',        '', '76000 Rouen',          'France', false, null,NULL, NULL, NULL,       false),
     (52, 'InseeAddress', 'Catherine Renault',     '', '', '53 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
-    (53, 'InseeAddress', 'Jacques Faure',         '', '', '55 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false);
+    (53, 'InseeAddress', 'Jacques Faure',         '', '', '55 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
+    (54, 'InseeAddress', 'Earl Simmons',         '', '', '25 avenue de la Liberté',       '', '34000 Montpellier',    'France', false, null,NULL, NULL, NULL,       false);
 
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
@@ -149,7 +150,9 @@ INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi,
     (50, 'InseeSampleIdentifier', '50', 50, '1', 50,  '60', 50, 50, 50, 50, 50, 1),
     (51, 'InseeSampleIdentifier', '51', 51, '1', 51,  '61', 51, 51, 51, 51, 51, 1),
     (52, 'InseeSampleIdentifier', '52', 52, '1', 52,  '62', 52, 52, 52, 52, 52, 1),
-    (53, 'InseeSampleIdentifier', '53', 53, '1', 53,  '63', 53, 53, 53, 53, 53, 1);
+    (53, 'InseeSampleIdentifier', '53', 53, '1', 53,  '63', 53, 53, 53, 53, 53, 1),
+    (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1);
+
 
 INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('GESTIO1', 'Gertrude', 'Gestionnaire1', 'OU-NATIONAL'),
@@ -157,24 +160,26 @@ INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('GESTIO3', 'Gerard', 'Gestionnaire3', 'OU-SOUTH'),
     ('GESTIO4', 'Gustave', 'Gestionnaire4', 'OU-WEST');
 
-INSERT INTO public.campaign (id, label, email, identification_configuration, contact_attempt_configuration, contact_outcome_configuration, sensitivity) VALUES
-    ('SIMPSONS2020X00', 'Survey on the Simpsons tv show 2020', 'first.email@test.com', 'IASCO', 'F2F', 'F2F', false),
-    ('VQS2021X00', 'Everyday life and health survey 2021', 'second.email@test.com', 'IASCO', 'TEL', 'TEL', false),
-    ('ZCLOSEDX00', 'Everyday life and health survey 2021', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false),
-    ('XCLOSEDX00', 'Everyday life and health survey 2021', 'fourth.email@test.com', 'IASCO', 'TEL', 'TEL', false),
-    ('AQV2022X00', 'Campagne qualité volaille en 2022', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false),
-    ('AQV2023X00', 'Campagne qualité volaille en 2023', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', true),
-    ('AQV2024X00', 'Campagne qualité volaille en 2024', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false),
-    ('INDTEL2025X00', 'INDTEL campaign', 'third.email@test.com', 'INDTEL', 'TEL', 'TEL', false),
-    ('IASCO2025X00', 'IASCO campaign', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false),
-    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', NULL, NULL, false),
-    ('HOUSEF2F2025X00', 'HOUSEF2F campaign', 'third.email@test.com', 'HOUSEF2F', 'F2F', 'F2F', false),
-    ('HOUSETEL2025X00', 'HOUSETEL campaign', 'third.email@test.com', 'HOUSETEL', 'TEL', 'TEL', false),
-    ('HOUSETELWSR2025X00', 'HOUSETELWSR campaign', 'third.email@test.com', 'HOUSETELWSR', 'TEL', 'TEL', false),
-    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', NULL, NULL, false),
-    ('INDTELNOR2025X00', 'INDTELNOR campaign', 'third.email@test.com', 'INDTELNOR', 'TEL', 'TEL', false),
-    ('INDF2F2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false),
-    ('INDF2FNOR2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2FNOR', 'F2F', 'F2F', false);
+INSERT INTO public.campaign (id, label, email, identification_configuration, contact_attempt_configuration, contact_outcome_configuration, sensitivity, collect_next_contacts) VALUES
+    ('SIMPSONS2020X00', 'Survey on the Simpsons tv show 2020', 'first.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
+    ('VQS2021X00', 'Everyday life and health survey 2021', 'second.email@test.com', 'IASCO', 'TEL', 'TEL', false, false),
+    ('ZCLOSEDX00', 'Everyday life and health survey 2021', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
+    ('XCLOSEDX00', 'Everyday life and health survey 2021', 'fourth.email@test.com', 'IASCO', 'TEL', 'TEL', false, false),
+    ('AQV2022X00', 'Campagne qualité volaille en 2022', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
+    ('AQV2023X00', 'Campagne qualité volaille en 2023', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', true, false),
+    ('AQV2024X00', 'Campagne qualité volaille en 2024', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
+    ('INDTEL2025X00', 'INDTEL campaign', 'third.email@test.com', 'INDTEL', 'TEL', 'TEL', false, false),
+    ('IASCO2025X00', 'IASCO campaign', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
+    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', NULL, NULL, false, false),
+    ('HOUSEF2F2025X00', 'HOUSEF2F campaign', 'third.email@test.com', 'HOUSEF2F', 'F2F', 'F2F', false, false),
+    ('HOUSETEL2025X00', 'HOUSETEL campaign', 'third.email@test.com', 'HOUSETEL', 'TEL', 'TEL', false, false),
+    ('HOUSETELWSR2025X00', 'HOUSETELWSR campaign', 'third.email@test.com', 'HOUSETELWSR', 'TEL', 'TEL', false, false),
+    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', NULL, NULL, false, false),
+    ('INDTELNOR2025X00', 'INDTELNOR campaign', 'third.email@test.com', 'INDTELNOR', 'TEL', 'TEL', false, false),
+    ('INDF2F2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false, false),
+    ('INDF2FNOR2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2FNOR', 'F2F', 'F2F', false, false),
+    ('CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INDF2F campaign with collect history', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false, true);
+
 
 INSERT INTO public.preference (id_user, id_campaign) VALUES
     ('GESTIO1', 'SIMPSONS2020X00'),
@@ -375,7 +380,17 @@ INSERT INTO visibility (
         EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
         EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
         EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+        true, 'indtel@nooneknows.fr', '0321234567'),
+
+    ('OU-NORTH', 'CAMPAIGN_WITH_COLLECT_HISTORY_1',
+        EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
+        EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
+        EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
+        EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
+        EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
+        EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
         true, 'indtel@nooneknows.fr', '0321234567');
+
 
 INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES
     ('11', 'business-id-11', TRUE, 1, 'SIMPSONS2020X00', 'INTERV5', 1, 'OU-NORTH'),
@@ -386,6 +401,7 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('21', 'business-id-21', FALSE, 6, 'VQS2021X00', 'INTERV5', 6, 'OU-NORTH'),
     ('22', 'business-id-22', FALSE, 7, 'VQS2021X00', 'INTERV5', 7, 'OU-NORTH'),
     ('23', 'business-id-23', FALSE, 8, 'VQS2021X00', 'INTERV5', 8, 'OU-NORTH'),
+    ('24', 'business-id-24', TRUE, 54, 'CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INTERV5',54, 'OU-NORTH'),
     ('PROTO01', 'business-id-proto01', TRUE, 9, 'AQV2023X00', 'INTERV5', 9, 'OU-NORTH'),
     ('PROTO02', 'business-id-proto02', TRUE, 10, 'AQV2023X00', 'INTERV5', 10, 'OU-NORTH'),
     ('PROTO03', 'business-id-proto03', FALSE, 11, 'AQV2023X00', 'INTERV5', 11, 'OU-NORTH'),
@@ -431,6 +447,7 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('SABIANE13', 'business-id-sabiane13', TRUE, 51, 'HOUSEF2F2025X00', 'INTERV1', 51, 'OU-NORTH'),
     ('SABIANE14', 'business-id-sabiane14', TRUE, 52, 'HOUSETEL2025X00', 'INTERV1', 52, 'OU-NORTH'),
     ('SABIANE15', 'business-id-sabiane15', TRUE, 53, 'HOUSETELWSR2025X00', 'INTERV1', 53, 'OU-NORTH');
+
 
 INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, privileged, survey_unit_id, panel, contact_history_type) VALUES
     (1,  'test@test.com', 'Ted',         'Farmer',      315532800000, 0, TRUE,  '11', false, NULL),
@@ -491,20 +508,27 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (56, 'test@test.com', 'Catherine',   'Renault',     898134646200, 0, TRUE,  'SABIANE14', false, NULL),
     (57, 'test@test.com', 'Jacques',     'Faure',       907844676970, 0, TRUE,  'SABIANE15', false, NULL),
     (58, 'test@test.com', 'Marion',      'Cotille',     917554707740, 1, FALSE, 'PROTO01', false, NULL),
-    (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE, 'PROTO03', false, NULL),
-    (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE, 'PROTO05', false, NULL),
-    (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE, 'PROTO06',false, NULL),
+    (59, 'test@test.com', 'Arthur',      'Couyer',      927264738510, 1, TRUE,  'PROTO03', false, NULL),
+    (60, 'test@test.com', 'Kaa',         'Melott',      936974769280, 0, TRUE,  'PROTO05', false, NULL),
+    (61, 'test@test.com', 'Père',        'Seval',       946684800050, 0, TRUE,  'PROTO06',false, NULL),
     (62, 'test@test.com', 'Fu',          'Ture',        null,         0, TRUE,  '11', false, 'NEXT'),
-    (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true, 'PREVIOUS'),
-    (64, 'test@test.com', 'Agrippa',     'Nel',         1024815788000, 0, FALSE,  '11', true, 'PREVIOUS'),
-    (65, 'test@test.com', 'Isidore',     'Champ',       1070870588000, 0, FALSE,  '11', false, 'PREVIOUS'),
-    (66, 'test@test.com', 'Bowie',       'Ken',         null,          0, FALSE,  '20', false, 'NEXT');
+    (63, 'test@test.com', 'Opre',        'Vious',       315532800000, 0, TRUE,  '11', true,  'PREVIOUS'),
+    (64, 'test@test.com', 'Agrippa',     'Nel',         102481578800, 0, FALSE, '11', true,  'PREVIOUS'),
+    (65, 'test@test.com', 'Isidore',     'Champ',       107087058800, 0, FALSE, '11', false, 'PREVIOUS'),
+    (66, 'test@test.com', 'Bowie',       'Ken',         null,          0, FALSE,'20', false, 'NEXT'),
+    (67, 'test@test.com', 'Earl',      'Simmons',       383503015391,  0, FALSE,'24', FALSE,   NULL),
+    (68, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, TRUE, '24', FALSE, 'PREVIOUS'),
+    (69, 'test@test.com', 'Corey',        'Woods',      1024815788003, 0, FALSE, '24', TRUE, 'PREVIOUS'),
+    (70, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
+    (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT');
 
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
     ('11', 'NEXT', NULL, NULL),
     ('11', 'PREVIOUS', 'INA', 'nice comment'),
-    ('20', 'NEXT', NULL, NULL);
+    ('20', 'NEXT', NULL, NULL),
+    ('24', 'NEXT', NULL, NULL),
+    ('24', 'PREVIOUS', 'INA', 'nice comment');
 
 INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (1,  TRUE, '+33677542802', 0, 1),
@@ -569,7 +593,9 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (74, TRUE, '+33677542866', 0, 59),
     (75, TRUE, '+33677542866', 0, 60),
     (76, TRUE, '+33677542866', 0, 61),
-    (77, TRUE, '+33778899110', 0, 62);
+    (77, TRUE, '+33778899110', 0, 69),
+    (78, TRUE, '+33778899112', 0, 70);
+
 
 
 INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES
@@ -632,7 +658,9 @@ INSERT INTO public.identification (id, survey_unit_id, identification_type, iden
     (50, 'SABIANE12', 'INDF2F', 'IDENTIFIED', 'ACC', NULL, NULL, NULL, 'ONGOING'),
     (51, 'SABIANE13', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', NULL, NULL, 'ONGOING'),
     (52, 'SABIANE14', 'HOUSETEL', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', NULL, 'ONGOING'),
-    (53, 'SABIANE15', 'HOUSETEL', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED');
+    (53, 'SABIANE15', 'HOUSETEL', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED'),
+    (54, '24', 'INDF2F', 'IDENTIFIED', NULL, NULL, NULL, NULL, 'ONGOING');
+
 
 
 INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
@@ -645,6 +673,7 @@ INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
     (7, 1741522020000, 'VIC', '21'),
     (8, 1741522080000, 'FIN', '22'),
     (9, 1741522140000, 'VIC', '23'),
+    (297, 1741525140000, 'VIC', '24'),
     (10, 1741523100000, 'NVM', 'PROTO01'),
     (11, 1741523112000, 'ANV', 'PROTO01'),
     (12, 1741523118000, 'VIN', 'PROTO01'),

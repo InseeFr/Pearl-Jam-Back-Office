@@ -175,6 +175,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return new SurveyUnitDetailDto(surveyUnitRepository.findById(surveyUnitId).get());
 	}
 
+
+
 	private void updateContactAttempt(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.contactAttempts() != null) {
 			Set<ContactAttempt> contactAttemps = surveyUnit.getContactAttempts();

@@ -22,11 +22,9 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
@@ -90,6 +88,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestAuthKeyCloak {
 
 	private final UserService userService;
+	private final SurveyUnitService surveyUnitService;
 	private final StateRepository stateRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
@@ -2070,12 +2069,38 @@ class TestAuthKeyCloak {
 	 * @throws JSONException        jsone
 	 */
 	@Test
-	@Order(220)
+	@Order(221)
 	void testGetSurveyUnitInterviewerDetailAsAdminNotFound() throws Exception {
 		mockMvc.perform(get("/api/admin/survey-unit/11111")
 						.with(authentication(ADMIN))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(222)
+	void testPutSurveyUnitWithContactHistoryWithANextExistingPerson() throws Exception {
+
+		SurveyUnitInterviewerResponseDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("20");
+		SurveyUnitUpdateDto surveyUnitUpdateDto =  new SurveyUnitUpdateDto(
+				surveyUnitDetailDto.id(),
+				surveyUnitDetailDto.persons(),
+				surveyUnitDetailDto.address(),
+				surveyUnitDetailDto.move(),
+				surveyUnitDetailDto.comments(),
+				surveyUnitDetailDto.states(),
+				surveyUnitDetailDto.contactAttempts(),
+				surveyUnitDetailDto.contactOutcome(),
+				null,
+				null,
+				surveyUnitDetailDto.nextContactHistory());
+
+		mockMvc.perform(put("/api/survey-unit/20")
+						.with(authentication(INTERVIEWER))
+						.accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(surveyUnitUpdateDto)))
+				.andExpect(status().isOk());
 	}
 
 	private static String asJsonString(final Object obj) {
