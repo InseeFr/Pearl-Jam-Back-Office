@@ -8,14 +8,13 @@ import jakarta.validation.constraints.NotNull;
 
 public record PreviousContactHistoryPersonDto(
         Long id,
-        @NotNull
         Title title,
         @NotNull
         String firstName,
         @NotNull
         String lastName,
         Long birthdate,
-        boolean panel
+        Boolean panel
 ) {
 
     public static Person toModel(PreviousContactHistoryPersonDto chPerson, ContactHistory contactHistory) {
