@@ -94,6 +94,7 @@
 	<include file="changelog/610_default_sensitity_to_false.xml" relativeToChangelogFile="true"/>
 
 	<!-- add contact-history -->
-	<include file="changelog/620_add_contact_history.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/620_add_contact_history.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/630_other_mode.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

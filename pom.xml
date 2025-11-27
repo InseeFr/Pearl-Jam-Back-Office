@@ -25,6 +25,9 @@
 		<postgresql.version>42.7.7</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.coverage.exclusions>**/fr/insee/pearljam/api/crossenvironmentcommunication/broker/dto/**</sonar.coverage.exclusions>
+        <sonar.cpd.exclusions>**/fr/insee/pearljam/api/crossenvironmentcommunication/broker/dto/**</sonar.cpd.exclusions>
+
 		<cucumber.version>7.21.1</cucumber.version>
 	</properties>
 
@@ -34,6 +37,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-pulsar</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
