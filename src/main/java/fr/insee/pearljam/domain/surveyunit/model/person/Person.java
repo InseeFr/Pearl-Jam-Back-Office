@@ -13,7 +13,7 @@ public record Person(
 		String email,
 		Long birthdate,
 		boolean privileged,
-		boolean isPanel,
+		Boolean isPanel,
 		Set<PhoneNumber> phoneNumbers,
 		ContactHistory contactHistory) {
 
@@ -28,7 +28,7 @@ public record Person(
 				&& Objects.equals(email, p.email)
 				&& Objects.equals(birthdate, p.birthdate)
 				&& privileged == p.privileged
-				&& isPanel == p.isPanel
+				&& Objects.equals(isPanel, p.isPanel)
 				&& Objects.equals(phoneNumbers, p.phoneNumbers);
 		// contactHistory intentionally excluded to break recursion
 	}

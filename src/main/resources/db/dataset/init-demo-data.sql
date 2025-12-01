@@ -520,7 +520,8 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (68, 'test@test.com', 'Clifford',    'Smith',       1024815788001, 0, TRUE, '24', FALSE, 'PREVIOUS'),
     (69, 'test@test.com', 'Corey',        'Woods',      1024815788003, 0, FALSE, '24', TRUE, 'PREVIOUS'),
     (70, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
-    (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT');
+    (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT'),
+    (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS');
 
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES

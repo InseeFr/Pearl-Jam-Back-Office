@@ -46,7 +46,7 @@ public class PersonDB implements Serializable {
             cascade = CascadeType.ALL, mappedBy = "person", orphanRemoval = true)
     private Set<PhoneNumberDB> phoneNumbers = new HashSet<>();
 
-    private boolean panel;
+    private Boolean panel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "contact_history_type", length = 10) // this binding can write the column
@@ -93,7 +93,7 @@ public class PersonDB implements Serializable {
                 person.getEmail(),
                 person.getBirthdate(),
                 person.isPrivileged(),
-                person.isPanel(),
+                person.getPanel(),
                 PhoneNumberDB.toModel(person.getPhoneNumbers()),
                 contactHistory);
     }
