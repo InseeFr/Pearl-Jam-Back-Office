@@ -49,11 +49,16 @@ public class PhoneNumberDB implements Serializable {
 
 
     public static Set<PhoneNumber> toModel(Set<PhoneNumberDB> phoneNumbers) {
+        if(phoneNumbers == null) {
+            return Set.of();
+        }
         return phoneNumbers.stream().map(phoneNumber -> new PhoneNumber(phoneNumber.source, phoneNumber.isFavorite(), phoneNumber.getNumber())).collect(Collectors.toSet());
-
     }
 
     public static List<PhoneNumberDB> fromModel(List<PhoneNumber> phoneNumbers, PersonDB person) {
+        if(phoneNumbers == null) {
+            return List.of();
+        }
         return phoneNumbers.stream().map(phoneNumber -> new PhoneNumberDB(null,phoneNumber.source(),phoneNumber.favorite(), phoneNumber.number(),person)).toList();
     }
 
