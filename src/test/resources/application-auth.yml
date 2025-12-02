@@ -8,6 +8,11 @@ application:
     webclient: webclient_access
 
 spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   application:
     name: api
   liquibase:
@@ -39,7 +44,15 @@ spring:
 logging:
   level:
     root: INFO
-    liquibase: WARN
+    liquibase: INFO
+    org:
+      hibernate:
+        orm:
+          jdbc: TRACE
+      springframework:
+        web:
+          client:
+            RestTemplate: DEBUG
 feature:
   oidc:
     enabled: true

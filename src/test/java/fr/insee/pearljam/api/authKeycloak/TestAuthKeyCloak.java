@@ -1843,8 +1843,8 @@ class TestAuthKeyCloak {
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteOrganizationUnit() throws Exception {
 		// Delete all Survey Units before deleting Organization Unit
-		surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"))
-				.forEach(surveyUnitRepository::delete);
+		List<SurveyUnit> su = surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"));
+		surveyUnitRepository.deleteAll(su);
 
 		// Delete all Users before deleting Organization Unit
 		List<User> users = userRepository.findAllByOrganizationUnitId("OU-NORTH");

@@ -63,13 +63,13 @@ public class UserServiceImpl implements UserService {
 		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
 		if (lstOu.isEmpty()) {
 			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
-		} else {
-			if (saveAllLevels) {
-				organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
-			}
-			for (OrganizationUnit ou : lstOu) {
-				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
-			}
+			return;
+		}
+		if (saveAllLevels) {
+			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
+		}
+		for (OrganizationUnit ou : lstOu) {
+			getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 		}
 	}
 
@@ -78,17 +78,20 @@ public class UserServiceImpl implements UserService {
 		if (!userId.equals(Constants.GUEST)) {
 			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
             user.ifPresent(value -> getOrganizationUnits(organizationUnits, value.getOrganizationUnit(), saveAllLevels));
-		} else {
-			Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
-			if (ouNat.isPresent()) {
-				getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
-			} else {
-				List<String> natOus = ouRepository.findNationalOUs();
-				if (!natOus.isEmpty()) {
-					Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.getFirst());
-                    ou.ifPresent(organizationUnit -> getOrganizationUnits(organizationUnits, organizationUnit, saveAllLevels));
-				}
-			}
+			return organizationUnits;
+		}
+
+		// if guest ... sic
+		Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
+		if (ouNat.isPresent()) {
+			getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
+			return organizationUnits;
+		}
+
+		List<String> natOus = ouRepository.findNationalOUs();
+		if (!natOus.isEmpty()) {
+			Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.getFirst());
+			ou.ifPresent(organizationUnit -> getOrganizationUnits(organizationUnits, organizationUnit, saveAllLevels));
 		}
 
 		return organizationUnits;
