@@ -8,7 +8,6 @@ import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.domain.exception.*;
 import lombok.Getter;
@@ -67,11 +66,6 @@ public class CampaignFakeService implements CampaignService {
     @Override
     public List<CampaignDto> getInterviewerCampaigns(String userId) {
         throw new UnsupportedOperationException("Unimplemented method 'getInterviewerCampaigns'");
-    }
-
-    @Override
-    public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getListInterviewers'");
     }
 
     @Override

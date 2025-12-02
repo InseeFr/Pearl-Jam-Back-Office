@@ -304,15 +304,17 @@ class TestAuthKeyCloak {
 	@Order(4)
 	void testGetCampaignInterviewer() throws Exception {
 		String interviewerJsonPath = "$.[?(@.id == 'INTW1')].%s";
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/interviewers")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						checkJsonPath(interviewerJsonPath, "interviewerFirstName", "Margie"),
-						checkJsonPath(interviewerJsonPath, "interviewerLastName", "Lucas"),
-						checkJsonPath(interviewerJsonPath, "surveyUnitCount", 2L));
-	}
+                mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/interviewers")
+                                                .with(authentication(LOCAL_USER))
+                                                .accept(MediaType.APPLICATION_JSON))
+                                .andExpectAll(
+                                                status().isOk(),
+                                                checkJsonPath(interviewerJsonPath, "interviewerFirstName", "Margie"),
+                                                checkJsonPath(interviewerJsonPath, "interviewerLastName", "Lucas"),
+                                                checkJsonPath(interviewerJsonPath, "email", "margie.lucas@ou.com"),
+                                                checkJsonPath(interviewerJsonPath, "phoneNumber", "+3391231231230"),
+                                                checkJsonPath(interviewerJsonPath, "surveyUnitCount", 2L));
+        }
 
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/interviewers"

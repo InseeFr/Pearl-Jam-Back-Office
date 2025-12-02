@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 
 /**
@@ -56,17 +55,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "AND pref.id_campaign = ?2", nativeQuery = true)
 	List<Integer> checkCampaignPreferences(String userId, String campaignId);
 
-	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName, COUNT(su.interviewer)) "
-			+ "FROM SurveyUnit su "
-			+ "INNER JOIN Interviewer interv ON su.interviewer.id = interv.id "
-			+ "WHERE su.campaign.id=?1 "
-			+ "AND (su.organizationUnit.id=?2 OR ?2='GUEST') "
-			+ "GROUP BY interv.id")
-	List<InterviewerDto> findInterviewersDtoByCampaignIdAndOrganisationUnitId(String id, String organizationUnitId);
-
-	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
-	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
+        @Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
+        List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
 
 	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
 			+ "FROM Campaign camp "

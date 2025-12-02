@@ -6,8 +6,10 @@ import java.util.Set;
 
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.interviewer.CampaignInterviewerDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 
 /**
  * Service for the Campaign entity
@@ -19,9 +21,11 @@ public interface InterviewerService {
 
 	Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId);
 
-	Response createInterviewers(List<InterviewerContextDto> interviewers);
+        Response createInterviewers(List<InterviewerContextDto> interviewers);
 
-	Set<InterviewerDto> getListInterviewers(String userId);
+        Set<InterviewerDto> getListInterviewers(String userId);
+
+        List<CampaignInterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
 
 	boolean delete(String id);
 

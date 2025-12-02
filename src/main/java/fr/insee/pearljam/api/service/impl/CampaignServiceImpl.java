@@ -12,7 +12,6 @@ import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
@@ -99,33 +98,10 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDtoReturned;
 	}
 
-	@Override
-	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
-		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
-
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-		List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
-				.toList();
-
-		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-			if (userOrgUnitIds.contains(orgId)) {
-				interviewersDtoReturned.addAll(
-						campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
-			}
-		}
-		if (interviewersDtoReturned.isEmpty()) {
-			log.warn("No interviewers found for the campaign {}", campaignId);
-		}
-		return interviewersDtoReturned;
-	}
-
-	@Override
-	public boolean isUserPreference(String userId, String campaignId) {
-		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
-	}
+        @Override
+        public boolean isUserPreference(String userId, String campaignId) {
+                return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
+        }
 
 	@Override
 	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {

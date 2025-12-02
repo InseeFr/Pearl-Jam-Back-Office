@@ -46,9 +46,7 @@ public interface CampaignService {
 	 * @return {@link List} of {@link InterviewerDto}
 	 * @throws NotFoundException
 	 */
-	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
-
-	boolean isUserPreference(String userId, String campaignId);
+    boolean isUserPreference(String userId, String campaignId);
 
 	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException;
 

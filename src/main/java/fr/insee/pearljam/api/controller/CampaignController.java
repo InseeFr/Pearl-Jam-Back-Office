@@ -33,11 +33,12 @@ import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.OngoingDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.interviewer.CampaignInterviewerDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.CampaignService;
 import fr.insee.pearljam.api.service.ReferentService;
+import fr.insee.pearljam.api.service.InterviewerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -51,9 +52,10 @@ import fr.insee.pearljam.api.constants.Constants;
 @Validated
 public class CampaignController {
 
-	private final CampaignService campaignService;
-	private final ReferentService referentService;
-	private final AuthenticatedUserService authenticatedUserService;
+        private final CampaignService campaignService;
+        private final ReferentService referentService;
+        private final InterviewerService interviewerService;
+        private final AuthenticatedUserService authenticatedUserService;
 
 	private static final String DEFAULT_FORCE_VALUE = "false";
 
@@ -132,17 +134,17 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Get interviewers")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_INTERVIEWERS)
-	public ResponseEntity<List<InterviewerDto>> getListInterviewers(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to get campaign[{}] interviewers ", userId, id);
-		List<InterviewerDto> lstInterviewer;
-		try {
-			lstInterviewer = campaignService.getListInterviewers(userId, id);
-		} catch (NotFoundException e) {
-			log.error(e.getMessage());
-			log.info("Get interviewers resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+        public ResponseEntity<List<CampaignInterviewerDto>> getListInterviewers(@PathVariable(value = "id") String id) {
+                String userId = authenticatedUserService.getCurrentUserId();
+                log.info("{} try to get campaign[{}] interviewers ", userId, id);
+                List<CampaignInterviewerDto> lstInterviewer;
+                try {
+                        lstInterviewer = interviewerService.getListInterviewers(userId, id);
+                } catch (NotFoundException e) {
+                        log.error(e.getMessage());
+                        log.info("Get interviewers resulting in 404");
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
 
 		log.info("Get interviewers resulting in 200");
 		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);

@@ -33,18 +33,18 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 			WHERE interv.id=?1""")
 	InterviewerContextDto findDtoById(String id);
 
-	@Query("SELECT interv "
-			+ "FROM Interviewer interv "
-			+ "INNER JOIN SurveyUnit su ON su.interviewer.id = interv.id "
-			+ "WHERE (su.organizationUnit.id in (:ouIds) OR 'GUEST' in (:ouIds)) "
-			+ "AND su.campaign.id=:campId "
-			+ "GROUP BY interv.id ")
-	List<Interviewer> findInterviewersWorkingOnCampaign(@Param("campId") String campId,
-			@Param("ouIds") List<String> ouIds);
+        @Query("SELECT interv "
+                        + "FROM Interviewer interv "
+                        + "INNER JOIN SurveyUnit su ON su.interviewer.id = interv.id "
+                        + "WHERE (su.organizationUnit.id in (:ouIds) OR 'GUEST' in (:ouIds)) "
+                        + "AND su.campaign.id=:campId "
+                        + "GROUP BY interv.id ")
+        List<Interviewer> findInterviewersWorkingOnCampaign(@Param("campId") String campId,
+                        @Param("ouIds") List<String> ouIds);
 
-	@Query("SELECT interv.id "
-			+ "FROM Interviewer interv "
-			+ "INNER JOIN SurveyUnit su "
+        @Query("SELECT interv.id "
+                        + "FROM Interviewer interv "
+                        + "INNER JOIN SurveyUnit su "
 			+ "ON su.interviewer.id = interv.id "
 			+ "WHERE (su.organizationUnit.id in (:ouIds) OR 'GUEST' in (:ouIds)) ")
 	List<String> findInterviewersByOrganizationUnits(@Param("ouIds") List<String> ouIds);

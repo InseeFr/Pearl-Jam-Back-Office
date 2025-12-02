@@ -16,16 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.api.dto.interviewer.CampaignInterviewerDto;
+import fr.insee.pearljam.domain.interviewer.port.serverside.CampaignInterviewerRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.service.UtilsService;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,10 +45,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InterviewerServiceImpl implements InterviewerService {
 
-	private final InterviewerRepository interviewerRepository;
-	private final VisibilityJpaRepository visibilityRepository;
-	private final UserService userService;
-	private final SurveyUnitService surveyUnitService;
+		private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
+
+		private final InterviewerRepository interviewerRepository;
+		private final CampaignInterviewerRepository campaignInterviewerRepository;
+		private final VisibilityJpaRepository visibilityRepository;
+		private final UserService userService;
+		private final SurveyUnitService surveyUnitService;
+		private final UtilsService utilsService;
 
 	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
@@ -118,17 +126,44 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public Set<InterviewerDto> getListInterviewers(String userId) {
-		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
-				.toList();
-		return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
-				.map(SurveyUnit::getInterviewer)
+		public Set<InterviewerDto> getListInterviewers(String userId) {
+				List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
+								.toList();
+				return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
+								.map(SurveyUnit::getInterviewer)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet())
 				.stream()
 				.map(InterviewerDto::new)
-				.collect(Collectors.toSet());
-	}
+								.collect(Collectors.toSet());
+		}
+
+		@Override
+		public List<CampaignInterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
+				if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
+						throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
+				}
+
+				List<String> userOrgUnitIds = userService.getUserOUs(userId, false).stream()
+								.map(OrganizationUnitDto::getId)
+								.toList();
+
+				List<CampaignInterviewerDto> interviewersDtoReturned = campaignInterviewerRepository
+								.findCampaignInterviewers(campaignId, userOrgUnitIds).stream()
+								.map(interviewer -> new CampaignInterviewerDto(
+												interviewer.id(),
+												interviewer.firstName(),
+												interviewer.lastName(),
+												interviewer.email(),
+												interviewer.phoneNumber(),
+												interviewer.surveyUnitCount()))
+								.toList();
+
+				if (interviewersDtoReturned.isEmpty()) {
+						log.warn("No interviewers found for the campaign {}", campaignId);
+				}
+				return interviewersDtoReturned;
+		}
 
 	@Override
 	public boolean delete(String id) {
