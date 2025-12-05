@@ -8,11 +8,6 @@ application:
     webclient: webclient_access
 
 spring:
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
   application:
     name: api
   liquibase:
