@@ -10,7 +10,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.User;
@@ -39,7 +38,6 @@ public class UserServiceImpl implements UserService {
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
-	private final OrganizationUnitRepository ouRepository;
 
 	public Optional<UserDto> getUser(String userId) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
@@ -79,25 +77,8 @@ public class UserServiceImpl implements UserService {
 
 	public List<OrganizationUnitDto> getUserOUs(String userId, boolean saveAllLevels) {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		if (!userId.equals(Constants.GUEST)) {
-			Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-            user.ifPresent(value -> getOrganizationUnits(organizationUnits, value.getOrganizationUnit(), saveAllLevels));
-			return organizationUnits;
-		}
-
-		// if guest ... sic
-		Optional<OrganizationUnit> ouNat = ouRepository.findByIdIgnoreCase("OU-NORTH");
-		if (ouNat.isPresent()) {
-			getOrganizationUnits(organizationUnits, ouNat.get(), saveAllLevels);
-			return organizationUnits;
-		}
-
-		List<String> natOus = ouRepository.findNationalOUs();
-		if (!natOus.isEmpty()) {
-			Optional<OrganizationUnit> ou = ouRepository.findByIdIgnoreCase(natOus.getFirst());
-			ou.ifPresent(organizationUnit -> getOrganizationUnits(organizationUnits, organizationUnit, saveAllLevels));
-		}
-
+		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
+		user.ifPresent(value -> getOrganizationUnits(organizationUnits, value.getOrganizationUnit(), saveAllLevels));
 		return organizationUnits;
 	}
 

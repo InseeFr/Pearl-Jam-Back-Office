@@ -45,14 +45,7 @@ logging:
   level:
     root: INFO
     liquibase: INFO
-    org:
-      hibernate:
-        orm:
-          jdbc: TRACE
-      springframework:
-        web:
-          client:
-            RestTemplate: DEBUG
+
 feature:
   oidc:
     enabled: true
