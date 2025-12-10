@@ -8,9 +8,6 @@ on:
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
     outputs:
       branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
@@ -30,6 +27,7 @@ jobs:
           java-version: "21"
 
       - name: Build API
+        working-directory: api
         run: mvn package --no-transfer-progress
 
       - name: Upload API jar

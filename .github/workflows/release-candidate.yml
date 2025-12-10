@@ -40,9 +40,6 @@ jobs:
   build-sources:
     needs: check-version
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
     steps:
       - name: Extract branch name
         shell: bash
@@ -60,6 +57,7 @@ jobs:
           java-version: "21"
 
       - name: Build API
+        working-directory: api
         run: mvn package -Dchangelist=-rc --no-transfer-progress
 
       - name: Upload API jar

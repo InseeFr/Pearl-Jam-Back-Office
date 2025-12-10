@@ -6,9 +6,6 @@ on:
 jobs:
   verify-branch:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
     steps:
       - name: Verify branch
         run: |
