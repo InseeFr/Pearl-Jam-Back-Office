@@ -7,6 +7,9 @@ on:
 jobs:
   check-version:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     outputs:
       release-version: ${{ steps.version.outputs.version }}
     steps:
@@ -37,6 +40,9 @@ jobs:
   build-sources:
     needs: check-version
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - name: Extract branch name
         shell: bash
@@ -60,11 +66,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
+          path: api/target/*.jar
 
   create-release-candidate:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,6 +106,9 @@ jobs:
   docker:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v4
 
@@ -104,7 +116,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: target/
+          path: api/target/
 
       - name: Publish to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@v5
@@ -114,3 +126,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
           tags: ${{ needs.check-version.outputs.release-version }}
+          workdir: api
