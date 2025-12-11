@@ -13,7 +13,8 @@
 	<description>Back-office services for PearlJam</description>
 
 	<modules>
-		<module>api</module>
+        <module>api</module>
+        <module>listener-jms</module>
 	</modules>
 
 	<parent>

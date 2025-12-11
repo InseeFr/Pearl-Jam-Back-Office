@@ -26,3 +26,17 @@ services:
       - "${KEYCLOAK_PORT}:8080"
     volumes:
       - ./container/keycloak/realms:/opt/keycloak/data/import
+  activemq:
+    image: ${IMAGES_REGISTRY_DOCKER_IO:-docker.io}/${IMAGE_ACTIVEMQ:-apache/activemq-artemis:2.32.0-alpine}
+    environment:
+      ARTEMIS_USER: ${ARTEMIS_USER:-insee}
+      ARTEMIS_PASSWORD: ${ARTEMIS_PASSWORD:-lille}
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 61616 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s

@@ -1,0 +1,64 @@
+broker:
+  # artemis, pulsar
+  name: artemis
+  queue:
+    interrogation:
+      request: interrogation_request
+      response: interrogation_response
+
+spring:
+  application:
+    name: pearl-listener-jms
+  datasource:
+    url: jdbc:postgresql://<URL>:5432/pearl
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 2
+  liquibase:
+    enabled: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      id:
+        new_generator_mappings: true
+      cache:
+        use_second_level_cache: false
+        use_query_cache: false
+      generate_statistics: false
+      hbm2ddl:
+        auto: validate
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  artemis:
+    mode: native
+    broker-url:
+    user:
+    password:
+    pool:
+      enabled: true
+      max-connections: 50
+  jms:
+    listener:
+      command-queue:
+logging:
+  level:
+    fr:
+      insee:
+        queen:
+          jms: INFO
+feature:
+  sensitive-data:
+    enabled: false
+    encryptionSecretKey:
+  multimode:
+    subscriber:
+      enabled: false
+    topic: multimode_events

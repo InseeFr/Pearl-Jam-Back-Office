@@ -98,4 +98,7 @@
 
 	<include file="changelog/621_remove_notnull_panel_contact_history.xml" relativeToChangelogFile="true"/>
 
+	<!-- add inbox table for event sourcing -->
+	<include file="changelog/630_add_inbox_table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
