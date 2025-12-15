@@ -25,6 +25,7 @@
 		<postgresql.version>42.7.7</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<cucumber.version>7.21.1</cucumber.version>
 	</properties>
 
