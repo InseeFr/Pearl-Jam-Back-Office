@@ -76,8 +76,10 @@
         <!-- Be sure to use the same version in the gandalf.yml file -->
         <dependency>
             <groupId>fr.insee</groupId>
-            <artifactId>modelefiliere</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <artifactId>modelefiliere-multimode-event</artifactId>
+            <version>20251202.195447-1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../modelefiliere-multimode-event-20251202.195447-1.jar</systemPath>
         </dependency>
 
         <dependency>
