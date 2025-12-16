@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import fr.insee.pearljam.api.exception.*;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,6 @@ import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
@@ -39,21 +37,19 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 
-	public Optional<UserDto> getUser(String userId) {
+	public UserDto getUser(String userId) throws NotFoundException {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-
-		if (user.isEmpty()) {
-			return Optional.empty();
-		}
+		User user = userRepository
+				.findByIdIgnoreCase(userId)
+				.orElseThrow(() -> new NotFoundException("User not found"));
 
 		OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
-		organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
-		organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
-		getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
+		organizationUnitsParent.setId(user.getOrganizationUnit().getId());
+		organizationUnitsParent.setLabel(user.getOrganizationUnit().getLabel());
+		getOrganizationUnits(organizationUnits, user.getOrganizationUnit(), false);
 
-		return Optional.of(new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-				organizationUnitsParent, organizationUnits));
+		return new UserDto(user.getId(), user.getFirstName(), user.getLastName(),
+				organizationUnitsParent, organizationUnits);
 	}
 
 	public boolean userIsPresent(String userId) {
@@ -82,7 +78,7 @@ public class UserServiceImpl implements UserService {
 		return organizationUnits;
 	}
 
-	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
+	public boolean isUserAssociatedToCampaign(String campaignId, String userId) {
 		List<OrganizationUnitDto> lstUserOU = new ArrayList<>();
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 		if (user.isEmpty()) {
@@ -100,7 +96,7 @@ public class UserServiceImpl implements UserService {
 		for (UserContextDto user : users) {
 			Optional<User> userOpt = userRepository.findById(user.getId());
 			if (userOpt.isPresent()) {
-				throw new UserAlreadyExistsException("Found duplicate user with id: " + user.getId());
+				throw new UserAlreadyExistsException("User already exists");
 			}
 			Optional<OrganizationUnit> ouOpt = organizationUnitRepository.findById(organisationUnitId);
 			if (ouOpt.isEmpty()) {
@@ -114,50 +110,55 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public HttpStatus delete(String id) {
+	public void delete(String id) throws NotFoundException {
 		Optional<User> user = userRepository.findById(id);
 		if (user.isEmpty()) {
-			return HttpStatus.NOT_FOUND;
+			throw new NotFoundException("User does not exist");
 		}
 		userRepository.delete(user.get());
-		return HttpStatus.OK;
 	}
 
 	@Override
-	public boolean checkValidity(UserDto user) {
-		if (user == null || user.getOrganizationUnit() == null)
-			return false;
-		String ouId = user.getOrganizationUnit().getId();
-		boolean attributesValidity = user.getFirstName() != null && user.getLastName() != null && user.getId() != null;
-		boolean ouValidity = ouId != null && organizationUnitRepository.findById(ouId).isPresent();
-
-		return ouValidity && attributesValidity;
-	}
-
-	@Override
-	public UserDto createUser(UserDto userToCreate) throws NotFoundException {
+	public UserDto createUser(UserDto userToCreate) throws NotFoundException, UserAlreadyExistsException {
 		Optional<OrganizationUnit> ouOpt = organizationUnitRepository
 				.findById(userToCreate.getOrganizationUnit().getId());
+
+		String ouId = userToCreate.getOrganizationUnit().getId();
+		if (!organizationUnitRepository.existsById(ouId)) {
+			throw new NotFoundException("No organizational unit found with this id",
+					String.format("Invalid organizational unit %s", ouId));
+		}
+
+		String userId = userToCreate.getId();
+		if (userIsPresent(userId)) {
+			throw new UserAlreadyExistsException("User already exists");
+		}
 
 		OrganizationUnit ou = ouOpt
 				.orElseThrow(() -> new NotFoundException(String.format("Organization Unit with id %s not found",
 						userToCreate.getOrganizationUnit().getId())));
 		User user = new User(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
 		userRepository.save(user);
-		return getUser(userToCreate.getId()).orElse(null);
+		return getUser(userToCreate.getId());
 	}
 
 	@Override
 	public UserDto updateUser(UserDto user) throws NotFoundException {
-		Optional<User> optDbUser = userRepository.findByIdIgnoreCase(user.getId());
-		if (optDbUser.isEmpty()) {
-			throw new NotFoundException(String.format("User with id %s not found", user.getId()));
-		}
-		User dbUser = optDbUser.get();
+		User dbUser = userRepository
+				.findByIdIgnoreCase(user.getId())
+				.orElseThrow(() -> new NotFoundException(
+						"User not found",
+						String.format("User with id %s not found", user.getId())));
 		dbUser.setFirstName(user.getFirstName());
 		dbUser.setLastName(user.getLastName());
-		OrganizationUnit dbOu = organizationUnitRepository.findByIdIgnoreCase(user.getOrganizationUnit().getId())
-				.orElse(null);
+
+		String ouId = user.getOrganizationUnit().getId();
+
+		OrganizationUnit dbOu = organizationUnitRepository
+				.findByIdIgnoreCase(user.getOrganizationUnit().getId())
+				.orElseThrow(() -> new NotFoundException(
+						"No organizational unit found with this id",
+						String.format("Invalid organizational unit %s", ouId)));
 
 		dbUser.setOrganizationUnit(dbOu);
 		User updatedUser = userRepository.save(dbUser);

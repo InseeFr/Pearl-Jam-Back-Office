@@ -247,7 +247,7 @@ public class CampaignController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} check if {} is on-going", userId, id);
 
-		if (!campaignService.findById(id).isPresent()) {
+		if (campaignService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
@@ -288,7 +288,7 @@ public class CampaignController {
 	public ResponseEntity<List<ReferentDto>> getReferents(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET {} referents", userId, id);
-		if (!campaignService.findById(id).isPresent()) {
+		if (campaignService.findById(id).isEmpty()) {
 			log.warn("Campaign {} is not present, can't get referents", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

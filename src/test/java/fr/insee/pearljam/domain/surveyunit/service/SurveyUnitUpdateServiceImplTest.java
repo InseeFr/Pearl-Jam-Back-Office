@@ -1,17 +1,13 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.domain.OrganizationUnitType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
@@ -24,16 +20,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
-import fr.insee.pearljam.domain.surveyunit.model.question.AccessQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.HouseholdCompositionQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.IndividualStatusQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.InterviewerCanProcessQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.NumberOfRespondentsQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.OccupantQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.PresentInPreviousHomeQuestionValue;
-import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
+import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
@@ -42,18 +29,20 @@ import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB
 import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 class SurveyUnitUpdateServiceImplTest {
 	private CommunicationRequestFakeRepository communicationRequestFakeRepository;
@@ -75,7 +64,7 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
 		surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository,
 				communicationTemplateFakeRepository, visibilityFakeService, dateService);
-		campaign = new Campaign("campaignId", "label", null, null, null, null, false);
+		campaign = new Campaign("campaignId", "label", null, null, null, null, false,false);
 		ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, true, "mail", "tel");
@@ -104,7 +93,7 @@ class SurveyUnitUpdateServiceImplTest {
 						CommunicationRequestReason.REFUSAL)
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
 		List<CommunicationRequest> communicationRequestResults =
@@ -159,7 +148,7 @@ class SurveyUnitUpdateServiceImplTest {
 						CommunicationRequestReason.REFUSAL)
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, communicationRequests, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
 		List<CommunicationRequest> communicationRequestResults =
@@ -204,7 +193,7 @@ class SurveyUnitUpdateServiceImplTest {
 				new CommentDto(CommentType.MANAGEMENT, "value2")
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, comments, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, comments, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getComments())
@@ -232,7 +221,7 @@ class SurveyUnitUpdateServiceImplTest {
 				new CommentDto(CommentType.INTERVIEWER, "value4")
 		);
 
-		surveyUnitDto = createSurveyUnitDto(null, comments, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, comments, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getComments())
@@ -268,7 +257,7 @@ class SurveyUnitUpdateServiceImplTest {
 				PresentInPreviousHomeQuestionValue.NONE,
 				HouseholdCompositionQuestionValue.OTHER_COMPO
 		);
-		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(identification, null, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		HouseF2FIdentificationDB identificationResult = (HouseF2FIdentificationDB) surveyUnit.getIdentification();
@@ -286,7 +275,7 @@ class SurveyUnitUpdateServiceImplTest {
 	void testUpdateIdentification02() {
 		IdentificationDB identificationDB = createHouseF2FIdentificationDB();
 		surveyUnit.setIdentification(identificationDB);
-		surveyUnitDto = createSurveyUnitDto(null, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(null, null, null, null, null);
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getIdentification()).isEqualTo(identificationDB);
 	}
@@ -306,7 +295,7 @@ class SurveyUnitUpdateServiceImplTest {
 				NumberOfRespondentsQuestionValue.MANY,
 				PresentInPreviousHomeQuestionValue.NONE,
 				HouseholdCompositionQuestionValue.OTHER_COMPO);
-		surveyUnitDto = createSurveyUnitDto(identification, null, null, null);
+		surveyUnitDto = createSurveyUnitDto(identification, null, null, null, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 
@@ -336,7 +325,7 @@ class SurveyUnitUpdateServiceImplTest {
 		ContactOutcomeDto contactOutcome = new ContactOutcomeDto(dateService.getCurrentTimestamp(),
 				input, 5);
 		surveyUnit.setContactOutcome(new ContactOutcomeDB(5L,dateService.getCurrentTimestamp(),ContactOutcomeType.ALA, 3,surveyUnit));
-		surveyUnitDto = createSurveyUnitDto(null, null, null, contactOutcome);
+		surveyUnitDto = createSurveyUnitDto(null, null, null, contactOutcome, null);
 
 		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
 		assertThat(surveyUnit.getContactOutcome().getType()).isEqualTo(expected);
@@ -344,9 +333,9 @@ class SurveyUnitUpdateServiceImplTest {
 
 	private SurveyUnitUpdateDto createSurveyUnitDto(RawIdentificationDto identification, List<CommentDto> comments,
 													List<CommunicationRequestCreateDto> communicationRequests,
-													ContactOutcomeDto contactOutcome) {
+													ContactOutcomeDto contactOutcome, NextContactHistoryDto contactHistory) {
 		return new SurveyUnitUpdateDto("su-id", null, null, true,
-				comments, null, null, contactOutcome, identification, communicationRequests);
+				comments, null, null, contactOutcome, identification, communicationRequests, contactHistory );
 	}
 
 	private IdentificationDB createHouseF2FIdentificationDB() {

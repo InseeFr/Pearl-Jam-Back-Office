@@ -9,7 +9,6 @@ public class ReferentFakeService implements ReferentService {
 
     @Override
     public List<ReferentDto> findByCampaignId(String id) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findByCampaignId'");
     }
 
