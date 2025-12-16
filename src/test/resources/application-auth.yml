@@ -39,7 +39,8 @@ spring:
 logging:
   level:
     root: INFO
-    liquibase: WARN
+    liquibase: INFO
+
 feature:
   oidc:
     enabled: true

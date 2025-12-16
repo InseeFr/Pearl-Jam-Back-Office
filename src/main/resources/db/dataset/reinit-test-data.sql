@@ -86,8 +86,7 @@ INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('DEF', 'Everett', 'Juste', 'OU-NORTH'),
     ('GHI', 'Elsie', 'Clarke', 'OU-SOUTH'),
     ('JKL', 'Julius', 'Howell', 'OU-NATIONAL'),
-    ('MNO', 'Ted', 'Kannt', 'OU-WEST'),
-    ('GUEST', 'firstname', 'lastname', 'OU-NATIONAL');
+    ('MNO', 'Ted', 'Kannt', 'OU-WEST');
 
 INSERT INTO public.campaign (id, label, email, identification_configuration, contact_attempt_configuration, contact_outcome_configuration) VALUES
     ('SIMPSONS2020X00', 'Survey on the Simpsons tv show 2020', 'first.email@test.com', 'IASCO', 'F2F', 'F2F'),
@@ -98,11 +97,7 @@ INSERT INTO public.campaign (id, label, email, identification_configuration, con
 INSERT INTO public.preference (id_user, id_campaign) VALUES
     ('GHI', 'SIMPSONS2020X00'),
     ('JKL', 'SIMPSONS2020X00'),
-    ('JKL', 'VQS2021X00'),
-    ('GUEST', 'SIMPSONS2020X00'),
-    ('GUEST', 'VQS2021X00'),
-    ('GUEST', 'ZCLOSEDX00'),
-    ('GUEST', 'XCLOSEDX00');
+    ('JKL', 'VQS2021X00');
 
 INSERT INTO visibility (
     organization_unit_id,
