@@ -6,17 +6,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>fr.insee.pearljam</groupId>
-		<artifactId>pearljam-back-office</artifactId>
-		<version>5.13.4</version>
-		<relativePath>../pom.xml</relativePath>
+        <groupId>fr.insee.pearljam</groupId>
+        <artifactId>pearljam-back-office</artifactId>
+        <version>${revision}${changelist}</version>
 	</parent>
 
 	<artifactId>api</artifactId>
 	<name>Pearl-Jam-Back-Office-API</name>
 	<description>Back-office API services for PearlJam</description>
     <properties>
-        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <postgresql.version>42.7.7</postgresql.version>

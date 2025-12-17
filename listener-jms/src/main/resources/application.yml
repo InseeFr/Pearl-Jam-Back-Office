@@ -48,12 +48,9 @@ spring:
   jms:
     listener:
       command-queue:
-logging:
-  level:
-    fr:
-      insee:
-        queen:
-          jms: INFO
+  logging:
+    file:
+      enabled: false
 feature:
   sensitive-data:
     enabled: false

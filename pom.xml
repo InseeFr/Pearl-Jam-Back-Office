@@ -7,10 +7,16 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.13.5</version>
+	<version>${revision}${changelist}</version>
 	<packaging>pom</packaging>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
+
+	<properties>
+		<revision>5.13.5</revision>
+		<changelist></changelist>
+		<java.version>21</java.version>
+	</properties>
 
 	<modules>
         <module>api</module>
