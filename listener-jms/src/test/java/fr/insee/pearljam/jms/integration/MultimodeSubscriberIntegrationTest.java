@@ -2,6 +2,7 @@ package fr.insee.pearljam.jms.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.modelefiliere.EventDto;
+import fr.insee.pearljam.JMSApplication;
 import fr.insee.pearljam.infrastructure.db.events.InboxDB;
 import fr.insee.pearljam.infrastructure.db.events.InboxJpaRepository;
 import jakarta.jms.ConnectionFactory;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = JMSApplication.class)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
         "feature.multimode.subscriber.enabled=true",

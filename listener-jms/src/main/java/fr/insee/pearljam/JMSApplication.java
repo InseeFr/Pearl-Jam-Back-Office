@@ -10,7 +10,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication(scanBasePackages = "fr.insee.pearljam")
+@SpringBootApplication(scanBasePackages = {
+        "fr.insee.pearljam.jms",
+        "fr.insee.pearljam.infrastructure.db.events"
+})
 @EnableTransactionManagement
 @ConfigurationPropertiesScan
 @EnableCaching
