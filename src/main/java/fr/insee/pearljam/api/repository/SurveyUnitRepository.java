@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 
 /**
@@ -108,8 +107,16 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ ") as t", nativeQuery=true)
 	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
 
-
-	List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId);
+	@Query(value="""
+			SELECT su FROM SurveyUnit su
+			LEFT JOIN fetch su.address
+			LEFT JOIN fetch su.sampleIdentifier
+			LEFT JOIN fetch su.interviewer
+			LEFT JOIN fetch su.contactOutcome
+			LEFT JOIN fetch su.closingCause
+			LEFT JOIN fetch su.identification
+			WHERE su.organizationUnit.id IN (:organisationalUnitIds)""")
+	List<SurveyUnit> findByOrganizationUnitIdIn( @Param("organisationalUnitIds") List<String> lstOuId);
 
 
 	@Query(value="SELECT su FROM SurveyUnit su WHERE "

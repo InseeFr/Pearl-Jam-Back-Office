@@ -5,15 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,7 +49,7 @@ public class OrganizationUnit implements Serializable {
 	@Column(length = 8)
 	private OrganizationUnitType type;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private OrganizationUnit organizationUnitParent;
 
 	/**
