@@ -49,6 +49,8 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 				.identificationType(identificationType)
 				.situation(situation)
 				.category(category)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -64,5 +66,7 @@ public class HouseTelIdentificationDB extends IdentificationDB {
 		}
 		this.setSituation(identification.situation());
 		this.setCategory(identification.category());
+		this.setDemenagementWeb(identification.demenagementWeb());
+		this.setDemenagementEnqueteur(identification.demenagementEnqueteur());
 	}
 }

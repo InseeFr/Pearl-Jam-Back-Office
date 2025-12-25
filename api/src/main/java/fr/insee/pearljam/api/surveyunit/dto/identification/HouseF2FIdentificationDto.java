@@ -9,7 +9,9 @@ public record HouseF2FIdentificationDto
 		 AccessQuestionValue access,
 		 SituationQuestionValue situation,
 		 CategoryQuestionValue category,
-		 OccupantQuestionValue occupant) implements IdentificationDto {
+		 OccupantQuestionValue occupant,
+		 Boolean demenagementWeb,
+		 Boolean demenagementEnqueteur) implements IdentificationDto {
 
 
 	/**
@@ -26,6 +28,8 @@ public record HouseF2FIdentificationDto
 				.situation(situation)
 				.category(category)
 				.occupant(occupant)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -42,7 +46,9 @@ public record HouseF2FIdentificationDto
 				identification.access(),
 				identification.situation(),
 				identification.category(),
-				identification.occupant()
+				identification.occupant(),
+				identification.demenagementWeb(),
+				identification.demenagementEnqueteur()
 		);
 	}
 }

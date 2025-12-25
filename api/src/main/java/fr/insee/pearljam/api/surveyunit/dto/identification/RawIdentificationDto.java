@@ -12,7 +12,9 @@ public record RawIdentificationDto(IdentificationQuestionValue identification,
 								   InterviewerCanProcessQuestionValue interviewerCanProcess,
 								   NumberOfRespondentsQuestionValue numberOfRespondents,
 								   PresentInPreviousHomeQuestionValue presentInPreviousHome,
-								   HouseholdCompositionQuestionValue householdComposition
+								   HouseholdCompositionQuestionValue householdComposition,
+								   Boolean demenagementWeb,
+								   Boolean demenagementEnqueteur
 
 ) implements IdentificationDto {
 
@@ -30,6 +32,8 @@ public record RawIdentificationDto(IdentificationQuestionValue identification,
 				.individualStatus(individualStatus)
 				.householdComposition(householdComposition)
 				.presentInPreviousHome(presentInPreviousHome)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 }

@@ -2,23 +2,31 @@ package fr.insee.pearljam;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication()
+@SpringBootApplication
+@ComponentScan(
+        basePackages = "fr.insee.pearljam",
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class),
+                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = PearlJamApplication.class)
+        }
+)
 @EnableTransactionManagement
 @ConfigurationPropertiesScan
 @EnableCaching
 @EnableJms
-@EntityScan(basePackages = "fr.insee.pearljam.jms.infrastructure.db")
-@EnableJpaRepositories(basePackages = "fr.insee.pearljam.jms.infrastructure.db")
 @Slf4j
 public class JMSApplication {
 

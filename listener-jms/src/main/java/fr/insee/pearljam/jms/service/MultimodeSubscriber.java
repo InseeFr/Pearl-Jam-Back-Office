@@ -2,9 +2,9 @@ package fr.insee.pearljam.jms.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.modelefiliere.EventDto;
+import fr.insee.pearljam.infrastructure.db.events.InboxDB;
+import fr.insee.pearljam.infrastructure.db.events.InboxJpaRepository;
 import fr.insee.pearljam.jms.configuration.MultimodeProperties;
-import fr.insee.pearljam.jms.infrastructure.db.events.InboxDB;
-import fr.insee.pearljam.jms.infrastructure.db.events.InboxJpaRepository;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;

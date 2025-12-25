@@ -100,5 +100,7 @@
 
 	<!-- add inbox table for event sourcing -->
 	<include file="changelog/630_add_inbox_table.xml" relativeToChangelogFile="true"/>
+	<include file="changelog/640_other_mode.xml" relativeToChangelogFile="true"/>
+	<include file="changelog/650_add_demenagement_fields.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

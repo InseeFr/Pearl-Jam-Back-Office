@@ -44,7 +44,7 @@ class IdentificationDBTest {
 				SituationQuestionValue.NOORDINARY,
 				CategoryQuestionValue.VACANT,
 				OccupantQuestionValue.UNIDENTIFIED,
-				null, null, null, null, null);
+				null, null, null, null, null, false, false);
 		identificationDB.update(identification);
 		HouseF2FIdentificationDB houseF2FIdentificationDB = (HouseF2FIdentificationDB) identificationDB;
 		assertThat(houseF2FIdentificationDB.getId()).isEqualTo(identificationId);

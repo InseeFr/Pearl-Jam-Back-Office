@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.bussinessrules.BusinessRules;
 import fr.insee.pearljam.api.campaign.dto.output.CommunicationTemplateResponseDto;
+import fr.insee.pearljam.api.domain.OtherModeQuestionnaireState;
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
@@ -16,6 +17,7 @@ import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
@@ -35,7 +37,8 @@ public record SurveyUnitInterviewerResponseDto(
 	List<CommunicationTemplateResponseDto> communicationTemplates,
 	List<CommunicationRequestResponseDto> communicationRequests,
 	PreviousContactHistoryDto previousContactHistory,
-	NextContactHistoryDto nextContactHistory
+	NextContactHistoryDto nextContactHistory,
+	Set<OtherModeQuestionnaireState> otherModeQuestionnaireState
 ) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
@@ -75,6 +78,6 @@ public record SurveyUnitInterviewerResponseDto(
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
 				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
-				previousContactHistory, nextContactHistory);
+				previousContactHistory, nextContactHistory, surveyUnit.getOtherModeQuestionnaireState());
 	}
 }

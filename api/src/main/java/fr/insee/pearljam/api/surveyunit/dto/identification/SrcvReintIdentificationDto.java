@@ -9,7 +9,9 @@ public record SrcvReintIdentificationDto
 		 IndividualStatusQuestionValue individualStatus,
 		 HouseholdCompositionQuestionValue householdComposition,
 		 PresentInPreviousHomeQuestionValue presentInPreviousHome,
-		 SituationQuestionValue situation) implements IdentificationDto {
+		 SituationQuestionValue situation,
+		 Boolean demenagementWeb,
+		 Boolean demenagementEnqueteur) implements IdentificationDto {
 
 
 	/**
@@ -26,6 +28,8 @@ public record SrcvReintIdentificationDto
 				.householdComposition(householdComposition)
 				.presentInPreviousHome(presentInPreviousHome)
 				.situation(situation)
+				.demenagementWeb(demenagementWeb)
+				.demenagementEnqueteur(demenagementEnqueteur)
 				.build();
 	}
 
@@ -42,7 +46,9 @@ public record SrcvReintIdentificationDto
 				identification.individualStatus(),
 				identification.householdComposition(),
 				identification.presentInPreviousHome(),
-				identification.situation()
+				identification.situation(),
+				identification.demenagementWeb(),
+				identification.demenagementEnqueteur()
 		);
 	}
 }
