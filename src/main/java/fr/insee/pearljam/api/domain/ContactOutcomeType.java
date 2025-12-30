@@ -16,6 +16,10 @@ public enum ContactOutcomeType {
 	DUU,//Definitely Unavailable for an Unknown reason => deprecated
 	NUH,//No longer Used for Habitation
 	DCD,//Deceased => deprecated
+    ROW,
+    NPX,
+    NPI,
+    NPA,
 	NOA//Not Applicable
 
 }
