@@ -3,6 +3,7 @@ package fr.insee.pearljam.jms.service.consumers;
 import fr.insee.modelefiliere.EventDto;
 import fr.insee.modelefiliere.EventPayloadDto;
 import fr.insee.pearljam.domain.surveyunit.port.userside.MovedService;
+import fr.insee.pearljam.domain.surveyunit.port.userside.StatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +19,14 @@ class MultiModeMovedConsumerTest {
     @Mock
     private MovedService movedService;
 
+    @Mock
+    private StatusService statusService;
+
     private MultiModeMovedConsumer consumer;
 
     @BeforeEach
     void setUp() {
-        consumer = new MultiModeMovedConsumer(movedService);
+        consumer = new MultiModeMovedConsumer(movedService, statusService);
     }
 
     @Test
