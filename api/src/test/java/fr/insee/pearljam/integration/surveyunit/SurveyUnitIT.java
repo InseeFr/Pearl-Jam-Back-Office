@@ -243,7 +243,9 @@ class SurveyUnitIT {
 				      "access":"ACC",
 				      "situation":"ORDINARY",
 				      "category":"PRIMARY",
-				      "occupant":"IDENTIFIED"
+				      "occupant":"IDENTIFIED",
+				      "demenagementEnqueteur": false,
+				      "demenagementWeb": false
 				   },
 				   "communicationTemplates":[
 				      {
@@ -350,7 +352,8 @@ class SurveyUnitIT {
 				         "preferredContact": true
 				         }
 				        ]
-				      }
+				      },
+				   "otherModeQuestionnaireState": []
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
@@ -781,8 +784,10 @@ class SurveyUnitIT {
 				      "access":"ACC",
 				      "situation":"ORDINARY",
 				      "category":"PRIMARY",
-				      "occupant":"IDENTIFIED"
-				   },
+				      "occupant":"IDENTIFIED",
+				      "demenagementEnqueteur": false,
+				      "demenagementWeb": false
+				    },
 				   "communicationTemplates":[
 				      {
 				         "id":"mesh1",
@@ -889,7 +894,8 @@ class SurveyUnitIT {
 				            "preferredContact":true
 				         }
 				      ]
-				   }
+				   },
+				   "otherModeQuestionnaireState": []
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}

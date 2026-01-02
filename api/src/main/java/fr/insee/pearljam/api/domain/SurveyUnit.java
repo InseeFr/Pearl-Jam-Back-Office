@@ -367,4 +367,10 @@ public class SurveyUnit implements Serializable {
 		this.contactHistory.add(next);
 
 	}
+
+	public void setIdentificationDemenagementWeb(Boolean demenagementWeb) {
+		if (this.identification != null) {
+			this.identification.setDemenagementWeb(demenagementWeb);
+		}
+	}
 }
