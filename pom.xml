@@ -16,7 +16,21 @@
 		<revision>5.13.5</revision>
 		<changelist></changelist>
 		<java.version>21</java.version>
+		<sonar.organization>inseefr</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>4.0.0.4121</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<modules>
         <module>api</module>
