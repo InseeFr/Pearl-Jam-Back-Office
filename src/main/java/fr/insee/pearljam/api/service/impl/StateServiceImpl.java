@@ -7,29 +7,25 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
+import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
+import fr.insee.pearljam.domain.count.model.ClosingCauseCount;
+import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
+import fr.insee.pearljam.domain.count.model.StateCount;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.InterviewerNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -42,15 +38,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StateServiceImpl implements StateService {
 
-  private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
-
   private final CampaignRepository campaignRepository;
   private final StateRepository stateRepository;
   private final ClosingCauseRepository closingCauseRepository;
   private final InterviewerRepository interviewerRepository;
   private final VisibilityRepository visibilityRepository;
   private final OrganizationUnitRepository organizationUnitRepository;
-  private final CommunicationTemplateJpaRepository communicationTemplateRepository;
   private final UserService userService;
   private final UtilsService utilsService;
   private final CommunicationRequestRepository communicationRequestRepository;
@@ -58,16 +51,11 @@ public class StateServiceImpl implements StateService {
 
   public StateCountDto getStateCount(String userId, String campaignId, String interviewerId,
       Long date,
-      List<String> associatedOrgUnits) throws NotFoundException {
+      List<String> associatedOrgUnits) throws CampaignNotFoundException {
     StateCountDto stateCountDto = new StateCountDto();
-    if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-      throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-    }
-    if (!interviewerRepository.findById(interviewerId).isPresent()) {
-      log.error("No interviewer found for the id {}", interviewerId);
-      throw new NotFoundException(
-          String.format("No interviewers found for the id %s", interviewerId));
-
+    userService.checkUserAssociationToCampaign(campaignId, userId);
+    if (interviewerRepository.findById(interviewerId).isEmpty()) {
+      throw new InterviewerNotFoundException(interviewerId);
     }
     List<String> userOuIds;
     if (!userId.equals(Constants.GUEST)) {
@@ -104,20 +92,16 @@ public class StateServiceImpl implements StateService {
               interviewerId, userOuIds, dateToUse));
     }
     if (stateCountDto.getTotal() == null) {
-      throw new NotFoundException(String.format(
-          "No matching interviewers %s were found for the user % and the campaign %s",
-          interviewerId,
-          userId, campaignId));
+      log.warn("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId, userId, campaignId);
+      throw new InterviewerNotFoundException("All");
     }
     return stateCountDto;
   }
 
   public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date)
-      throws NotFoundException {
+          throws NotFoundException, CampaignNotFoundException {
     StateCountCampaignDto stateCountCampaignDto = new StateCountCampaignDto();
-    if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-      throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-    }
+    userService.checkUserAssociationToCampaign(campaignId, userId);
     List<StateCountDto> stateCountList = new ArrayList<>();
     Long dateToUse = date;
     if (dateToUse == null) {
@@ -166,43 +150,113 @@ public class StateServiceImpl implements StateService {
   }
 
   public List<StateCountDto> getStateCountByCampaigns(String userId, Long date) {
-    List<StateCountDto> returnList = new ArrayList<>();
-    List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
-    if (organizationUnits.isEmpty()) {
+    Long dateToUse = (date != null) ? date : System.currentTimeMillis();
+
+    List<String> userOrgUnitIds = userService
+            .getUserOUs(userId, true)
+            .stream().map(OrganizationUnitDto::getId).toList();
+    if (userOrgUnitIds.isEmpty()) {
       return Collections.emptyList();
     }
-    for (OrganizationUnitDto dto : organizationUnits) {
-      log.info(dto.getId());
-    }
-    List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
-        .collect(Collectors.toList());
-    Long dateToUse = date;
-    if (dateToUse == null) {
-      dateToUse = System.currentTimeMillis();
-    }
-    List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
 
-    for (String id : campaignIds) {
-      Map<String, Long> stateCountsByCampaign = new HashMap<>(
-          stateRepository.getStateCountSumByCampaign(id, userOrgUnitIds, dateToUse));
-      stateCountsByCampaign.put(Constants.NOTICE_COUNT,
-          communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(
-              id, CommunicationType.NOTICE, dateToUse, userOrgUnitIds));
-      stateCountsByCampaign.put(Constants.REMINDER_COUNT,
-          communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(
-              id, CommunicationType.REMINDER, dateToUse, userOrgUnitIds));
-      StateCountDto campaignSum = new StateCountDto(stateCountsByCampaign);
-      campaignSum.addClosingCauseCount(
-          closingCauseRepository.getgetStateClosedByClosingCauseCountByCampaign(id,
-              userOrgUnitIds, dateToUse));
-      if (campaignSum.getTotal() != null) {
-        CampaignDto dto = campaignRepository.findDtoById(id);
-        campaignSum.setCampaign(dto);
-        returnList.add(campaignSum);
-      }
+    Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
+            .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
+
+    List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
+    if (campaignIds.isEmpty()) {
+      return Collections.emptyList();
     }
-    return returnList;
+
+    Map<String, StateCountDto> stateCountsByCampaign = toDtos(
+            stateRepository.findGroupedByCampaign(campaignIds, userOrgUnitIds, dateToUse)
+    );
+
+    Map<String, CommunicationRequestCount> commRequestCountsByCampaign =
+            communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
+                    .stream()
+                    .collect(Collectors.toMap(CommunicationRequestCount::campaignId, projection -> projection));
+
+    Map<String, ClosingCauseCount> closingCauseCountsByCampaign =
+            closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
+                    .stream()
+                    .collect(Collectors.toMap(ClosingCauseCount::campaignId, projection -> projection));
+
+
+    return campaignIds.stream()
+            .map(id -> {
+              StateCountDto campaignSum = mergeCounts(
+                      stateCountsByCampaign.get(id),
+                      commRequestCountsByCampaign.get(id),
+                      closingCauseCountsByCampaign.get(id)
+              );
+              campaignSum.setCampaign(campaigns.get(id));
+              return campaignSum;
+            })
+            .toList();
   }
+
+  private Map<String, StateCountDto> toDtos(List<StateCount> results) {
+    return results.stream()
+            .collect(Collectors.toMap(StateCount::campaignId, this::toDto));
+  }
+
+  private StateCountDto toDto(StateCount projection) {
+    Map<String, Long> counts = new HashMap<>();
+    counts.put(Constants.NVM_COUNT, nullToZero(projection.nvmCount()));
+    counts.put(Constants.NNS_COUNT, nullToZero(projection.nnsCount()));
+    counts.put(Constants.ANV_COUNT, nullToZero(projection.anvCount()));
+    counts.put(Constants.VIN_COUNT, nullToZero(projection.vinCount()));
+    counts.put(Constants.VIC_COUNT, nullToZero(projection.vicCount()));
+    counts.put(Constants.PRC_COUNT, nullToZero(projection.prcCount()));
+    counts.put(Constants.AOC_COUNT, nullToZero(projection.aocCount()));
+    counts.put(Constants.APS_COUNT, nullToZero(projection.apsCount()));
+    counts.put(Constants.INS_COUNT, nullToZero(projection.insCount()));
+    counts.put(Constants.WFT_COUNT, nullToZero(projection.wftCount()));
+    counts.put(Constants.WFS_COUNT, nullToZero(projection.wfsCount()));
+    counts.put(Constants.TBR_COUNT, nullToZero(projection.tbrCount()));
+    counts.put(Constants.FIN_COUNT, nullToZero(projection.finCount()));
+    counts.put(Constants.CLO_COUNT, nullToZero(projection.cloCount()));
+    counts.put(Constants.NVA_COUNT, nullToZero(projection.nvaCount()));
+    counts.put(Constants.TOTAL_COUNT, nullToZero(projection.total()));
+    return new StateCountDto(counts);
+  }
+
+
+  private Long nullToZero(Long value) {
+    return value == null ? 0L : value;
+  }
+
+  private StateCountDto mergeCounts(StateCountDto stateCounts,
+                                    CommunicationRequestCount commCounts,
+                                    ClosingCauseCount closingCauseCounts) {
+
+    StateCountDto merged = stateCounts != null ? stateCounts : new StateCountDto(Collections.emptyMap());
+
+    merged.setNoticeCount(commCounts != null && commCounts.noticeCount() != null
+            ? commCounts.noticeCount()
+            : 0L);
+    merged.setReminderCount(commCounts != null && commCounts.reminderCount() != null
+            ? commCounts.reminderCount()
+            : 0L);
+
+    merged.addClosingCauseCount(toClosingCauseCountMap(closingCauseCounts));
+    return merged;
+  }
+
+  private Map<String, Long> toClosingCauseCountMap(ClosingCauseCount projection) {
+    if (projection == null) {
+      return Collections.emptyMap();
+    }
+    Map<String, Long> counts = new HashMap<>();
+    counts.put(Constants.NPA_COUNT, projection.npaCount() == null ? 0L : projection.npaCount());
+    counts.put(Constants.NPI_COUNT, projection.npiCount() == null ? 0L : projection.npiCount());
+    counts.put(Constants.NPX_COUNT, projection.npxCount() == null ? 0L : projection.npxCount());
+    counts.put(Constants.ROW_COUNT, projection.rowCount() == null ? 0L : projection.rowCount());
+    return counts;
+  }
+
+
+
 
   @Override
   public List<StateCountDto> getStateCountByInterviewer(String userId, Long date) {
@@ -268,11 +322,9 @@ public class StateServiceImpl implements StateService {
 
 
   @Override
-  public StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date)
-      throws NotFoundException {
-    if (!utilsService.checkUserCampaignOUConstraints(userId, id)) {
-      throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, id, userId));
-    }
+  public StateCountDto getNbSUNotAttributedStateCount(String userId, String campaignId, Long date)
+          throws CampaignNotFoundException {
+    userService.checkUserAssociationToCampaign(campaignId, userId);
 
     List<String> organizationUnits = userService.getUserOUs(userId, true)
         .stream().map(OrganizationUnitDto::getId)
@@ -283,9 +335,9 @@ public class StateServiceImpl implements StateService {
     }
 
     StateCountDto interviewerSum = new StateCountDto(
-        stateRepository.getStateCountNotAttributed(id, organizationUnits, dateToUse));
+            stateRepository.getStateCountNotAttributed(campaignId, organizationUnits, dateToUse));
     interviewerSum.addClosingCauseCount(
-        closingCauseRepository.getClosingCauseCountNotAttributed(id, organizationUnits, dateToUse));
+            closingCauseRepository.getClosingCauseCountNotAttributed(campaignId, organizationUnits, dateToUse));
 
     return interviewerSum;
   }

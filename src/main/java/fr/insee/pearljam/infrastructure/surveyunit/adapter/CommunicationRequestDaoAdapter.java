@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
 import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
@@ -11,12 +12,13 @@ import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationRequestJpaRepository;
 import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -48,8 +50,6 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   @Override
   public Long getCommRequestCountByCampaignAndType(String campaignId,
       CommunicationType type, Long date) {
-
-
     return communicationRequestRepository.getCommRequestCountByCampaignAndType(
         campaignId, type, date);
   }
@@ -57,7 +57,6 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   @Override
   public Long getCommRequestCountByCampaignTypeAndOrgaUnit(String campaignId,
       CommunicationType type, Long date, List<String> ouIds) {
-
     return communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(
         campaignId, type, date, ouIds);
   }
@@ -68,6 +67,14 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
 
     return communicationRequestRepository.getCommRequestCountByInterviewersAndType(
         campaignIds, interviewersId, type, ouIds, date);
+  }
+
+  @Override
+  public List<CommunicationRequestCount> getCommRequestCountByCampaigns(
+          List<String> campaignIds,
+          List<String> ouIds,
+          Long date) {
+    return communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, ouIds, date);
   }
 
 }

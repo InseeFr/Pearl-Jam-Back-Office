@@ -8,24 +8,10 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public class UtilsFakeService implements UtilsService {
-    @Override
-    public boolean checkUserCampaignOUConstraints(String userId, String campaignId) {
-        return false;
-    }
 
     @Override
     public List<String> getRelatedOrganizationUnits(String userId) {
         return List.of();
-    }
-
-    @Override
-    public boolean isDevProfile() {
-        return false;
-    }
-
-    @Override
-    public boolean isTestProfile() {
-        return false;
     }
 
     @Override

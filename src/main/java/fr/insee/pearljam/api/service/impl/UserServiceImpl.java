@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
@@ -82,16 +84,25 @@ public class UserServiceImpl implements UserService {
 		return organizationUnits;
 	}
 
-	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
+	public void checkUserAssociationToCampaign(String campaignId, String userId) throws UserNotAssociatedToCampaignException, CampaignNotFoundException {
 		List<OrganizationUnitDto> lstUserOU = new ArrayList<>();
 		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 		if (user.isEmpty()) {
-			return false;
+			throw new UserNotAssociatedToCampaignException(campaignId, userId);
 		}
+		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
+		if(lstIdOUCampaign.isEmpty()){
+			throw new CampaignNotFoundException();
+		}
+
 		getOrganizationUnits(lstUserOU, user.get().getOrganizationUnit(), true);
 		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).toList();
-		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
-		return !Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
+		boolean notAssociated = Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
+
+		if (notAssociated){
+			throw new UserNotAssociatedToCampaignException(campaignId, userId);
+		}
+
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
@@ -1842,8 +1843,12 @@ class TestAuthKeyCloak {
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")
 				.forEach(u -> {
 					messageService.deleteMessageByUserId(u.getId());
-					preferenceService.setPreferences(Collections.emptyList(), u.getId());
-					userService.delete(u.getId());
+                    try {
+                        preferenceService.setPreferences(Collections.emptyList(), u.getId());
+                    } catch (CampaignNotFoundException e) {
+                        // won't happen as there is no campaign id to check
+                    }
+                    userService.delete(u.getId());
 				});
 
 		mockMvc.perform(delete("/api/organization-unit/OU-NORTH")

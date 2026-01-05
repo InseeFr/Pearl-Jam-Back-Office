@@ -3,6 +3,8 @@ package fr.insee.pearljam.api.service;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+
 import java.util.List;
 
 /**
@@ -19,19 +21,19 @@ public interface StateService {
 	 * @param date
 	 * @param associatedOrgUnits
 	 * @return {@link StateCountDto}
-	 * @throws NotFoundException 
+	 * @throws CampaignNotFoundException
 	 */
 	StateCountDto getStateCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits) throws NotFoundException;
+			List<String> associatedOrgUnits) throws CampaignNotFoundException;
 	
 	/**
 	 * @param userId
 	 * @param campaignId
 	 * @param date
 	 * @return {@link StateCountCampaignDto}
-	 * @throws NotFoundException 
+	 * @throws NotFoundException
 	 */
-	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) throws NotFoundException;
+	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) throws NotFoundException, CampaignNotFoundException;
 
 	/**
 	 * @param userId
@@ -61,5 +63,5 @@ public interface StateService {
 	 * @param date
 	 * @return {@link StateCountDto}
 	 */
-	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) throws NotFoundException;
+	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) throws NotFoundException, CampaignNotFoundException;
 }

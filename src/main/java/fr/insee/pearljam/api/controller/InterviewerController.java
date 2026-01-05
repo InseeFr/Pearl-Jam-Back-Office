@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +40,7 @@ public class InterviewerController {
 	/**
 	 * This method is used to post the list of interviewers defined in request body
 	 * 
-	 * @param request
-	 * @param id
-	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link Interviewer} if exists, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Post interviewers")
@@ -59,8 +57,6 @@ public class InterviewerController {
 	 * This method is used to get the list of interviewers associated with the
 	 * campaign {id} for current user
 	 * 
-	 * @param request
-	 * @param id
 	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
@@ -68,7 +64,7 @@ public class InterviewerController {
 	@GetMapping(path = Constants.API_INTERVIEWERS)
 	public ResponseEntity<Set<InterviewerDto>> getListInterviewers() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		Set<InterviewerDto> lstInterviewer = interviewerService.getListInterviewers(userId);
+		Set<InterviewerDto> lstInterviewer = interviewerService.getInterviewersByUserAndCampaign(userId);
 		if (lstInterviewer == null) {
 			log.info("Get interviewers resulting in 404");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -111,7 +107,7 @@ public class InterviewerController {
 	public ResponseEntity<List<CampaignDto>> getListCampaigns(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
-		if (!list.isPresent()) {
+		if (list.isEmpty()) {
 			log.info("{} -> Get interviewer campaigns resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -131,7 +127,7 @@ public class InterviewerController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 		Optional<InterviewerContextDto> updatedInterviewer = interviewerService.update(id, interviewer);
-		if (!updatedInterviewer.isPresent()) {
+		if (updatedInterviewer.isEmpty()) {
 			log.error("{} : UPDATE interviewer {} resulting in 404. ", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -160,6 +156,22 @@ public class InterviewerController {
 		log.info("{} : DELETE interviewer with id {} resulting in 200", userId, id);
 		return ResponseEntity.ok().build();
 
+	}
+
+	/**
+	 * This method is used to get the list of interviewers associated with the
+	 * campaign {id} for current user
+	 *
+	 * @param id campaign id
+	 * @return List of {@link Interviewer} if exists, {@link HttpStatus} NOT_FOUND,
+	 *         or {@link HttpStatus} FORBIDDEN
+	 */
+	@Operation(summary = "Get interviewers for target campaign")
+	@GetMapping(path = Constants.API_CAMPAIGN_ID_INTERVIEWERS)
+	public List<InterviewerDto> getInterviewersByCampaignForCurrentUser(@PathVariable(value = "id") String id)throws CampaignNotFoundException {
+		String userId = authenticatedUserService.getCurrentUserId();
+		log.info("{} try to get campaign[{}] interviewers ", userId, id);
+		return interviewerService.getInterviewersByUserAndCampaign(userId, id);
 	}
 
 }

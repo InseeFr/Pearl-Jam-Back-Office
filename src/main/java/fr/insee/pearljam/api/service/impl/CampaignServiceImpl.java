@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.campaign.dto.input.*;
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.domain.Campaign;
@@ -12,10 +11,8 @@ import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
@@ -51,15 +48,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CampaignServiceImpl implements CampaignService {
 
-	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
-
 	private final CampaignRepository campaignRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final MessageRepository messageRepository;
 	private final UserService userService;
-	private final UtilsService utilsService;
 	private final SurveyUnitService surveyUnitService;
 	private final PreferenceService preferenceService;
 	private final ReferentService referentService;
@@ -99,28 +93,6 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDtoReturned;
 	}
 
-	@Override
-	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
-		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
-
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-		List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
-				.toList();
-
-		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-			if (userOrgUnitIds.contains(orgId)) {
-				interviewersDtoReturned.addAll(
-						campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
-			}
-		}
-		if (interviewersDtoReturned.isEmpty()) {
-			log.warn("No interviewers found for the campaign {}", campaignId);
-		}
-		return interviewersDtoReturned;
-	}
 
 	@Override
 	public boolean isUserPreference(String userId, String campaignId) {
@@ -128,20 +100,16 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
 		int nbSUAbandoned = 0;
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
+		userService.checkUserAssociationToCampaign(campaignId, userId);
 		return new CountDto(nbSUAbandoned);
 	}
 
 	@Override
-	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
 		int nbSUNotAttributed = 0;
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
+		userService.checkUserAssociationToCampaign(campaignId, userId);
 		return new CountDto(nbSUNotAttributed);
 	}
 
@@ -209,21 +177,27 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		surveyUnitRepository.findByCampaignId(campaign.getId())
 				.forEach(surveyunit -> surveyUnitService.delete(surveyunit.getId()));
+
+		// use UserService here
 		userRepository.findAll()
 				.forEach(user -> {
 					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(Campaign::getId)
 							.toList());
 					if (lstCampaignId.contains(campaign.getId())) {
 						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
-						preferenceService.setPreferences(lstCampaignId, user.getId());
-					}
+                        try {
+                            preferenceService.setPreferences(lstCampaignId, user.getId());
+                        } catch (CampaignNotFoundException e) {
+                            // campaign already checked
+                        }
+                    }
 				});
 		messageRepository.deleteCampaignMessageRecipientByCampaignId(campaign.getId());
 		campaignRepository.delete(campaign);
 	}
 
 	@Override
-	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, OrganizationalUnitNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 

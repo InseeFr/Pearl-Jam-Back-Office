@@ -13,7 +13,6 @@ import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 
 /**
@@ -25,7 +24,7 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 public interface CampaignService {
 
 	/**
-	 * @param userId
+	 * @param userId user id
 	 * @return {@link List} of {@link CampaignDto}
 	 */
 	List<CampaignDto> getListCampaign(String userId);
@@ -40,19 +39,11 @@ public interface CampaignService {
 	 */
 	List<CampaignDto> getInterviewerCampaigns(String userId);
 
-	/**
-	 * @param userId
-	 * @param campaignId
-	 * @return {@link List} of {@link InterviewerDto}
-	 * @throws NotFoundException
-	 */
-	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
-
 	boolean isUserPreference(String userId, String campaignId);
 
-	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException;
+	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException, CampaignNotFoundException;
 
-	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException;
+	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException, CampaignNotFoundException;
 
 	void createCampaign(CampaignCreateDto campaignDto) throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException;
 

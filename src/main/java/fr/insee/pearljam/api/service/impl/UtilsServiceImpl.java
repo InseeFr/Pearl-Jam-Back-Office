@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,10 +18,8 @@ import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.surveyunit.InterrogationOkNokDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
-import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +31,8 @@ public class UtilsServiceImpl implements UtilsService {
 
 	private final ExternalServicesProperties externalServicesProperties;
 	private final UserRepository userRepository;
-	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
-	private final UserService userService;
 	private final RestTemplate restTemplate;
-	private final Environment environment;
 
 	public List<String> getRelatedOrganizationUnits(String userId) {
 		List<String> l = new ArrayList<>();
@@ -57,40 +51,6 @@ public class UtilsServiceImpl implements UtilsService {
 		}
 
 		return l;
-	}
-
-	public boolean checkUserCampaignOUConstraints(String userId, String campaignId) {
-		if (!userRepository.existsByIdIgnoreCase(userId) && !Constants.GUEST.equals(userId)) {
-			log.error(Constants.ERR_USER_NOT_EXIST, userId);
-			return false;
-		}
-		if (!campaignRepository.existsById(campaignId)) {
-			log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
-			return false;
-		}
-		if (!userService.isUserAssocitedToCampaign(campaignId, userId) && !Constants.GUEST.equals(userId)) {
-			log.error(Constants.ERR_NO_OU_FOR_CAMPAIGN, campaignId, userId);
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean isDevProfile() {
-		for (final String profileName : environment.getActiveProfiles()) {
-			if ("dev".equals(profileName))
-				return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isTestProfile() {
-		for (final String profileName : environment.getActiveProfiles()) {
-			if ("test".equals(profileName))
-				return true;
-		}
-		return false;
 	}
 
 	@Override

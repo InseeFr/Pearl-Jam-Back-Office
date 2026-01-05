@@ -86,7 +86,7 @@ class CampaignServiceImplTest {
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
+                userService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
     }
 
     // TODO : handle referent

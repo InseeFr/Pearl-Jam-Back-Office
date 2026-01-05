@@ -7,6 +7,7 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.ContactOutcomeService;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -30,8 +31,7 @@ public class ContactOutcomeController {
   /**
    * This method is used to count survey units not attributed by contact-outcomes
    *
-   * @param request
-   * @param id
+   * @param id campaign id
    * @return {@link ContactOutcomeTypeCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
@@ -39,7 +39,7 @@ public class ContactOutcomeController {
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountDto> getNbSUNotAttributedContactOutcomes(
       @PathVariable(value = "id") String id,
-      @RequestParam(required = false, name = "date") Long date) {
+      @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
     ContactOutcomeTypeCountDto contactOutcomes;
     try {
@@ -57,8 +57,7 @@ public class ContactOutcomeController {
   /**
    * Return the contact-outcome type count for each campaign
    *
-   * @param request
-   * @param date
+   * @param date use a different date (optional)
    * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
@@ -81,9 +80,8 @@ public class ContactOutcomeController {
   /**
    * This method is used to count the contact-outcome types by organizational units and campaign
    *
-   * @param request
-   * @param id
-   * @param date
+   * @param id campaign id
+   * @param date use a different date (optional)
    * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
@@ -91,7 +89,7 @@ public class ContactOutcomeController {
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountCampaignDto> getContactOutcomeTypeCountByCampaign(
       @PathVariable(value = "id") String id,
-      @RequestParam(required = false, name = "date") Long date) {
+      @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
     ContactOutcomeTypeCountCampaignDto stateCountCampaignDto;
     try {
@@ -110,16 +108,15 @@ public class ContactOutcomeController {
    * This method is used to get the contact outcome type count associated with the campaign {id} for
    * current an interviewer
    *
-   * @param request
-   * @param id
-   * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND, or
+   * @param id campaign id
+   * @return List of {@link Interviewer} if exists, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get contact-outcome type for an interviewer on a specific campaign")
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CONTACTOUTCOMES)
   public ResponseEntity<ContactOutcomeTypeCountDto> getContactOuctomeByCampaignAndInterviewer(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
-      @RequestParam(required = false, name = "date") Long date) {
+      @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
     ContactOutcomeTypeCountDto cotd;
     try {

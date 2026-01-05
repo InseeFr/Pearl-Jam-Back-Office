@@ -1,15 +1,14 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
 * SurveyUnitRepository is the repository using to access to SurveyUnit table in DB
