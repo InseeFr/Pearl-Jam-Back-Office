@@ -83,7 +83,8 @@ INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, bui
     (51, 'InseeAddress', 'Philippe Garnier',      '', '', '52 rue de l''Industrie',        '', '76000 Rouen',          'France', false, null,NULL, NULL, NULL,       false),
     (52, 'InseeAddress', 'Catherine Renault',     '', '', '53 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
     (53, 'InseeAddress', 'Jacques Faure',         '', '', '55 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
-    (54, 'InseeAddress', 'Earl Simmons',         '', '', '25 avenue de la Liberté',       '', '34000 Montpellier',    'France', false, null,NULL, NULL, NULL,       false);
+    (54, 'InseeAddress', 'Earl Simmons',          '', '', '25 avenue de la Liberté',       '', '34000 Montpellier',    'France', false, null,NULL, NULL, NULL,       false),
+    (55, 'InseeAddress', 'Albert Johnson',        '', '', '12 avenue de la Gare',          '', '21000 Dijon',          'France', false, null,NULL, NULL, NULL,       false);
 
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
@@ -151,7 +152,9 @@ INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi,
     (51, 'InseeSampleIdentifier', '51', 51, '1', 51,  '61', 51, 51, 51, 51, 51, 1),
     (52, 'InseeSampleIdentifier', '52', 52, '1', 52,  '62', 52, 52, 52, 52, 52, 1),
     (53, 'InseeSampleIdentifier', '53', 53, '1', 53,  '63', 53, 53, 53, 53, 53, 1),
-    (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1);
+    (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1),
+    (55, 'InseeSampleIdentifier', '55', 55, '1', 55,  '64', 55, 55, 55, 55, 55, 1);
+
 
 
 INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
@@ -402,6 +405,7 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('22', 'business-id-22', FALSE, 7, 'VQS2021X00', 'INTERV5', 7, 'OU-NORTH'),
     ('23', 'business-id-23', FALSE, 8, 'VQS2021X00', 'INTERV5', 8, 'OU-NORTH'),
     ('24', 'business-id-24', TRUE, 54, 'CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INTERV5',54, 'OU-NORTH'),
+    ('25', 'business-id-25', TRUE, 55, 'CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INTERV5',55, 'OU-NORTH'),
     ('PROTO01', 'business-id-proto01', TRUE, 9, 'AQV2023X00', 'INTERV5', 9, 'OU-NORTH'),
     ('PROTO02', 'business-id-proto02', TRUE, 10, 'AQV2023X00', 'INTERV5', 10, 'OU-NORTH'),
     ('PROTO03', 'business-id-proto03', FALSE, 11, 'AQV2023X00', 'INTERV5', 11, 'OU-NORTH'),
@@ -521,7 +525,11 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (69, 'test@test.com', 'Corey',        'Woods',      1024815788003, 0, FALSE, '24', TRUE, 'PREVIOUS'),
     (70, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
     (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT'),
-    (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS');
+    (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS'),
+    (73, 'test@test.com', 'John',    'Marston',       1024815788005, 0, FALSE, '25', FALSE, 'PREVIOUS'),
+    (74, 'test@test.com', 'Arthur',        'Morgan',      1024815788009, 0, TRUE, '25', TRUE, 'PREVIOUS'),
+    (75, 'test@test.com', 'Dutch',      'Van Der Linde',       null,          0, FALSE, '25', TRUE, 'NEXT');
+
 
 
 INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
@@ -529,7 +537,10 @@ INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contac
     ('11', 'PREVIOUS', 'INA', 'nice comment'),
     ('20', 'NEXT', NULL, NULL),
     ('24', 'NEXT', NULL, NULL),
-    ('24', 'PREVIOUS', 'INA', 'nice comment');
+    ('24', 'PREVIOUS', 'INA', 'nice comment'),
+    ('25', 'NEXT', NULL, NULL),
+    ('25', 'PREVIOUS', 'INA', 'previous to next collect import test');
+
 
 INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (1,  TRUE, '+33677542802', 0, 1),
@@ -660,7 +671,9 @@ INSERT INTO public.identification (id, survey_unit_id, identification_type, iden
     (51, 'SABIANE13', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', NULL, NULL, 'ONGOING'),
     (52, 'SABIANE14', 'HOUSETEL', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', NULL, 'ONGOING'),
     (53, 'SABIANE15', 'HOUSETEL', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED'),
-    (54, '24', 'INDF2F', 'IDENTIFIED', NULL, NULL, NULL, NULL, 'ONGOING');
+    (54, '24', 'INDF2F', 'IDENTIFIED', NULL, NULL, NULL, NULL, 'ONGOING'),
+    (55, '25', 'INDF2F', 'IDENTIFIED', NULL, NULL, NULL, NULL, 'ONGOING');
+
 
 
 
@@ -675,6 +688,7 @@ INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
     (8, 1741522080000, 'FIN', '22'),
     (9, 1741522140000, 'VIC', '23'),
     (297, 1741525140000, 'VIC', '24'),
+    (298, 1741525140000, 'VIC', '25'),
     (10, 1741523100000, 'NVM', 'PROTO01'),
     (11, 1741523112000, 'ANV', 'PROTO01'),
     (12, 1741523118000, 'VIN', 'PROTO01'),
