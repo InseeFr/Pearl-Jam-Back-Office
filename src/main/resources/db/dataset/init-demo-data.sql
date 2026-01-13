@@ -84,7 +84,7 @@ INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, bui
     (52, 'InseeAddress', 'Catherine Renault',     '', '', '53 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
     (53, 'InseeAddress', 'Jacques Faure',         '', '', '55 boulevard de la Mer',        '', '80000 Amiens',         'France', false, null,NULL, NULL, NULL,       false),
     (54, 'InseeAddress', 'Earl Simmons',          '', '', '25 avenue de la Liberté',       '', '34000 Montpellier',    'France', false, null,NULL, NULL, NULL,       false),
-    (55, 'InseeAddress', 'Albert Johnson',        '', '', '12 avenue de la Gare',          '', '21000 Dijon',          'France', false, null,NULL, NULL, NULL,       false);
+    (55, 'InseeAddress', 'Albert Hilbert',        '', '', '12 avenue de la Gare',          '', '21000 Dijon',          'France', false, null,NULL, NULL, NULL,       false);
 
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NATIONAL', 'National organizational unit', 'NATIONAL', null);
 INSERT INTO public.organization_unit (id, label, type, organization_unit_parent_id) VALUES ('OU-NORTH', 'North region organizational unit', 'LOCAL', 'OU-NATIONAL');
@@ -526,10 +526,8 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (70, 'test@test.com', 'Gary',        'Grice',       1024815788002, 0, TRUE, '24', FALSE, 'NEXT'),
     (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT'),
     (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS'),
-    (73, 'test@test.com', 'John',    'Marston',       1024815788005, 0, FALSE, '25', FALSE, 'PREVIOUS'),
-    (74, 'test@test.com', 'Arthur',        'Morgan',      1024815788009, 0, TRUE, '25', TRUE, 'PREVIOUS'),
-    (75, 'test@test.com', 'Dutch',      'Van Der Linde',       null,          0, FALSE, '25', TRUE, 'NEXT'),
-    (76, 'test@test.com', 'Albert ',      'Johnson',       383503015391,  0, FALSE, '25', FALSE,   NULL);
+    (73, 'test@test.com', 'Dutch',      'Smith',       null,          0, FALSE, '25', TRUE, 'NEXT'),
+    (74, 'test@test.com', 'Albert ',      'Hilbert',       383506515391,  0, FALSE, '25', FALSE,   NULL);
 
 
 
@@ -540,8 +538,7 @@ INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contac
     ('20', 'NEXT', NULL, NULL),
     ('24', 'NEXT', NULL, NULL),
     ('24', 'PREVIOUS', 'INA', 'nice comment'),
-    ('25', 'NEXT', NULL, NULL),
-    ('25', 'PREVIOUS', 'INA', 'previous to next collect import test');
+    ('25', 'NEXT', NULL, NULL);
 
 
 INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
