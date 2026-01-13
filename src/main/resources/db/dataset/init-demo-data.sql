@@ -153,7 +153,7 @@ INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi,
     (52, 'InseeSampleIdentifier', '52', 52, '1', 52,  '62', 52, 52, 52, 52, 52, 1),
     (53, 'InseeSampleIdentifier', '53', 53, '1', 53,  '63', 53, 53, 53, 53, 53, 1),
     (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1),
-    (55, 'InseeSampleIdentifier', '55', 55, '1', 55,  '64', 55, 55, 55, 55, 55, 1);
+    (55, 'InseeSampleIdentifier', '55', 55, '1', 55,  '65', 55, 55, 55, 55, 55, 1);
 
 
 
@@ -528,7 +528,9 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS'),
     (73, 'test@test.com', 'John',    'Marston',       1024815788005, 0, FALSE, '25', FALSE, 'PREVIOUS'),
     (74, 'test@test.com', 'Arthur',        'Morgan',      1024815788009, 0, TRUE, '25', TRUE, 'PREVIOUS'),
-    (75, 'test@test.com', 'Dutch',      'Van Der Linde',       null,          0, FALSE, '25', TRUE, 'NEXT');
+    (75, 'test@test.com', 'Dutch',      'Van Der Linde',       null,          0, FALSE, '25', TRUE, 'NEXT'),
+    (76, 'test@test.com', 'Albert ',      'Johnson',       383503015391,  0, FALSE, '25', FALSE,   NULL);
+
 
 
 
