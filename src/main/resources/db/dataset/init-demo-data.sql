@@ -605,7 +605,9 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (75, TRUE, '+33677542866', 0, 60),
     (76, TRUE, '+33677542866', 0, 61),
     (77, TRUE, '+33778899110', 0, 69),
-    (78, TRUE, '+33778899112', 0, 70);
+    (78, TRUE, '+33778899112', 0, 70),
+    (79, TRUE, '+33771755198', 0, 74);
+
 
 
 
