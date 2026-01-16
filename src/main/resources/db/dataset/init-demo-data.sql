@@ -527,7 +527,9 @@ INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, p
     (71, 'test@test.com', 'Dennis',      'Coles',       null,          0, FALSE, '24', TRUE, 'NEXT'),
     (72, null           , 'Pedro',       null,          null,          null, FALSE, '24', null, 'PREVIOUS'),
     (73, 'test@test.com', 'Dutch',      'Smith',       null,          0, FALSE, '25', TRUE, 'NEXT'),
-    (74, 'test@test.com', 'Albert ',      'Hilbert',       383506515391,  0, FALSE, '25', FALSE,   NULL);
+    (74, 'test@test.com', 'Albert ',      'Hilbert',       383506515391,  0, FALSE, '25', FALSE,   NULL),
+    (75, 'test@test.com', 'Roberta ',      'Hilbert',       383506515311,  1, FALSE, '25', FALSE,   NULL);
+
 
 
 
@@ -606,7 +608,9 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (76, TRUE, '+33677542866', 0, 61),
     (77, TRUE, '+33778899110', 0, 69),
     (78, TRUE, '+33778899112', 0, 70),
-    (79, TRUE, '+33771755198', 0, 74);
+    (79, TRUE, '+33771755198', 0, 74),
+    (80, TRUE, '+33771766666', 0, 75);
+
 
 
 
