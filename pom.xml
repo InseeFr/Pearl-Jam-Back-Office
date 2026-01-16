@@ -33,6 +33,7 @@
 	</build>
 
 	<modules>
+        <module>domain</module>
         <module>api</module>
         <module>listener-jms</module>
 	</modules>

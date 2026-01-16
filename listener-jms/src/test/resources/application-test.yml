@@ -57,7 +57,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     enabled: true
-    change-log: classpath:db/master.xml
+    change-log: classpath:db/integration-test.xml
   artemis:
     mode: native
     broker-url: (tcp://localhost:61616)?maxReconnectAttempts=111&maxReconnectDelay=2000&jms.watchTopicAdvisories=false

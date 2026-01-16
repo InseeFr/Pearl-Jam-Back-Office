@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
         basePackages = "fr.insee.pearljam",
         excludeFilters = {
                 @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class),
-                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = PearlJamApplication.class)
+                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class)
         }
 )
 @EnableTransactionManagement
