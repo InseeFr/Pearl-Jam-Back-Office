@@ -21,6 +21,7 @@ jobs:
 
       - name: Get source version
         id: version-step
+        working-directory: api
         run: echo "version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
       - name: Print source version
@@ -57,17 +58,21 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Build app
+        working-directory: api
         run: mvn package --no-transfer-progress
 
       - name: Upload app jar
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
+          path: api/target/*.jar
 
   create-release:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v4
         with:
@@ -99,6 +104,9 @@ jobs:
   docker:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v4
 
@@ -106,7 +114,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: target/
+          path: api/target/
 
       - name: Publish to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@v5
@@ -116,3 +124,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
           tags: ${{ needs.check-version.outputs.release-version }}
+          workdir: api

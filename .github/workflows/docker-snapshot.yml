@@ -27,18 +27,22 @@ jobs:
           java-version: "21"
 
       - name: Build API
+        working-directory: api
         run: mvn package --no-transfer-progress
 
       - name: Upload API jar
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
+          path: api/target/*.jar
 
   docker:
     needs:
       - build-snapshot
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v4
 
@@ -46,7 +50,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: target/
+          path: api/target/
 
       - name: Create docker version tag
         id: docker-version
@@ -64,4 +68,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
           tags: "snapshot-${{ env.docker_tag }}"
-          workdir: .
+          workdir: api
