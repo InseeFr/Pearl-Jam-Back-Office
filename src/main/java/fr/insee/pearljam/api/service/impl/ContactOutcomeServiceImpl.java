@@ -121,8 +121,8 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 			throw new NotFoundException(
 					String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
 		}
-		if (!interviewerRepository.findById(interviewerId).isPresent()
-				|| !campaignRepository.findById(campaignId).isPresent()) {
+		if (interviewerRepository.findById(interviewerId).isEmpty()
+				|| campaignRepository.findById(campaignId).isEmpty()) {
 			throw new NotFoundException(String.format("The interviewer %s or the campaign %s was not found in database",
 					interviewerId, campaignId));
 		}

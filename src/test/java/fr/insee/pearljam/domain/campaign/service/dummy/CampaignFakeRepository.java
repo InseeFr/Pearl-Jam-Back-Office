@@ -32,11 +32,6 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<String> findAllIdsVisible(List<String> ouIds, Long date) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) {
         return List.of();
     }

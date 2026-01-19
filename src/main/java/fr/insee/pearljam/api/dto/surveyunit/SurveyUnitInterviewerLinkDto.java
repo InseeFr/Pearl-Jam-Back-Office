@@ -2,44 +2,21 @@ package fr.insee.pearljam.api.dto.surveyunit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyUnitInterviewerLinkDto {
+
 	private String surveyUnitId;
 	private String interviewerId;
-	public SurveyUnitInterviewerLinkDto(String surveyUnitId, String interviewerId) {
-		super();
-		this.surveyUnitId = surveyUnitId;
-		this.interviewerId = interviewerId;
-	}
-	public SurveyUnitInterviewerLinkDto() {
-		super();
-	}
-	/**
-	 * @return the surveyUnitId
-	 */
-	public String getSurveyUnitId() {
-		return surveyUnitId;
-	}
-	/**
-	 * @param surveyUnitId the surveyUnitId to set
-	 */
-	public void setSurveyUnitId(String surveyUnitId) {
-		this.surveyUnitId = surveyUnitId;
-	}
-	/**
-	 * @return the interviewerId
-	 */
-	public String getInterviewerId() {
-		return interviewerId;
-	}
-	/**
-	 * @param interviewerId the interviewerId to set
-	 */
-	public void setInterviewerId(String interviewerId) {
-		this.interviewerId = interviewerId;
-	}
-	
+
 	@JsonIgnore
 	public String getLink() {
 		if(this.surveyUnitId != null && this.interviewerId != null) {

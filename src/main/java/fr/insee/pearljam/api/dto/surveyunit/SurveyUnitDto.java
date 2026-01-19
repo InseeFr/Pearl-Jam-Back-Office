@@ -9,7 +9,7 @@ import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,6 +66,7 @@ public class SurveyUnitDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
+	private boolean collectNextContacts;
 	private boolean useLetterCommunication;
 
 	private List<PersonDto> persons;
@@ -86,5 +87,6 @@ public class SurveyUnitDto {
 		this.identificationConfiguration = campaign.getIdentificationConfiguration();
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();
+		this.collectNextContacts = campaign.isCollectNextContacts();
 	}
 }

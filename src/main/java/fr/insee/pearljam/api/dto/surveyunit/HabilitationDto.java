@@ -1,15 +1,11 @@
 package fr.insee.pearljam.api.dto.surveyunit;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class HabilitationDto {
   private boolean habilitated;
 
-
-
-public boolean isHabilitated() {
-	return habilitated;
-}
-
-public void setHabilitated(boolean habilitated) {
-	this.habilitated = habilitated;
-}
 }

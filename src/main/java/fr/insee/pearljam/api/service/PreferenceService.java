@@ -11,6 +11,6 @@ public interface PreferenceService {
 	 * @param userId
 	 * @return {@link HttpStatus}
 	 */
-	public HttpStatus setPreferences(List<String> listPreference, String userId);
+	HttpStatus setPreferences(List<String> listPreference, String userId);
 
 }

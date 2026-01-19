@@ -107,7 +107,7 @@ public class MessageServiceImpl implements MessageService {
 		ArrayList<Interviewer> interviewerMessageRecipients = new ArrayList<>();
 		ArrayList<Campaign> campaignMessageRecipients = new ArrayList<>();
 		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 
 		if (optSender.isPresent()) {
 			sender = optSender.get();
@@ -168,7 +168,7 @@ public class MessageServiceImpl implements MessageService {
 	public List<MessageDto> getMessages(String interviewerId) {
 		List<Long> ids = messageRepository.getMessageIdsByInterviewer(interviewerId);
 		List<OrganizationUnitDto> userOUs = userService.getUserOUs(interviewerId, true);
-		List<String> ouIds = userOUs.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+		List<String> ouIds = userOUs.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 		List<Long> idsByOU = messageRepository.getMessageIdsByOrganizationUnit(ouIds);
 		for (Long id : idsByOU) {
 			if (!ids.contains(id)) {
@@ -180,8 +180,8 @@ public class MessageServiceImpl implements MessageService {
 		for (MessageDto message : messages) {
 			List<String> status = messageRepository.getMessageStatus(message.getId(), interviewerId);
 			if (!status.isEmpty()) {
-				if (!status.get(0).equals("REA")) {
-					message.setStatus(status.get(0));
+				if (!status.getFirst().equals("REA")) {
+					message.setStatus(status.getFirst());
 				} else {
 					messagesDeleted.add(message);
 				}
@@ -195,7 +195,7 @@ public class MessageServiceImpl implements MessageService {
 
 	public List<MessageDto> getMessageHistory(String userId) {
 		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 		List<Long> messageIds = messageRepository.getAllOrganizationMessagesIds(userOUIds);
 
 		List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
@@ -213,18 +213,16 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	public List<VerifyNameResponseDto> verifyName(String text, String userId) {
-		List<VerifyNameResponseDto> returnValue = new ArrayList<>();
-		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(ou -> ou.getId()).collect(Collectors.toList());
+        List<String> userOUIds = userService.getUserOUs(userId, true)
+				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 		Pageable topFifteen = PageRequest.of(0, 15);
 
-		returnValue.addAll(
-				campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
+        List<VerifyNameResponseDto> returnValue = new ArrayList<>(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
 
 		return returnValue.stream()
 				.collect(
 						collectingAndThen(
-								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::getId))),
+								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::id))),
 								ArrayList::new));
 	}
 

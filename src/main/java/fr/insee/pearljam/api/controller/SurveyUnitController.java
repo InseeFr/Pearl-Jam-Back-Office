@@ -11,7 +11,7 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.dto.surveyunit.HabilitationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
@@ -62,12 +62,13 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
 	 * @param surveyUnits survey units to create
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Create survey-units")
 	@PostMapping(Constants.API_SURVEYUNITS)
-	public ResponseEntity<Object> postSurveyUnits(@RequestBody List<SurveyUnitContextDto> surveyUnits) {
+	public ResponseEntity<Object> postSurveyUnits(
+			@Valid @RequestBody List<SurveyUnitCreationDto> surveyUnits) {
 		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
