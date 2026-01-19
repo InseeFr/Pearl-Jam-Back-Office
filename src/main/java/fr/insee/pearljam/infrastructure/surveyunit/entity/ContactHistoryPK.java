@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistoryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

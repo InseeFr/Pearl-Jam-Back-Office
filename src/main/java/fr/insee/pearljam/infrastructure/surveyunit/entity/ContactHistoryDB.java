@@ -1,8 +1,8 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class ContactHistoryDB implements Serializable {
     private String comment;
 
     @Enumerated(EnumType.STRING)
-    private ContactOutcomeType contactOutcomeValue;
+    private HistoryContactOutcomeType contactOutcomeValue;
 
     @OneToMany(mappedBy = "contactHistory", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

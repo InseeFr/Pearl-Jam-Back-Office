@@ -31,6 +31,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -1495,7 +1496,7 @@ class TestAuthKeyCloak {
 		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
 		surveyUnit.setClosingCause(new ClosingCauseDto(1843078880000L,ClosingCauseType.NPA));
 		surveyUnit.setContactHistory(new PreviousContactHistoryDto("comment",
-				ContactOutcomeType.INA,
+				HistoryContactOutcomeType.INA,
 				List.of()
 		));
 
@@ -1510,7 +1511,7 @@ class TestAuthKeyCloak {
 
 	/**
 	 * Test that the POST endpoint
-	 * "/survey-units returns 400 when id dupliate in DB
+	 * "/survey-units returns 400 when id duplicate in DB
 	 *
 	 * @throws JsonProcessingException jpe
 	 * @throws JSONException           jsone

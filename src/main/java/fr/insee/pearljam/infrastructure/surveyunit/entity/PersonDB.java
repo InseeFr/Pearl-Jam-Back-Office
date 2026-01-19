@@ -2,9 +2,9 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.domain.Title;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
-import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistoryType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

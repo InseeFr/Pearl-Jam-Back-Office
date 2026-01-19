@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.dto.phonenumber;
 
 import fr.insee.pearljam.api.domain.Source;
-import fr.insee.pearljam.domain.surveyunit.model.person.PhoneNumber;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.PhoneNumber;
 
 public record PhoneNumberDto(
 		Source source,
