@@ -18,6 +18,8 @@ application:
       mail-url:
 
 feature:
+  cross-environment-communication:
+    consumer: false
   oidc:
     enabled: true
     auth-server-host:

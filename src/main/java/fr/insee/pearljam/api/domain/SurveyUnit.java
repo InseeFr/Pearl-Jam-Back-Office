@@ -13,6 +13,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.infrastructure.crossenvironmentcommunication.db.entity.SurveyUnitStatusEntity;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
@@ -98,6 +99,9 @@ public class SurveyUnit implements Serializable {
 	@OneToOne(fetch = FetchType.LAZY, targetEntity = IdentificationDB.class, cascade = CascadeType.ALL, mappedBy =
 			"surveyUnit", orphanRemoval = true)
 	private IdentificationDB identification;
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = SurveyUnitStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit", orphanRemoval = true)
+    private Set<SurveyUnitStatusEntity> otherModeQuestionnaireState;
 
 	/**
 	 * The Campaign of SurveyUnit

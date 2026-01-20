@@ -350,7 +350,8 @@ class SurveyUnitIT {
 				         "preferredContact": true
 				         }
 				        ]
-				      }
+				      },
+				      "otherModeQuestionnaireState": []
 				}""";
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
