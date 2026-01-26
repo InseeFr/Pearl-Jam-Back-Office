@@ -2,7 +2,6 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import lombok.Getter;
@@ -32,11 +31,6 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<String> findAllIdsVisible(List<String> ouIds, Long date) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) {
         return List.of();
     }
@@ -62,12 +56,12 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<Integer> checkCampaignPreferences(String userId, String campaignId) {
+    public List<CampaignDto> findAllDtoByOuIds(List<String> ouIds) {
         return List.of();
     }
 
     @Override
-    public List<InterviewerDto> findInterviewersDtoByCampaignIdAndOrganisationUnitId(String id, String organizationUnitId) {
+    public List<Integer> checkCampaignPreferences(String userId, String campaignId) {
         return List.of();
     }
 
@@ -98,17 +92,14 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<Campaign> entities) {
-
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<String> strings) {
-
     }
 
     @Override
     public void deleteAllInBatch() {
-
     }
 
     @Override

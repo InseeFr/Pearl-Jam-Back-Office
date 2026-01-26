@@ -36,6 +36,11 @@ public class VisibilityFakeRepository implements VisibilityRepository {
     }
 
     @Override
+    public Set<String> findDistinctOrganizationalUnitIdByCampaignId(String campaignId) {
+        return Set.of();
+    }
+
+    @Override
     public void updateDates(Visibility visibilityToUpdate) throws VisibilityNotFoundException {
         String campaignId = visibilityToUpdate.campaignId();
         String organizationalUnitId = visibilityToUpdate.organizationalUnitId();

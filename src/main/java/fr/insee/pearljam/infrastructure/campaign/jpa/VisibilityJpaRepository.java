@@ -2,6 +2,7 @@ package fr.insee.pearljam.infrastructure.campaign.jpa;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import org.springframework.data.repository.query.Param;
@@ -49,4 +50,6 @@ public interface VisibilityJpaRepository extends JpaRepository<VisibilityDB, Vis
 													   @Param("organizationalUnitIds") List<String> organizationalUnitIds);
 
 	List<VisibilityDB> findByCampaignId(String campaignId);
+
+	Set<String> findDistinctOrganizationalUnitIdByCampaignId(String camapignId);
 }

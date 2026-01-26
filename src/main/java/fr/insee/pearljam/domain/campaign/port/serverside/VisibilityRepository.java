@@ -6,6 +6,7 @@ import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface VisibilityRepository {
 
@@ -31,6 +32,9 @@ public interface VisibilityRepository {
      * @return the visibilities of a campaign
      */
     List<Visibility> findVisibilities(String campaignId);
+
+    //TODO: WIP
+    Set<String> findDistinctOrganizationalUnitIdByCampaignId(String campaignId);
 
     /**
      * Update dates for a visibility

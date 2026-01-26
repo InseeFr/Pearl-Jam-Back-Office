@@ -1,10 +1,5 @@
 package fr.insee.pearljam.api.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
@@ -13,8 +8,14 @@ import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.service.ClosingCauseService;
+import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -28,24 +29,19 @@ import lombok.RequiredArgsConstructor;
 public class ClosingCauseServiceImpl implements ClosingCauseService {
 
 	private final ClosingCauseRepository closingCauseRepository;
-
 	private final StateRepository stateRepository;
-
 	private final InterviewerRepository interviewerRepository;
-
 	private final OrganizationUnitRepository organizationUnitRepository;
-
 	private final UtilsService utilsService;
+	private final UserService userService;
 
-	@Override
+	@SneakyThrows
+    @Override
 	public ClosingCauseCountDto getClosingCauseCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits) throws NotFoundException {
+			List<String> associatedOrgUnits)  {
 		ClosingCauseCountDto closingCauseCountDto = new ClosingCauseCountDto();
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(
-					String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
-		}
-		if (!interviewerRepository.findById(interviewerId).isPresent()) {
+		userService.checkUserAssociationToCampaign(campaignId, userId);
+		if (interviewerRepository.findById(interviewerId).isEmpty()) {
 			throw new NotFoundException("No interviewer found for the id " + interviewerId);
 		}
 		List<String> userOuIds;

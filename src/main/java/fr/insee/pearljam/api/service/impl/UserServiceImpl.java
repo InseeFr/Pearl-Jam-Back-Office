@@ -1,19 +1,10 @@
 package fr.insee.pearljam.api.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import jakarta.transaction.Transactional;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitTreeDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
@@ -22,8 +13,18 @@ import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -36,62 +37,63 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
 	private final OrganizationUnitRepository organizationUnitRepository;
+	private final OrganizationUnitService organizationUnitService;
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 
 	public Optional<UserDto> getUser(String userId) {
-		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
 
-		if (user.isEmpty()) {
-			return Optional.empty();
-		}
+		return userRepository.findByIdIgnoreCase(userId)
+				.map(user -> {
+					OrganizationUnitTreeDto ouTree =
+							organizationUnitService.getOrganizationUnitTree(
+									user.getOrganizationUnit().getId(),
+									false
+							);
 
-		OrganizationUnitDto organizationUnitsParent = new OrganizationUnitDto();
-		organizationUnitsParent.setId(user.get().getOrganizationUnit().getId());
-		organizationUnitsParent.setLabel(user.get().getOrganizationUnit().getLabel());
-		getOrganizationUnits(organizationUnits, user.get().getOrganizationUnit(), false);
-
-		return Optional.of(new UserDto(user.get().getId(), user.get().getFirstName(), user.get().getLastName(),
-				organizationUnitsParent, organizationUnits));
+					return new UserDto(
+							user.getId(),
+							user.getFirstName(),
+							user.getLastName(),
+							ouTree.root(),
+							ouTree.childOrganizationUnits()
+					);
+				});
 	}
 
 	public boolean userIsPresent(String userId) {
 		return userRepository.findByIdIgnoreCase(userId).isPresent();
 	}
 
-	public void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu,
-			boolean saveAllLevels) {
-		List<OrganizationUnit> lstOu = organizationUnitRepository.findChildren(currentOu.getId());
-		if (lstOu.isEmpty()) {
-			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
-			return;
-		}
-		if (saveAllLevels) {
-			organizationUnits.add(new OrganizationUnitDto(currentOu.getId(), currentOu.getLabel()));
-		}
-		for (OrganizationUnit ou : lstOu) {
-			getOrganizationUnits(organizationUnits, ou, saveAllLevels);
-		}
-	}
 
 	public List<OrganizationUnitDto> getUserOUs(String userId, boolean saveAllLevels) {
-		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();
-		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		user.ifPresent(value -> getOrganizationUnits(organizationUnits, value.getOrganizationUnit(), saveAllLevels));
-		return organizationUnits;
+		return userRepository.findByIdIgnoreCase(userId)
+				.map(user -> organizationUnitService.getOrganizationUnitTree(
+						user.getOrganizationUnit().getId(), saveAllLevels)
+						.childOrganizationUnits())
+				.orElse(List.of());
 	}
+	public void checkUserAssociationToCampaign(String campaignId, String userId) throws UserNotAssociatedToCampaignException, CampaignNotFoundException {
 
-	public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
-		List<OrganizationUnitDto> lstUserOU = new ArrayList<>();
-		Optional<User> user = userRepository.findByIdIgnoreCase(userId);
-		if (user.isEmpty()) {
-			return false;
-		}
-		getOrganizationUnits(lstUserOU, user.get().getOrganizationUnit(), true);
-		List<String> lstIdOUUser = lstUserOU.stream().map(OrganizationUnitDto::getId).toList();
+		User user = userRepository.findByIdIgnoreCase(userId)
+				.orElseThrow(() -> new UserNotAssociatedToCampaignException(campaignId, userId));
+
 		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
-		return !Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
+		if(lstIdOUCampaign.isEmpty()){
+			throw new CampaignNotFoundException();
+		}
+
+		List<String> lstIdOUUser = organizationUnitService.getOrganizationUnitTree(user.getOrganizationUnit().getId(), true)
+				.childOrganizationUnits()
+				.stream()
+				.map(OrganizationUnitDto::getId)
+				.toList();
+
+		boolean notAssociated = Collections.disjoint(lstIdOUUser, lstIdOUCampaign);
+		if (notAssociated) {
+			throw new UserNotAssociatedToCampaignException(campaignId, userId);
+		}
+
 	}
 
 	@Override

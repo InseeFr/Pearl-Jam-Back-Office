@@ -92,4 +92,9 @@
 
 	<!-- add Not Null Constraint sensitivity -->
 	<include file="changelog/610_default_sensitity_to_false.xml" relativeToChangelogFile="true"/>
+
+	<!-- add state-survey_unit index for faster last state junction -->
+	<include file="changelog/620_add_index_state_order_desc.xml" relativeToChangelogFile="true"/>
+
+
 </databaseChangeLog>

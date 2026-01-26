@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	private final VisibilityJpaRepository visibilityRepository;
 	private final UserService userService;
 	private final SurveyUnitService surveyUnitService;
+	private final InterviewerCountRepository campaignInterviewerRepository;
 
 	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
 		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
@@ -118,7 +121,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public Set<InterviewerDto> getListInterviewers(String userId) {
+	public Set<InterviewerDto> getInterviewersByUserAndCampaign(String userId) {
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
 		return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
@@ -172,6 +175,25 @@ public class InterviewerServiceImpl implements InterviewerService {
 	public List<InterviewerContextDto> getCompleteListInterviewers() {
 
 		return interviewerRepository.findAll().stream().map(InterviewerContextDto::new).toList();
+	}
+
+	@Override
+	public List<InterviewerDto> getInterviewersByUserAndCampaign(String userId, String campaignId) throws CampaignNotFoundException {
+		userService.checkUserAssociationToCampaign(campaignId, userId);
+
+		List<String> userOrgUnitIds = userService.getUserOUs(userId, false).stream()
+				.map(OrganizationUnitDto::getId)
+				.toList();
+
+		List<InterviewerDto> interviewersDtoReturned = campaignInterviewerRepository
+				.findCampaignInterviewers(campaignId, userOrgUnitIds).stream()
+				.map(InterviewerDto::fromModel)
+				.toList();
+
+		if (interviewersDtoReturned.isEmpty()) {
+			log.warn("No interviewers found for the campaign {}", campaignId);
+		}
+		return interviewersDtoReturned;
 	}
 
 }

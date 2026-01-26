@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import org.springframework.data.domain.Example;
@@ -17,7 +16,7 @@ import java.util.function.Function;
 
 public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     @Override
-    public List<String> findIdsByInterviewerId(String idInterviewer) {
+    public List<String> findIdsByInterviewerIdWithinVisibilityScope(String idInterviewer, Long anyTime, List<String> anyStateTypes) {
         return List.of();
     }
 

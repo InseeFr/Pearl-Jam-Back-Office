@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Repository
@@ -35,6 +36,11 @@ public class VisibilityDaoAdapter implements VisibilityRepository {
         return VisibilityDB.toModel(
                 crudRepository.findByCampaignId(campaignId)
         );
+    }
+
+    @Override
+    public Set<String> findDistinctOrganizationalUnitIdByCampaignId(String campaignId) {
+        return crudRepository.findDistinctOrganizationalUnitIdByCampaignId(campaignId);
     }
 
     @Override
