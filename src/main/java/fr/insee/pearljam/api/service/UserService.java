@@ -7,7 +7,6 @@ import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
 import org.springframework.http.HttpStatus;
 
-import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
@@ -35,14 +34,6 @@ public interface UserService {
 	 * @return true if user is present
 	 */
 	boolean userIsPresent(String userId);
-
-	/**
-	 * @param organizationUnits
-	 * @param currentOu
-	 * @param saveAllLevels
-	 */
-	void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu,
-			boolean saveAllLevels);
 
 	/**
 	 * @param userId

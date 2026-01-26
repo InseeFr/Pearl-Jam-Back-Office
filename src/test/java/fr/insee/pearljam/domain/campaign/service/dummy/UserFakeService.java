@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
@@ -21,11 +20,6 @@ public class UserFakeService implements UserService {
     @Override
     public boolean userIsPresent(String userId) {
         return false;
-    }
-
-    @Override
-    public void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
-
     }
 
     @Override

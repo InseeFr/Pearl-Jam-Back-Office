@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.count.model;
 
 public record CommunicationRequestCount(
-        String campaignId,
+        String entityId,
         Long noticeCount,
         Long reminderCount) {
 }

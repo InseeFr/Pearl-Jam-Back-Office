@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.count.model;
 
 public record ClosingCauseCount(
-        String campaignId,
+        String entityId,
         Long npaCount,
         Long npiCount,
         Long npxCount,

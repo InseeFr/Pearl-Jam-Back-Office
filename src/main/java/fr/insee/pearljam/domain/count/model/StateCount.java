@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.count.model;
 
         public record StateCount(
-    String campaignId,
+    String entityId,
     Long nvmCount,
     Long nnsCount,
     Long anvCount,

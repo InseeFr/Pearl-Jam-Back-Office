@@ -12,7 +12,6 @@ import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
-import java.util.function.Function;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
@@ -22,6 +21,7 @@ import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
@@ -67,6 +67,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final UtilsService utilsService;
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
 	private final CommunicationTemplateService communicationTemplateService;
+	private final DateService dateService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -132,12 +133,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
-		List<String> surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
+		long now = dateService.getCurrentTimestamp();
 
-		if (surveyUnitDtoIds.isEmpty()) {
-			log.error("No Survey Unit found for interviewer {}", userId);
-			return List.of();
-		}
+		List<String> visibleTypes =
+				BusinessRules.statesVisibleToInterviewer().stream()
+						.map(Enum::name)
+						.toList();
+		List<String> surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerIdWithinVisibilityScope(userId, now, visibleTypes);
 
 		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(this::canBeSeenByInterviewer)
 				.toList();

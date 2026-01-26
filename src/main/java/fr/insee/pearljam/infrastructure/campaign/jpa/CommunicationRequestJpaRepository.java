@@ -135,4 +135,30 @@ public interface CommunicationRequestJpaRepository extends
           @Param("ouIds") List<String> ouIds,
           @Param("date") Long date);
 
+
+  @Query(value = """
+          SELECT
+              su.organization_unit_id AS entityId,
+              COUNT(DISTINCT CASE WHEN ctd.type = 'NOTICE' THEN su.id END) AS noticeCount,
+              COUNT(DISTINCT CASE WHEN ctd.type = 'REMINDER' THEN su.id END) AS reminderCount
+          FROM communication_request crd
+          JOIN survey_unit su ON su.id = crd.survey_unit_id
+          JOIN campaign c ON c.id = su.campaign_id
+          JOIN visibility v ON v.campaign_id = c.id
+          JOIN communication_template ctd
+              ON ctd.campaign_id = crd.campaign_id AND ctd.meshuggah_id = crd.meshuggah_id
+          JOIN communication_request_status s ON s.communication_request_id = crd.id
+          WHERE crd.campaign_id = :campaignId
+            AND s.date < :dateToUse
+            AND v.end_date > :dateToUse
+            AND v.management_start_date < :dateToUse
+            AND s.status = 'READY'
+            AND su.organization_unit_id IN (:ouIds)
+          GROUP BY su.organization_unit_id
+          """, nativeQuery = true)
+  List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(@Param("campaignId") String campaignId,
+                                                                      @Param("ouIds") List<String> ouIds,
+                                                                      @Param("dateToUse") Long dateToUse);
+
+
 }

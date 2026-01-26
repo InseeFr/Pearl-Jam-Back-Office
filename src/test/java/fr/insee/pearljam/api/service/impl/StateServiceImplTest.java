@@ -157,7 +157,7 @@ class StateServiceImplTest {
   void shouldReturnEmptyListWhenUserHasNoOrganizationUnits() {
     // Given
     when(userService.getUserOUs(userId, true)).thenReturn(Collections.emptyList());
-    when(interviewerRepository.findIdsByOrganizationUnits(anyList())).thenReturn(Collections.emptySet());
+    when(interviewerRepository.findIdsByOrganizationUnitsAndCampaignId(anyList(),anyList())).thenReturn(Collections.emptySet());
 
     // When
     List<StateCountDto> result = stateService.getStateCountByInterviewer(userId, date);
