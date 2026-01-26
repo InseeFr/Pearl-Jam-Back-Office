@@ -76,7 +76,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGNS)
 	public List<CampaignDto> getUserPreferredCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("User {} : GET preferred campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getPreferredCampaigns(userId);
 		log.info("User {} -> {} preferred campaigns found", userId, lstCampaigns.size());
 		return lstCampaigns;
@@ -93,7 +92,6 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_CAMPAIGNS_PREFERENCES)
 	public List<CampaignPreferenceDto> getUserCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("User {} : GET related campaigns", userId);
 		List<CampaignPreferenceDto> lstCampaigns = campaignService.getCampaignPreferences(userId);
 		log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
 		return lstCampaigns;
@@ -110,9 +108,8 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("User {} : GET all campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
-		log.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
+		log.info("User {}, GET all campaigns ({} campaigns found)", userId,
 				lstCampaigns.size());
 		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 
