@@ -10,6 +10,7 @@ import fr.insee.pearljam.api.domain.Referent;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
@@ -67,36 +68,41 @@ public class CampaignServiceImpl implements CampaignService {
 	private final DateService dateService;
 
 	@Override
-	public List<CampaignDto> getListCampaign(String userId) {
+	public List<CampaignDto> getPreferredCampaigns(String userId) {
 
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, true);
-
-		List<String> campaignDtoIds = organizationUnits.stream()
+		List<String> organizationUnitIds = userService
+				.getUserOUs(userId, true)
+				.stream()
 				.map(OrganizationUnitDto::getId)
-				.flatMap(ouId -> campaignRepository.findIdsByOuId(ouId).stream())
-				.distinct()
 				.toList();
 
-		List<String> lstOuId = organizationUnits.stream()
-				.map(OrganizationUnitDto::getId).toList();
+		Long currentTimestamp = dateService.getCurrentTimestamp();
+		List<CampaignDto> userCampaigns = campaignRepository.findByUserAndManagementVisibility(userId, currentTimestamp);
 
-		List<CampaignDto> campaignDtoReturned = new ArrayList<>();
-		for (String idCampaign : campaignDtoIds) {
-			CampaignDto campaign = campaignRepository.findDtoById(idCampaign);
-
-			CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(idCampaign, lstOuId);
+		for (CampaignDto campaign : userCampaigns) {
+			CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaign.getId(), organizationUnitIds);
 			campaign.setManagementStartDate(campaignVisibility.managementStartDate());
 			campaign.setInterviewerStartDate(campaignVisibility.interviewerStartDate());
 			campaign.setIdentificationPhaseStartDate(campaignVisibility.identificationPhaseStartDate());
 			campaign.setCollectionStartDate(campaignVisibility.collectionStartDate());
 			campaign.setCollectionEndDate(campaignVisibility.collectionEndDate());
 			campaign.setEndDate(campaignVisibility.endDate());
-			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(idCampaign, lstOuId));
-			campaign.setPreference(isUserPreference(userId, idCampaign));
-			campaign.setReferents(referentService.findByCampaignId(idCampaign));
-			campaignDtoReturned.add(campaign);
+			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(campaign.getId(), organizationUnitIds));
+			campaign.setReferents(referentService.findByCampaignId(campaign.getId()));
 		}
-		return campaignDtoReturned;
+		return userCampaigns;
+	}
+
+	@Override
+	public List<CampaignPreferenceDto> getCampaignPreferences(String userId) {
+
+		List<String> organizationUnitIds = userService
+				.getUserOUs(userId, true)
+				.stream()
+				.map(OrganizationUnitDto::getId)
+				.toList();
+
+		return campaignRepository.findByOuIdWithPreference(organizationUnitIds, userId, dateService.getCurrentTimestamp());
 	}
 
 	@Override
@@ -120,11 +126,6 @@ public class CampaignServiceImpl implements CampaignService {
 			log.warn("No interviewers found for the campaign {}", campaignId);
 		}
 		return interviewersDtoReturned;
-	}
-
-	@Override
-	public boolean isUserPreference(String userId, String campaignId) {
-		return (campaignRepository.checkCampaignPreferences(userId, campaignId).isEmpty()) || "GUEST".equals(userId);
 	}
 
 	@Override

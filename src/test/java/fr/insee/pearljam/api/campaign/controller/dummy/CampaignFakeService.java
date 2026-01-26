@@ -6,6 +6,7 @@ import java.util.Optional;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +58,13 @@ public class CampaignFakeService implements CampaignService {
     private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
-    public List<CampaignDto> getListCampaign(String userId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getListCampaign'");
+    public List<CampaignDto> getPreferredCampaigns(String userId) {
+        return List.of();
+    }
+
+    @Override
+    public List<CampaignPreferenceDto> getCampaignPreferences(String userId) {
+        return List.of();
     }
 
     @Override
@@ -74,11 +80,6 @@ public class CampaignFakeService implements CampaignService {
     @Override
     public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
         throw new UnsupportedOperationException("Unimplemented method 'getListInterviewers'");
-    }
-
-    @Override
-    public boolean isUserPreference(String userId, String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'isUserPreference'");
     }
 
     @Override

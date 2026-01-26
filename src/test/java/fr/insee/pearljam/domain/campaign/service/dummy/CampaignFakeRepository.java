@@ -2,6 +2,7 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
@@ -32,17 +33,17 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<String> findAllIdsVisible(List<String> ouIds, Long date) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) {
         return List.of();
     }
 
     @Override
-    public List<String> findIdsByOuId(String ouId) {
+    public List<CampaignDto> findByUserAndManagementVisibility(String userId, Long date) {
+        return List.of();
+    }
+
+    @Override
+    public List<CampaignPreferenceDto> findByOuIdWithPreference(List<String> ouIds, String userId, Long date) {
         return List.of();
     }
 
@@ -58,11 +59,6 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public List<CampaignDto> findAllDto() {
-        return List.of();
-    }
-
-    @Override
-    public List<Integer> checkCampaignPreferences(String userId, String campaignId) {
         return List.of();
     }
 
@@ -83,7 +79,7 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public void flush() {
-
+        // to fill
     }
 
     @Override
@@ -98,17 +94,17 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<Campaign> entities) {
-
+        // to fill
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<String> strings) {
-
+        // to fill
     }
 
     @Override
     public void deleteAllInBatch() {
-
+        // to fill
     }
 
     @Override
@@ -204,27 +200,27 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public void deleteById(String s) {
-
+        // to fill
     }
 
     @Override
     public void delete(Campaign entity) {
-
+        // to fill
     }
 
     @Override
     public void deleteAllById(Iterable<? extends String> strings) {
-
+        // to fill
     }
 
     @Override
     public void deleteAll(Iterable<? extends Campaign> entities) {
-
+        // to fill
     }
 
     @Override
     public void deleteAll() {
-
+        // to fill
     }
 
     @Override
