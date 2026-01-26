@@ -2,9 +2,13 @@ package fr.insee.pearljam.jms.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.modelefiliere.EventDto;
+import fr.insee.modelefiliere.EventPayloadDto;
 import fr.insee.pearljam.JMSApplication;
+import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.db.events.InboxDB;
 import fr.insee.pearljam.infrastructure.db.events.InboxJpaRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,9 @@ class MultimodeSubscriberIntegrationTest {
 
     @Autowired
     private InboxJpaRepository inboxRepository;
+
+    @Autowired
+    private SurveyUnitRepository surveyUnitRepository;
 
     @BeforeEach
     void setUp() {
@@ -135,6 +143,82 @@ class MultimodeSubscriberIntegrationTest {
 
         // Verify total count
         assertEquals(3, inboxRepository.count(), "Exactly 3 entries should exist in inbox");
+    }
+
+    @Test
+    @Transactional
+    void shouldSaveMultimodeMovedMessageToInbox() throws Exception {
+        // Given: Get an existing survey unit from the database
+        String surveyUnitId = getExistingSurveyUnitId();
+
+        UUID correlationId = UUID.randomUUID();
+        EventDto eventDto = new EventDto();
+        eventDto.setCorrelationId(correlationId);
+        eventDto.setEventType(EventDto.EventTypeEnum.MULTIMODE_MOVED);
+
+        EventPayloadDto payload = new EventPayloadDto();
+        payload.setInterrogationId(surveyUnitId);
+        eventDto.setPayload(payload);
+
+        String jsonMessage = objectMapper.writeValueAsString(eventDto);
+
+        // When: Send message to topic
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.convertAndSend("multimode_events_test", jsonMessage);
+
+        // Then: Wait for message to be processed and verify in inbox
+        InboxDB inboxEntry = waitForInboxEntry(correlationId, 10);
+
+        assertNotNull(inboxEntry, "Inbox entry should exist");
+        assertEquals(correlationId, inboxEntry.getId(), "Inbox ID should match correlation ID");
+        assertNotNull(inboxEntry.getPayload(), "Payload should not be null");
+        assertNotNull(inboxEntry.getCreatedDate(), "Created date should not be null");
+
+        // Verify payload content
+        assertEquals("MULTIMODE_MOVED", inboxEntry.getPayload().get("eventType").asText());
+        assertEquals(surveyUnitId, inboxEntry.getPayload().get("payload").get("interrogationId").asText());
+
+        // Verify that the survey unit has been updated in the database
+        waitForSurveyUnitUpdate(surveyUnitId, 10);
+
+        // Verify the survey unit data in a separate transactional context
+        verifySurveyUnitData(surveyUnitId);
+    }
+
+    void verifySurveyUnitData(String surveyUnitId) {
+        SurveyUnit updatedSurveyUnit = surveyUnitRepository.findById(surveyUnitId)
+                .orElseThrow(() -> new AssertionError("SurveyUnit should exist"));
+
+        assertTrue(updatedSurveyUnit.isPriority(), "SurveyUnit priority should be true");
+
+        // Verify that only one person exists with firstName="PRENOM" and lastName="NOM"
+        assertEquals(1, updatedSurveyUnit.getPersons().size(),
+                "Should have exactly one person");
+        PersonDB person = updatedSurveyUnit.getPersons().iterator().next();
+        assertEquals("PRENOM", person.getFirstName(),
+                "Person firstName should be PRENOM");
+        assertEquals("NOM", person.getLastName(),
+                "Person lastName should be NOM");
+    }
+
+    private String getExistingSurveyUnitId() {
+        return surveyUnitRepository.findAll().stream()
+                .findFirst()
+                .map(SurveyUnit::getId)
+                .orElseThrow(() -> new RuntimeException("No SurveyUnit found in database. Ensure test data is loaded."));
+    }
+
+    private void waitForSurveyUnitUpdate(String surveyUnitId, int maxSeconds) throws InterruptedException {
+        int attempts = maxSeconds * 2;
+        for (int i = 0; i < attempts; i++) {
+            SurveyUnit surveyUnit = surveyUnitRepository.findById(surveyUnitId).orElse(null);
+            if (surveyUnit != null && surveyUnit.isPriority()) {
+                return;
+            }
+            Thread.sleep(500);
+        }
+        fail("SurveyUnit was not updated with priority=true within " + maxSeconds + " seconds");
     }
 
     /**

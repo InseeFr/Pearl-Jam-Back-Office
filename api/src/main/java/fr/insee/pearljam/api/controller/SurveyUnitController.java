@@ -102,7 +102,7 @@ public class SurveyUnitController {
 	@GetMapping(path = {Constants.API_SURVEYUNITS, Constants.API_INTERROGATIONS})
 	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
 						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
-		String userId = authenticatedUserService.getCurrentUserId();
+		String userId = "INTERV1";//authenticatedUserService.getCurrentUserId();
 		List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
 		if (lstSurveyUnit == null) {
 			log.info("{} GET SurveyUnits resulting in 404", userId);
@@ -122,7 +122,7 @@ public class SurveyUnitController {
 	@Operation(summary = "Get detail of specific survey unit ")
 	@GetMapping(path = {Constants.API_SURVEYUNIT_ID_INTERVIEWER, Constants.API_SURVEYUNIT_ID})
 	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
-		String userId = authenticatedUserService.getCurrentUserId();
+		String userId = "INTERV1"; //authenticatedUserService.getCurrentUserId();
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 

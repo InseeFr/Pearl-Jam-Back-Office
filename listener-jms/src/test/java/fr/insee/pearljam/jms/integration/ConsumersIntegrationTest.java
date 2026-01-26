@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.repository.OtherModeQuestionnaireRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.db.events.InboxJpaRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -187,6 +189,7 @@ class ConsumersIntegrationTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should process MULTIMODE_MOVED event and update SurveyUnit")
     void shouldProcessMultimodeMovedEvent() throws Exception {
         // Given
@@ -200,15 +203,31 @@ class ConsumersIntegrationTest {
 
         // Then
         waitForInboxEntry(correlationId, 10);
+        waitForSurveyUnitUpdate(surveyUnitId, 10);
 
-        SurveyUnit updatedSurveyUnit = waitForSurveyUnitUpdate(surveyUnitId, 10);
-        assertNotNull(updatedSurveyUnit, "SurveyUnit should exist");
+        // Verify the survey unit data in a separate transactional context
+        verifyMovedSurveyUnitData(surveyUnitId);
+    }
+
+    void verifyMovedSurveyUnitData(String surveyUnitId) {
+        SurveyUnit updatedSurveyUnit = surveyUnitRepository.findById(surveyUnitId)
+                .orElseThrow(() -> new AssertionError("SurveyUnit should exist"));
+
         assertTrue(updatedSurveyUnit.isPriority(), "SurveyUnit priority should be true");
 
         if (updatedSurveyUnit.getIdentification() != null) {
             assertTrue(updatedSurveyUnit.getIdentification().getDemenagementWeb(),
                     "Identification demenagementWeb should be true");
         }
+
+        // Verify that only one person exists with firstName="PRENOM" and lastName="NOM"
+        assertEquals(1, updatedSurveyUnit.getPersons().size(),
+                "Should have exactly one person");
+        PersonDB person = updatedSurveyUnit.getPersons().iterator().next();
+        assertEquals("PRENOM", person.getFirstName(),
+                "Person firstName should be PRENOM");
+        assertEquals("NOM", person.getLastName(),
+                "Person lastName should be NOM");
     }
 
     @Test
@@ -284,15 +303,15 @@ class ConsumersIntegrationTest {
         return List.of();
     }
 
-    private SurveyUnit waitForSurveyUnitUpdate(String surveyUnitId, int maxSeconds) throws InterruptedException {
+    private void waitForSurveyUnitUpdate(String surveyUnitId, int maxSeconds) throws InterruptedException {
         int attempts = maxSeconds * 2;
         for (int i = 0; i < attempts; i++) {
             SurveyUnit surveyUnit = surveyUnitRepository.findById(surveyUnitId).orElse(null);
             if (surveyUnit != null && surveyUnit.isPriority()) {
-                return surveyUnit;
+                return;
             }
             Thread.sleep(500);
         }
-        return surveyUnitRepository.findById(surveyUnitId).orElse(null);
+        fail("SurveyUnit was not updated with priority=true within " + maxSeconds + " seconds");
     }
 }

@@ -1,6 +1,6 @@
 application:
-  host: http://localhost:8080
-  corsOrigins:
+  host: http://localhost:3000
+  corsOrigins: http://localhost:3000,http://localhost:5173
   # Define Roles mapping here
   roles:
     interviewer:
@@ -19,7 +19,7 @@ application:
 
 feature:
   oidc:
-    enabled: true
+    enabled: false
     auth-server-host:
     application-host: ${application.host}
     auth-server-url: ${feature.oidc.auth-server-host}/auth
