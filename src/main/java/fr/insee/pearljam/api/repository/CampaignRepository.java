@@ -28,25 +28,31 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
 	@Query("""
-	SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
-	  camp.id,
-	  camp.label,
-	  camp.email,
-	  camp.identificationConfiguration,
-	  camp.contactOutcomeConfiguration,
-	  camp.contactAttemptConfiguration
-	)
-	FROM User u
-	  JOIN u.campaigns camp
-	  JOIN camp.visibilities vi
-	WHERE LOWER(u.id) = LOWER(:userId)
-	AND vi.managementStartDate <= :date
-	AND vi.collectionEndDate > :date
-	""")
+    SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
+      camp.id,
+      camp.label,
+      camp.email,
+      camp.identificationConfiguration,
+      camp.contactOutcomeConfiguration,
+      camp.contactAttemptConfiguration
+    )
+    FROM Campaign camp
+      JOIN camp.visibilities vi
+    WHERE vi.managementStartDate <= :date
+      AND vi.collectionEndDate > :date
+      AND NOT EXISTS (
+        SELECT 1
+        FROM User u
+          JOIN u.campaigns c2
+        WHERE LOWER(u.id) = LOWER(:userId)
+          AND c2 = camp
+      )
+    """)
 	List<CampaignDto> findByUserAndManagementVisibility(
 			@Param("userId") String userId,
 			@Param("date") Long date
 	);
+
 
 
 	@Query("""

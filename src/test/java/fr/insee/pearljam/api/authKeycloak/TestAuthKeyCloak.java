@@ -260,28 +260,28 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(3)
 	void testGetPreferredCampaigns() throws Exception {
-		String campaignJsonPath = "$.[?(@.id == 'SIMPSONS2020X00')].%s";
+		String campaignJsonPath = "$.[?(@.id == 'VQS2021X00')].%s";
 
 		mockMvc.perform(get(Constants.API_CAMPAIGNS)
-						.with(authentication(AuthenticatedUserTestHelper.getAuthenticatedUser("JKL", AuthorityRole.LOCAL_USER)))
+						.with(authentication(AuthenticatedUserTestHelper.getAuthenticatedUser("GHI", AuthorityRole.LOCAL_USER)))
 						.accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpectAll(
 						status().isOk(),
-						checkJsonPath(campaignJsonPath, "label", "Survey on the Simpsons tv show 2020"),
-						checkJsonPath(campaignJsonPath, "allocated", 5L),
-						checkJsonPath(campaignJsonPath, "toProcessInterviewer", 0L),
+						checkJsonPath(campaignJsonPath, "label", "Everyday life and health survey 2021"),
+						checkJsonPath(campaignJsonPath, "allocated", 1L),
+						checkJsonPath(campaignJsonPath, "toProcessInterviewer", 1L),
 						checkJsonPath(campaignJsonPath, "toAffect", 0L),
 						checkJsonPath(campaignJsonPath, "toFollowUp", 0L),
 						checkJsonPath(campaignJsonPath, "finalized", 0L),
-						checkJsonPath(campaignJsonPath, "email", "first.email@test.com"),
-						checkJsonPath(campaignJsonPath, "toReview", 4L),
+						checkJsonPath(campaignJsonPath, "email", "second.email@test.com"),
+						checkJsonPath(campaignJsonPath, "toReview", 0L),
 						checkJsonPath(campaignJsonPath, "identificationConfiguration",
 								IdentificationConfiguration.IASCO.name()),
 						checkJsonPath(campaignJsonPath, "contactAttemptConfiguration",
-								ContactAttemptConfiguration.F2F.name()),
+								ContactAttemptConfiguration.TEL.name()),
 						checkJsonPath(campaignJsonPath, "contactOutcomeConfiguration",
-								ContactOutcomeConfiguration.F2F.name()),
+								ContactOutcomeConfiguration.TEL.name()),
 						expectValidManagementStartDate(),
 						expectValidIdentificationPhaseStartDate(),
 						expectValidInterviewerStartDate(),
