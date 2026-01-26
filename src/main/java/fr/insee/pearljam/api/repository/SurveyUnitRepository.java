@@ -90,22 +90,37 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
 	
-	@Query(value="SELECT "
-			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
-			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
-			+ "SUM(CASE WHEN type IN ('FIN', 'CLO') THEN 1 ELSE 0 END) "
-			+ "AS finalized, "
-			+ "COUNT(DISTINCT t.survey_unit_id) AS allocated "
-			+ "FROM ( "
-			+ "SELECT survey_unit_id, type, date FROM state WHERE (survey_unit_id, date) IN ("
-			+ "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN ("
-			+ "SELECT id FROM survey_unit "
-			+	"WHERE campaign_id=:campaignId "
-			+	"AND interviewer_id IN (SELECT int.id FROM interviewer int INNER JOIN survey_unit su ON su.interviewer_id=int.id "
-				+ "WHERE su.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
-			+ "GROUP BY survey_unit_id) "
-			+ ") as t", nativeQuery=true)
-	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
+	@Query(value= """
+    WITH su AS (
+      SELECT su1.id
+          FROM survey_unit su1
+      WHERE su1.campaign_id = :campaignId
+        AND EXISTS (
+          SELECT 1
+          FROM survey_unit su2
+          WHERE su2.interviewer_id = su1.interviewer_id
+            AND su2.organization_unit_id in (:organizationalUnitIds)
+        )
+    ),
+    mx AS (
+      SELECT su.id AS survey_unit_id,
+                 (SELECT s1.date
+              FROM state s1
+              WHERE s1.survey_unit_id = su.id
+              ORDER BY s1.date DESC
+              LIMIT 1) AS max_date
+      FROM su
+    )
+    SELECT
+      SUM((s.type IN ('VIC','PRC','AOC','APS','INS','WFT','WFS'))::int) AS toProcessInterviewer,
+      SUM((s.type='TBR')::int)                                         AS toBeReviewed,
+      SUM((s.type IN ('FIN','CLO'))::int)                               AS finalized,
+      (SELECT COUNT(*) FROM su)                                         AS allocated
+    FROM mx
+    JOIN state s ON s.survey_unit_id = mx.survey_unit_id
+     AND s.date = mx.max_date;
+    """, nativeQuery=true)
+	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("organizationalUnitIds") List<String> organizationalUnitIds);
 
 	@Query(value="""
 			SELECT su FROM SurveyUnit su
