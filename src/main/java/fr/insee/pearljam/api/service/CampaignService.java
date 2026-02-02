@@ -6,6 +6,7 @@ import java.util.Optional;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 
@@ -25,10 +26,18 @@ import fr.insee.pearljam.api.exception.NotFoundException;
 public interface CampaignService {
 
 	/**
+	 * Return a list of preferred campaigns for the user
 	 * @param userId
 	 * @return {@link List} of {@link CampaignDto}
 	 */
-	List<CampaignDto> getListCampaign(String userId);
+	List<CampaignDto> getPreferredCampaigns(String userId);
+
+	/**
+	 * Return a list of related campaigns for the user
+	 * @param userId
+	 * @return {@link List} of {@link CampaignPreferenceDto}
+	 */
+	List<CampaignPreferenceDto> getCampaignPreferences(String userId);
 
 	/**
 	 * @return {@link List} of {@link CampaignDto}
@@ -47,8 +56,6 @@ public interface CampaignService {
 	 * @throws NotFoundException
 	 */
 	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
-
-	boolean isUserPreference(String userId, String campaignId);
 
 	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException;
 
