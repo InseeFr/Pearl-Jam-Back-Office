@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import fr.insee.pearljam.api.dto.surveyunit.*;
+import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
@@ -86,7 +87,7 @@ public interface SurveyUnitService {
 	 */
 	SurveyUnit getSurveyUnit(String surveyUnitId);
 
-	List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
+	List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
 
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 

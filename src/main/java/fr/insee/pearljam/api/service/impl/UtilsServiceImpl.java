@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -95,7 +96,7 @@ public class UtilsServiceImpl implements UtilsService {
 
 	@Override
 	public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
-			List<String> ids) {
+			Set<String> ids) {
 		final String dataCollectionUri = String.join("", externalServicesProperties.datacollectionUrl(),
 				Constants.API_QUEEN_INTERROGATIONS_STATEDATA);
 

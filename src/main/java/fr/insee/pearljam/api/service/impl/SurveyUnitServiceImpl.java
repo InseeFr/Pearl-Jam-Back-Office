@@ -12,19 +12,18 @@ import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
-import java.util.function.Function;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitVisibilityDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
+import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +67,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final UtilsService utilsService;
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
 	private final CommunicationTemplateService communicationTemplateService;
+	private final DateService dateService;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -325,79 +326,98 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
 	}
 
-	public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
-		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
+	@Transactional(readOnly = true)
+	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(
+			HttpServletRequest request,
+			String userId) {
+
+		List<String> lstOuIds = userService.getUserOUs(userId, true).stream()
+				.map(OrganizationUnitDto::getId)
 				.toList();
 
-    // Condition 1 : SU en phase de traitement
-    List<SurveyUnit> suToCheck = surveyUnitRepository
-        .findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
-            System.currentTimeMillis(), lstOuId
-        );
+		long now = dateService.getCurrentTimestamp();
 
-		Map<String, String> mapQuestionnaireStateBySu = Collections.emptyMap();
+		List<ClosableSurveyUnitCandidateProjection> candidates =
+				surveyUnitRepository.findClosableCandidates(now, lstOuIds);
 
-		try {
-			mapQuestionnaireStateBySu = getQuestionnaireStatesFromDataCollection(request,
-					suToCheck.stream().map(SurveyUnit::getId).toList());
-
-		} catch (Exception e) {
-			log.error("Could not get data collection API : {}", e.getMessage());
-			log.error("All questionnaire states will be considered null");
+		if (candidates.isEmpty()) {
+			return List.of();
 		}
 
-		final Map<String, String> map = mapQuestionnaireStateBySu;
+		Map<String, ClosableSurveyUnitCandidateProjection> candidatesById =
+				candidates.parallelStream()
+						.collect(Collectors.toMap(
+								ClosableSurveyUnitCandidateProjection::getId,
+								Function.identity()
+						));
 
-		return suToCheck.stream().map(su -> {
-			SurveyUnitCampaignDto sudto = new SurveyUnitCampaignDto(su);
-					IdentificationState identificationResult =
-							IdentificationState.getState(su.getModelIdentification(),
-									sudto.getIdentificationConfiguration());
-			sudto.setIdentificationState(identificationResult);
-			String questionnaireState = Optional.ofNullable(map.get(su.getId())).orElse(Constants.UNAVAILABLE);
-			sudto.setQuestionnaireState(questionnaireState);
-			return sudto;
+		final Map<String, String> questionnaireStates = getQuestionnaireStatesFromDataCollection(request, candidatesById.keySet());
 
-		}).filter(this::isClosable)
+		Map<String, ClosableSurveyUnitCandidateProjection> eligibleSurveyUnitsById =
+				candidates.parallelStream()
+				.filter(candidate -> isClosable(candidate, questionnaireStates.get(candidate.getId())))
+				.collect(Collectors.toMap(
+						ClosableSurveyUnitCandidateProjection::getId,
+						Function.identity()
+				));
+
+		List<ClosableSurveyUnitProjection> closableSurveyUnitProjections =
+				surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
+
+		return closableSurveyUnitProjections
+				.parallelStream()
+				.map(closableSurveyUnitProjection -> {
+					String surveyUnitId = closableSurveyUnitProjection.getId();
+					return ClosableSurveyUnitDto.from(
+							candidatesById.get(surveyUnitId),
+							closableSurveyUnitProjection,
+							questionnaireStates.get(surveyUnitId) == null ? Constants.UNAVAILABLE : questionnaireStates.get(surveyUnitId)
+					);
+				})
 				.toList();
-
 	}
 
-  private boolean isClosable(SurveyUnitCampaignDto sudto) {
-    String questionnaireState = sudto.getQuestionnaireState();
-    ContactOutcomeDto outcome = sudto.getContactOutcome();
+	private boolean isClosable(ClosableSurveyUnitCandidateProjection candidate, String questionnaireState) {
+		StateType currentState = candidate.getCurrentStateType();
+		ContactOutcomeType outcomeType = candidate.getContactOutcomeType();
 
-    // Condition 2 : jamais transmise
-    boolean neverTransmitted = !Set.of("TBR", "FIN", "CLO").contains(sudto.getState().name());
+		boolean neverTransmitted =
+				currentState != null
+						&& !Set.of(StateType.TBR, StateType.FIN, StateType.CLO).contains(currentState);
 
-    // Condition 3 : contact = INA et questionnaire null
-    boolean inaWithoutQuestionnaire = outcome != null
-        && outcome.type() == ContactOutcomeType.INA
-        && (questionnaireState == null || Constants.UNAVAILABLE.equals(questionnaireState));
+		boolean inaWithoutQuestionnaire =
+				outcomeType == ContactOutcomeType.INA
+						&& (questionnaireState == null || Constants.UNAVAILABLE.equals(questionnaireState));
 
-    return neverTransmitted || inaWithoutQuestionnaire;
-  }
+		return neverTransmitted || inaWithoutQuestionnaire;
+	}
 
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
-			List<String> lstSu) {
-		ResponseEntity<InterrogationOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
-				lstSu);
-		log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
-		InterrogationOkNokDto object = result.getBody();
-		HttpStatusCode responseCode = result.getStatusCode();
-
-		if (!responseCode.equals(HttpStatus.OK)) {
-			String code = responseCode.toString();
-			log.error("Data collection API responded with error code {}", code);
-		}
-		if (object == null) {
-			log.error("Could not get response from data collection API");
-			throw new BadRequestException(404, "Could not get response from data collection API");
-		}
+			Set<String> lstSu) {
 		Map<String, String> mapResult = new HashMap<>();
-		object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
-		object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));
+		try {
+			ResponseEntity<InterrogationOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
+					lstSu);
+			log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
+			InterrogationOkNokDto object = result.getBody();
+			HttpStatusCode responseCode = result.getStatusCode();
+
+			if (!responseCode.equals(HttpStatus.OK)) {
+				String code = responseCode.toString();
+				log.error("Data collection API responded with error code {}", code);
+			}
+			if (object == null) {
+				log.error("Could not get response from data collection API");
+				throw new BadRequestException(404, "Could not get response from data collection API");
+			}
+			object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
+			object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));
+		} catch (Exception e) {
+			log.error("Could not get data collection API : {}", e.getMessage());
+			log.error("All questionnaire states will be considered null");
+			lstSu.forEach(id -> mapResult.put(id, Constants.UNAVAILABLE) );
+		}
 		return mapResult;
 	}
 
