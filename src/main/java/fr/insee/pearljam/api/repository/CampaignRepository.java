@@ -34,7 +34,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
       camp.email,
       camp.identificationConfiguration,
       camp.contactOutcomeConfiguration,
-      camp.contactAttemptConfiguration
+      camp.contactAttemptConfiguration,
+      camp.collectNextContacts
     )
     FROM Campaign camp
       JOIN camp.visibilities vi
