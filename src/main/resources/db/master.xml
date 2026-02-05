@@ -98,4 +98,10 @@
 
 	<!-- add indexes for closable su -->
 	<include file="changelog/621_indexes_for_closable_su.xml" relativeToChangelogFile="true"/>
+
+	<!-- add contact-history -->
+	<include file="changelog/620_add_contact_history.xml" relativeToChangelogFile="true"/>
+
+	<include file="changelog/621_remove_notnull_panel_contact_history.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
