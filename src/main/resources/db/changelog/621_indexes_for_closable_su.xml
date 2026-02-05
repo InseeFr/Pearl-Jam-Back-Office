@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0621-1" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX IF NOT EXISTS idx_state_su_type_date_desc
+            ON state (survey_unit_id, type, date DESC);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0621-2" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX IF NOT EXISTS idx_contact_outcome_type_su
+            ON contact_outcome (type, survey_unit_id);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -95,4 +95,7 @@
 
 	<!-- add indexes for campaign stats -->
 	<include file="changelog/620_indexes_for_campaign_stats.xml" relativeToChangelogFile="true"/>
+
+	<!-- add indexes for closable su -->
+	<include file="changelog/621_indexes_for_closable_su.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

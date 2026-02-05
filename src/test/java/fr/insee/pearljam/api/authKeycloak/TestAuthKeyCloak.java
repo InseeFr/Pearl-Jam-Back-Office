@@ -30,8 +30,6 @@ import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
@@ -89,7 +87,6 @@ class TestAuthKeyCloak {
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final CampaignRepository campaignRepository;
-	private final VisibilityJpaRepository visibilityRepository;
 	private final MessageRepository messageRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final InterviewerRepository interviewerRepository;
@@ -1012,7 +1009,6 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(47)
 	void testGetSUClosable() throws Exception {
-
 		String expectedBody = """
 				{"interrogationOK" :
 					[{ "id" : "23",
@@ -1030,20 +1026,6 @@ class TestAuthKeyCloak {
 						.contentType(MediaType.APPLICATION_JSON)
 						.body(expectedBody));
 
-		Optional<VisibilityDB> visiOpt = visibilityRepository.findVisibilityByCampaignIdAndOuId("VQS2021X00", "OU" +
-				"-NORTH");
-		if (visiOpt.isEmpty()) {
-			fail("No visibility found for VQS2021X00  and OU-NORTH");
-		}
-
-		VisibilityDB visi = visiOpt.get();
-		Long collectionEndDate = visi.getCollectionEndDate();
-		Long endDate = visi.getEndDate();
-
-		visi.setCollectionEndDate(System.currentTimeMillis() - 86400000);
-		visi.setEndDate(System.currentTimeMillis() + 86400000);
-		visibilityRepository.save(visi);
-
     mockMvc
         .perform(get("/api/survey-units/closable")
             .with(authentication(LOCAL_USER))
@@ -1057,11 +1039,6 @@ class TestAuthKeyCloak {
             jsonPath("$.[?(@.id == '20')].ssech").value(1),
             jsonPath("$.[?(@.id == '20')].questionnaireState").value("UNAVAILABLE")
         );
-
-
-    visi.setCollectionEndDate(collectionEndDate);
-		visi.setEndDate(endDate);
-		visibilityRepository.save(visi);
 	}
 
 	/**

@@ -40,7 +40,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
       JOIN camp.visibilities vi
       JOIN vi.organizationUnit ou
     WHERE vi.managementStartDate <= :date
-      AND vi.collectionEndDate > :date
+      AND vi.endDate > :date
       AND NOT EXISTS (
         SELECT 1
         FROM User u
@@ -81,7 +81,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	  JOIN vi.organizationUnit ou
 	WHERE ou.id in (:ouIds)
 	AND vi.managementStartDate <= :date
-	AND vi.collectionEndDate > :date
+	AND vi.endDate > :date
 	""")
 	List<CampaignPreferenceDto> findByOuIdWithPreference(
 			@Param("ouIds") List<String> ouIds,
