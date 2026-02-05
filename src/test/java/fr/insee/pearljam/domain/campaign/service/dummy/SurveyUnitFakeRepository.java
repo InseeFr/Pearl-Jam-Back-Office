@@ -1,8 +1,9 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
 import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.api.repository.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(Long date, List<String> lstOuId) {
+    public List<ClosableSurveyUnitCandidateProjection> findClosableCandidates(long date, List<String> lstOuIds) {
         return List.of();
     }
 
@@ -87,7 +88,12 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
         //not used yet
     }
 
-  @Override
+    @Override
+    public List<ClosableSurveyUnitProjection> findClosableSurveyUnits(Set<String> ids) {
+        return List.of();
+    }
+
+    @Override
     public void flush() {
         //not used yet
     }

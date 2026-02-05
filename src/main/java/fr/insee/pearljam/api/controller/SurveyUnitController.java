@@ -16,6 +16,7 @@ import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.EntityNotFoundException;
@@ -349,13 +350,12 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get closable survey units")
 	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
-	public ResponseEntity<List<SurveyUnitCampaignDto>> getClosableSurveyUnits(HttpServletRequest request) {
+	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
 
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to GET closable units", userId);
-		List<SurveyUnitCampaignDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
-		log.info("GET closable survey units resulting in 200");
-		return new ResponseEntity<>(lstSu, HttpStatus.OK);
+		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
+		log.info("Retrieved closable survey units");
+		return lstSu;
 	}
 
 	/**

@@ -3,7 +3,8 @@ package fr.insee.pearljam.api.constants;
 import java.util.List;
 
 public class Constants {
-	private Constants() {
+
+  private Constants() {
 		throw new IllegalStateException("Constants class");
 	}
 
@@ -11,7 +12,6 @@ public class Constants {
 	public static final String REVIEWER = "reviewer";
 	public static final String GUEST = "GUEST";
 	public static final String AUTHORIZATION = "Authorization";
-  public static final String USER = "user";
 
   public static final String API_QUEEN_INTERROGATIONS_STATEDATA = "/api/interrogations/state-data";
 
@@ -45,6 +45,7 @@ public class Constants {
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
   public static final String API_CAMPAIGNS_ID = "/api/campaigns/{id}";
+  public static final String API_CAMPAIGNS_PREFERENCES = "/api/campaigns/preferences";
   public static final String API_CAMPAIGNS_COMMONS_ID = "/api/campaigns/commons/{id}";
   public static final String API_CAMPAIGNS_COMMONS_ONGOING = "/api/campaigns/commons/ongoing";
   public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";

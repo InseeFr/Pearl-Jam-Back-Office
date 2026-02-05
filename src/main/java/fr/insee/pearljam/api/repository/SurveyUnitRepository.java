@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,23 +59,36 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			+ "FROM survey_unit ", nativeQuery=true)
 	List<String> findAllIds();
 
-  @Query(value = """
-    SELECT su
-    FROM SurveyUnit su
-    WHERE su.organizationUnit.id IN (:lstOuId)
-      AND EXISTS (
-          SELECT vi
-          FROM VisibilityDB vi
-          WHERE vi.campaign.id = su.campaign.id
-            AND vi.organizationUnit.id = su.organizationUnit.id
-            AND vi.collectionEndDate < :date
-            AND vi.endDate > :date
-      )
-    """)
-  List<SurveyUnit> findSurveyUnitsOfOrganizationUnitsInProcessingPhase(
-      @Param("date") Long date,
-      @Param("lstOuId") List<String> lstOuId
-  );
+	@Query(value = """
+        SELECT
+          su.id                              AS id,
+          ls.current_state                   AS currentStateType,
+          co.type                            AS contactOutcomeType
+        FROM survey_unit su
+        JOIN visibility vi
+          ON vi.campaign_id = su.campaign_id
+         AND vi.organization_unit_id = su.organization_unit_id
+        JOIN LATERAL (
+          SELECT s.type AS current_state
+          FROM state s
+          WHERE s.survey_unit_id = su.id
+          ORDER BY s.date DESC
+          LIMIT 1
+        ) ls ON TRUE
+        LEFT JOIN contact_outcome co
+          ON co.survey_unit_id = su.id
+        WHERE su.organization_unit_id IN (:lstOuIds)
+        AND vi.collection_end_date < :date
+        AND vi.end_date > :date
+        AND (
+          ls.current_state NOT IN ('TBR','FIN','CLO')
+          OR co.type = 'INA'
+        )
+        """, nativeQuery = true)
+	List<ClosableSurveyUnitCandidateProjection> findClosableCandidates(
+			@Param("date") long date,
+			@Param("lstOuIds") List<String> lstOuIds
+	);
 
 		@Query(value="SELECT su FROM SurveyUnit su "
 		+" LEFT JOIN fetch su.comments"
@@ -90,22 +104,37 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
 	
-	@Query(value="SELECT "
-			+ "SUM(CASE WHEN type IN ('VIC', 'PRC', 'AOC', 'APS', 'INS', 'WFT', 'WFS') THEN 1 ELSE 0 END) AS toProcessInterviewer, "
-			+ "SUM(CASE WHEN type='TBR' THEN 1 ELSE 0 END) AS toBeReviewed, "
-			+ "SUM(CASE WHEN type IN ('FIN', 'CLO') THEN 1 ELSE 0 END) "
-			+ "AS finalized, "
-			+ "COUNT(DISTINCT t.survey_unit_id) AS allocated "
-			+ "FROM ( "
-			+ "SELECT survey_unit_id, type, date FROM state WHERE (survey_unit_id, date) IN ("
-			+ "SELECT survey_unit_id, MAX(date) FROM state WHERE survey_unit_id IN ("
-			+ "SELECT id FROM survey_unit "
-			+	"WHERE campaign_id=:campaignId "
-			+	"AND interviewer_id IN (SELECT int.id FROM interviewer int INNER JOIN survey_unit su ON su.interviewer_id=int.id "
-				+ "WHERE su.organization_unit_id IN (:OUids) OR 'GUEST' IN (:OUids))) "
-			+ "GROUP BY survey_unit_id) "
-			+ ") as t", nativeQuery=true)
-	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("OUids") List<String> organizationalUnitIds);
+	@Query(value= """
+    WITH su AS (
+      SELECT su1.id
+          FROM survey_unit su1
+      WHERE su1.campaign_id = :campaignId
+        AND EXISTS (
+          SELECT 1
+          FROM survey_unit su2
+          WHERE su2.interviewer_id = su1.interviewer_id
+            AND su2.organization_unit_id in (:organizationalUnitIds)
+        )
+    ),
+    mx AS (
+      SELECT su.id AS survey_unit_id,
+                 (SELECT s1.date
+              FROM state s1
+              WHERE s1.survey_unit_id = su.id
+              ORDER BY s1.date DESC
+              LIMIT 1) AS max_date
+      FROM su
+    )
+    SELECT
+      SUM((s.type IN ('VIC','PRC','AOC','APS','INS','WFT','WFS'))::int) AS toProcessInterviewer,
+      SUM((s.type='TBR')::int)                                         AS toBeReviewed,
+      SUM((s.type IN ('FIN','CLO'))::int)                               AS finalized,
+      (SELECT COUNT(*) FROM su)                                         AS allocated
+    FROM mx
+    JOIN state s ON s.survey_unit_id = mx.survey_unit_id
+     AND s.date = mx.max_date;
+    """, nativeQuery=true)
+	List<Object[]> getCampaignStats(@Param("campaignId") String campaignId, @Param("organizationalUnitIds") List<String> organizationalUnitIds);
 
 	@Query(value="""
 			SELECT su FROM SurveyUnit su
@@ -137,4 +166,47 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	+ "SET interviewer_id=:interviewerId "
 	+ "WHERE id IN (:surveyUnitIds)", nativeQuery=true)
 	void setInterviewer(List<String> surveyUnitIds, String interviewerId);
+
+	@Query(value = """
+    WITH finalization AS (
+      SELECT
+        s2.survey_unit_id,
+        MAX(s2.date) AS finalizationDate
+      FROM state s2
+      WHERE s2.type IN ('FIN','CLO')
+      GROUP BY s2.survey_unit_id
+    )
+    SELECT
+    su.id                    AS id,
+    su.display_name          AS displayName,
+    si.ssech                 AS ssech,
+    a.l6                     AS addressL6,
+    c.label                  AS campaignLabel,
+    c.identification_configuration AS campaignIdentificationConfiguration,
+    cc.type                        AS closingCauseType,
+    idf.identification_type        AS identificationType,
+    idf.identification             AS identification,
+    idf.access                     AS access,
+    idf.situation                  AS situation,
+    idf.category                   AS category,
+    idf.occupant                   AS occupant,
+    idf.individual_status          AS individualStatus,
+    idf.interviewer_can_process    AS interviewerCanProcess,
+    idf.number_of_respondents      AS numberOfRespondents,
+    idf.present_in_previous_home   AS presentInPreviousHome,
+    idf.household_composition      AS householdComposition,
+    int.first_name                 AS interviewerFirstName,
+    int.last_name                  AS interviewerLastName,
+    f.finalizationDate              AS finalizationDate
+    FROM survey_unit su
+    LEFT JOIN campaign c ON c.id = su.campaign_id
+    LEFT JOIN address a ON a.id = su.address_id
+    LEFT JOIN sample_identifier si ON si.id = su.sample_identifier_id 
+    LEFT JOIN closing_cause cc ON cc.survey_unit_id = su.id
+    LEFT JOIN identification idf ON idf.survey_unit_id = su.id
+    LEFT JOIN interviewer int ON int.id = su.interviewer_id
+    LEFT JOIN finalization f ON f.survey_unit_id = su.id
+    WHERE su.id IN (:ids)
+    """, nativeQuery = true)
+	List<ClosableSurveyUnitProjection> findClosableSurveyUnits(@Param("ids") Set<String> ids);
 }

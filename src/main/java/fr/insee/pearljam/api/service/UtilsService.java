@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,5 +25,5 @@ public interface UtilsService {
 	 */
 	List<String> getRelatedOrganizationUnits(String userId);
 
-	ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id);
+	ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, Set<String> id);
 }

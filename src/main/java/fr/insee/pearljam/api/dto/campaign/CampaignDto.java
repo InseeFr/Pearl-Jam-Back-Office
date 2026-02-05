@@ -31,7 +31,6 @@ public class CampaignDto {
 	private Long toFollowUp;
 	private Long toReview;
 	private Long finalized;
-	private Boolean preference;
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
