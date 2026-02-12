@@ -93,6 +93,12 @@
 	<!-- add Not Null Constraint sensitivity -->
 	<include file="changelog/610_default_sensitity_to_false.xml" relativeToChangelogFile="true"/>
 
+	<!-- add indexes for campaign stats -->
+	<include file="changelog/620_indexes_for_campaign_stats.xml" relativeToChangelogFile="true"/>
+
+	<!-- add indexes for closable su -->
+	<include file="changelog/621_indexes_for_closable_su.xml" relativeToChangelogFile="true"/>
+
 	<!-- add contact-history -->
 	<include file="changelog/620_add_contact_history.xml" relativeToChangelogFile="true"/>
 

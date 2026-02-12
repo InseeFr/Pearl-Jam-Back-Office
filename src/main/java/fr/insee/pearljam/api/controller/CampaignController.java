@@ -4,8 +4,7 @@ import java.util.List;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
+import fr.insee.pearljam.api.dto.campaign.*;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.campaign.OngoingDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
@@ -69,20 +66,35 @@ public class CampaignController {
 	}
 
 	/**
+	 * This method is used to get the list of preferred Campaigns for current user
+	 *
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 *         or
+	 *         {@link HttpStatus} FORBIDDEN
+	 */
+	@Operation(summary = "Get user preferred Campaigns")
+	@GetMapping(path = Constants.API_CAMPAIGNS)
+	public List<CampaignDto> getUserPreferredCampaigns() {
+		String userId = authenticatedUserService.getCurrentUserId();
+		List<CampaignDto> lstCampaigns = campaignService.getPreferredCampaigns(userId);
+		log.info("User {} -> {} preferred campaigns found", userId, lstCampaigns.size());
+		return lstCampaigns;
+	}
+
+	/**
 	 * This method is used to get the list of Campaigns for current user
-	 * 
+	 *
 	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get user related Campaigns")
-	@GetMapping(path = Constants.API_CAMPAIGNS)
-	public ResponseEntity<List<CampaignDto>> getListCampaign() {
+	@GetMapping(path = Constants.API_CAMPAIGNS_PREFERENCES)
+	public List<CampaignPreferenceDto> getUserCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("User {} : GET related campaigns", userId);
-		List<CampaignDto> lstCampaigns = campaignService.getListCampaign(userId);
+		List<CampaignPreferenceDto> lstCampaigns = campaignService.getCampaignPreferences(userId);
 		log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
-		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
+		return lstCampaigns;
 	}
 
 	/**
@@ -96,9 +108,8 @@ public class CampaignController {
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
 	public ResponseEntity<List<CampaignDto>> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("User {} : GET all campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
-		log.info("User {}, GET all campaigns ({} campaigns found) resulting in 200", userId,
+		log.info("User {}, GET all campaigns ({} campaigns found)", userId,
 				lstCampaigns.size());
 		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
 

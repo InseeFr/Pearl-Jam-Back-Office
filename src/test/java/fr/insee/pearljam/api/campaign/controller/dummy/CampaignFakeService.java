@@ -3,14 +3,15 @@ package fr.insee.pearljam.api.campaign.controller.dummy;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
+import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.service.CampaignService;
-import fr.insee.pearljam.domain.exception.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -55,8 +56,13 @@ public class CampaignFakeService implements CampaignService {
     private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
-    public List<CampaignDto> getListCampaign(String userId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getListCampaign'");
+    public List<CampaignDto> getPreferredCampaigns(String userId) {
+        return List.of();
+    }
+
+    @Override
+    public List<CampaignPreferenceDto> getCampaignPreferences(String userId) {
+        return List.of();
     }
 
     @Override
@@ -72,11 +78,6 @@ public class CampaignFakeService implements CampaignService {
     @Override
     public List<InterviewerDto> getListInterviewers(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getListInterviewers'");
-    }
-
-    @Override
-    public boolean isUserPreference(String userId, String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'isUserPreference'");
     }
 
     @Override

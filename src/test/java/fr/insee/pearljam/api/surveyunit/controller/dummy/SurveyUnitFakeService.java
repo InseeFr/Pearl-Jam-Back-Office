@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
@@ -68,7 +69,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public List<SurveyUnitCampaignDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
+    public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
