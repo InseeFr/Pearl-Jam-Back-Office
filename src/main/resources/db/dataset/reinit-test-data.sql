@@ -1,6 +1,7 @@
 --changeset davdarras:reset-data context:test
 
 TRUNCATE TABLE
+    public.survey_unit_status,
     public.communication_request_status,
     public.communication_request,
     public.communication_template,

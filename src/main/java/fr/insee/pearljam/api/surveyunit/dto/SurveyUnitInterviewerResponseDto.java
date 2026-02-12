@@ -13,9 +13,11 @@ import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto
 import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitForInterviewer;
+import fr.insee.pearljam.infrastructure.crossenvironmentcommunication.db.entity.SurveyUnitStatusEntity;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SurveyUnitInterviewerResponseDto(
@@ -35,7 +37,8 @@ public record SurveyUnitInterviewerResponseDto(
 	List<CommunicationTemplateResponseDto> communicationTemplates,
 	List<CommunicationRequestResponseDto> communicationRequests,
 	PreviousContactHistoryDto previousContactHistory,
-	NextContactHistoryDto nextContactHistory
+	NextContactHistoryDto nextContactHistory,
+    Set<SurveyUnitStatusEntity> otherModeQuestionnaireState
 ) {
 
 	public static SurveyUnitInterviewerResponseDto fromModel(SurveyUnitForInterviewer surveyUnitForInterviewer) {
@@ -75,6 +78,6 @@ public record SurveyUnitInterviewerResponseDto(
 				IdentificationDto.fromModel(surveyUnit.getModelIdentification()),
 				CommunicationTemplateResponseDto.fromModel(surveyUnitForInterviewer.communicationTemplates()),
 				CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()),
-				previousContactHistory, nextContactHistory);
+				previousContactHistory, nextContactHistory, surveyUnit.getOtherModeQuestionnaireState());
 	}
 }

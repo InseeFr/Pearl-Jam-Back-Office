@@ -1,6 +1,7 @@
 --changeset davdarras:init-demo-data context:demo
 
 TRUNCATE TABLE
+    public.survey_unit_status,
     public.communication_request_status,
     public.communication_request,
     public.communication_template,
