@@ -1,5 +1,20 @@
 package fr.insee.pearljam.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
@@ -9,16 +24,9 @@ import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -69,7 +77,7 @@ public class UtilsServiceImpl implements UtilsService {
 
 	@Override
 	public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request,
-			List<String> ids) {
+			Set<String> ids) {
 		final String dataCollectionUri = String.join("", externalServicesProperties.datacollectionUrl(),
 				Constants.API_QUEEN_INTERROGATIONS_STATEDATA);
 

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Set;
 
 public class UtilsFakeService implements UtilsService {
     @Override
@@ -19,7 +20,7 @@ public class UtilsFakeService implements UtilsService {
     }
 
     @Override
-    public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, List<String> id) {
+    public ResponseEntity<InterrogationOkNokDto> getQuestionnairesStateFromDataCollection(HttpServletRequest request, Set<String> id) {
         return null;
     }
 }

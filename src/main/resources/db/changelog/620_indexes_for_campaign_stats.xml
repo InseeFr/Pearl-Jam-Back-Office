@@ -1,0 +1,28 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0620-1" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_su_campaign_org
+            ON public.survey_unit (campaign_id, organization_unit_id, id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0620-2" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_state_su_date_desc
+            ON public.state (survey_unit_id, date DESC)
+            INCLUDE (type);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0620-3" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_su_org_interviewer
+            ON public.survey_unit (organization_unit_id, interviewer_id);
+        </sql>
+    </changeSet>
+</databaseChangeLog>
