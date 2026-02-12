@@ -9,15 +9,13 @@ import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.UserService;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 public class UserFakeService implements UserService {
     @Override
-    public Optional<UserDto> getUser(String userId) {
-        return Optional.empty();
+    public UserDto getUser(String userId) throws NotFoundException {
+        throw new NotFoundException("User not found");
     }
 
     @Override
@@ -27,7 +25,7 @@ public class UserFakeService implements UserService {
 
     @Override
     public void getOrganizationUnits(List<OrganizationUnitDto> organizationUnits, OrganizationUnit currentOu, boolean saveAllLevels) {
-
+        // not used at this moment
     }
 
     @Override
@@ -36,7 +34,7 @@ public class UserFakeService implements UserService {
     }
 
     @Override
-    public boolean isUserAssocitedToCampaign(String campaignId, String userId) {
+    public boolean isUserAssociatedToCampaign(String campaignId, String userId) {
         return false;
     }
 
@@ -46,13 +44,8 @@ public class UserFakeService implements UserService {
     }
 
     @Override
-    public HttpStatus delete(String id) {
-        return null;
-    }
-
-    @Override
-    public boolean checkValidity(UserDto user) {
-        return false;
+    public void delete(String id) {
+        return;
     }
 
     @Override

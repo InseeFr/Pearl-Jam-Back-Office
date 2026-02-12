@@ -30,7 +30,7 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 			SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto(interv.id, interv.firstName, interv.lastName,
 			interv.email, interv.phoneNumber, interv.title)
 			FROM Interviewer interv
-			WHERE interv.id=?1 """)
+			WHERE interv.id=?1""")
 	InterviewerContextDto findDtoById(String id);
 
 	@Query("SELECT interv "

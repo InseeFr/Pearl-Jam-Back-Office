@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.web.exception;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.*;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
@@ -125,6 +125,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiError> exceptions(BadRequestException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(CommunicationTemplateNotFoundException.class)
     public ResponseEntity<ApiError> exceptions(CommunicationTemplateNotFoundException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
@@ -133,6 +138,21 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(SurveyUnitNotFoundException.class)
     public ResponseEntity<ApiError> exceptions(SurveyUnitNotFoundException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(NotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request, e.getGlobalMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> exceptions(UserAlreadyExistsException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> exceptions(ConflictException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.CONFLICT, request, e.getGlobalMessage());
     }
 
     @ExceptionHandler(VisibilityNotFoundException.class)

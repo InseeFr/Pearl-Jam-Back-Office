@@ -34,6 +34,7 @@ public class CampaignDto {
 	private IdentificationConfiguration identificationConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
+	private boolean collectNextContacts;
 	private List<ReferentDto> referents;
 
 	public CampaignDto(String id, String label, Long managementStartDate, Long endDate) {
@@ -44,8 +45,9 @@ public class CampaignDto {
 		this.endDate = endDate;
 	}
 
+	// keep it for creation in SQL
 	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig) {
+			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -53,14 +55,15 @@ public class CampaignDto {
 		this.identificationConfiguration = identConfig;
 		this.contactOutcomeConfiguration = contOutConfig;
 		this.contactAttemptConfiguration = contAttConfig;
+		this.collectNextContacts = collectNextContacts;
 	}
 
 	public void setCampaignStats(List<Object[]> obj) {
-		if (obj != null && !obj.isEmpty() && obj.get(0).length > 3 && obj.get(0)[0] != null) {
-			this.toProcessInterviewer = (Long) obj.get(0)[0];
-			this.toReview = (Long) (obj.get(0)[1]);
-			this.finalized = (Long) (obj.get(0)[2]);
-			this.allocated = (Long) (obj.get(0)[3]);
+		if (obj != null && !obj.isEmpty() && obj.getFirst().length > 3 && obj.getFirst()[0] != null) {
+			this.toProcessInterviewer = (Long) obj.getFirst()[0];
+			this.toReview = (Long) (obj.getFirst()[1]);
+			this.finalized = (Long) (obj.getFirst()[2]);
+			this.allocated = (Long) (obj.getFirst()[3]);
 			this.toAffect = 0L;
 			this.toFollowUp = 0L;
 		}
