@@ -17,7 +17,7 @@ import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
-import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 

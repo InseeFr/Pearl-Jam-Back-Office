@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.surveyunit.dto;
 
 import fr.insee.pearljam.api.domain.Title;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
-import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
