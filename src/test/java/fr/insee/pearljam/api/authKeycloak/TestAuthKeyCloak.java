@@ -33,8 +33,6 @@ import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
