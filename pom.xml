@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.13.7</version>
+	<version>5.13.8</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.5</version>
+		<version>3.5.10</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 
@@ -22,10 +22,10 @@
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<postgresql.version>42.7.7</postgresql.version>
+		<postgresql.version>42.7.10</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<cucumber.version>7.21.1</cucumber.version>
+		<cucumber.version>7.34.2</cucumber.version>
 	</properties>
 
 	<dependencies>
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.8.9</version>
+			<version>2.8.15</version>
 		</dependency>
 
 		<!-- Security -->
@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
-			<version>1.10.0</version>
+			<version>1.10.1</version>
 		</dependency>
 
 		<dependency>
@@ -169,7 +169,7 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.8.13</version>
+						<version>0.8.14</version>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
@@ -229,7 +229,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
+					<version>3.15.0</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
@@ -254,7 +254,7 @@
 						<dependency>
 							<groupId>jakarta.xml.bind</groupId>
 							<artifactId>jakarta.xml.bind-api</artifactId>
-							<version>4.0.2</version>
+							<version>4.0.5</version>
 						</dependency>
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
@@ -281,7 +281,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.3</version>
+					<version>3.5.4</version>
 					<configuration>
 						<includes>
 							<include>**/TestAuthKeyCloak</include>
