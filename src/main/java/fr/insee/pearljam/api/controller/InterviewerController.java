@@ -1,21 +1,5 @@
 package fr.insee.pearljam.api.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
@@ -23,10 +7,18 @@ import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.service.InterviewerService;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @Tag(name = "04. Interviewers", description = "Endpoints for interviewers")
@@ -111,7 +103,7 @@ public class InterviewerController {
 	public ResponseEntity<List<CampaignDto>> getListCampaigns(@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		Optional<List<CampaignDto>> list = interviewerService.findCampaignsOfInterviewer(id);
-		if (!list.isPresent()) {
+		if (list.isEmpty()) {
 			log.info("{} -> Get interviewer campaigns resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -131,7 +123,7 @@ public class InterviewerController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 		Optional<InterviewerContextDto> updatedInterviewer = interviewerService.update(id, interviewer);
-		if (!updatedInterviewer.isPresent()) {
+		if (updatedInterviewer.isEmpty()) {
 			log.error("{} : UPDATE interviewer {} resulting in 404. ", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

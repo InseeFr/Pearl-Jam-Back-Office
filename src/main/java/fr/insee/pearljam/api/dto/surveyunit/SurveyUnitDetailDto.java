@@ -6,13 +6,16 @@ import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +39,15 @@ public class SurveyUnitDetailDto {
 	private ContactOutcomeDto contactOutcome;
 	private IdentificationDto identification;
 	private List<CommunicationRequestResponseDto> communicationRequests;
+	private PreviousContactHistoryDto previousContactHistory;
+	private NextContactHistoryDto nextContactHistory;
 
 	public SurveyUnitDetailDto(SurveyUnit surveyUnit) {
 		this.id = surveyUnit.getId();
 		this.setPersons(surveyUnit.getPersons().stream()
-				.map(PersonDto::new)
+				.filter(person -> person.getContactHistoryType() == null)
+				.map(person -> PersonDB.toModel(person,null))
+				.map(PersonDto::fromModel)
 				.toList());
 		this.priority = surveyUnit.isPriority();
 		this.campaign = surveyUnit.getCampaign().getId();
@@ -64,5 +71,7 @@ public class SurveyUnitDetailDto {
 
 		this.move = surveyUnit.getMove();
 		this.communicationRequests = CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests());
+		this.previousContactHistory = PreviousContactHistoryDto.fromModel(surveyUnit.getPreviousContactHistory());
+		this.nextContactHistory = NextContactHistoryDto.fromModel(surveyUnit.getNextContactHistory());
 	}
 }

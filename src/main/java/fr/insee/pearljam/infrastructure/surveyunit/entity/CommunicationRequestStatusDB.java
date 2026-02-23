@@ -1,27 +1,14 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.CascadeType;
-import java.io.Serializable;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestStatus;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Entity(name = "communication_request_status")
 @Table

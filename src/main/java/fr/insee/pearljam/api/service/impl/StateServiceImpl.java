@@ -7,29 +7,20 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
+import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -50,7 +41,6 @@ public class StateServiceImpl implements StateService {
   private final InterviewerRepository interviewerRepository;
   private final VisibilityRepository visibilityRepository;
   private final OrganizationUnitRepository organizationUnitRepository;
-  private final CommunicationTemplateJpaRepository communicationTemplateRepository;
   private final UserService userService;
   private final UtilsService utilsService;
   private final CommunicationRequestRepository communicationRequestRepository;
@@ -63,7 +53,7 @@ public class StateServiceImpl implements StateService {
     if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
       throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
     }
-    if (!interviewerRepository.findById(interviewerId).isPresent()) {
+    if (interviewerRepository.findById(interviewerId).isEmpty()) {
       log.error("No interviewer found for the id {}", interviewerId);
       throw new NotFoundException(
           String.format("No interviewers found for the id %s", interviewerId));
@@ -105,7 +95,7 @@ public class StateServiceImpl implements StateService {
     }
     if (stateCountDto.getTotal() == null) {
       throw new NotFoundException(String.format(
-          "No matching interviewers %s were found for the user % and the campaign %s",
+          "No matching interviewers %s were found for the user %s and the campaign %s",
           interviewerId,
           userId, campaignId));
     }

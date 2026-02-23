@@ -1,17 +1,19 @@
 package fr.insee.pearljam.api.domain;
 
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationMetadataDB;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
+import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,10 +22,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,7 +105,7 @@ public class SurveyUnit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Campaign campaign;
 
-	/*
+	/**
 	 * The Interviewer of SurveyUnit
 	 */
 	@ManyToOne
@@ -115,9 +114,9 @@ public class SurveyUnit implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganizationUnit organizationUnit;
 
-	@OneToMany(fetch = FetchType.LAZY, targetEntity = Person.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = PersonDB.class, cascade = CascadeType.ALL, mappedBy = "surveyUnit"
 			, orphanRemoval = true)
-	private Set<Person> persons = new HashSet<>();
+	private Set<PersonDB> persons = new HashSet<>();
 
 	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactAttempt.class, cascade = CascadeType.ALL, mappedBy =
 			"surveyUnit", orphanRemoval = true)
@@ -139,9 +138,13 @@ public class SurveyUnit implements Serializable {
 			mappedBy = "surveyUnit", orphanRemoval = true)
 	private Set<CommunicationMetadataDB> communicationMetadata = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, targetEntity = ContactHistoryDB.class, cascade = CascadeType.ALL,
+			mappedBy = "surveyUnit", orphanRemoval = true)
+	private Set<ContactHistoryDB> contactHistory = new HashSet<>();
+
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
 					  Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
-					  Set<Person> persons) {
+					  Set<PersonDB> persons) {
 		super();
 		this.id = id;
 		this.priority = priority;
@@ -154,7 +157,14 @@ public class SurveyUnit implements Serializable {
 		this.persons = persons;
 	}
 
-	public SurveyUnit(SurveyUnitContextDto su, OrganizationUnit organizationUnit, Campaign campaign) {
+	/**
+	 * Create a new survey-unit from dto
+	 *
+	 * @param su               surveyUnitDto
+	 * @param organizationUnit related organisationUnit
+	 * @param campaign         related campaign
+	 */
+	public SurveyUnit(SurveyUnitCreationDto su, OrganizationUnit organizationUnit, Campaign campaign) {
 		this.id = su.getId();
 		this.displayName = su.getDisplayName();
 		//TODO: delete this test when displayName becomes mandatory in creation endpoint
@@ -172,8 +182,12 @@ public class SurveyUnit implements Serializable {
 		this.identification = IdentificationDB.fromModel(this, IdentificationDto.toModel(su.getIdentification(),
 				identificationType), identificationType);
 		this.organizationUnit = organizationUnit;
-		this.persons = su.getPersons().stream().map(p -> new Person(p, this)).collect(Collectors.toSet());
 
+		this.persons = su.getPersons().stream()
+				.map(person -> PersonDto.toModel(person, null))
+				.map(personModel -> PersonDB.fromModel(personModel, null, this))
+				.collect(Collectors.toSet());
+		this.contactHistory = createContactHistory(su.getContactHistory());
 
 		this.comments = new HashSet<>(
 				Optional.ofNullable(su.getComments()).orElse(new HashSet<>()).stream()
@@ -204,6 +218,14 @@ public class SurveyUnit implements Serializable {
 		}
 
 
+	}
+
+	Set<ContactHistoryDB> createContactHistory(PreviousContactHistoryDto contactHistory) {
+		if (contactHistory == null) {
+			return new HashSet<>();
+		}
+		return Set.of(
+				ContactHistoryDB.fromModel(PreviousContactHistoryDto.toModel(contactHistory), this));
 	}
 
 	public Boolean isAtLeastState(String state) {
@@ -298,6 +320,48 @@ public class SurveyUnit implements Serializable {
 			return;
 		}
 		currentContactOutcome.updateContactOutcome(contactOutcome);
+
+	}
+
+	public List<Person> getModelPersons() {
+		return persons.stream()
+				.filter( person -> person.getContactHistoryType()==null)
+				.map(person -> PersonDB.toModel(person, null)).toList();
+	}
+
+	public void updatePersons(Set<Person> personsToUpdate) {
+		if (this.getPersons() == null) {
+			this.setPersons(new HashSet<>());
+		}
+		Set<PersonDB> existingPersons = this.getPersons();
+
+		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
+				.map(newPerson -> PersonDB.fromModel(newPerson, null, this))
+				.collect(Collectors.toSet());
+
+		// we remove persons not linked to contactHistory, handled appart
+		existingPersons.removeIf( current -> current.getContactHistoryType()==null);
+
+		existingPersons.addAll(personsDBToUpdate);
+	}
+
+	public ContactHistory getNextContactHistory(){
+		return this.contactHistory.stream()
+				.filter(ch -> ch.getId().getContactHistoryType()== ContactHistoryType.NEXT)
+				.findFirst().map(ContactHistoryDB::toModel).orElse(null);
+	}
+
+	public ContactHistory getPreviousContactHistory(){
+		return this.contactHistory.stream()
+				.filter(ch -> ch.getId().getContactHistoryType()== ContactHistoryType.PREVIOUS)
+				.findFirst().map(ContactHistoryDB::toModel).orElse(null);
+	}
+
+	public void updateNextContactHistory(ContactHistory nextContactHistory) {
+		ContactHistoryDB next = ContactHistoryDB.fromModel(nextContactHistory, this);
+		this.contactHistory.removeIf(ch -> ch.getId().getContactHistoryType() == ContactHistoryType.NEXT);
+		this.persons.removeIf(person -> person.getContactHistoryType()==ContactHistoryType.NEXT);
+		this.contactHistory.add(next);
 
 	}
 }

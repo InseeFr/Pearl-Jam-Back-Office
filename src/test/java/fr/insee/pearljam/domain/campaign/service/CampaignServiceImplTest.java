@@ -42,6 +42,7 @@ class CampaignServiceImplTest {
             ContactOutcomeConfiguration.F2F,
             ContactAttemptConfiguration.F2F,
             "email@email.com",
+            false,
             false);
 
     private final Visibility existingVisibility1 =
@@ -109,6 +110,7 @@ class CampaignServiceImplTest {
                 IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
+                false,
                 false
         );
 
@@ -149,6 +151,7 @@ class CampaignServiceImplTest {
                 IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F,
+                false,
                 false
         );
 
@@ -173,7 +176,8 @@ class CampaignServiceImplTest {
                 List.of(),
                 "emailUpdated@email.com",
                 ContactOutcomeConfiguration.TEL,
-                ContactAttemptConfiguration.TEL);
+                ContactAttemptConfiguration.TEL,
+                false);
 
         // When
         campaignService.updateCampaign(campaignId, updateDto);
@@ -208,7 +212,8 @@ class CampaignServiceImplTest {
                 null,
                 emailToUpdate,
                 ContactOutcomeConfiguration.TEL,
-                ContactAttemptConfiguration.TEL);
+                ContactAttemptConfiguration.TEL,
+                false);
 
         // When
         campaignService.updateCampaign(campaignId, updateDto);
@@ -230,7 +235,8 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 ContactOutcomeConfiguration.TEL,
-                ContactAttemptConfiguration.TEL);
+                ContactAttemptConfiguration.TEL,
+                false);
 
         // When
         campaignService.updateCampaign(campaignId, updateDto);
@@ -251,7 +257,8 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 ContactOutcomeConfiguration.TEL,
-                ContactAttemptConfiguration.TEL);
+                ContactAttemptConfiguration.TEL,
+                false);
 
         // When
         campaignService.updateCampaign(campaignId, updateDto);
@@ -271,7 +278,8 @@ class CampaignServiceImplTest {
                 null,
                 null,
                 ContactOutcomeConfiguration.TEL,
-                ContactAttemptConfiguration.TEL);
+                ContactAttemptConfiguration.TEL,
+                false);
 
         assertThatThrownBy(() -> campaignService.updateCampaign(campaignId, updateDto))
                 .isInstanceOf(CampaignNotFoundException.class);

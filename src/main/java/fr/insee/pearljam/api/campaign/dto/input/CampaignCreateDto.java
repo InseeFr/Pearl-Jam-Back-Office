@@ -32,5 +32,16 @@ public record CampaignCreateDto (
 		ContactOutcomeConfiguration contactOutcomeConfiguration,
 		ContactAttemptConfiguration contactAttemptConfiguration,
 		@Schema(description = "Is campaign data sensitive", defaultValue = "false")
-		Boolean sensitivity) {
+		Boolean sensitivity,
+		@Schema(description = "Allow collection of future contacts data", defaultValue = "false")
+		Boolean collectNextContacts) {
+
+	public CampaignCreateDto {
+		// Defaults for nullable attributes
+		if (collectNextContacts == null) collectNextContacts = Boolean.FALSE;
+		if (sensitivity == null) sensitivity = Boolean.FALSE;
+
+		if (communicationTemplates == null) communicationTemplates = List.of();
+	}
+
 }

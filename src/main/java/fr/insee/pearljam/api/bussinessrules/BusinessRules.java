@@ -15,23 +15,16 @@ public class BusinessRules {
 	 * Checks if a survey unit is allowed to pass from a state to another
 	 * via a manager action
 	 */
-	public static Boolean stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
-		switch (targetState) {
-			case NVA:
-				return currentState != StateType.NVA;
-			case ANV:
-				return currentState == StateType.NNS;
-			case VIN:
-				return List.of(StateType.NNS,StateType.ANV).contains(currentState);
-			case FIN:
-				return currentState == StateType.TBR;
-			case WFT:
-				return List.of(StateType.FIN, StateType.TBR).contains(currentState);
-			case CLO:
-				return true;
-			default:
-				return false;
-		}
+	public static boolean stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
+        return switch (targetState) {
+            case NVA -> currentState != StateType.NVA;
+            case ANV -> currentState == StateType.NNS;
+            case VIN -> List.of(StateType.NNS, StateType.ANV).contains(currentState);
+            case FIN -> currentState == StateType.TBR;
+            case WFT -> List.of(StateType.FIN, StateType.TBR).contains(currentState);
+            case CLO -> true;
+            default -> false;
+        };
 	}
 
 
@@ -41,7 +34,7 @@ public class BusinessRules {
 	 * Checks if a survey unit can be seen by the interviewer
 	 * via an automatic business rule
 	 */
-	public static Boolean stateCanBeSeenByInterviewerBussinessRules(StateType currentState) {
+	public static boolean stateCanBeSeenByInterviewerBussinessRules(StateType currentState) {
 		StateType[] possibleTypes = {
 				StateType.VIN,
 				StateType.VIC,
@@ -58,7 +51,7 @@ public class BusinessRules {
 		return Arrays.asList(possibleTypes).contains(currentState);
 	}
 
-	public static Boolean shouldFallBackToTbrOrFin(List<StateDto> states) {
+	public static boolean shouldFallBackToTbrOrFin(List<StateDto> states) {
 		// If survey-unit has NVA 'Not Visible to All' => no fall-back
 		Set<StateType> presentTypes = states.stream().map(StateDto::type).collect(Collectors.toSet());
 		if (presentTypes.contains(StateType.NVA))
