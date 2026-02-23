@@ -48,7 +48,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, String state) {
+    public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state) {
         throw new IllegalArgumentException("not implemented yet");
     }
 

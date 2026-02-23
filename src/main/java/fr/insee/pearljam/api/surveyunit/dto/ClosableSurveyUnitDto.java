@@ -3,7 +3,8 @@ package fr.insee.pearljam.api.surveyunit.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.domain.ClosingCauseType;
 import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.repository.ClosableSurveyUnitCandidateProjection;
+import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDtoMappers;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
@@ -38,39 +39,17 @@ public class ClosableSurveyUnitDto {
                 candidate.getId(),
                 projection.getDisplayName(),
                 projection.getSsech(),
-                computeLocation(projection.getAddressL6()),
-                computeCity(projection.getAddressL6()),
+                SurveyUnitDtoMappers.computeLocation(projection.getAddressL6()),
+                SurveyUnitDtoMappers.computeCity(projection.getAddressL6()),
                 projection.getFinalizationDate(),
                 projection.getCampaignLabel(),
-                computeClosingCause(candidate, projection),
+                SurveyUnitDtoMappers.computeClosingCause(projection.getClosingCauseType(), candidate.getCurrentStateType()),
                 candidate.getCurrentStateType(),
                 questionnaireState,
                 candidate.getContactOutcomeType() == null ? null : new ClosableContactOutcomeDto(candidate.getContactOutcomeType()),
                 computeIdentificationState(projection),
                 new ClosableInterviewerDto(projection.getInterviewerFirstName(), projection.getInterviewerLastName())
         );
-    }
-
-    private static String computeLocation(String l6) {
-        if (l6 == null) return null;
-        String trimmed = l6.trim();
-        int idx = trimmed.indexOf(' ');
-        return idx > 0 ? trimmed.substring(0, idx) : null;
-    }
-
-    private static String computeCity(String l6) {
-        if (l6 == null) return null;
-        String trimmed = l6.trim();
-        int idx = trimmed.indexOf(' ');
-        return idx > 0 ? trimmed.substring(idx + 1) : null;
-    }
-
-    private static ClosingCauseType computeClosingCause(ClosableSurveyUnitCandidateProjection candidate, ClosableSurveyUnitProjection projection) {
-        if (projection.getClosingCauseType() != null
-                && candidate.getCurrentStateType() != StateType.CLO) {
-            return projection.getClosingCauseType();
-        }
-        return null;
     }
 
     private static Identification toModelIdentification(ClosableSurveyUnitProjection p) {

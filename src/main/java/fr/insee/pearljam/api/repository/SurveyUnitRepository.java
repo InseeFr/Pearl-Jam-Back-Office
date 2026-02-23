@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
+import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
 import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -90,17 +92,250 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 			@Param("lstOuIds") List<String> lstOuIds
 	);
 
-		@Query(value="SELECT su FROM SurveyUnit su "
-		+" LEFT JOIN fetch su.comments"
-		+" LEFT JOIN fetch su.states"
-		+" LEFT JOIN fetch su.address"
-		+" LEFT JOIN fetch su.sampleIdentifier "
-		+" LEFT JOIN fetch su.interviewer "
-		+" LEFT JOIN fetch su.contactOutcome "
-		+" LEFT JOIN fetch su.closingCause "
-		+" LEFT JOIN fetch su.identification "
-		+ "WHERE su.campaign.id=:id AND su.organizationUnit.id IN (:lstOuId)")
-	Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(@Param("id")String id, @Param("lstOuId")List<String> lstOuId);
+	@Query(value = """
+        SELECT
+          su.id                              AS id,
+          su.display_name                    AS displayName,
+          si.ssech                           AS ssech,
+           a.l6                              AS addressL6,
+          ls.current_state                   AS currentStateType,
+          cc.type                            AS closingCauseType,
+          co.type                            AS contactOutcomeType,
+         int.id                              AS interviewerId,
+         int.first_name                      AS interviewerFirstName,
+         int.last_name                       AS interviewerLastName
+        FROM survey_unit su
+        JOIN LATERAL (
+          SELECT s.type AS current_state
+          FROM state s
+          WHERE s.survey_unit_id = su.id
+          ORDER BY s.date DESC
+          LIMIT 1
+        ) ls ON TRUE
+        LEFT JOIN address a
+            ON a.id = su.address_id
+        LEFT JOIN sample_identifier si
+            ON si.id = su.sample_identifier_id
+        LEFT JOIN closing_cause cc
+            ON cc.survey_unit_id = su.id
+        LEFT JOIN contact_outcome co
+            ON co.survey_unit_id = su.id
+        LEFT JOIN interviewer int
+            ON int.id = su.interviewer_id
+        WHERE su.organization_unit_id IN (:lstOuIds)
+        AND su.campaign_id = :campaignId
+    """, nativeQuery = true)
+	Set<SurveyUnitCampaignProjection> findByCampaignIdAndOrganizationUnitIdIn(
+			@Param("campaignId") String campaignId,
+			@Param("lstOuIds") List<String> lstOuId);
+
+	@Query(value = """
+	    WITH su_scope AS (
+	        SELECT
+	            su.id,
+	            su.display_name,
+	            su.viewed,
+	            su.address_id,
+	            su.sample_identifier_id,
+	            su.interviewer_id
+	        FROM survey_unit su
+	        WHERE su.campaign_id = :campaignId
+	        AND su.organization_unit_id IN (:lstOuIds)
+	        AND EXISTS (
+	            SELECT 1
+	            FROM state s
+	            WHERE s.survey_unit_id = su.id
+	            AND s.type = :state
+	        )
+	    )
+	    SELECT
+	        su.id                              AS id,
+	        su.display_name                    AS displayName,
+	        su.viewed                          AS viewed,
+	        si.ssech                           AS ssech,
+	        a.l6                               AS addressL6,
+	        cc.type                            AS closingCauseType,
+	        co.type                            AS contactOutcomeType,
+	        int.id                             AS interviewerId,
+	        int.first_name                     AS interviewerFirstName,
+	        int.last_name                      AS interviewerLastName,
+	        com.type                           AS commentType,
+	        com.value                          AS commentValue,
+	        ls.current_state                   AS currentStateType
+	    FROM su_scope su
+	    JOIN LATERAL (
+	        SELECT s.type AS current_state
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) ls ON ls.current_state = :state
+	    LEFT JOIN address a
+	        ON a.id = su.address_id
+	    LEFT JOIN sample_identifier si
+	        ON si.id = su.sample_identifier_id
+	    LEFT JOIN closing_cause cc
+	        ON cc.survey_unit_id = su.id
+	    LEFT JOIN contact_outcome co
+	        ON co.survey_unit_id = su.id
+	    LEFT JOIN interviewer int
+	        ON int.id = su.interviewer_id
+	    LEFT JOIN LATERAL (
+	        SELECT c.type, c.value
+	        FROM comment c
+	        WHERE c.survey_unit_id = su.id
+	        AND c.type = 'MANAGEMENT'
+	        LIMIT 1
+	    ) com ON TRUE;
+	""", nativeQuery = true)
+	Set<SurveyUnitCampaignProjection> findByCampaignIdAndStateAndOrganizationUnitIdIn(@Param("campaignId") String campaignId,
+																					  @Param("lstOuIds") List<String> lstOuId,
+																					  @Param("state") String state);
+
+	@Query(value = """
+	    WITH su_scope AS (
+	        SELECT
+	            su.id,
+	            su.display_name,
+	            su.address_id,
+	            su.sample_identifier_id,
+	            su.interviewer_id
+	        FROM survey_unit su
+	        WHERE su.campaign_id = :campaignId
+	        AND su.organization_unit_id IN (:lstOuIds)
+	        AND EXISTS (
+	            SELECT 1
+	            FROM state s
+	            WHERE s.survey_unit_id = su.id
+	            AND s.type = 'FIN'
+	        )
+	    )
+	    SELECT
+	        su.id                              AS id,
+	        su.display_name                    AS displayName,
+	        si.ssech                           AS ssech,
+	        a.l6                               AS addressL6,
+	        cc.type                            AS closingCauseType,
+	        co.type                            AS contactOutcomeType,
+	        int.id                             AS interviewerId,
+	        int.first_name                     AS interviewerFirstName,
+	        int.last_name                      AS interviewerLastName,
+	        f.finalizationDate                 AS finalizationDate,
+	        com.type                           AS commentType,
+	        com.value                          AS commentValue,
+	        (tbr.exists_tbr IS NOT NULL)       AS reading
+	    FROM su_scope su
+	    JOIN LATERAL (
+	        SELECT s.date AS finalizationDate
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        AND s.type IN ('FIN','CLO')
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) f ON TRUE
+	    LEFT JOIN LATERAL (
+	        SELECT 1 AS exists_tbr
+	        FROM state s_tbr
+	        WHERE s_tbr.survey_unit_id = su.id
+	        AND s_tbr.type = 'TBR'
+	        LIMIT 1
+	    ) tbr ON TRUE
+	    LEFT JOIN address a
+	        ON a.id = su.address_id
+	    LEFT JOIN sample_identifier si
+	        ON si.id = su.sample_identifier_id
+	    LEFT JOIN closing_cause cc
+	        ON cc.survey_unit_id = su.id
+	    LEFT JOIN contact_outcome co
+	        ON co.survey_unit_id = su.id
+	    LEFT JOIN interviewer int
+	        ON int.id = su.interviewer_id
+	    LEFT JOIN LATERAL (
+	        SELECT c.type, c.value
+	        FROM comment c
+	        WHERE c.survey_unit_id = su.id
+	        AND c.type = 'MANAGEMENT'
+	        LIMIT 1
+	    ) com ON TRUE;
+	""", nativeQuery = true)
+	Set<SurveyUnitCampaignProjection> findFinalizedByCampaignIdAndOrganizationUnitIdIn(@Param("campaignId") String campaignId,
+																					   @Param("lstOuIds") List<String> lstOuId);
+
+	@Query(value = """
+	    WITH su_scope AS (
+	        SELECT
+	            su.id,
+	            su.display_name,
+	            su.address_id,
+	            su.sample_identifier_id,
+	            su.interviewer_id
+	        FROM survey_unit su
+	        WHERE su.campaign_id = :campaignId
+	        AND su.organization_unit_id IN (:lstOuIds)
+	        AND EXISTS (
+	            SELECT 1
+	            FROM state s
+	            WHERE s.survey_unit_id = su.id
+	            AND s.type = 'CLO'
+	        )
+	    )
+	    SELECT
+	        su.id                              AS id,
+	        su.display_name                    AS displayName,
+	        si.ssech                           AS ssech,
+	        a.l6                               AS addressL6,
+	        cc.type                            AS closingCauseType,
+	        co.type                            AS contactOutcomeType,
+	        int.id                             AS interviewerId,
+	        int.first_name                     AS interviewerFirstName,
+	        int.last_name                      AS interviewerLastName,
+	        f.finalizationDate                 AS finalizationDate,
+	        com.type                           AS commentType,
+	        com.value                          AS commentValue,
+	        (tbr.exists_tbr IS NOT NULL)       AS reading
+	    FROM su_scope su
+	    JOIN LATERAL (
+	        SELECT s.type AS current_state
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) ls ON ls.current_state = 'CLO'
+	    JOIN LATERAL (
+	        SELECT s.date AS finalizationDate
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        AND s.type IN ('FIN','CLO')
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) f ON TRUE
+	    LEFT JOIN LATERAL (
+	        SELECT 1 AS exists_tbr
+	        FROM state s_tbr
+	        WHERE s_tbr.survey_unit_id = su.id
+	        AND s_tbr.type = 'TBR'
+	        LIMIT 1
+	    ) tbr ON TRUE
+	    LEFT JOIN address a
+	        ON a.id = su.address_id
+	    LEFT JOIN sample_identifier si
+	        ON si.id = su.sample_identifier_id
+	    LEFT JOIN closing_cause cc
+	        ON cc.survey_unit_id = su.id
+	    LEFT JOIN contact_outcome co
+	        ON co.survey_unit_id = su.id
+	    LEFT JOIN interviewer int
+	        ON int.id = su.interviewer_id
+	    LEFT JOIN LATERAL (
+	        SELECT c.type, c.value
+	        FROM comment c
+	        WHERE c.survey_unit_id = su.id
+	        AND c.type = 'MANAGEMENT'
+	        LIMIT 1
+	    ) com ON TRUE;
+	""", nativeQuery = true)
+	Set<SurveyUnitCampaignProjection> findClosedByCampaignIdAndOrganizationUnitIdIn(@Param("campaignId") String campaignId,
+																					   @Param("lstOuIds") List<String> lstOuId);
 
 	List<SurveyUnit> findByInterviewerIdIgnoreCase(String id);
 	
@@ -201,7 +436,7 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
     FROM survey_unit su
     LEFT JOIN campaign c ON c.id = su.campaign_id
     LEFT JOIN address a ON a.id = su.address_id
-    LEFT JOIN sample_identifier si ON si.id = su.sample_identifier_id 
+    LEFT JOIN sample_identifier si ON si.id = su.sample_identifier_id
     LEFT JOIN closing_cause cc ON cc.survey_unit_id = su.id
     LEFT JOIN identification idf ON idf.survey_unit_id = su.id
     LEFT JOIN interviewer int ON int.id = su.interviewer_id

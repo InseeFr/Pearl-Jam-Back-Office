@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0623-1" author="davdarras">
+        <createIndex indexName="idx_comment_su" tableName="comment">
+            <column name="survey_unit_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="0623-2" author="davdarras">
+        <createIndex indexName="idx_contact_outcome_su" tableName="contact_outcome">
+            <column name="survey_unit_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="0623-3" author="davdarras">
+        <createIndex indexName="idx_closing_cause_su" tableName="closing_cause">
+            <column name="survey_unit_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
