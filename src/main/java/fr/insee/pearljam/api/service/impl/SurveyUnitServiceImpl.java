@@ -10,6 +10,8 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
+import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.api.service.UserService;
@@ -308,22 +310,30 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return HttpStatus.OK;
 	}
 
-	public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, String state) {
-		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
+	public Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, StateType state) {
+		List<String> lstOuId = userService.getUserOUs(userId, true)
+				.stream()
+				.map(OrganizationUnitDto::getId)
 				.toList();
-		Set<SurveyUnit> lstSurveyUnit = surveyUnitRepository.findByCampaignIdAndOrganizationUnitIdIn(campaignId,
-				lstOuId);
-		if (state != null && !state.isEmpty() && state.equalsIgnoreCase(StateType.FIN.toString())) {
-			// filter on SU with at least one state FIN
-			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isAtLeastState(state)).collect(Collectors.toSet());
-		} else if (state != null && !state.isEmpty() && !state.equalsIgnoreCase(StateType.FIN.toString())) {
-			// filter on SU with last state equals to state
-			lstSurveyUnit = lstSurveyUnit.stream().filter(su -> su.isLastState(state)).collect(Collectors.toSet());
-		}
-		if (lstSurveyUnit.isEmpty()) {
+
+		Set<SurveyUnitCampaignProjection> surveyUnits = switch(state) {
+			case FIN -> surveyUnitRepository.findFinalizedByCampaignIdAndOrganizationUnitIdIn(campaignId,
+					lstOuId);
+			case CLO -> surveyUnitRepository.findClosedByCampaignIdAndOrganizationUnitIdIn(campaignId,
+					lstOuId);
+			case null -> surveyUnitRepository.findByCampaignIdAndOrganizationUnitIdIn(campaignId,
+					lstOuId);
+			default -> surveyUnitRepository.findByCampaignIdAndStateAndOrganizationUnitIdIn(campaignId,
+					lstOuId, state.name());
+		};
+
+		if (surveyUnits.isEmpty()) {
 			log.warn("No Survey Unit found for the user {}", userId);
 		}
-		return lstSurveyUnit.stream().map(SurveyUnitCampaignDto::new).collect(Collectors.toSet());
+		return surveyUnits
+				.stream()
+				.map(SurveyUnitCampaignDto::from)
+				.collect(Collectors.toSet());
 	}
 
 	@Transactional(readOnly = true)

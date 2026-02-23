@@ -1,8 +1,9 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.repository.ClosableSurveyUnitCandidateProjection;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
 import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,22 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public Set<SurveyUnit> findByCampaignIdAndOrganizationUnitIdIn(String id, List<String> lstOuId) {
+    public Set<SurveyUnitCampaignProjection> findByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
+        return Set.of();
+    }
+
+    @Override
+    public Set<SurveyUnitCampaignProjection> findByCampaignIdAndStateAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId, String state) {
+        return Set.of();
+    }
+
+    @Override
+    public Set<SurveyUnitCampaignProjection> findFinalizedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
+        return Set.of();
+    }
+
+    @Override
+    public Set<SurveyUnitCampaignProjection> findClosedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
         return Set.of();
     }
 

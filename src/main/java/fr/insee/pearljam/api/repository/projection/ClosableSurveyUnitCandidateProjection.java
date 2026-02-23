@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.repository;
+package fr.insee.pearljam.api.repository.projection;
 
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.StateType;

@@ -65,7 +65,7 @@ public interface SurveyUnitService {
 	 * @param state
 	 * @return {@link HttpStatus}
 	 */
-	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, String state);
+	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
 
 	/**
 	 * @param listSU

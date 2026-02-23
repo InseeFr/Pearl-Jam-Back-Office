@@ -669,11 +669,7 @@ class SurveyUnitIT {
 				      "ssech":1,
 				      "location":"90000",
 				      "city":"Belfort",
-				      "campaign":"Survey on the Simpsons tv show 2020",
 				      "state":"TBR",
-				      "reading":true,
-				      "viewed":false,
-				      "comments":[],
 				      "interviewer":{
 				         "id":"INTW1",
 				         "interviewerFirstName":"Margie",
@@ -686,16 +682,7 @@ class SurveyUnitIT {
 				      "ssech":2,
 				      "location":"32230",
 				      "city":"Marciac",
-				      "campaign":"Survey on the Simpsons tv show 2020",
 				      "state":"TBR",
-				      "reading":true,
-				      "viewed":false,
-				      "comments":[
-				         {
-				            "type":"INTERVIEWER",
-				            "value":"un commentaire"
-				         }
-				      ],
 				      "interviewer":{
 				         "id":"INTW2",
 				         "interviewerFirstName":"Carlton",
@@ -705,19 +692,11 @@ class SurveyUnitIT {
 				   {
 				      "id":"24",
 				      "displayName":"business-id-24",
+				      "contactOutcome":{"type":"DUK"},
 				      "ssech":1,
 				      "location":"35000",
 				      "city":"Rennes",
-				      "campaign":"Survey on the Simpsons tv show 2020",
-				      "state":"TBR",
-				      "reading":true,
-				      "viewed":false,
-				      "contactOutcome":{
-				         "date":1590504478334,
-				         "type":"DUK",
-				         "totalNumberOfContactAttempts":null
-				      },
-				      "comments":[]
+				      "state":"TBR"
 				   },
 				   {
 				      "id":"14",
@@ -725,11 +704,7 @@ class SurveyUnitIT {
 				      "ssech":3,
 				      "location":"44190",
 				      "city":"Clisson",
-				      "campaign":"Survey on the Simpsons tv show 2020",
 				      "state":"TBR",
-				      "reading":true,
-				      "viewed":false,
-				      "comments":[],
 				      "interviewer":{
 				         "id":"INTW3",
 				         "interviewerFirstName":"Gerald",
@@ -742,12 +717,8 @@ class SurveyUnitIT {
 				      "ssech":1,
 				      "location":"29270",
 				      "city":"Carhaix",
-				      "campaign":"Survey on the Simpsons tv show 2020",
 				      "closingCause":"NPI",
 				      "state":"VIN",
-				      "reading":true,
-				      "viewed":false,
-				      "comments":[],
 				      "interviewer":{
 				         "id":"INTW1",
 				         "interviewerFirstName":"Margie",
@@ -774,12 +745,9 @@ class SurveyUnitIT {
 				      "ssech":1,
 				      "location":"29270",
 				      "city":"Carhaix",
-				      "campaign":"Survey on the Simpsons tv show 2020",
 				      "closingCause":"NPI",
+				      "viewed": false,
 				      "state":"VIN",
-				      "reading":true,
-				      "viewed":false,
-				      "comments":[],
 				      "interviewer":{
 				         "id":"INTW1",
 				         "interviewerFirstName":"Margie",
