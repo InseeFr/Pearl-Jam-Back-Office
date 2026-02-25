@@ -253,7 +253,7 @@ public class SurveyUnitController {
 
 	/**
 	 * This method is used to get survey units of a specific campaign
-	 * 
+	 *
 	 * @param id campaign id
 	 * @param state search survey unit with this state
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
@@ -262,8 +262,8 @@ public class SurveyUnitController {
 	@Operation(summary = "Get Survey Units in target campaign")
 	@GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(
-			@PathVariable(value = "id") String id, 
-			@RequestParam(value = "state", required = false) String state) {
+			@PathVariable(value = "id") String id,
+			@RequestParam(value = "state", required = false) StateType state) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
 		if (surveyUnit == null) {

@@ -99,6 +99,11 @@
 	<!-- add indexes for closable su -->
 	<include file="changelog/621_indexes_for_closable_su.xml" relativeToChangelogFile="true"/>
 
+	<!-- add indexes for su from campaigns-->
+	<include file="changelog/622_indexes_for_su_from_campaigns.xml" relativeToChangelogFile="true"/>
+
+	<!-- add indexes for su-->
+	<include file="changelog/623_indexes_for_su.xml" relativeToChangelogFile="true"/>
 	<!-- add contact-history -->
 	<include file="changelog/620_add_contact_history.xml" relativeToChangelogFile="true"/>
 
