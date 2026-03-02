@@ -111,14 +111,16 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
                 .orElseThrow(CommunicationTemplateNotFoundException::new);
 
         long timestampDelta = communicationRequestToCreate.creationTimestamp() - readyTimestamp;
+        long creationTimestamp = communicationRequestToCreate.creationTimestamp();
+
         if(timestampDelta > 0)
-            readyTimestamp += timestampDelta + 1;
+            creationTimestamp -= timestampDelta + 1;
 
         if(!communicationTemplate.medium().equals(CommunicationMedium.LETTER)) {
             return CommunicationRequest.create(
                     campaignId,
                     communicationRequestToCreate.communicationTemplateId(),
-                    communicationRequestToCreate.creationTimestamp(),
+                    creationTimestamp,
                     readyTimestamp,
                     communicationRequestToCreate.reason());
         }
