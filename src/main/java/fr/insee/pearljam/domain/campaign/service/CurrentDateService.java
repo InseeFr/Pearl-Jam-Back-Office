@@ -10,6 +10,6 @@ import java.time.Instant;
 public class CurrentDateService implements DateService {
     @Override
     public long getCurrentTimestamp() {
-        return Instant.now().toEpochMilli();
+        return Instant.now().plusSeconds(10).toEpochMilli();
     }
 }
