@@ -585,7 +585,7 @@ class SurveyUnitIT {
               "emitter": "INTERVIEWER",
               "status": [
                 {
-                  "date": 1721903754305,
+                  "date": 1719324511999,
                   "status": "INITIATED"
                 },
                 {
