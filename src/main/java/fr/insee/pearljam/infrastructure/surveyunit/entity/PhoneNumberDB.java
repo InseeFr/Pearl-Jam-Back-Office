@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 import fr.insee.pearljam.api.domain.Source;
-import fr.insee.pearljam.domain.surveyunit.model.person.PhoneNumber;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.PhoneNumber;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.surveyunit.model.person;
+package fr.insee.pearljam.domain.surveyunit.model.contacthistory;
 
 import fr.insee.pearljam.api.domain.Title;
 

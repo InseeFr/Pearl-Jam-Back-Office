@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.dto.contactHistory;
 
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
-import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistoryType;
-import fr.insee.pearljam.domain.surveyunit.model.person.Person;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistoryType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import jakarta.validation.Valid;
 
 import java.util.HashSet;
