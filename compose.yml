@@ -1,6 +1,6 @@
 services:
   pearl-db:
-    image: postgres:14.15
+    image: postgres:14.22@sha256:980f2ff9f2d8e4eff5c7f53b54392ad5a43eb2d1193d37f91a1ff59a75b77ee3
     environment:
       - POSTGRES_USER=${PEARL_DB_USER}
       - POSTGRES_PASSWORD=${PEARL_DB_PASSWORD}
