@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 
 /**
  * CampaignRepository is the repository using to access to Campaign table in DB
@@ -107,14 +106,18 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "FROM Campaign camp")
 	List<CampaignDto> findAllDto();
 
-	@Query("SELECT "
-			+ "new fr.insee.pearljam.api.dto.interviewer.InterviewerDto(interv.id, interv.firstName, interv.lastName, COUNT(su.interviewer)) "
-			+ "FROM SurveyUnit su "
-			+ "INNER JOIN Interviewer interv ON su.interviewer.id = interv.id "
-			+ "WHERE su.campaign.id=?1 "
-			+ "AND (su.organizationUnit.id=?2 OR ?2='GUEST') "
-			+ "GROUP BY interv.id")
-	List<InterviewerDto> findInterviewersDtoByCampaignIdAndOrganisationUnitId(String id, String organizationUnitId);
+	@Query("""
+    SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
+        camp.id, camp.label, camp.email,
+        camp.identificationConfiguration,
+        camp.contactOutcomeConfiguration,
+        camp.contactAttemptConfiguration
+    )
+    FROM Campaign camp
+    JOIN camp.visibilities vi
+    WHERE vi.organizationUnit.id IN :ouIds
+    """)
+	List<CampaignDto> findAllDtoByOuIds(@Param("ouIds") List<String> ouIds);
 
 	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
 	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
@@ -126,10 +129,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "vi.organizationUnit.id in (:ouIds) "
 			+ "OR 'GUEST' in (:ouIds) "
 			+ "AND vi.managementStartDate<=:date "
-			+ "AND vi.managementStartDate<=:date "
-			+ "AND vi.managementStartDate<=:date "
-			+ "AND vi.collectionStartDate<=:date "
-			+ "AND vi.collectionStartDate<=:date "
 			+ "AND vi.collectionStartDate<=:date "
 			+ "AND vi.collectionEndDate>:date"
 			+ ") "

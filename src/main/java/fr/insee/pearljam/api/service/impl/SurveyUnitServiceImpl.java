@@ -115,7 +115,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				});
 
 		if (!canBeSeenByInterviewer(surveyUnit.getId())) {
-			log.error(String.format("Survey unit with id %s is not associated to the interviewer %s anymore", surveyUnitId, userId));
+			log.error("Survey unit with id {} is not associated to the interviewer {} anymore", surveyUnitId, userId);
 			throw new SurveyUnitNotFoundException(surveyUnitId);
 		}
 
@@ -135,12 +135,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	public List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended) {
-		List<String> surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerId(userId);
+		long now = dateService.getCurrentTimestamp();
 
-		if (surveyUnitDtoIds.isEmpty()) {
-			log.error("No Survey Unit found for interviewer {}", userId);
-			return List.of();
-		}
+		List<String> visibleTypes =
+				BusinessRules.statesVisibleToInterviewer().stream()
+						.map(Enum::name)
+						.toList();
+		List<String> surveyUnitDtoIds = surveyUnitRepository.findIdsByInterviewerIdWithinVisibilityScope(userId, now, visibleTypes);
 
 		surveyUnitDtoIds = surveyUnitDtoIds.stream().filter(this::canBeSeenByInterviewer)
 				.toList();
@@ -209,7 +210,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			addStateAuto(surveyUnit);
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
-		if (Boolean.TRUE.equals(BusinessRules.shouldFallBackToTbrOrFin(dbStates))) {
+		if (BusinessRules.shouldFallBackToTbrOrFin(dbStates)) {
 			Set<State> ueStates = surveyUnit.getStates();
 			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 				ueStates.add(new State(new Date().getTime(), surveyUnit, StateType.FIN));
@@ -436,7 +437,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Optional<SurveyUnit> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
 			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).type();
-			if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, state))) {
+			if (BusinessRules.stateCanBeModifiedByManager(currentState, state)) {
 				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
 					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
 					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
@@ -465,7 +466,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
-			} else if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
+			} else if (BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO)) {
 				stateRepository.save(new State(new Date().getTime(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
@@ -517,11 +518,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);
 
-	}
-
-	@Override
-	public List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId) {
-		return surveyUnitRepository.findByOrganizationUnitIdIn(lstOuId);
 	}
 
 	@Override

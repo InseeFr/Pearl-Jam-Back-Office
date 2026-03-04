@@ -1,25 +1,23 @@
 package fr.insee.pearljam.api.campaign.controller.dummy;
 
-import java.util.List;
-import java.util.Optional;
-
+import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
+import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
-import fr.insee.pearljam.domain.exception.*;
-import lombok.RequiredArgsConstructor;
-
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
+import fr.insee.pearljam.api.dto.campaign.PortalDataDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.domain.exception.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CampaignFakeService implements CampaignService {
@@ -55,6 +53,9 @@ public class CampaignFakeService implements CampaignService {
     private CampaignUpdateDto campaignUpdated = null;
 
     @Setter
+    private PortalDataDto portalDataToReturn = null;
+
+    @Setter
     private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
@@ -78,17 +79,12 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
-        throw new UnsupportedOperationException("Unimplemented method 'getListInterviewers'");
-    }
-
-    @Override
-    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
+    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getNbSUAbandonedByCampaign'");
     }
 
     @Override
-    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
+    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'getNbSUNotAttributedByCampaign'");
     }
 
@@ -157,12 +153,20 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public CampaignCommonsDto findCampaignCommonsById(String id) throws CampaignNotFoundException {
+    public CampaignCommonsDto findCampaignCommonsById(String id) {
         return null;
     }
 
     @Override
-    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
+    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() {
         return List.of();
+    }
+
+    @Override
+    public PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException {
+        if(shouldThrowCampaignNotFoundException) {
+            throw new CampaignNotFoundException();
+        }
+        return portalDataToReturn;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public interface CommunicationTemplateRepository {
     /**
      *
-     * @param communicationTemplateId communication template id
+     * @param meshuggahId communication template id
      * @param campaignId campaign id
      * @return the communication template
      */

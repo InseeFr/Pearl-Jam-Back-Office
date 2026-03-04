@@ -1,45 +1,33 @@
 package fr.insee.pearljam.api.controller;
 
-import java.util.List;
-
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.dto.campaign.*;
+import fr.insee.pearljam.api.dto.count.CountDto;
+import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.api.service.CampaignService;
+import fr.insee.pearljam.api.service.ReferentService;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.service.CampaignService;
-import fr.insee.pearljam.api.service.ReferentService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import fr.insee.pearljam.api.constants.Constants;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "01. Campaigns", description = "Endpoints for campaigns")
@@ -83,8 +71,8 @@ public class CampaignController {
 
 	/**
 	 * This method is used to get the list of Campaigns for current user
-	 *
-	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 * 
+	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -106,12 +94,12 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Get Campaigns")
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
-	public ResponseEntity<List<CampaignDto>> getAllCampaigns() {
+	public List<CampaignDto> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
 		log.info("User {}, GET all campaigns ({} campaigns found)", userId,
 				lstCampaigns.size());
-		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
+		return lstCampaigns;
 
 	}
 
@@ -124,40 +112,11 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Get interviewer related Campaigns")
 	@GetMapping(path = Constants.API_INTERVIEWER_CAMPAIGNS)
-	public ResponseEntity<List<CampaignDto>> getInterviewerCampaigns() {
+	public List<CampaignDto> getInterviewerCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("Interviewer {} : GET related campaigns", userId);
 		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
 		log.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
-		return new ResponseEntity<>(lstCampaigns, HttpStatus.OK);
-
-	}
-
-	/**
-	 * This method is used to get the list of interviewers associated with the
-	 * campaign {id} for current user
-	 * 
-	 * @param id campaign id
-	 * @return List of {@link Interviewer} if exist, {@link HttpStatus} NOT_FOUND,
-	 *         or {@link HttpStatus} FORBIDDEN
-	 */
-	@Operation(summary = "Get interviewers")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID_INTERVIEWERS)
-	public ResponseEntity<List<InterviewerDto>> getListInterviewers(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to get campaign[{}] interviewers ", userId, id);
-		List<InterviewerDto> lstInterviewer;
-		try {
-			lstInterviewer = campaignService.getListInterviewers(userId, id);
-		} catch (NotFoundException e) {
-			log.error(e.getMessage());
-			log.info("Get interviewers resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-		log.info("Get interviewers resulting in 200");
-		return new ResponseEntity<>(lstInterviewer, HttpStatus.OK);
-
+		return lstCampaigns;
 	}
 
 	/**
@@ -165,22 +124,13 @@ public class CampaignController {
 	 * Return the sum of survey units states by campaign as a list
 	 *
 	 * @param id campaign id
-	 * @return
+	 * @return CountDto counts
 	 */
 	@Operation(summary = "Get numberSUAbandoned")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_ABANDONED)
-	public ResponseEntity<CountDto> getNbSUAbandoned(@PathVariable(value = "id") String id) {
+	public CountDto getNbSUAbandoned(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to get campaign[{}] abandoned survey-units ", userId, id);
-		CountDto nbSUAbandoned;
-		try {
-			nbSUAbandoned = campaignService.getNbSUAbandonedByCampaign(userId, id);
-		} catch (NotFoundException e) {
-			log.info("Get numberSUAbandoned resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		log.info("Get numberSUAbandoned resulting in 200");
-		return new ResponseEntity<>(nbSUAbandoned, HttpStatus.OK);
+		return campaignService.getNbSUAbandonedByCampaign(userId, id);
 
 	}
 
@@ -188,31 +138,20 @@ public class CampaignController {
 	 * This method is used to count survey units that are not attributed by campaign
 	 *
 	 * @param campaignId campaign id
-	 * @return
+	 * @return CountDto counts
 	 */
 	@Operation(summary = "Get numberSUNotAttributed")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED)
-	public ResponseEntity<CountDto> getNbSUNotAttributed(@PathVariable(value = "id") String campaignId) {
+	public CountDto getNbSUNotAttributed(@PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to get campaign[{}] not attributed survey-units ", userId, campaignId);
-		CountDto nbSUNotAttributed;
-		try {
-			nbSUNotAttributed = campaignService.getNbSUNotAttributedByCampaign(userId, campaignId);
-		} catch (NotFoundException e) {
-			log.info("Get numberSUAbandoned resulting in 404");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		log.info("Get numberSUAbandoned resulting in 200");
-		return new ResponseEntity<>(nbSUNotAttributed, HttpStatus.OK);
-
+		return campaignService.getNbSUNotAttributedByCampaign(userId, campaignId);
 	}
 
 	/**
 	 * This method deletes a campaign
 	 * 
 	 * @param campaignId the value to delete
-	 * @return {@link HttpStatus}
-	 * 
+	 *
 	 */
 	@Operation(summary = "Delete a campaign")
 	@DeleteMapping(path = Constants.API_CAMPAIGN_ID)
@@ -222,11 +161,7 @@ public class CampaignController {
 			@RequestParam(required = false, defaultValue = DEFAULT_FORCE_VALUE)
 			boolean force)
 			throws CampaignNotFoundException, CampaignOnGoingException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to delete campaign {}", userId, campaignId);
-
 		campaignService.delete(campaignId, force);
-		log.info("DELETE campaign with id {} resulting in 200", campaignId);
 	}
 
 	/**
@@ -237,10 +172,7 @@ public class CampaignController {
 	@Operation(summary = "Update campaign (label, email, configurations, visibilities, communication-informations, referents)")
 	@PutMapping(path = Constants.API_CAMPAIGN_ID)
 	public void updateCampaign(@NotBlank @PathVariable(value = "id") String id,
-			@Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to update campaign {} collection dates", userId, id);
-
+							   @Valid @NotNull @RequestBody CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		campaignService.updateCampaign(id, campaign);
 		log.info("Campaign with id {} updated", id);
 	}
@@ -254,19 +186,8 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Check if campaign is on-going")
 	@GetMapping(path = Constants.API_CAMPAIGNS_ID_ON_GOING)
-	public ResponseEntity<OngoingDto> isOngoing(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} check if {} is on-going", userId, id);
-
-		if (!campaignService.findById(id).isPresent()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-		OngoingDto campaignOngoing = new OngoingDto();
-		campaignOngoing.setOngoing(campaignService.isCampaignOngoing(id));
-
-		log.info("{} checked if campaign {} is on-going : {}", userId, id, campaignOngoing.isOngoing());
-		return new ResponseEntity<>(campaignOngoing, HttpStatus.OK);
+	public OngoingDto isOngoing(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
+		return new OngoingDto(campaignService.isCampaignOngoing(id));
 	}
 
 	/**
@@ -276,7 +197,7 @@ public class CampaignController {
 	 */
 	@Operation(summary = "get ongoing sensitive campaigns")
 	@GetMapping(value = Constants.API_CAMPAIGNS_ON_GOING, produces = "application/json")
-	public List<CampaignSensitivityDto> getCampaignSensitivityDto() throws CampaignNotFoundException {
+	public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
 		return campaignService.getCampaignSensitivityDto();
 	}
 
@@ -296,19 +217,9 @@ public class CampaignController {
 
 	@Operation(summary = "Get referents of targeted campaign")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_REFERENTS)
-	public ResponseEntity<List<ReferentDto>> getReferents(@PathVariable(value = "id") String id) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to GET {} referents", userId, id);
-		if (!campaignService.findById(id).isPresent()) {
-			log.warn("Campaign {} is not present, can't get referents", id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-		List<ReferentDto> referents = referentService.findByCampaignId(id);
-
-		log.info("{}  GOT {} referents for campaign {}", userId, referents.size(), id);
-
-		return new ResponseEntity<>(referents, HttpStatus.OK);
+	public List<ReferentDto> getReferents(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
+		campaignService.findById(id).orElseThrow(CampaignNotFoundException::new);
+		return referentService.findByCampaignId(id);
 	}
 
 	@Operation(summary = "Get commons campaign")
@@ -325,6 +236,13 @@ public class CampaignController {
 	@GetMapping(value = Constants.API_CAMPAIGNS_COMMONS_ONGOING, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CampaignCommonsDto> getCommonsOngoingCampaigns() throws CampaignNotFoundException {
 		return campaignService.findCampaignsCommonsOngoing();
+	}
+
+	@Operation(summary = "Get campaign portal data")
+	@GetMapping(value = Constants.API_CAMPAIGN_ID_PORTAL_DATA, produces = MediaType.APPLICATION_JSON_VALUE)
+	public PortalDataDto getPortalData(@PathVariable("id") String id) throws CampaignNotFoundException {
+		String userId = authenticatedUserService.getCurrentUserId();
+		return campaignService.findCampaignPortalData(id, userId);
 	}
 
 

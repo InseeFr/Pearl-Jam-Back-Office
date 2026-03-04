@@ -3,7 +3,6 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import lombok.Getter;
@@ -63,7 +62,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<InterviewerDto> findInterviewersDtoByCampaignIdAndOrganisationUnitId(String id, String organizationUnitId) {
+    public List<CampaignDto> findAllDtoByOuIds(List<String> ouIds) {
         return List.of();
     }
 

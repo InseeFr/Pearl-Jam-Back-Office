@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     @Override
-    public List<String> findIdsByInterviewerId(String idInterviewer) {
+    public List<String> findIdsByInterviewerIdWithinVisibilityScope(String idInterviewer, Long anyTime, List<String> anyStateTypes) {
         return List.of();
     }
 
@@ -97,6 +97,16 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     @Override
     public List<String> findAllIdsByInterviewerId(String interviewerId) {
         return List.of();
+    }
+
+    @Override
+    public Integer countUnallocatedSurveyUnitsByCampaignId(String campaignId) {
+        return 0;
+    }
+
+    @Override
+    public Integer countUnallocatedSurveyUnitsByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> organizationUnitIds) {
+        return 0;
     }
 
     @Override

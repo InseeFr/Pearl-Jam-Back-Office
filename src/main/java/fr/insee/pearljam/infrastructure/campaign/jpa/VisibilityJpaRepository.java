@@ -27,13 +27,6 @@ public interface VisibilityJpaRepository extends JpaRepository<VisibilityDB, Vis
 	VisibilityDB getVisibilityBySurveyUnitId(String surveyUnitId);
 
 	@Query(value = """
-		SELECT vi FROM VisibilityDB vi
-		INNER JOIN SurveyUnit su ON su.campaign.id = vi.campaign.id
-		WHERE su.organizationUnit.id = vi.organizationUnit.id
-		AND su.id IN (:surveyUnitIds)""")
-	List<VisibilityDB> findAllVisibilityBySurveyUnitIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
-
-	@Query(value = """
 		SELECT new fr.insee.pearljam.domain.campaign.model.CampaignVisibility(
 		    MIN(vi.managementStartDate),
 		    MIN(vi.interviewerStartDate),
@@ -47,6 +40,21 @@ public interface VisibilityJpaRepository extends JpaRepository<VisibilityDB, Vis
 		AND vi.organizationUnit.id IN (:organizationalUnitIds)""")
 	CampaignVisibility getCampaignVisibility(@Param("campaignId") String campaignId,
 													   @Param("organizationalUnitIds") List<String> organizationalUnitIds);
+
+	@Query(value = """
+			SELECT
+			    vi.campaign.id AS campaignId,
+			    vi.campaign.label AS campaignLabel,
+			    MIN(vi.managementStartDate) AS managementStartDate,
+			    MAX(vi.endDate) AS endDate
+			FROM VisibilityDB vi
+			JOIN SurveyUnit su
+			    ON su.campaign.id = vi.campaign.id
+			   AND su.organizationUnit.id = vi.organizationUnit.id
+			WHERE su.id IN :surveyUnitIds
+			GROUP BY vi.campaign.id, vi.campaign.label""")
+	List<CampaignVisibilityPeriodProjection> findCampaignsBySurveyUnitIds(List<String> surveyUnitIds);
+
 
 	List<VisibilityDB> findByCampaignId(String campaignId);
 }

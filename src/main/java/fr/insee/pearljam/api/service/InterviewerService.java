@@ -1,13 +1,15 @@
 package fr.insee.pearljam.api.service;
 
+import fr.insee.pearljam.api.campaign.dto.output.CampaignVisibilityPeriodDto;
+import fr.insee.pearljam.api.domain.Response;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.InterviewerNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 
 /**
  * Service for the Campaign entity
@@ -17,18 +19,20 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
  */
 public interface InterviewerService {
 
-	Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId);
+	List<CampaignVisibilityPeriodDto> findCampaignsOfInterviewer(String interviewerId);
 
 	Response createInterviewers(List<InterviewerContextDto> interviewers);
 
-	Set<InterviewerDto> getListInterviewers(String userId);
+	Set<InterviewerDto> getInterviewersForCurrentUser();
 
-	boolean delete(String id);
+	void delete(String id);
 
-	Optional<InterviewerContextDto> update(String id, InterviewerContextDto interviewer);
+	InterviewerContextDto update(String id, InterviewerContextDto interviewer);
 
 	Optional<InterviewerContextDto> findDtoById(String id);
 
 	List<InterviewerContextDto> getCompleteListInterviewers();
+
+	List<InterviewerDto> getInterviewersByUserAndCampaign(String campaignId) throws InterviewerNotFoundException, CampaignNotFoundException;
 
 }

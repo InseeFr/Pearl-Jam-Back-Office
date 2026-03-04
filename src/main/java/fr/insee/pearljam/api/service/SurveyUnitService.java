@@ -95,8 +95,6 @@ public interface SurveyUnitService {
 
 	HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
 
-	List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId);
-
 	Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits);
 
 	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);

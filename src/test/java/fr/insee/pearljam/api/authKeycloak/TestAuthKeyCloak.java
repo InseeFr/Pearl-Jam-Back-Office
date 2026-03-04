@@ -29,6 +29,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
@@ -1473,6 +1474,64 @@ class TestAuthKeyCloak {
 
 	}
 
+
+	@Test
+	@Order(110)
+	void testGetAllInterviewersAsAdmin() throws Exception {
+
+		mockMvc.perform(get(Constants.API_ADMIN_INTERVIEWERS)
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		List<Interviewer> interviewersDB = interviewerRepository.findAll();
+		assertEquals(7,interviewersDB.size());
+	}
+
+	// UPDATE
+	@Test
+	@Order(111)
+	void testUpdateInterviewer() throws Exception {
+
+		InterviewerContextDto updatedInterviewer = generateInterviewerAContextDto("INTERV1");
+		updatedInterviewer.setFirstName("Bobby");
+		updatedInterviewer.setLastName("Kong");
+
+		mockMvc.perform(put("/api/interviewer/INTERV1")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(updatedInterviewer)))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.id").value("INTERV1"),
+						jsonPath("$.firstName").value("Bobby"),
+						jsonPath("$.lastName").value("Kong"),
+						jsonPath("$.email").value("pierre.legrand@insee.fr"),
+						jsonPath("$.phoneNumber").value("06 XX XX XX XX"));
+
+	}
+
+	// DELETE INTERVIEWER
+	@Test
+	@Order(112)
+	void testDeleteInterviewer() throws Exception {
+		InterviewerContextDto intervToDelete = generateInterviewerAContextDto("INTERV_TO_KILL");
+
+		mockMvc.perform(post("/api/interviewers")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(List.of(intervToDelete))))
+				.andExpect(status().isOk());
+		assertTrue(interviewerRepository.findById("INTERV_TO_KILL").isPresent());
+
+		mockMvc.perform(delete("/api/interviewer/INTERV_TO_KILL")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(List.of(intervToDelete))))
+				.andExpect(status().isOk());
+		assertFalse(interviewerRepository.findById("INTERV_TO_KILL").isPresent());
+	}
+
 	/**
 	 * Test that the POST endpoint
 	 * "/survey-units returns 200
@@ -1841,8 +1900,12 @@ class TestAuthKeyCloak {
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")
 				.forEach(u -> {
 					messageService.deleteMessageByUserId(u.getId());
-					preferenceService.setPreferences(Collections.emptyList(), u.getId());
-					userService.delete(u.getId());
+                    try {
+                        preferenceService.setPreferences(Collections.emptyList(), u.getId());
+                    } catch (CampaignNotFoundException e) {
+                        // won't happen as there is no campaign id to check
+                    }
+                    userService.delete(u.getId());
 				});
 
 		mockMvc.perform(delete("/api/organization-unit/OU-NORTH")
@@ -2037,6 +2100,46 @@ class TestAuthKeyCloak {
 	}
 
 	/**
+	 * Test that the GET endpoint "api/campaign/{id}/portal-data"
+	 * return 200 with portal data for a campaign
+	 *
+	 * @throws Exception e
+	 */
+	@Test
+	@Order(220)
+	void testGetCampaignPortalData() throws Exception {
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/portal-data")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().isOk(),
+						jsonPath("$.id").value("SIMPSONS2020X00"),
+						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
+						jsonPath("$.email").value("first.email@test.com"),
+						jsonPath("$.interviewers[0].firstName").value("Margie"),
+						jsonPath("$.interviewers[0].lastName").value("Lucas"),
+						jsonPath("$.interviewers[0].count").value(2),
+						jsonPath("$.abandoned").value(0),
+						jsonPath("$.unallocated").value(1),
+						jsonPath("$.total").value(6));
+	}
+
+	/**
+	 * Test that the GET endpoint "api/campaign/{id}/portal-data"
+	 * return 404 when campaign doesn't exist
+	 *
+	 * @throws Exception e
+	 */
+	@Test
+	@Order(221)
+	void testGetCampaignPortalDataNotFound() throws Exception {
+		mockMvc.perform(get("/api/campaign/MISSING/portal-data")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
+
+	/**
 	 * Test that the GET endpoint "api/api/survey-unit/{id}"
 	 * return 200 and survey units interviewer details
 	 *
@@ -2044,7 +2147,7 @@ class TestAuthKeyCloak {
 	 * @throws JSONException        jsone
 	 */
 	@Test
-	@Order(220)
+	@Order(223)
 	void testGetSurveyUnitInterviewerDetailAsAdmin() throws Exception {
 		mockMvc.perform(get("/api/admin/survey-unit/11")
 						.with(authentication(ADMIN))
@@ -2060,7 +2163,7 @@ class TestAuthKeyCloak {
 	 * @throws JSONException        jsone
 	 */
 	@Test
-	@Order(220)
+	@Order(224)
 	void testGetSurveyUnitInterviewerDetailAsAdminNotFound() throws Exception {
 		mockMvc.perform(get("/api/admin/survey-unit/11111")
 						.with(authentication(ADMIN))

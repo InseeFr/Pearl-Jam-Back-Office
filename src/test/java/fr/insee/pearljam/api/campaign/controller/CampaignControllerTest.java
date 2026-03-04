@@ -2,7 +2,10 @@ package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.controller.CampaignController;
+import fr.insee.pearljam.api.dto.campaign.PortalDataDto;
 import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;
+
+import java.util.List;
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
@@ -35,6 +38,7 @@ class CampaignControllerTest {
     private CampaignFakeService campaignService;
     private final String deletePath = "/api/campaign/campaign-id";
     private final String getPath = "/api/campaign/campaign-id";
+    private final String portalDataPath = "/api/campaign/test-campaign/portal-data";
 
 
     @BeforeEach
@@ -113,5 +117,46 @@ class CampaignControllerTest {
         mockMvc.perform(delete(deletePath)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.CONFLICT, deletePath, CampaignOnGoingException.MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Should retrieve portal data")
+    void testGetPortalData01() throws Exception {
+        PortalDataDto portalData = new PortalDataDto(
+            "test-campaign",
+            "Test Campaign",
+            "test@example.com",
+            1769382060000L,
+            1769392800000L,
+            1769641260000L,
+            1770591660000L,
+            1776203940000L,
+            1777067940000L,
+            List.of(),
+            List.of(),
+            5,
+            3,
+            153
+        );
+
+        campaignService.setPortalDataToReturn(portalData);
+
+        MvcResult mvcResult = mockMvc.perform(get(portalDataPath)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+        String expectedResult = JsonTestHelper.toJson(portalData);
+        JSONAssert.assertEquals(contentResult, expectedResult, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    @DisplayName("Should return not found when campaign doesn't exist for portal data")
+    void testGetPortalData02() throws Exception {
+        campaignService.setShouldThrowCampaignNotFoundException(true);
+        mockMvc.perform(get("/api/campaign/unknown-campaign/portal-data")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, "/api/campaign/unknown-campaign/portal-data", CampaignNotFoundException.MESSAGE));
     }
 }

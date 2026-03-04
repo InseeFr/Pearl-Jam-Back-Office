@@ -2,10 +2,8 @@ package fr.insee.pearljam.api.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,11 +18,12 @@ import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
 import fr.insee.pearljam.api.service.UserService;
-import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.count.model.ClosingCauseCount;
+import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
+import fr.insee.pearljam.domain.count.model.StateCount;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -83,10 +82,12 @@ class StateServiceImplTest {
     List<OrganizationUnitDto> organizationUnits = Arrays.asList(new OrganizationUnitDto("OU1", "Unit 1"), new OrganizationUnitDto("OU2", "Unit 2"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(Arrays.asList("campaign1", "campaign2"));
-    when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
-    when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
+    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+    when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
+    when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(Collections.emptyList());
+    when(closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(Collections.emptyList());
 
     // When
     List<StateCountDto> result = stateService.getStateCountByCampaigns(userId, date);
@@ -95,8 +96,8 @@ class StateServiceImplTest {
     assertEquals(2, result.size(), "Expected two campaigns to be returned.");
     verify(userService).getUserOUs(userId, true);
     verify(campaignRepository).findAllCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"));
-    verify(stateRepository, times(2)).getStateCountSumByCampaign(anyString(), anyList(), eq(date));
-    verify(communicationRequestRepository, times(4)).getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), any(), eq(date), anyList());
+    verify(stateRepository).findGroupedByCampaign(anyList(), anyList(), eq(date));
+    verify(communicationRequestRepository).getCommRequestCountByCampaigns(anyList(), anyList(), anyLong());
   }
 
   @Test
@@ -106,10 +107,12 @@ class StateServiceImplTest {
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
-    when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
-    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
-    when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
-    when(campaignRepository.findDtoById(anyString())).thenReturn(new CampaignDto());
+    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+    when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
+    when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(Collections.emptyList());
+    when(closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(Collections.emptyList());
 
     // When
     List<StateCountDto> result = stateService.getStateCountByCampaigns(userId, null);
@@ -121,11 +124,40 @@ class StateServiceImplTest {
   }
 
   @Test
+  @DisplayName("Should merge projection, communication request and closing cause counts")
+  void testGetStateCountByCampaigns_WithCounts() {
+    List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
+    when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
+    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
+    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+
+    StateCount projection = new StateCount("campaign1", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 136L);
+    when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong()))
+            .thenReturn(List.of(projection));
+
+    when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(List.of(new CommunicationRequestCount("campaign1", 20L, 21L)));
+    when(closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(anyList(), anyList(), anyLong()))
+            .thenReturn(List.of(new ClosingCauseCount("campaign1", 5L, 0L, 0L, 0L)));
+
+    List<StateCountDto> result = stateService.getStateCountByCampaigns(userId, date);
+
+    StateCountDto dto = result.getFirst();
+    assertEquals(136L, dto.getTotal());
+    assertEquals(20L, dto.getNoticeCount());
+    assertEquals(21L, dto.getReminderCount());
+    assertEquals(5L, dto.getNpaCount());
+    assertEquals(1L, dto.getNvmCount());
+    assertEquals(15L, dto.getNvaCount());
+  }
+
+
+  @Test
   @DisplayName("Should return an empty list when the user has no organizational units")
   void shouldReturnEmptyListWhenUserHasNoOrganizationUnits() {
     // Given
     when(userService.getUserOUs(userId, true)).thenReturn(Collections.emptyList());
-    when(interviewerRepository.findIdsByOrganizationUnits(anyList())).thenReturn(Collections.emptySet());
+    when(interviewerRepository.findIdsByOrganizationUnitsAndCampaignId(anyList(),anyList())).thenReturn(Collections.emptySet());
 
     // When
     List<StateCountDto> result = stateService.getStateCountByInterviewer(userId, date);

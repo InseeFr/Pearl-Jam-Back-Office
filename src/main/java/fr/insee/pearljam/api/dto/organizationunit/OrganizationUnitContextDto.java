@@ -5,20 +5,24 @@ import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.domain.OrganizationUnitType;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganizationUnitContextDto {
+	@NotBlank
 	private String id;
+	@NotBlank
 	private String label;
+	@NotNull
 	private OrganizationUnitType type;
 	private List<UserContextDto> users;
 	private List<String> organisationUnitRef;

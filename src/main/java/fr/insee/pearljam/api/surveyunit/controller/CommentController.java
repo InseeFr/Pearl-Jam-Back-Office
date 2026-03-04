@@ -1,22 +1,15 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.domain.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.userside.CommentService;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
+import fr.insee.pearljam.domain.surveyunit.port.userside.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Comment endpoints for survey units
@@ -40,7 +33,7 @@ public class CommentController {
     @PutMapping(path = "/survey-unit/{id}/comment")
     public void updateSurveyUnitComment(
             @Valid @NotNull @RequestBody CommentDto comment,
-            @PathVariable(value = "id") String surveyUnitId) throws EntityNotFoundException {
+            @PathVariable(value = "id") String surveyUnitId) {
         commentService.updateSurveyUnitComment(CommentDto.toModel(surveyUnitId, comment));
     }
 }

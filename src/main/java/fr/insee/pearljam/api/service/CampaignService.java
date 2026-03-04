@@ -8,14 +8,13 @@ import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
+import fr.insee.pearljam.api.dto.campaign.PortalDataDto;
 import fr.insee.pearljam.domain.exception.*;
 
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 
 /**
  * Service for the Campaign entity
@@ -49,17 +48,9 @@ public interface CampaignService {
 	 */
 	List<CampaignDto> getInterviewerCampaigns(String userId);
 
-	/**
-	 * @param userId
-	 * @param campaignId
-	 * @return {@link List} of {@link InterviewerDto}
-	 * @throws NotFoundException
-	 */
-	List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException;
+	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException;
 
-	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException;
-
-	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException;
+	CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException;
 
 	void createCampaign(CampaignCreateDto campaignDto) throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException;
 
@@ -67,15 +58,17 @@ public interface CampaignService {
 
 	void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException;
 
-	void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException;
+	void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException;
 
 	boolean isCampaignOngoing(String id) throws CampaignNotFoundException;
 
 	CampaignResponseDto getCampaignDtoById(String id) throws CampaignNotFoundException;
 
-	List<CampaignSensitivityDto> getCampaignSensitivityDto() throws CampaignNotFoundException;
+	List<CampaignSensitivityDto> getCampaignSensitivityDto();
 
 	CampaignCommonsDto findCampaignCommonsById(String id) throws CampaignNotFoundException;
 
 	List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException;
+
+	PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException;
 }

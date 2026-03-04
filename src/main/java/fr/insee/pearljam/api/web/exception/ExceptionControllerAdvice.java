@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.web.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
@@ -158,6 +159,21 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(SendMailException.class)
     public ResponseEntity<ApiError> exceptions(SendMailException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
+    }
+
+    @ExceptionHandler(UserNotAssociatedToCampaignException.class)
+    public ResponseEntity<ApiError> userCampaignMismatch(Exception e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(InterviewerNotFoundException.class)
+    public ResponseEntity<ApiError> interviewerNotFoundException(Exception e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> existingUserOnCreationException(Exception e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(Exception.class)

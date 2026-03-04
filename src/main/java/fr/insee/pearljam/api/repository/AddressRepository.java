@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
 import fr.insee.pearljam.api.domain.InseeAddress;
-import fr.insee.pearljam.api.dto.address.AddressDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,6 +11,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 */
 public interface AddressRepository extends JpaRepository<InseeAddress, Long> {
 	
-	AddressDto findDtoById(Long id);
-
 }

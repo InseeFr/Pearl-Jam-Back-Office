@@ -29,9 +29,9 @@ feature:
       enabled: true
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/pearl
-    username: mypostgresuser
-    password: mypostgrespassword
+    url: jdbc:postgresql://localhost:5432/pearl
+    username: dbuser
+    password: letmein
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 1

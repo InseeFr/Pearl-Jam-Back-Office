@@ -1,33 +1,29 @@
 package fr.insee.pearljam.api.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import fr.insee.pearljam.api.campaign.dto.output.CampaignVisibilityPeriodDto;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import fr.insee.pearljam.api.service.InterviewerService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.exception.InterviewerNotFoundException;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignVisibilityPeriodProjection;
+import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -45,37 +41,21 @@ public class InterviewerServiceImpl implements InterviewerService {
 	private final VisibilityJpaRepository visibilityRepository;
 	private final UserService userService;
 	private final SurveyUnitService surveyUnitService;
+	private final InterviewerCountRepository campaignInterviewerRepository;
+	private final AuthenticatedUserService authenticatedUserService;
 
-	public Optional<List<CampaignDto>> findCampaignsOfInterviewer(String interviewerId) {
-		Optional<Interviewer> intwOpt = interviewerRepository.findById(interviewerId);
-		if (intwOpt.isEmpty()) {
-			return Optional.empty();
-		}
-		Interviewer intw = intwOpt.get();
-		List<String> suIds = intw.getSurveyUnits().stream().map(SurveyUnit::getId).toList();
-		List<VisibilityDB> visibilities = visibilityRepository.findAllVisibilityBySurveyUnitIds(suIds);
-		List<CampaignDto> dtos = new ArrayList<>();
-		for (VisibilityDB vi : visibilities) {
-			Optional<CampaignDto> dtoOpt = dtos.stream()
-					.filter(dto -> dto.getId().equals(vi.getCampaign().getId()))
-					.findFirst();
-			if (dtoOpt.isEmpty()) {
-				dtos.add(new CampaignDto(
-						vi.getCampaign().getId(),
-						vi.getCampaign().getLabel(),
-						vi.getManagementStartDate(),
-						vi.getEndDate()));
-			} else {
-				if (dtoOpt.get().getManagementStartDate() > vi.getManagementStartDate()) {
-					dtoOpt.get().setManagementStartDate(vi.getManagementStartDate());
-				}
-				if (dtoOpt.get().getEndDate() < vi.getEndDate()) {
-					dtoOpt.get().setEndDate(vi.getEndDate());
-				}
-			}
-		}
-		return Optional.of(dtos);
+	public List<CampaignVisibilityPeriodDto> findCampaignsOfInterviewer(String interviewerId) {
+		interviewerRepository.findById(interviewerId).orElseThrow(() -> new InterviewerNotFoundException(interviewerId));
 
+		List<String> suIds = surveyUnitService.getAllIdsByInterviewerId(interviewerId);
+		if (suIds.isEmpty()) return List.of();
+
+		List<CampaignVisibilityPeriodProjection> campaignVisibilitiesDB = visibilityRepository.findCampaignsBySurveyUnitIds(suIds);
+
+		return campaignVisibilitiesDB.stream()
+				.map(CampaignVisibilityPeriodProjection::toDomain)
+				.map(CampaignVisibilityPeriodDto::fromDomain)
+				.toList();
 	}
 
 	@Override
@@ -118,47 +98,38 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public Set<InterviewerDto> getListInterviewers(String userId) {
+	public Set<InterviewerDto> getInterviewersForCurrentUser() {
+		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
-		return surveyUnitService.getSurveyUnitIdByOrganizationUnits(lstOuId).stream()
-				.map(SurveyUnit::getInterviewer)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet())
-				.stream()
-				.map(InterviewerDto::new)
+		return interviewerRepository.findInterviewersByOrganizationUnits(lstOuId)
+				.stream().map(InterviewerDto::new)
 				.collect(Collectors.toSet());
 	}
 
 	@Override
-	public boolean delete(String id) {
-		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
-		if (optInterviewer.isEmpty()) {
-			return false;
-		}
+	public void delete(String id) {
+		interviewerRepository.findById(id).orElseThrow(() -> new InterviewerNotFoundException(id));
 		List<String> ids = surveyUnitService.getAllIdsByInterviewerId(id);
 		if (!ids.isEmpty()) {
 			surveyUnitService.removeInterviewerLink(ids);
 		}
 		interviewerRepository.deleteById(id);
-		return true;
 	}
 
 	@Override
-	public Optional<InterviewerContextDto> update(String id, InterviewerContextDto interviewer) {
+	public InterviewerContextDto update(String id, InterviewerContextDto interviewer) {
 
-		Optional<Interviewer> optInterviewer = interviewerRepository.findById(id);
-		if (optInterviewer.isEmpty()) {
-			return Optional.empty();
-		}
-		Interviewer interviewerToUpdate = optInterviewer.get();
+		Interviewer interviewerToUpdate = interviewerRepository.findById(id)
+				.orElseThrow(() -> new InterviewerNotFoundException(id));
+
 		interviewerToUpdate.setEmail(interviewer.getEmail());
 		interviewerToUpdate.setFirstName(interviewer.getFirstName());
 		interviewerToUpdate.setLastName(interviewer.getLastName());
 		interviewerToUpdate.setPhoneNumber(interviewer.getPhoneNumber());
 		interviewerToUpdate.setTitle(interviewer.getTitle());
 
-		return Optional.of(interviewerRepository.findDtoById(id));
+		return interviewerRepository.findDtoById(id);
 	}
 
 	@Override
@@ -172,6 +143,26 @@ public class InterviewerServiceImpl implements InterviewerService {
 	public List<InterviewerContextDto> getCompleteListInterviewers() {
 
 		return interviewerRepository.findAll().stream().map(InterviewerContextDto::new).toList();
+	}
+
+	@Override
+	public List<InterviewerDto> getInterviewersByUserAndCampaign(String campaignId) throws CampaignNotFoundException {
+		String userId = authenticatedUserService.getCurrentUserId();
+		userService.checkUserAssociationToCampaign(campaignId, userId);
+
+		List<String> userOrgUnitIds = userService.getUserOUs(userId, false).stream()
+				.map(OrganizationUnitDto::getId)
+				.toList();
+
+		List<InterviewerDto> interviewersDtoReturned = campaignInterviewerRepository
+				.findCampaignInterviewers(campaignId, userOrgUnitIds).stream()
+				.map(InterviewerDto::fromModel)
+				.toList();
+
+		if (interviewersDtoReturned.isEmpty()) {
+			log.warn("No interviewers found for the campaign {}", campaignId);
+		}
+		return interviewersDtoReturned;
 	}
 
 }

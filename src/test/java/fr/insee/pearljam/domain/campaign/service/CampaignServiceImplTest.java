@@ -3,7 +3,6 @@ package fr.insee.pearljam.domain.campaign.service;
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.campaign.dto.input.*;
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.domain.*;
 import fr.insee.pearljam.api.service.impl.CampaignServiceImpl;
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
@@ -79,14 +78,16 @@ class CampaignServiceImplTest {
         organizationUnitRepository.setOrganizationUnits(List.of(existingOrganizationUnit));
         MessageFakeRepository messageRepository = new MessageFakeRepository();
         UserFakeService userService = new UserFakeService();
-        UtilsFakeService utilsService = new UtilsFakeService();
         SurveyUnitFakeService surveyUnitService = new SurveyUnitFakeService();
         PreferenceFakeService preferenceService = new PreferenceFakeService();
         ReferentFakeService referentService = new ReferentFakeService();
+        ReferentFakeRepository referentRepository = new ReferentFakeRepository();
+        InterviewerCountFakeRepository interviewerCountRepository = new InterviewerCountFakeRepository();
+        SurveyUnitCountFakeService surveyUnitCountService = new SurveyUnitCountFakeService();
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, utilsService, surveyUnitService, preferenceService, referentService, visibilityService, dateService);
+                userService, surveyUnitService, preferenceService, referentService, referentRepository, visibilityService, dateService, interviewerCountRepository, surveyUnitCountService);
     }
 
     // TODO : handle referent
@@ -160,7 +161,7 @@ class CampaignServiceImplTest {
     // TODO : handle referents
     @Test
     @DisplayName("Should update an existing campaign successfully")
-    void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
+    void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = existingCampaign.getId();
 
         // Given
@@ -198,7 +199,7 @@ class CampaignServiceImplTest {
     @ValueSource(strings = {"", "  "})
     @NullSource
     @DisplayName("Should not update email if empty")
-    void shouldNotUpdateEmailIfNull(String emailToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
+    void shouldNotUpdateEmailIfNull(String emailToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = existingCampaign.getId();
 
         // Given
@@ -220,7 +221,7 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should not update visibilities if null")
-    void shouldNotUpdateVisibilitiesIfNull() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException, OrganizationalUnitNotFoundException {
+    void shouldNotUpdateVisibilitiesIfNull() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = existingCampaign.getId();
 
         // Given
@@ -242,7 +243,7 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should not update referents if null")
-    void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException, OrganizationalUnitNotFoundException {
+    void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException {
         String campaignId = existingCampaign.getId();
 
         // Given

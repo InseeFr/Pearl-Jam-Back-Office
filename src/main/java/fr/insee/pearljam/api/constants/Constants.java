@@ -8,7 +8,6 @@ public class Constants {
 		throw new IllegalStateException("Constants class");
 	}
 
-	public static final String INTERVIEWER = "interviewer";
 	public static final String REVIEWER = "reviewer";
 	public static final String GUEST = "GUEST";
 	public static final String AUTHORIZATION = "Authorization";
@@ -69,6 +68,7 @@ public class Constants {
   public static final String API_CAMPAIGNS_ID_ON_GOING = "/campaigns/{id}/ongoing";
   public static final String API_CAMPAIGNS_ON_GOING = "/api/campaigns/ongoing";
   public static final String API_CAMPAIGN_ID_INTERVIEWERS_STATECOUNT = "api/campaign/{id}/interviewers/state-count";
+  public static final String API_CAMPAIGN_ID_PORTAL_DATA = "api/campaign/{id}/portal-data";
 
   public static final String API_INTERVIEWERS = "/api/interviewers";
   public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";
@@ -107,9 +107,7 @@ public class Constants {
   public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
   public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
   // Error messages
-  public static final String ERR_USER_NOT_EXIST = "User {} does not exist";
   public static final String ERR_CAMPAIGN_NOT_EXIST = "Campaign {} does not exist";
-  public static final String ERR_NO_OU_FOR_CAMPAIGN = "There is no Organisation Unit for Campaign {} affiliated to user {}";
 
   // Front expected variables names
 

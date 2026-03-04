@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.count.model.OrganizationUnitLabel;
 import lombok.Setter;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -36,11 +37,6 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public List<String> findNationalOUs() {
-        return List.of();
-    }
-
-    @Override
     public List<OrganizationUnit> findChildren(String orgUnitId) {
         return List.of();
     }
@@ -53,6 +49,16 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     @Override
     public String findLabel(String orgUnitId) {
         return "";
+    }
+
+    @Override
+    public List<OrganizationUnit> findSubtree(String rootId) {
+        return List.of();
+    }
+
+    @Override
+    public List<OrganizationUnitLabel> findLabelsByIds(List<String> ids) {
+        return List.of();
     }
 
     @Override

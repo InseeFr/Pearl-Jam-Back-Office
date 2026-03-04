@@ -88,11 +88,6 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public List<SurveyUnit> getSurveyUnitIdByOrganizationUnits(List<String> lstOuId) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
     public Response createSurveyUnits(List<SurveyUnitContextDto> surveyUnits) {
         throw new IllegalArgumentException("not implemented yet");
     }

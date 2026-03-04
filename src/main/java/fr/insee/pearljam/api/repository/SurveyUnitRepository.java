@@ -1,10 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
 import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
@@ -12,7 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
 * SurveyUnitRepository is the repository using to access to SurveyUnit table in DB
@@ -23,15 +22,42 @@ import fr.insee.pearljam.api.domain.SurveyUnit;
 public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> {
 
 	/**
-	* This method retrieve all Id of SurveyUnits with a certain state and idInterviewer in DB 
+	 * This method retrieve all Id of SurveyUnits with a certain state and idInterviewer in DB for currently active campaigns
 	* 
 	* @return List of all {@link SurveyUnit}
 	*/
-	@Query(value="SELECT su.id as id "
-			+ "FROM survey_unit su "
-			+ "WHERE su.interviewer_id ILIKE ?1", nativeQuery=true)
-	List<String> findIdsByInterviewerId(String idInterviewer);
-	
+	@Query(value = """
+			SELECT su.id
+			FROM survey_unit su
+			
+			-- pick the latest state row for this SU
+			JOIN LATERAL (
+			    SELECT st.type
+			    FROM state st
+			    WHERE st.survey_unit_id = su.id
+			    ORDER BY st.date DESC
+			    LIMIT 1
+			) last_st ON TRUE
+			
+			WHERE lower(su.interviewer_id) = lower(:interviewerId)
+			
+			AND EXISTS (
+			    SELECT 1
+			    FROM (
+			        SELECT DISTINCT ON (st.survey_unit_id)
+			               st.survey_unit_id,
+			               st.type
+			        FROM state st
+			        WHERE st.survey_unit_id = su.id
+			        ORDER BY st.survey_unit_id, st.date DESC
+			    ) last_st
+			    WHERE last_st.type IN (:visibleTypes)
+			)
+			""", nativeQuery = true)
+	List<String> findIdsByInterviewerIdWithinVisibilityScope(@Param("interviewerId") String interviewerId,
+															 @Param("now") Long now,
+															 @Param("visibleTypes") List<String> visibleTypes);
+
 	/**
 	* This method count SurveyUnits with contactOutcome = INA and states contains TBR
 	* 
@@ -396,6 +422,14 @@ public interface SurveyUnitRepository extends JpaRepository<SurveyUnit, String> 
 	@Query(value="SELECT id FROM survey_unit "
 			+ "WHERE interviewer_id=:interviewerId", nativeQuery=true)
 	List<String> findAllIdsByInterviewerId(@Param("interviewerId") String interviewerId);
+
+	@Query(value="SELECT COUNT(*) FROM survey_unit "
+			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId", nativeQuery=true)
+	Integer countUnallocatedSurveyUnitsByCampaignId(@Param("campaignId") String campaignId);
+
+	@Query(value="SELECT COUNT(*) FROM survey_unit "
+			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId AND organization_unit_id IN (:organizationUnitIds)", nativeQuery=true)
+	Integer countUnallocatedSurveyUnitsByCampaignIdAndOrganizationUnitIdIn(@Param("campaignId") String campaignId, @Param("organizationUnitIds") List<String> organizationUnitIds);
 
 	@Query(value="UPDATE survey_unit "
 	+ "SET interviewer_id=:interviewerId "

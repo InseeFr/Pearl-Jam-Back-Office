@@ -206,25 +206,6 @@ public class SurveyUnit implements Serializable {
 
 	}
 
-	public Boolean isAtLeastState(String state) {
-		for (State s : this.states) {
-			if (s.getType().toString().equals(state)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Boolean isLastState(String state) {
-		State lastState = new State();
-		for (State s : this.states) {
-			if (lastState.getDate() == null || lastState.getDate() < s.getDate()) {
-				lastState = s;
-			}
-		}
-		return state.equals(lastState.getType().toString());
-	}
-
 	public void updateIdentification(Identification identification) {
 		if (identification == null) {
 			return;

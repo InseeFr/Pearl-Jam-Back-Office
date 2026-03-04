@@ -1,37 +1,33 @@
 package fr.insee.pearljam.api.controller;
 
 import fr.insee.pearljam.api.constants.Constants;
-import java.util.Collections;
-import java.util.List;
-
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.OrganisationUnitAlreadyExistsException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @Tag(name = "05. Organization-units", description = "Endpoints for organization-units")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class OrganizationUnitController {
 
 	private final OrganizationUnitService organizationUnitService;
@@ -41,55 +37,32 @@ public class OrganizationUnitController {
 	/**
 	 * This method is used to post the list of Organizational Units defined in
 	 * request body
-	 * 
-	 * @param request
-	 * @param idCampaign
-	 * @param idOu
+	 *
+	 * @param organizationUnits organisation units to be created
 	 */
 	@Operation(summary = "Create Context with Organizational Unit and users associated")
 	@PostMapping(Constants.API_ORGANIZATIONUNITS)
-	public ResponseEntity<Object> postContext(@RequestBody List<OrganizationUnitContextDto> organizationUnits) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		Response response;
-		try {
-			response = organizationUnitService.createOrganizationUnits(organizationUnits);
-		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
-			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		log.info("{} : POST /organization-units resulting in {} with response [{}]", userId, response.getHttpStatus(),
-				response.getMessage());
-		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	public void postContext(@RequestBody List<OrganizationUnitContextDto> organizationUnits)
+			throws NoOrganizationUnitException, OrganizationalUnitNotFoundException, UserAlreadyExistsException, OrganisationUnitAlreadyExistsException {
+		organizationUnitService.createOrganizationUnits(organizationUnits);
 	}
 
 	/**
 	 * This method is used to post the Organization Unit defined in request body
-	 * 
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
-	 *         {@link HttpStatus} FORBIDDEN
+	 *
 	 */
 	@Operation(summary = "Create Organizational Unit and users associated")
 	@PostMapping(Constants.API_ORGANIZATIONUNIT)
-	public ResponseEntity<Object> postOrganizationUnit(@RequestBody OrganizationUnitContextDto organizationUnit) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		log.info("{} try to create a new OU", userId);
-		Response response;
-		try {
-			response = organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
-		} catch (NoOrganizationUnitException | UserAlreadyExistsException e) {
-			log.error(e.getMessage());
-			response = new Response(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		log.info("{} POST /organization-unit resulting in {} with response [{}]", userId, response.getHttpStatus(),
-				response.getMessage());
-		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
+	public void postOrganizationUnit(@RequestBody OrganizationUnitContextDto organizationUnit)
+			throws OrganisationUnitAlreadyExistsException, OrganizationalUnitNotFoundException, NoOrganizationUnitException, UserAlreadyExistsException {
+		organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
 	}
 
 	/**
 	 * This method add Users to target Organization Unit
-	 * 
-	 * @param request
-	 * @param idCampaign
-	 * @param idOu
+	 *
+	 * @param id campaign id
+	 * @param users users to add to the target OU
 	 */
 	@Operation(summary = "Create users by organization-unit")
 	@PostMapping(Constants.API_ORGANIZATIONUNIT_ID_USERS)
@@ -109,9 +82,6 @@ public class OrganizationUnitController {
 	/**
 	 * This method return a list of all Organization Units
 	 * 
-	 * @param request
-	 * @param idCampaign
-	 * @param idOu
 	 */
 	@Operation(summary = "Get all organization-units")
 	@GetMapping(Constants.API_ORGANIZATIONUNITS)
@@ -123,10 +93,8 @@ public class OrganizationUnitController {
 
 	/**
 	 * This method try to delete target Organization Unit
-	 * 
-	 * @param request
-	 * @param idCampaign
-	 * @param idOu
+	 *
+	 * @param id id of the OU to delete
 	 */
 	@Operation(summary = "Delete an organization-unit")
 	@DeleteMapping(Constants.API_ORGANIZATIONUNIT_ID)

@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.mail;
 
-import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "feature.mail-service.enabled", havingValue = "false")
 public class NoMailSender implements MailSender {
     @Override
-    public void sendMail(String subject, String content) throws SendMailException {
+    public void sendMail(String subject, String content) {
         // dummy mail sender
     }
 }

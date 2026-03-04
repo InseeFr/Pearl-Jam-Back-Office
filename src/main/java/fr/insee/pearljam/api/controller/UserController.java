@@ -8,6 +8,7 @@ import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,8 +41,7 @@ public class UserController {
 	/**
 	 * This method returns the current USER
 	 * 
-	 * @param request
-	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link UserDto} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get User")
@@ -60,8 +60,7 @@ public class UserController {
 	/**
 	 * This method returns user matching with the `id` param
 	 * 
-	 * @param request
-	 * @return List of {@link UserDto} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link UserDto} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get User by id")
@@ -82,7 +81,6 @@ public class UserController {
 	/**
 	 * This method creates a user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(Constants.API_USER)
@@ -98,7 +96,7 @@ public class UserController {
 
 		if (userService.userIsPresent(user.getId())) {
 			String alreadyPresentUserInfo = String.format("User %s can't be created : already present",
-					user.toString());
+					user);
 			log.warn(alreadyPresentUserInfo);
 			return new ResponseEntity<>(alreadyPresentUserInfo, HttpStatus.CONFLICT);
 		}
@@ -119,7 +117,6 @@ public class UserController {
 	/**
 	 * This method updates a user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Update User")
 	@PutMapping(Constants.API_USER_ID)
@@ -163,7 +160,6 @@ public class UserController {
 	/**
 	 * This method assign a user to target Organization Unit
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Assign User to Organization Unit")
 	@PutMapping(Constants.API_USER_ID_ORGANIZATION_ID_OUID)
@@ -203,13 +199,12 @@ public class UserController {
 	}
 
 	/**
-	 * This method is used to delete an user
+	 * This method is used to delete a user
 	 * 
-	 * @param request
 	 */
 	@Operation(summary = "Delete User")
 	@DeleteMapping(Constants.API_USER_ID)
-	public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") String id) {
+	public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to delete user {}", userId, id);
 

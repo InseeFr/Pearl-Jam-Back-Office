@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.campaign.dto.input.*;
-import fr.insee.pearljam.api.campaign.dto.input.CommunicationTemplateCreateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.domain.Campaign;
@@ -12,16 +11,20 @@ import fr.insee.pearljam.api.dto.campaign.CampaignCommonsDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
+import fr.insee.pearljam.api.dto.campaign.PortalDataDto;
 import fr.insee.pearljam.api.dto.count.CountDto;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.referent.ReferentDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.*;
+import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
+import fr.insee.pearljam.domain.count.model.InterviewerCount;
+import fr.insee.pearljam.domain.count.port.userside.SurveyUnitCountService;
+import fr.insee.pearljam.domain.campaign.port.serverside.ReferentRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
 import fr.insee.pearljam.domain.exception.*;
@@ -52,20 +55,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CampaignServiceImpl implements CampaignService {
 
-	private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
-
 	private final CampaignRepository campaignRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final MessageRepository messageRepository;
 	private final UserService userService;
-	private final UtilsService utilsService;
 	private final SurveyUnitService surveyUnitService;
 	private final PreferenceService preferenceService;
 	private final ReferentService referentService;
+	private final ReferentRepository referentRepository;
 	private final VisibilityService visibilityService;
 	private final DateService dateService;
+	private final InterviewerCountRepository interviewerCountRepository;
+	private final SurveyUnitCountService surveyUnitCountService;
 
 	@Override
 	public List<CampaignDto> getPreferredCampaigns(String userId) {
@@ -88,8 +91,9 @@ public class CampaignServiceImpl implements CampaignService {
 			campaign.setCollectionEndDate(campaignVisibility.collectionEndDate());
 			campaign.setEndDate(campaignVisibility.endDate());
 			campaign.setCampaignStats(surveyUnitRepository.getCampaignStats(campaign.getId(), organizationUnitIds));
-			campaign.setReferents(referentService.findByCampaignId(campaign.getId()));
-		}
+			campaign.setReferents(referentRepository.findByCampaignId(campaign.getId())
+					.stream().map(ReferentDto::new).toList());
+        }
 		return userCampaigns;
 	}
 
@@ -105,44 +109,18 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignRepository.findByOuIdWithPreference(organizationUnitIds, userId, dateService.getCurrentTimestamp());
 	}
 
-	@Override
-	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
-		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
-
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-		List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
-				.toList();
-
-		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-			if (userOrgUnitIds.contains(orgId)) {
-				interviewersDtoReturned.addAll(
-						campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
-			}
-		}
-		if (interviewersDtoReturned.isEmpty()) {
-			log.warn("No interviewers found for the campaign {}", campaignId);
-		}
-		return interviewersDtoReturned;
-	}
 
 	@Override
-	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws NotFoundException {
+	public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
 		int nbSUAbandoned = 0;
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
+		userService.checkUserAssociationToCampaign(campaignId, userId);
 		return new CountDto(nbSUAbandoned);
 	}
 
 	@Override
-	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws NotFoundException {
+	public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
 		int nbSUNotAttributed = 0;
-		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
-			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
-		}
+		userService.checkUserAssociationToCampaign(campaignId, userId);
 		return new CountDto(nbSUNotAttributed);
 	}
 
@@ -216,15 +194,19 @@ public class CampaignServiceImpl implements CampaignService {
 							.toList());
 					if (lstCampaignId.contains(campaign.getId())) {
 						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
-						preferenceService.setPreferences(lstCampaignId, user.getId());
-					}
+                        try {
+                            preferenceService.setPreferences(lstCampaignId, user.getId());
+                        } catch (CampaignNotFoundException e) {
+                            // campaign already checked
+                        }
+                    }
 				});
 		messageRepository.deleteCampaignMessageRecipientByCampaignId(campaign.getId());
 		campaignRepository.delete(campaign);
 	}
 
 	@Override
-	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, OrganizationalUnitNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
@@ -345,5 +327,47 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		return campaignsCommonsOngoing;
+	}
+
+	@Override
+	public PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException {
+		// Check user association to campaign (security check)
+		userService.checkUserAssociationToCampaign(campaignId, userId);
+
+		Campaign campaign = campaignRepository.findById(campaignId)
+				.orElseThrow(CampaignNotFoundException::new);
+
+		// Get user's organization units for visibility filtering
+		List<String> organizationUnitIds = userService.getUserOUs(userId, true)
+				.stream()
+				.map(OrganizationUnitDto::getId)
+				.toList();
+
+		// Get referents
+		List<ReferentDto> referents = referentService.findByCampaignId(campaignId);
+
+		// Get interviewers with their survey unit counts (filtered by organization units)
+		List<InterviewerCount> interviewerCounts = interviewerCountRepository.findCampaignInterviewers(campaignId, organizationUnitIds);
+
+		// Get campaign visibility dates (filtered by organization units)
+		CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaignId, organizationUnitIds);
+
+		// Get survey unit counts from domain service
+		SurveyUnitCounts surveyUnitCounts = surveyUnitCountService.getSurveyUnitCounts(campaignId, organizationUnitIds);
+
+		log.info("[{}] get {} portal data : {} interviewers / {} abandoned / {} unallocated / {} total ",
+				userId,campaignId,
+				interviewerCounts.size(),
+				surveyUnitCounts.abandoned(),
+				surveyUnitCounts.unallocated(),
+				surveyUnitCounts.total());
+
+		return PortalDataDto.fromModel(
+				campaign,
+				campaignVisibility,
+				referents,
+				interviewerCounts,
+				surveyUnitCounts
+		);
 	}
 }

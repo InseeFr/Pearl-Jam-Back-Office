@@ -19,18 +19,12 @@ public class UserFakeRepository implements UserRepository {
     }
 
     @Override
-    public boolean existsByIdIgnoreCase(String userId) {
-        return false;
-    }
-
-    @Override
     public List<User> findAllByOrganizationUnitId(String id) {
         return List.of();
     }
 
     @Override
     public void flush() {
-
     }
 
     @Override
@@ -45,7 +39,6 @@ public class UserFakeRepository implements UserRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<User> entities) {
-
     }
 
     @Override

@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.controller;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -30,7 +31,7 @@ public class PreferenceController {
 	 */
 	@Operation(summary = "Update current user preferences with campaigns listed in request body")
 	@PutMapping(Constants.API_PREFERENCES)
-	public ResponseEntity<Object> updatePreferences(@RequestBody List<String> listPreference) {
+	public ResponseEntity<Object> updatePreferences(@RequestBody List<String> listPreference) throws CampaignNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus returnCode = preferenceService.setPreferences(listPreference, userId);
 		log.info("PUT preferences '{}' for user {} resulting in {}", String.join(", ", listPreference), userId,
