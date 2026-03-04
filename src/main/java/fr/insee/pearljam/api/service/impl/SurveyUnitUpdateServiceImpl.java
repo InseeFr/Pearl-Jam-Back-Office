@@ -110,11 +110,17 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
                 .findCommunicationTemplate(campaignId, communicationRequestToCreate.communicationTemplateId())
                 .orElseThrow(CommunicationTemplateNotFoundException::new);
 
+        // Correcting clock desynchronization from frontend retrieved creation timestamp (for initialization status)
+        // in case ready status is set before initialization status
+        // by setting creation timestamp right before ready one
+        long timestampDelta = communicationRequestToCreate.creationTimestamp() - readyTimestamp;
+        long creationTimestamp = timestampDelta >= 0 ? readyTimestamp - 1 : communicationRequestToCreate.creationTimestamp();
+
         if(!communicationTemplate.medium().equals(CommunicationMedium.LETTER)) {
             return CommunicationRequest.create(
                     campaignId,
                     communicationRequestToCreate.communicationTemplateId(),
-                    communicationRequestToCreate.creationTimestamp(),
+                    creationTimestamp,
                     readyTimestamp,
                     communicationRequestToCreate.reason());
         }
