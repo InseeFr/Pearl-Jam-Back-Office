@@ -40,22 +40,14 @@ public class StateController {
    */
   @Operation(summary = "Get interviewerStateCount")
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_STATECOUNT)
-  public ResponseEntity<StateCountDto> getInterviewerStateCount(
-      @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
-      @RequestParam(required = false, name = "date") Long date) {
+  public StateCountDto getInterviewerStateCount(
+          @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
+          @RequestParam(required = false, name = "date") Long date) throws NotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
     List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
 
-    StateCountDto stateCountDto;
-    try {
-      stateCountDto = stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
-    } catch (NotFoundException e) {
-      log.error(e.getMessage());
-      log.info("Get interviewerStateCount resulting in 404");
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    log.info("Get interviewerStateCount resulting in 200");
-    return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
+    return stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
+
   }
 
   /**

@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.web.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.domain.exception.*;
 import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
 import jakarta.validation.ConstraintViolationException;
@@ -158,6 +159,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(SendMailException.class)
     public ResponseEntity<ApiError> exceptions(SendMailException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> exceptions(NotFoundException e, WebRequest request) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(Exception.class)

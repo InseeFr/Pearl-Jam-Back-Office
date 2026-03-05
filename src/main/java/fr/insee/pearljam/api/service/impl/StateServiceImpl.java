@@ -18,7 +18,6 @@ import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CommunicationTemplateJpaRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +49,6 @@ public class StateServiceImpl implements StateService {
   private final InterviewerRepository interviewerRepository;
   private final VisibilityRepository visibilityRepository;
   private final OrganizationUnitRepository organizationUnitRepository;
-  private final CommunicationTemplateJpaRepository communicationTemplateRepository;
   private final UserService userService;
   private final UtilsService utilsService;
   private final CommunicationRequestRepository communicationRequestRepository;
@@ -105,7 +103,7 @@ public class StateServiceImpl implements StateService {
     }
     if (stateCountDto.getTotal() == null) {
       throw new NotFoundException(String.format(
-          "No matching interviewers %s were found for the user % and the campaign %s",
+          "No matching interviewers %s were found for the user %s and the campaign %s",
           interviewerId,
           userId, campaignId));
     }
@@ -230,7 +228,7 @@ public class StateServiceImpl implements StateService {
         .collect(Collectors.toList());
 
     Long dateToUse = (date != null) ? date : System.currentTimeMillis();
-    Set<String> interviewerIds = interviewerRepository.findIdsByOrganizationUnits(userOrgUnitIds);
+    Set<String> interviewerIds = interviewerRepository.findIdsByOrganizationUnitsAndCampaignId(userOrgUnitIds, campaignIds);
 
     Map<String, Long> noticeCounts = communicationRequestRepository
         .getCommRequestCountByInterviewersAndType(campaignIds, interviewerIds,
