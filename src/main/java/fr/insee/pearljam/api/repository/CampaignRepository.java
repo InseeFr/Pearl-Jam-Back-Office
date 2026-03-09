@@ -27,29 +27,29 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
 	@Query("""
-    SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
-      camp.id,
-      camp.label,
-      camp.email,
-      camp.identificationConfiguration,
-      camp.contactOutcomeConfiguration,
-			  camp.contactAttemptConfiguration,
-			  camp.collectNextContacts
-    )
-    FROM Campaign camp
-      JOIN camp.visibilities vi
-      JOIN vi.organizationUnit ou
-    WHERE vi.managementStartDate <= :date
-      AND vi.endDate > :date
-      AND NOT EXISTS (
-        SELECT 1
-        FROM User u
-          JOIN u.campaigns c2
-        WHERE LOWER(u.id) = LOWER(:userId)
-          AND c2 = camp
-      )
-      AND ou.id in (:ouIds)
-    """)
+		SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
+			camp.id,
+			camp.label,
+			camp.email,
+			camp.identificationConfiguration,
+			camp.contactOutcomeConfiguration,
+			camp.contactAttemptConfiguration,
+			camp.collectNextContacts
+		)
+		FROM Campaign camp
+			JOIN camp.visibilities vi
+			JOIN vi.organizationUnit ou
+		WHERE vi.managementStartDate <= :date
+			AND vi.endDate > :date
+			AND NOT EXISTS (
+				SELECT 1
+				FROM User u
+					JOIN u.campaigns c2
+				WHERE LOWER(u.id) = LOWER(:userId)
+					AND c2 = camp
+			)
+			AND ou.id in (:ouIds)
+		""")
 	List<CampaignDto> findByUserAndManagementVisibility(
 			@Param("ouIds") List<String> ouIds,
 			@Param("userId") String userId,

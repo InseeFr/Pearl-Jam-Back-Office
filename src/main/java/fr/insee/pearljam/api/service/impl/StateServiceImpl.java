@@ -311,7 +311,7 @@ public class StateServiceImpl implements StateService {
 
     List<String> userOrgUnitIds = userService.getUserOUs(userId, true).stream()
         .map(OrganizationUnitDto::getId)
-        .collect(Collectors.toList());
+        .toList();
 
     Long dateToUse = (date != null) ? date : System.currentTimeMillis();
     Set<String> interviewerIds = interviewerRepository.findIdsByOrganizationUnitsAndCampaignId(userOrgUnitIds, campaignIds);
@@ -357,8 +357,7 @@ public class StateServiceImpl implements StateService {
     userService.checkUserAssociationToCampaign(campaignId, userId);
 
     List<String> organizationUnits = userService.getUserOUs(userId, true)
-        .stream().map(OrganizationUnitDto::getId)
-        .collect(Collectors.toList());
+            .stream().map(OrganizationUnitDto::getId).toList();
     Long dateToUse = date;
     if (dateToUse == null) {
       dateToUse = System.currentTimeMillis();

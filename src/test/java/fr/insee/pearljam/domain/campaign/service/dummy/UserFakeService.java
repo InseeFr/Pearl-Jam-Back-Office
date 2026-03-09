@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class UserFakeService implements UserService {
 
     @Override
     public void delete(String id) {
-        return;
+        // no-imp;
     }
 
     @Override
