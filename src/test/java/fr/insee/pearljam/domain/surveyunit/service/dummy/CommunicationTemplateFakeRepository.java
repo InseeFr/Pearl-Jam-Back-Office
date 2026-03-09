@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class CommunicationTemplateFakeRepository implements CommunicationTemplateRepository {
 
-    private List<CommunicationTemplate> communicationTemplates = new ArrayList<>();
+    private final List<CommunicationTemplate> communicationTemplates = new ArrayList<>();
 
     public void save(CommunicationTemplate communicationTemplate) {
         communicationTemplates.add(communicationTemplate);

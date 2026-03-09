@@ -13,17 +13,19 @@ import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.phonenumber.PhoneNumberDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitContextDto;
 import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitInterviewerLinkDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
-import fr.insee.pearljam.api.service.*;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.service.MessageService;
+import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
@@ -31,6 +33,7 @@ import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
@@ -60,7 +63,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -84,6 +89,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestAuthKeyCloak {
 
 	private final UserService userService;
+	private final SurveyUnitService surveyUnitService;
 	private final StateRepository stateRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
@@ -234,7 +240,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(2)
 	void testGetUserNotFound() {
-		assertEquals(Optional.empty(), userService.getUser("test"));
+		assertThatThrownBy(() -> userService.getUser("test")).isInstanceOf(NotFoundException.class);
 	}
 
 	private ResultMatcher checkJsonPath(String formattablePath, String nodeAttribute, Object expectedValue) {
@@ -940,7 +946,7 @@ class TestAuthKeyCloak {
 				.andExpectAll(status().isOk());
 		List<MessageDto> messages = messageRepository
 				.findMessagesDtoByIds(messageRepository.getMessageIdsByInterviewer("INTW1"));
-		assertEquals("TEST", messages.get(0).getText());
+		assertEquals("TEST", messages.getFirst().getText());
 	}
 
 	/**
@@ -1031,7 +1037,6 @@ class TestAuthKeyCloak {
         .perform(get("/api/survey-units/closable")
             .with(authentication(LOCAL_USER))
             .accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpectAll(
             status().isOk(),
             jsonPath("$.[?(@.id == '20')]").exists(),
@@ -1313,7 +1318,7 @@ class TestAuthKeyCloak {
 						.with(authentication(ADMIN))
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(asJsonString(List.of(ou1, ou2))))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isConflict());
 
 		// No OU should have been added
 		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
@@ -1543,11 +1548,15 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(111)
 	void testPostSurveyUnits() throws Exception {
-		SurveyUnitContextDto surveyUnit = generateSurveyUnit("8");
+		SurveyUnitCreationDto surveyUnit = generateSurveyUnit("8");
 		surveyUnit.setComments(Set.of(new CommentDto(CommentType.INTERVIEWER, "interviewer comment")));
 		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L,ContactOutcomeType.INA,2));
 		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
 		surveyUnit.setClosingCause(new ClosingCauseDto(1843078880000L,ClosingCauseType.NPA));
+		surveyUnit.setContactHistory(new PreviousContactHistoryDto("comment",
+				HistoryContactOutcomeType.INA,
+				List.of()
+		));
 
 		mockMvc.perform(post(Constants.API_SURVEYUNITS)
 						.with(authentication(ADMIN))
@@ -1560,7 +1569,7 @@ class TestAuthKeyCloak {
 
 	/**
 	 * Test that the POST endpoint
-	 * "/survey-units returns 400 when id dupliate in DB
+	 * "/survey-units returns 400 when id duplicate in DB
 	 *
 	 * @throws JsonProcessingException jpe
 	 * @throws JSONException           jsone
@@ -1587,7 +1596,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(113)
 	void testPostSurveyUnitsDuplicateInBody() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 
 		mockMvc.perform(post("/api/survey-units")
 						.with(authentication(ADMIN))
@@ -1607,7 +1616,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(114)
 	void testPostSurveyUnitsOUNotExist() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 		// Use an unknown organization unit
 		su.setOrganizationUnitId("OU-TEST");
 
@@ -1629,7 +1638,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(115)
 	void testPostSurveyUnitsCampaignNotExist() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("9");
+		SurveyUnitCreationDto su = generateSurveyUnit("9");
 		su.setCampaign("campaignTest");
 
 		mockMvc.perform(post("/api/survey-units")
@@ -1651,7 +1660,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(117)
 	void testPostSurveyUnitsSUNotValid() throws Exception {
-		SurveyUnitContextDto su = generateSurveyUnit("");
+		SurveyUnitCreationDto su = generateSurveyUnit("");
 
 		// ID null
 		mockMvc.perform(post("/api/survey-units")
@@ -1900,12 +1909,8 @@ class TestAuthKeyCloak {
 		userRepository.findAllByOrganizationUnitId("OU-NORTH")
 				.forEach(u -> {
 					messageService.deleteMessageByUserId(u.getId());
-                    try {
-                        preferenceService.setPreferences(Collections.emptyList(), u.getId());
-                    } catch (CampaignNotFoundException e) {
-                        // won't happen as there is no campaign id to check
-                    }
-                    userService.delete(u.getId());
+					assertDoesNotThrow(() -> preferenceService.deletePreferences(u.getId()));
+					assertDoesNotThrow(() -> userService.delete(u.getId()));
 				});
 
 		mockMvc.perform(delete("/api/organization-unit/OU-NORTH")
@@ -1936,6 +1941,16 @@ class TestAuthKeyCloak {
 
 	@Test
 	@Order(209)
+	void testUpdateMissingUser() throws Exception {
+		mockMvc.perform(put("/api/user/XYZ")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(generateValidUser())))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(210)
 	void testCreateValidUser() throws Exception {
 		mockMvc.perform(post(Constants.API_USER)
 						.with(authentication(ADMIN))
@@ -1945,7 +1960,7 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
-	@Order(210)
+	@Order(211)
 	void testCreateAreadyPresentUser() throws Exception {
 		mockMvc.perform(post(Constants.API_USER)
 						.with(authentication(ADMIN))
@@ -1955,7 +1970,7 @@ class TestAuthKeyCloak {
 	}
 
 	@Test
-	@Order(211)
+	@Order(212)
 	void testCreateInvalidUser() throws Exception {
 		// Null user object
 		mockMvc.perform(post(Constants.API_USER)
@@ -1999,16 +2014,6 @@ class TestAuthKeyCloak {
 						.with(authentication(ADMIN))
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(asJsonString(user)))
-				.andExpect(status().isBadRequest());
-	}
-
-	@Test
-	@Order(212)
-	void testUpdateMissingUser() throws Exception {
-		mockMvc.perform(put("/api/user/TEST")
-						.with(authentication(ADMIN))
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(asJsonString(generateValidUser())))
 				.andExpect(status().isNotFound());
 	}
 
@@ -2171,6 +2176,32 @@ class TestAuthKeyCloak {
 				.andExpect(status().isNotFound());
 	}
 
+	@Test
+	@Order(222)
+	void testPutSurveyUnitWithContactHistoryWithANextExistingPerson() throws Exception {
+
+		SurveyUnitInterviewerResponseDto surveyUnitDetailDto = surveyUnitService.getSurveyUnitDetail("20");
+		SurveyUnitUpdateDto surveyUnitUpdateDto =  new SurveyUnitUpdateDto(
+				surveyUnitDetailDto.id(),
+				surveyUnitDetailDto.persons(),
+				surveyUnitDetailDto.address(),
+				surveyUnitDetailDto.move(),
+				surveyUnitDetailDto.comments(),
+				surveyUnitDetailDto.states(),
+				surveyUnitDetailDto.contactAttempts(),
+				surveyUnitDetailDto.contactOutcome(),
+				null,
+				null,
+				surveyUnitDetailDto.nextContactHistory());
+
+		mockMvc.perform(put("/api/survey-unit/20")
+						.with(authentication(INTERVIEWER))
+						.accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(surveyUnitUpdateDto)))
+				.andExpect(status().isOk());
+	}
+
 	private static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);
@@ -2179,8 +2210,8 @@ class TestAuthKeyCloak {
 		}
 	}
 
-	private SurveyUnitContextDto generateSurveyUnit(String id) {
-		SurveyUnitContextDto su = new SurveyUnitContextDto();
+	private SurveyUnitCreationDto generateSurveyUnit(String id) {
+		SurveyUnitCreationDto su = new SurveyUnitCreationDto();
 		su.setId(id);
 		su.setCampaign("SIMPSONS2020X00");
 		su.setOrganizationUnitId("OU-NORTH");
@@ -2190,15 +2221,16 @@ class TestAuthKeyCloak {
 		addr.setL2("1 rue test");
 		addr.setL3("TEST");
 		su.setAddress(addr);
-		PersonDto p = new PersonDto();
-		p.setFirstName("test");
-		p.setLastName("test");
-		p.setEmail("test@test.com");
-		p.setFavoriteEmail(true);
-		p.setBirthdate(1564656540L);
-		p.setPrivileged(true);
-		p.setTitle(Title.MISTER);
-		p.setPhoneNumbers(List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666")));
+		PersonDto p = new PersonDto(
+				null,
+				Title.MISTER,
+				"test",
+				"test",
+				"test@test.com",
+				1564656540L,
+				true,
+				List.of(new PhoneNumberDto(Source.FISCAL, true, "+33666666666"))
+		);
 		List<PersonDto> lstPerson = List.of(p);
 		su.setPersons(lstPerson);
 		su.setSampleIdentifiers(new SampleIdentifiersDto(0, "0", 0, 0, 0, 0, 0, 0, 0, "0", "0"));

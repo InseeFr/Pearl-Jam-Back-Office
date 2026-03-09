@@ -13,7 +13,7 @@ class CampaignSensitivityDtoTest {
         // Given
         Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.HOUSEF2F,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com", false);
+                "email@plop.com", false, false);
 
         // When
         CampaignSensitivityDto campaignSensitivityDto = CampaignSensitivityDto.fromModel(campaign);

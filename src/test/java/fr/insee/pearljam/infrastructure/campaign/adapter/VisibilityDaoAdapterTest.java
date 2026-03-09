@@ -9,9 +9,6 @@ import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDBId;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,12 +42,6 @@ class VisibilityDaoAdapterTest {
     @Autowired
     private VisibilityDaoAdapter visibilityDaoAdapter;
 
-    @Autowired
-    private VisibilityJpaRepository crudRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private Campaign campaign;
     private OrganizationUnit organizationUnit;
     private OrganizationUnit organizationUnit2;
@@ -60,7 +51,7 @@ class VisibilityDaoAdapterTest {
     void setup() {
         campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com", false);
+                "email@plop.com", false, false);
 
         organizationUnit = new OrganizationUnit("OU-SOUTHWEST", "South west", OrganizationUnitType.LOCAL);
         organizationUnit2 = new OrganizationUnit("OU-NORTHWEST", "North west", OrganizationUnitType.NATIONAL);

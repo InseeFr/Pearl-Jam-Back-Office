@@ -17,6 +17,7 @@ TRUNCATE TABLE
     public.campaign,
     public.preference,
     public.visibility,
+    public.contact_history,
     public.survey_unit,
     public.identification,
     public.person,
@@ -132,22 +133,31 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
 INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) SELECT  '24', 'business-id-24', TRUE, a.id, 'SIMPSONS2020X00', NULL, s.id, 'OU-NORTH' FROM address a, sample_identifier s WHERE a.l1='Laurent Neville' AND s.bs='24';
 
 
-INSERT INTO public.person (email, favorite_email, first_name, last_name, birthdate, title, privileged, survey_unit_id) VALUES
-    ('test@test.com',TRUE, 'Ted', 'Farmer', 11111111, 0, TRUE, '11'),
-    ('test@test.com', TRUE,'Cecilia', 'Ortega', 11111111, 1, TRUE, '12'),
-    ('test@test.com', TRUE,'Mylene', 'Mikoton', 11111111, 1, TRUE, '25'),
-    ('test@test.com', TRUE,'Claude', 'Watkins', 11111111, 0, TRUE, '13'),
-    ('test@test.com', TRUE,'Veronica', 'Baker', 11111111, 1, TRUE, '14'),
-    ('test@test.com', TRUE,'Christine', 'Aguilar', 11111111, 1, FALSE, '11'),
-    ('test@test.com', TRUE,'Louise', 'Walker', 11111111, 1, FALSE, '11'),
-    ('test@test.com', TRUE,'Anthony', 'Bennett', 11111111, 0, FALSE, '12'),
-    ('test@test.com', TRUE,'Christopher', 'Lewis', 11111111, 0, FALSE, '14'),
-    ('test@test.com', TRUE,'Harriette', 'Raymond', 11111111, 0, TRUE, '20'),
-    ('test@test.com', TRUE,'Aimée', 'Lamothe', 11111111, 0, TRUE, '21'),
-    ('test@test.com', TRUE,'Perrin', 'Blanchard', 11111111, 0, TRUE, '22'),
-    ('test@test.com', TRUE,'Artus', 'Arnoux', 11111111, 0, TRUE, '23'),
-    ('test@test.com', TRUE,'Laurent', 'Neville', 11111111, 0, TRUE, '24');
+INSERT INTO public.person (email, first_name, last_name, birthdate, title, privileged, survey_unit_id, panel, contact_history_type) VALUES
+    ('test@test.com', 'Ted', 'Farmer', 11111111, 0, TRUE, '11', FALSE, NULL),
+    ('test@test.com', 'Cecilia', 'Ortega', 11111111, 1, TRUE, '12', FALSE, NULL),
+    ('test@test.com', 'Mylene', 'Mikoton', 11111111, 1, TRUE, '25', FALSE, NULL),
+    ('test@test.com', 'Claude', 'Watkins', 11111111, 0, TRUE, '13', FALSE, NULL),
+    ('test@test.com', 'Veronica', 'Baker', 11111111, 1, TRUE, '14', FALSE, NULL),
+    ('test@test.com', 'Christine', 'Aguilar', 11111111, 1, FALSE, '11', FALSE, NULL),
+    ('test@test.com', 'Louise', 'Walker', 11111111, 1, FALSE, '11', FALSE, NULL),
+    ('test@test.com', 'Anthony', 'Bennett', 11111111, 0, FALSE, '12', FALSE, NULL),
+    ('test@test.com', 'Christopher', 'Lewis', 11111111, 0, FALSE, '14', FALSE, NULL),
+    ('test@test.com', 'Harriette', 'Raymond', 11111111, 0, TRUE, '20', FALSE, NULL),
+    ('test@test.com', 'Aimée', 'Lamothe', 11111111, 0, TRUE, '21', FALSE, NULL),
+    ('test@test.com', 'Perrin', 'Blanchard', 11111111, 0, TRUE, '22', FALSE, NULL),
+    ('test@test.com', 'Artus', 'Arnoux', 11111111, 0, TRUE, '23', FALSE, NULL),
+    ('test@test.com', 'Laurent', 'Neville', 11111111, 0, TRUE, '24', FALSE, NULL),
+    (null           , 'Pedro',    null,         null, null, FALSE, '11', null, 'PREVIOUS'),
+    ('futur.ama@ch.com', 'Futur', 'Ama', null, 1, TRUE, '11', FALSE, 'NEXT'),
+    ('test@ch.com', 'Opre', 'Vious', 315532800000, 1, TRUE, '11', TRUE, 'PREVIOUS'),
+    ('test@ch.com', 'Agrippa', 'Nel', 1024815788000, 0, FALSE, '11', TRUE, 'PREVIOUS'),
+    ('test@ch.com', 'Isidore', 'Champ', 1070870588000, 0, FALSE, '11', FALSE, 'PREVIOUS');
 
+INSERT INTO public.contact_history (survey_unit_id, contact_history_type, contact_outcome_value, comment) VALUES
+    ('11', 'NEXT', NULL, NULL),
+    ('11', 'PREVIOUS', 'INA', 'nice comment'),
+    ('20', 'NEXT', NULL, NULL);
 
 
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Ted' and p.last_name='Farmer' and p.survey_unit_id='11';
@@ -165,6 +175,7 @@ INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRU
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Perrin' and p.last_name='Blanchard' and p.survey_unit_id='22';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Artus' and p.last_name='Arnoux' and p.survey_unit_id='23';
 INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542802', 0,  p.id FROM person p WHERE p.first_name='Laurent' and p.last_name='Neville' and p.survey_unit_id='24';
+INSERT INTO public.phone_number (favorite, number, source, person_id) SELECT TRUE,'+33677542866', 2,  p.id FROM person p WHERE p.first_name='Futur' and p.last_name='Ama' and p.survey_unit_id='11';
 
 INSERT INTO public.state (date, type, survey_unit_id) VALUES
     (111112111,'VIN', '11'),
@@ -224,5 +235,5 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
     (4, 'INITIATED', 1721903754205);
 
 INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
-    ('11','SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
+    ('11', 'SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
     ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');

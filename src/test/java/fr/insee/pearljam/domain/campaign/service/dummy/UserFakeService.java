@@ -4,17 +4,17 @@ import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 public class UserFakeService implements UserService {
     @Override
-    public Optional<UserDto> getUser(String userId) {
-        return Optional.empty();
+    public UserDto getUser(String userId) throws NotFoundException {
+        throw new NotFoundException("User not found");
     }
 
     @Override
@@ -38,13 +38,8 @@ public class UserFakeService implements UserService {
     }
 
     @Override
-    public HttpStatus delete(String id) {
-        return null;
-    }
-
-    @Override
-    public boolean checkValidity(UserDto user) {
-        return false;
+    public void delete(String id) {
+        return;
     }
 
     @Override

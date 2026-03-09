@@ -1,10 +1,8 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.campaign.port.userside.DateService;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
@@ -19,15 +17,17 @@ import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
-import java.util.Optional;
+
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Set;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -67,11 +67,21 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
         surveyUnit.updateIdentification(identification);
 
+        Set<Person> personsToUpdate = Optional.ofNullable(surveyUnitUpdateDto.persons()).orElse(Collections.emptyList())
+                .stream().map(person -> PersonDto.toModel(person, null))
+                .collect(Collectors.toSet());
+        surveyUnit.updatePersons(personsToUpdate);
+
         //update ContactOutcome
         ContactOutcome contactOutcome = ContactOutcomeDto.toModel(surveyUnit.getId(),
             surveyUnitUpdateDto.contactOutcome());
         contactOutcome = convertDeprecatedContactOutcomeValue(contactOutcome);
         surveyUnit.updateContactOutcome(contactOutcome);
+
+        //update ContactHistory
+        Optional.ofNullable(surveyUnitUpdateDto.nextContactHistory())
+                .map(NextContactHistoryDto::toModel)
+                .ifPresent(surveyUnit::updateNextContactHistory);
     }
 
     // when DCD and DUU values are not used anymore => to be removed
@@ -100,11 +110,17 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
                 .findCommunicationTemplate(campaignId, communicationRequestToCreate.communicationTemplateId())
                 .orElseThrow(CommunicationTemplateNotFoundException::new);
 
+        // Correcting clock desynchronization from frontend retrieved creation timestamp (for initialization status)
+        // in case ready status is set before initialization status
+        // by setting creation timestamp right before ready one
+        long timestampDelta = communicationRequestToCreate.creationTimestamp() - readyTimestamp;
+        long creationTimestamp = timestampDelta >= 0 ? readyTimestamp - 1 : communicationRequestToCreate.creationTimestamp();
+
         if(!communicationTemplate.medium().equals(CommunicationMedium.LETTER)) {
             return CommunicationRequest.create(
                     campaignId,
                     communicationRequestToCreate.communicationTemplateId(),
-                    communicationRequestToCreate.creationTimestamp(),
+                    creationTimestamp,
                     readyTimestamp,
                     communicationRequestToCreate.reason());
         }

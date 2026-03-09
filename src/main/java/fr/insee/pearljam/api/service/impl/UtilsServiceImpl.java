@@ -24,6 +24,7 @@ import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 
 @Service
 @Slf4j

@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.service.impl;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.User;
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.PreferenceService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -50,5 +52,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 		user.get().setCampaigns(lstCampaign);
 		userRepository.save(user.get());
 		return HttpStatus.OK;
+	}
+
+	public void deletePreferences(String userId) throws NotFoundException {
+		User user = userRepository.findByIdIgnoreCase(userId)
+				.orElseThrow(() -> new NotFoundException("User not found"));
+		user.setCampaigns(null);
+		userRepository.save(user);
 	}
 }

@@ -27,7 +27,7 @@ public interface UserService {
 	 * @param userId
 	 * @return {@link Optional<UserDto>}
 	 */
-	Optional<UserDto> getUser(String userId);
+	UserDto getUser(String userId) throws NotFoundException;
 
 	/**
 	 * @param userId
@@ -50,11 +50,9 @@ public interface UserService {
 	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId)
 			throws UserAlreadyExistsException, NoOrganizationUnitException;
 
-	HttpStatus delete(String id);
+	void delete(String id) throws NotFoundException;
 
-	boolean checkValidity(UserDto user);
-
-	UserDto createUser(UserDto user) throws NotFoundException;
+	UserDto createUser(UserDto user) throws NotFoundException, UserAlreadyExistsException;
 
 	UserDto updateUser(UserDto user) throws NotFoundException;
 }
