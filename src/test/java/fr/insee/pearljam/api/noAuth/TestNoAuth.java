@@ -2,9 +2,9 @@ package fr.insee.pearljam.api.noAuth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.insee.pearljam.api.domain.ClosingCause;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.dto.message.MessageDto;
+import fr.insee.pearljam.domain.closingcause.model.ClosingCause;
+import fr.insee.pearljam.domain.closingcause.model.ClosingCauseType;
+import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;

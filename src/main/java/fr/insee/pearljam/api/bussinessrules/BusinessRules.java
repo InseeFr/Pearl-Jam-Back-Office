@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.bussinessrules;
 
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.domain.state.model.StateType;
+import fr.insee.pearljam.api.state.dto.StateDto;
 
 import java.util.*;
 import java.util.stream.Collectors;

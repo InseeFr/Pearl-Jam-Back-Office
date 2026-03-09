@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.communication.*;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;

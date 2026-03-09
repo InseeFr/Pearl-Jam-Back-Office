@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.SurveyUnitTempZone;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitTempZone;
 
 import java.util.UUID;
 

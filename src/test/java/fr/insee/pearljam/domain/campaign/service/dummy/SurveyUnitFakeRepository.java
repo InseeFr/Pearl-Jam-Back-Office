@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitProjection;
 import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
-import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

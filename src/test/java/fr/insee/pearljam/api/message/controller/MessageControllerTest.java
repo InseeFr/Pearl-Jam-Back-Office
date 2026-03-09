@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.message.controller;
 
-import fr.insee.pearljam.api.controller.MessageController;
 import fr.insee.pearljam.api.message.controller.dummy.MailFakeSender;
 import fr.insee.pearljam.api.message.controller.dummy.MessageFakeService;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;

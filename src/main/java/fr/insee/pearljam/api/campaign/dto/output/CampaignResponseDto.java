@@ -1,11 +1,11 @@
 package fr.insee.pearljam.api.campaign.dto.output;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.api.campaign.dto.ReferentDto;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.question.AccessQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
@@ -32,47 +32,47 @@ class IdentificationStateTest {
   }
 
 
-   /// | identification  | access     | situation             | category           | occupant              | interviewer         | IdentificationConfiguration | État attendu |
-   /// | --------------- | ---------- | --------------------- | ------------------ | --------------------- | ------------------- | ---------------------------- | ------------ |
-   /// | DESTROY         | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | UNIDENTIFIED    | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | ONGOING      |
-   /// | IDENTIFIED      | NACC       | ORDINARY              | PRIMARY            | null                  | ---                 | HOUSEF2F                    | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | SECONDARY          | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | VACANT             | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | null                  | ---                 | HOUSEF2F                    | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
-   /// | IDENTIFIED      | ACC        | null                  | null               | null                  | ---                 | HOUSEF2F                    | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | null               | null                  | ---                 | HOUSEF2F                    | ONGOING      |
-   /// | ---             | ---        | ---                   | ---                | ---                   | ---                 | HOUSEF2F                    | MISSING      |
-   /// | ---             | ---        | ---                   | ---                | ---                   | ---                 | HOUSETEL                    | MISSING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
-   /// | IDENTIFIED      | NACC       | ABSORBED              | SECONDARY          | UNIDENTIFIED          | ---                 | INDTEL                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | VACANT             | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
-   /// | IDENTIFIED      | NACC       | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | INDTEL                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | null                  | VACANT             | UNIDENTIFIED          | ---                 | INDTEL                      | ONGOING      |
-   /// | IDENTIFIED      | NACC       | ABSORBED              | SECONDARY          | IDENTIFIED            | ---                 | INDTEL                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
-   /// | UNIDENTIFIED    | NACC       | NOORDINARY            | SECONDARY          | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
-   /// | DESTROY         | ACC        | ABSORBED              | VACANT             | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | null                  | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | SECONDARY          | null                  | ---                 | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | NO                  | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | SECONDARY          | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | YES                 | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | ONGOING      |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | YES                 | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | FINISHED     |
-   /// | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | ---                   |  NO                 | INDTEL                      | FINISHED     |
+   // | identification  | access     | situation             | category           | occupant              | interviewer         | IdentificationConfiguration | État attendu |
+   // | --------------- | ---------- | --------------------- | ------------------ | --------------------- | ------------------- | ---------------------------- | ------------ |
+   // | DESTROY         | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | UNIDENTIFIED    | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | null       | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | ONGOING      |
+   // | IDENTIFIED      | NACC       | ORDINARY              | PRIMARY            | null                  | ---                 | HOUSEF2F                    | ONGOING      |
+   // | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | SECONDARY          | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | VACANT             | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | null                  | ---                 | HOUSEF2F                    | ONGOING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | HOUSEF2F                    | FINISHED     |
+   // | IDENTIFIED      | ACC        | null                  | null               | null                  | ---                 | HOUSEF2F                    | ONGOING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | null               | null                  | ---                 | HOUSEF2F                    | ONGOING      |
+   // | ---             | ---        | ---                   | ---                | ---                   | ---                 | HOUSEF2F                    | MISSING      |
+   // | ---             | ---        | ---                   | ---                | ---                   | ---                 | HOUSETEL                    | MISSING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
+   // | IDENTIFIED      | NACC       | ABSORBED              | SECONDARY          | UNIDENTIFIED          | ---                 | INDTEL                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | VACANT             | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
+   // | IDENTIFIED      | NACC       | ORDINARY              | PRIMARY            | UNIDENTIFIED          | ---                 | INDTEL                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDTEL                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | null                  | VACANT             | UNIDENTIFIED          | ---                 | INDTEL                      | ONGOING      |
+   // | IDENTIFIED      | NACC       | ABSORBED              | SECONDARY          | IDENTIFIED            | ---                 | INDTEL                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
+   // | UNIDENTIFIED    | NACC       | NOORDINARY            | SECONDARY          | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+   // | DESTROY         | ACC        | ABSORBED              | VACANT             | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | null                  | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | SECONDARY          | null                  | ---                 | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | NACC       | ABSORBED              | VACANT             | UNIDENTIFIED          | NO                  | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | SECONDARY          | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | IDENTIFIED            | ---                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | YES                 | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | ABSORBED              | PRIMARY            | UNIDENTIFIED          | ---                 | INDF2F                      | ONGOING      |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | UNIDENTIFIED          | YES                 | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | NOORDINARY            | PRIMARY            | UNIDENTIFIED          | NO                  | INDF2F                      | FINISHED     |
+   // | IDENTIFIED      | ACC        | ORDINARY              | PRIMARY            | ---                   |  NO                 | INDTEL                      | FINISHED     |
 
 
   private static Stream<TestCase> provideTestCases() {

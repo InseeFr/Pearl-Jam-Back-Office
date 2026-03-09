@@ -1,10 +1,10 @@
 package fr.insee.pearljam.api.campaign.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.api.campaign.dto.ReferentDto;
 import fr.insee.pearljam.api.web.annotation.NoDuplicateMediumAndType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;

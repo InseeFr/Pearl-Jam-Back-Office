@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.adapter;
 
-import fr.insee.pearljam.api.domain.Referent;
+import fr.insee.pearljam.domain.campaign.model.Referent;
 import fr.insee.pearljam.domain.campaign.port.serverside.ReferentRepository;
 import fr.insee.pearljam.infrastructure.campaign.jpa.ReferentJpaRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.model.contacthistory;
 
-import fr.insee.pearljam.api.domain.Source;
-import fr.insee.pearljam.api.domain.Title;
+import fr.insee.pearljam.domain.surveyunit.model.Source;
+import fr.insee.pearljam.domain.common.model.Title;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -81,4 +81,3 @@ class PersonTest {
         assertNotEquals(p1, p2);
     }
 }
-

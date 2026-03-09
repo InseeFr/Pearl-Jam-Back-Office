@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.model;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 
 import java.util.EnumSet;

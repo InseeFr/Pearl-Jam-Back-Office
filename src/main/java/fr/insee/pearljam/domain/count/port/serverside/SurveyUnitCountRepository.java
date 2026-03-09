@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.count.port.serverside;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;

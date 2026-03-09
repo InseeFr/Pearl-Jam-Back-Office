@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.jpa;
 
-import fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.api.interviewer.dto.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
@@ -52,7 +52,7 @@ public interface CommunicationRequestJpaRepository extends
    * @return A list of {@link InterviewerCountDto} containing interviewer IDs and their respective request counts.
    */
   @Query("""
-    SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto(i.id, COUNT(DISTINCT su.id))
+    SELECT new fr.insee.pearljam.api.interviewer.dto.InterviewerCountDto(i.id, COUNT(DISTINCT su.id))
     FROM communication_request cr
     INNER JOIN cr.surveyUnit su
     INNER JOIN su.campaign c

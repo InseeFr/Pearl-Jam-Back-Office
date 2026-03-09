@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.Interviewer;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.domain.interviewer.model.Interviewer;
+import fr.insee.pearljam.api.interviewer.dto.InterviewerContextDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,7 +30,7 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 	Set<String> findIdsByOrganizationUnitsAndCampaignId(@Param("ouIds") List<String> ouIds, @Param("campaignIds") List<String> campaignIds);
 
 	@Query("""
-			SELECT new fr.insee.pearljam.api.dto.interviewer.InterviewerContextDto(interv.id, interv.firstName, interv.lastName,
+			SELECT new fr.insee.pearljam.api.interviewer.dto.InterviewerContextDto(interv.id, interv.firstName, interv.lastName,
 			interv.email, interv.phoneNumber, interv.title)
 			FROM Interviewer interv
 			WHERE interv.id=?1""")

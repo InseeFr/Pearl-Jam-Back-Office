@@ -1,11 +1,10 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.domain.ClosingCauseType;
-import fr.insee.pearljam.api.domain.StateType;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDtoMappers;
+import fr.insee.pearljam.domain.closingcause.model.ClosingCauseType;
+import fr.insee.pearljam.domain.state.model.StateType;
 import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
-import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitProjection;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import lombok.AllArgsConstructor;

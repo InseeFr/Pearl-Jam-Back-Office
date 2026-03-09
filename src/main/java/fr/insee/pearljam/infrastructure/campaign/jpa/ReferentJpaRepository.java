@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.jpa;
 
-import fr.insee.pearljam.api.domain.Referent;
+import fr.insee.pearljam.domain.campaign.model.Referent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

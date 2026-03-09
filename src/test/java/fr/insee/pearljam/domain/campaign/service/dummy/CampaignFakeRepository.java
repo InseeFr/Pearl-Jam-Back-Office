@@ -1,9 +1,9 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.dto.campaign.CampaignDto;
-import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
-import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.api.campaign.dto.CampaignDto;
+import fr.insee.pearljam.api.campaign.dto.CampaignPreferenceDto;
+import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.api.repository.CampaignRepository;
 import lombok.Getter;
 import org.springframework.data.domain.Example;

@@ -1,8 +1,8 @@
 package fr.insee.pearljam.infrastructure.surveyunit.entity;
 
 
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.contactoutcome.model.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.count.model.OrganizationUnitLabel;
 import lombok.Setter;

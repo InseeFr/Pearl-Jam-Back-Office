@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.domain.surveyunit.model.InseeAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

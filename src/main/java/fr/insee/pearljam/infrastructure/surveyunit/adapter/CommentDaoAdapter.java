@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.surveyunit.adapter;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommentRepository;

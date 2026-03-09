@@ -1,12 +1,12 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.Response;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.dto.user.UserContextDto;
-import fr.insee.pearljam.api.dto.user.UserDto;
+import fr.insee.pearljam.domain.surveyunit.model.Response;
+import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
+import fr.insee.pearljam.api.user.dto.UserContextDto;
+import fr.insee.pearljam.api.user.dto.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.domain.exception.UserNotAssociatedToCampaignException;
+import fr.insee.pearljam.domain.user.port.userside.UserService;
 
 import java.util.List;
 

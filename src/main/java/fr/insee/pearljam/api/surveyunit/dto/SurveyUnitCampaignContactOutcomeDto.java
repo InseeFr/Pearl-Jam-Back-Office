@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.domain.contactoutcome.model.ContactOutcomeType;
 
 /**
  * Record representing a ContactOutcomeDto

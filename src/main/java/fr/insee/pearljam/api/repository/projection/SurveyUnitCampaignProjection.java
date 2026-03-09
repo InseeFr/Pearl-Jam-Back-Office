@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.repository.projection;
 
-import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.domain.closingcause.model.*;
+import fr.insee.pearljam.domain.contactoutcome.model.*;
+import fr.insee.pearljam.domain.state.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 
 public interface SurveyUnitCampaignProjection {

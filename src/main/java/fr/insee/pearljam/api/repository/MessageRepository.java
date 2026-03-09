@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.Message;
-import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.message.model.Message;
+import fr.insee.pearljam.api.message.dto.MessageDto;
+import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -48,7 +48,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 		    + "OR 'GUEST' IN (:organizationUnitIds) ", nativeQuery=true)
 		    List<Long> getAllOrganizationMessagesIds(@Param("organizationUnitIds") List<String> organizationUnitIds);
 	
-	@Query("SELECT new fr.insee.pearljam.api.dto.message.MessageDto(m.id, m.text, m.sender.id, m.date) "
+	@Query("SELECT new fr.insee.pearljam.api.message.dto.MessageDto(m.id, m.text, m.sender.id, m.date) "
 			  + "FROM Message m "
 			  + "WHERE m.id in (:ids)")
     List<MessageDto> findMessagesDtoByIds(@Param("ids") List<Long> ids);
@@ -59,14 +59,14 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	List<String> getMessageStatus(Long messageId, String interviewerId);
 	
 	
-	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
+	@Query("SELECT new fr.insee.pearljam.api.message.dto.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
 			  + "FROM CampaignMessageRecipient cmr "
 			  + "INNER JOIN Campaign camp "
 			  + "ON camp.id = cmr.campaign.id "
 			  + "WHERE cmr.message.id = :messageId ")
 	List<VerifyNameResponseDto> getCampaignRecipients(@Param("messageId") Long messageId);
 	
-	@Query("SELECT new fr.insee.pearljam.api.dto.message.VerifyNameResponseDto(ou.id,  'organization', ou.label) "
+	@Query("SELECT new fr.insee.pearljam.api.message.dto.VerifyNameResponseDto(ou.id,  'organization', ou.label) "
 			  + "FROM OUMessageRecipient oumr "
 			  + "INNER JOIN OrganizationUnit ou "
 			  + "ON ou.id = oumr.organizationUnit.id "

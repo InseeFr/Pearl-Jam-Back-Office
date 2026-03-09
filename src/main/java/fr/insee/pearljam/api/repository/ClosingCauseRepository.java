@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.ClosingCause;
+import fr.insee.pearljam.domain.closingcause.model.ClosingCause;
 import fr.insee.pearljam.domain.count.model.ClosingCauseCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

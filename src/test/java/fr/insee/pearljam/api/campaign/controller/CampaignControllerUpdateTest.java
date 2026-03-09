@@ -2,12 +2,11 @@ package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
-import fr.insee.pearljam.api.controller.CampaignController;
-import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
-import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;
 import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
-import fr.insee.pearljam.api.dto.referent.ReferentDto;
+import fr.insee.pearljam.api.campaign.dto.ReferentDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;

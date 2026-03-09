@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.User;
+import fr.insee.pearljam.domain.user.model.User;
 import fr.insee.pearljam.api.repository.UserRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

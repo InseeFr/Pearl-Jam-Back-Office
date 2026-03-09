@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
-import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;

@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
+import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitProjection;
 import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
-import fr.insee.pearljam.api.service.impl.ClosableSurveyUnitProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

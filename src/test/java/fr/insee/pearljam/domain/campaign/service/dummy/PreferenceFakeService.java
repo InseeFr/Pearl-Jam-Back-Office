@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.service.PreferenceService;
+import fr.insee.pearljam.domain.preference.port.userside.PreferenceService;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;

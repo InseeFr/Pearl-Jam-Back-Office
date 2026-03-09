@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.State;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.state.StateDto;
+import fr.insee.pearljam.domain.state.model.State;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
+import fr.insee.pearljam.api.state.dto.StateDto;
 
 /**
  * StateRepository is the repository using to access to State table in DB

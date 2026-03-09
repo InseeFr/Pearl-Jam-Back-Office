@@ -1,10 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.api.dto.address.AddressDto;
-import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.state.dto.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import jakarta.validation.Valid;
 

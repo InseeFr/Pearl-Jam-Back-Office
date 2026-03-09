@@ -1,12 +1,11 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import fr.insee.pearljam.api.domain.Address;
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.InseeAddress;
-import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
-import fr.insee.pearljam.api.domain.SampleIdentifier;
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.domain.surveyunit.model.Address;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.domain.surveyunit.model.InseeAddress;
+import fr.insee.pearljam.domain.surveyunit.model.InseeSampleIdentifier;
+import fr.insee.pearljam.domain.surveyunit.model.SampleIdentifier;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;

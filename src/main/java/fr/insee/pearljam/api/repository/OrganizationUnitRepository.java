@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.api.domain.OrganizationUnit;
-import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
+import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
 
 /**
  * OrganizationUnitRepository is the repository using to access to Organisation
@@ -23,7 +23,7 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
 	Optional<OrganizationUnit> findByIdIgnoreCase(String ouId);
 
 	@Query("""
-			SELECT new fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto(ou.id, ou.label)
+			SELECT new fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto(ou.id, ou.label)
 			FROM OrganizationUnit ou
 			WHERE lower(ou.id) = lower(:ouId)
 			""")

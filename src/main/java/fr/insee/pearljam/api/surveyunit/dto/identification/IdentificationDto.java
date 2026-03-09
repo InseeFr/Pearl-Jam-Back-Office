@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.dto.identification;
 
-import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 
 public interface IdentificationDto {

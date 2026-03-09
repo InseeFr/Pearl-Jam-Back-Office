@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.model;
 
-import fr.insee.pearljam.api.domain.ContactOutcomeType;
+import fr.insee.pearljam.domain.contactoutcome.model.ContactOutcomeType;
 
 public record ContactOutcome(
 		Long id,

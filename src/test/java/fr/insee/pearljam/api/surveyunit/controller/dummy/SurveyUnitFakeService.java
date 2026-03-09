@@ -1,16 +1,18 @@
 package fr.insee.pearljam.api.surveyunit.controller.dummy;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.dto.surveyunit.*;
-import fr.insee.pearljam.api.service.SurveyUnitService;
+import fr.insee.pearljam.domain.closingcause.model.*;
+import fr.insee.pearljam.domain.state.model.*;
+import fr.insee.pearljam.domain.surveyunit.model.*;
+import fr.insee.pearljam.api.state.dto.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;

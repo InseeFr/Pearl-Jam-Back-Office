@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.adapter.count;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.count.port.serverside.SurveyUnitCountRepository;
 import lombok.RequiredArgsConstructor;

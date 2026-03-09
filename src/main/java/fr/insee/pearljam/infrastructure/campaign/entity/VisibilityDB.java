@@ -4,8 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import fr.insee.pearljam.api.domain.Campaign;
-import fr.insee.pearljam.api.domain.OrganizationUnit;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

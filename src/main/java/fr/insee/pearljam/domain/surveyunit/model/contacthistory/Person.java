@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.model.contacthistory;
 
-import fr.insee.pearljam.api.domain.Title;
+import fr.insee.pearljam.domain.common.model.Title;
 
 import java.util.Objects;
 import java.util.Set;

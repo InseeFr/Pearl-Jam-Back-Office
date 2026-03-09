@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.surveyunit.adapter;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
-import fr.insee.pearljam.api.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
+import fr.insee.pearljam.api.interviewer.dto.InterviewerCountDto;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;

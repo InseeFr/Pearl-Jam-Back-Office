@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.domain.Message;
-import fr.insee.pearljam.api.dto.message.MessageDto;
-import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.message.model.Message;
+import fr.insee.pearljam.api.message.dto.MessageDto;
+import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

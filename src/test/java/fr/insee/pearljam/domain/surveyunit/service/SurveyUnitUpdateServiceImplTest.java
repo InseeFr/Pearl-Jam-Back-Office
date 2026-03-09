@@ -1,13 +1,15 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
+import fr.insee.pearljam.domain.campaign.model.*;
+import fr.insee.pearljam.domain.contactoutcome.model.*;
+import fr.insee.pearljam.domain.organizationunit.model.*;
+import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
 import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
-import fr.insee.pearljam.api.surveyunit.dto.contactHistory.NextContactHistoryDto;
+import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;

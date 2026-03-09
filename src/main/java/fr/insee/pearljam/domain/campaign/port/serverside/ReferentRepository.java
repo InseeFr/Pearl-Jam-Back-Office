@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.port.serverside;
 
-import fr.insee.pearljam.api.domain.Referent;
+import fr.insee.pearljam.domain.campaign.model.Referent;
 
 import java.util.List;
 

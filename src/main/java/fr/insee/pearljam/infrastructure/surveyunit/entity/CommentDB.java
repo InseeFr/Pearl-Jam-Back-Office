@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import fr.insee.pearljam.api.domain.SurveyUnit;
+import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import jakarta.persistence.Column;

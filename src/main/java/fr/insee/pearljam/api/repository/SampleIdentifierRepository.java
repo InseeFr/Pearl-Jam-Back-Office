@@ -3,8 +3,8 @@ package fr.insee.pearljam.api.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
-import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
+import fr.insee.pearljam.domain.surveyunit.model.InseeSampleIdentifier;
+import fr.insee.pearljam.api.surveyunit.dto.SampleIdentifiersDto;
 
 /**
 * SampleIdentifierRepository is the repository using to access to InseeSampleIdentifier table in DB

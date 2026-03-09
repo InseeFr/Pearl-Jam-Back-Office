@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.repository;
 
-import fr.insee.pearljam.api.domain.User;
+import fr.insee.pearljam.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
