@@ -1,21 +1,16 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.campaign.model.Campaign;
 import fr.insee.pearljam.api.campaign.dto.CampaignDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
 import lombok.Getter;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.FluentQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class CampaignFakeRepository implements CampaignRepository {
 
@@ -25,10 +20,18 @@ public class CampaignFakeRepository implements CampaignRepository {
     private Campaign savedCampaign;
 
     @Override
+    public Optional<Campaign> findById(String id) {
+        return campaigns.stream().filter(campaign -> campaign.getId().equalsIgnoreCase(id)).findFirst();
+    }
+
+    @Override
     public Optional<Campaign> findByIdIgnoreCase(String id) {
-        return campaigns.stream()
-                .filter(campaign -> campaign.getId().equalsIgnoreCase(id))
-                .findFirst();
+        return findById(id);
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return findById(id).isPresent();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignDto> findByUserAndManagementVisibility(List<String> organisationalUnitIds, String userId, Long date) {
+    public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return List.of();
     }
 
@@ -67,6 +70,33 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
+    public List<Campaign> findAll() {
+        return new ArrayList<>(campaigns);
+    }
+
+    @Override
+    public List<Campaign> findAllById(Iterable<String> ids) {
+        List<Campaign> result = new ArrayList<>();
+        for (String id : ids) {
+            findById(id).ifPresent(result::add);
+        }
+        return result;
+    }
+
+    @Override
+    public Campaign save(Campaign campaign) {
+        savedCampaign = campaign;
+        findById(campaign.getId()).ifPresent(campaigns::remove);
+        campaigns.add(campaign);
+        return campaign;
+    }
+
+    @Override
+    public void delete(Campaign campaign) {
+        campaigns.remove(campaign);
+    }
+
+    @Override
     public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) {
         return List.of();
     }
@@ -74,162 +104,6 @@ public class CampaignFakeRepository implements CampaignRepository {
     @Override
     public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) {
         return List.of();
-    }
-
-    @Override
-    public void flush() {
-        // to fill
-    }
-
-    @Override
-    public <S extends Campaign> S saveAndFlush(S entity) {
-        return null;
-    }
-
-    @Override
-    public <S extends Campaign> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return List.of();
-    }
-
-    @Override
-    public void deleteAllInBatch(Iterable<Campaign> entities) {
-        // to fill
-    }
-
-    @Override
-    public void deleteAllByIdInBatch(Iterable<String> strings) {
-        // to fill
-    }
-
-    @Override
-    public void deleteAllInBatch() {
-        // to fill
-    }
-
-    @Override
-    public Campaign getOne(String s) {
-        return null;
-    }
-
-    @Override
-    public Campaign getById(String s) {
-        return null;
-    }
-
-    @Override
-    public Campaign getReferenceById(String s) {
-        return null;
-    }
-
-    @Override
-    public <S extends Campaign> Optional<S> findOne(Example<S> example) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <S extends Campaign> List<S> findAll(Example<S> example) {
-        return List.of();
-    }
-
-    @Override
-    public <S extends Campaign> List<S> findAll(Example<S> example, Sort sort) {
-        return List.of();
-    }
-
-    @Override
-    public <S extends Campaign> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Campaign> long count(Example<S> example) {
-        return 0;
-    }
-
-    @Override
-    public <S extends Campaign> boolean exists(Example<S> example) {
-        return false;
-    }
-
-    @Override
-    public <S extends Campaign, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
-        return null;
-    }
-
-    @Override
-    public <S extends Campaign> S save(S campaign) {
-        savedCampaign = campaign;
-        Optional<Campaign> campaignToUpdate = findById(campaign.getId());
-        if(campaignToUpdate.isPresent()) {
-            campaigns.remove(campaignToUpdate);
-        }
-        campaigns.add(campaign);
-        return campaign;
-    }
-
-    @Override
-    public <S extends Campaign> List<S> saveAll(Iterable<S> entities) {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Campaign> findById(String id) {
-        return findByIdIgnoreCase(id);
-    }
-
-    @Override
-    public boolean existsById(String s) {
-        return false;
-    }
-
-    @Override
-    public List<Campaign> findAll() {
-        return List.of();
-    }
-
-    @Override
-    public List<Campaign> findAllById(Iterable<String> strings) {
-        return List.of();
-    }
-
-    @Override
-    public long count() {
-        return 0;
-    }
-
-    @Override
-    public void deleteById(String s) {
-        // to fill
-    }
-
-    @Override
-    public void delete(Campaign entity) {
-        // to fill
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends String> strings) {
-        // to fill
-    }
-
-    @Override
-    public void deleteAll(Iterable<? extends Campaign> entities) {
-        // to fill
-    }
-
-    @Override
-    public void deleteAll() {
-        // to fill
-    }
-
-    @Override
-    public List<Campaign> findAll(Sort sort) {
-        return List.of();
-    }
-
-    @Override
-    public Page<Campaign> findAll(Pageable pageable) {
-        return null;
     }
 
     public void addCampaign(Campaign campaign) {

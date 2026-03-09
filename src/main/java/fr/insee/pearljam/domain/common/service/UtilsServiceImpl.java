@@ -19,9 +19,9 @@ import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.domain.user.model.User;
 import fr.insee.pearljam.api.surveyunit.dto.InterrogationOkNokDto;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.domain.common.port.userside.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.serverside.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.user.port.serverside.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

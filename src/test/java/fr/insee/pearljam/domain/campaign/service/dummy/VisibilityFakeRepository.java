@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
@@ -53,6 +54,11 @@ public class VisibilityFakeRepository implements VisibilityRepository {
                 1627845600000L, 1627932000000L, 1628018400000L,
                 1628104800000L, 1628191200000L, 1628277600000L,
                 true, "mail", "tel");
+    }
+
+    @Override
+    public List<CampaignVisibilityPeriod> findCampaignsBySurveyUnitIds(List<String> surveyUnitIds) {
+        return List.of();
     }
 
     // Additional methods for testing purposes

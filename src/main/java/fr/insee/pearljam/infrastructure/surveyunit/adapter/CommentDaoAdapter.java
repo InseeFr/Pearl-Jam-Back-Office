@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.surveyunit.adapter;
 
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommentRepository;
 import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class CommentDaoAdapter implements CommentRepository {
-    private final SurveyUnitRepository surveyUnitRepository;
+    private final SurveyUnitJpaRepository surveyUnitRepository;
 
     @Override
     @Transactional

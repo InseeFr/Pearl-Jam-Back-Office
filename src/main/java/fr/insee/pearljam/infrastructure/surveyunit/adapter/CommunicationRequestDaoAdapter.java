@@ -2,7 +2,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.adapter;
 
 import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
 import fr.insee.pearljam.api.interviewer.dto.InterviewerCountDto;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
 import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
@@ -24,7 +24,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class CommunicationRequestDaoAdapter implements CommunicationRequestRepository {
 
-  private final SurveyUnitRepository surveyUnitRepository;
+  private final SurveyUnitJpaRepository surveyUnitRepository;
   private final CommunicationTemplateJpaRepository communicationTemplateRepository;
   private final CommunicationRequestJpaRepository communicationRequestRepository;
 

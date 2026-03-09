@@ -2,7 +2,6 @@ package fr.insee.pearljam.integration.campaign;
 
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
@@ -10,6 +9,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +49,7 @@ class CampaignIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private CampaignRepository campaignRepository;
+    private CampaignJpaRepository campaignRepository;
 
 
     @Test

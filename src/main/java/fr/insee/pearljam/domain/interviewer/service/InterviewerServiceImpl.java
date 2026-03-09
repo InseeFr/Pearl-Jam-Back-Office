@@ -1,21 +1,21 @@
 package fr.insee.pearljam.domain.interviewer.service;
 
 import fr.insee.pearljam.api.campaign.dto.output.CampaignVisibilityPeriodDto;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
+import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.interviewer.model.Interviewer;
 import fr.insee.pearljam.domain.surveyunit.model.Response;
 import fr.insee.pearljam.api.interviewer.dto.InterviewerContextDto;
 import fr.insee.pearljam.api.interviewer.dto.InterviewerDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
 import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.exception.InterviewerNotFoundException;
+import fr.insee.pearljam.domain.interviewer.port.serverside.InterviewerRepository;
 import fr.insee.pearljam.domain.interviewer.port.userside.InterviewerService;
 import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
 import fr.insee.pearljam.domain.user.port.userside.UserService;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignVisibilityPeriodProjection;
-import fr.insee.pearljam.infrastructure.campaign.jpa.VisibilityJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class InterviewerServiceImpl implements InterviewerService {
 
 	private final InterviewerRepository interviewerRepository;
-	private final VisibilityJpaRepository visibilityRepository;
+	private final VisibilityRepository visibilityRepository;
 	private final UserService userService;
 	private final SurveyUnitService surveyUnitService;
 	private final InterviewerCountRepository campaignInterviewerRepository;
@@ -50,10 +50,9 @@ public class InterviewerServiceImpl implements InterviewerService {
 		List<String> suIds = surveyUnitService.getAllIdsByInterviewerId(interviewerId);
 		if (suIds.isEmpty()) return List.of();
 
-		List<CampaignVisibilityPeriodProjection> campaignVisibilitiesDB = visibilityRepository.findCampaignsBySurveyUnitIds(suIds);
+		List<CampaignVisibilityPeriod> campaignVisibilities = visibilityRepository.findCampaignsBySurveyUnitIds(suIds);
 
-		return campaignVisibilitiesDB.stream()
-				.map(CampaignVisibilityPeriodProjection::toDomain)
+		return campaignVisibilities.stream()
 				.map(CampaignVisibilityPeriodDto::fromDomain)
 				.toList();
 	}

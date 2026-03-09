@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.insee.pearljam.domain.closingcause.model.ClosingCause;
 import fr.insee.pearljam.domain.closingcause.model.ClosingCauseType;
 import fr.insee.pearljam.api.message.dto.MessageDto;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.MessageRepository;
+import fr.insee.pearljam.infrastructure.closingcause.jpa.ClosingCauseJpaRepository;
+import fr.insee.pearljam.infrastructure.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(FixedDateServiceConfiguration.class)
 class TestNoAuth {
 
-	private final MessageRepository messageRepository;
-	private final ClosingCauseRepository closingCauseRepository;
+	private final MessageJpaRepository messageRepository;
+	private final ClosingCauseJpaRepository closingCauseRepository;
 	private final MockMvc mockMvc;
 
 	@Test

@@ -1,6 +1,7 @@
 package fr.insee.pearljam.infrastructure.campaign.adapter;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
@@ -51,5 +52,16 @@ public class VisibilityDaoAdapter implements VisibilityRepository {
     public Visibility getVisibilityBySurveyUnitId(String surveyUnitId) {
         return VisibilityDB.toModel(crudRepository
                 .getVisibilityBySurveyUnitId(surveyUnitId));
+    }
+
+    @Override
+    public List<CampaignVisibilityPeriod> findCampaignsBySurveyUnitIds(List<String> surveyUnitIds) {
+        return crudRepository.findCampaignsBySurveyUnitIds(surveyUnitIds).stream()
+                .map(campaignVisibilityPeriodProjection -> new CampaignVisibilityPeriod(
+                        campaignVisibilityPeriodProjection.getCampaignId(),
+                        campaignVisibilityPeriodProjection.getCampaignLabel(),
+                        campaignVisibilityPeriodProjection.getManagementStartDate(),
+                        campaignVisibilityPeriodProjection.getEndDate()))
+                .toList();
     }
 }

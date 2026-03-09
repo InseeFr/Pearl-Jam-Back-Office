@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.serverside.ReferentRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.ReferentService;
 import fr.insee.pearljam.domain.exception.CampaignNotFoundException;

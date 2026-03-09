@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.campaign.port.serverside;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
 
@@ -45,4 +46,6 @@ public interface VisibilityRepository {
      * @return the visibility for a survey unit
      */
     Visibility getVisibilityBySurveyUnitId(String surveyUnitId);
+
+    List<CampaignVisibilityPeriod> findCampaignsBySurveyUnitIds(List<String> surveyUnitIds);
 }

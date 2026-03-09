@@ -3,9 +3,9 @@ package fr.insee.pearljam.infrastructure.campaign.adapter;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.domain.organizationunit.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
+import fr.insee.pearljam.infrastructure.organizationunit.jpa.OrganizationUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
@@ -33,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 class VisibilityDaoAdapterTest {
     @Autowired
-    private CampaignRepository campaignRepository;
+    private CampaignJpaRepository campaignRepository;
 
     @Autowired
-    private SurveyUnitRepository surveyUnitRepository;
+    private SurveyUnitJpaRepository surveyUnitRepository;
 
     @Autowired
-    private OrganizationUnitRepository organizationUnitRepository;
+    private OrganizationUnitJpaRepository organizationUnitRepository;
 
     @Autowired
     private VisibilityDaoAdapter visibilityDaoAdapter;

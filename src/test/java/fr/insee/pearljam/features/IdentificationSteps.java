@@ -17,9 +17,9 @@ import fr.insee.pearljam.api.surveyunit.dto.ContactAttemptDto;
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
 import fr.insee.pearljam.api.state.dto.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.infrastructure.interviewer.jpa.InterviewerJpaRepository;
+import fr.insee.pearljam.infrastructure.organizationunit.jpa.OrganizationUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
 import fr.insee.pearljam.domain.campaign.port.userside.CampaignService;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
@@ -63,9 +63,9 @@ public class IdentificationSteps {
 	@Autowired
 	MockMvc mockMvc;
 
-	private final SurveyUnitRepository surveyUnitRepository;
-	private final OrganizationUnitRepository organizationUnitRepository;
-	private final InterviewerRepository interviewerRepository;
+	private final SurveyUnitJpaRepository surveyUnitRepository;
+	private final OrganizationUnitJpaRepository organizationUnitRepository;
+	private final InterviewerJpaRepository interviewerRepository;
 	private final CampaignService campaignService;
 	final ObjectMapper objectMapper = new ObjectMapper();
 
