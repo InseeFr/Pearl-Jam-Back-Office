@@ -38,7 +38,6 @@ class CampaignControllerTest {
     private CampaignFakeService campaignService;
     private final String deletePath = "/api/campaign/campaign-id";
     private final String getPath = "/api/campaign/campaign-id";
-    private final String portalDataPath = "/api/campaign/test-campaign/portal-data";
 
 
     @BeforeEach
@@ -141,6 +140,7 @@ class CampaignControllerTest {
 
         campaignService.setPortalDataToReturn(portalData);
 
+        String portalDataPath = "/api/campaign/test-campaign/portal-data";
         MvcResult mvcResult = mockMvc.perform(get(portalDataPath)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

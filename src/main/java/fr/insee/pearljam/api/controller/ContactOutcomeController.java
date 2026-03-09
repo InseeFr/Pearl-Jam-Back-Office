@@ -50,7 +50,7 @@ public class ContactOutcomeController {
    * Return the contact-outcome type count for each campaign
    *
    * @param date use a different date (optional)
-   * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
+   * @return {@link ContactOutcomeTypeCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")

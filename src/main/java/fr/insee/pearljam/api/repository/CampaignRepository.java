@@ -33,8 +33,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
       camp.email,
       camp.identificationConfiguration,
       camp.contactOutcomeConfiguration,
-      camp.contactAttemptConfiguration,
-      camp.collectNextContacts
+			  camp.contactAttemptConfiguration,
+			  camp.collectNextContacts
     )
     FROM Campaign camp
       JOIN camp.visibilities vi
@@ -90,7 +90,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 	);
 
 
-
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM Campaign camp "
 			+ "WHERE camp.id=?1")
@@ -112,7 +111,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
         camp.id, camp.label, camp.email,
         camp.identificationConfiguration,
         camp.contactOutcomeConfiguration,
-        camp.contactAttemptConfiguration
+        camp.contactAttemptConfiguration,
+        camp.collectNextContacts
     )
     FROM Campaign camp
     JOIN camp.visibilities vi

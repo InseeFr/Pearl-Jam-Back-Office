@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
+import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.service.PreferenceService;
 import org.springframework.http.HttpStatus;
 
@@ -9,5 +10,10 @@ public class PreferenceFakeService implements PreferenceService {
     @Override
     public HttpStatus setPreferences(List<String> listPreference, String userId) {
         return null;
+    }
+
+    @Override
+    public void deletePreferences(String userId) throws NotFoundException {
+        // no-impl
     }
 }

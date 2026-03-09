@@ -155,8 +155,6 @@ INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi,
     (54, 'InseeSampleIdentifier', '54', 54, '1', 54,  '64', 54, 54, 54, 54, 54, 1),
     (55, 'InseeSampleIdentifier', '55', 55, '1', 55,  '65', 55, 55, 55, 55, 55, 1);
 
-
-
 INSERT INTO public.USER (id, first_name, last_name, organization_unit_id) VALUES
     ('GESTIO1', 'Gertrude', 'Gestionnaire1', 'OU-NATIONAL'),
     ('GESTIO2', 'Gontrand', 'Gestionnaire2', 'OU-NORTH'),
@@ -394,7 +392,6 @@ INSERT INTO visibility (
         EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
         true, 'indtel@nooneknows.fr', '0321234567');
 
-
 INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES
     ('11', 'business-id-11', TRUE, 1, 'SIMPSONS2020X00', 'INTERV5', 1, 'OU-NORTH'),
     ('12', 'business-id-12', TRUE, 2, 'SIMPSONS2020X00', 'INTERV5', 2, 'OU-NORTH'),
@@ -479,7 +476,6 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('SABIANE47', 'business-id-sabiane07', TRUE, 45, 'AQV2023X00', 'INTERV1', 45, 'OU-NORTH'),
     ('SABIANE48', 'business-id-sabiane08', TRUE, 46, 'AQV2023X00', 'INTERV1', 46, 'OU-NORTH'),
     ('SABIANE49', 'business-id-sabiane09', TRUE, 47, 'AQV2023X00', 'INTERV1', 47, 'OU-NORTH');
-
 
 INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, privileged, survey_unit_id, panel, contact_history_type) VALUES
     (1,  'test@test.com', 'Ted',         'Farmer',      315532800000, 0, TRUE,  '11', false, NULL),
@@ -638,9 +634,6 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
     (78, TRUE, '+33778899112', 0, 70),
     (79, TRUE, '+33771755198', 0, 74),
     (80, TRUE, '+33771766666', 0, 75);
-
-
-
 
 
 INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES
