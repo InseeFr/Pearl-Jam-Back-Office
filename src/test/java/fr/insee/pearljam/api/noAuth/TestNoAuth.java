@@ -2,11 +2,11 @@ package fr.insee.pearljam.api.noAuth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.insee.pearljam.domain.closingcause.model.ClosingCause;
-import fr.insee.pearljam.domain.closingcause.model.ClosingCauseType;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.api.message.dto.MessageDto;
-import fr.insee.pearljam.infrastructure.closingcause.jpa.ClosingCauseJpaRepository;
-import fr.insee.pearljam.infrastructure.message.jpa.MessageJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ class TestNoAuth {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
 		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
 	}
 

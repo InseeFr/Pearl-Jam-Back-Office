@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.security.adapter;
 
-import fr.insee.pearljam.domain.security.port.serverside.AuthenticatedUserHelperPort;
+import fr.insee.pearljam.domain.security.port.out.AuthenticatedUserHelperPort;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

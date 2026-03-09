@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;

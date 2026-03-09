@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.configuration.log;
 
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

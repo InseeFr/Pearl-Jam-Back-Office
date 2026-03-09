@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.security.service;
 
-import fr.insee.pearljam.domain.security.port.serverside.AuthenticatedUserHelperPort;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import fr.insee.pearljam.domain.security.port.out.AuthenticatedUserHelperPort;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

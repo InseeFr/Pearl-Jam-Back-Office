@@ -1,18 +1,19 @@
 package fr.insee.pearljam.api.surveyunit.controller.dummy;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.domain.closingcause.model.*;
-import fr.insee.pearljam.domain.state.model.*;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
+import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.api.state.dto.StateDto;
-import fr.insee.pearljam.api.surveyunit.dto.*;
-import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
-import fr.insee.pearljam.domain.exception.PersonNotFoundException;
-import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
+import fr.insee.pearljam.api.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +67,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public SurveyUnit getSurveyUnit(String surveyUnitId) {
+    public SurveyUnitDB getSurveyUnit(String surveyUnitId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -121,7 +122,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public List<SurveyUnitTempZone> getAllSurveyUnitTempZone() {
+    public List<SurveyUnitTempZoneDB> getAllSurveyUnitTempZone() {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -151,7 +152,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnit surveyUnit) {
+    public SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnitDB surveyUnit) {
         return null;
     }
 

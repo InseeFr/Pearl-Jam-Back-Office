@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.model;
 
-import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

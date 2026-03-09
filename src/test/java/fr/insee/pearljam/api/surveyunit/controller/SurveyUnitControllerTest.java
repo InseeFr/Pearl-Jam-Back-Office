@@ -1,15 +1,15 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
-import fr.insee.pearljam.domain.exception.PersonNotFoundException;
-import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import org.junit.jupiter.api.BeforeEach;

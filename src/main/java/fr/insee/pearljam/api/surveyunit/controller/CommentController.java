@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.domain.surveyunit.port.userside.CommentService;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.domain.surveyunit.port.in.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

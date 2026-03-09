@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.campaign.controller;
 import fr.insee.pearljam.api.campaign.dto.output.CommunicationTemplateResponseDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
-import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
+import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;

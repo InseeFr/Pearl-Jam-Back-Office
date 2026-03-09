@@ -4,12 +4,12 @@ import java.util.List;
 
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.campaign.dto.input.VisibilityUpdateDto;
-import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
+import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

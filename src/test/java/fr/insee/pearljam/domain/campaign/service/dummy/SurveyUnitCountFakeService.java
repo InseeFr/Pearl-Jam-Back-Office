@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
-import fr.insee.pearljam.domain.count.port.userside.SurveyUnitCountService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCountService;
 
 import java.util.List;
 

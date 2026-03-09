@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.surveyunit.dto.InterrogationOkNokDto;
-import fr.insee.pearljam.domain.common.port.userside.UtilsService;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.InterrogationOkNokDto;
+import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 

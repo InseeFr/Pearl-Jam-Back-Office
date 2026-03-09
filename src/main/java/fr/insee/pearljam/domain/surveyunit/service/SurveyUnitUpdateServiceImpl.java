@@ -1,27 +1,31 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.api.surveyunit.dto.person.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestCreateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.domain.contactoutcome.model.*;
-import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.api.surveyunit.dto.*;
 import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
-import fr.insee.pearljam.domain.campaign.port.serverside.CommunicationTemplateRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.CommunicationTemplateNotFoundException;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.campaign.port.out.CommunicationTemplateRepository;
+import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
+import fr.insee.pearljam.domain.campaign.service.exception.CommunicationTemplateNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
-import fr.insee.pearljam.domain.surveyunit.model.ContactOutcome;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcome;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
-import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitUpdateService;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitUpdateService;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.IdentificationDB;
 
 import java.util.*;
 
@@ -44,7 +48,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
 
     @Transactional
     @Override
-    public void updateSurveyUnitInfos(SurveyUnit surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
+    public void updateSurveyUnitInfos(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
         if(surveyUnitUpdateDto.comments() != null) {
             Set<Comment> commentsToUpdate = surveyUnitUpdateDto.comments().stream()
                     .map(commentDto -> CommentDto.toModel(surveyUnit.getId(), commentDto))
@@ -106,7 +110,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
      * @param surveyUnit the survey unit to update
      * @return a new communication request
      */
-    private CommunicationRequest getNewCommunicationRequest(CommunicationRequestCreateDto communicationRequestToCreate, SurveyUnit surveyUnit, Long readyTimestamp) {
+    private CommunicationRequest getNewCommunicationRequest(CommunicationRequestCreateDto communicationRequestToCreate, SurveyUnitDB surveyUnit, Long readyTimestamp) {
         String campaignId = surveyUnit.getCampaign().getId();
         CommunicationTemplate communicationTemplate = communicationTemplateRepository
                 .findCommunicationTemplate(campaignId, communicationRequestToCreate.communicationTemplateId())

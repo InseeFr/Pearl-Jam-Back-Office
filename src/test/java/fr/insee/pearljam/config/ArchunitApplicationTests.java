@@ -17,7 +17,7 @@ class ArchunitApplicationTests {
     private Architectures.LayeredArchitecture architecture;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         String projectPackage = "fr.insee.pearljam";
         importedClasses = new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
@@ -28,8 +28,8 @@ class ArchunitApplicationTests {
                 .consideringOnlyDependenciesInLayers()
                 .layer("application").definedBy("..api..")
                 .layer("old.service").definedBy("..api..service..")
-                .layer("domain.port.userside").definedBy("..domain..port.userside..")
-                .layer("domain.port.serverside").definedBy("..domain..port.serverside..")
+                .layer("domain.port.in").definedBy("..domain..port.in..")
+                .layer("domain.port.out").definedBy("..domain..port.out..")
                 .layer("domain.model").definedBy("..domain..model..")
                 .layer("domain.service").definedBy("..domain..service..")
                 .layer("infrastructure").definedBy("..infrastructure..")
@@ -54,14 +54,14 @@ class ArchunitApplicationTests {
     @Test
     void usersidePortsShouldOnlyBeAccessedByControllerAndServices() {
         architecture
-                .whereLayer("domain.port.userside").mayOnlyBeAccessedByLayers("domain.service", "application")
+                .whereLayer("domain.port.in").mayOnlyBeAccessedByLayers("domain.service", "application")
                 .check(importedClasses);
     }
 
     @Test
     void serversidePortsShouldOnlyBeAccessedByDaoAndServices() {
         architecture
-                .whereLayer("domain.port.serverside").mayOnlyBeAccessedByLayers("domain.service", "infrastructure.adapter", "old.service")
+                .whereLayer("domain.port.out").mayOnlyBeAccessedByLayers("domain.service", "infrastructure.adapter", "old.service")
                 .check(importedClasses);
     }
 
@@ -69,8 +69,8 @@ class ArchunitApplicationTests {
     void modelsShouldBeAccessedByAllLayers() {
         architecture
                 .whereLayer("domain.model").mayOnlyBeAccessedByLayers(
-                        "domain.port.userside",
-                        "domain.port.serverside",
+                        "domain.port.in",
+                        "domain.port.out",
                         "domain.service",
                         "infrastructure.adapter",
                         "application",

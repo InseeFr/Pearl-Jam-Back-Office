@@ -3,15 +3,15 @@ package fr.insee.pearljam.api.campaign.controller.dummy;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.api.campaign.dto.CampaignCommonsDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignSensitivityDto;
 import fr.insee.pearljam.api.campaign.dto.PortalDataDto;
-import fr.insee.pearljam.api.count.dto.CountDto;
-import fr.insee.pearljam.domain.campaign.port.userside.CampaignService;
-import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.api.campaign.dto.CountDto;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
+import fr.insee.pearljam.domain.campaign.service.exception.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -104,7 +104,7 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public Optional<Campaign> findById(String campaignId) {
+    public Optional<CampaignDB> findById(String campaignId) {
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 

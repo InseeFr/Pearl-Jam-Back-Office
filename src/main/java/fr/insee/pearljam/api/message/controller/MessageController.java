@@ -4,11 +4,11 @@ import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.api.message.dto.MailDto;
-import fr.insee.pearljam.api.message.dto.WsText;
-import fr.insee.pearljam.domain.message.port.userside.MessageService;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import fr.insee.pearljam.infrastructure.mail.MailSender;
-import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
+import fr.insee.pearljam.api.message.dto.WsTextDto;
+import fr.insee.pearljam.domain.message.port.in.MessageService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.infrastructure.http.mail.sender.MailSender;
+import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -116,7 +116,7 @@ public class MessageController{
 	 */
 	@Operation(summary = "Update Messages with campaigns or interviewers listed in request body")
 	@PostMapping(Constants.API_VERIFYNAME)
-	public ResponseEntity<Object> postMessage(@RequestBody WsText name) {
+	public ResponseEntity<Object> postMessage(@RequestBody WsTextDto name) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		String text = name.getText();
 		List<VerifyNameResponseDto> resp = messageService.verifyName(text, userId);

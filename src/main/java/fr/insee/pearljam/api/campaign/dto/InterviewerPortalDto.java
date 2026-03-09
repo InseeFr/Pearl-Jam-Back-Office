@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.campaign.dto;
 
-import fr.insee.pearljam.domain.count.model.InterviewerCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 
 public record InterviewerPortalDto(
     String firstName,

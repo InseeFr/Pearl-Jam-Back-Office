@@ -17,24 +17,24 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.insee.pearljam.domain.campaign.model.Campaign;
-import fr.insee.pearljam.domain.interviewer.model.Interviewer;
-import fr.insee.pearljam.domain.message.model.Message;
-import fr.insee.pearljam.domain.message.model.MessageStatus;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
+import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
+import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageStatusDB;
 import fr.insee.pearljam.domain.message.model.MessageStatusType;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.user.model.User;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
-import fr.insee.pearljam.domain.interviewer.port.serverside.InterviewerRepository;
-import fr.insee.pearljam.domain.message.port.serverside.MessageRepository;
-import fr.insee.pearljam.domain.message.port.serverside.MessageStatusRepository;
-import fr.insee.pearljam.domain.message.port.userside.MessageService;
-import fr.insee.pearljam.domain.organizationunit.port.serverside.OrganizationUnitRepository;
-import fr.insee.pearljam.domain.user.port.serverside.UserRepository;
-import fr.insee.pearljam.domain.user.port.userside.UserService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
+import fr.insee.pearljam.domain.message.port.out.MessageRepository;
+import fr.insee.pearljam.domain.message.port.out.MessageStatusRepository;
+import fr.insee.pearljam.domain.message.port.in.MessageService;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,21 +55,21 @@ public class MessageServiceImpl implements MessageService {
 	private static final String NOTIFICATIONS = "/notifications/";
 
 	public HttpStatus markAsRead(Long id, String idep) {
-		Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
-		Optional<Message> msg = messageRepository.findById(id);
+		Optional<InterviewerDB> interv = interviewerRepository.findByIdIgnoreCase(idep);
+		Optional<MessageDB> msg = messageRepository.findById(id);
 		if (interv.isPresent() && msg.isPresent()) {
 			log.info("trying to save");
-			Message message = msg.get();
-			List<MessageStatus> statusList = message.getMessageStatus();
+			MessageDB message = msg.get();
+			List<MessageStatusDB> statusList = message.getMessageStatus();
 			if (statusList == null) {
 				statusList = new ArrayList<>();
 			} else {
 				message.getMessageStatus().removeAll(statusList);
 			}
-			List<MessageStatus> newList = statusList.stream()
+			List<MessageStatusDB> newList = statusList.stream()
 					.filter(c -> !c.getInterviewer().getId().equals(interv.get().getId()))
 					.collect(Collectors.toList());
-			newList.add(new MessageStatus(message, interv.get(), MessageStatusType.REA));
+			newList.add(new MessageStatusDB(message, interv.get(), MessageStatusType.REA));
 			message.setMessageStatus(newList);
 			messageRepository.save(message);
 			return HttpStatus.OK;
@@ -78,21 +78,21 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	public HttpStatus markAsDeleted(Long id, String idep) {
-		Optional<Interviewer> interv = interviewerRepository.findByIdIgnoreCase(idep);
-		Optional<Message> msg = messageRepository.findById(id);
+		Optional<InterviewerDB> interv = interviewerRepository.findByIdIgnoreCase(idep);
+		Optional<MessageDB> msg = messageRepository.findById(id);
 		if (interv.isPresent() && msg.isPresent()) {
 			log.info("trying to save");
-			Message message = msg.get();
-			List<MessageStatus> statusList = message.getMessageStatus();
+			MessageDB message = msg.get();
+			List<MessageStatusDB> statusList = message.getMessageStatus();
 			if (statusList == null) {
 				statusList = new ArrayList<>();
 			} else {
 				message.getMessageStatus().removeAll(statusList);
 			}
-			List<MessageStatus> newList = statusList.stream()
+			List<MessageStatusDB> newList = statusList.stream()
 					.filter(c -> !c.getInterviewer().getId().equals(interv.get().getId()))
 					.collect(Collectors.toList());
-			newList.add(new MessageStatus(message, interv.get(), MessageStatusType.DEL));
+			newList.add(new MessageStatusDB(message, interv.get(), MessageStatusType.DEL));
 			message.setMessageStatus(newList);
 			messageRepository.save(message);
 			return HttpStatus.OK;
@@ -101,11 +101,11 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	public HttpStatus addMessage(String text, List<String> recipients, String userId) {
-		Optional<User> optSender = userRepository.findByIdIgnoreCase(userId);
-		User sender;
-		ArrayList<OrganizationUnit> ouMessageRecipients = new ArrayList<>();
-		ArrayList<Interviewer> interviewerMessageRecipients = new ArrayList<>();
-		ArrayList<Campaign> campaignMessageRecipients = new ArrayList<>();
+		Optional<UserDB> optSender = userRepository.findByIdIgnoreCase(userId);
+		UserDB sender;
+		ArrayList<OrganizationUnitDB> ouMessageRecipients = new ArrayList<>();
+		ArrayList<InterviewerDB> interviewerMessageRecipients = new ArrayList<>();
+		ArrayList<CampaignDB> campaignMessageRecipients = new ArrayList<>();
 		List<String> userOUIds = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 
@@ -115,12 +115,12 @@ public class MessageServiceImpl implements MessageService {
 			log.warn("Message sender is null");
 			sender = null;
 		}
-		Message message = new Message(text, sender, System.currentTimeMillis());
+		MessageDB message = new MessageDB(text, sender, System.currentTimeMillis());
 
 		for (String recipient : recipients) {
 			if (recipient.equalsIgnoreCase("All") || recipient.equalsIgnoreCase("Tous")) {
 				for (String OUId : userOUIds) {
-					Optional<OrganizationUnit> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
+					Optional<OrganizationUnitDB> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
 					if (ouRecipient.isEmpty()) {
 						return HttpStatus.BAD_REQUEST;
 
@@ -128,7 +128,7 @@ public class MessageServiceImpl implements MessageService {
 					ouMessageRecipients.add(ouRecipient.get());
 				}
 			} else {
-				Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
+				Optional<CampaignDB> camp = campaignRepository.findByIdIgnoreCase(recipient);
 				if (camp.isPresent()) {
 					campaignMessageRecipients.add(camp.get());
 					interviewerMessageRecipients.addAll(
@@ -143,19 +143,19 @@ public class MessageServiceImpl implements MessageService {
 
 		}
 
-		List<Interviewer> uniqueInterviwerRecipients = interviewerMessageRecipients.stream()
-				.collect(collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(Interviewer::getId))),
+		List<InterviewerDB> uniqueInterviwerRecipients = interviewerMessageRecipients.stream()
+				.collect(collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(InterviewerDB::getId))),
 						ArrayList::new));
 		message.setOuMessageRecipients(ouMessageRecipients);
 		message.setCampaignMessageRecipients(campaignMessageRecipients);
 
-		for (Interviewer recipient : uniqueInterviwerRecipients) {
+		for (InterviewerDB recipient : uniqueInterviwerRecipients) {
 			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
 			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
 					"new message");
 		}
 
-		for (OrganizationUnit recipient : ouMessageRecipients) {
+		for (OrganizationUnitDB recipient : ouMessageRecipients) {
 			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
 			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
 					"new message");
@@ -229,7 +229,7 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	@Transactional
 	public void deleteMessageByUserId(String userId) {
-		List<Message> lstMessage = messageRepository.findAllBySenderId(userId);
+		List<MessageDB> lstMessage = messageRepository.findAllBySenderId(userId);
 		lstMessage.stream().forEach(msg -> {
 			messageRepository.deleteCampaignMessageRecipientByMessageId(msg.getId());
 			messageRepository.deleteOUMessageRecipientByMessageId(msg.getId());

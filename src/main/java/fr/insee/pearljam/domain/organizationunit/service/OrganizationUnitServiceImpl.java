@@ -1,21 +1,21 @@
 package fr.insee.pearljam.domain.organizationunit.service;
 
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
-import fr.insee.pearljam.domain.user.model.User;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitTreeDto;
-import fr.insee.pearljam.api.user.dto.UserContextDto;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.exception.OrganisationUnitAlreadyExistsException;
-import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
-import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
-import fr.insee.pearljam.domain.message.port.serverside.MessageRepository;
-import fr.insee.pearljam.domain.organizationunit.port.serverside.OrganizationUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.SurveyUnitRepository;
-import fr.insee.pearljam.domain.user.port.serverside.UserRepository;
-import fr.insee.pearljam.domain.organizationunit.port.userside.OrganizationUnitService;
+import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.domain.organizationunit.service.exception.OrganisationUnitAlreadyExistsException;
+import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
+import fr.insee.pearljam.domain.campaign.service.exception.OrganizationalUnitNotFoundException;
+import fr.insee.pearljam.domain.message.port.out.MessageRepository;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
+import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -68,7 +68,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	private void addUsers(List<OrganizationUnitContextDto> organizationUnitDtos) throws OrganizationalUnitNotFoundException, UserAlreadyExistsException {
 
 		for (OrganizationUnitContextDto ouDto : organizationUnitDtos) {
-			OrganizationUnit ouEntity = organizationUnitRepository
+			OrganizationUnitDB ouEntity = organizationUnitRepository
 					.findById(ouDto.getId())
 					.orElseThrow(OrganizationalUnitNotFoundException::new);
 
@@ -81,13 +81,13 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 	}
 
 
-	private void insertUserForOrganisationUnitCreation(UserContextDto user, OrganizationUnit ouEntity) throws UserAlreadyExistsException {
+	private void insertUserForOrganisationUnitCreation(UserContextDto user, OrganizationUnitDB ouEntity) throws UserAlreadyExistsException {
 
-		Optional<User> userOpt = userRepository.findById(user.getId());
+		Optional<UserDB> userOpt = userRepository.findById(user.getId());
 		if (userOpt.isPresent()) {
 			throw new UserAlreadyExistsException("Found duplicate user with id: " + user.getId());
 		}
-		userRepository.save(new User(user.getId(), user.getFirstName(), user.getLastName(), ouEntity));
+		userRepository.save(new UserDB(user.getId(), user.getFirstName(), user.getLastName(), ouEntity));
 
 
 	}
@@ -103,7 +103,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 			for (OrganizationUnitContextDto ouDto : remainingToAdd) {
 				if (ouDto.getOrganisationUnitRef() == null || ouDto.getOrganisationUnitRef().stream()
 						.allMatch(ouId -> organizationUnitRepository.findById(ouId).isPresent())) {
-					OrganizationUnit orgUnit = new OrganizationUnit(ouDto.getId(), ouDto.getLabel(), ouDto.getType());
+					OrganizationUnitDB orgUnit = new OrganizationUnitDB(ouDto.getId(), ouDto.getLabel(), ouDto.getType());
 					organizationUnitRepository.save(orgUnit);
 					added.add(ouDto);
 					setParentInChildOU(ouDto, orgUnit);
@@ -122,12 +122,12 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 		}
 	}
 
-	private void setParentInChildOU(OrganizationUnitContextDto ouDto, OrganizationUnit orgUnit) {
+	private void setParentInChildOU(OrganizationUnitContextDto ouDto, OrganizationUnitDB orgUnit) {
 		if (ouDto.getOrganisationUnitRef() != null) {
 			for (String ouId : ouDto.getOrganisationUnitRef()) {
-				Optional<OrganizationUnit> childOuOpt = organizationUnitRepository.findById(ouId);
+				Optional<OrganizationUnitDB> childOuOpt = organizationUnitRepository.findById(ouId);
 				if (childOuOpt.isPresent()) {
-					OrganizationUnit childOu = childOuOpt.get();
+					OrganizationUnitDB childOu = childOuOpt.get();
 					childOu.setOrganizationUnitParent(orgUnit);
 					organizationUnitRepository.save(childOu);
 				}
@@ -145,12 +145,12 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
 	@Override
 	public HttpStatus delete(String id) {
-		Optional<OrganizationUnit> ou = organizationUnitRepository.findById(id);
+		Optional<OrganizationUnitDB> ou = organizationUnitRepository.findById(id);
 		if (ou.isEmpty()) {
 			return HttpStatus.NOT_FOUND;
 		}
-		List<SurveyUnit> lstSu = surveyUnitRepository.findByOrganizationUnitIdIn(List.of(id));
-		List<User> lstUser = userRepository.findAllByOrganizationUnitId(id);
+		List<SurveyUnitDB> lstSu = surveyUnitRepository.findByOrganizationUnitIdIn(List.of(id));
+		List<UserDB> lstUser = userRepository.findAllByOrganizationUnitId(id);
 		if (!lstSu.isEmpty() || !lstUser.isEmpty()) {
 			return HttpStatus.BAD_REQUEST;
 		}
@@ -176,13 +176,13 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
 	public OrganizationUnitTreeDto getOrganizationUnitTree(String rootId, boolean saveAllLevels) {
 
-		List<OrganizationUnit> subtree = organizationUnitRepository.findSubtree(rootId);
+		List<OrganizationUnitDB> subtree = organizationUnitRepository.findSubtree(rootId);
 
 		if (subtree.isEmpty()) {
 			throw new IllegalStateException("Root OU not found: " + rootId);
 		}
 
-		OrganizationUnit root = subtree.stream()
+		OrganizationUnitDB root = subtree.stream()
 				.filter(ou -> ou.getId().equals(rootId))
 				.findFirst()
 				.orElseThrow(() -> new IllegalStateException("Root OU not found: " + rootId));

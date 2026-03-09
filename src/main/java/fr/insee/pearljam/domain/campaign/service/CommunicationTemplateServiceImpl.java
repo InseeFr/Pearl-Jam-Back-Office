@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
-import fr.insee.pearljam.domain.campaign.port.serverside.CommunicationTemplateRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.CommunicationTemplateService;
+import fr.insee.pearljam.domain.campaign.port.out.CommunicationTemplateRepository;
+import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

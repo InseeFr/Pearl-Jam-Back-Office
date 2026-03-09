@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
-import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.port.serverside.ReferentRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.ReferentService;
-import fr.insee.pearljam.domain.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.out.ReferentRepository;
+import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

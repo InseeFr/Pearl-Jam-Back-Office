@@ -3,8 +3,8 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 
 import java.util.*;
 

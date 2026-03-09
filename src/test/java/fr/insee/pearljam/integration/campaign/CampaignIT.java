@@ -7,9 +7,11 @@ import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -211,10 +213,10 @@ class CampaignIT {
                         .content(content))
                 .andExpect(status().isOk());
 
-        Optional<Campaign> campaignOptional = campaignRepository.findById(campaignId);
+        Optional<CampaignDB> campaignOptional = campaignRepository.findById(campaignId);
 
         assertThat(campaignOptional).isPresent();
-        Campaign campaignCreated = campaignOptional.get();
+        CampaignDB campaignCreated = campaignOptional.get();
         assertCampaignInfos(campaignCreated, campaignId, "An other campaign", "test.email@plop.com",
                 ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F);
@@ -315,10 +317,10 @@ class CampaignIT {
                         .content(content))
                 .andExpect(status().isOk());
 
-        Optional<Campaign> campaignOptional = campaignRepository.findById(campaignId);
+        Optional<CampaignDB> campaignOptional = campaignRepository.findById(campaignId);
 
         assertThat(campaignOptional).isPresent();
-        Campaign campaignUpdated = campaignOptional.get();
+        CampaignDB campaignUpdated = campaignOptional.get();
         assertCampaignInfos(campaignUpdated, campaignId, "An other campaign", "test.test@sdf.com",
                 ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.TEL);
@@ -352,7 +354,7 @@ class CampaignIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Optional<Campaign> campaignOptional = campaignRepository.findById(campaignId);
+        Optional<CampaignDB> campaignOptional = campaignRepository.findById(campaignId);
         assertThat(campaignOptional).isEmpty();
     }
 
@@ -425,7 +427,7 @@ class CampaignIT {
         assertThat(visibilityToCheck.getTel()).isEqualTo(tel);
     }
 
-    private void assertReferent(Referent referentToCheck, String campaignId, String role, String lastName,
+    private void assertReferent(ReferentDB referentToCheck, String campaignId, String role, String lastName,
                                 String firstName, String phoneNumber) {
         assertThat(referentToCheck.getCampaign().getId()).isEqualTo(campaignId);
         assertThat(referentToCheck.getId()).isNotNull();
@@ -435,7 +437,7 @@ class CampaignIT {
         assertThat(referentToCheck.getPhoneNumber()).isEqualTo(phoneNumber);
     }
 
-    private void assertCampaignInfos(Campaign campaignToCheck, String campaignId, String label, String email,
+    private void assertCampaignInfos(CampaignDB campaignToCheck, String campaignId, String label, String email,
                                      ContactAttemptConfiguration contactAttemptConfig,
                                      IdentificationConfiguration identificationConfig, ContactOutcomeConfiguration contactOutcomeConfig) {
         assertThat(campaignToCheck.getId()).isEqualTo(campaignId);

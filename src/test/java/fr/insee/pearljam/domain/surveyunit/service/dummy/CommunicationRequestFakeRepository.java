@@ -1,11 +1,11 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
-import fr.insee.pearljam.api.interviewer.dto.InterviewerCountDto;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.api.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.count.model.CommunicationRequestCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +19,8 @@ public class CommunicationRequestFakeRepository implements CommunicationRequestR
   private List<CommunicationRequest> communicationRequestsAdded;
 
   @Override
-  public void addCommunicationRequests(SurveyUnit surveyUnit,
-      List<CommunicationRequest> communicationRequests) {
+  public void addCommunicationRequests(SurveyUnitDB surveyUnit,
+                                       List<CommunicationRequest> communicationRequests) {
     communicationRequestsAdded = communicationRequests;
   }
 

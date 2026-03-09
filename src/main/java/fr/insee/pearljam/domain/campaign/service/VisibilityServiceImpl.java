@@ -2,10 +2,10 @@ package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
-import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
-import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -3,41 +3,41 @@ package fr.insee.pearljam.domain.campaign.service;
 import fr.insee.pearljam.api.campaign.dto.input.*;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
-import fr.insee.pearljam.domain.campaign.model.Campaign;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.campaign.model.Referent;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.domain.campaign.service.exception.*;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.api.campaign.dto.CampaignCommonsDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignSensitivityDto;
 import fr.insee.pearljam.api.campaign.dto.PortalDataDto;
-import fr.insee.pearljam.api.count.dto.CountDto;
+import fr.insee.pearljam.api.campaign.dto.CountDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
-import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
-import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.CampaignService;
-import fr.insee.pearljam.domain.count.model.InterviewerCount;
-import fr.insee.pearljam.domain.count.port.userside.SurveyUnitCountService;
-import fr.insee.pearljam.domain.campaign.port.serverside.ReferentRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
-import fr.insee.pearljam.domain.campaign.port.userside.ReferentService;
-import fr.insee.pearljam.domain.campaign.port.userside.VisibilityService;
-import fr.insee.pearljam.domain.exception.*;
-import fr.insee.pearljam.domain.message.port.serverside.MessageRepository;
-import fr.insee.pearljam.domain.organizationunit.port.serverside.OrganizationUnitRepository;
-import fr.insee.pearljam.domain.preference.port.userside.PreferenceService;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.SurveyUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
-import fr.insee.pearljam.domain.user.port.serverside.UserRepository;
-import fr.insee.pearljam.domain.user.port.userside.UserService;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
+import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCountService;
+import fr.insee.pearljam.domain.campaign.port.out.ReferentRepository;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
+import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
+import fr.insee.pearljam.domain.message.port.out.MessageRepository;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -137,13 +137,13 @@ public class CampaignServiceImpl implements CampaignService {
             throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
 
 		String campaignId = campaignDto.campaign().toUpperCase();
-		Optional<Campaign> campOpt = campaignRepository.findById(campaignId);
+		Optional<CampaignDB> campOpt = campaignRepository.findById(campaignId);
 		if (campOpt.isPresent()) {
 			throw new CampaignAlreadyExistException();
 		}
 
 		// Creating campaign
-		Campaign campaign = new Campaign(campaignId, campaignDto.campaignLabel(),
+		CampaignDB campaign = new CampaignDB(campaignId, campaignDto.campaignLabel(),
 				campaignDto.identificationConfiguration(),
 				campaignDto.contactOutcomeConfiguration(),
 				campaignDto.contactAttemptConfiguration(),
@@ -159,7 +159,7 @@ public class CampaignServiceImpl implements CampaignService {
 			if(!Visibility.isValid(visibility)) {
 				throw new VisibilityHasInvalidDatesException();
 			}
-			OrganizationUnit organizationUnit = organizationUnitRepository.findById(visibility.organizationalUnitId())
+			OrganizationUnitDB organizationUnit = organizationUnitRepository.findById(visibility.organizationalUnitId())
 					.orElseThrow(OrganizationalUnitNotFoundException::new);
 			visibilitiesDBToCreate.add(VisibilityDB.fromModel(visibility, campaign, organizationUnit));
 		}
@@ -176,13 +176,13 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public Optional<Campaign> findById(String campaignId) {
+	public Optional<CampaignDB> findById(String campaignId) {
 		return campaignRepository.findById(campaignId);
 	}
 
 	@Override
 	public void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException {
-		Campaign campaign = findById(campaignId)
+		CampaignDB campaign = findById(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
 		if (!force && isCampaignOngoing(campaignId)) {
@@ -192,7 +192,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.forEach(surveyunit -> surveyUnitService.delete(surveyunit.getId()));
 		userRepository.findAll()
 				.forEach(user -> {
-					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(Campaign::getId)
+					List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(CampaignDB::getId)
 							.toList());
 					if (lstCampaignId.contains(campaign.getId())) {
 						lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
@@ -209,7 +209,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
-		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
+		CampaignDB currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
 		if(campaignToUpdate.visibilities() != null) {
@@ -233,7 +233,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignRepository.save(currentCampaign);
 	}
 
-	private void updateConfiguration(Campaign currentCampaign, CampaignUpdateDto campDto) {
+	private void updateConfiguration(CampaignDB currentCampaign, CampaignUpdateDto campDto) {
 
 		// identificationConfiguration should not be updated anymore
 		if (campDto.contactOutcomeConfiguration() != null) {
@@ -257,7 +257,7 @@ public class CampaignServiceImpl implements CampaignService {
 	public List<CampaignDto> getInterviewerCampaigns(String userId) {
 
 		Map<String, String> map = surveyUnitRepository.findByInterviewerIdIgnoreCase(userId).stream()
-				.collect(Collectors.toMap(su -> su.getCampaign().getId(), SurveyUnit::getId,
+				.collect(Collectors.toMap(su -> su.getCampaign().getId(), SurveyUnitDB::getId,
 						(existing, replacement) -> existing));
 
 		return map.entrySet().stream()
@@ -267,18 +267,18 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public boolean isCampaignOngoing(String campaignId) throws CampaignNotFoundException {
-		Campaign campaign = findById(campaignId)
+		CampaignDB campaign = findById(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 		List<Visibility> visibilities = visibilityService.findVisibilities(campaign.getId());
 		return visibilities.stream()
 				.anyMatch(visibility -> visibility.endDate() > dateService.getCurrentTimestamp());
 	}
 
-	private void updateReferents(Campaign campaign, @NonNull List<ReferentDto> referentDtos) {
-		List<Referent> referents = campaign.getReferents();
+	private void updateReferents(CampaignDB campaign, @NonNull List<ReferentDto> referentDtos) {
+		List<ReferentDB> referents = campaign.getReferents();
 		referents.clear();
 		referentDtos.forEach(refDto -> {
-			Referent ref = new Referent();
+			ReferentDB ref = new ReferentDB();
 			ref.setCampaign(campaign);
 			ref.setFirstName(refDto.getFirstName());
 			ref.setLastName(refDto.getLastName());
@@ -290,7 +290,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public CampaignResponseDto getCampaignDtoById(String campaignId) throws CampaignNotFoundException {
-		Campaign campaignDB = campaignRepository.findById(campaignId)
+		CampaignDB campaignDB = campaignRepository.findById(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 		List<ReferentDto> referents = referentService.findByCampaignId(campaignId);
 		List<VisibilityCampaignDto> visibilities = VisibilityCampaignDto.fromModel(
@@ -306,7 +306,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public CampaignCommonsDto findCampaignCommonsById(String campaignId) throws CampaignNotFoundException {
-		Campaign campaign = campaignRepository.findById(campaignId)
+		CampaignDB campaign = campaignRepository.findById(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 		return new CampaignCommonsDto(
 				campaign.getId(),
@@ -318,8 +318,8 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
 		List<CampaignCommonsDto> campaignsCommonsOngoing = new ArrayList<>();
-		List<Campaign> campaigns = campaignRepository.findAll();
-		for (Campaign campaign : campaigns) {
+		List<CampaignDB> campaigns = campaignRepository.findAll();
+		for (CampaignDB campaign : campaigns) {
 			if (isCampaignOngoing(campaign.getId())) {
 				campaignsCommonsOngoing.add(new CampaignCommonsDto(
 							campaign.getId(),
@@ -337,7 +337,7 @@ public class CampaignServiceImpl implements CampaignService {
 		// Check user association to campaign (security check)
 		userService.checkUserAssociationToCampaign(campaignId, userId);
 
-		Campaign campaign = campaignRepository.findById(campaignId)
+		CampaignDB campaign = campaignRepository.findById(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 
 		// Get user's organization units for visibility filtering

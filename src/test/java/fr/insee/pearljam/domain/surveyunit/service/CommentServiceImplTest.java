@@ -3,7 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommentFakeRepository;
-import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

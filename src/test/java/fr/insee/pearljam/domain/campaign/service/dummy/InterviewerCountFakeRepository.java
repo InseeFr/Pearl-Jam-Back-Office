@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.count.model.InterviewerCount;
-import fr.insee.pearljam.domain.count.port.serverside.InterviewerCountRepository;
+import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.CommentRepository;
-import fr.insee.pearljam.domain.surveyunit.port.userside.CommentService;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommentRepository;
+import fr.insee.pearljam.domain.surveyunit.port.in.CommentService;
 
-import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

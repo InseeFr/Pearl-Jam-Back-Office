@@ -4,51 +4,52 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import fr.insee.pearljam.api.constants.Constants;
+import fr.insee.pearljam.api.surveyunit.dto.person.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.domain.closingcause.model.*;
-import fr.insee.pearljam.domain.common.model.*;
-import fr.insee.pearljam.domain.contactoutcome.model.*;
-import fr.insee.pearljam.domain.interviewer.model.*;
 import fr.insee.pearljam.domain.message.model.*;
 import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.domain.state.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.domain.user.model.*;
-import fr.insee.pearljam.api.surveyunit.dto.AddressDto;
-import fr.insee.pearljam.api.closingcause.dto.ClosingCauseDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactAttemptDto;
-import fr.insee.pearljam.api.interviewer.dto.InterviewerContextDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.AddressDto;
+import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.ContactAttemptDto;
+import fr.insee.pearljam.api.surveyunit.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitContextDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.PhoneNumberDto;
-import fr.insee.pearljam.api.surveyunit.dto.SampleIdentifiersDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.user.dto.UserContextDto;
-import fr.insee.pearljam.api.user.dto.UserDto;
-import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.message.dto.WsText;
-import fr.insee.pearljam.api.surveyunit.dto.*;
+import fr.insee.pearljam.api.surveyunit.dto.person.PhoneNumberDto;
+import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
+import fr.insee.pearljam.api.web.exception.NotFoundException;
+import fr.insee.pearljam.api.message.dto.WsTextDto;
 import fr.insee.pearljam.api.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
-import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
-import fr.insee.pearljam.infrastructure.closingcause.jpa.ClosingCauseJpaRepository;
-import fr.insee.pearljam.infrastructure.interviewer.jpa.InterviewerJpaRepository;
-import fr.insee.pearljam.infrastructure.message.jpa.MessageJpaRepository;
-import fr.insee.pearljam.infrastructure.organizationunit.jpa.OrganizationUnitJpaRepository;
-import fr.insee.pearljam.infrastructure.state.jpa.StateJpaRepository;
-import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.infrastructure.user.jpa.UserJpaRepository;
-import fr.insee.pearljam.domain.message.port.userside.MessageService;
-import fr.insee.pearljam.domain.preference.port.userside.PreferenceService;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
+import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.UserJpaRepository;
+import fr.insee.pearljam.domain.message.port.in.MessageService;
+import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
-import fr.insee.pearljam.domain.user.port.userside.UserService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
@@ -412,7 +413,7 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
 		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
 
 	}
@@ -440,7 +441,7 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<ClosingCause> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
+		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
 		assertEquals(ClosingCauseType.NPA, closingCauses.getFirst().getType());
 
 	}
@@ -885,7 +886,7 @@ class TestAuthKeyCloak {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		Optional<Message> message = messageRepository.findById(messageId);
+		Optional<MessageDB> message = messageRepository.findById(messageId);
 		assertEquals(MessageStatusType.DEL, message.get().getMessageStatus().getFirst().getStatus());
 	}
 
@@ -934,7 +935,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(42)
 	void testPostVerifyName() throws Exception {
-		WsText message = new WsText("simps");
+		WsTextDto message = new WsTextDto("simps");
 
 		mockMvc.perform(post("/api/verify-name")
 						.with(authentication(LOCAL_USER))
@@ -1277,18 +1278,18 @@ class TestAuthKeyCloak {
 						.content(asJsonString(List.of(ou1, ou2))))
 				.andExpect(status().isOk());
 
-		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH2");
-		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL2");
+		Optional<OrganizationUnitDB> ou1Opt = organizationUnitRepository.findById("OU-NORTH2");
+		Optional<OrganizationUnitDB> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL2");
 		assertTrue(ou1Opt.isPresent());
 		assertTrue(ou2Opt.isPresent());
 		assertEquals("North region OU 2", ou1Opt.get().getLabel());
 		assertEquals("OU-NATIONAL2", ou1Opt.get().getOrganizationUnitParent().getId());
 		assertEquals("National OU 2", ou2Opt.get().getLabel());
 
-		Optional<User> user1Opt = userRepository.findById("JBOULANGER1");
-		Optional<User> user2Opt = userRepository.findById("CBERLIN1");
-		Optional<User> user3Opt = userRepository.findById("TFABRES1");
-		Optional<User> user4Opt = userRepository.findById("FDUPONT1");
+		Optional<UserDB> user1Opt = userRepository.findById("JBOULANGER1");
+		Optional<UserDB> user2Opt = userRepository.findById("CBERLIN1");
+		Optional<UserDB> user3Opt = userRepository.findById("TFABRES1");
+		Optional<UserDB> user4Opt = userRepository.findById("FDUPONT1");
 
 		assertTrue(user1Opt.isPresent());
 		assertEquals("Jacques", user1Opt.get().getFirstName());
@@ -1336,8 +1337,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isConflict());
 
 		// No OU should have been added
-		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
-		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
+		Optional<OrganizationUnitDB> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
+		Optional<OrganizationUnitDB> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
 		assertTrue(ou1Opt.isEmpty());
 		assertTrue(ou2Opt.isEmpty());
 
@@ -1371,8 +1372,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isBadRequest());
 
 		// No OU should have been added
-		Optional<OrganizationUnit> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
-		Optional<OrganizationUnit> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
+		Optional<OrganizationUnitDB> ou1Opt = organizationUnitRepository.findById("OU-NORTH3");
+		Optional<OrganizationUnitDB> ou2Opt = organizationUnitRepository.findById("OU-NATIONAL3");
 		assertTrue(ou1Opt.isEmpty());
 		assertTrue(ou2Opt.isEmpty());
 
@@ -1397,8 +1398,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		// Interviewers should have been added
-		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV1");
-		Optional<Interviewer> interv2Opt = interviewerRepository.findById("INTERV2");
+		Optional<InterviewerDB> interv1Opt = interviewerRepository.findById("INTERV1");
+		Optional<InterviewerDB> interv2Opt = interviewerRepository.findById("INTERV2");
 		assertTrue(interv1Opt.isPresent());
 		assertTrue(interv2Opt.isPresent());
 
@@ -1437,8 +1438,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isBadRequest());
 
 		// Interviewers should not have been added
-		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV4");
-		Optional<Interviewer> interv2Opt = interviewerRepository.findById("INTERV5");
+		Optional<InterviewerDB> interv1Opt = interviewerRepository.findById("INTERV4");
+		Optional<InterviewerDB> interv2Opt = interviewerRepository.findById("INTERV5");
 		assertTrue(interv1Opt.isEmpty());
 		assertTrue(interv2Opt.isEmpty());
 	}
@@ -1463,7 +1464,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isBadRequest());
 
 		// Interviewers should not have been added
-		Optional<Interviewer> interv1Opt = interviewerRepository.findById("INTERV3");
+		Optional<InterviewerDB> interv1Opt = interviewerRepository.findById("INTERV3");
 		assertTrue(interv1Opt.isEmpty());
 
 	}
@@ -1488,7 +1489,7 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		// Interviewers should have been added
-		Optional<Interviewer> intervNoTitleOpt = interviewerRepository.findById("INTERV_WITHOUT_TITLE");
+		Optional<InterviewerDB> intervNoTitleOpt = interviewerRepository.findById("INTERV_WITHOUT_TITLE");
 		assertTrue(intervNoTitleOpt.isPresent());
 		assertEquals(Title.MISTER, intervNoTitleOpt.get().getTitle());
 
@@ -1504,7 +1505,7 @@ class TestAuthKeyCloak {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<Interviewer> interviewersDB = interviewerRepository.findAll();
+		List<InterviewerDB> interviewersDB = interviewerRepository.findAll();
 		assertEquals(7,interviewersDB.size());
 	}
 
@@ -1565,7 +1566,7 @@ class TestAuthKeyCloak {
 	void testPostSurveyUnits() throws Exception {
 		SurveyUnitCreationDto surveyUnit = generateSurveyUnit("8");
 		surveyUnit.setComments(Set.of(new CommentDto(CommentType.INTERVIEWER, "interviewer comment")));
-		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L,ContactOutcomeType.INA,2));
+		surveyUnit.setContactOutcome(new ContactOutcomeDto(1743078880000L, ContactOutcomeType.INA,2));
 		surveyUnit.setContactAttempts(List.of(new ContactAttemptDto(1743078880000L,Status.MES,Medium.TEL),new ContactAttemptDto(1743078900000L,Status.INA,Medium.FIELD)));
 		surveyUnit.setClosingCause(new ClosingCauseDto(1843078880000L,ClosingCauseType.NPA));
 		surveyUnit.setContactHistory(new PreviousContactHistoryDto("comment",
@@ -1729,8 +1730,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		// Survey Units should have been attributed to interviewers
-		Optional<SurveyUnit> su1 = surveyUnitRepository.findById("101");
-		Optional<SurveyUnit> su2 = surveyUnitRepository.findById("102");
+		Optional<SurveyUnitDB> su1 = surveyUnitRepository.findById("101");
+		Optional<SurveyUnitDB> su2 = surveyUnitRepository.findById("102");
 
 		assertTrue(su1.isPresent());
 		assertEquals("INTW4", su1.get().getInterviewer().getId());
@@ -1765,8 +1766,8 @@ class TestAuthKeyCloak {
 				.andExpect(status().isBadRequest());
 
 		// Survey Units should not have been attributed to interviewers
-		Optional<SurveyUnit> su1 = surveyUnitRepository.findById("103");
-		Optional<SurveyUnit> su2 = surveyUnitRepository.findById("104");
+		Optional<SurveyUnitDB> su1 = surveyUnitRepository.findById("103");
+		Optional<SurveyUnitDB> su2 = surveyUnitRepository.findById("104");
 
 		assertTrue(su1.isPresent());
 		assertNull(su1.get().getInterviewer());
@@ -1796,11 +1797,11 @@ class TestAuthKeyCloak {
 				.andExpect(status().isOk());
 
 		// Ensure users have been added to the organization unit
-		Optional<User> user = userRepository.findById("TEST");
+		Optional<UserDB> user = userRepository.findById("TEST");
 		assertTrue(user.isPresent());
 		assertEquals("OU-NORTH", user.get().getOrganizationUnit().getId());
 
-		Optional<User> user2 = userRepository.findById("TEST2");
+		Optional<UserDB> user2 = userRepository.findById("TEST2");
 		assertTrue(user2.isPresent());
 		assertEquals("OU-NORTH", user2.get().getOrganizationUnit().getId());
 	}
@@ -1825,11 +1826,11 @@ class TestAuthKeyCloak {
 				.andExpect(status().isBadRequest());
 
 		// Verify the user organization unit
-		Optional<User> user = userRepository.findById("TEST");
+		Optional<UserDB> user = userRepository.findById("TEST");
 		assertTrue(user.isPresent());
 		assertEquals("OU-NORTH", user.get().getOrganizationUnit().getId());
 
-		Optional<User> user2 = userRepository.findById("TEST2");
+		Optional<UserDB> user2 = userRepository.findById("TEST2");
 		assertTrue(user2.isPresent());
 		assertEquals("OU-NORTH", user2.get().getOrganizationUnit().getId());
 	}
@@ -1917,7 +1918,7 @@ class TestAuthKeyCloak {
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testDeleteOrganizationUnit() throws Exception {
 		// Delete all Survey Units before deleting Organization Unit
-		List<SurveyUnit> su = surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"));
+		List<SurveyUnitDB> su = surveyUnitRepository.findByOrganizationUnitIdIn(List.of("OU-NORTH"));
 		surveyUnitRepository.deleteAll(su);
 
 		// Delete all Users before deleting Organization Unit

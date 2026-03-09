@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.campaign.dto;
 
-import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
-import fr.insee.pearljam.domain.count.model.InterviewerCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public record PortalDataDto(
     int total
 ) {
     public static PortalDataDto fromModel(
-            Campaign campaign,
+            CampaignDB campaign,
             CampaignVisibility campaignVisibility,
             List<ReferentDto> referents,
             List<InterviewerCount> interviewerCounts,

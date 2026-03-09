@@ -3,8 +3,8 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.api.campaign.dto.CampaignDto;
 import fr.insee.pearljam.api.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.domain.campaign.model.Campaign;
-import fr.insee.pearljam.domain.campaign.port.serverside.CampaignRepository;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import lombok.Getter;
 import org.springframework.data.domain.Pageable;
 
@@ -14,18 +14,18 @@ import java.util.Optional;
 
 public class CampaignFakeRepository implements CampaignRepository {
 
-    private final List<Campaign> campaigns = new ArrayList<>();
+    private final List<CampaignDB> campaigns = new ArrayList<>();
 
     @Getter
-    private Campaign savedCampaign;
+    private CampaignDB savedCampaign;
 
     @Override
-    public Optional<Campaign> findById(String id) {
+    public Optional<CampaignDB> findById(String id) {
         return campaigns.stream().filter(campaign -> campaign.getId().equalsIgnoreCase(id)).findFirst();
     }
 
     @Override
-    public Optional<Campaign> findByIdIgnoreCase(String id) {
+    public Optional<CampaignDB> findByIdIgnoreCase(String id) {
         return findById(id);
     }
 
@@ -70,13 +70,13 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<Campaign> findAll() {
+    public List<CampaignDB> findAll() {
         return new ArrayList<>(campaigns);
     }
 
     @Override
-    public List<Campaign> findAllById(Iterable<String> ids) {
-        List<Campaign> result = new ArrayList<>();
+    public List<CampaignDB> findAllById(Iterable<String> ids) {
+        List<CampaignDB> result = new ArrayList<>();
         for (String id : ids) {
             findById(id).ifPresent(result::add);
         }
@@ -84,7 +84,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public Campaign save(Campaign campaign) {
+    public CampaignDB save(CampaignDB campaign) {
         savedCampaign = campaign;
         findById(campaign.getId()).ifPresent(campaigns::remove);
         campaigns.add(campaign);
@@ -92,7 +92,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public void delete(Campaign campaign) {
+    public void delete(CampaignDB campaign) {
         campaigns.remove(campaign);
     }
 
@@ -106,7 +106,7 @@ public class CampaignFakeRepository implements CampaignRepository {
         return List.of();
     }
 
-    public void addCampaign(Campaign campaign) {
+    public void addCampaign(CampaignDB campaign) {
         campaigns.add(campaign);
     }
 }

@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.campaign.controller.dummy;
 import java.util.List;
 
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
-import fr.insee.pearljam.domain.campaign.port.userside.ReferentService;
+import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
 
 public class ReferentFakeService implements ReferentService {
 

@@ -7,32 +7,30 @@ import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.domain.common.model.*;
-import fr.insee.pearljam.domain.interviewer.model.*;
-import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.domain.state.model.*;
-import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.api.surveyunit.dto.AddressDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactAttemptDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.AddressDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.ContactAttemptDto;
 import fr.insee.pearljam.api.campaign.dto.ReferentDto;
-import fr.insee.pearljam.api.state.dto.StateDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.infrastructure.interviewer.jpa.InterviewerJpaRepository;
-import fr.insee.pearljam.infrastructure.organizationunit.jpa.OrganizationUnitJpaRepository;
-import fr.insee.pearljam.infrastructure.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.domain.campaign.port.userside.CampaignService;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.PersonDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.Title;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.person.PersonDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.IdentificationDB;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -72,7 +70,7 @@ public class IdentificationSteps {
 	private Authentication securityRole;
 	private IdentificationConfiguration identificationConfiguration;
 	private MvcResult createdCampaign;
-	private SurveyUnit surveyUnit;
+	private SurveyUnitDB surveyUnit;
 	private String surveyUnitId;
 	private String campaignId;
 	private ResultActions result;
@@ -115,19 +113,19 @@ public class IdentificationSteps {
 	public void this_survey_unit_is_affected_to_this_interviewer() throws Exception {
 		surveyUnitId = "SURVEYUNIT_" + System.currentTimeMillis();
 
-		Address addressDB = new InseeAddress("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
+		AddressDB addressDB = new InseeAddressDB("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
 				"building", "floor", "door", "staircase", true);
-		Campaign campaignDB = campaignService.findById(campaignId).orElseThrow();
-		Interviewer interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
-		OrganizationUnit ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
+		CampaignDB campaignDB = campaignService.findById(campaignId).orElseThrow();
+		InterviewerDB interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
+		OrganizationUnitDB ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
 		Set<PersonDB> persons = Set.of(new PersonDB(null, Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L, true, surveyUnit, null, false,
 				 null,null));
 		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
 				, null, null, null, null, null, null);
-		surveyUnit = new SurveyUnit(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, persons);
+		surveyUnit = new SurveyUnitDB(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, persons);
 
 		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
-		surveyUnit.getStates().add(new State(System.currentTimeMillis(), surveyUnit, StateType.VIN));
+		surveyUnit.getStates().add(new StateDB(System.currentTimeMillis(), surveyUnit, StateType.VIN));
 		surveyUnit = surveyUnitRepository.save(surveyUnit);
 
 		List<SurveyUnitInterviewerLinkDto> link = List.of(new SurveyUnitInterviewerLinkDto(surveyUnitId, "INTW1"));

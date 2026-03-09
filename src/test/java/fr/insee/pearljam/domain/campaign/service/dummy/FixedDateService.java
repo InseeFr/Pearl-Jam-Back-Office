@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
 
 public class FixedDateService implements DateService {
     public static final long FIXED_TIMESTAMP = 1719324512000L;

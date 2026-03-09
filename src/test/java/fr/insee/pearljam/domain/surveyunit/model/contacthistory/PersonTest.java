@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.model.contacthistory;
 
 import fr.insee.pearljam.domain.surveyunit.model.Source;
-import fr.insee.pearljam.domain.common.model.Title;
+import fr.insee.pearljam.domain.surveyunit.model.Title;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

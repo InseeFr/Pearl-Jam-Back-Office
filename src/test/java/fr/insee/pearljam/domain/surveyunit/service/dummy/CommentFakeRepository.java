@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.CommentRepository;
-import fr.insee.pearljam.domain.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommentRepository;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

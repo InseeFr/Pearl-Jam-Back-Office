@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
-import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitProjection;
-import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
-import fr.insee.pearljam.domain.surveyunit.port.serverside.SurveyUnitRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +23,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public Optional<SurveyUnit> findByIdAndInterviewerIdIgnoreCase(String surveyUnitId, String userId) {
+    public Optional<SurveyUnitDB> findByIdAndInterviewerIdIgnoreCase(String surveyUnitId, String userId) {
         return Optional.empty();
     }
 
@@ -33,32 +33,32 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<ClosableSurveyUnitCandidateProjection> findClosableCandidates(long date, List<String> lstOuIds) {
+    public List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, List<String> lstOuIds) {
         return List.of();
     }
 
     @Override
-    public Set<SurveyUnitCampaignProjection> findByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
+    public Set<SurveyUnitCampaignView> findByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
         return Set.of();
     }
 
     @Override
-    public Set<SurveyUnitCampaignProjection> findByCampaignIdAndStateAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId, String state) {
+    public Set<SurveyUnitCampaignView> findByCampaignIdAndStateAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId, String state) {
         return Set.of();
     }
 
     @Override
-    public Set<SurveyUnitCampaignProjection> findFinalizedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
+    public Set<SurveyUnitCampaignView> findFinalizedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
         return Set.of();
     }
 
     @Override
-    public Set<SurveyUnitCampaignProjection> findClosedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
+    public Set<SurveyUnitCampaignView> findClosedByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId) {
         return Set.of();
     }
 
     @Override
-    public List<SurveyUnit> findByInterviewerIdIgnoreCase(String id) {
+    public List<SurveyUnitDB> findByInterviewerIdIgnoreCase(String id) {
         return List.of();
     }
 
@@ -68,17 +68,17 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<SurveyUnit> findByOrganizationUnitIdIn(List<String> lstOuId) {
+    public List<SurveyUnitDB> findByOrganizationUnitIdIn(List<String> lstOuId) {
         return List.of();
     }
 
     @Override
-    public List<SurveyUnit> findByIdInOrganizationalUnit(String id, List<String> organizationalUnitIds) {
+    public List<SurveyUnitDB> findByIdInOrganizationalUnit(String id, List<String> organizationalUnitIds) {
         return List.of();
     }
 
     @Override
-    public Collection<SurveyUnit> findByCampaignId(String id) {
+    public Collection<SurveyUnitDB> findByCampaignId(String id) {
         return List.of();
     }
 
@@ -98,27 +98,27 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     }
 
     @Override
-    public List<ClosableSurveyUnitProjection> findClosableSurveyUnits(Set<String> ids) {
+    public List<ClosableSurveyUnitView> findClosableSurveyUnits(Set<String> ids) {
         return List.of();
     }
 
     @Override
-    public Optional<SurveyUnit> findById(String surveyUnitId) {
+    public Optional<SurveyUnitDB> findById(String surveyUnitId) {
         return Optional.empty();
     }
 
     @Override
-    public SurveyUnit save(SurveyUnit surveyUnit) {
+    public SurveyUnitDB save(SurveyUnitDB surveyUnit) {
         return surveyUnit;
     }
 
     @Override
-    public List<SurveyUnit> saveAll(List<SurveyUnit> surveyUnits) {
+    public List<SurveyUnitDB> saveAll(List<SurveyUnitDB> surveyUnits) {
         return surveyUnits;
     }
 
     @Override
-    public List<SurveyUnit> findAllById(Iterable<String> ids) {
+    public List<SurveyUnitDB> findAllById(Iterable<String> ids) {
         return List.of();
     }
 

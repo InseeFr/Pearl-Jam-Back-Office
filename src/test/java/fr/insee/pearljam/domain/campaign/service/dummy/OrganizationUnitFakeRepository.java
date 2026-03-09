@@ -1,9 +1,9 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.count.model.OrganizationUnitLabel;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.organizationunit.port.serverside.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -13,15 +13,15 @@ import java.util.Optional;
 public class OrganizationUnitFakeRepository implements OrganizationUnitRepository {
 
     @Setter
-    private List<OrganizationUnit> organizationUnits = new ArrayList<>();
+    private List<OrganizationUnitDB> organizationUnits = new ArrayList<>();
 
     @Override
-    public Optional<OrganizationUnit> findById(String id) {
+    public Optional<OrganizationUnitDB> findById(String id) {
         return organizationUnits.stream().filter(organizationUnit -> organizationUnit.getId().equals(id)).findFirst();
     }
 
     @Override
-    public Optional<OrganizationUnit> findByIdIgnoreCase(String id) {
+    public Optional<OrganizationUnitDB> findByIdIgnoreCase(String id) {
         return organizationUnits.stream().filter(organizationUnit -> organizationUnit.getId().equalsIgnoreCase(id)).findFirst();
     }
 
@@ -41,22 +41,22 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public List<OrganizationUnit> findChildren(String orgUnitId) {
+    public List<OrganizationUnitDB> findChildren(String orgUnitId) {
         return List.of();
     }
 
     @Override
     public List<String> findAllId() {
-        return organizationUnits.stream().map(OrganizationUnit::getId).toList();
+        return organizationUnits.stream().map(OrganizationUnitDB::getId).toList();
     }
 
     @Override
     public String findLabel(String orgUnitId) {
-        return findById(orgUnitId).map(OrganizationUnit::getLabel).orElse("");
+        return findById(orgUnitId).map(OrganizationUnitDB::getLabel).orElse("");
     }
 
     @Override
-    public List<OrganizationUnit> findSubtree(String rootId) {
+    public List<OrganizationUnitDB> findSubtree(String rootId) {
         return List.of();
     }
 
@@ -66,20 +66,20 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public OrganizationUnit save(OrganizationUnit organizationUnit) {
+    public OrganizationUnitDB save(OrganizationUnitDB organizationUnit) {
         findById(organizationUnit.getId()).ifPresent(organizationUnits::remove);
         organizationUnits.add(organizationUnit);
         return organizationUnit;
     }
 
     @Override
-    public List<OrganizationUnit> findAll() {
+    public List<OrganizationUnitDB> findAll() {
         return new ArrayList<>(organizationUnits);
     }
 
     @Override
-    public List<OrganizationUnit> findAllById(Iterable<String> ids) {
-        List<OrganizationUnit> result = new ArrayList<>();
+    public List<OrganizationUnitDB> findAllById(Iterable<String> ids) {
+        List<OrganizationUnitDB> result = new ArrayList<>();
         for (String id : ids) {
             findById(id).ifPresent(result::add);
         }
@@ -87,7 +87,7 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public void delete(OrganizationUnit organizationUnit) {
+    public void delete(OrganizationUnitDB organizationUnit) {
         organizationUnits.remove(organizationUnit);
     }
 }

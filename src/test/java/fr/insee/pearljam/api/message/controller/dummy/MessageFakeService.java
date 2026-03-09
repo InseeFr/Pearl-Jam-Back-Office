@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.message.controller.dummy;
 
 import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.domain.message.port.userside.MessageService;
+import fr.insee.pearljam.domain.message.port.in.MessageService;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;

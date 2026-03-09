@@ -2,26 +2,26 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.domain.closingcause.model.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.model.Response;
-import fr.insee.pearljam.domain.state.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnitTempZone;
-import fr.insee.pearljam.api.state.dto.StateDto;
-import fr.insee.pearljam.api.state.dto.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.surveyunit.dto.HabilitationDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitCreationDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.surveyunit.dto.ClosableSurveyUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
-import fr.insee.pearljam.domain.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
+import fr.insee.pearljam.api.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import fr.insee.pearljam.domain.surveyunit.port.userside.SurveyUnitService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * SurveyUnitController is the Controller managing {@link SurveyUnit}
+ * SurveyUnitController is the Controller managing {@link SurveyUnitDB}
  * entity
  * 
  * @author Claudel Benjamin
@@ -63,7 +63,7 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
 	 * @param surveyUnits survey units to create
-	 * @return List of {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Create survey-units")
@@ -80,7 +80,7 @@ public class SurveyUnitController {
 	 * This method is used to post the list of links between survey-unit and
 	 * interviewer defined in request body
 	 * 
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link SurveyUnitDB} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Assign SurveyUnits to interviewers")
@@ -96,7 +96,7 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to get the list of SurveyUnit for current interviewer
 	 * 
-	 * @return List of {@link SurveyUnit} if exist, {@link HttpStatus} NOT_FOUND, or
+	 * @return List of {@link SurveyUnitDB} if exist, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get SurveyUnits")
@@ -117,7 +117,7 @@ public class SurveyUnitController {
 	 * This method is used to get the detail of survey unit for current interviewer
 	 * 
 	 * @param surveyUnitId the id of reporting unit
-	 * @return {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
+	 * @return {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
@@ -131,7 +131,7 @@ public class SurveyUnitController {
 	 * Admin way of getting any survey-unit
 	 *
 	 * @param surveyUnitId the id of expected survey-unit
-	 * @return {@link SurveyUnit} if exists, {@link HttpStatus} NOT_FOUND, or
+	 * @return {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
 	 * {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail as admin of specific survey unit ")
@@ -179,7 +179,7 @@ public class SurveyUnitController {
 	@Operation(summary = "GET all survey-units in temp-zone")
 	@GetMapping(Constants.API_SURVEYUNITS_TEMP_ZONE)
 	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
-		List<SurveyUnitTempZone> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
+		List<SurveyUnitTempZoneDB> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
 		log.info("GET survey-units in temp-zone resulting in 200");
 		return new ResponseEntity<>(surveyUnitTempZones, HttpStatus.OK);
 	}

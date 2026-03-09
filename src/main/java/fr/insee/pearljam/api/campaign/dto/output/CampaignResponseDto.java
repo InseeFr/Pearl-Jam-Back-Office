@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.campaign.dto.output;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.domain.campaign.model.Campaign;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
@@ -34,7 +34,7 @@ public record CampaignResponseDto(
         ContactAttemptConfiguration contactAttemptConfiguration,
         Boolean sensitivity
 ) {
-    public static CampaignResponseDto fromModel(Campaign campaignDB,
+    public static CampaignResponseDto fromModel(CampaignDB campaignDB,
                                                 List<ReferentDto> referents,
                                                 List<VisibilityCampaignDto> visibilities) {
         return new CampaignResponseDto(campaignDB.getId(),

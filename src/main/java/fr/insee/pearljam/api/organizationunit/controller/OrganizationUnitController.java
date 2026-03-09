@@ -1,16 +1,16 @@
 package fr.insee.pearljam.api.organizationunit.controller;
 
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.domain.surveyunit.model.Response;
+import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitContextDto;
-import fr.insee.pearljam.api.user.dto.UserContextDto;
-import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.exception.OrganisationUnitAlreadyExistsException;
-import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
-import fr.insee.pearljam.domain.exception.OrganizationalUnitNotFoundException;
-import fr.insee.pearljam.domain.organizationunit.port.userside.OrganizationUnitService;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import fr.insee.pearljam.domain.user.port.userside.UserService;
+import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
+import fr.insee.pearljam.domain.organizationunit.service.exception.OrganisationUnitAlreadyExistsException;
+import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
+import fr.insee.pearljam.domain.campaign.service.exception.OrganizationalUnitNotFoundException;
+import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

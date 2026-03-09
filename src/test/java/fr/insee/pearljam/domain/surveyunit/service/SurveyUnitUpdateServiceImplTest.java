@@ -2,35 +2,37 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.domain.contactoutcome.model.*;
 import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.SurveyUnitUpdateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestCreateDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.campaign.port.userside.DateService;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationStatusType;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationRequestFakeRepository;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.CommunicationTemplateFakeRepository;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.ContactOutcomeDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDBId;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommentDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ContactOutcomeDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.HouseF2FIdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.IdentificationDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,13 +52,13 @@ class SurveyUnitUpdateServiceImplTest {
 	private CommunicationRequestFakeRepository communicationRequestFakeRepository;
 	private VisibilityFakeService visibilityFakeService;
 	private SurveyUnitUpdateServiceImpl surveyUnitService;
-	private SurveyUnit surveyUnit;
+	private SurveyUnitDB surveyUnit;
 	private SurveyUnitUpdateDto surveyUnitDto;
 	private DateService dateService;
 	private CommunicationTemplate communicationTemplate;
 	private CommunicationTemplateFakeRepository communicationTemplateFakeRepository;
-	private Campaign campaign;
-	private OrganizationUnit ou;
+	private CampaignDB campaign;
+	private OrganizationUnitDB ou;
 
 	@BeforeEach
 	void setup() {
@@ -66,12 +68,12 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
 		surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository,
 				communicationTemplateFakeRepository, visibilityFakeService, dateService);
-		campaign = new Campaign("campaignId", "label", null, null, null, null, false,false);
-		ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
+		campaign = new CampaignDB("campaignId", "label", null, null, null, null, false,false);
+		ou = new OrganizationUnitDB("ouId", "label-ou", OrganizationUnitType.LOCAL);
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, true, "mail", "tel");
 		visibilityFakeService.save(visibility);
-		surveyUnit = new SurveyUnit("id", true, true, null,
+		surveyUnit = new SurveyUnitDB("id", true, true, null,
 				null, campaign, null, ou, null);
 
 		communicationTemplate = new CommunicationTemplate("SIMPSONS2020X00", "messhId", CommunicationMedium.EMAIL,

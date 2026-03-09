@@ -1,10 +1,10 @@
 package fr.insee.pearljam.api.organizationunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
-import fr.insee.pearljam.domain.user.model.User;
-import fr.insee.pearljam.api.user.dto.UserContextDto;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
+import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public class OrganizationUnitContextDto {
 		this.users = users;
 	}
 
-	public OrganizationUnitContextDto(OrganizationUnit ou, List<User> lstUser, List<String> lstOURef) {
+	public OrganizationUnitContextDto(OrganizationUnitDB ou, List<UserDB> lstUser, List<String> lstOURef) {
 		this.id = ou.getId();
 		this.label = ou.getLabel();
 		this.type = ou.getType();

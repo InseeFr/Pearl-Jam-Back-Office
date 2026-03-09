@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.utils.dummy;
 
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 

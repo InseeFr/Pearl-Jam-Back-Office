@@ -2,20 +2,20 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.api.message.dto.MessageDto;
 import fr.insee.pearljam.api.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.domain.message.model.Message;
-import fr.insee.pearljam.domain.message.port.serverside.MessageRepository;
+import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
+import fr.insee.pearljam.domain.message.port.out.MessageRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public class MessageFakeRepository implements MessageRepository {
     @Override
-    public Optional<Message> findById(Long id) {
+    public Optional<MessageDB> findById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public Message save(Message message) {
+    public MessageDB save(MessageDB message) {
         return message;
     }
 
@@ -75,12 +75,12 @@ public class MessageFakeRepository implements MessageRepository {
     }
 
     @Override
-    public List<Message> findAllBySenderId(String userId) {
+    public List<MessageDB> findAllBySenderId(String userId) {
         return List.of();
     }
 
     @Override
-    public void deleteAll(List<Message> messages) {
+    public void deleteAll(List<MessageDB> messages) {
         // not used at this moment
     }
 }

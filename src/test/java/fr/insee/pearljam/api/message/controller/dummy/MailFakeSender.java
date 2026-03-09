@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.message.controller.dummy;
 
-import fr.insee.pearljam.infrastructure.mail.MailSender;
-import fr.insee.pearljam.infrastructure.mail.exception.SendMailException;
+import fr.insee.pearljam.infrastructure.http.mail.sender.MailSender;
+import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

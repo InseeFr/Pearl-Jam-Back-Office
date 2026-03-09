@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.enums.controller;
 
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.domain.contactoutcome.model.ContactOutcomeType;
-import fr.insee.pearljam.domain.state.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.Status;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

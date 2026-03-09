@@ -1,11 +1,15 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import fr.insee.pearljam.domain.surveyunit.model.Address;
-import fr.insee.pearljam.domain.campaign.model.Campaign;
-import fr.insee.pearljam.domain.surveyunit.model.InseeAddress;
-import fr.insee.pearljam.domain.surveyunit.model.InseeSampleIdentifier;
-import fr.insee.pearljam.domain.surveyunit.model.SampleIdentifier;
-import fr.insee.pearljam.domain.surveyunit.model.SurveyUnit;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestResponseDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestStatusDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.AddressDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InseeAddressDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InseeSampleIdentifierDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SampleIdentifierDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.api.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
@@ -16,12 +20,12 @@ import fr.insee.pearljam.domain.surveyunit.model.question.CategoryQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.OccupantQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.model.question.SituationQuestionValue;
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDBId;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommentDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.CommunicationRequestStatusDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.HouseF2FIdentificationDB;
-import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDBId;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommentDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommunicationRequestDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommunicationRequestStatusDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.HouseF2FIdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.IdentificationDB;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,17 +35,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class SurveyUnitDetailDtoTest {
-	private SurveyUnit surveyUnit;
+	private SurveyUnitDB surveyUnit;
 
 	@BeforeEach
 	void setup() {
-		Address address = new InseeAddress("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
+		AddressDB address = new InseeAddressDB("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
 				"building", "floor", "door", "staircase", true);
-		SampleIdentifier sampleIdentifier = new InseeSampleIdentifier(1, "ec", 2, 3, 4, 5, 6,
+		SampleIdentifierDB sampleIdentifier = new InseeSampleIdentifierDB(1, "ec", 2, 3, 4, 5, 6,
 				7, 8, "autre", "nograp");
-		Campaign campaign = new Campaign("id", "label", null,
+		CampaignDB campaign = new CampaignDB("id", "label", null,
 				null, null, "email", false, false);
-		surveyUnit = new SurveyUnit("id", true, true, address,
+		surveyUnit = new SurveyUnitDB("id", true, true, address,
 				sampleIdentifier, campaign, null, null, new HashSet<>());
 
 		surveyUnit.getComments().addAll(Set.of(

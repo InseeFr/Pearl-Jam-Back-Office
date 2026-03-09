@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.dto.contacthistory;
 
 import fr.insee.pearljam.domain.surveyunit.model.Source;
-import fr.insee.pearljam.domain.common.model.Title;
+import fr.insee.pearljam.domain.surveyunit.model.Title;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.PhoneNumber;

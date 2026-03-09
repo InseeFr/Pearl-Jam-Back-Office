@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.model;
 
-import fr.insee.pearljam.domain.exception.VisibilityHasInvalidDatesException;
+import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 
 /**
  * A class representing the visibility of a campaign for an organizational unit
