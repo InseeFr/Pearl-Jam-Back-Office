@@ -59,6 +59,7 @@ public class NoAuthSecurityConfiguration {
          */
         @Bean
         @Order(2)
+        @SuppressWarnings("java:S4502")
         protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 return http
                         .securityMatcher("/**")

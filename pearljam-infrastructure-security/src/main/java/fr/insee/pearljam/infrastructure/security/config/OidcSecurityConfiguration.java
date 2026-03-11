@@ -64,11 +64,13 @@ public class OidcSecurityConfiguration {
 	 */
 	@Bean
 	@Order(2)
+	@SuppressWarnings("java:S4502")
 	protected SecurityFilterChain filterChain(HttpSecurity http,
 			RoleProperties roleProperties) throws Exception {
 
         http
 				.securityMatcher("/**")
+				// sonarjava:S4502 - Stateless API with bearer-token auth; CSRF protection is not applicable here.
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(Customizer.withDefaults())
 				.headers(headers -> headers
