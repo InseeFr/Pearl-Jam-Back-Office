@@ -28,6 +28,19 @@ feature:
     file:
       enabled: true
 spring:
+  docker:
+    compose:
+      enabled: true
+      file: pearljam-api/compose.yml
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+      profiles:
+        active:
+          - all
   datasource:
     url:
     username:

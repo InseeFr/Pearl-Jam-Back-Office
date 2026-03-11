@@ -1,6 +1,9 @@
 services:
   pearl-db:
     image: postgres:14.15
+    profiles:
+      - all
+      - db
     environment:
       - POSTGRES_USER=${PEARL_DB_USER}
       - POSTGRES_PASSWORD=${PEARL_DB_PASSWORD}
@@ -16,6 +19,9 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
+    profiles:
+      - all
+      - keycloak
     environment:
       KEYCLOAK_ADMIN: administrator
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}

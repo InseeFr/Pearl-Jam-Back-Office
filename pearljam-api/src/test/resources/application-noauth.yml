@@ -28,10 +28,10 @@ spring:
         arguments: -v
       skip:
         in-tests: false
+      profiles:
+        active:
+          - all
   datasource:
-    url: jdbc:postgresql://localhost:5434/pearl
-    username: mypostgresuser
-    password: mypostgrespassword
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 1

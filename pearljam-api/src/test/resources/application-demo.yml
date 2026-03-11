@@ -26,12 +26,12 @@ spring:
         command: down
         timeout: 1m
         arguments: -v
+      profiles:
+        active:
+          - all
       skip:
         in-tests: false
   datasource:
-    url: jdbc:postgresql://localhost:5434/pearl
-    username: mypostgresuser
-    password: mypostgrespassword
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 1
