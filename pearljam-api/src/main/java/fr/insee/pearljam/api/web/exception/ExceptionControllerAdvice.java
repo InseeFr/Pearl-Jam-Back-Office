@@ -149,11 +149,6 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> exceptions(NotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request, e.getGlobalMessage());
-    }
-
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> exceptions(ConflictException e, WebRequest request) {
         return generateResponseError(e, HttpStatus.CONFLICT, request, e.getGlobalMessage());
