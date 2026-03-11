@@ -9,6 +9,7 @@ import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.domain.message.model.*;
 import fr.insee.pearljam.domain.organizationunit.model.*;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.AddressDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
@@ -24,7 +25,6 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PhoneNumberDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.api.message.dto.WsTextDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
@@ -260,7 +260,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(2)
 	void testGetUserNotFound() {
-		assertThatThrownBy(() -> userService.getUser("test")).isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> userService.getUser("test")).isInstanceOf(EntityNotFoundException.class);
 	}
 
 	private ResultMatcher checkJsonPath(String formattablePath, String nodeAttribute, Object expectedValue) {

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class PreferenceFakeService implements PreferenceService {
     }
 
     @Override
-    public void deletePreferences(String userId) throws NotFoundException {
+    public void deletePreferences(String userId) throws EntityNotFoundException {
         // no-impl
     }
 }

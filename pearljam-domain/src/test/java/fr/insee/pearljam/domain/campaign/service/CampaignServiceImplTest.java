@@ -1,16 +1,14 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.api.campaign.controller.dummy.ReferentFakeService;
-import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.campaign.dto.input.*;
 import fr.insee.pearljam.domain.campaign.model.*;
+import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
-import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.campaign.service.dummy.*;
+import fr.insee.pearljam.domain.organizationunit.model.*;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;

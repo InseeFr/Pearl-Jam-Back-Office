@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.domain.organizationunit.model.*;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
@@ -15,6 +14,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTempla
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
+import fr.insee.pearljam.domain.campaign.service.dummy.VisibilityFakeService;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;

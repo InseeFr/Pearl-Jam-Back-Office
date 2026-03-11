@@ -4,6 +4,7 @@ import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CampaignSensitivityDtoTest {
@@ -17,7 +18,8 @@ class CampaignSensitivityDtoTest {
                 "email@plop.com", false, false);
 
         // When
-        CampaignSensitivityDto campaignSensitivityDto = CampaignSensitivityDto.fromModel(campaign);
+        CampaignSensitivityDto campaignSensitivityDto =
+                CampaignSensitivityDto.fromModel(campaign.getId(), campaign.getSensitivity());
 
         // Then
         assertThat(campaignSensitivityDto).isNotNull();

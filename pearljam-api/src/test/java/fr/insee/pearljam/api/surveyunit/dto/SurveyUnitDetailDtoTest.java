@@ -29,6 +29,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identifica
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,14 @@ import org.junit.jupiter.api.Test;
 
 class SurveyUnitDetailDtoTest {
 	private SurveyUnitDB surveyUnit;
+
+    private SurveyUnitDetailDto buildSurveyUnitDetailDto() {
+        SurveyUnitDetailDto dto = new SurveyUnitDetailDto();
+        dto.setComments(CommentDto.fromModel(surveyUnit.getModelComments()));
+        dto.setIdentification(IdentificationDto.fromModel(surveyUnit.getModelIdentification()));
+        dto.setCommunicationRequests(CommunicationRequestResponseDto.fromModel(surveyUnit.getModelCommunicationRequests()));
+        return dto;
+    }
 
 	@BeforeEach
 	void setup() {
@@ -65,7 +74,7 @@ class SurveyUnitDetailDtoTest {
 				CategoryQuestionValue.SECONDARY,
 				OccupantQuestionValue.IDENTIFIED);
 		surveyUnit.setIdentification(identificationDB);
-		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
+		SurveyUnitDetailDto surveyUnitDetailDto = buildSurveyUnitDetailDto();
 		IdentificationDto identificationDto = surveyUnitDetailDto.getIdentification();
 		IdentificationDto identificationDtoExpected =
 				IdentificationDto.fromModel(IdentificationDB.toModel(identificationDB));
@@ -75,7 +84,7 @@ class SurveyUnitDetailDtoTest {
 	@Test
 	@DisplayName("Should have comments")
 	void testCreateComments01() {
-		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
+		SurveyUnitDetailDto surveyUnitDetailDto = buildSurveyUnitDetailDto();
 		assertThat(surveyUnitDetailDto.getComments())
 				.containsExactlyInAnyOrder(
 						new CommentDto(CommentType.INTERVIEWER, "value1"),
@@ -108,7 +117,7 @@ class SurveyUnitDetailDtoTest {
 				CommunicationRequestEmitter.TOOL, surveyUnit, status2));
 		surveyUnit.setCommunicationRequests(communicationRequestDBs);
 
-		SurveyUnitDetailDto surveyUnitDetailDto = new SurveyUnitDetailDto(surveyUnit);
+		SurveyUnitDetailDto surveyUnitDetailDto = buildSurveyUnitDetailDto();
 
 		List<CommunicationRequestStatusDto> status1Expected = List.of(
 				new CommunicationRequestStatusDto(1233456789L, CommunicationStatusType.INITIATED),

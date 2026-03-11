@@ -41,11 +41,18 @@ class ModuleBoundariesArchTests {
     }
 
     @Test
-    void infrastructureAdaptersInApiModuleShouldNotDependOnApiPackage() {
+    void apiModuleShouldNotContainInfrastructurePackages() {
         noClasses()
-                .that().resideInAPackage("fr.insee.pearljam.infrastructure..")
+                .should().resideInAPackage("fr.insee.pearljam.infrastructure..")
+                .check(importedClasses);
+    }
+
+    @Test
+    void apiShouldNotDependOnInfrastructurePackages() {
+        noClasses()
+                .that().resideInAPackage("fr.insee.pearljam.api..")
                 .should().dependOnClassesThat().resideInAnyPackage(
-                        "fr.insee.pearljam.api.."
+                        "fr.insee.pearljam.infrastructure.."
                 )
                 .check(importedClasses);
     }
