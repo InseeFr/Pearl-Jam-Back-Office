@@ -19,6 +19,7 @@ spring:
     compose:
       enabled: true
       file: ../pearljam-api/compose.yml
+      project-directory: ../pearljam-api
       lifecycle-management: start-and-stop
       start:
         command: up
@@ -28,6 +29,9 @@ spring:
         arguments: -v
       skip:
         in-tests: false
+      profiles:
+        active:
+          - db
   datasource:
     url: jdbc:postgresql://localhost:5434/pearl
     username: mypostgresuser
