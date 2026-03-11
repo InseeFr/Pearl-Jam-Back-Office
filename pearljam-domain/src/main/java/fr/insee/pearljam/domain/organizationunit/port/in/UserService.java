@@ -1,11 +1,11 @@
 package fr.insee.pearljam.domain.organizationunit.port.in;
 
 import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserNotAssociatedToCampaignException;
@@ -25,7 +25,7 @@ public interface UserService {
 	 * @param userId
 	 * @return {@link Optional<UserDto>}
 	 */
-	UserDto getUser(String userId) throws NotFoundException;
+	UserDto getUser(String userId) throws EntityNotFoundException;
 
 	/**
 	 * @param userId
@@ -48,9 +48,9 @@ public interface UserService {
 	Response createUsersByOrganizationUnit(List<UserContextDto> users, String organisationUnitId)
 			throws UserAlreadyExistsException, NoOrganizationUnitException;
 
-	void delete(String id) throws NotFoundException;
+	void delete(String id) throws EntityNotFoundException;
 
-	UserDto createUser(UserDto user) throws NotFoundException, UserAlreadyExistsException;
+	UserDto createUser(UserDto user) throws EntityNotFoundException, UserAlreadyExistsException;
 
-	UserDto updateUser(UserDto user) throws NotFoundException;
+	UserDto updateUser(UserDto user) throws EntityNotFoundException;
 }

@@ -18,7 +18,6 @@ import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactAttemptDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactOutcomeDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SampleIdentifiersDto;
-import fr.insee.pearljam.api.web.exception.BadRequestException;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -503,7 +502,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			}
 			if (object == null) {
 				log.error("Could not get response from data collection API");
-				throw new BadRequestException("Could not get response from data collection API");
+				throw new IllegalStateException("Could not get response from data collection API");
 			}
 			object.interrogationNOK().forEach(su -> mapResult.put(su.id(), QUESTIONNAIRE_STATE_UNAVAILABLE));
 			object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));

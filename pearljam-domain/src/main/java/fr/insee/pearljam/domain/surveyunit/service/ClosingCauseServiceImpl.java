@@ -2,16 +2,16 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.in.ClosingCauseService;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +35,13 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 	private final RelatedOrganizationUnitService relatedOrganizationUnitService;
 	private final UserService userService;
 
-	@SneakyThrows
-    @Override
+	@Override
 	public ClosingCauseCountDto getClosingCauseCount(String userId, String campaignId, String interviewerId, Long date,
-			List<String> associatedOrgUnits)  {
+			List<String> associatedOrgUnits) throws CampaignNotFoundException {
 		ClosingCauseCountDto closingCauseCountDto = new ClosingCauseCountDto();
 		userService.checkUserAssociationToCampaign(campaignId, userId);
 		if (interviewerRepository.findById(interviewerId).isEmpty()) {
-			throw new NotFoundException("No interviewer found for the id " + interviewerId);
+			throw new InterviewerNotFoundException(interviewerId);
 		}
 		List<String> userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 
@@ -59,8 +58,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 					.setTotal(stateRepository.getTotalStateCount(campaignId, interviewerId, userOuIds, dateToUse));
 		}
 		if (closingCauseCountDto.getTotal() == null) {
-			throw new NotFoundException("No matching interviewers " + interviewerId + " were found for the user "
-					+ userId + " and the campaign " + interviewerId);
+			throw new InterviewerNotFoundException(interviewerId);
 		}
 		return closingCauseCountDto;
 	}

@@ -2,8 +2,8 @@ package fr.insee.pearljam.domain.surveyunit.port.in;
 
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 
 import java.util.List;
 
@@ -31,9 +31,9 @@ public interface StateService {
 	 * @param campaignId
 	 * @param date
 	 * @return {@link StateCountCampaignDto}
-	 * @throws NotFoundException
+	 * @throws EntityNotFoundException
 	 */
-	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) throws NotFoundException, CampaignNotFoundException;
+	StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date) throws EntityNotFoundException;
 
 	/**
 	 * @param userId

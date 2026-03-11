@@ -7,7 +7,6 @@ import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDt
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
@@ -19,6 +18,7 @@ import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount
 import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
@@ -107,7 +107,7 @@ public class StateServiceImpl implements StateService {
   }
 
   public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date)
-          throws NotFoundException, CampaignNotFoundException {
+          throws EntityNotFoundException {
 
     userService.checkUserAssociationToCampaign(campaignId, userId);
     long dateToUse = (date != null) ? date : System.currentTimeMillis();
@@ -116,7 +116,7 @@ public class StateServiceImpl implements StateService {
     List<String> targetOuIds = visibilityRepository.findVisibilities(campaignId)
             .stream().map(Visibility::organizationalUnitId).toList();
     if (targetOuIds.isEmpty()) {
-      throw new NotFoundException(String.format(
+      throw new EntityNotFoundException(String.format(
               "No visibility found for campaign %s", campaignId));
     }
 
@@ -177,7 +177,7 @@ public class StateServiceImpl implements StateService {
     result.setFrance(dtoFrance);
 
     if (result.getFrance() == null || result.getOrganizationUnits() == null) {
-      throw new NotFoundException(String.format(
+      throw new EntityNotFoundException(String.format(
               "No matching survey units states were found for the user %s and the campaign %s",
               userId, campaignId));
     }

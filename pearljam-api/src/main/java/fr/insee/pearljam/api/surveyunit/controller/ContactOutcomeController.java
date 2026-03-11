@@ -5,10 +5,10 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.Interviewe
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.in.ContactOutcomeService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,7 +87,7 @@ public class ContactOutcomeController {
     try {
       stateCountCampaignDto = contactOutcomeService.getContactOutcomeCountTypeByCampaign(userId, id,
           date);
-    } catch (NotFoundException e) {
+    } catch (EntityNotFoundException e) {
       log.error(e.getMessage());
       log.info("Get contact-outcome type count resulting in 404");
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -114,7 +114,7 @@ public class ContactOutcomeController {
     try {
       cotd = contactOutcomeService.getContactOutcomeByInterviewerAndCampaign(userId, id, idep,
           date);
-    } catch (NotFoundException e) {
+    } catch (EntityNotFoundException e) {
       log.error(e.getMessage());
       log.info("Get contactOutcomeTypeCount resulting in 404");
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

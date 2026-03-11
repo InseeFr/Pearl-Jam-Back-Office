@@ -3,10 +3,10 @@ package fr.insee.pearljam.api.surveyunit.controller;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -119,7 +119,7 @@ public class StateController {
     StateCountCampaignDto stateCountCampaignDto;
     try {
       stateCountCampaignDto = stateService.getStateCountByCampaign(userId, id, date);
-    } catch (NotFoundException | CampaignNotFoundException e) {
+    } catch (EntityNotFoundException e) {
       log.error(e.getMessage());
       log.info("Get campaignStateCount resulting in 404");
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

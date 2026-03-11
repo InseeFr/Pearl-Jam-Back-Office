@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.in.ClosingCauseService;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
@@ -40,7 +41,7 @@ public class ClosingCauseController {
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES)
   public ClosingCauseCountDto getClosingCauseCount(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
-      @RequestParam(required = false, name = "date") Long date) {
+      @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
     List<String> associatedOrgUnits = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 

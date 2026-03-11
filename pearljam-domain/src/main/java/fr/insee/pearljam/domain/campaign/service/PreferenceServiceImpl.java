@@ -2,10 +2,10 @@ package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +52,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return HttpStatus.OK;
 	}
 
-	public void deletePreferences(String userId) throws NotFoundException {
+	public void deletePreferences(String userId) throws EntityNotFoundException {
 		UserDB user = userRepository.findByIdIgnoreCase(userId)
-				.orElseThrow(() -> new NotFoundException("User not found"));
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 		user.setCampaigns(null);
 		userRepository.save(user);
 	}

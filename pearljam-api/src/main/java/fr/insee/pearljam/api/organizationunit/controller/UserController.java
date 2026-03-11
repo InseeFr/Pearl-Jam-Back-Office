@@ -4,13 +4,13 @@ import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.api.web.exception.ConflictException;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.message.port.in.MessageService;
 import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class UserController {
 	 */
 	@Operation(summary = "Get current user")
 	@GetMapping(Constants.API_USER)
-	public UserDto getCurrentUser() throws NotFoundException {
+	public UserDto getCurrentUser() throws EntityNotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		return userService.getUser(currentUserId);
 	}
@@ -54,7 +54,7 @@ public class UserController {
 	@Operation(summary = "Get User by id")
 	@GetMapping(Constants.API_USER_ID)
 	public UserDto getUserById(
-						@PathVariable(value = "id") String userId) throws NotFoundException {
+						@PathVariable(value = "id") String userId) throws EntityNotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to GET user with id : {}", currentUserId, userId);
 		return userService.getUser(userId);
@@ -64,14 +64,14 @@ public class UserController {
 	 * Create a user
 	 * @param user user to created
 	 * @return the user created
-	 * @throws NotFoundException This is thrown when errors occurred during dto validation
+	 * @throws EntityNotFoundException This is thrown when errors occurred during dto validation
 	 * @throws UserAlreadyExistsException This is thrown when errors occurred during dto validation
 	 */
 	@Operation(summary = "Create User")
 	@PostMapping(Constants.API_USER)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public UserDto createUser(
-						@RequestBody @NotNull @Valid UserDto user) throws NotFoundException, UserAlreadyExistsException {
+						@RequestBody @NotNull @Valid UserDto user) throws EntityNotFoundException, UserAlreadyExistsException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to create a new user", currentUserId);
 
@@ -91,7 +91,7 @@ public class UserController {
 	@PutMapping(Constants.API_USER_ID)
 	public UserDto updateUser(
 			@PathVariable(value = "id") String userId,
-			@RequestBody @Valid @NotNull UserDto user) throws ConflictException, NotFoundException {
+			@RequestBody @Valid @NotNull UserDto user) throws ConflictException, EntityNotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to update user {}", currentUserId, userId);
 
@@ -114,14 +114,14 @@ public class UserController {
 	@PutMapping(Constants.API_USER_ID_ORGANIZATION_ID_OUID)
 	public UserDto assignUserToOU(
 			@PathVariable(value = "userId") String userId, 
-			@PathVariable(value = "ouId") String ouId) throws NotFoundException {
+			@PathVariable(value = "ouId") String ouId) throws EntityNotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to assign user {} to OU {}", currentUserId, userId, ouId);
 		UserDto user = userService.getUser(userId);
 
 		Optional<OrganizationUnitDto> ouOptional = organizationUnitService.findById(ouId);
 		if (ouOptional.isEmpty()) {
-			throw new NotFoundException("Organization unit not found");
+			throw new EntityNotFoundException("Organization unit not found");
 		}
 
 		OrganizationUnitDto ou = ouOptional.get();
@@ -138,7 +138,7 @@ public class UserController {
 	 */
 	@Operation(summary = "Delete User")
 	@DeleteMapping(Constants.API_USER_ID)
-	public void deleteUser(@PathVariable(value = "id") String userId) throws NotFoundException {
+	public void deleteUser(@PathVariable(value = "id") String userId) throws EntityNotFoundException {
 		String currentUserId = authenticatedUserService.getCurrentUserId();
 		log.info("{} tries to delete user {}", currentUserId, userId);
 		messageService.deleteMessageByUserId(userId);

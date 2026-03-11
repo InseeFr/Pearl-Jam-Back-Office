@@ -3,16 +3,17 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.ContactOutcomeRepository;
 import fr.insee.pearljam.domain.surveyunit.port.in.ContactOutcomeService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +49,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 	@Override
 	public ContactOutcomeTypeCountCampaignDto getContactOutcomeCountTypeByCampaign(String userId, String campaignId,
-			Long date) throws NotFoundException, CampaignNotFoundException {
+			Long date) throws EntityNotFoundException {
 		ContactOutcomeTypeCountCampaignDto stateCountCampaignDto = new ContactOutcomeTypeCountCampaignDto();
 		userService.checkUserAssociationToCampaign(campaignId, userId);
 		List<ContactOutcomeTypeCountDto> stateCountList = new ArrayList<>();
@@ -67,7 +68,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 		stateCountCampaignDto.setFrance(new ContactOutcomeTypeCountDto(
 				contactOutcomeRepository.getContactOutcomeTypeCountByCampaignId(campaignId, dateToUse)));
 		if (stateCountCampaignDto.getFrance() == null || stateCountCampaignDto.getOrganizationUnits() == null) {
-			throw new NotFoundException("No matching survey units states were found for the user " + userId
+			throw new EntityNotFoundException("No matching survey units states were found for the user " + userId
 					+ " and the campaign " + campaignId);
 		}
 		return stateCountCampaignDto;
@@ -104,12 +105,13 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 	@Override
 	public ContactOutcomeTypeCountDto getContactOutcomeByInterviewerAndCampaign(String userId, String campaignId,
-			String interviewerId, Long date) throws NotFoundException,CampaignNotFoundException {
+			String interviewerId, Long date) throws EntityNotFoundException {
 		userService.checkUserAssociationToCampaign(campaignId, userId);
-		if (interviewerRepository.findById(interviewerId).isEmpty()
-				|| campaignRepository.findById(campaignId).isEmpty()) {
-			throw new NotFoundException(String.format("The interviewer %s or the campaign %s was not found in database",
-					interviewerId, campaignId));
+		if (interviewerRepository.findById(interviewerId).isEmpty()) {
+			throw new InterviewerNotFoundException(interviewerId);
+		}
+		if (campaignRepository.findById(campaignId).isEmpty()) {
+			throw new CampaignNotFoundException();
 		}
 		List<String> userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 

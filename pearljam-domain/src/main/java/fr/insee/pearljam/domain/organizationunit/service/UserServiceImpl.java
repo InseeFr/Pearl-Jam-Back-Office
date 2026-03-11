@@ -2,16 +2,17 @@ package fr.insee.pearljam.domain.organizationunit.service;
 
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitTreeDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
 import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.OrganizationalUnitNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
@@ -41,9 +42,9 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CampaignRepository campaignRepository;
 
-	public UserDto getUser(String userId) throws NotFoundException {
+	public UserDto getUser(String userId) throws EntityNotFoundException {
 		UserDB user = userRepository.findByIdIgnoreCase(userId)
-				.orElseThrow(() -> new NotFoundException("User not found"));
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
 		OrganizationUnitTreeDto ouTree = organizationUnitService.getOrganizationUnitTree(
 				user.getOrganizationUnit().getId(),
@@ -115,23 +116,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void delete(String id) throws NotFoundException {
+	public void delete(String id) throws EntityNotFoundException {
 		Optional<UserDB> user = userRepository.findById(id);
 		if (user.isEmpty()) {
-			throw new NotFoundException("User does not exist");
+			throw new EntityNotFoundException("User does not exist");
 		}
 		userRepository.delete(user.get());
 	}
 
 	@Override
-	public UserDto createUser(UserDto userToCreate) throws NotFoundException, UserAlreadyExistsException {
+	public UserDto createUser(UserDto userToCreate) throws EntityNotFoundException, UserAlreadyExistsException {
 		Optional<OrganizationUnitDB> ouOpt = organizationUnitRepository
 				.findById(userToCreate.getOrganizationUnit().getId());
 
 		String ouId = userToCreate.getOrganizationUnit().getId();
 		if (!organizationUnitRepository.existsById(ouId)) {
-			throw new NotFoundException("No organizational unit found with this id",
-					String.format("Invalid organizational unit %s", ouId));
+			throw new OrganizationalUnitNotFoundException();
 		}
 
 		String userId = userToCreate.getId();
@@ -140,19 +140,17 @@ public class UserServiceImpl implements UserService {
 		}
 
 		OrganizationUnitDB ou = ouOpt
-				.orElseThrow(() -> new NotFoundException(String.format("Organization Unit with id %s not found",
-						userToCreate.getOrganizationUnit().getId())));
+				.orElseThrow(OrganizationalUnitNotFoundException::new);
 		UserDB user = new UserDB(userToCreate.getId(), userToCreate.getFirstName(), userToCreate.getLastName(), ou);
 		userRepository.save(user);
 		return getUser(userToCreate.getId());
 	}
 
 	@Override
-	public UserDto updateUser(UserDto user) throws NotFoundException {
+	public UserDto updateUser(UserDto user) throws EntityNotFoundException {
 		UserDB dbUser = userRepository
 				.findByIdIgnoreCase(user.getId())
-				.orElseThrow(() -> new NotFoundException(
-						"User not found",
+				.orElseThrow(() -> new EntityNotFoundException(
 						String.format("User with id %s not found", user.getId())));
 		dbUser.setFirstName(user.getFirstName());
 		dbUser.setLastName(user.getLastName());
@@ -161,9 +159,7 @@ public class UserServiceImpl implements UserService {
 
 		OrganizationUnitDB dbOu = organizationUnitRepository
 				.findByIdIgnoreCase(user.getOrganizationUnit().getId())
-				.orElseThrow(() -> new NotFoundException(
-						"No organizational unit found with this id",
-						String.format("Invalid organizational unit %s", ouId)));
+				.orElseThrow(OrganizationalUnitNotFoundException::new);
 
 		dbUser.setOrganizationUnit(dbOu);
 		UserDB updatedUser = userRepository.save(dbUser);

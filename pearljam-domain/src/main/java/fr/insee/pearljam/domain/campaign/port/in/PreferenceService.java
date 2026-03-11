@@ -2,8 +2,8 @@ package fr.insee.pearljam.domain.campaign.port.in;
 
 import java.util.List;
 
-import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 
 public interface PreferenceService {
@@ -15,6 +15,6 @@ public interface PreferenceService {
 	 */
 	HttpStatus setPreferences(List<String> listPreference, String userId) throws CampaignNotFoundException;
 
-	void deletePreferences(String userId) throws NotFoundException;
+	void deletePreferences(String userId) throws EntityNotFoundException;
 
 }
