@@ -5,7 +5,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.Interviewe
 import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
@@ -33,7 +33,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 	private final StateRepository stateRepository;
 	private final InterviewerRepository interviewerRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
-	private final UtilsService utilsService;
+	private final RelatedOrganizationUnitService relatedOrganizationUnitService;
 	private final UserService userService;
 
 	@SneakyThrows
@@ -47,7 +47,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 		}
 		List<String> userOuIds;
 		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = utilsService.getRelatedOrganizationUnits(userId);
+			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 		} else {
 			userOuIds = organizationUnitRepository.findAllId();
 		}

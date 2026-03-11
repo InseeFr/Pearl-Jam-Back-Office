@@ -13,7 +13,7 @@ import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
@@ -53,7 +53,7 @@ public class StateServiceImpl implements StateService {
   private final VisibilityRepository visibilityRepository;
   private final OrganizationUnitRepository organizationUnitRepository;
   private final UserService userService;
-  private final UtilsService utilsService;
+  private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final CommunicationRequestRepository communicationRequestRepository;
 
 
@@ -67,7 +67,7 @@ public class StateServiceImpl implements StateService {
     }
     List<String> userOuIds;
     if (!userId.equals(Constants.GUEST)) {
-      userOuIds = utilsService.getRelatedOrganizationUnits(userId);
+      userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
     } else {
       userOuIds = organizationUnitRepository.findAllId();
     }

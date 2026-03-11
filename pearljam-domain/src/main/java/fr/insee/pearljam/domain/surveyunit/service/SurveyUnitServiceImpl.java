@@ -35,7 +35,7 @@ import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
@@ -86,7 +86,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final VisibilityRepository visibilityRepository;
 	private final ClosingCauseRepository closingCauseRepository;
 	private final UserService userService;
-	private final UtilsService utilsService;
+	private final QuestionnaireStateClient questionnaireStateClient;
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
 	private final CommunicationTemplateService communicationTemplateService;
 	private final DateService dateService;
@@ -491,7 +491,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<String> lstSu) {
 		Map<String, String> mapResult = new HashMap<>();
 		try {
-			ResponseEntity<InterrogationOkNokDto> result = utilsService.getQuestionnairesStateFromDataCollection(request,
+			ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(request,
 					lstSu);
 			log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 			InterrogationOkNokDto object = result.getBody();

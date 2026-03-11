@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.domain.surveyunit.port.in.ClosingCauseService;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ClosingCauseController {
 
   private final ClosingCauseService closingCauseService;
-  private final UtilsService utilsService;
+  private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final AuthenticatedUserService authenticatedUserService;
 
   /**
@@ -42,7 +42,7 @@ public class ClosingCauseController {
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) {
     String userId = authenticatedUserService.getCurrentUserId();
-    List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
+    List<String> associatedOrgUnits = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 
       return closingCauseService.getClosingCauseCount(userId, id, idep, date,
           associatedOrgUnits);

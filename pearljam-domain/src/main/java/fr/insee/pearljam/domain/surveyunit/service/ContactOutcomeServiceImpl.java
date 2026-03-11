@@ -7,7 +7,7 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.api.web.exception.NotFoundException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.ContactOutcomeRepository;
 import fr.insee.pearljam.domain.surveyunit.port.in.ContactOutcomeService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
@@ -45,7 +45,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 	private final UserService userService;
 
-	private final UtilsService utilsService;
+	private final RelatedOrganizationUnitService relatedOrganizationUnitService;
 
 	@Override
 	public ContactOutcomeTypeCountCampaignDto getContactOutcomeCountTypeByCampaign(String userId, String campaignId,
@@ -78,7 +78,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 	public List<ContactOutcomeTypeCountDto> getContactOutcomeTypeCountByCampaign(String userId, Long date) {
 		List<String> userOuIds;
 		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = utilsService.getRelatedOrganizationUnits(userId);
+			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 		} else {
 			userOuIds = organizationUnitRepository.findAllId();
 		}
@@ -119,7 +119,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 		}
 		List<String> userOuIds;
 		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = utilsService.getRelatedOrganizationUnits(userId);
+			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 		} else {
 			userOuIds = organizationUnitRepository.findAllId();
 		}

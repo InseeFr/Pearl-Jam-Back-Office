@@ -4,7 +4,7 @@ import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.api.web.exception.NotFoundException;
-import fr.insee.pearljam.domain.organizationunit.port.in.UtilsService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
@@ -28,7 +28,7 @@ import java.util.List;
 public class StateController {
 
   private final StateService stateService;
-  private final UtilsService utilsService;
+  private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final AuthenticatedUserService authenticatedUserService;
 
   /**
@@ -46,7 +46,7 @@ public class StateController {
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
     String userId = authenticatedUserService.getCurrentUserId();
-    List<String> associatedOrgUnits = utilsService.getRelatedOrganizationUnits(userId);
+    List<String> associatedOrgUnits = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 
     return stateService.getStateCount(userId, id, idep, date, associatedOrgUnits);
 
