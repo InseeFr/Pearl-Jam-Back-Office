@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.http.datacollection.adapter;
 
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.InterrogationOkNokDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.infrastructure.http.datacollection.config.DataCollectionHttpProperties;

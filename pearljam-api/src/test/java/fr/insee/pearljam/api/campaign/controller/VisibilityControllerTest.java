@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.campaign.controller;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.JsonTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;

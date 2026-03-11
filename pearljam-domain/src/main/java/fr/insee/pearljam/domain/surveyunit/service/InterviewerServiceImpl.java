@@ -1,12 +1,12 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.api.campaign.dto.output.CampaignVisibilityPeriodDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CampaignVisibilityPeriodDto;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
-import fr.insee.pearljam.api.surveyunit.dto.interviewer.InterviewerDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;

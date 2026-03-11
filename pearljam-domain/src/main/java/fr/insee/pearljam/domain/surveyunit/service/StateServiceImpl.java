@@ -5,8 +5,8 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.Interviewe
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;

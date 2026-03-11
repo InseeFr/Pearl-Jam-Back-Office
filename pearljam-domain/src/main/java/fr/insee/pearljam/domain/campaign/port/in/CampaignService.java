@@ -3,18 +3,18 @@ package fr.insee.pearljam.domain.campaign.port.in;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.CampaignCommonsDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.api.campaign.dto.CampaignSensitivityDto;
-import fr.insee.pearljam.api.campaign.dto.PortalDataDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
+import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
-import fr.insee.pearljam.api.campaign.dto.CountDto;
+import fr.insee.pearljam.contracts.campaign.dto.CountDto;
 
 /**
  * Service for the Campaign entity

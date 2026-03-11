@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestStatusDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommunicationRequestResponseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommunicationRequestStatusDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.AddressDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InseeAddressDB;

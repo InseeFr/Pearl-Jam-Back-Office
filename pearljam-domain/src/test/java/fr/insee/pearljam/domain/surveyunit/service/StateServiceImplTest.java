@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;

@@ -3,8 +3,8 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
-import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserNotAssociatedToCampaignException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 

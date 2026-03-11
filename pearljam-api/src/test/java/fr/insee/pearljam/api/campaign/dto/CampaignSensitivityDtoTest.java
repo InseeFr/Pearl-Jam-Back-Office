@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.campaign.dto;
 
+import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.junit.jupiter.api.DisplayName;

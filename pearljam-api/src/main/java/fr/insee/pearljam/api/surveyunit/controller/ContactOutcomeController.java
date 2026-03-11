@@ -2,9 +2,9 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.domain.surveyunit.port.in.ContactOutcomeService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;

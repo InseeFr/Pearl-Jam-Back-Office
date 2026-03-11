@@ -3,11 +3,8 @@ package fr.insee.pearljam.domain.surveyunit.port.in;
 import java.util.List;
 import java.util.Set;
 
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;

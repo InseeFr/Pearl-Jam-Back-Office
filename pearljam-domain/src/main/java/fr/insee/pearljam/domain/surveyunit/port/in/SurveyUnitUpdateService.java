@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 
 /**
  * Temporary service used for the full app refactoring to update survey unit infos

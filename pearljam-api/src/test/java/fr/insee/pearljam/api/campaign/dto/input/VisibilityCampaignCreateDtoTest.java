@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.campaign.dto.input;
 
+import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

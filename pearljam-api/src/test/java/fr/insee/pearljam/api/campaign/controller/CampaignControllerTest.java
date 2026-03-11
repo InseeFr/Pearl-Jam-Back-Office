@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.campaign.dto.PortalDataDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
 import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;
 
 import java.util.List;

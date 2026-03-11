@@ -1,14 +1,11 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
+import fr.insee.pearljam.contracts.campaign.dto.*;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.campaign.dto.*;
-import fr.insee.pearljam.api.campaign.dto.CountDto;
-import fr.insee.pearljam.contracts.campaign.dto.ReferentDto;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;

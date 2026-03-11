@@ -1,19 +1,19 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.api.campaign.dto.input.*;
-import fr.insee.pearljam.api.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.*;
+import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.api.campaign.dto.CampaignCommonsDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.api.campaign.dto.CampaignSensitivityDto;
-import fr.insee.pearljam.api.campaign.dto.PortalDataDto;
-import fr.insee.pearljam.api.campaign.dto.CountDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
+import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
+import fr.insee.pearljam.contracts.campaign.dto.CountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.campaign.dto.ReferentDto;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;

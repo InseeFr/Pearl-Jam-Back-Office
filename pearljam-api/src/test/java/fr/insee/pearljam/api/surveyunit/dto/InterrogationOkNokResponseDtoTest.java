@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
-import fr.insee.pearljam.api.surveyunit.dto.state.StateDataDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.InterrogationOkNokResponseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDataDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokResponseDto;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,11 +1,10 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.campaign.dto.output.CommunicationTemplateResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CommunicationTemplateResponseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.NextContactHistoryDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
@@ -13,11 +12,6 @@ import fr.insee.pearljam.contracts.surveyunit.dto.identification.IdentificationD
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.AddressDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactAttemptDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactOutcomeDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SampleIdentifiersDto;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;

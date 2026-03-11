@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.output.CommunicationTemplateResponseDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.CommunicationTemplateResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;

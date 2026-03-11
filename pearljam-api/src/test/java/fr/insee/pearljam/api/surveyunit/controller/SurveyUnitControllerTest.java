@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.RawIdentificationDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;

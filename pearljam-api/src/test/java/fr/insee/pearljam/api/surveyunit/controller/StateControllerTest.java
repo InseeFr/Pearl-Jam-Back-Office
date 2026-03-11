@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
 import org.junit.jupiter.api.BeforeEach;

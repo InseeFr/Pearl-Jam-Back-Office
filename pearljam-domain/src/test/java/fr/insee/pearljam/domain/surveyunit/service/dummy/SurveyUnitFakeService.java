@@ -1,13 +1,13 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
 import fr.insee.pearljam.domain.shared.model.Response;

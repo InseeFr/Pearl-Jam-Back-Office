@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.state.StateCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;

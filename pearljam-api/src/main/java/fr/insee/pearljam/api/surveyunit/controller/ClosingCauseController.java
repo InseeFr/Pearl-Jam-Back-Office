@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.in.ClosingCauseService;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;

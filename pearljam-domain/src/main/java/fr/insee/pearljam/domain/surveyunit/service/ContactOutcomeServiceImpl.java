@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
-import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;

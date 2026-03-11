@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.organizationunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.api.organizationunit.dto.user.UserDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.api.web.exception.ConflictException;
 import fr.insee.pearljam.domain.message.port.in.MessageService;
 import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;

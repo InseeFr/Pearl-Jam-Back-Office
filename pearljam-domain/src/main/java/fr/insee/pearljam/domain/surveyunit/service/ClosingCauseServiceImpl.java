@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;

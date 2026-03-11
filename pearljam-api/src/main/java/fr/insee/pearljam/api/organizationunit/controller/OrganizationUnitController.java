@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.organizationunit.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.api.organizationunit.dto.OrganizationUnitContextDto;
-import fr.insee.pearljam.api.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitContextDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserContextDto;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.OrganisationUnitAlreadyExistsException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;

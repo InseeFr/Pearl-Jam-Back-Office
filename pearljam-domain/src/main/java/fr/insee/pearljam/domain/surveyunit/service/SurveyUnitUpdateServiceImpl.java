@@ -2,11 +2,11 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.CommunicationRequestCreateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommunicationRequestCreateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactOutcomeDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.api.surveyunit.dto.contacthistory.NextContactHistoryDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.IdentificationDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;

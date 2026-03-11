@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.api.campaign.dto.input.*;
+import fr.insee.pearljam.contracts.campaign.dto.input.*;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.campaign.service.exception.*;

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.input.CampaignUpdateDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityCampaignUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityCampaignUpdateDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.campaign.controller.dummy.CampaignFakeService;

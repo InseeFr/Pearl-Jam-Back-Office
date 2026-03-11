@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.campaign.controller;
 
-import fr.insee.pearljam.api.campaign.dto.input.*;
+import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.CommunicationTemplateCreateDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;

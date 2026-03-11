@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.campaign.controller;
 
 import java.util.List;
 
-import fr.insee.pearljam.api.campaign.dto.output.VisibilityCampaignDto;
-import fr.insee.pearljam.api.campaign.dto.input.VisibilityUpdateDto;
+import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityUpdateDto;
 import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
