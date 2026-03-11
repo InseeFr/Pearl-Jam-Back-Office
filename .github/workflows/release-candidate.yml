@@ -1,9 +1,8 @@
-name: Release Candidate & Docker
+name: Build release candidate
 
 on:
-  push:
-    branches:
-      - 'develop'
+  workflow_dispatch:
+
 jobs:
   check-version:
     runs-on: ubuntu-latest
@@ -20,7 +19,7 @@ jobs:
       - name: Print version
         run: echo ${{ steps.version.outputs.version }}
 
-      - uses: mukunku/tag-exists-action@v1.6.0
+      - uses: mukunku/tag-exists-action@v1.7.0
         name: Check tag existence
         id: check-tag-exists
         with:
@@ -60,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
+          path: pearljam-api/target/*.jar
 
   create-release-candidate:
     needs: [ check-version, build-sources ]
@@ -104,7 +103,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: target/
+          path: pearljam-api/target/
 
       - name: Publish to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@v5
@@ -114,3 +113,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
           tags: ${{ needs.check-version.outputs.release-version }}
+          workdir: pearljam-api

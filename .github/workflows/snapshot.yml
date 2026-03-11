@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
+          path: pearljam-api/target/*.jar
 
   publish-docker:
     needs: [ check-version, build-sources ]
@@ -80,7 +80,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: target/
+          path: pearljam-api/target/
 
       - name: Publish to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@v5
@@ -90,3 +90,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
           tags: ${{ needs.check-version.outputs.release-version }}
+          workdir: pearljam-api
