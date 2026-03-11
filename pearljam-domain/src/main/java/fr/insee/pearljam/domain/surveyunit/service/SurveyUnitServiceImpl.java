@@ -7,7 +7,6 @@ import fr.insee.pearljam.api.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.api.surveyunit.dto.surveyunit.closable.ClosableSurveyUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
 import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.IdentificationDto;
@@ -72,6 +71,7 @@ import java.util.stream.Collectors;
 public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private static final String GUEST = "GUEST";
+	private static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
 
 	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
 	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
@@ -465,7 +465,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 					return ClosableSurveyUnitDto.from(
 							candidatesById.get(surveyUnitId),
 							closableSurveyUnitProjection,
-							questionnaireStates.get(surveyUnitId) == null ? Constants.UNAVAILABLE : questionnaireStates.get(surveyUnitId)
+							questionnaireStates.get(surveyUnitId) == null ? QUESTIONNAIRE_STATE_UNAVAILABLE : questionnaireStates.get(surveyUnitId)
 					);
 				})
 				.toList();
@@ -481,7 +481,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		boolean inaWithoutQuestionnaire =
 				outcomeType == ContactOutcomeType.INA
-						&& (questionnaireState == null || Constants.UNAVAILABLE.equals(questionnaireState));
+						&& (questionnaireState == null || QUESTIONNAIRE_STATE_UNAVAILABLE.equals(questionnaireState));
 
 		return neverTransmitted || inaWithoutQuestionnaire;
 	}
@@ -505,12 +505,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				log.error("Could not get response from data collection API");
 				throw new BadRequestException("Could not get response from data collection API");
 			}
-			object.interrogationNOK().forEach(su -> mapResult.put(su.id(), Constants.UNAVAILABLE));
+			object.interrogationNOK().forEach(su -> mapResult.put(su.id(), QUESTIONNAIRE_STATE_UNAVAILABLE));
 			object.interrogationOK().forEach(su -> mapResult.put(su.id(), su.stateData().getState()));
 		} catch (Exception e) {
 			log.error("Could not get data collection API : {}", e.getMessage());
 			log.error("All questionnaire states will be considered null");
-			lstSu.forEach(id -> mapResult.put(id, Constants.UNAVAILABLE) );
+			lstSu.forEach(id -> mapResult.put(id, QUESTIONNAIRE_STATE_UNAVAILABLE) );
 		}
 		return mapResult;
 	}

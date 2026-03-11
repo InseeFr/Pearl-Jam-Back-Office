@@ -106,8 +106,6 @@ public class Constants {
   public static final String API_ENUM_STATE = "/api/enum/state";
   public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
   public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
-  // Error messages
-  public static final String ERR_CAMPAIGN_NOT_EXIST = "Campaign {} does not exist";
 
   // Front expected variables names
 
@@ -158,7 +156,4 @@ public class Constants {
 
   public static final List<String> CONTACT_OUTCOME_FIELDS = List.of(INA_COUNT, REF_COUNT, IMP_COUNT,
       UCD_COUNT, UTR_COUNT, ALA_COUNT, NUH_COUNT, DUK_COUNT, DUU_COUNT, NOA_COUNT);
-
-  public static final String UNAVAILABLE = "UNAVAILABLE";
-
 }

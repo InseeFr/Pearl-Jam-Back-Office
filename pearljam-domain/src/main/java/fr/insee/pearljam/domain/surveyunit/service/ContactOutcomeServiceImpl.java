@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountCampaignDto;
 import fr.insee.pearljam.api.surveyunit.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
@@ -76,12 +75,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 	@Override
 	public List<ContactOutcomeTypeCountDto> getContactOutcomeTypeCountByCampaign(String userId, Long date) {
-		List<String> userOuIds;
-		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
-		} else {
-			userOuIds = organizationUnitRepository.findAllId();
-		}
+		List<String> userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 		final Long dateToUse = date == null ? System.currentTimeMillis() : date;
 		List<String> lstCampaignUser = campaignRepository.findAllCampaignIdsByOuIds(userOuIds);
 
@@ -117,12 +111,8 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 			throw new NotFoundException(String.format("The interviewer %s or the campaign %s was not found in database",
 					interviewerId, campaignId));
 		}
-		List<String> userOuIds;
-		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
-		} else {
-			userOuIds = organizationUnitRepository.findAllId();
-		}
+		List<String> userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
+
 		Long dateToUse = date;
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();

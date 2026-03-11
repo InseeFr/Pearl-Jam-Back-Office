@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.api.web.exception.NotFoundException;
@@ -42,7 +41,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		for (String campaignId : listPreference) {
 			Optional<CampaignDB> campaign = campaignRepository.findById(campaignId);
 			if (campaign.isEmpty()) {
-				log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
+				log.error("Campaign {} does not exist", campaignId);
 				return HttpStatus.NOT_FOUND;
 			}
 			userService.checkUserAssociationToCampaign(campaignId, userId);

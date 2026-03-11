@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.api.surveyunit.dto.closingcause.ClosingCauseCountDto;
 import fr.insee.pearljam.api.web.exception.NotFoundException;
@@ -45,12 +44,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 		if (interviewerRepository.findById(interviewerId).isEmpty()) {
 			throw new NotFoundException("No interviewer found for the id " + interviewerId);
 		}
-		List<String> userOuIds;
-		if (!userId.equals(Constants.GUEST)) {
-			userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
-		} else {
-			userOuIds = organizationUnitRepository.findAllId();
-		}
+		List<String> userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
 
 		List<String> intervIds = interviewerRepository.findInterviewersByOrganizationUnits(associatedOrgUnits)
 				.stream().map(InterviewerDB::getId).toList();
@@ -58,7 +52,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();
 		}
-		if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(Constants.GUEST)) {
+		if (!intervIds.isEmpty() && (intervIds.contains(interviewerId))) {
 			closingCauseCountDto = new ClosingCauseCountDto(
 					closingCauseRepository.getClosingCauseCount(campaignId, interviewerId, userOuIds, dateToUse));
 			closingCauseCountDto
