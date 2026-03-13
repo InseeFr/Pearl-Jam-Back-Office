@@ -1,9 +1,9 @@
-package fr.insee.pearljam.api.repository;
+package fr.insee.pearljam.infrastructure.campaign.jpa;
 
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
@@ -14,14 +14,11 @@ import org.springframework.data.repository.query.Param;
 import fr.insee.pearljam.api.dto.interviewer.InterviewerDto;
 
 /**
- * CampaignRepository is the repository using to access to Campaign table in DB
- * 
- * @author scorcaud
- * 
+ * JPA repository for CampaignDB entity.
  */
-public interface CampaignRepository extends JpaRepository<Campaign, String> {
+public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String> {
 
-	Optional<Campaign> findByIdIgnoreCase(String id);
+	Optional<CampaignDB> findByIdIgnoreCase(String id);
 
 	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
 			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
@@ -57,13 +54,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			@Param("date") Long date
 	);
 
-
 	/**
 	 * WARNING: negative pref !!! If pref is found it returns false (sic)
-	 * @param ouIds organisational unit ids
-	 * @param userId user id
-	 * @param date date to check
-	 * @return the campaign preferences
 	 */
 	@Query("""
 	SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto(
@@ -89,8 +81,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			@Param("userId") String userId,
 			@Param("date") Long date
 	);
-
-
 
 	@Query(value = "SELECT new fr.insee.pearljam.api.dto.campaign.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM Campaign camp "

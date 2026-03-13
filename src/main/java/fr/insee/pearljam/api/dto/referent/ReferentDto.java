@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.dto.referent;
 
-import fr.insee.pearljam.api.domain.Referent;
+import fr.insee.pearljam.infrastructure.campaign.entity.ReferentDB;
 import lombok.Data;
 
 /**
@@ -27,7 +27,7 @@ public class ReferentDto {
         this.role = role;
     }
 
-    public ReferentDto(Referent ref) {
+    public ReferentDto(ReferentDB ref) {
         this.firstName = ref.getFirstName();
         this.lastName = ref.getLastName();
         this.phoneNumber = ref.getPhoneNumber();

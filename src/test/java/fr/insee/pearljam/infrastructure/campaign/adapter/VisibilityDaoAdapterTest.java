@@ -1,9 +1,10 @@
 package fr.insee.pearljam.infrastructure.campaign.adapter;
 
 import fr.insee.pearljam.api.domain.*;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import fr.insee.pearljam.domain.exception.VisibilityNotFoundException;
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 class VisibilityDaoAdapterTest {
     @Autowired
-    private CampaignRepository campaignRepository;
+    private CampaignJpaRepository campaignRepository;
 
     @Autowired
     private SurveyUnitRepository surveyUnitRepository;
@@ -42,14 +43,14 @@ class VisibilityDaoAdapterTest {
     @Autowired
     private VisibilityDaoAdapter visibilityDaoAdapter;
 
-    private Campaign campaign;
+    private CampaignDB campaign;
     private OrganizationUnit organizationUnit;
     private OrganizationUnit organizationUnit2;
     private VisibilityDB visibilityDB1, visibilityDB2;
 
     @BeforeEach
     void setup() {
-        campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+        campaign = new CampaignDB("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com", false, false);
 
@@ -79,7 +80,7 @@ class VisibilityDaoAdapterTest {
                 24L, 25L, 26L, true, "mail", "tel");
         visibilityDaoAdapter.updateDates(visibilityToUpdate);
 
-        Optional<Campaign> campaignOptional = campaignRepository.findById(campaign.getId());
+        Optional<CampaignDB> campaignOptional = campaignRepository.findById(campaign.getId());
         assertThat(campaignOptional).isPresent();
         campaign = campaignOptional.get();
         List<VisibilityDB> visibilities = campaign.getVisibilities();

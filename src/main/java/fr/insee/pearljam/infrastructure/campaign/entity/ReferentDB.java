@@ -1,8 +1,9 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.infrastructure.campaign.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
 
+import fr.insee.pearljam.domain.campaign.model.Referent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,13 +13,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table
+/**
+ * JPA entity for the referent table in DB.
+ */
+@Entity(name = "Referent")
+@Table(name = "referent")
 @Getter
 @Setter
-public class Referent implements Serializable {
+@NoArgsConstructor
+public class ReferentDB implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1987L;
@@ -39,10 +45,20 @@ public class Referent implements Serializable {
     @Column(length = 50)
     private String role;
 
-    /**
-     * The Campaign of Referent
-     */
     @ManyToOne(fetch = FetchType.LAZY)
-    private Campaign campaign;
+    private CampaignDB campaign;
 
+    public Referent toModel() {
+        return new Referent(firstName, lastName, phoneNumber, role);
+    }
+
+    public static ReferentDB fromModel(Referent referent, CampaignDB campaign) {
+        ReferentDB db = new ReferentDB();
+        db.setFirstName(referent.firstName());
+        db.setLastName(referent.lastName());
+        db.setPhoneNumber(referent.phoneNumber());
+        db.setRole(referent.role());
+        db.setCampaign(campaign);
+        return db;
+    }
 }

@@ -13,7 +13,7 @@ import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountCampaignD
 import fr.insee.pearljam.api.dto.contactoutcome.ContactOutcomeTypeCountDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.ContactOutcomeRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 
 	private final ContactOutcomeRepository contactOutcomeRepository;
 

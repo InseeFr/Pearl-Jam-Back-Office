@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.ClosingCauseRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.StateRepository;
@@ -40,7 +40,7 @@ class StateServiceImplTest {
   @Mock
   private InterviewerRepository interviewerRepository;
   @Mock
-  private CampaignRepository campaignRepository;
+  private CampaignJpaRepository campaignRepository;
   @Mock
   private StateRepository stateRepository;
   @Mock

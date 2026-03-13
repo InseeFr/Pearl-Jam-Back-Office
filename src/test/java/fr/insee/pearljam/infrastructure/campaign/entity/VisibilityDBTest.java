@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class VisibilityDBTest {
-    private Campaign campaign;
+    private CampaignDB campaign;
     private OrganizationUnit organizationUnit;
 
     @BeforeEach
     void setup() {
-        campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+        campaign = new CampaignDB("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com", false, false);
         organizationUnit = new OrganizationUnit("OU-SOUTHWEST", "South west", OrganizationUnitType.LOCAL);

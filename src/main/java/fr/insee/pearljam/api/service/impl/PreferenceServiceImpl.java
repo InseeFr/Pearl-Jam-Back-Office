@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.api.constants.Constants;
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.User;
-import fr.insee.pearljam.api.repository.CampaignRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PreferenceServiceImpl implements PreferenceService {
 
 	private final UserRepository userRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 	private final UserService userService;
 
 	public HttpStatus setPreferences(List<String> listPreference, String userId) {
@@ -36,10 +36,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 			log.error("User {} not found", userId);
 			return HttpStatus.NOT_FOUND;
 		}
-		List<Campaign> lstCampaign = new ArrayList<>();
+		List<CampaignDB> lstCampaign = new ArrayList<>();
 
 		for (String campaignId : listPreference) {
-			Optional<Campaign> campaign = campaignRepository.findById(campaignId);
+			Optional<CampaignDB> campaign = campaignRepository.findById(campaignId);
 			if (campaign.isEmpty()) {
 				log.error(Constants.ERR_CAMPAIGN_NOT_EXIST, campaignId);
 				return HttpStatus.NOT_FOUND;

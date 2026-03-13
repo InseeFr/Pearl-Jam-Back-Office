@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,7 +59,7 @@ public class Message implements Serializable {
 	@ManyToMany
 	@JoinTable(name = "campaignMessageRecipient", joinColumns = {
 			@JoinColumn(name = "message_id")}, inverseJoinColumns = {@JoinColumn(name = "campaign_id")})
-	private List<Campaign> campaignMessageRecipients;
+	private List<CampaignDB> campaignMessageRecipients;
 
 	/**
 	 * The reference to visibility table

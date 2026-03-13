@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
@@ -41,7 +40,7 @@ public class CommunicationTemplateDB implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("campaignId")
-    private Campaign campaign;
+    private CampaignDB campaign;
 
     public static List<CommunicationTemplate> toModel(List<CommunicationTemplateDB> communicationTemplatesDB) {
         return communicationTemplatesDB.stream()
@@ -61,7 +60,7 @@ public class CommunicationTemplateDB implements Serializable {
     }
 
 
-    public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, Campaign campaign) {
+    public static List<CommunicationTemplateDB> fromModel(List<CommunicationTemplate> communicationTemplates, CampaignDB campaign) {
         return communicationTemplates.stream()
             .map(communicationTemplate -> new CommunicationTemplateDB(
                 new CommunicationTemplateDBId(communicationTemplate.meshuggahId(), campaign.getId()),

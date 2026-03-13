@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.dto;
 
 import fr.insee.pearljam.api.domain.Address;
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.InseeAddress;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import fr.insee.pearljam.api.domain.InseeSampleIdentifier;
 import fr.insee.pearljam.api.domain.SampleIdentifier;
 import fr.insee.pearljam.api.domain.SurveyUnit;
@@ -40,7 +40,7 @@ class SurveyUnitDetailDtoTest {
 				"building", "floor", "door", "staircase", true);
 		SampleIdentifier sampleIdentifier = new InseeSampleIdentifier(1, "ec", 2, 3, 4, 5, 6,
 				7, 8, "autre", "nograp");
-		Campaign campaign = new Campaign("id", "label", null,
+		CampaignDB campaign = new CampaignDB("id", "label", null,
 				null, null, "email", false, false);
 		surveyUnit = new SurveyUnit("id", true, true, address,
 				sampleIdentifier, campaign, null, null, new HashSet<>());

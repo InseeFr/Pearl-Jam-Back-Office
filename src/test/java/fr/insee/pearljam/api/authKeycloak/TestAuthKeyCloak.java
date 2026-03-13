@@ -20,6 +20,7 @@ import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.service.MessageService;
 import fr.insee.pearljam.api.service.PreferenceService;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -92,7 +93,7 @@ class TestAuthKeyCloak {
 	private final StateRepository stateRepository;
 	private final UserRepository userRepository;
 	private final SurveyUnitRepository surveyUnitRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 	private final MessageRepository messageRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final InterviewerRepository interviewerRepository;

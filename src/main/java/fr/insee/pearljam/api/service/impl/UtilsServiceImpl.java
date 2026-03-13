@@ -19,7 +19,7 @@ import fr.insee.pearljam.api.configuration.properties.ExternalServicesProperties
 import fr.insee.pearljam.api.constants.Constants;
 import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.surveyunit.InterrogationOkNokDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
@@ -35,7 +35,7 @@ public class UtilsServiceImpl implements UtilsService {
 
 	private final ExternalServicesProperties externalServicesProperties;
 	private final UserRepository userRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final UserService userService;
 	private final RestTemplate restTemplate;

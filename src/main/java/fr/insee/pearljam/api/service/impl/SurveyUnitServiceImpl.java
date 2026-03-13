@@ -9,6 +9,8 @@ import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.exception.BadRequestException;
 import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.projection.ClosableSurveyUnitCandidateProjection;
 import fr.insee.pearljam.api.repository.projection.SurveyUnitCampaignProjection;
 import fr.insee.pearljam.api.service.SurveyUnitService;
@@ -55,7 +57,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final AddressRepository addressRepository;
 	private final StateRepository stateRepository;
 	private final InterviewerRepository interviewerRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final VisibilityRepository visibilityRepository;
 	private final ClosingCauseRepository closingCauseRepository;
@@ -484,11 +486,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<String> surveyUnitErrors = new ArrayList<>();
 		List<SurveyUnit> listSurveyUnits = new ArrayList<>();
 		List<String> surveyUnitsDb = surveyUnitRepository.findAllIds();
-		Map<String, Campaign> mapCampaigns = campaignRepository.findAllById(
+		Map<String, CampaignDB> mapCampaigns = campaignRepository.findAllById(
 				surveyUnits.stream()
 						.map(SurveyUnitCreationDto::getCampaign)
 						.toList())
-				.stream().collect(Collectors.toMap(Campaign::getId, c -> c));
+				.stream().collect(Collectors.toMap(CampaignDB::getId, c -> c));
 		Map<String, OrganizationUnit> mapOrganizationUnits = organizationUnitRepository.findAllById(
 				surveyUnits.stream()
 						.map(SurveyUnitCreationDto::getOrganizationUnitId)
@@ -526,7 +528,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private boolean checkValidity(SurveyUnitCreationDto su, Map<String, OrganizationUnit> ous,
-                                  Map<String, Campaign> camps) {
+                                  Map<String, CampaignDB> camps) {
 		if (!su.isValid()) {
 			log.info("Su {} is not valid", su.getId());
 			return false;

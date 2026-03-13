@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 
 class ArchunitApplicationTests {
@@ -93,8 +94,8 @@ class ArchunitApplicationTests {
                 .that().resideOutsideOfPackage("..infrastructure.security.config.swagger")
                 .and().resideOutsideOfPackage("..infrastructure.mail")
                 .and().resideInAPackage("..infrastructure..")
-                // TODO disable api.dto and api.domain when refacto is done
-                .should().onlyBeAccessed().byClassesThat().resideInAnyPackage("..infrastructure..", "..api.dto..", "..api.domain..", "..api.service..")
+                // TODO disable api.dto, api.domain, api.campaign.dto, api.surveyunit.dto when refacto is done
+                .should().onlyBeAccessed().byClassesThat().resideInAnyPackage("..infrastructure..", "..api.dto..", "..api.domain..", "..api.service..", "..api.campaign..", "..api.surveyunit..")
                 .check(importedClasses);
     }
 
@@ -103,6 +104,36 @@ class ArchunitApplicationTests {
         classes()
                 .that().resideInAPackage("..infrastructure.security.config.swagger")
                 .should().onlyBeAccessed().byClassesThat().resideInAnyPackage("..api.configuration..", "..infrastructure..")
+                .check(importedClasses);
+    }
+
+    // ===== Hexagonal Architecture target rules =====
+    // These rules represent the end-state of the refactoring.
+    // Enable them progressively as each aggregate is migrated.
+
+    @Test
+    void domainShouldNotDependOnInfrastructure() {
+        noClasses()
+                .that().resideInAPackage("fr.insee.pearljam.domain..")
+                .should().dependOnClassesThat().resideInAPackage("..infrastructure..")
+                .check(importedClasses);
+    }
+
+    @Test
+    @Disabled("enable after full refacto - domain still depends on api.domain enums")
+    void domainShouldNotDependOnApi() {
+        noClasses()
+                .that().resideInAPackage("..domain..")
+                .should().dependOnClassesThat().resideInAPackage("..api..")
+                .check(importedClasses);
+    }
+
+    @Test
+    @Disabled("enable after full refacto - infrastructure still references api.domain entities")
+    void infrastructureShouldNotDependOnApi() {
+        noClasses()
+                .that().resideInAPackage("..infrastructure..")
+                .should().dependOnClassesThat().resideInAPackage("..api..")
                 .check(importedClasses);
     }
 }

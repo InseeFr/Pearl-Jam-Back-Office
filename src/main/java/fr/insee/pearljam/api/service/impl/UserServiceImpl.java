@@ -17,7 +17,7 @@ import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.user.UserContextDto;
 import fr.insee.pearljam.api.dto.user.UserDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
 import fr.insee.pearljam.api.repository.UserRepository;
 import fr.insee.pearljam.api.service.UserService;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final UserRepository userRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 
 	public UserDto getUser(String userId) throws NotFoundException {
 		List<OrganizationUnitDto> organizationUnits = new ArrayList<>();

@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,7 +68,7 @@ public class User implements Serializable {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "preference", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = {
 			@JoinColumn(name = "id_campaign") })
-	private List<Campaign> campaigns;
+	private List<CampaignDB> campaigns;
 
 	public User(String id, String firstName, String lastName, OrganizationUnit organizationUnit) {
 		super();

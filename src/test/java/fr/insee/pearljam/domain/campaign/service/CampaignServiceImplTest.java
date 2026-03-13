@@ -12,6 +12,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.exception.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,7 @@ class CampaignServiceImplTest {
     private CampaignServiceImpl campaignService;
     private final CurrentDateService dateService = new CurrentDateService();
     private final OrganizationUnit existingOrganizationUnit = new OrganizationUnit("OU-NORTH", "label-ou", OrganizationUnitType.LOCAL);
-    private final Campaign existingCampaign =  new Campaign(
+    private final CampaignDB existingCampaign =  new CampaignDB(
             "CAMPAIGN-ID",
             "label-campaign",
             IdentificationConfiguration.HOUSEF2F,
@@ -116,7 +117,7 @@ class CampaignServiceImplTest {
 
         campaignService.createCampaign(campaignCreateDto);
 
-        Campaign createdCampaign = campaignRepository.getSavedCampaign();
+        CampaignDB createdCampaign = campaignRepository.getSavedCampaign();
         assertThat(createdCampaign.getId()).isEqualTo(campaignCreateDto.campaign());
         assertThat(createdCampaign.getLabel()).isEqualTo(campaignCreateDto.campaignLabel());
         assertThat(createdCampaign.getEmail()).isEqualTo(campaignCreateDto.email());
@@ -183,7 +184,7 @@ class CampaignServiceImplTest {
         campaignService.updateCampaign(campaignId, updateDto);
 
         // Then
-        Campaign updatedCampaign = campaignRepository.getSavedCampaign();
+        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
         assertThat(updatedCampaign.getId()).isEqualTo(campaignId);
         assertThat(updatedCampaign.getLabel()).isEqualTo(updateDto.campaignLabel());
         assertThat(updatedCampaign.getEmail()).isEqualTo(updateDto.email());
@@ -219,7 +220,7 @@ class CampaignServiceImplTest {
         campaignService.updateCampaign(campaignId, updateDto);
 
         // Then
-        Campaign updatedCampaign = campaignRepository.getSavedCampaign();
+        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
         assertThat(updatedCampaign.getEmail()).isEqualTo(existingCampaign.getEmail());
     }
 
@@ -242,7 +243,7 @@ class CampaignServiceImplTest {
         campaignService.updateCampaign(campaignId, updateDto);
 
         // Then
-        Campaign updatedCampaign = campaignRepository.getSavedCampaign();
+        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
         assertThat(updatedCampaign.getVisibilities()).hasSize(2);
     }
 
@@ -264,7 +265,7 @@ class CampaignServiceImplTest {
         campaignService.updateCampaign(campaignId, updateDto);
 
         // Then
-        Campaign updatedCampaign = campaignRepository.getSavedCampaign();
+        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
         assertThat(updatedCampaign.getReferents()).containsAll(existingCampaign.getReferents());
     }
 

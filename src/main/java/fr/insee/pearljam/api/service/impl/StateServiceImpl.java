@@ -8,6 +8,7 @@ import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
 import fr.insee.pearljam.api.repository.*;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -35,7 +36,7 @@ public class StateServiceImpl implements StateService {
 
   private static final String USER_CAMP_CONST_MSG = "No campaign with id %s  associated to the user %s";
 
-  private final CampaignRepository campaignRepository;
+  private final CampaignJpaRepository campaignRepository;
   private final StateRepository stateRepository;
   private final ClosingCauseRepository closingCauseRepository;
   private final InterviewerRepository interviewerRepository;

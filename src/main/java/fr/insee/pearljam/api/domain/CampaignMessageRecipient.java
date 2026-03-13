@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.domain;
 
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,6 @@ public class CampaignMessageRecipient implements Serializable {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
-	private Campaign campaign;
+	private CampaignDB campaign;
 
 }

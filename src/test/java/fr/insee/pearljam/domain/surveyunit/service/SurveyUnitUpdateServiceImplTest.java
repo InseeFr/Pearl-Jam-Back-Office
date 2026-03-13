@@ -2,6 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.api.campaign.controller.dummy.VisibilityFakeService;
 import fr.insee.pearljam.api.domain.*;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import fr.insee.pearljam.api.service.impl.SurveyUnitUpdateServiceImpl;
 import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
 import fr.insee.pearljam.api.surveyunit.dto.CommunicationRequestCreateDto;
@@ -53,7 +54,7 @@ class SurveyUnitUpdateServiceImplTest {
 	private DateService dateService;
 	private CommunicationTemplate communicationTemplate;
 	private CommunicationTemplateFakeRepository communicationTemplateFakeRepository;
-	private Campaign campaign;
+	private CampaignDB campaign;
 	private OrganizationUnit ou;
 
 	@BeforeEach
@@ -64,7 +65,7 @@ class SurveyUnitUpdateServiceImplTest {
 		communicationRequestFakeRepository = new CommunicationRequestFakeRepository();
 		surveyUnitService = new SurveyUnitUpdateServiceImpl(communicationRequestFakeRepository,
 				communicationTemplateFakeRepository, visibilityFakeService, dateService);
-		campaign = new Campaign("campaignId", "label", null, null, null, null, false,false);
+		campaign = new CampaignDB("campaignId", "label", null, null, null, null, false,false);
 		ou = new OrganizationUnit("ouId", "label-ou", OrganizationUnitType.LOCAL);
 		Visibility visibility = new Visibility(campaign.getId(), ou.getId(), null, null,
 				null, null, null, null, true, "mail", "tel");

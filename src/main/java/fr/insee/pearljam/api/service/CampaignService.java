@@ -10,7 +10,7 @@ import fr.insee.pearljam.api.dto.campaign.CampaignPreferenceDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignSensitivityDto;
 import fr.insee.pearljam.domain.exception.*;
 
-import fr.insee.pearljam.api.domain.Campaign;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
 import fr.insee.pearljam.api.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.count.CountDto;

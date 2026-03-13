@@ -4,7 +4,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.OrganizationUnit;
 import fr.insee.pearljam.domain.campaign.model.Visibility;
 import jakarta.persistence.*;
@@ -35,7 +34,7 @@ public class VisibilityDB implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
-	private Campaign campaign;
+	private CampaignDB campaign;
 
 	private Long managementStartDate;
 	private Long interviewerStartDate;
@@ -91,7 +90,7 @@ public class VisibilityDB implements Serializable {
 		}
 	}
 
-	public static VisibilityDB fromModel(Visibility visibility, Campaign campaign, OrganizationUnit organizationUnit) {
+	public static VisibilityDB fromModel(Visibility visibility, CampaignDB campaign, OrganizationUnit organizationUnit) {
 		VisibilityDBId id = new VisibilityDBId(organizationUnit.getId(), campaign.getId());
 		return new VisibilityDB(id,
 				organizationUnit, campaign,

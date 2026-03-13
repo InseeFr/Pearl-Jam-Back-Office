@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.campaign.entity;
 
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
 import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
 import fr.insee.pearljam.api.domain.IdentificationConfiguration;
@@ -20,7 +19,7 @@ class CommunicationTemplateDBTest {
     @DisplayName("Should create model objects")
     void testToModel() {
         // Given
-        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+        CampaignDB campaign = new CampaignDB("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com", false, false);
         CommunicationTemplateDB templateDB1 = new CommunicationTemplateDB(new CommunicationTemplateDBId("mesh1", "SIMPSONS2020X00"), CommunicationMedium.EMAIL, CommunicationType.NOTICE, campaign);
@@ -47,7 +46,7 @@ class CommunicationTemplateDBTest {
     @DisplayName("Should create entity objects")
     void testFromModel() {
         // Given
-        Campaign campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
+        CampaignDB campaign = new CampaignDB("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
                 "email@plop.com", false, false);
         CommunicationTemplate template1 = new CommunicationTemplate("SIMPSONS2020X00", "msg1", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
@@ -76,7 +75,7 @@ class CommunicationTemplateDBTest {
             String expectedMesshugahId,
             CommunicationMedium expectedMedium,
             CommunicationType expectedType,
-            Campaign expectedCampaign
+            CampaignDB expectedCampaign
     ) {
         assertThat(templateDB.getCommunicationTemplateDBId().getCampaignId()).isEqualTo(expectedCampaignId);
         assertThat(templateDB.getCommunicationTemplateDBId().getMeshuggahId()).isEqualTo(expectedMesshugahId);

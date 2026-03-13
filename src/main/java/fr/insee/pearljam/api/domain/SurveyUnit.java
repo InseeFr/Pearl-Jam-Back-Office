@@ -13,6 +13,7 @@ import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequ
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistory;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.ContactHistoryType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.Person;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.*;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.identification.IdentificationDB;
 import jakarta.persistence.*;
@@ -103,7 +104,7 @@ public class SurveyUnit implements Serializable {
 	 * The Campaign of SurveyUnit
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Campaign campaign;
+	private CampaignDB campaign;
 
 	/**
 	 * The Interviewer of SurveyUnit
@@ -143,7 +144,7 @@ public class SurveyUnit implements Serializable {
 	private Set<ContactHistoryDB> contactHistory = new HashSet<>();
 
 	public SurveyUnit(String id, boolean priority, boolean viewed, Address address, SampleIdentifier sampleIdentifier,
-					  Campaign campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
+					  CampaignDB campaign, Interviewer interviewer, OrganizationUnit organizationUnit,
 					  Set<PersonDB> persons) {
 		super();
 		this.id = id;
@@ -164,7 +165,7 @@ public class SurveyUnit implements Serializable {
 	 * @param organizationUnit related organisationUnit
 	 * @param campaign         related campaign
 	 */
-	public SurveyUnit(SurveyUnitCreationDto su, OrganizationUnit organizationUnit, Campaign campaign) {
+	public SurveyUnit(SurveyUnitCreationDto su, OrganizationUnit organizationUnit, CampaignDB campaign) {
 		this.id = su.getId();
 		this.displayName = su.getDisplayName();
 		//TODO: delete this test when displayName becomes mandatory in creation endpoint
@@ -263,7 +264,7 @@ public class SurveyUnit implements Serializable {
 		identificationDB.update(identification);
 	}
 
-	private IdentificationConfiguration safeGetIdentificationConfiguration(Campaign campaign) {
+	private IdentificationConfiguration safeGetIdentificationConfiguration(CampaignDB campaign) {
 		if (campaign == null) {
 			return null;
 		}

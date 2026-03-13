@@ -17,7 +17,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.insee.pearljam.api.domain.Campaign;
 import fr.insee.pearljam.api.domain.Interviewer;
 import fr.insee.pearljam.api.domain.Message;
 import fr.insee.pearljam.api.domain.MessageStatus;
@@ -27,7 +26,8 @@ import fr.insee.pearljam.api.domain.User;
 import fr.insee.pearljam.api.dto.message.MessageDto;
 import fr.insee.pearljam.api.dto.message.VerifyNameResponseDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
+import fr.insee.pearljam.infrastructure.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.api.repository.InterviewerRepository;
 import fr.insee.pearljam.api.repository.MessageRepository;
 import fr.insee.pearljam.api.repository.MessageStatusRepository;
@@ -48,7 +48,7 @@ public class MessageServiceImpl implements MessageService {
 	private final UserRepository userRepository;
 	private final UserService userService;
 	private final InterviewerRepository interviewerRepository;
-	private final CampaignRepository campaignRepository;
+	private final CampaignJpaRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final SimpMessagingTemplate brokerMessagingTemplate;
 
@@ -105,7 +105,7 @@ public class MessageServiceImpl implements MessageService {
 		User sender;
 		ArrayList<OrganizationUnit> ouMessageRecipients = new ArrayList<>();
 		ArrayList<Interviewer> interviewerMessageRecipients = new ArrayList<>();
-		ArrayList<Campaign> campaignMessageRecipients = new ArrayList<>();
+		ArrayList<CampaignDB> campaignMessageRecipients = new ArrayList<>();
 		List<String> userOUIds = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
 
@@ -128,7 +128,7 @@ public class MessageServiceImpl implements MessageService {
 					ouMessageRecipients.add(ouRecipient.get());
 				}
 			} else {
-				Optional<Campaign> camp = campaignRepository.findByIdIgnoreCase(recipient);
+				Optional<CampaignDB> camp = campaignRepository.findByIdIgnoreCase(recipient);
 				if (camp.isPresent()) {
 					campaignMessageRecipients.add(camp.get());
 					interviewerMessageRecipients.addAll(

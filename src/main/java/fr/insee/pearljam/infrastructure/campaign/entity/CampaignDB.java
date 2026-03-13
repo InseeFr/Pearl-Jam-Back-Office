@@ -1,11 +1,13 @@
-package fr.insee.pearljam.api.domain;
+package fr.insee.pearljam.infrastructure.campaign.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import fr.insee.pearljam.infrastructure.campaign.entity.CommunicationTemplateDB;
-import fr.insee.pearljam.infrastructure.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.api.domain.ContactAttemptConfiguration;
+import fr.insee.pearljam.api.domain.ContactOutcomeConfiguration;
+import fr.insee.pearljam.api.domain.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.model.Campaign;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,34 +21,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Entity Campaign : represent the entity table in DB
- * 
- * @author Corcaud Samuel
- * 
+ * JPA entity for the campaign table in DB.
  */
-@Entity
-@Table
+@Entity(name = "Campaign")
+@Table(name = "campaign")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Campaign implements Serializable {
+public class CampaignDB implements Serializable {
 
-	/**
-	 * 
-	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The id of Campaign
-	 */
 	@Id
 	@Column(length = 50)
 	private String id;
 
-	/**
-	 * The label of Campaign
-	 */
 	@Column(length = 255)
 	private String label;
 
@@ -65,14 +55,11 @@ public class Campaign implements Serializable {
 	@Column(length = 255)
 	private String email;
 
-	/**
-	 * The reference to visibility table
-	 */
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<VisibilityDB> visibilities;
 
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Referent> referents;
+	private List<ReferentDB> referents;
 
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CommunicationTemplateDB> communicationTemplates;
@@ -83,7 +70,7 @@ public class Campaign implements Serializable {
 	@Column
 	private boolean collectNextContacts;
 
-	public Campaign(String id, String label, IdentificationConfiguration identConfig,
+	public CampaignDB(String id, String label, IdentificationConfiguration identConfig,
 			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, String email, boolean sensitivity, boolean collectNextContacts) {
 		super();
 		this.id = id;
@@ -94,5 +81,16 @@ public class Campaign implements Serializable {
 		this.email = email;
 		this.sensitivity = sensitivity;
 		this.collectNextContacts = collectNextContacts;
+	}
+
+	public Campaign toModel() {
+		return new Campaign(id, label, identificationConfiguration, contactOutcomeConfiguration,
+				contactAttemptConfiguration, email, sensitivity, collectNextContacts);
+	}
+
+	public static CampaignDB fromModel(Campaign campaign) {
+		return new CampaignDB(campaign.id(), campaign.label(), campaign.identificationConfiguration(),
+				campaign.contactOutcomeConfiguration(), campaign.contactAttemptConfiguration(),
+				campaign.email(), campaign.sensitivity(), campaign.collectNextContacts());
 	}
 }
