@@ -38,6 +38,11 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
+    public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) {
+        return List.of();
+    }
+
+    @Override
     public List<CampaignDto> findByUserAndManagementVisibility(List<String> organisationalUnitIds, String userId, Long date) {
         return List.of();
     }
