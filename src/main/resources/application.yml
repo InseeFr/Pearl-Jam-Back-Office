@@ -83,6 +83,7 @@ springdoc:
   swagger-ui:
     # used only if oidc enabled
     oauth.client-id: ${feature.oidc.client-id}
+    use-pkce-with-authorization-code-grant: true
     path: /
     syntax-highlight:
       activated: false
