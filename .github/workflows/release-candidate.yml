@@ -10,7 +10,7 @@ jobs:
       release-version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Get version
         id: version
@@ -19,7 +19,7 @@ jobs:
       - name: Print version
         run: echo ${{ steps.version.outputs.version }}
 
-      - uses: mukunku/tag-exists-action@0f5c3d8c7a1b6c9c2d5f7e8a9b0c1d2e3f4a5b6c
+      - uses: mukunku/tag-exists-action@5c39604fe8aef7e65acb6fbcf96ec580f7680313 # v1.7.0
         name: Check tag existence
         id: check-tag-exists
         with:
@@ -42,21 +42,21 @@ jobs:
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
         id: extract_branch
 
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
 
-      - name: Set up JDK 25
-        uses: actions/setup-java@99b8678c5c2e1e5f0f2e2d8d3a3d79042f2f20c5
+      - name: Set up JDK 21
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: "temurin"
-          java-version: "25"
+          java-version: "21"
 
       - name: Build API
         run: mvn package -Dchangelist=-rc --no-transfer-progress
 
       - name: Upload API jar
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: app-jar
           path: pearljam-api/target/*.jar
@@ -65,7 +65,7 @@ jobs:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
@@ -76,14 +76,14 @@ jobs:
 
       - name: Create release note
         id: changelog
-        uses: requarks/changelog-action@9c1f7b3e6d2a4f8b5c0e1d3a7b9c6f2e4d8a1c0b
+        uses: requarks/changelog-action@6d71e098526ee17bae963f058d34cd763378337f # v1
         with:
           fromTag: ${{ github.sha }}
           toTag: ${{ steps.previousTag.outputs.previousTag}}
           token: ${{ secrets.GITHUB_TOKEN }}
           writeToFile: false
 
-      - uses: softprops/action-gh-release@d3f86a10e4c1bb5f6e1e6b5c2a3d4f7e8c9b0a1d
+      - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
         with:
           tag_name: ${{ needs.check-version.outputs.release-version }}
           target_commitish: ${{ github.head_ref || github.ref }}
@@ -97,16 +97,16 @@ jobs:
     needs: [ check-version, build-sources ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Download uploaded jar
-        uses: actions/download-artifact@f44a8c4d8c2e2c2d6d8a6e1c2c3d4f5a6b7c8d9e
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: app-jar
           path: pearljam-api/target/
 
       - name: Publish to Docker Hub
-        uses: elgohr/Publish-Docker-Github-Action@3c1f5e1b0e3dcb05463e99e36fcff7bcac28cfb4
+        uses: elgohr/Publish-Docker-Github-Action@32b6623ebb46c5fe6dcfc2281cfcd549a31366ce # v5
         with:
           name: inseefr/pearl-jam-back-office
           username: ${{ secrets.DOCKERHUB_USERNAME }}
