@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
 
       - name: Get version
         id: version
@@ -31,7 +31,7 @@ jobs:
 
       - name: Find git tag
         if: ${{ github.base_ref == 'main' || github.base_ref == 'develop' }}
-        uses: mukunku/tag-exists-action@v1.6.0
+        uses: mukunku/tag-exists-action@0f5c3d8c7a1b6c9c2d5f7e8a9b0c1d2e3f4a5b6c
         id: check-tag-exists
         with:
           tag: ${{ steps.version.outputs.version }}
