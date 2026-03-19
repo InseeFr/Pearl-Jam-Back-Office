@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.closingcause.jpa;
 
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
-import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCountProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -163,7 +163,7 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
 			GROUP BY su.campaign_id
 			""",
 			nativeQuery = true)
-	List<ClosingCauseCount> getStateClosedByClosingCauseCountByCampaigns(
+	List<ClosingCauseCountProjection> getStateClosedByClosingCauseCountByCampaigns(
 			@Param("campaignIds") List<String> campaignIds,
 			@Param("ouIds") List<String> ouIds,
 			@Param("date") Long date);
@@ -206,8 +206,8 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
         JOIN survey_unit su ON su.id = t.survey_unit_id
         GROUP BY su.organization_unit_id
         """, nativeQuery = true)
-	List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(@Param("campaignId") String campaignId,
-																				   @Param("ouIds") List<String> ouIds,
-																				   @Param("dateToUse") Long dateToUse);
+	List<ClosingCauseCountProjection> getClosingCauseCountByCampaignAndOus(@Param("campaignId") String campaignId,
+																		   @Param("ouIds") List<String> ouIds,
+																		   @Param("dateToUse") Long dateToUse);
 
 }

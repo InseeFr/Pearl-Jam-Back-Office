@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.port.out;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -18,19 +18,19 @@ public interface CampaignRepository {
 
     List<String> findAllCampaignIdsByOuIds(List<String> ouIds);
 
-    List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date);
+    List<CampaignProjection> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
 
-    List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
+    List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date);
 
     List<CampaignPreferenceDto> findByOuIdWithPreference(List<String> ouIds, String userId, Long date);
 
-    CampaignDto findDtoById(String id);
+    CampaignProjection findDtoById(String id);
 
-    CampaignDto findDtoBySurveyUnitId(String id);
+    CampaignProjection findDtoBySurveyUnitId(String id);
 
-    List<CampaignDto> findAllDto();
+    List<CampaignProjection> findAllDto();
 
-    List<CampaignDto> findAllDtoByOuIds(List<String> ouIds);
+    List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds);
 
     List<CampaignDB> findAll();
 

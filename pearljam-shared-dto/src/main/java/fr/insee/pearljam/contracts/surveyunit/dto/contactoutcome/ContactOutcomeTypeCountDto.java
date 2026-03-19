@@ -2,7 +2,7 @@ package fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome;
 
 import static fr.insee.pearljam.contracts.constants.Constants.CONTACT_OUTCOME_FIELDS;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class ContactOutcomeTypeCountDto {
 
   private String labelDem;
 
-  private CampaignDto campaign;
+  private CampaignProjection campaign;
 
   private Long inaCount;
 
@@ -50,7 +50,7 @@ public class ContactOutcomeTypeCountDto {
 		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
 	}
 
-  public ContactOutcomeTypeCountDto(Map<String, Long> obj, CampaignDto campaign) {
+  public ContactOutcomeTypeCountDto(Map<String, Long> obj, CampaignProjection campaign) {
     this.campaign = campaign;
     dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
   }

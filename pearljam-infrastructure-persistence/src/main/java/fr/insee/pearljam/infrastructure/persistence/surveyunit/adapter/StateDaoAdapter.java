@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
@@ -58,12 +58,12 @@ public class StateDaoAdapter implements StateRepository {
     }
 
     @Override
-    public List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
+    public List<StateCountProjection> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
         return stateJpaRepository.findGroupedByCampaign(campaignIds, ouIds, date);
     }
 
     @Override
-    public List<StateCount> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse) {
+    public List<StateCountProjection> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse) {
         return stateJpaRepository.findGroupedByOu(campaignId, ouIds, dateToUse);
     }
 

@@ -13,7 +13,7 @@ import fr.insee.pearljam.domain.campaign.service.exception.*;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CountDto;
 
 /**
@@ -27,9 +27,9 @@ public interface CampaignService {
 	/**
 	 * Return a list of preferred campaigns for the user
 	 * @param userId
-	 * @return {@link List} of {@link CampaignDto}
+	 * @return {@link List} of {@link CampaignProjection}
 	 */
-	List<CampaignDto> getPreferredCampaigns(String userId);
+	List<CampaignProjection> getPreferredCampaigns(String userId);
 
 	/**
 	 * Return a list of related campaigns for the user
@@ -39,14 +39,14 @@ public interface CampaignService {
 	List<CampaignPreferenceDto> getCampaignPreferences(String userId);
 
 	/**
-	 * @return {@link List} of {@link CampaignDto}
+	 * @return {@link List} of {@link CampaignProjection}
 	 */
-	List<CampaignDto> getAllCampaigns();
+	List<CampaignProjection> getAllCampaigns();
 
 	/**
-	 * @return {@link List} of {@link CampaignDto}
+	 * @return {@link List} of {@link CampaignProjection}
 	 */
-	List<CampaignDto> getInterviewerCampaigns(String userId);
+	List<CampaignProjection> getInterviewerCampaigns(String userId);
 
 	CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException;
 

@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -44,7 +44,7 @@ public class CampaignDaoAdapter implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
+    public List<CampaignProjection> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return campaignJpaRepository.findByUserAndManagementVisibility(ouIds, userId, date);
     }
 
@@ -54,22 +54,22 @@ public class CampaignDaoAdapter implements CampaignRepository {
     }
 
     @Override
-    public CampaignDto findDtoById(String id) {
+    public CampaignProjection findDtoById(String id) {
         return campaignJpaRepository.findDtoById(id);
     }
 
     @Override
-    public CampaignDto findDtoBySurveyUnitId(String id) {
+    public CampaignProjection findDtoBySurveyUnitId(String id) {
         return campaignJpaRepository.findDtoBySurveyUnitId(id);
     }
 
     @Override
-    public List<CampaignDto> findAllDto() {
+    public List<CampaignProjection> findAllDto() {
         return campaignJpaRepository.findAllDto();
     }
 
     @Override
-    public List<CampaignDto> findAllDtoByOuIds(List<String> ouIds) {
+    public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds) {
         return campaignJpaRepository.findAllDtoByOuIds(ouIds);
     }
 

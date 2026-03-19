@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.model.count;
 
-public record ClosingCauseCount(
+public record ClosingCauseCountProjection(
         String entityId,
         Long npaCount,
         Long npiCount,

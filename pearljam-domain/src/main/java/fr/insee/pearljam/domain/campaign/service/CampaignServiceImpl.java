@@ -9,7 +9,7 @@ import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.Orga
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
 import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
@@ -76,7 +76,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final SurveyUnitCountService surveyUnitCountService;
 
 	@Override
-	public List<CampaignDto> getPreferredCampaigns(String userId) {
+	public List<CampaignProjection> getPreferredCampaigns(String userId) {
 
 		List<String> organizationUnitIds = userService
 				.getUserOUs(userId, true)
@@ -85,9 +85,9 @@ public class CampaignServiceImpl implements CampaignService {
 				.toList();
 
 		Long currentTimestamp = dateService.getCurrentTimestamp();
-		List<CampaignDto> userCampaigns = campaignRepository.findByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
+		List<CampaignProjection> userCampaigns = campaignRepository.findByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
 
-		for (CampaignDto campaign : userCampaigns) {
+		for (CampaignProjection campaign : userCampaigns) {
 			CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaign.getId(), organizationUnitIds);
 			campaign.setManagementStartDate(campaignVisibility.managementStartDate());
 			campaign.setInterviewerStartDate(campaignVisibility.interviewerStartDate());
@@ -244,7 +244,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<CampaignDto> getAllCampaigns() {
+	public List<CampaignProjection> getAllCampaigns() {
 		List<String> lstOuId = organizationUnitRepository.findAllId();
 		return campaignRepository.findAllDto().stream().map(camp -> {
 			camp.setCampaignStats(surveyUnitRepository.getCampaignStats(camp.getId(), lstOuId));
@@ -253,7 +253,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<CampaignDto> getInterviewerCampaigns(String userId) {
+	public List<CampaignProjection> getInterviewerCampaigns(String userId) {
 
 		Map<String, String> map = surveyUnitRepository.findByInterviewerIdIgnoreCase(userId).stream()
 				.collect(Collectors.toMap(su -> su.getCampaign().getId(), SurveyUnitDB::getId,

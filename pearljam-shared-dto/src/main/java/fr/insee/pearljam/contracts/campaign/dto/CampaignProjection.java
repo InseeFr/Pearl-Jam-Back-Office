@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CampaignDto {
+public class CampaignProjection {
 	private String id;
 	private String label;
 	private String email;
@@ -36,7 +36,7 @@ public class CampaignDto {
 	private boolean collectNextContacts;
 	private List<ReferentDto> referents;
 
-	public CampaignDto(String id, String label, Long managementStartDate, Long endDate) {
+	public CampaignProjection(String id, String label, Long managementStartDate, Long endDate) {
 		super();
 		this.id = id;
 		this.label = label;
@@ -45,8 +45,8 @@ public class CampaignDto {
 	}
 
 	// keep it for creation in SQL
-	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
+	public CampaignProjection(String id, String label, String email, IdentificationConfiguration identConfig,
+							  ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
 		super();
 		this.id = id;
 		this.label = label;

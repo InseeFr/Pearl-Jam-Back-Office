@@ -158,6 +158,7 @@ public class StateController {
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get campaignStateCount")
+  @Deprecated
   @GetMapping(Constants.API_CAMPAIGNS_SU_STATECOUNT)
   public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(
       @RequestParam(required = false, name = "date") Long date) {

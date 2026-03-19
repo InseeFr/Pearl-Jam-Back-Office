@@ -3,7 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.port.out;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 
 import java.util.List;
@@ -24,13 +24,13 @@ public interface CommunicationRequestRepository {
 
   List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(List<String> campaignIds, Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
 
-  List<CommunicationRequestCount> getCommRequestCountByCampaigns(
+  List<CommunicationRequestCountProjection> getCommRequestCountByCampaigns(
           List<String> campaignIds,
           List<String> ouIds,
           Long date);
 
-  List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId,
-                                                                                        List<String> ouIds,
-                                                                                        Long dateToUse);
+  List<CommunicationRequestCountProjection> getCommRequestCountByCampaignAndOus(String campaignId,
+                                                                                List<String> ouIds,
+                                                                                Long dateToUse);
 
 }

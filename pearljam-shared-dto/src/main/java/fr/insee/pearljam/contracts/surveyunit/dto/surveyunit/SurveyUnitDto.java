@@ -8,7 +8,7 @@ import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -71,7 +71,7 @@ public class SurveyUnitDto {
 
 	private AddressDto address;
 
-	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, SurveyUnitVisibilityDto visibility) {
+	public SurveyUnitDto(String idSurveyUnit, CampaignProjection campaign, SurveyUnitVisibilityDto visibility) {
 		this.id = idSurveyUnit;
 		this.campaign = campaign.getId();
 		this.campaignLabel = campaign.getLabel();

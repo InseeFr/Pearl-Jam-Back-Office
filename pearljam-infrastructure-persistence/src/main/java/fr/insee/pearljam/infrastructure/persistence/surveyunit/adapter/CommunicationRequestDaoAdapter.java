@@ -4,7 +4,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
 import fr.insee.pearljam.domain.campaign.service.exception.CommunicationTemplateNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
@@ -63,7 +63,7 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   }
 
   @Override
-  public List<CommunicationRequestCount> getCommRequestCountByCampaigns(
+  public List<CommunicationRequestCountProjection> getCommRequestCountByCampaigns(
           List<String> campaignIds,
           List<String> ouIds,
           Long date) {
@@ -71,7 +71,7 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   }
 
   @Override
-  public List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
+  public List<CommunicationRequestCountProjection> getCommRequestCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
     return communicationRequestRepository.getCommRequestCountByCampaignAndOus(campaignId,ouIds,dateToUse);
   }
 

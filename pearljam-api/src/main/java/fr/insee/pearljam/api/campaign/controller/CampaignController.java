@@ -55,15 +55,15 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of preferred Campaigns for current user
 	 *
-	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get user preferred Campaigns")
 	@GetMapping(path = Constants.API_CAMPAIGNS)
-	public List<CampaignDto> getUserPreferredCampaigns() {
+	public List<CampaignProjection> getUserPreferredCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignDto> lstCampaigns = campaignService.getPreferredCampaigns(userId);
+		List<CampaignProjection> lstCampaigns = campaignService.getPreferredCampaigns(userId);
 		log.info("User {} -> {} preferred campaigns found", userId, lstCampaigns.size());
 		return lstCampaigns;
 	}
@@ -71,7 +71,7 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of Campaigns for current user
 	 * 
-	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignProjection} if exists, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -87,15 +87,15 @@ public class CampaignController {
 	/**
 	 * This method return the list of all Campaigns
 	 * 
-	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get Campaigns")
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
-	public List<CampaignDto> getAllCampaigns() {
+	public List<CampaignProjection> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
+		List<CampaignProjection> lstCampaigns = campaignService.getAllCampaigns();
 		log.info("User {}, GET all campaigns ({} campaigns found)", userId,
 				lstCampaigns.size());
 		return lstCampaigns;
@@ -105,15 +105,15 @@ public class CampaignController {
 	/**
 	 * This method return the list of Campaigns for current interviewer
 	 * 
-	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get interviewer related Campaigns")
 	@GetMapping(path = Constants.API_INTERVIEWER_CAMPAIGNS)
-	public List<CampaignDto> getInterviewerCampaigns() {
+	public List<CampaignProjection> getInterviewerCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
+		List<CampaignProjection> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
 		log.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
 		return lstCampaigns;
 	}

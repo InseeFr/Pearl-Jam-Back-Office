@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -40,12 +40,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) {
-        return List.of();
-    }
-
-    @Override
-    public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
+    public List<CampaignProjection> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return List.of();
     }
 
@@ -55,22 +50,22 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public CampaignDto findDtoById(String id) {
+    public CampaignProjection findDtoById(String id) {
         return null;
     }
 
     @Override
-    public CampaignDto findDtoBySurveyUnitId(String id) {
+    public CampaignProjection findDtoBySurveyUnitId(String id) {
         return null;
     }
 
     @Override
-    public List<CampaignDto> findAllDto() {
+    public List<CampaignProjection> findAllDto() {
         return List.of();
     }
 
     @Override
-    public List<CampaignDto> findAllDtoByOuIds(List<String> ouIds) {
+    public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds) {
         return List.of();
     }
 

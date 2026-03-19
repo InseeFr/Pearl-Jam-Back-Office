@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +59,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 		)
 		AND ou.id in (:ouIds)
 		""")
-	List<CampaignDto> findByUserAndManagementVisibility(
+	List<CampaignProjection> findByUserAndManagementVisibility(
 			@Param("ouIds") List<String> ouIds,
 			@Param("userId") String userId,
 			@Param("date") Long date
@@ -102,18 +102,18 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM CampaignDB camp "
 			+ "WHERE camp.id=?1")
-	CampaignDto findDtoById(String id);
+	CampaignProjection findDtoById(String id);
 
 	@Query("SELECT "
 			+ "new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM SurveyUnitDB su "
 			+ "JOIN su.campaign camp "
 			+ "WHERE su.id=?1")
-	CampaignDto findDtoBySurveyUnitId(String id);
+	CampaignProjection findDtoBySurveyUnitId(String id);
 
 	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM CampaignDB camp")
-	List<CampaignDto> findAllDto();
+	List<CampaignProjection> findAllDto();
 
 	@Query("""
     SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(
@@ -127,7 +127,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
     JOIN camp.visibilities vi
     WHERE vi.organizationUnit.id IN :ouIds
     """)
-	List<CampaignDto> findAllDtoByOuIds(@Param("ouIds") List<String> ouIds);
+	List<CampaignProjection> findAllDtoByOuIds(@Param("ouIds") List<String> ouIds);
 
 	@Query(value = "SELECT v.organization_unit_id FROM visibility v WHERE v.campaign_id=?1", nativeQuery = true)
 	List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);

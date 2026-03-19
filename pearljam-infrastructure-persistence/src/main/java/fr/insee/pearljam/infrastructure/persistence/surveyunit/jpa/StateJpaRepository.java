@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -242,8 +242,8 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
 			+ "AND (s.date<=:date OR :date<0) "
 			+ "GROUP BY su.campaign_id",
 			nativeQuery = true)
-	List<StateCount> findGroupedByCampaign(@Param("campaignIds") List<String> campaignIds,
-										   @Param("ouIds") List<String> ouIds, @Param("date") Long date);
+	List<StateCountProjection> findGroupedByCampaign(@Param("campaignIds") List<String> campaignIds,
+                                                     @Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 
 	@Query(value = """
@@ -280,9 +280,9 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
           AND (s.date <= :dateToUse OR :dateToUse < 0)
         GROUP BY su.organization_unit_id
         """, nativeQuery = true)
-	List<StateCount> findGroupedByOu(@Param("campaignId") String campaignId,
-													   @Param("ouIds") List<String> ouIds,
-													   @Param("dateToUse") Long dateToUse);
+	List<StateCountProjection> findGroupedByOu(@Param("campaignId") String campaignId,
+                                               @Param("ouIds") List<String> ouIds,
+                                               @Param("dateToUse") Long dateToUse);
 
 
 }

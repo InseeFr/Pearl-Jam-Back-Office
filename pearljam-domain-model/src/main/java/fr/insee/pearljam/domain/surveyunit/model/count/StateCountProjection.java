@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.model.count;
 
-        public record StateCount(
+        public record StateCountProjection(
     String entityId,
     Long nvmCount,
     Long nnsCount,
