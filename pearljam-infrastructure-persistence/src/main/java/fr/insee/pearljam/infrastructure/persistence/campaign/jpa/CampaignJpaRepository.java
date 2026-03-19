@@ -36,7 +36,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 
 
 	@Query("""
-		SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(
+		SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(
 		    camp.id,
 		    camp.label,
 		    camp.email,
@@ -99,24 +99,24 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	);
 
 
-	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
+	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM CampaignDB camp "
 			+ "WHERE camp.id=?1")
 	CampaignProjection findDtoById(String id);
 
 	@Query("SELECT "
-			+ "new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
+			+ "new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM SurveyUnitDB su "
 			+ "JOIN su.campaign camp "
 			+ "WHERE su.id=?1")
 	CampaignProjection findDtoBySurveyUnitId(String id);
 
-	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
+	@Query(value = "SELECT new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(camp.id, camp.label, camp.email, camp.identificationConfiguration, camp.contactOutcomeConfiguration, camp.contactAttemptConfiguration, camp.collectNextContacts) "
 			+ "FROM CampaignDB camp")
 	List<CampaignProjection> findAllDto();
 
 	@Query("""
-    SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(
+    SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(
         camp.id, camp.label, camp.email,
         camp.identificationConfiguration,
         camp.contactOutcomeConfiguration,

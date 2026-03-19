@@ -8,11 +8,15 @@ import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
+@RequiredArgsConstructor
 public class CampaignProgressionRepository {
 
     CampaignRepository campaignRepository;
