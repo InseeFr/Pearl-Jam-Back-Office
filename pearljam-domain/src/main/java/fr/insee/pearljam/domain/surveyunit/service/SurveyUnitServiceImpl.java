@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import fr.insee.pearljam.contracts.campaign.dto.output.CommunicationTemplateResponseDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
@@ -83,6 +84,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
 	private final CommunicationTemplateService communicationTemplateService;
 	private final DateService dateService;
+	private final JsonMapper jsonMapper;
 
 	@Override
 	public boolean checkHabilitationInterviewer(String userId, String id) {
@@ -710,7 +712,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit) {
 		Long date = new Date().getTime();
-		SurveyUnitTempZoneDB surveyUnitTempZoneToSave = new SurveyUnitTempZoneDB(id, userId, date, surveyUnit);
+		String jsonSurveyUnit = jsonMapper.writeValueAsString(surveyUnit);
+		SurveyUnitTempZoneDB surveyUnitTempZoneToSave = new SurveyUnitTempZoneDB(id, userId, date, jsonSurveyUnit);
 		surveyUnitTempZoneRepository.save(surveyUnitTempZoneToSave);
 	}
 

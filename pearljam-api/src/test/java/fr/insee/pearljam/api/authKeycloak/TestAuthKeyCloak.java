@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.authKeycloak;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
@@ -52,7 +52,7 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
@@ -2220,7 +2220,7 @@ class TestAuthKeyCloak {
 
 	private static String asJsonString(final Object obj) {
 		try {
-			return new ObjectMapper().writeValueAsString(obj);
+			return new JsonMapper().writeValueAsString(obj);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

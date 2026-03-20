@@ -1,7 +1,5 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.entity;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -55,14 +53,14 @@ public class SurveyUnitTempZoneDB {
 	 */
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "survey_unit", columnDefinition = "jsonb")
-	private JsonNode surveyUnit;
+	private String surveyUnit;
 
 	public SurveyUnitTempZoneDB() {
 		super();
 		this.id = UUID.randomUUID();
 	}
 
-	public SurveyUnitTempZoneDB(String surveyUnitId, String interviewerId, Long date, JsonNode surveyUnit) {
+	public SurveyUnitTempZoneDB(String surveyUnitId, String interviewerId, Long date, String surveyUnit) {
 		super();
 		this.id = UUID.randomUUID();
 		this.surveyUnitId = surveyUnitId;

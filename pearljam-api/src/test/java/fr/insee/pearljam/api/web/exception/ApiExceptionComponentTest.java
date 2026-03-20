@@ -3,8 +3,8 @@ package fr.insee.pearljam.api.web.exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -15,11 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ApiExceptionComponentTest {
     private ApiExceptionComponent exceptionComponent;
-    private ErrorAttributes errorAttributes;
 
     @BeforeEach
     void setup() {
-        errorAttributes = new DefaultErrorAttributes();
+        ErrorAttributes errorAttributes = new DefaultErrorAttributes();
         exceptionComponent = new ApiExceptionComponent(errorAttributes);
     }
 

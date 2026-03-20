@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDto;

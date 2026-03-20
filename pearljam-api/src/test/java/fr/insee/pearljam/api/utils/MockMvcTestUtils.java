@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.utils;
 import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultMatcher;
 

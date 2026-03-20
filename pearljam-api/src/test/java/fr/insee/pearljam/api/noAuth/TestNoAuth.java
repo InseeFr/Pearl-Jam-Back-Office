@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.noAuth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import tools.jackson.databind.json.JsonMapper;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -62,7 +61,6 @@ class TestNoAuth {
 	 * Test that the POST endpoint
 	 * "api/message" return 200
 	 * 
-	 * @throws JsonProcessingException
 	 */
 	@Test
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
@@ -74,7 +72,7 @@ class TestNoAuth {
 		mockMvc.perform(post("/api/message")
 						.accept(MediaType.APPLICATION_JSON)
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(new ObjectMapper().writeValueAsString(message)))
+						.content(new JsonMapper().writeValueAsString(message)))
 				.andExpect(status().isOk());
 
 		List<MessageDto> messages = messageRepository
