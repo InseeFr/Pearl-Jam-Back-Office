@@ -32,7 +32,6 @@
         <cucumber.version>7.21.1</cucumber.version>
         <springdoc.version>3.0.2</springdoc.version>
         <archunit.version>1.4.1</archunit.version>
-        <janino.version>3.1.12</janino.version>
         <jacoco.version>0.8.14</jacoco.version>
         <commons-validator.version>1.10.1</commons-validator.version>
     </properties>
@@ -93,11 +92,6 @@
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.janino</groupId>
-                <artifactId>janino</artifactId>
-                <version>${janino.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
