@@ -23,9 +23,20 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 
 	Optional<Campaign> findByIdIgnoreCase(String id);
 
-	@Query(value = "SELECT DISTINCT(campaign_id) FROM visibility WHERE "
-			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
-	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
+	@Query(value = """
+	SELECT DISTINCT(campaign_id) FROM visibility
+	WHERE organization_unit_id IN (:ouIds)
+	""", nativeQuery = true)
+	List<String> findAllCampaignIdsByOuIds(@Param("ouIds") List<String> ouIds);
+
+	@Query(value = """
+	SELECT DISTINCT(campaign_id) FROM visibility
+	WHERE organization_unit_id IN (:ouIds)
+	AND management_start_date <= :date
+	AND end_date > :date
+	""", nativeQuery = true)
+	List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(@Param("ouIds") List<String> ouIds,
+															  @Param("date") Long date);
 
 	@Query("""
     SELECT DISTINCT new fr.insee.pearljam.api.dto.campaign.CampaignDto(
@@ -112,7 +123,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, String> {
 			+ "FROM SurveyUnit su "
 			+ "INNER JOIN Interviewer interv ON su.interviewer.id = interv.id "
 			+ "WHERE su.campaign.id=?1 "
-			+ "AND (su.organizationUnit.id=?2 OR ?2='GUEST') "
+			+ "AND su.organizationUnit.id=?2 "
 			+ "GROUP BY interv.id")
 	List<InterviewerDto> findInterviewersDtoByCampaignIdAndOrganisationUnitId(String id, String organizationUnitId);
 

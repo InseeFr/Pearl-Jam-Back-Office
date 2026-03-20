@@ -21,6 +21,14 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, String
 
 	Optional<Interviewer> findByIdIgnoreCase(String userId);
 
+	@Query(value = """
+			SELECT int.id FROM interviewer int
+			INNER JOIN survey_unit su ON su.interviewer_id = int.id
+			WHERE su.organization_unit_id IN (:ouIds)
+			AND su.campaign_id IN (:campaignIds)
+			""", nativeQuery = true)
+	Set<String> findIdsByOrganizationUnitsAndCampaignId(@Param("ouIds") List<String> ouIds, @Param("campaignIds") List<String> campaignIds);
+
 	@Query(value = "SELECT int.id FROM interviewer int INNER JOIN survey_unit su "
 			+ "ON su.interviewer_id = int.id "
 			+ "WHERE su.organization_unit_id IN (:ouIds) ", nativeQuery = true)

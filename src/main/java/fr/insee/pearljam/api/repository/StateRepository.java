@@ -194,7 +194,7 @@ public interface StateRepository extends JpaRepository<State, Long> {
 			+ "WHERE campaign_id=?1 "
 			+ "AND organization_unit_id =?2"
 			+ ") "
-			+ "AND (date<=?3 OR ?3<0) GROUP BY survey_unit_id"
+			+ "AND date<=?3 GROUP BY survey_unit_id"
 			+ ") "
 			+ ") as t", nativeQuery = true)
 	Map<String, Long> getStateCountByCampaignAndOU(String campaignId, String organizationalUnitId, Long date);
@@ -222,7 +222,7 @@ public interface StateRepository extends JpaRepository<State, Long> {
 			+ "SELECT id FROM survey_unit su "
 			+ "WHERE campaign_id=?1 "
 			+ ") "
-			+ "AND (date<=?2 OR ?2<0) GROUP BY survey_unit_id"
+			+ "AND date<=?2 GROUP BY survey_unit_id"
 			+ ") "
 			+ ") as t", nativeQuery = true)
 	Map<String, Long> getStateCountByCampaignId(String campaignId, Long date);
