@@ -2,7 +2,6 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.controller.dummy.CommentFakeService;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CommentControllerTest {
@@ -105,11 +103,11 @@ class CommentControllerTest {
         mockMvc.perform(put(updatePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(comment))
-                .andExpectAll(status().isNotFound(),
-                        jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()),
-                        jsonPath("$.path").value(updatePath),
-                        jsonPath("$.message").value(String.format(SurveyUnitNotFoundException.MESSAGE, "1")),
-                        jsonPath("$.timestamp", new StructureDateMatcher()));
+                .andExpect(
+                        MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND,
+                                updatePath,
+                                String.format(SurveyUnitNotFoundException.MESSAGE, "1"))
+                );
         assertThat(commentService.getCommentUpdated()).isNull();
     }
 }

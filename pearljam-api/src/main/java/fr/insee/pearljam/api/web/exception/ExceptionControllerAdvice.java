@@ -12,49 +12,43 @@ import fr.insee.pearljam.domain.shared.exception.EntityAlreadyExistException;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserNotAssociatedToCampaignException;
-import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.DatabindException;
+
+import java.net.URI;
 
 /**
  * Handle API exceptions for project
  * Do not work on exceptions occuring before/outside controllers scope
  */
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class ExceptionControllerAdvice {
 
-    private final ApiExceptionComponent errorComponent;
-
-    public ExceptionControllerAdvice(ErrorAttributes errorAttributes) {
-        this.errorComponent = new ApiExceptionComponent(errorAttributes);
-    }
-
     public static final String ERROR_OCCURRED_LABEL = "An error has occurred";
-    public static final String INVALID_PARAMETERS_MESSAGE = "Invalid parameters";
+    public static final String INVALID_PARAMETERS_MESSAGE = "Invalid request content.";
 
     /**
      * Global method to process the catched exception
      *
      * @param ex      Exception catched
      * @param status  status linked with this exception
-     * @param request request initiating the exception
      * @return the apierror object with linked status code
      */
-    private ResponseEntity<ApiError> generateResponseError(Exception ex, HttpStatus status, WebRequest request) {
-        return generateResponseError(ex, status, request, null);
+    private ProblemDetail generateResponseError(Exception ex, HttpStatus status) {
+        return generateResponseError(ex, status, null, null);
     }
 
     /**
@@ -62,47 +56,31 @@ public class ExceptionControllerAdvice {
      *
      * @param ex                   Exception catched
      * @param status               status linked with this exception
-     * @param request              request initiating the exception
+     * @param problemType          problem type
      * @param overrideErrorMessage message overriding default error message from exception
      * @return the apierror object with linked status code
      */
-    private ResponseEntity<ApiError> generateResponseError(Exception ex, HttpStatus status, WebRequest request, String overrideErrorMessage) {
+    private ProblemDetail generateResponseError(Exception ex, HttpStatus status, URI problemType, String overrideErrorMessage) {
         log.error(ex.getMessage(), ex);
         String errorMessage = ex.getMessage();
         if (overrideErrorMessage != null) {
             errorMessage = overrideErrorMessage;
         }
-        ApiError error = errorComponent.buildApiErrorObject(request, status, errorMessage);
-        return new ResponseEntity<>(error, status);
-    }
-
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiError> noHandlerFoundException(NoHandlerFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, errorMessage);
+        if(problemType != null) {
+            problemDetail.setType(problemType);
+        }
+        return problemDetail;
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiError> accessDeniedException(AccessDeniedException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.FORBIDDEN, request);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException e,
-            WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request, INVALID_PARAMETERS_MESSAGE);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> handleConstraintViolation(
-            ConstraintViolationException e,
-            WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request, "Invalid data");
+    public ProblemDetail accessDeniedException(AccessDeniedException e) {
+        return generateResponseError(e, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException e, WebRequest request) {
+    public ProblemDetail handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
 
         Throwable rootCause = e.getRootCause();
@@ -116,86 +94,89 @@ public class ExceptionControllerAdvice {
             String location = mappingException.getLocation() != null ? "[line: " + mappingException.getLocation().getLineNr() + ", column: " + mappingException.getLocation().getColumnNr() + "]" : "";
             errorMessage = "Error when deserializing JSON. Check that your JSON properties are of the expected types " + location;
         }
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request, errorMessage);
+        return generateResponseError(e, HttpStatus.BAD_REQUEST, null, errorMessage);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> noEntityFoundException(EntityNotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail noEntityFoundException(EntityNotFoundException e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EntityAlreadyExistException.class)
-    public ResponseEntity<ApiError> entityAlreadyExistException(EntityAlreadyExistException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    public ProblemDetail entityAlreadyExistException(EntityAlreadyExistException e) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoOrganizationUnitException.class)
-    public ResponseEntity<ApiError> exceptions(NoOrganizationUnitException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    public ProblemDetail exceptions(NoOrganizationUnitException e) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> exceptions(BadRequestException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.BAD_REQUEST, request);
+    public ProblemDetail exceptions(BadRequestException e) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CommunicationTemplateNotFoundException.class)
-    public ResponseEntity<ApiError> exceptions(CommunicationTemplateNotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail exceptions(CommunicationTemplateNotFoundException e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(SurveyUnitNotFoundException.class)
-    public ResponseEntity<ApiError> exceptions(SurveyUnitNotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail exceptions(SurveyUnitNotFoundException e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> exceptions(ConflictException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.CONFLICT, request, e.getGlobalMessage());
+    public ProblemDetail exceptions(ConflictException e) {
+        return generateResponseError(e, HttpStatus.CONFLICT, null, e.getGlobalMessage());
     }
 
     @ExceptionHandler(VisibilityNotFoundException.class)
-    public ResponseEntity<ApiError> exceptions(VisibilityNotFoundException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail exceptions(VisibilityNotFoundException e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(VisibilityHasInvalidDatesException.class)
-    public ResponseEntity<ApiError> exceptions(VisibilityHasInvalidDatesException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    public ProblemDetail exceptions(VisibilityHasInvalidDatesException e) {
+        return generateResponseError(e, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(CampaignOnGoingException.class)
-    public ResponseEntity<ApiError> exceptions(CampaignOnGoingException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    public ProblemDetail exceptions(CampaignOnGoingException e) {
+        return generateResponseError(e, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<ApiError> exceptions(HttpClientErrorException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.valueOf(e.getStatusCode().value()), request, ERROR_OCCURRED_LABEL);
+    public ProblemDetail exceptions(HttpClientErrorException e) {
+        return generateResponseError(e, HttpStatus.valueOf(e.getStatusCode().value()), null, ERROR_OCCURRED_LABEL);
     }
 
     @ExceptionHandler(SendMailException.class)
-    public ResponseEntity<ApiError> exceptions(SendMailException e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
+    public ProblemDetail exceptions(SendMailException e) {
+        return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED_LABEL);
     }
 
     @ExceptionHandler(UserNotAssociatedToCampaignException.class)
-    public ResponseEntity<ApiError> userCampaignMismatch(Exception e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail userCampaignMismatch(Exception e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InterviewerNotFoundException.class)
-    public ResponseEntity<ApiError> interviewerNotFoundException(Exception e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.NOT_FOUND, request);
+    public ProblemDetail interviewerNotFoundException(Exception e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ApiError> existingUserOnCreationException(Exception e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.CONFLICT, request);
+    public ProblemDetail existingUserOnCreationException(Exception e) {
+        return generateResponseError(e, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> exceptions(Exception e, WebRequest request) {
-        return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, request, ERROR_OCCURRED_LABEL);
+    public ProblemDetail exceptions(Exception e) {
+        if(e instanceof ErrorResponse err) {
+            return err.getBody();
+        }
+        return generateResponseError(e, HttpStatus.INTERNAL_SERVER_ERROR, URI.create("about:blank"), ERROR_OCCURRED_LABEL);
     }
 }

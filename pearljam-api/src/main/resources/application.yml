@@ -37,6 +37,9 @@ feature:
     enabled: false
 
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   docker:
     compose:
       enabled: false

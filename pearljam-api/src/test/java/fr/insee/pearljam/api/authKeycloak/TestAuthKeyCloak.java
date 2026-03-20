@@ -587,7 +587,7 @@ class TestAuthKeyCloak {
 		mockMvc.perform(put("/api/survey-unit/11/state/test")
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isInternalServerError());
+				.andExpect(status().isBadRequest());
 	}
 
 	/**
