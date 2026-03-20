@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.configuration.log;
 
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,10 +13,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 public class LogInterceptorConfiguration implements WebMvcConfigurer {
-    private final LogInterceptor logInterceptor;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(logInterceptor);
+        registry.addInterceptor(this.myLogInterceptor(authenticatedUserService));
+    }
+
+    @Bean
+    public LogInterceptor myLogInterceptor(AuthenticatedUserService authenticationUserService) {
+        return new LogInterceptor(authenticationUserService);
     }
 }
