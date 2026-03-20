@@ -8,6 +8,8 @@ import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.CampaignProgressionProjection;
 import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -19,19 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressionController {
     private final CampaignProgressionService campaignProgressionService;
     private final ModelMapper modelMapper;
 
-    @Operation(summary = "GET campaign progress status")
+    public record CampaignProgressionRequest(@NotNull Instant date, String campaignLabel) {}
+
+    @Operation(summary = "POST campaign reporting")
     @PostMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     public List<CampaignProgressionDto> getCampaignsProgression(
-            @RequestBody Instant date,
-            @RequestBody(required = false) String campaignLabel,
+            @RequestBody CampaignProgressionRequest request,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
 
         List<CampaignProgressionProjection> projections = campaignProgressionService
-                .getCampaignsProgression(userId, date);
+                .getCampaignsProgression(userId, request.date);
 
         return projections.stream()
                 .map(projection -> modelMapper.map(projection, CampaignProgressionDto.class))

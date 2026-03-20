@@ -46,7 +46,7 @@ public class CampaignProgressionRepository {
                                                                                          Long date)
     {
             return communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, ouIds, date)
-                    .stream()
+                     .stream()
                     .collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, projection -> projection));
     }
 
