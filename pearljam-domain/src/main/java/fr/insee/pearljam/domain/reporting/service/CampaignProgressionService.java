@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,9 @@ public class CampaignProgressionService implements CampaignProgression {
         }
 
         Map<String, CampaignProjection> campaigns = campaignProgressionRepository.findAllDtoByOuIds(userOrgUnitIds)
-                .stream().collect(Collectors.toMap(CampaignProjection::getId, campaign -> campaign));
+                .stream().collect(Collectors.toMap(CampaignProjection::id, campaign -> campaign));
 
-        List<String> campaignIds = campaignProgressionRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
+        List<String> campaignIds = new ArrayList<>(campaigns.keySet());
 
         if (campaignIds.isEmpty()) {
             return Collections.emptyList();
@@ -78,7 +79,7 @@ public class CampaignProgressionService implements CampaignProgression {
 
                     return new CampaignProgressionProjection(
                             id,
-                            campaign.getLabel(),
+                            campaign.label(),
                             progressRate,
                             surveyUnits
                     );

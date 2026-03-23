@@ -13,8 +13,6 @@ public interface CampaignProgressionRepository {
 
     public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds);
 
-    public List<String>  findAllCampaignIdsByOuIds(List<String> userOrgUnitIds);
-
     public List<StateCountProjection> findGroupedByCampaign(
             @Param("campaignIds") List<String> campaignIds,
             @Param("ouIds") List<String> ouIds,
