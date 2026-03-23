@@ -418,8 +418,8 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			if (currentState.equals(StateType.CLO)) {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
-			} else if (BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO)) {
-				stateRepository.save(new State(new Date().getTime(), su.get(), StateType.CLO));
+			} else if (Boolean.TRUE.equals(BusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO))) {
+				stateRepository.save(new State(dateService.getCurrentTimestamp(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else {
@@ -455,7 +455,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			cc = new ClosingCause();
 			cc.setSurveyUnit(surveyUnit);
 		}
-		cc.setDate(System.currentTimeMillis());
+		cc.setDate(dateService.getCurrentTimestamp());
 		cc.setType(type);
 
 		surveyUnit.setClosingCause(cc);

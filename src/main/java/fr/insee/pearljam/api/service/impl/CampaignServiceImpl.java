@@ -34,10 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -107,25 +104,49 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	public List<InterviewerDto> getListInterviewers(String userId, String campaignId) throws NotFoundException {
-		List<InterviewerDto> interviewersDtoReturned = new ArrayList<>();
 		if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
 			throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
 		}
 
-		List<OrganizationUnitDto> organizationUnits = userService.getUserOUs(userId, false);
-		List<String> userOrgUnitIds = organizationUnits.stream().map(OrganizationUnitDto::getId)
+		List<String> userOUIds = userService.getUserOUs(userId, false).stream()
+				.map(OrganizationUnitDto::getId)
 				.toList();
 
-		for (String orgId : campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId)) {
-			if (userOrgUnitIds.contains(orgId)) {
-				interviewersDtoReturned.addAll(
-						campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, orgId));
+		List<String> campaignOUIds = campaignRepository
+				.findAllOrganistionUnitIdByCampaignId(campaignId);
+
+		Map<String, InterviewerDto> aggregatedInterviewersById = new HashMap<>();
+
+		for (String campaignOUId : campaignOUIds) {
+			if (!userOUIds.contains(campaignOUId)) {
+				continue;
+			}
+
+			List<InterviewerDto> interviewersInOu =
+					campaignRepository.findInterviewersDtoByCampaignIdAndOrganisationUnitId(campaignId, campaignOUId);
+
+			for (InterviewerDto interviewer : interviewersInOu) {
+
+				aggregatedInterviewersById.merge(
+						interviewer.getId(),
+						interviewer,
+						(existing, incoming) -> {
+							Long existingCount = existing.getSurveyUnitCount();
+							Long incomingCount = incoming.getSurveyUnitCount();
+							existing.setSurveyUnitCount(existingCount + incomingCount);
+							return existing;
+						}
+				);
 			}
 		}
-		if (interviewersDtoReturned.isEmpty()) {
+
+		List<InterviewerDto> aggregatedInterviewers = new ArrayList<>(aggregatedInterviewersById.values());
+
+		if (aggregatedInterviewers.isEmpty()) {
 			log.warn("No interviewers found for the campaign {}", campaignId);
 		}
-		return interviewersDtoReturned;
+
+		return aggregatedInterviewers;
 	}
 
 	@Override
@@ -218,7 +239,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, OrganizationalUnitNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
+	public void updateCampaign(String campaignId, CampaignUpdateDto campaignToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
 		Campaign currentCampaign = campaignRepository.findByIdIgnoreCase(campaignId)
 				.orElseThrow(CampaignNotFoundException::new);
 

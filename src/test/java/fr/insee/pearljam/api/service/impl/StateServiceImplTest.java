@@ -15,12 +15,12 @@ import static org.mockito.Mockito.when;
 import fr.insee.pearljam.api.dto.campaign.CampaignDto;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
+import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.api.service.UtilsService;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.campaign.port.serverside.VisibilityRepository;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.CommunicationRequestRepository;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +29,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,8 +46,13 @@ class StateServiceImplTest {
   private CommunicationRequestRepository communicationRequestRepository;
   @Mock
   private ClosingCauseRepository closingCauseRepository;
+  @Mock
+  private VisibilityRepository visibilityRepository;
+  @Mock
+  private OrganizationUnitRepository organizationRepository;
+  @Mock
+  private UtilsService utilsService;
 
-  @InjectMocks
   private StateServiceImpl stateService;
 
   private String userId;
@@ -57,6 +61,14 @@ class StateServiceImplTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    FixedDateService fixedDateService = new FixedDateService();
+    stateService = new StateServiceImpl(campaignRepository, stateRepository,
+            closingCauseRepository, interviewerRepository,
+            visibilityRepository, organizationRepository,
+            userService, utilsService,
+            fixedDateService, communicationRequestRepository
+            );
+
     userId = "user1";
     date = System.currentTimeMillis();
   }
@@ -82,7 +94,7 @@ class StateServiceImplTest {
     // Given
     List<OrganizationUnitDto> organizationUnits = Arrays.asList(new OrganizationUnitDto("OU1", "Unit 1"), new OrganizationUnitDto("OU2", "Unit 2"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
-    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(Arrays.asList("campaign1", "campaign2"));
+    when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(Arrays.asList("campaign1", "campaign2"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
     when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
     when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
@@ -94,7 +106,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(2, result.size(), "Expected two campaigns to be returned.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"));
+    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"), date);
     verify(stateRepository, times(2)).getStateCountSumByCampaign(anyString(), anyList(), eq(date));
     verify(communicationRequestRepository, times(4)).getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), any(), eq(date), anyList());
   }
@@ -105,7 +117,7 @@ class StateServiceImplTest {
     // Given
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
-    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
+    when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(List.of("campaign1"));
     when(stateRepository.getStateCountSumByCampaign(anyString(), anyList(), anyLong())).thenReturn(new HashMap<>());
     when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.NOTICE), anyLong(), anyList())).thenReturn(0L);
     when(communicationRequestRepository.getCommRequestCountByCampaignTypeAndOrgaUnit(anyString(), eq(CommunicationType.REMINDER), anyLong(), anyList())).thenReturn(0L);
@@ -117,7 +129,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(1, result.size(), "Expected one campaign to be returned when date is null.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllCampaignIdsByOuIds(List.of("OU1"));
+    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(List.of("OU1"), FixedDateService.FIXED_TIMESTAMP);
   }
 
   @Test

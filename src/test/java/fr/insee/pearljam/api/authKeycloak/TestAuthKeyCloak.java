@@ -30,6 +30,7 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
@@ -99,6 +100,7 @@ class TestAuthKeyCloak {
 	private final ClosingCauseRepository closingCauseRepository;
 	private final MessageService messageService;
 	private final PreferenceService preferenceService;
+	private final FixedDateService fixedDateService;
 
 	private final MockMvc mockMvc;
 	private final RestTemplate restTemplate;
