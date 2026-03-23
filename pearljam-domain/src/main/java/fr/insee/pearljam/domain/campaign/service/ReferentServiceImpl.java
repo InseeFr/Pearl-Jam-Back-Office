@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class ReferentServiceImpl implements ReferentService {
         }
 		return referentRepository.findByCampaignId(id).stream()
 				.map(ref -> new ReferentDto(ref.getFirstName(), ref.getLastName(), ref.getPhoneNumber(), ref.getRole()))
-				.collect(Collectors.toList());
+				.toList();
     }
 
 }

@@ -155,8 +155,6 @@ public class UserServiceImpl implements UserService {
 		dbUser.setFirstName(user.getFirstName());
 		dbUser.setLastName(user.getLastName());
 
-		String ouId = user.getOrganizationUnit().getId();
-
 		OrganizationUnitDB dbOu = organizationUnitRepository
 				.findByIdIgnoreCase(user.getOrganizationUnit().getId())
 				.orElseThrow(OrganizationalUnitNotFoundException::new);

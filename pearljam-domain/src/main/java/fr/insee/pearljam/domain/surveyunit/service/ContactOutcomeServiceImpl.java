@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -84,7 +83,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 				.map(idCampaign -> new ContactOutcomeTypeCountDto(
 						contactOutcomeRepository.getContactOutcomeTypeCountByCampaignId(idCampaign, dateToUse),
 						campaignRepository.findDtoById(idCampaign)))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class ContactOutcomeServiceImpl implements ContactOutcomeService {
 
 		List<String> organizationUnits = userService.getUserOUs(userId, true)
 				.stream().map(OrganizationUnitDto::getId)
-				.collect(Collectors.toList());
+				.toList();
 		Long dateToUse = date;
 		if (dateToUse == null) {
 			dateToUse = System.currentTimeMillis();
