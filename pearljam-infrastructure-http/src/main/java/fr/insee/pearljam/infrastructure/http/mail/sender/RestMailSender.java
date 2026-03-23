@@ -8,12 +8,12 @@ import fr.insee.pearljam.infrastructure.http.mail.config.MailProperties;
 import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Http mail sender
@@ -25,8 +25,8 @@ import org.springframework.web.client.RestTemplate;
 public class RestMailSender implements MailSender {
     private final MailProperties mailProperties;
 
-    @Qualifier("mailRestTemplate")
-    private final RestTemplate mailRestTemplate;
+    @Qualifier("mailRestClient")
+    private final RestClient.Builder mailRestClient;
 
     @Override
     public void sendMail(String subject, String content) throws SendMailException {
@@ -39,16 +39,25 @@ public class RestMailSender implements MailSender {
         recipient.setAddress(mailProperties.mailRecipients());
         Recipients recipients = new Recipients();
         recipients.getRecipient().add(recipient);
-        SendRequest body = new SendRequest();
-        body.setMessageTemplate(messagetemplate);
-        body.setRecipients(recipients);
+        SendRequest request = new SendRequest();
+        request.setMessageTemplate(messagetemplate);
+        request.setRecipients(recipients);
 
-        HttpEntity<SendRequest> request = new HttpEntity<>(body);
         log.info("Calling {}", mailProperties.url());
         try {
-            ResponseEntity<String> response = mailRestTemplate.exchange(mailProperties.url(), HttpMethod.POST, request,
-                    String.class);
-            log.info("Response : message # {}", response.getStatusCode());
+            HttpStatusCode status = mailRestClient
+                    .build()
+                    .post()
+                    .body(request)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .getStatusCode();
+
+            if (status.value() == HttpStatus.OK.value()) {
+                log.info("Le mail a bien été envoyé");
+                return;
+            }
+            throw new SendMailException(String.format("Error sending mail. Status: %s", status.value()));
         } catch(RestClientException ex) {
             throw new SendMailException(ex.getMessage());
         }

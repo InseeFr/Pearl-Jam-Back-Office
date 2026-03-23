@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.authKeycloak;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
 import fr.insee.pearljam.contracts.constants.Constants;
@@ -67,7 +68,6 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -118,7 +118,8 @@ class TestAuthKeyCloak {
 	private final FixedDateService fixedDateService;
 
 	private final MockMvc mockMvc;
-	private final RestTemplate restTemplate;
+
+	private final RestClient.Builder dataCollectionRestClient;
 
 	private MockRestServiceServer mockServer;
 
@@ -131,7 +132,7 @@ class TestAuthKeyCloak {
 	 */
 	@BeforeEach
 	void setUp() {
-		mockServer = MockRestServiceServer.createServer(restTemplate);
+		mockServer = MockRestServiceServer.bindTo(dataCollectionRestClient).build();
 	}
 
 	private ResultMatcher expectValidManagementStartDate() {

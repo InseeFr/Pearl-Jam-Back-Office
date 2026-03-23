@@ -10,6 +10,11 @@ public class AuthenticationUserFakeService implements AuthenticatedUserService {
     private final Authentication authenticationUser;
 
     @Override
+    public String getToken() {
+        return "token";
+    }
+
+    @Override
     public String getCurrentUserId() {
         return authenticationUser.getName();
     }

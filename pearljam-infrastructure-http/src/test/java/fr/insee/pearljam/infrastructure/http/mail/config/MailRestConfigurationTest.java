@@ -5,10 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,31 +16,38 @@ import java.util.Base64;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
-class MailConfigurationTest {
-    private RestTemplate restTemplate;
+class MailRestConfigurationTest {
+    private RestClient.Builder restClientBuilder;
     private MailProperties mailProperties;
     private MockRestServiceServer mockServer;
 
     @BeforeEach
     void init() {
         mailProperties = new MailProperties("url", "login", "password", "recipient1,recipient2", "sender");
-        MailConfiguration conf = new MailConfiguration(mailProperties);
-        restTemplate = conf.mailRestTemplate();
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        MailRestConfiguration conf = new MailRestConfiguration(mailProperties);
+        restClientBuilder = conf.mailRestClient();
+        mockServer = MockRestServiceServer.bindTo(restClientBuilder).build();
     }
 
     @Test
-    @DisplayName("when using mail restTemplate, assure basic authentication is integrated in requests")
+    @DisplayName("when using mail restClient, assure basic authentication is integrated in requests")
     void testAuthorizationIsIntegratedInHttpRequest() throws URISyntaxException {
-        String base64Credentials = Base64.getEncoder().encodeToString((mailProperties.login() + ":" + mailProperties.password()).getBytes());
+
+        String base64Credentials = Base64.getEncoder()
+                .encodeToString((mailProperties.login() + ":" + mailProperties.password()).getBytes());
+
         mockServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("/")))
+                        requestTo(new URI(mailProperties.url())))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(header("Authorization", "Basic " + base64Credentials))
                 .andRespond(withStatus(HttpStatus.OK));
 
-        restTemplate.getForObject("/", Object.class);
+        RestClient restClient = restClientBuilder.build();
+
+        restClient.get()
+                .retrieve()
+                .toBodilessEntity();
+
         mockServer.verify();
     }
 }

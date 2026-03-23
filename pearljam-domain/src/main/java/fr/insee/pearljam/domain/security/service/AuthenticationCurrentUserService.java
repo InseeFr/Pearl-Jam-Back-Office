@@ -13,6 +13,11 @@ public class AuthenticationCurrentUserService implements AuthenticatedUserServic
     private final AuthenticatedUserHelperPort currentUserHelper;
 
     @Override
+    public String getToken() {
+        return currentUserHelper.getToken();
+    }
+
+    @Override
     public String getCurrentUserId() {
         return currentUserHelper.getCurrentUserId();
     }
