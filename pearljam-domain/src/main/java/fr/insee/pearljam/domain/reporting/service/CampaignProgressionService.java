@@ -31,7 +31,7 @@ public class CampaignProgressionService implements CampaignProgression {
             return Collections.emptyList();
         }
 
-        Map<String, CampaignProjection> campaigns = campaignProgressionRepository.findAllDtoByOuIds(userOrgUnitIds)
+        Map<String, CampaignProjection> campaigns = campaignProgressionRepository.findCampaingnsByOrganisationUnits(userOrgUnitIds)
                 .stream().collect(Collectors.toMap(CampaignProjection::id, campaign -> campaign));
 
         List<String> campaignIds = new ArrayList<>(campaigns.keySet());
@@ -41,7 +41,7 @@ public class CampaignProgressionService implements CampaignProgression {
         }
 
         Map<String, StateCountProjection> stateCountsByCampaign =
-                campaignProgressionRepository.findGroupedByCampaign(campaignIds, userOrgUnitIds, dateToUse)
+                campaignProgressionRepository.findStateCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
                         .stream()
                         .collect(Collectors.toMap(StateCountProjection::entityId, projection -> projection));
 

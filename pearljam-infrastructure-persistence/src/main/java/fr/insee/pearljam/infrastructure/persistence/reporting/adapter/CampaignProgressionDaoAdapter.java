@@ -83,14 +83,14 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
             """;
 
     @Override
-    public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds) {
+    public List<CampaignProjection> findCampaingnsByOrganisationUnits(List<String> ouIds) {
         return em.createQuery(JPQL_CAMPAIGNS_BY_OU, CampaignProjection.class)
                 .setParameter(PARAM_OU_IDS, ouIds)
                 .getResultList();
     }
 
     @Override
-    public List<StateCountProjection> findGroupedByCampaign(
+    public List<StateCountProjection> findStateCountByCampaigns(
             List<String> campaignIds,
             List<String> ouIds,
             Long date) {

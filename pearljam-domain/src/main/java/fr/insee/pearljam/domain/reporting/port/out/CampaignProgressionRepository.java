@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 public interface CampaignProgressionRepository {
 
-    public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds);
+    public List<CampaignProjection> findCampaingnsByOrganisationUnits(List<String> ouIds);
 
-    public List<StateCountProjection> findGroupedByCampaign(
+    public List<StateCountProjection> findStateCountByCampaigns(
             @Param("campaignIds") List<String> campaignIds,
             @Param("ouIds") List<String> ouIds,
             @Param("date") Long date);
