@@ -168,7 +168,8 @@ class CampaignControllerUpdateTest {
                 referents,
                 email,
                 contactOutcomeConfiguration,
-                contactAttemptConfiguration
+                contactAttemptConfiguration,
+                false
         );
 
     }

@@ -24,7 +24,7 @@ public class VisibilityFakeService implements VisibilityService {
     @Getter
     private Visibility visibilityUpdated = null;
 
-    private List<Visibility> visibilities = new ArrayList<>();
+    private final List<Visibility> visibilities = new ArrayList<>();
 
     @Override
     public List<Visibility> findVisibilities(String campaignId) throws CampaignNotFoundException {

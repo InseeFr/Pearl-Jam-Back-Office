@@ -16,7 +16,7 @@ class VisibilityDBTest {
     void setup() {
         campaign = new Campaign("id", "label", IdentificationConfiguration.IASCO,
                 ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F,
-                "email@plop.com", false);
+                "email@plop.com", false, false);
         organizationUnit = new OrganizationUnit("OU-SOUTHWEST", "South west", OrganizationUnitType.LOCAL);
     }
 

@@ -1,16 +1,15 @@
-package fr.insee.pearljam.api.dto.surveyunit;
+package fr.insee.pearljam.api.surveyunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.pearljam.api.dto.address.AddressDto;
 import fr.insee.pearljam.api.dto.closingcause.ClosingCauseDto;
 import fr.insee.pearljam.api.dto.contactattempt.ContactAttemptDto;
-import fr.insee.pearljam.api.dto.person.PersonDto;
 import fr.insee.pearljam.api.dto.sampleidentifier.SampleIdentifiersDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
-import fr.insee.pearljam.api.surveyunit.dto.CommentDto;
-import fr.insee.pearljam.api.surveyunit.dto.ContactOutcomeDto;
+import fr.insee.pearljam.api.surveyunit.dto.contactHistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.surveyunit.dto.identification.RawIdentificationDto;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SurveyUnitContextDto {
+public class SurveyUnitCreationDto {
 	private String id;
 	private String displayName;
 	private List<PersonDto> persons;
@@ -37,6 +36,8 @@ public class SurveyUnitContextDto {
 	private ClosingCauseDto closingCause;
 	private RawIdentificationDto identification;
 	private Set<CommentDto> comments;
+	@Valid
+	private PreviousContactHistoryDto contactHistory;
 
 	/**
 	 * This method checks if mandatory fields in the Survey Unit are valid or not

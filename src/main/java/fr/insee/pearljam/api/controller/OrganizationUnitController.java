@@ -1,20 +1,6 @@
 package fr.insee.pearljam.api.controller;
 
 import fr.insee.pearljam.api.constants.Constants;
-import java.util.Collections;
-import java.util.List;
-
-import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.insee.pearljam.api.domain.Response;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitContextDto;
@@ -23,10 +9,17 @@ import fr.insee.pearljam.api.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.api.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.api.service.OrganizationUnitService;
 import fr.insee.pearljam.api.service.UserService;
+import fr.insee.pearljam.domain.security.port.userside.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @Tag(name = "05. Organization-units", description = "Endpoints for organization-units")

@@ -45,7 +45,7 @@ public class ClosingCauseServiceImpl implements ClosingCauseService {
 			throw new NotFoundException(
 					String.format("No campaign with id %s  associated to the user %s", campaignId, userId));
 		}
-		if (!interviewerRepository.findById(interviewerId).isPresent()) {
+		if (interviewerRepository.findById(interviewerId).isEmpty()) {
 			throw new NotFoundException("No interviewer found for the id " + interviewerId);
 		}
 		List<String> userOuIds;

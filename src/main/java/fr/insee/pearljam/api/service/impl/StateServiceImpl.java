@@ -7,11 +7,7 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.api.dto.state.StateCountDto;
 import fr.insee.pearljam.api.exception.NotFoundException;
-import fr.insee.pearljam.api.repository.CampaignRepository;
-import fr.insee.pearljam.api.repository.ClosingCauseRepository;
-import fr.insee.pearljam.api.repository.InterviewerRepository;
-import fr.insee.pearljam.api.repository.OrganizationUnitRepository;
-import fr.insee.pearljam.api.repository.StateRepository;
+import fr.insee.pearljam.api.repository.*;
 import fr.insee.pearljam.api.service.StateService;
 import fr.insee.pearljam.api.service.UserService;
 import fr.insee.pearljam.api.service.UtilsService;
@@ -30,6 +26,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Service for the Interviewer entity
@@ -63,7 +62,7 @@ public class StateServiceImpl implements StateService {
     if (!utilsService.checkUserCampaignOUConstraints(userId, campaignId)) {
       throw new NotFoundException(String.format(USER_CAMP_CONST_MSG, campaignId, userId));
     }
-    if (!interviewerRepository.findById(interviewerId).isPresent()) {
+    if (interviewerRepository.findById(interviewerId).isEmpty()) {
       log.error("No interviewer found for the id {}", interviewerId);
       throw new NotFoundException(
           String.format("No interviewers found for the id %s", interviewerId));

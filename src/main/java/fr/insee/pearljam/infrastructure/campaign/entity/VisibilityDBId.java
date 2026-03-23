@@ -5,10 +5,7 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * This class is used to defines the association between OrganizationUnit and
@@ -21,6 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class VisibilityDBId implements Serializable {
 
 	@Serial
