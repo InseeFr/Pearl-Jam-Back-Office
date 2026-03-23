@@ -1,6 +1,7 @@
-package fr.insee.pearljam.contracts.campaign.dto;
+package fr.insee.pearljam.domain.reporting.projection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import fr.insee.pearljam.contracts.campaign.dto.ReferentDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;

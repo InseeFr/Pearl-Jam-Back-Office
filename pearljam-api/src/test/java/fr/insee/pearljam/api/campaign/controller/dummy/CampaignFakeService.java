@@ -5,8 +5,7 @@ import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
 import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
 import fr.insee.pearljam.contracts.campaign.dto.CountDto;
@@ -59,7 +58,7 @@ public class CampaignFakeService implements CampaignService {
     private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
-    public List<CampaignProjection> getPreferredCampaigns(String userId) {
+    public List<CampaignDto> getPreferredCampaigns(String userId) {
         return List.of();
     }
 
@@ -69,12 +68,12 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<CampaignProjection> getAllCampaigns() {
+    public List<CampaignDto> getAllCampaigns() {
         throw new UnsupportedOperationException("Unimplemented method 'getAllCampaigns'");
     }
 
     @Override
-    public List<CampaignProjection> getInterviewerCampaigns(String userId) {
+    public List<CampaignDto> getInterviewerCampaigns(String userId) {
         throw new UnsupportedOperationException("Unimplemented method 'getInterviewerCampaigns'");
     }
 

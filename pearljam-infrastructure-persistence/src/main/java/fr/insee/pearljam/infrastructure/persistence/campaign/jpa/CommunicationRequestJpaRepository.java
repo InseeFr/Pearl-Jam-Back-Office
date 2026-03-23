@@ -2,7 +2,7 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.jpa;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommunicationRequestDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -99,7 +99,7 @@ public interface CommunicationRequestJpaRepository extends
             )
           GROUP BY su.campaign_id
           """, nativeQuery = true)
-  List<CommunicationRequestCountProjection> getCommRequestCountByCampaigns(
+  List<CommunicationRequestCount> getCommRequestCountByCampaigns(
           @Param("campaignIds") List<String> campaignIds,
           @Param("ouIds") List<String> ouIds,
           @Param("date") Long date);
@@ -125,9 +125,9 @@ public interface CommunicationRequestJpaRepository extends
             AND su.organization_unit_id IN (:ouIds)
           GROUP BY su.organization_unit_id
           """, nativeQuery = true)
-  List<CommunicationRequestCountProjection> getCommRequestCountByCampaignAndOus(@Param("campaignId") String campaignId,
-                                                                                @Param("ouIds") List<String> ouIds,
-                                                                                @Param("dateToUse") Long dateToUse);
+  List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(@Param("campaignId") String campaignId,
+                                                                      @Param("ouIds") List<String> ouIds,
+                                                                      @Param("dateToUse") Long dateToUse);
 
 
 }

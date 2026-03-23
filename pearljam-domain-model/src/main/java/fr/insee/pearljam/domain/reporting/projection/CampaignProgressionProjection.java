@@ -1,19 +1,8 @@
 // CampaignProgressionReport.java
-package fr.insee.pearljam.domain.campaign.model;
+package fr.insee.pearljam.domain.reporting.projection;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class CampaignProgressionProjection {
-
-    private final String campaignId;
-    private final String campaignLabel;
-    private final float progressRate;
-    private final SurveyUnits surveyUnits;
+public record CampaignProgressionProjection(String campaignId, String campaignLabel, float progressRate,
+                                            SurveyUnits surveyUnits) {
 
     public record SurveyUnits(
             Long allocated,

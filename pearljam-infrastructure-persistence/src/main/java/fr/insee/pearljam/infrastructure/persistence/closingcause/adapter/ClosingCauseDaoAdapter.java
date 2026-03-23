@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.closingcause.adapter;
 
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -40,12 +40,12 @@ public class ClosingCauseDaoAdapter implements ClosingCauseRepository {
     }
 
     @Override
-    public List<ClosingCauseCountProjection> getStateClosedByClosingCauseCountByCampaigns(List<String> campaignIds, List<String> ouIds, Long date) {
+    public List<ClosingCauseCount> getStateClosedByClosingCauseCountByCampaigns(List<String> campaignIds, List<String> ouIds, Long date) {
         return closingCauseJpaRepository.getStateClosedByClosingCauseCountByCampaigns(campaignIds, ouIds, date);
     }
 
     @Override
-    public List<ClosingCauseCountProjection> getClosingCauseCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
+    public List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
         return closingCauseJpaRepository.getClosingCauseCountByCampaignAndOus(campaignId, ouIds, dateToUse);
     }
 

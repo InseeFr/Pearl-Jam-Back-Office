@@ -57,6 +57,7 @@ class StateServiceImplTest {
   @Mock
   private RelatedOrganizationUnitService relatedOrganizationUnitService;
 
+  @InjectMocks
   private StateServiceImpl stateService;
 
   private String userId;
@@ -136,7 +137,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(1, result.size(), "Expected one campaign to be returned when date is null.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(eq(List.of("OU1")), anyLong());
+    verify(campaignRepository).findAllCampaignIdsByOuIds(List.of("OU1"));
   }
 
   @Test

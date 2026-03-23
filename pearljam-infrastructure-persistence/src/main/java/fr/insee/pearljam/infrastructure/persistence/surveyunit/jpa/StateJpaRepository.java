@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -214,7 +215,8 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds,
 			@Param("date") Long date);
 
-
+// TO DO : mettre ce repo en deprecate + déplacer dans une nouvelle classe CampaignRepository la méthode findGroupedByCampaign
+	// Ajouter la méthode dans CampaignRepository la requete pour les tableaux de comptage sur les com request
 	@Query(value = "SELECT "
 			+ "su.campaign_id AS entityId, "
 			+ "SUM(CASE WHEN s.type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
@@ -242,8 +244,8 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
 			+ "AND (s.date<=:date OR :date<0) "
 			+ "GROUP BY su.campaign_id",
 			nativeQuery = true)
-	List<StateCountProjection> findGroupedByCampaign(@Param("campaignIds") List<String> campaignIds,
-                                                     @Param("ouIds") List<String> ouIds, @Param("date") Long date);
+	List<StateCount> findGroupedByCampaign(@Param("campaignIds") List<String> campaignIds,
+										   @Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 
 	@Query(value = """
@@ -280,7 +282,7 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
           AND (s.date <= :dateToUse OR :dateToUse < 0)
         GROUP BY su.organization_unit_id
         """, nativeQuery = true)
-	List<StateCountProjection> findGroupedByOu(@Param("campaignId") String campaignId,
+	List<StateCount> findGroupedByOu(@Param("campaignId") String campaignId,
                                                @Param("ouIds") List<String> ouIds,
                                                @Param("dateToUse") Long dateToUse);
 

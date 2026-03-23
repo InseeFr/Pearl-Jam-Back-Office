@@ -5,8 +5,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.STATE_COUNT_FIELDS
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
-import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class StateCountDto {
 	private String idDem;
 	private String labelDem;
 	private InterviewerContextDto interviewer;
-	private CampaignProjection campaign;
+	private CampaignDto campaign;
 	private Long nvmCount;
 	private Long nnsCount;
 	private Long anvCount;

@@ -9,7 +9,7 @@ import fr.insee.pearljam.api.campaign.dto.*;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
-import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,15 +55,15 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of preferred Campaigns for current user
 	 *
-	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get user preferred Campaigns")
 	@GetMapping(path = Constants.API_CAMPAIGNS)
-	public List<CampaignProjection> getUserPreferredCampaigns() {
+	public List<CampaignDto> getUserPreferredCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignProjection> lstCampaigns = campaignService.getPreferredCampaigns(userId);
+		List<CampaignDto> lstCampaigns = campaignService.getPreferredCampaigns(userId);
 		log.info("User {} -> {} preferred campaigns found", userId, lstCampaigns.size());
 		return lstCampaigns;
 	}
@@ -71,7 +71,7 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of Campaigns for current user
 	 * 
-	 * @return List of {@link CampaignProjection} if exists, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
@@ -87,15 +87,15 @@ public class CampaignController {
 	/**
 	 * This method return the list of all Campaigns
 	 * 
-	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get Campaigns")
 	@GetMapping(path = Constants.API_ADMIN_CAMPAIGNS)
-	public List<CampaignProjection> getAllCampaigns() {
+	public List<CampaignDto> getAllCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignProjection> lstCampaigns = campaignService.getAllCampaigns();
+		List<CampaignDto> lstCampaigns = campaignService.getAllCampaigns();
 		log.info("User {}, GET all campaigns ({} campaigns found)", userId,
 				lstCampaigns.size());
 		return lstCampaigns;
@@ -105,15 +105,15 @@ public class CampaignController {
 	/**
 	 * This method return the list of Campaigns for current interviewer
 	 * 
-	 * @return List of {@link CampaignProjection} if exist, {@link HttpStatus} NOT_FOUND,
+	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get interviewer related Campaigns")
 	@GetMapping(path = Constants.API_INTERVIEWER_CAMPAIGNS)
-	public List<CampaignProjection> getInterviewerCampaigns() {
+	public List<CampaignDto> getInterviewerCampaigns() {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignProjection> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
+		List<CampaignDto> lstCampaigns = campaignService.getInterviewerCampaigns(userId);
 		log.info("Interviewer {} : returned {} campaigns, resulting in 200", userId, lstCampaigns.size());
 		return lstCampaigns;
 	}

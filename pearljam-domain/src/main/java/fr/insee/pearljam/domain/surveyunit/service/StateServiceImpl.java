@@ -2,8 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
-import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
@@ -13,10 +12,10 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
-import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCountProjection;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
@@ -131,18 +130,18 @@ public class StateServiceImpl implements StateService {
     );
 
     // 5) Comm request counts grouped by OU (1 query)
-    Map<String, CommunicationRequestCountProjection> commByOu =
+    Map<String, CommunicationRequestCount> commByOu =
             communicationRequestRepository.getCommRequestCountByCampaignAndOus(
                             campaignId, targetOuIds, dateToUse)
                     .stream()
-                    .collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, x -> x));
+                    .collect(Collectors.toMap(CommunicationRequestCount::entityId, x -> x));
 
     // 6) Closing cause counts grouped by OU (1 query)
-    Map<String, ClosingCauseCountProjection> closingByOu =
+    Map<String, ClosingCauseCount> closingByOu =
             closingCauseRepository.getClosingCauseCountByCampaignAndOus(
                             campaignId, targetOuIds, dateToUse)
                     .stream()
-                    .collect(Collectors.toMap(ClosingCauseCountProjection::entityId, Function.identity()));
+                    .collect(Collectors.toMap(ClosingCauseCount::entityId, Function.identity()));
 
     // 7) Build per-OU DTOs in memory (no DB)
     List<StateCountDto> ouDtos = targetOuIds.stream()
@@ -184,7 +183,6 @@ public class StateServiceImpl implements StateService {
     return result;
   }
 
-  @Deprecated
   public List<StateCountDto> getStateCountByCampaigns(String userId, Long date) {
     Long dateToUse = (date != null) ? date : System.currentTimeMillis();
 
@@ -195,8 +193,8 @@ public class StateServiceImpl implements StateService {
       return Collections.emptyList();
     }
 
-    Map<String, CampaignProjection> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
-            .stream().collect(Collectors.toMap(CampaignProjection::getId, campaign -> campaign));
+    Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
+            .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
 
     List<String> campaignIds = campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(userOrgUnitIds, dateToUse);
     if (campaignIds.isEmpty()) {
@@ -207,15 +205,15 @@ public class StateServiceImpl implements StateService {
             stateRepository.findGroupedByCampaign(campaignIds, userOrgUnitIds, dateToUse)
     );
 
-    Map<String, CommunicationRequestCountProjection> commRequestCountsByCampaign =
+    Map<String, CommunicationRequestCount> commRequestCountsByCampaign =
             communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
                     .stream()
-                    .collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, projection -> projection));
+                    .collect(Collectors.toMap(CommunicationRequestCount::entityId, projection -> projection));
 
-    Map<String, ClosingCauseCountProjection> closingCauseCountsByCampaign =
+    Map<String, ClosingCauseCount> closingCauseCountsByCampaign =
             closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
                     .stream()
-                    .collect(Collectors.toMap(ClosingCauseCountProjection::entityId, projection -> projection));
+                    .collect(Collectors.toMap(ClosingCauseCount::entityId, projection -> projection));
 
     return campaignIds.stream()
             .map(id -> {
@@ -230,12 +228,12 @@ public class StateServiceImpl implements StateService {
             .toList();
   }
 
-  private Map<String, StateCountDto> toDtos(List<StateCountProjection> results) {
+  private Map<String, StateCountDto> toDtos(List<StateCount> results) {
     return results.stream()
-            .collect(Collectors.toMap(StateCountProjection::entityId, this::toDto));
+            .collect(Collectors.toMap(StateCount::entityId, this::toDto));
   }
 
-  private StateCountDto toDto(StateCountProjection projection) {
+  private StateCountDto toDto(StateCount projection) {
     Map<String, Long> counts = new HashMap<>();
     counts.put(Constants.NVM_COUNT, nullToZero(projection.nvmCount()));
     counts.put(Constants.NNS_COUNT, nullToZero(projection.nnsCount()));
@@ -262,8 +260,8 @@ public class StateServiceImpl implements StateService {
   }
 
   private StateCountDto mergeCounts(StateCountDto stateCounts,
-                                    CommunicationRequestCountProjection commCounts,
-                                    ClosingCauseCountProjection closingCauseCountsProjection) {
+                                    CommunicationRequestCount commCounts,
+                                    ClosingCauseCount closingCauseCountsProjection) {
 
     StateCountDto merged = stateCounts != null ? stateCounts : new StateCountDto(Collections.emptyMap());
 
@@ -278,7 +276,7 @@ public class StateServiceImpl implements StateService {
     return merged;
   }
 
-  private Map<String, Long> toClosingCauseCountMap(ClosingCauseCountProjection projection) {
+  private Map<String, Long> toClosingCauseCountMap(ClosingCauseCount projection) {
     if (projection == null) {
       return Collections.emptyMap();
     }

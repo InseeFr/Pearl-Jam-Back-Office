@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.port.in;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignProgressionProjection;
+import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
 
 import java.time.Instant;
 import java.util.List;

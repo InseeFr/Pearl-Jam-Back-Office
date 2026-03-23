@@ -1,12 +1,12 @@
 package fr.insee.pearljam.domain.reporting.service;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
+import fr.insee.pearljam.domain.reporting.projection.CampaignProjection;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.campaign.model.CampaignProgressionProjection;
+import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
+import fr.insee.pearljam.domain.reporting.projection.StateCountProjection;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,9 @@ public class CampaignProgressionService implements CampaignProgression {
             return Collections.emptyList();
         }
 
+        // TODO : rajouter les stream().collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, projection -> projection));
+        // TODO : revert/remettre les dto/classes qui ont été renommés mais garder les nouvelles versions
+
 
         Map<String, CampaignProjection> campaigns = campaignProgressionRepository.findAllDtoByOuIds(userOrgUnitIds);
 
@@ -44,14 +47,16 @@ public class CampaignProgressionService implements CampaignProgression {
         Map<String, StateCountProjection> stateCountsByCampaign =
                 campaignProgressionRepository.stateCountsByCampaign(campaignIds, userOrgUnitIds, dateToUse);
 
-        Map<String, CommunicationRequestCountProjection> commRequestCountsByCampaign =
+        Map<String, CommunicationRequestCount> commRequestCountsByCampaign =
                 campaignProgressionRepository.commRequestCountsByCampaign(campaignIds, userOrgUnitIds, dateToUse);
 
         return campaignIds.stream()
                 .map(id -> {
                     CampaignProjection campaign = campaigns.get(id);
-                    StateCountProjection s = stateCountsByCampaign.get(id);
-                    CommunicationRequestCountProjection comm = commRequestCountsByCampaign.get(id);
+                    StateCountProjection s = stateCountsByCampaign
+                            .getOrDefault(id, StateCountProjection.empty(id));
+                    CommunicationRequestCount comm = commRequestCountsByCampaign
+                            .getOrDefault(id, CommunicationRequestCount.empty(id));
 
                     long allocated = s.total();
 

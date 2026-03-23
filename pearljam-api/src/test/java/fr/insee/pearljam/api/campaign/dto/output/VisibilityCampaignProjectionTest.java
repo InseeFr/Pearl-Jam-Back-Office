@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VisibilityCampaignProjectionTest {
+class VisibilityCampaignDtoTest {
 
     @Test
     @DisplayName("Should return dto objects from models")

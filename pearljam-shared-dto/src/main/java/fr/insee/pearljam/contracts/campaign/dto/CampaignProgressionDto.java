@@ -1,7 +1,5 @@
 package fr.insee.pearljam.contracts.campaign.dto;
 
-import java.util.List;
-
 public record CampaignProgressionDto(
         String campaignId,
         String campaignLabel,
@@ -10,18 +8,18 @@ public record CampaignProgressionDto(
 ) {
 
     public record SurveyUnits(
-            int allocated,
-            int notStarted,
-            int inProgress,
-            int pendingTransmission,
-            int toReview,
-            int validated,
-            int preparingContact,
-            int atLeastOneContact,
-            int appointmentScheduled,
-            int started,
-            int noticeLetter,
-            int reminderLetter
+            long allocated,
+            long notStarted,
+            long inProgress,
+            long pendingTransmission,
+            long toReview,
+            long validated,
+            long preparingContact,
+            long atLeastOneContact,
+            long appolongmentScheduled,
+            long started,
+            long noticeLetter,
+            long reminderLetter
     ) {}
 
 
