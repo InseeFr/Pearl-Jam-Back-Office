@@ -43,6 +43,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpa
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.UserJpaRepository;
 import fr.insee.pearljam.domain.message.port.in.MessageService;
 import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
@@ -114,6 +115,7 @@ class TestAuthKeyCloak {
 	private final ClosingCauseJpaRepository closingCauseRepository;
 	private final MessageService messageService;
 	private final PreferenceService preferenceService;
+	private final FixedDateService fixedDateService;
 
 	private final MockMvc mockMvc;
 	private final RestTemplate restTemplate;

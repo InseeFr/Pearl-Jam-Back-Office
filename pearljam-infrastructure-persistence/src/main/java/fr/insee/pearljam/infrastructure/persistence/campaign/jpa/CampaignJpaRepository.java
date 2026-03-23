@@ -26,6 +26,15 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
+	@Query(value = """
+		SELECT DISTINCT(campaign_id) FROM visibility
+		WHERE organization_unit_id IN (:ouIds)
+		AND management_start_date <= :date
+		AND end_date > :date
+		""", nativeQuery = true)
+	List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
+
+
 	@Query("""
 		SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignDto(
 		    camp.id,

@@ -543,7 +543,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else if (StateBusinessRules.stateCanBeModifiedByManager(currentState, StateType.CLO)) {
-				stateRepository.save(new StateDB(new Date().getTime(), su.get(), StateType.CLO));
+				stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su.get(), StateType.CLO));
 				addOrModifyClosingCause(surveyUnit, type);
 				return HttpStatus.OK;
 			} else {
@@ -579,7 +579,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			cc = new ClosingCauseDB();
 			cc.setSurveyUnit(surveyUnit);
 		}
-		cc.setDate(System.currentTimeMillis());
+		cc.setDate(dateService.getCurrentTimestamp());
 		cc.setType(type);
 
 		surveyUnit.setClosingCause(cc);

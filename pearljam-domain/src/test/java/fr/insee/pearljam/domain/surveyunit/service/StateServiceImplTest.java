@@ -14,6 +14,7 @@ import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
@@ -22,6 +23,8 @@ import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +32,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,8 +49,13 @@ class StateServiceImplTest {
   private CommunicationRequestRepository communicationRequestRepository;
   @Mock
   private ClosingCauseRepository closingCauseRepository;
+  @Mock
+  private VisibilityRepository visibilityRepository;
+  @Mock
+  private OrganizationUnitRepository organizationRepository;
+  @Mock
+  private RelatedOrganizationUnitService relatedOrganizationUnitService;
 
-  @InjectMocks
   private StateServiceImpl stateService;
 
   private String userId;
@@ -57,6 +64,13 @@ class StateServiceImplTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    stateService = new StateServiceImpl(campaignRepository, stateRepository,
+            closingCauseRepository, interviewerRepository,
+            visibilityRepository, organizationRepository,
+            userService, relatedOrganizationUnitService,
+            communicationRequestRepository
+            );
+
     userId = "user1";
     date = System.currentTimeMillis();
   }
@@ -82,8 +96,8 @@ class StateServiceImplTest {
     // Given
     List<OrganizationUnitDto> organizationUnits = Arrays.asList(new OrganizationUnitDto("OU1", "Unit 1"), new OrganizationUnitDto("OU2", "Unit 2"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
-    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(Arrays.asList("campaign1", "campaign2"));
-    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+    when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(Arrays.asList("campaign1", "campaign2"));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(Arrays.asList(new CampaignDto("campaign1", null, null, null), new CampaignDto("campaign2", null, null, null)));
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
     when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
             .thenReturn(Collections.emptyList());
@@ -96,7 +110,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(2, result.size(), "Expected two campaigns to be returned.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"));
+    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(Arrays.asList("OU1", "OU2"), date);
     verify(stateRepository).findGroupedByCampaign(anyList(), anyList(), eq(date));
     verify(communicationRequestRepository).getCommRequestCountByCampaigns(anyList(), anyList(), anyLong());
   }
@@ -107,8 +121,8 @@ class StateServiceImplTest {
     // Given
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
-    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
-    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+    when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(List.of("campaign1"));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignDto()));
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
     when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
             .thenReturn(Collections.emptyList());
@@ -121,7 +135,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(1, result.size(), "Expected one campaign to be returned when date is null.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllCampaignIdsByOuIds(List.of("OU1"));
+    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(eq(List.of("OU1")), anyLong());
   }
 
   @Test
@@ -129,8 +143,8 @@ class StateServiceImplTest {
   void testGetStateCountByCampaigns_WithCounts() {
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
-    when(campaignRepository.findAllCampaignIdsByOuIds(anyList())).thenReturn(List.of("campaign1"));
-    when(campaignRepository.findAllDto()).thenReturn(List.of(new CampaignDto()));
+    when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(List.of("campaign1"));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignDto()));
 
     StateCount projection = new StateCount("campaign1", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 136L);
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong()))

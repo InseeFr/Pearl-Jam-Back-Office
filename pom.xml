@@ -18,7 +18,7 @@
     <name>Pearl-Jam-Back-Office Parent</name>
 
     <properties>
-        <revision>5.13.10</revision>
+        <revision>5.13.12</revision>
         <changelist></changelist>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -200,4 +200,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

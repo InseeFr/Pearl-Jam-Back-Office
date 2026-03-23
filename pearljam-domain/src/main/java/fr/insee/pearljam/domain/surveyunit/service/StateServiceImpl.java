@@ -197,7 +197,7 @@ public class StateServiceImpl implements StateService {
     Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
             .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
 
-    List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(userOrgUnitIds);
+    List<String> campaignIds = campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(userOrgUnitIds, dateToUse);
     if (campaignIds.isEmpty()) {
       return Collections.emptyList();
     }

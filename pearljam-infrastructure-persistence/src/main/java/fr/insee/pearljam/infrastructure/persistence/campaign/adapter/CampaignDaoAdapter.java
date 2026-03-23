@@ -39,6 +39,11 @@ public class CampaignDaoAdapter implements CampaignRepository {
     }
 
     @Override
+    public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) {
+        return campaignJpaRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(ouIds, date);
+    }
+
+    @Override
     public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return campaignJpaRepository.findByUserAndManagementVisibility(ouIds, userId, date);
     }
