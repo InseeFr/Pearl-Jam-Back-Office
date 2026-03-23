@@ -8,7 +8,8 @@ import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import lombok.Getter;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import lombok.Getter;
 import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

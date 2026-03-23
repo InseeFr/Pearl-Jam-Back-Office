@@ -2,7 +2,8 @@ package fr.insee.pearljam.contracts.surveyunit.dto.contactoutcome;
 
 import static fr.insee.pearljam.contracts.constants.Constants.CONTACT_OUTCOME_FIELDS;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import java.lang.reflect.Field;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

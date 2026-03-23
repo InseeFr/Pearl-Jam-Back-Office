@@ -194,7 +194,7 @@ public class StateServiceImpl implements StateService {
     }
 
     Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
-            .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
+          .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
 
     List<String> campaignIds = campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(userOrgUnitIds, dateToUse);
     if (campaignIds.isEmpty()) {
@@ -261,7 +261,7 @@ public class StateServiceImpl implements StateService {
 
   private StateCountDto mergeCounts(StateCountDto stateCounts,
                                     CommunicationRequestCount commCounts,
-                                    ClosingCauseCount closingCauseCountsProjection) {
+                                    ClosingCauseCount closingCauseCounts) {
 
     StateCountDto merged = stateCounts != null ? stateCounts : new StateCountDto(Collections.emptyMap());
 
@@ -272,7 +272,7 @@ public class StateServiceImpl implements StateService {
             ? commCounts.reminderCount()
             : 0L);
 
-    merged.addClosingCauseCount(toClosingCauseCountMap(closingCauseCountsProjection));
+    merged.addClosingCauseCount(toClosingCauseCountMap(closingCauseCounts));
     return merged;
   }
 
