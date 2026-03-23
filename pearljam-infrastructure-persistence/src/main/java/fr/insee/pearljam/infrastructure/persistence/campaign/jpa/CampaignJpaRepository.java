@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

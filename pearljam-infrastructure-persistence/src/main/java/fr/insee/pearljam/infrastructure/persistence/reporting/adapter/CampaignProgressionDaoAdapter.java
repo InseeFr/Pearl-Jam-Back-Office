@@ -1,9 +1,9 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
+import fr.insee.pearljam.domain.reporting.projection.CampaignProjection;
+import fr.insee.pearljam.domain.reporting.projection.CommunicationRequestCountProjection;
 import fr.insee.pearljam.domain.reporting.projection.StateCountProjection;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
-import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +19,7 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
 
     private static final String OU_IDS = "ouIds";
 
-    public List<InterviewerCount> findAllDtoByOuIds(List<String> ouIds) {
+    public List<CampaignProjection> findAllDtoByOuIds(List<String> ouIds) {
             String jpql = """
                     SELECT DISTINCT new fr.insee.pearljam.contracts.campaign.dto.CampaignProjection(
                             camp.id, camp.label, camp.email,
@@ -32,7 +32,7 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
                     JOIN camp.visibilities vi
                     WHERE vi.organizationUnit.id IN :ouIds""";
 
-            return em.createQuery(jpql, InterviewerCount.class)
+            return em.createQuery(jpql, CampaignProjection.class)
                     .setParameter(OU_IDS, ouIds)
                     .getResultList();
         }
@@ -95,9 +95,9 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
                     .getResultList();
         }
 
-    public List<CommunicationRequestCount> commRequestCountsByCampaign (List<String> campaignIds,
-                                                                        List<String> ouIds,
-                                                                        Long date){
+    public List<CommunicationRequestCountProjection> commRequestCountsByCampaign (List<String> campaignIds,
+                                                                                  List<String> ouIds,
+                                                                                  Long date){
         String jpql ="""
           SELECT
               su.campaign_id AS campaignId,
@@ -119,7 +119,7 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
           GROUP BY su.campaign_id
           """;
 
-        return em.createQuery(jpql, CommunicationRequestCount.class)
+        return em.createQuery(jpql, CommunicationRequestCountProjection.class)
                 .setParameter(OU_IDS, ouIds)
                 .setParameter("campaignIds", campaignIds)
                 .setParameter("date", date)
