@@ -23,9 +23,7 @@ public class RelatedOrganizationUnitServiceImpl implements RelatedOrganizationUn
         List<String> organizationUnitIds = new ArrayList<>();
         Optional<UserDB> user = userRepository.findByIdIgnoreCase(userId);
 
-        if ("GUEST".equals(userId)) {
-            organizationUnitIds.add("GUEST");
-        } else if (user.isPresent()) {
+        if (user.isPresent()) {
             organizationUnitIds.add(user.get().getOrganizationUnit().getId());
             List<String> childrenIds = organizationUnitRepository.findChildrenId(user.get().getOrganizationUnit().getId());
             organizationUnitIds.addAll(childrenIds);
