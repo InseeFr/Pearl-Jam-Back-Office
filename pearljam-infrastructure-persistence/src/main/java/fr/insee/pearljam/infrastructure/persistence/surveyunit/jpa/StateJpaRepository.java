@@ -211,8 +211,8 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
 			+ ") "
 			+ ") as t", nativeQuery = true)
 	Long getTotalStateCount(@Param("campaignId") String campaignId,
-			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds,
-			@Param("date") Long date);
+							@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds,
+							@Param("date") Long date);
 
 	@Query(value = "SELECT "
 			+ "su.campaign_id AS entityId, "
