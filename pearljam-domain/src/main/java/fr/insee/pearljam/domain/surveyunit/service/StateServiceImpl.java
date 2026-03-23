@@ -2,7 +2,8 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
@@ -194,7 +195,7 @@ public class StateServiceImpl implements StateService {
     }
 
     Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
-          .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
+            .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
 
     List<String> campaignIds = campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(userOrgUnitIds, dateToUse);
     if (campaignIds.isEmpty()) {

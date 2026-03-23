@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -215,8 +214,6 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
 			@Param("interviewerId") String interviewerId, @Param("ouIds") List<String> ouIds,
 			@Param("date") Long date);
 
-// TO DO : mettre ce repo en deprecate + déplacer dans une nouvelle classe CampaignRepository la méthode findGroupedByCampaign
-	// Ajouter la méthode dans CampaignRepository la requete pour les tableaux de comptage sur les com request
 	@Query(value = "SELECT "
 			+ "su.campaign_id AS entityId, "
 			+ "SUM(CASE WHEN s.type='NVM' THEN 1 ELSE 0 END) AS nvmCount, "
