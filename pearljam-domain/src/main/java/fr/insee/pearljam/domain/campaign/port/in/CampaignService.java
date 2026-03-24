@@ -13,7 +13,8 @@ import fr.insee.pearljam.domain.campaign.service.exception.*;
 
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;import fr.insee.pearljam.contracts.campaign.dto.CountDto;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
+import fr.insee.pearljam.contracts.campaign.dto.CountDto;
 
 /**
  * Service for the Campaign entity
