@@ -11,15 +11,15 @@ import java.util.List;
 @Repository
 public interface CampaignProgressionRepository {
 
-    public List<CampaignProjection> findCampaingnsByOrganisationUnits(List<String> ouIds);
+    public List<CampaignProjection> getCampaignsByOrganisationUnits(List<String> ouIds);
 
-    public List<StateCountProjection> findStateCountByCampaigns(
+    public List<StateCountProjection> getStateCountByCampaignsAndOrganisationUnits(
             @Param("campaignIds") List<String> campaignIds,
             @Param("ouIds") List<String> ouIds,
             @Param("date") Long date);
 
-    public List<CommunicationRequestCountProjection> commRequestCountsByCampaign (List<String> campaignIds,
-                                                                                  List<String> ouIds,
-                                                                                  Long date);
+    public List<CommunicationRequestCountProjection> getComRequestCountsByCampaignsAndOrganisationUnits(List<String> campaignIds,
+                                                                                                        List<String> ouIds,
+                                                                                                        Long date);
 }
 

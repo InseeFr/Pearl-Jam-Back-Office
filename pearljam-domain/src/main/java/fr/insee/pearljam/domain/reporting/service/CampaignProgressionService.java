@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.service;
+import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
 import fr.insee.pearljam.domain.reporting.projection.*;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
@@ -25,13 +25,14 @@ public class CampaignProgressionService implements CampaignProgression {
         Long dateToUse = date.toEpochMilli();
 
         List<String> userOrgUnitIds = userService
-                .getUserOUs(userId, true)
-                .stream().map(OrganizationUnitDto::getId).toList();
+                .getUserOUsModel(userId, true)
+                .stream().map(OrganizationUnit::getId).toList();
+
         if (userOrgUnitIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        Map<String, CampaignProjection> campaigns = campaignProgressionRepository.findCampaingnsByOrganisationUnits(userOrgUnitIds)
+        Map<String, CampaignProjection> campaigns = campaignProgressionRepository.getCampaignsByOrganisationUnits(userOrgUnitIds)
                 .stream().collect(Collectors.toMap(CampaignProjection::id, campaign -> campaign));
 
         List<String> campaignIds = new ArrayList<>(campaigns.keySet());
@@ -41,13 +42,13 @@ public class CampaignProgressionService implements CampaignProgression {
         }
 
         Map<String, StateCountProjection> stateCountsByCampaign =
-                campaignProgressionRepository.findStateCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
+                campaignProgressionRepository.getStateCountByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
                         .stream()
                         .collect(Collectors.toMap(StateCountProjection::entityId, projection -> projection));
 
 
         Map<String, CommunicationRequestCountProjection> commRequestCountsByCampaign =
-                campaignProgressionRepository.commRequestCountsByCampaign(campaignIds, userOrgUnitIds, dateToUse)
+                campaignProgressionRepository.getComRequestCountsByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
                         .stream()
                         .collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, projection -> projection));
 
