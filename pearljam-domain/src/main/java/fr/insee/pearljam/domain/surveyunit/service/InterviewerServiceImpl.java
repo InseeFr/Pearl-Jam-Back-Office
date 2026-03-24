@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignVisibilityPeriodDto;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
@@ -157,19 +158,38 @@ public class InterviewerServiceImpl implements InterviewerService {
 		String userId = authenticatedUserService.getCurrentUserId();
 		userService.checkUserAssociationToCampaign(campaignId, userId);
 
-		List<String> userOrgUnitIds = userService.getUserOUs(userId, false).stream()
+		List<String> userOUIds = userService.getUserOUs(userId, false).stream()
 				.map(OrganizationUnitDto::getId)
 				.toList();
 
-		List<InterviewerDto> interviewersDtoReturned = campaignInterviewerRepository
-				.findCampaignInterviewers(campaignId, userOrgUnitIds).stream()
-				.map(InterviewerDto::fromModel)
-				.toList();
+		Map<String, InterviewerDto> aggregatedInterviewersById = new HashMap<>();
 
-		if (interviewersDtoReturned.isEmpty()) {
+		List<InterviewerDto> interviewersInOu =
+				campaignInterviewerRepository
+						.findCampaignInterviewers(campaignId, userOUIds)
+						.stream()
+						.map(InterviewerDto::fromModel)
+						.toList();
+		for (InterviewerDto interviewer : interviewersInOu) {
+
+			aggregatedInterviewersById.merge(
+					interviewer.getId(),
+					interviewer,
+					(existing, incoming) -> {
+						Long existingCount = existing.getSurveyUnitCount();
+						Long incomingCount = incoming.getSurveyUnitCount();
+						existing.setSurveyUnitCount(existingCount + incomingCount);
+                        return existing;
+                    }
+			);
+		}
+
+		List<InterviewerDto> aggregatedInterviewers = new ArrayList<>(aggregatedInterviewersById.values());
+
+		if (aggregatedInterviewers.isEmpty()) {
 			log.warn("No interviewers found for the campaign {}", campaignId);
 		}
-		return interviewersDtoReturned;
-	}
 
+		return aggregatedInterviewers;
+	}
 }
