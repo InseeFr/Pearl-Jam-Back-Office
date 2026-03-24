@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CampaignProgressionController {
     private final CampaignProgressionService campaignProgressionService;
 
-    @Operation(summary = "POST campaign reporting")
+    @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
     public List<CampaignProgressionProjection> getCampaignsProgression(
