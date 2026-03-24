@@ -44,7 +44,7 @@ public class UserServiceStub implements UserService {
 
     @Override
     public void checkUserAssociationToCampaign(String campaignId, String userId) throws UserNotAssociatedToCampaignException, CampaignNotFoundException {
-        // not used
+        //not used
     }
 
     @Override
@@ -54,7 +54,7 @@ public class UserServiceStub implements UserService {
 
     @Override
     public void delete(String id) throws EntityNotFoundException {
-        // not used
+        //not used
     }
 
     @Override
