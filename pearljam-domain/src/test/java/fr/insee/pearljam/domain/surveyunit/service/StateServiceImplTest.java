@@ -10,17 +10,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import fr.insee.pearljam.contracts.campaign.dto.CampaignProjection;
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
+import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
-import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCountProjection;
-import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCountProjection;
-import fr.insee.pearljam.domain.surveyunit.model.count.StateCountProjection;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
@@ -99,7 +99,7 @@ class StateServiceImplTest {
     List<OrganizationUnitDto> organizationUnits = Arrays.asList(new OrganizationUnitDto("OU1", "Unit 1"), new OrganizationUnitDto("OU2", "Unit 2"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(Arrays.asList("campaign1", "campaign2"));
-    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(Arrays.asList(new CampaignProjection("campaign1", null, null, null), new CampaignProjection("campaign2", null, null, null)));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(Arrays.asList(new CampaignDto("campaign1", null, null, null), new CampaignDto("campaign2", null, null, null)));
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
     when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
             .thenReturn(Collections.emptyList());
@@ -124,7 +124,7 @@ class StateServiceImplTest {
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(List.of("campaign1"));
-    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignProjection()));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignDto()));
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong())).thenReturn(Collections.emptyList());
     when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
             .thenReturn(Collections.emptyList());
@@ -137,7 +137,7 @@ class StateServiceImplTest {
     // Then
     assertEquals(1, result.size(), "Expected one campaign to be returned when date is null.");
     verify(userService).getUserOUs(userId, true);
-    verify(campaignRepository).findAllCampaignIdsByOuIds(List.of("OU1"));
+    verify(campaignRepository).findAllManagedAndNotClosedCampaignIdsByOuIds(eq(List.of("OU1")), anyLong());
   }
 
   @Test
@@ -146,16 +146,16 @@ class StateServiceImplTest {
     List<OrganizationUnitDto> organizationUnits = List.of(new OrganizationUnitDto("OU1", "Unit 1"));
     when(userService.getUserOUs(userId, true)).thenReturn(organizationUnits);
     when(campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(anyList(), anyLong())).thenReturn(List.of("campaign1"));
-    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignProjection()));
+    when(campaignRepository.findAllDtoByOuIds(anyList())).thenReturn(List.of(new CampaignDto()));
 
-    StateCountProjection projection = new StateCountProjection("campaign1", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 136L);
+    StateCount projection = new StateCount("campaign1", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 136L);
     when(stateRepository.findGroupedByCampaign(anyList(), anyList(), anyLong()))
             .thenReturn(List.of(projection));
 
     when(communicationRequestRepository.getCommRequestCountByCampaigns(anyList(), anyList(), anyLong()))
-            .thenReturn(List.of(new CommunicationRequestCountProjection("campaign1", 20L, 21L)));
+            .thenReturn(List.of(new CommunicationRequestCount("campaign1", 20L, 21L)));
     when(closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(anyList(), anyList(), anyLong()))
-            .thenReturn(List.of(new ClosingCauseCountProjection("campaign1", 5L, 0L, 0L, 0L)));
+            .thenReturn(List.of(new ClosingCauseCount("campaign1", 5L, 0L, 0L, 0L)));
 
     List<StateCountDto> result = stateService.getStateCountByCampaigns(userId, date);
 
