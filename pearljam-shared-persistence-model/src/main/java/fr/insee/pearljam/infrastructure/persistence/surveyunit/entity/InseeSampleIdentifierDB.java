@@ -1,0 +1,65 @@
+package fr.insee.pearljam.infrastructure.persistence.surveyunit.entity;
+
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SampleIdentifiersDto;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serial;
+
+/**
+ * Entity InseeSampleIdentifier : represent the entity table in DB
+ *
+ * @author Claudel Benjamin
+ */
+@Entity
+@DiscriminatorValue("InseeSampleIdentifier")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class InseeSampleIdentifierDB extends SampleIdentifierDB {
+
+	@Serial
+	private static final long serialVersionUID = 1044333540440142996L;
+	@Column
+	private Integer bs;
+	@Column(length = 1)
+	private String ec;
+	@Column
+	private Integer le;
+	@Column
+	private Integer noi;
+	@Column
+	private Integer numfa;
+	@Column
+	private Integer rges;
+	@Column
+	private Integer ssech;
+	@Column
+	private Integer nolog;
+	@Column
+	private Integer nole;
+	@Column(length = 50)
+	private String autre;
+	@Column(length = 50)
+	private String nograp;
+
+	public InseeSampleIdentifierDB(SampleIdentifiersDto sampleIdentifiers) {
+		this.bs = sampleIdentifiers.getBs();
+		this.ec = sampleIdentifiers.getEc();
+		this.le = sampleIdentifiers.getLe();
+		this.noi = sampleIdentifiers.getNoi();
+		this.numfa = sampleIdentifiers.getNumfa();
+		this.rges = sampleIdentifiers.getRges();
+		this.ssech = sampleIdentifiers.getSsech();
+		this.nolog = sampleIdentifiers.getNolog();
+		this.nole = sampleIdentifiers.getNole();
+		this.autre = sampleIdentifiers.getAutre();
+		this.nograp = sampleIdentifiers.getNograp();
+	}
+}
