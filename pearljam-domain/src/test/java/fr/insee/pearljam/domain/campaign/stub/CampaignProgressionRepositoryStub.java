@@ -23,7 +23,7 @@ public class CampaignProgressionRepositoryStub implements CampaignProgressionRep
     }
 
     @Override
-    public List<CampaignQueryResponse> getCampaignsByOrganisationUnits(List<String> orgUnitIds) {
+    public List<CampaignQueryResponse> getOpenedCampaignsByOrganisationUnits(List<String> orgUnitIds, Long date) {
         return campaigns;
     }
 

@@ -75,9 +75,8 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
             GROUP BY su.campaign.id
             """;
 
-    @Override
-    public List<CampaignQueryResponse> getCampaignsByOrganisationUnits(List<String> ouIds) {
-        return campaignRepository.findAllCampaignsByOuIds(ouIds);
+    public List<CampaignQueryResponse> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Long date) {
+        return campaignRepository.findAllOpenedCampaignsByOuIds(ouIds, date);
     }
 
     @Override

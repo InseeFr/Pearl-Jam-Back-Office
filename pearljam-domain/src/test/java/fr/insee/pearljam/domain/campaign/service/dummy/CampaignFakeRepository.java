@@ -41,7 +41,7 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignQueryResponse> findAllCampaignsByOuIds(List<String> ouIds) {
+    public List<CampaignQueryResponse> findAllOpenedCampaignsByOuIds(List<String> ouIds, Long date) {
         return campaigns.stream().map(c -> new CampaignQueryResponse(c.getId(), c.getLabel())).toList();
     }
 

@@ -25,7 +25,7 @@ public class CampaignProgressionService implements CampaignProgression {
     private final UserService userService;
 
     public List<CampaignProgressionProjection> getCampaignsProgression(String userId, Instant date) {
-        Long dateToUse = date.toEpochMilli();
+        Long dateEpochMilli = date.toEpochMilli();
 
         List<String> userOrgUnitIds = userService
                 .getUserOUsModel(userId, true)
@@ -35,7 +35,8 @@ public class CampaignProgressionService implements CampaignProgression {
             return Collections.emptyList();
         }
 
-        Map<String, CampaignQueryResponse> campaigns = campaignProgressionRepository.getCampaignsByOrganisationUnits(userOrgUnitIds)
+        Map<String, CampaignQueryResponse> campaigns = campaignProgressionRepository
+                .getOpenedCampaignsByOrganisationUnits(userOrgUnitIds, dateEpochMilli)
                 .stream().collect(Collectors.toMap(CampaignQueryResponse::id, campaign -> campaign));
         List<String> campaignIds = new ArrayList<>(campaigns.keySet());
 
@@ -45,13 +46,13 @@ public class CampaignProgressionService implements CampaignProgression {
         }
 
         Map<String, StateCountQueryResponse> stateCountsByCampaign =
-                campaignProgressionRepository.getStateCountByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
+                campaignProgressionRepository.getStateCountByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateEpochMilli)
                         .stream()
                         .collect(Collectors.toMap(StateCountQueryResponse::entityId, projection -> projection));
 
 
         Map<String, CommunicationRequestCountQueryResponse> commRequestCountsByCampaign =
-                campaignProgressionRepository.getComRequestCountsByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
+                campaignProgressionRepository.getComRequestCountsByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateEpochMilli)
                         .stream()
                         .collect(Collectors.toMap(CommunicationRequestCountQueryResponse::entityId, projection -> projection));
 

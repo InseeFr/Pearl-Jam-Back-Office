@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface CampaignProgressionRepository {
 
-    public List<CampaignQueryResponse> getCampaignsByOrganisationUnits(List<String> ouIds);
+    public List<CampaignQueryResponse> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Long date);
 
     public List<StateCountQueryResponse> getStateCountByCampaignsAndOrganisationUnits(
             @Param("campaignIds") List<String> campaignIds,

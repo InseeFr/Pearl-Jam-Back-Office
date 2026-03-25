@@ -40,8 +40,8 @@ public class CampaignDaoAdapter implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignQueryResponse> findAllCampaignsByOuIds(List<String> ouIds) {
-        return campaignJpaRepository.findAllCampaignByOuIds(ouIds);
+    public List<CampaignQueryResponse> findAllOpenedCampaignsByOuIds(List<String> ouIds, Long date) {
+        return campaignJpaRepository.findAllOpenedCampaignByOuIds(ouIds, date);
     }
 
     @Override

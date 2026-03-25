@@ -28,8 +28,10 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
 	@Query("SELECT DISTINCT new fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse(v.visibilityId.campaignId, v.campaign.label) " +
-			"FROM VisibilityDB v JOIN v.campaign WHERE v.visibilityId.organizationUnitId IN (:ouIds)")
-	List<CampaignQueryResponse> findAllCampaignByOuIds(@Param("ouIds") List<String> ouIds);
+			"FROM VisibilityDB v JOIN v.campaign " +
+			"WHERE v.visibilityId.organizationUnitId IN (:ouIds) " +
+			"AND v.endDate > :date")
+	List<CampaignQueryResponse> findAllOpenedCampaignByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = """
 		SELECT DISTINCT(campaign_id) FROM visibility
