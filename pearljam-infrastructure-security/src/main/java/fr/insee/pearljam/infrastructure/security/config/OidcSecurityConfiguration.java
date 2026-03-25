@@ -19,7 +19,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
@@ -58,15 +60,18 @@ public class OidcSecurityConfiguration {
 	/**
 	 *
 	 * @param http  Http Security configuration object
+	 * @param customAuthenticationEntrypoint customAuthenticationEntrypoint
+	 * @param customAccessDeniedHandler customAccessDeniedHandler
 	 * @param roleProperties role properties
 	 * @return the spring security filter chain
-	 * @throws Exception exception
 	 */
 	@Bean
 	@Order(2)
 	@SuppressWarnings("java:S4502")
 	protected SecurityFilterChain filterChain(HttpSecurity http,
-			RoleProperties roleProperties) throws Exception {
+											  AuthenticationEntryPoint customAuthenticationEntrypoint,
+											  AccessDeniedHandler customAccessDeniedHandler,
+											  RoleProperties roleProperties) {
 
         http
 				.securityMatcher("/**")
@@ -80,8 +85,11 @@ public class OidcSecurityConfiguration {
 						.referrerPolicy(referrerPolicy -> referrerPolicy.policy(
 								ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)))
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2 -> oauth2
-						.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(roleProperties))));
+                .oauth2ResourceServer(oauth2 ->
+						oauth2
+								.accessDeniedHandler(customAccessDeniedHandler)
+								.authenticationEntryPoint(customAuthenticationEntrypoint)
+								.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(roleProperties))));
 		authorizeRequests(http);
 		return http.build();
 	}
@@ -89,9 +97,8 @@ public class OidcSecurityConfiguration {
 	/**
 	 * Add security on endpoints
 	 * @param http Http security configuration
-	 * @throws Exception exception
 	 */
-	private void authorizeRequests(HttpSecurity http) throws Exception {
+	private void authorizeRequests(HttpSecurity http) {
 		final String adminRole = AuthorityRole.ADMIN.name();
 		final String localUserRole = AuthorityRole.LOCAL_USER.name();
 		final String nationalUserRole = AuthorityRole.NATIONAL_USER.name();

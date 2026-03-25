@@ -14,7 +14,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import fr.insee.pearljam.domain.surveyunit.model.*;
 import org.springframework.http.HttpStatus;
 

@@ -1,7 +1,8 @@
 package fr.insee.pearljam.api.authKeycloak;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
@@ -52,7 +53,7 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
@@ -67,7 +68,6 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -118,7 +118,8 @@ class TestAuthKeyCloak {
 	private final FixedDateService fixedDateService;
 
 	private final MockMvc mockMvc;
-	private final RestTemplate restTemplate;
+
+	private final RestClient.Builder dataCollectionRestClient;
 
 	private MockRestServiceServer mockServer;
 
@@ -131,7 +132,7 @@ class TestAuthKeyCloak {
 	 */
 	@BeforeEach
 	void setUp() {
-		mockServer = MockRestServiceServer.createServer(restTemplate);
+		mockServer = MockRestServiceServer.bindTo(dataCollectionRestClient).build();
 	}
 
 	private ResultMatcher expectValidManagementStartDate() {
@@ -587,7 +588,7 @@ class TestAuthKeyCloak {
 		mockMvc.perform(put("/api/survey-unit/11/state/test")
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isInternalServerError());
+				.andExpect(status().isBadRequest());
 	}
 
 	/**
@@ -2220,7 +2221,7 @@ class TestAuthKeyCloak {
 
 	private static String asJsonString(final Object obj) {
 		try {
-			return new ObjectMapper().writeValueAsString(obj);
+			return new JsonMapper().writeValueAsString(obj);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

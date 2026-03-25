@@ -25,4 +25,9 @@ public interface AuthenticatedUserHelperPort {
      * @return true if the current user has one of the specified roles
      */
     boolean hasAnyRole(AuthorityRole... roles);
+
+    /**
+     * @return authentication token
+     */
+    String getToken();
 }

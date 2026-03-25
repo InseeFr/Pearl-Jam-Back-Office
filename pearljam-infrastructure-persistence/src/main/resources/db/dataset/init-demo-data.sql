@@ -1,34 +1,5 @@
 --changeset davdarras:init-demo-data context:demo
 
-TRUNCATE TABLE
-    public.communication_request_status,
-    public.communication_request,
-    public.communication_template,
-    public.communication_metadata,
-    public.contact_attempt,
-    public.oumessage_recipient,
-    public.referent,
-    public.message,
-    public.campaign_message_recipient,
-    public.message_status,
-    public.interviewer,
-    public.sample_identifier,
-    public.user,
-    public.campaign,
-    public.preference,
-    public.visibility,
-    public.survey_unit,
-    public.contact_history,
-    public.identification,
-    public.person,
-    public.phone_number,
-    public.state,
-    public.contact_outcome,
-    public.comment,
-    public.closing_cause,
-    public.organization_unit,
-    public.address;
-
 INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, building, floor, door, staircase, city_priority_district) VALUES
     (1,  'InseeAddress', 'Ted Farmer',            '', '', '1 rue de la gare',              '', '29270 Carhaix',        'France', true,  'Bat. C', 'Etg 4', 'Porte 48',   'Escalier B', true),
     (2,  'InseeAddress', 'Cecilia Ortega',        '', '', '2 place de la mairie',          '', '90000 Belfort',       'France', false, null,NULL, NULL, NULL,       false),

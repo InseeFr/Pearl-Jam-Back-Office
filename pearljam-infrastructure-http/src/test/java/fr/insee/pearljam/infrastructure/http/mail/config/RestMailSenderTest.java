@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,10 +27,11 @@ class RestMailSenderTest {
 
     @BeforeEach
     void setup() {
-        RestTemplate restTemplate = new RestTemplate();
-        mockServer = MockRestServiceServer.createServer(restTemplate);
         mailProperties = new MailProperties("http://dummy-url/send-mail", "login", "password", "recipients", "mailSender");
-        mailSender = new RestMailSender(mailProperties, restTemplate);
+        RestClient.Builder restClientBuilder = RestClient.builder()
+                .baseUrl(mailProperties.url());
+        mockServer = MockRestServiceServer.bindTo(restClientBuilder).build();
+        mailSender = new RestMailSender(mailProperties, restClientBuilder);
     }
 
     @Test

@@ -1,9 +1,7 @@
 package fr.insee.pearljam.api.utils;
 
-import fr.insee.pearljam.api.utils.matcher.StructureDateMatcher;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -19,15 +17,14 @@ public class MockMvcTestUtils {
     public static ResultMatcher apiErrorMatches(HttpStatus errorStatus, String path, String message) {
         return result -> {
             status().is(errorStatus.value()).match(result);
-            jsonPath("$.code").value(errorStatus.value()).match(result);
-            jsonPath("$.path").value(path).match(result);
-            jsonPath("$.message").value(message).match(result);
-            jsonPath("$.timestamp", new StructureDateMatcher()).match(result);
+            jsonPath("$.status").value(errorStatus.value()).match(result);
+            jsonPath("$.instance").value(path).match(result);
+            jsonPath("$.detail").value(message).match(result);
         };
     }
 
     public static ExceptionControllerAdvice createExceptionControllerAdvice() {
-        return new ExceptionControllerAdvice(new DefaultErrorAttributes());
+        return new ExceptionControllerAdvice();
     }
 
     public static LocalDate getDate() {

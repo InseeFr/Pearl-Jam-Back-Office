@@ -8,6 +8,11 @@ import fr.insee.pearljam.domain.security.model.AuthorityRole;
 public interface AuthenticatedUserService {
 
     /**
+     * @return authentication token
+     */
+    String getToken();
+
+    /**
      * Retrieve current user id
      * @return id of the current authenticated user
      */

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.features;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
@@ -37,7 +37,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,7 +65,7 @@ public class IdentificationSteps {
 	private final OrganizationUnitJpaRepository organizationUnitRepository;
 	private final InterviewerJpaRepository interviewerRepository;
 	private final CampaignService campaignService;
-	final ObjectMapper objectMapper = new ObjectMapper();
+	final JsonMapper jsonMapper = new JsonMapper();
 
 	private Authentication securityRole;
 	private IdentificationConfiguration identificationConfiguration;
@@ -97,7 +97,7 @@ public class IdentificationSteps {
 	public void the_created_campaign_should_have_the_identification_configuration(String expectedIdentificationType) throws IOException {
 		String contentResult = createdCampaign.getResponse().getContentAsString();
 
-		CampaignResponseDto campaignDto = objectMapper.readValue(contentResult, CampaignResponseDto.class);
+		CampaignResponseDto campaignDto = jsonMapper.readValue(contentResult, CampaignResponseDto.class);
 
 		assertThat(campaignDto.identificationConfiguration()).isEqualTo(IdentificationConfiguration.fromName(expectedIdentificationType));
 	}
@@ -157,8 +157,8 @@ public class IdentificationSteps {
 		result.andExpect(status().isOk());
 		String content = result.andReturn().getResponse().getContentAsString();
 
-		JsonNode expectedJson = objectMapper.readTree(expectedValue);
-		JsonNode actualResponse = objectMapper.readTree(content);
+		JsonNode expectedJson = jsonMapper.readTree(expectedValue);
+		JsonNode actualResponse = jsonMapper.readTree(content);
 		JsonNode actualIdentification = actualResponse.get("identification");
 		assertThat(actualIdentification).isEqualTo(expectedJson);
 	}
