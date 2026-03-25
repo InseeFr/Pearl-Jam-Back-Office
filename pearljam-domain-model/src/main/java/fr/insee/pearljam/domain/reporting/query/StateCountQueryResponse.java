@@ -1,6 +1,6 @@
-package fr.insee.pearljam.domain.reporting.projection;
+package fr.insee.pearljam.domain.reporting.query;
 
-public record StateCountProjection(
+public record StateCountQueryResponse(
         String entityId,
         Long nvmCount,
         Long nnsCount,
@@ -19,8 +19,8 @@ public record StateCountProjection(
         Long nvaCount,
         Long total) {
 
-        public static StateCountProjection empty(String id) {
-                return new StateCountProjection(id, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L);
+        public static StateCountQueryResponse empty(String id) {
+                return new StateCountQueryResponse(id, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L);
         }
 
 }

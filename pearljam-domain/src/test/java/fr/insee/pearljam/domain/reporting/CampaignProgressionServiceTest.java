@@ -2,7 +2,10 @@ package fr.insee.pearljam.domain.reporting;
 
 import fr.insee.pearljam.domain.campaign.stub.CampaignProgressionRepositoryStub;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.reporting.projection.*;
+import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
 import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
@@ -18,8 +21,8 @@ class CampaignProgressionServiceTest {
     static final Instant FIXED_DATE = Instant.ofEpochMilli(1_000_000L);
     static final OrganizationUnit ORG_UNIT = new OrganizationUnit("ou-1", "Org Unit 1");
 
-    static StateCountProjection stateCount(String campaignId) {
-        return new StateCountProjection(
+    static StateCountQueryResponse stateCount(String campaignId) {
+        return new StateCountQueryResponse(
                 campaignId,
                 1L,
                 5L,
@@ -40,15 +43,15 @@ class CampaignProgressionServiceTest {
         );
     }
 
-    static CommunicationRequestCountProjection commCount(String campaignId) {
-        return new CommunicationRequestCountProjection(campaignId, 15L, 25L);
+    static CommunicationRequestCountQueryResponse commCount(String campaignId) {
+        return new CommunicationRequestCountQueryResponse(campaignId, 15L, 25L);
     }
 
     private CampaignProgressionService buildService(
             List<OrganizationUnit> orgUnits,
-            List<CampaignProjection> campaigns,
-            List<StateCountProjection> stateCounts,
-            List<CommunicationRequestCountProjection> commCounts) {
+            List<CampaignQueryResponse> campaigns,
+            List<StateCountQueryResponse> stateCounts,
+            List<CommunicationRequestCountQueryResponse> commCounts) {
         return new CampaignProgressionService(
                 new CampaignProgressionRepositoryStub(campaigns, stateCounts, commCounts),
                 new UserServiceStub(orgUnits)
@@ -77,7 +80,7 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldReturnOneCampaignProjection_whenOneCampaignExists() {
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -96,7 +99,7 @@ class CampaignProgressionServiceTest {
     @Test
     void shouldComputeProgressRateCorrectly() {
         // total=100, fin=40, tbr=20 → (40+20)/100*100 = 60%
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -112,7 +115,7 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldMapSurveyUnitCountsCorrectly() {
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -140,8 +143,8 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldUseEmptyStateCounts_whenNoStateCountForCampaign() {
-        // No stateCount for campaign-1 → StateCountProjection.empty() used → all zeros
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        // No stateCount for campaign-1 → StateCountQueryResponse.empty() used → all zeros
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -159,7 +162,7 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldUseEmptyCommunicationCounts_whenNoCommCountForCampaign() {
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -177,8 +180,8 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldReturnMultipleCampaigns_whenMultipleExist() {
-        CampaignProjection c1 = new CampaignProjection("campaign-1", "Campaign One");
-        CampaignProjection c2 = new CampaignProjection("campaign-2", "Campaign Two");
+        CampaignQueryResponse c1 = new CampaignQueryResponse("campaign-1", "Campaign One");
+        CampaignQueryResponse c2 = new CampaignQueryResponse("campaign-2", "Campaign Two");
 
         CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
@@ -198,7 +201,7 @@ class CampaignProgressionServiceTest {
     void shouldHandleMultipleOrgUnits() {
         OrganizationUnit ou1 = new OrganizationUnit("ou-1", "Org 1");
         OrganizationUnit ou2 = new OrganizationUnit("ou-2", "Org 2");
-        CampaignProjection campaign = new CampaignProjection("campaign-1", "Campaign One");
+        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
 
         CampaignProgressionService service = buildService(
                 List.of(ou1, ou2),

@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.campaign.port.out;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.springframework.data.domain.Pageable;
 
@@ -17,6 +18,8 @@ public interface CampaignRepository {
     boolean existsById(String id);
 
     List<String> findAllCampaignIdsByOuIds(List<String> ouIds);
+
+    List<CampaignQueryResponse> findAllCampaignsByOuIds(List<String> ouIds);
 
     List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
 

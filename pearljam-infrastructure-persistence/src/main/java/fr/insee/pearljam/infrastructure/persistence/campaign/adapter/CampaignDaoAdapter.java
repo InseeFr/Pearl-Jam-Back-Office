@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
@@ -36,6 +37,11 @@ public class CampaignDaoAdapter implements CampaignRepository {
     @Override
     public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) {
         return campaignJpaRepository.findAllCampaignIdsByOuIds(ouIds);
+    }
+
+    @Override
+    public List<CampaignQueryResponse> findAllCampaignsByOuIds(List<String> ouIds) {
+        return campaignJpaRepository.findAllCampaignByOuIds(ouIds);
     }
 
     @Override

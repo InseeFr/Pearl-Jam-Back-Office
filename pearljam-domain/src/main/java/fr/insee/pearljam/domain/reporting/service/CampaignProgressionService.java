@@ -1,9 +1,12 @@
 package fr.insee.pearljam.domain.reporting.service;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.reporting.projection.*;
+import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
+import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,33 +35,35 @@ public class CampaignProgressionService implements CampaignProgression {
             return Collections.emptyList();
         }
 
-        Map<String, CampaignProjection> campaigns = campaignProgressionRepository.getCampaignsByOrganisationUnits(userOrgUnitIds)
-                .stream().collect(Collectors.toMap(CampaignProjection::id, campaign -> campaign));
-
+        Map<String, CampaignQueryResponse> campaigns = campaignProgressionRepository.getCampaignsByOrganisationUnits(userOrgUnitIds)
+                .stream().collect(Collectors.toMap(CampaignQueryResponse::id, campaign -> campaign));
         List<String> campaignIds = new ArrayList<>(campaigns.keySet());
 
-        if (campaignIds.isEmpty()) {
+
+        if (campaigns.isEmpty()) {
             return Collections.emptyList();
         }
 
-        Map<String, StateCountProjection> stateCountsByCampaign =
+        Map<String, StateCountQueryResponse> stateCountsByCampaign =
                 campaignProgressionRepository.getStateCountByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
                         .stream()
-                        .collect(Collectors.toMap(StateCountProjection::entityId, projection -> projection));
+                        .collect(Collectors.toMap(StateCountQueryResponse::entityId, projection -> projection));
 
 
-        Map<String, CommunicationRequestCountProjection> commRequestCountsByCampaign =
+        Map<String, CommunicationRequestCountQueryResponse> commRequestCountsByCampaign =
                 campaignProgressionRepository.getComRequestCountsByCampaignsAndOrganisationUnits(campaignIds, userOrgUnitIds, dateToUse)
                         .stream()
-                        .collect(Collectors.toMap(CommunicationRequestCountProjection::entityId, projection -> projection));
+                        .collect(Collectors.toMap(CommunicationRequestCountQueryResponse::entityId, projection -> projection));
 
         return campaignIds.stream()
                 .map(id -> {
-                    CampaignProjection campaign = campaigns.get(id);
-                    StateCountProjection s = stateCountsByCampaign
-                            .getOrDefault(id, StateCountProjection.empty(id));
-                    CommunicationRequestCountProjection comm = commRequestCountsByCampaign
-                            .getOrDefault(id, CommunicationRequestCountProjection.empty(id));
+
+                    CampaignQueryResponse campaign = campaigns.get(id);
+
+                    StateCountQueryResponse s = stateCountsByCampaign
+                            .getOrDefault(id, StateCountQueryResponse.empty(id));
+                    CommunicationRequestCountQueryResponse comm = commRequestCountsByCampaign
+                            .getOrDefault(id, CommunicationRequestCountQueryResponse.empty(id));
 
                     long allocated = s.total();
 

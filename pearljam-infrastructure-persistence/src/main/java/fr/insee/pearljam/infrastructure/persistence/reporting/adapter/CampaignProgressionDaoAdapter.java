@@ -1,9 +1,10 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
-import fr.insee.pearljam.domain.reporting.projection.CampaignProjection;
-import fr.insee.pearljam.domain.reporting.projection.CommunicationRequestCountProjection;
-import fr.insee.pearljam.domain.reporting.projection.StateCountProjection;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
+import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,22 +16,14 @@ import java.util.List;
 public class CampaignProgressionDaoAdapter implements CampaignProgressionRepository {
 
     private final EntityManager em;
+    private final CampaignRepository campaignRepository;
 
     private static final String PARAM_OU_IDS       = "ouIds";
     private static final String PARAM_CAMPAIGN_IDS = "campaignIds";
     private static final String PARAM_DATE         = "date";
 
-    private static final String JPQL_CAMPAIGNS_BY_OU = """
-            SELECT DISTINCT new fr.insee.pearljam.domain.reporting.projection.CampaignProjection(
-                    camp.id, camp.label
-            )
-            FROM CampaignDB camp
-            JOIN camp.visibilities vi
-            WHERE vi.organizationUnit.id IN :ouIds
-            """;
-
     private static final String JPQL_STATE_COUNTS_BY_CAMPAIGN = """
-        SELECT new fr.insee.pearljam.domain.reporting.projection.StateCountProjection(
+        SELECT new fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse(
             su.campaign.id,
             SUM(CASE WHEN s.type = fr.insee.pearljam.domain.surveyunit.model.StateType.NVM THEN 1L ELSE 0L END),
             SUM(CASE WHEN s.type = fr.insee.pearljam.domain.surveyunit.model.StateType.NNS THEN 1L ELSE 0L END),
@@ -63,7 +56,7 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
         """;
 
     private static final String JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN = """
-            SELECT new fr.insee.pearljam.domain.reporting.projection.CommunicationRequestCountProjection(
+            SELECT new fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse(
                 su.campaign.id,
                 SUM(CASE WHEN ct.type = 'NOTICE'   THEN 1L ELSE 0L END),
                 SUM(CASE WHEN ct.type = 'REMINDER' THEN 1L ELSE 0L END)
@@ -83,19 +76,17 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
             """;
 
     @Override
-    public List<CampaignProjection> getCampaignsByOrganisationUnits(List<String> ouIds) {
-        return em.createQuery(JPQL_CAMPAIGNS_BY_OU, CampaignProjection.class)
-                .setParameter(PARAM_OU_IDS, ouIds)
-                .getResultList();
+    public List<CampaignQueryResponse> getCampaignsByOrganisationUnits(List<String> ouIds) {
+        return campaignRepository.findAllCampaignsByOuIds(ouIds);
     }
 
     @Override
-    public List<StateCountProjection> getStateCountByCampaignsAndOrganisationUnits(
+    public List<StateCountQueryResponse> getStateCountByCampaignsAndOrganisationUnits(
             List<String> campaignIds,
             List<String> ouIds,
             Long date) {
 
-        return em.createQuery(JPQL_STATE_COUNTS_BY_CAMPAIGN, StateCountProjection.class)
+        return em.createQuery(JPQL_STATE_COUNTS_BY_CAMPAIGN, StateCountQueryResponse.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
                 .setParameter(PARAM_DATE, date)
@@ -103,12 +94,12 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
     }
 
     @Override
-    public List<CommunicationRequestCountProjection> getComRequestCountsByCampaignsAndOrganisationUnits(
+    public List<CommunicationRequestCountQueryResponse> getComRequestCountsByCampaignsAndOrganisationUnits(
             List<String> campaignIds,
             List<String> ouIds,
             Long date) {
 
-        return em.createQuery(JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN, CommunicationRequestCountProjection.class)
+        return em.createQuery(JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN, CommunicationRequestCountQueryResponse.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
                 .setParameter(PARAM_DATE, date)

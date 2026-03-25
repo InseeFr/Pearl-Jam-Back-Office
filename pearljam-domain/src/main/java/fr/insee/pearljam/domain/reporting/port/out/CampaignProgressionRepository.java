@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.reporting.port.out;
 
-import fr.insee.pearljam.domain.reporting.projection.CampaignProjection;
-import fr.insee.pearljam.domain.reporting.projection.CommunicationRequestCountProjection;
-import fr.insee.pearljam.domain.reporting.projection.StateCountProjection;
+import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
+import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,15 +11,16 @@ import java.util.List;
 @Repository
 public interface CampaignProgressionRepository {
 
-    public List<CampaignProjection> getCampaignsByOrganisationUnits(List<String> ouIds);
+    public List<CampaignQueryResponse> getCampaignsByOrganisationUnits(List<String> ouIds);
 
-    public List<StateCountProjection> getStateCountByCampaignsAndOrganisationUnits(
+    public List<StateCountQueryResponse> getStateCountByCampaignsAndOrganisationUnits(
             @Param("campaignIds") List<String> campaignIds,
             @Param("ouIds") List<String> ouIds,
             @Param("date") Long date);
 
-    public List<CommunicationRequestCountProjection> getComRequestCountsByCampaignsAndOrganisationUnits(List<String> campaignIds,
-                                                                                                        List<String> ouIds,
-                                                                                                        Long date);
+    public List<CommunicationRequestCountQueryResponse> getComRequestCountsByCampaignsAndOrganisationUnits(List<String> campaignIds,
+                                                                                                           List<String> ouIds,
+                                                                                                           Long date);
+
 }
 
