@@ -53,13 +53,10 @@ public class RestMailSender implements MailSender {
                     .toBodilessEntity()
                     .getStatusCode();
 
-            if (status.value() == HttpStatus.OK.value()) {
-                log.info("Le mail a bien été envoyé");
-                return;
-            }
-            throw new SendMailException(String.format("Error sending mail. Status: %s", status.value()));
-        } catch(RestClientException ex) {
-            throw new SendMailException(ex.getMessage());
+            log.info("Mail sent successfully. Status: {}", status.value());
+
+        } catch (RestClientException ex) {
+            throw new SendMailException("Error sending mail", ex);
         }
     }
 }
