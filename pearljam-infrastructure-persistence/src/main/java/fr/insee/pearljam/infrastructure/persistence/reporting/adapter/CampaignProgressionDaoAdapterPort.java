@@ -24,7 +24,7 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
     private static final String PARAM_DATE         = "date";
 
     private static final String JPQL_STATE_COUNTS_BY_CAMPAIGN = """
-        SELECT new fr.insee.pearljam.domain.reporting.query.StateCount(
+        SELECT new fr.insee.pearljam.domain.reporting.readmodel.StateCount(
             su.campaign.id,
             SUM(CASE WHEN s.type = fr.insee.pearljam.domain.surveyunit.model.StateType.NVM THEN 1L ELSE 0L END),
             SUM(CASE WHEN s.type = fr.insee.pearljam.domain.surveyunit.model.StateType.NNS THEN 1L ELSE 0L END),
@@ -57,7 +57,7 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
         """;
 
     private static final String JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN = """
-            SELECT new fr.insee.pearljam.domain.reporting.query.CommunicationRequestCount(
+            SELECT new fr.insee.pearljam.domain.reporting.readmodel.CommunicationRequestCount(
                 su.campaign.id,
                 SUM(CASE WHEN ct.type = 'NOTICE'   THEN 1L ELSE 0L END),
                 SUM(CASE WHEN ct.type = 'REMINDER' THEN 1L ELSE 0L END)
