@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.organizationunit.port.in;
 
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
@@ -45,7 +45,7 @@ public interface UserService {
 	 * @param userId
 	 * @return {@link Optional<UserDto>}
 	 */
-	List<OrganizationUnit> getUserOUsModel(String userId, boolean saveAllLevels) ;
+	List<OrganizationUnitSummary> getUserOUsModel(String userId, boolean saveAllLevels) ;
 
 
 	/**

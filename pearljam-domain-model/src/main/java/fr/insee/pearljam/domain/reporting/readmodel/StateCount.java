@@ -1,6 +1,6 @@
-package fr.insee.pearljam.domain.reporting.query;
+package fr.insee.pearljam.domain.reporting.readmodel;
 
-public record StateCountQueryResponse(
+public record StateCount(
         String entityId,
         Long nvmCount,
         Long nnsCount,
@@ -19,8 +19,8 @@ public record StateCountQueryResponse(
         Long nvaCount,
         Long total) {
 
-        public static StateCountQueryResponse empty(String id) {
-                return new StateCountQueryResponse(id, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L);
+        public static StateCount empty(String id) {
+                return new StateCount(id, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L);
         }
 
 }

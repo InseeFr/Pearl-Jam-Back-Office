@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
@@ -28,7 +28,7 @@ public class UserFakeService implements UserService {
     }
 
     @Override
-    public List<OrganizationUnit> getUserOUsModel(String userId, boolean saveAllLevels) {
+    public List<OrganizationUnitSummary> getUserOUsModel(String userId, boolean saveAllLevels) {
         return List.of();
     }
 

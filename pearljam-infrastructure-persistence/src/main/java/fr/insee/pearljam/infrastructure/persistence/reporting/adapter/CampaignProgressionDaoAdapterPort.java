@@ -1,19 +1,20 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
-import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
-import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepository;
-import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
+import fr.insee.pearljam.domain.reporting.readmodel.CommunicationRequestCount;
+import fr.insee.pearljam.domain.reporting.port.out.CampaignProgressionRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.StateCount;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CampaignProgressionDaoAdapter implements CampaignProgressionRepository {
+public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRepositoryPort {
 
     private final EntityManager em;
     private final CampaignRepository campaignRepository;
@@ -75,33 +76,36 @@ public class CampaignProgressionDaoAdapter implements CampaignProgressionReposit
             GROUP BY su.campaign.id
             """;
 
-    public List<CampaignQueryResponse> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Long date) {
-        return campaignRepository.findAllOpenedCampaignsByOuIds(ouIds, date);
+    public List<CampaignSummary> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Instant date) {
+        Long dateMillis = date.toEpochMilli();
+        return campaignRepository.findAllOpenedCampaignsByOuIds(ouIds, dateMillis);
     }
 
     @Override
-    public List<StateCountQueryResponse> getStateCountByCampaignsAndOrganisationUnits(
+    public List<StateCount> getStateCountByCampaignsAndOrganisationUnits(
             List<String> campaignIds,
             List<String> ouIds,
-            Long date) {
+            Instant date) {
 
-        return em.createQuery(JPQL_STATE_COUNTS_BY_CAMPAIGN, StateCountQueryResponse.class)
+        Long dateMillis = date.toEpochMilli();
+        return em.createQuery(JPQL_STATE_COUNTS_BY_CAMPAIGN, StateCount.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
-                .setParameter(PARAM_DATE, date)
+                .setParameter(PARAM_DATE, dateMillis)
                 .getResultList();
     }
 
     @Override
-    public List<CommunicationRequestCountQueryResponse> getComRequestCountsByCampaignsAndOrganisationUnits(
+    public List<CommunicationRequestCount> getComRequestCountsByCampaignsAndOrganisationUnits(
             List<String> campaignIds,
             List<String> ouIds,
-            Long date) {
+            Instant date) {
 
-        return em.createQuery(JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN, CommunicationRequestCountQueryResponse.class)
+        Long dateMillis = date.toEpochMilli();
+        return em.createQuery(JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN, CommunicationRequestCount.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
-                .setParameter(PARAM_DATE, date)
+                .setParameter(PARAM_DATE, dateMillis)
                 .getResultList();
     }
 }

@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.List;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
+import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
+import fr.insee.pearljam.domain.reporting.service.CampaignProgressionPortService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressionController {
-    private final CampaignProgressionService campaignProgressionService;
+    private final CampaignProgressionPortService campaignProgressionService;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProgressionProjection> getCampaignsProgression(
+    public List<CampaignProgression> getCampaignsProgression(
             @RequestParam Instant date,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
 

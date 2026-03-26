@@ -4,7 +4,7 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.user.UserContextDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
@@ -16,9 +16,9 @@ import java.util.List;
 
 public class UserServiceStub implements UserService {
 
-    private final List<OrganizationUnit> orgUnits;
+    private final List<OrganizationUnitSummary> orgUnits;
 
-    public UserServiceStub(List<OrganizationUnit> orgUnits) {
+    public UserServiceStub(List<OrganizationUnitSummary> orgUnits) {
         this.orgUnits = orgUnits;
     }
 
@@ -38,7 +38,7 @@ public class UserServiceStub implements UserService {
     }
 
     @Override
-    public List<OrganizationUnit> getUserOUsModel(String userId, boolean withChildren) {
+    public List<OrganizationUnitSummary> getUserOUsModel(String userId, boolean withChildren) {
         return orgUnits;
     }
 

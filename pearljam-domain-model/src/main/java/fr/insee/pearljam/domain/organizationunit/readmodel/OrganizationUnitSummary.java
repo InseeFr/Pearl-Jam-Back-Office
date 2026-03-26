@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.organizationunit.model;
+package fr.insee.pearljam.domain.organizationunit.readmodel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganizationUnit {
+public class OrganizationUnitSummary {
     private String id;
     private String label;
 }

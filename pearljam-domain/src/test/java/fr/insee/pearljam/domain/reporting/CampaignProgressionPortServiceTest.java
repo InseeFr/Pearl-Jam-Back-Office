@@ -1,12 +1,12 @@
 package fr.insee.pearljam.domain.reporting;
 
-import fr.insee.pearljam.domain.campaign.stub.CampaignProgressionRepositoryStub;
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
-import fr.insee.pearljam.domain.reporting.projection.CampaignProgressionProjection;
-import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
-import fr.insee.pearljam.domain.reporting.query.CommunicationRequestCountQueryResponse;
-import fr.insee.pearljam.domain.reporting.query.StateCountQueryResponse;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
+import fr.insee.pearljam.domain.campaign.stub.CampaignProgressionRepositoryPortStub;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
+import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
+import fr.insee.pearljam.domain.reporting.readmodel.CommunicationRequestCount;
+import fr.insee.pearljam.domain.reporting.readmodel.StateCount;
+import fr.insee.pearljam.domain.reporting.service.CampaignProgressionPortService;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +16,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
 
-class CampaignProgressionServiceTest {
+class CampaignProgressionPortServiceTest {
 
     static final Instant FIXED_DATE = Instant.ofEpochMilli(1_000_000L);
-    static final OrganizationUnit ORG_UNIT = new OrganizationUnit("ou-1", "Org Unit 1");
+    static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
 
-    static StateCountQueryResponse stateCount(String campaignId) {
-        return new StateCountQueryResponse(
+    static StateCount stateCount(String campaignId) {
+        return new StateCount(
                 campaignId,
                 1L,
                 5L,
@@ -43,17 +43,17 @@ class CampaignProgressionServiceTest {
         );
     }
 
-    static CommunicationRequestCountQueryResponse commCount(String campaignId) {
-        return new CommunicationRequestCountQueryResponse(campaignId, 15L, 25L);
+    static CommunicationRequestCount commCount(String campaignId) {
+        return new CommunicationRequestCount(campaignId, 15L, 25L);
     }
 
-    private CampaignProgressionService buildService(
-            List<OrganizationUnit> orgUnits,
-            List<CampaignQueryResponse> campaigns,
-            List<StateCountQueryResponse> stateCounts,
-            List<CommunicationRequestCountQueryResponse> commCounts) {
-        return new CampaignProgressionService(
-                new CampaignProgressionRepositoryStub(campaigns, stateCounts, commCounts),
+    private CampaignProgressionPortService buildService(
+            List<OrganizationUnitSummary> orgUnits,
+            List<CampaignSummary> campaigns,
+            List<StateCount> stateCounts,
+            List<CommunicationRequestCount> commCounts) {
+        return new CampaignProgressionPortService(
+                new CampaignProgressionRepositoryPortStub(campaigns, stateCounts, commCounts),
                 new UserServiceStub(orgUnits)
         );
     }
@@ -62,34 +62,34 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
-        CampaignProgressionService service = buildService(List.of(), List.of(), List.of(), List.of());
+        CampaignProgressionPortService service = buildService(List.of(), List.of(), List.of(), List.of());
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
-        CampaignProgressionService service = buildService(List.of(ORG_UNIT), List.of(), List.of(), List.of());
+        CampaignProgressionPortService service = buildService(List.of(ORG_UNIT), List.of(), List.of(), List.of());
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldReturnOneCampaignProjection_whenOneCampaignExists() {
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
                 List.of(commCount("campaign-1"))
         );
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().campaignId()).isEqualTo("campaign-1");
@@ -99,32 +99,32 @@ class CampaignProgressionServiceTest {
     @Test
     void shouldComputeProgressRateCorrectly() {
         // total=100, fin=40, tbr=20 → (40+20)/100*100 = 60%
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
                 List.of(commCount("campaign-1"))
         );
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result.getFirst().progressRate()).isCloseTo(60.0f, within(0.001f));
     }
 
     @Test
     void shouldMapSurveyUnitCountsCorrectly() {
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
                 List.of(commCount("campaign-1"))
         );
 
-        CampaignProgressionProjection.SurveyUnits su =
+        CampaignProgression.SurveyUnits su =
                 service.getCampaignsProgression("user-1", FIXED_DATE).getFirst().surveyUnits();
 
         assertThat(su.allocated()).isEqualTo(100L);
@@ -143,17 +143,17 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldUseEmptyStateCounts_whenNoStateCountForCampaign() {
-        // No stateCount for campaign-1 → StateCountQueryResponse.empty() used → all zeros
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        // No stateCount for campaign-1 → StateCount.empty() used → all zeros
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(), // no state counts
                 List.of(commCount("campaign-1"))
         );
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         // progressRate = (0 + 0) / 0 * 100 = NaN (division by zero)
         assertThat(result.getFirst().surveyUnits().allocated()).isZero();
@@ -162,16 +162,16 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldUseEmptyCommunicationCounts_whenNoCommCountForCampaign() {
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
                 List.of() // no comm counts
         );
 
-        CampaignProgressionProjection.SurveyUnits su =
+        CampaignProgression.SurveyUnits su =
                 service.getCampaignsProgression("user-1", FIXED_DATE).getFirst().surveyUnits();
 
         assertThat(su.noticeLetter()).isZero();
@@ -180,37 +180,37 @@ class CampaignProgressionServiceTest {
 
     @Test
     void shouldReturnMultipleCampaigns_whenMultipleExist() {
-        CampaignQueryResponse c1 = new CampaignQueryResponse("campaign-1", "Campaign One");
-        CampaignQueryResponse c2 = new CampaignQueryResponse("campaign-2", "Campaign Two");
+        CampaignSummary c1 = new CampaignSummary("campaign-1", "Campaign One");
+        CampaignSummary c2 = new CampaignSummary("campaign-2", "Campaign Two");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(c1, c2),
                 List.of(stateCount("campaign-1"), stateCount("campaign-2")),
                 List.of(commCount("campaign-1"), commCount("campaign-2"))
         );
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(CampaignProgressionProjection::campaignId)
+        assertThat(result).extracting(CampaignProgression::campaignId)
                 .containsExactlyInAnyOrder("campaign-1", "campaign-2");
     }
 
     @Test
     void shouldHandleMultipleOrgUnits() {
-        OrganizationUnit ou1 = new OrganizationUnit("ou-1", "Org 1");
-        OrganizationUnit ou2 = new OrganizationUnit("ou-2", "Org 2");
-        CampaignQueryResponse campaign = new CampaignQueryResponse("campaign-1", "Campaign One");
+        OrganizationUnitSummary ou1 = new OrganizationUnitSummary("ou-1", "Org 1");
+        OrganizationUnitSummary ou2 = new OrganizationUnitSummary("ou-2", "Org 2");
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionService service = buildService(
+        CampaignProgressionPortService service = buildService(
                 List.of(ou1, ou2),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
                 List.of(commCount("campaign-1"))
         );
 
-        List<CampaignProgressionProjection> result = service.getCampaignsProgression("user-1", FIXED_DATE);
+        List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().campaignId()).isEqualTo("campaign-1");

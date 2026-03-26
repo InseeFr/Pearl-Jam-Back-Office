@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.organizationunit.service;
 
-import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnit;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
 				ouTree.childOrganizationUnits());
 	}
 
-	public List<OrganizationUnit> getUserOUsModel(String userId, boolean saveAllLevels) {
+	public List<OrganizationUnitSummary> getUserOUsModel(String userId, boolean saveAllLevels) {
 		return getUserOUs(userId, saveAllLevels)
 				.stream()
-				.map(ouDto -> new OrganizationUnit(ouDto.getId(), ouDto.getLabel()))
+				.map(ouDto -> new OrganizationUnitSummary(ouDto.getId(), ouDto.getLabel()))
 				.toList();
 	}
 

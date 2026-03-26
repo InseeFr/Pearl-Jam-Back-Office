@@ -3,7 +3,7 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.domain.reporting.query.CampaignQueryResponse;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import lombok.Getter;
@@ -41,8 +41,8 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignQueryResponse> findAllOpenedCampaignsByOuIds(List<String> ouIds, Long date) {
-        return campaigns.stream().map(c -> new CampaignQueryResponse(c.getId(), c.getLabel())).toList();
+    public List<CampaignSummary> findAllOpenedCampaignsByOuIds(List<String> ouIds, Long date) {
+        return campaigns.stream().map(c -> new CampaignSummary(c.getId(), c.getLabel())).toList();
     }
 
     @Override

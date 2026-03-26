@@ -1,8 +1,8 @@
 // CampaignProgressionReport.java
-package fr.insee.pearljam.domain.reporting.projection;
+package fr.insee.pearljam.domain.reporting.model;
 
-public record CampaignProgressionProjection(String campaignId, String campaignLabel, float progressRate,
-                                            SurveyUnits surveyUnits) {
+public record CampaignProgression(String campaignId, String campaignLabel, float progressRate,
+                                  SurveyUnits surveyUnits) {
 
     public record SurveyUnits(
             Long allocated,
