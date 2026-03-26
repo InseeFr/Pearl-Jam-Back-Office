@@ -8,6 +8,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 class ModuleBoundariesArchTests {
@@ -91,6 +92,42 @@ class ModuleBoundariesArchTests {
                 .should().dependOnClassesThat().resideInAnyPackage(
                         "fr.insee.pearljam.api.."
                 )
+                .check(importedClasses);
+    }
+
+    @Test
+    void readModelsShouldOnlyBeUsedByDomainAndInfrastructure() {
+        classes()
+                .that().resideInAPackage("fr.insee.pearljam.domain..readmodel..")
+                .should().onlyBeAccessed()
+                .byAnyPackage(
+                        "fr.insee.pearljam.domain..",
+                        "fr.insee.pearljam.infrastructure.."
+                )
+                .check(importedClasses);
+    }
+
+    @Test
+    void modelsShouldOnlyBeUsedByDomainAndControllerForReporting() {
+        classes()
+                .that().resideInAPackage("fr.insee.pearljam.domain.reporting.model")
+                .should().onlyBeAccessed()
+                .byAnyPackage(
+                        "fr.insee.pearljam.domain..",
+                        "fr.insee.pearljam.api..controller.."
+                )
+                .check(importedClasses);
+    }
+
+    @Test
+    void queryShouldOnlyBeUsedByDomainAndController() {
+        classes()
+                .that().resideInAPackage("fr.insee.pearljam.domain..query..")
+                .should().onlyBeAccessed()
+                .byAnyPackage(
+                        "fr.insee.pearljam.domain..",
+                        "fr.insee.pearljam.api..controller.."
+                ).allowEmptyShould(true)
                 .check(importedClasses);
     }
 }
