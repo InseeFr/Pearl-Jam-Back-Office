@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRepositoryPort {
+public class CampaignProgressionDaoAdapter implements CampaignProgressionRepositoryPort {
 
     private final EntityManager em;
     private final CampaignRepository campaignRepository;
@@ -77,8 +77,7 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
             """;
 
     public List<CampaignSummary> getAllManagedAndNotClosedCampaignsByOrganisationUnits(List<String> ouIds, Instant date) {
-        Long dateMillis = date.toEpochMilli();
-        return campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(ouIds, dateMillis);
+        return campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(ouIds, date);
     }
 
     @Override
@@ -87,11 +86,10 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
             List<String> ouIds,
             Instant date) {
 
-        Long dateMillis = date.toEpochMilli();
         return em.createQuery(JPQL_STATE_COUNTS_BY_CAMPAIGN, StateCount.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
-                .setParameter(PARAM_DATE, dateMillis)
+                .setParameter(PARAM_DATE, date.toEpochMilli())
                 .getResultList();
     }
 
@@ -101,11 +99,10 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
             List<String> ouIds,
             Instant date) {
 
-        Long dateMillis = date.toEpochMilli();
         return em.createQuery(JPQL_COMM_REQUEST_COUNTS_BY_CAMPAIGN, CommunicationRequestCount.class)
                 .setParameter(PARAM_CAMPAIGN_IDS, campaignIds)
                 .setParameter(PARAM_OU_IDS, ouIds)
-                .setParameter(PARAM_DATE, dateMillis)
+                .setParameter(PARAM_DATE, date.toEpochMilli())
                 .getResultList();
     }
 }

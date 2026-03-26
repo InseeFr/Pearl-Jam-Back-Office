@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +41,8 @@ public class CampaignDaoAdapter implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Long date) {
-        return campaignJpaRepository.findAllOpenedCampaignByOuIds(ouIds, date);
+    public List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Instant date) {
+        return campaignJpaRepository.findAllManagedAndNotClosedCampaignByOuIds(ouIds, date.toEpochMilli());
     }
 
     @Override

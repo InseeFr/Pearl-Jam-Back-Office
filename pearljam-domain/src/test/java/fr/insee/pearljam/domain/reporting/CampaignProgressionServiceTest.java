@@ -6,7 +6,7 @@ import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.reporting.readmodel.CommunicationRequestCount;
 import fr.insee.pearljam.domain.reporting.readmodel.StateCount;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionPortService;
+import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
 
-class CampaignProgressionPortServiceTest {
+class CampaignProgressionServiceTest {
 
     static final Instant FIXED_DATE = Instant.ofEpochMilli(1_000_000L);
     static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
@@ -47,12 +47,12 @@ class CampaignProgressionPortServiceTest {
         return new CommunicationRequestCount(campaignId, 15L, 25L);
     }
 
-    private CampaignProgressionPortService buildService(
+    private CampaignProgressionService buildService(
             List<OrganizationUnitSummary> orgUnits,
             List<CampaignSummary> campaigns,
             List<StateCount> stateCounts,
             List<CommunicationRequestCount> commCounts) {
-        return new CampaignProgressionPortService(
+        return new CampaignProgressionService(
                 new CampaignProgressionRepositoryPortStub(campaigns, stateCounts, commCounts),
                 new UserServiceStub(orgUnits)
         );
@@ -62,7 +62,7 @@ class CampaignProgressionPortServiceTest {
 
     @Test
     void shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
-        CampaignProgressionPortService service = buildService(List.of(), List.of(), List.of(), List.of());
+        CampaignProgressionService service = buildService(List.of(), List.of(), List.of(), List.of());
 
         List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
@@ -71,7 +71,7 @@ class CampaignProgressionPortServiceTest {
 
     @Test
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
-        CampaignProgressionPortService service = buildService(List.of(ORG_UNIT), List.of(), List.of(), List.of());
+        CampaignProgressionService service = buildService(List.of(ORG_UNIT), List.of(), List.of(), List.of());
 
         List<CampaignProgression> result = service.getCampaignsProgression("user-1", FIXED_DATE);
 
@@ -82,7 +82,7 @@ class CampaignProgressionPortServiceTest {
     void shouldReturnOneCampaignProjection_whenOneCampaignExists() {
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
@@ -101,7 +101,7 @@ class CampaignProgressionPortServiceTest {
         // total=100, fin=40, tbr=20 → (40+20)/100*100 = 60%
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
@@ -117,7 +117,7 @@ class CampaignProgressionPortServiceTest {
     void shouldMapSurveyUnitCountsCorrectly() {
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
@@ -146,7 +146,7 @@ class CampaignProgressionPortServiceTest {
         // No stateCount for campaign-1 → StateCount.empty() used → all zeros
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(), // no state counts
@@ -164,7 +164,7 @@ class CampaignProgressionPortServiceTest {
     void shouldUseEmptyCommunicationCounts_whenNoCommCountForCampaign() {
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),
@@ -183,7 +183,7 @@ class CampaignProgressionPortServiceTest {
         CampaignSummary c1 = new CampaignSummary("campaign-1", "Campaign One");
         CampaignSummary c2 = new CampaignSummary("campaign-2", "Campaign Two");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ORG_UNIT),
                 List.of(c1, c2),
                 List.of(stateCount("campaign-1"), stateCount("campaign-2")),
@@ -203,7 +203,7 @@ class CampaignProgressionPortServiceTest {
         OrganizationUnitSummary ou2 = new OrganizationUnitSummary("ou-2", "Org 2");
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
-        CampaignProgressionPortService service = buildService(
+        CampaignProgressionService service = buildService(
                 List.of(ou1, ou2),
                 List.of(campaign),
                 List.of(stateCount("campaign-1")),

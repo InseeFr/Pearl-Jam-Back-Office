@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public interface CampaignRepository {
 
     List<String> findAllCampaignIdsByOuIds(List<String> ouIds);
 
-    List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Long date);
+    List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Instant date);
 
     List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
 

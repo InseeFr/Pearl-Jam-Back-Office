@@ -30,8 +30,9 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	@Query("SELECT DISTINCT new fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary(v.visibilityId.campaignId, v.campaign.label) " +
 			"FROM VisibilityDB v JOIN v.campaign " +
 			"WHERE v.visibilityId.organizationUnitId IN (:ouIds) " +
-			"AND v.endDate > :date")
-	List<CampaignSummary> findAllOpenedCampaignByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
+			"AND v.endDate > :date " +
+			"AND v.managementStartDate <= :date")
+	List<CampaignSummary> findAllManagedAndNotClosedCampaignByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = """
 		SELECT DISTINCT(campaign_id) FROM visibility

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class CampaignProgressionPortService implements CampaignProgressionPort {
+public class CampaignProgressionService implements CampaignProgressionPort {
 
     private final CampaignProgressionRepositoryPort campaignProgressionRepositoryPort;
     private final UserService userService;

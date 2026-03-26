@@ -5,7 +5,7 @@ import java.util.List;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionPortService;
+import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressionController {
-    private final CampaignProgressionPortService campaignProgressionService;
+    private final CampaignProgressionService campaignProgressionService;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
