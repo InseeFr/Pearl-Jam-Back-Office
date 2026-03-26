@@ -15,12 +15,12 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
@@ -32,6 +32,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -56,6 +57,7 @@ class StateServiceImplTest {
   @Mock
   private RelatedOrganizationUnitService relatedOrganizationUnitService;
 
+  @InjectMocks
   private StateServiceImpl stateService;
 
   private String userId;

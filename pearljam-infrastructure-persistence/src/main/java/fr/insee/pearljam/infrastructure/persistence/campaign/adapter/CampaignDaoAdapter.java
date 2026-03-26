@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,11 @@ public class CampaignDaoAdapter implements CampaignRepository {
     @Override
     public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) {
         return campaignJpaRepository.findAllCampaignIdsByOuIds(ouIds);
+    }
+
+    @Override
+    public List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Instant date) {
+        return campaignJpaRepository.findAllManagedAndNotClosedCampaignByOuIds(ouIds, date.toEpochMilli());
     }
 
     @Override

@@ -30,7 +30,7 @@ public interface CommunicationRequestRepository {
           Long date);
 
   List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId,
-                                                                                        List<String> ouIds,
-                                                                                        Long dateToUse);
+                                                                      List<String> ouIds,
+                                                                      Long dateToUse);
 
 }

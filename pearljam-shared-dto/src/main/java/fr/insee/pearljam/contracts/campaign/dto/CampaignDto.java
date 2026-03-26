@@ -46,7 +46,7 @@ public class CampaignDto {
 
 	// keep it for creation in SQL
 	public CampaignDto(String id, String label, String email, IdentificationConfiguration identConfig,
-			ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
+                       ContactOutcomeConfiguration contOutConfig, ContactAttemptConfiguration contAttConfig, boolean collectNextContacts) {
 		super();
 		this.id = id;
 		this.label = label;

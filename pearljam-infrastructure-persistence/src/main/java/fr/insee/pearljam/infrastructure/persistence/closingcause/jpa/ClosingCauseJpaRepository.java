@@ -207,7 +207,7 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
         GROUP BY su.organization_unit_id
         """, nativeQuery = true)
 	List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(@Param("campaignId") String campaignId,
-																				   @Param("ouIds") List<String> ouIds,
-																				   @Param("dateToUse") Long dateToUse);
+                                                                 @Param("ouIds") List<String> ouIds,
+                                                                 @Param("dateToUse") Long dateToUse);
 
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * This class is used to defines the association between OrganizationUnit and
+ * This class is used to defines the association between OrganizationUnitSummary and
  * Campaign tables.
  * 
  * @author Guillemet Paul

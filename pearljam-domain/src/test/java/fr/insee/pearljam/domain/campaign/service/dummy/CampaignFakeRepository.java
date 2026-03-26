@@ -3,11 +3,13 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import lombok.Getter;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,12 +42,17 @@ public class CampaignFakeRepository implements CampaignRepository {
     }
 
     @Override
-    public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) {
-        return List.of();
+    public List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Instant date) {
+        return campaigns.stream().map(c -> new CampaignSummary(c.getId(), c.getLabel())).toList();
     }
 
     @Override
     public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
+        return List.of();
+    }
+
+    @Override
+    public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) {
         return List.of();
     }
 
