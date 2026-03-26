@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface CampaignProgressionRepositoryPort {
 
-    List<CampaignSummary> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Instant date);
+    List<CampaignSummary> getAllManagedAndNotClosedCampaignsByOrganisationUnits(List<String> ouIds, Instant date);
 
     List<StateCount> getStateCountByCampaignsAndOrganisationUnits(
             @Param("campaignIds") List<String> campaignIds,

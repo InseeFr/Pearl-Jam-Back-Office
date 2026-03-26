@@ -19,7 +19,7 @@ public interface CampaignRepository {
 
     List<String> findAllCampaignIdsByOuIds(List<String> ouIds);
 
-    List<CampaignSummary> findAllOpenedCampaignsByOuIds(List<String> ouIds, Long date);
+    List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Long date);
 
     List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
 

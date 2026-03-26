@@ -76,9 +76,9 @@ public class CampaignProgressionDaoAdapterPort implements CampaignProgressionRep
             GROUP BY su.campaign.id
             """;
 
-    public List<CampaignSummary> getOpenedCampaignsByOrganisationUnits(List<String> ouIds, Instant date) {
+    public List<CampaignSummary> getAllManagedAndNotClosedCampaignsByOrganisationUnits(List<String> ouIds, Instant date) {
         Long dateMillis = date.toEpochMilli();
-        return campaignRepository.findAllOpenedCampaignsByOuIds(ouIds, dateMillis);
+        return campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(ouIds, dateMillis);
     }
 
     @Override

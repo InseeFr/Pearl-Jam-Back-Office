@@ -24,7 +24,7 @@ public class CampaignProgressionRepositoryPortStub implements CampaignProgressio
     }
 
     @Override
-    public List<CampaignSummary> getOpenedCampaignsByOrganisationUnits(List<String> orgUnitIds, Instant date) {
+    public List<CampaignSummary> getAllManagedAndNotClosedCampaignsByOrganisationUnits(List<String> orgUnitIds, Instant date) {
         return campaigns;
     }
 

@@ -35,7 +35,7 @@ public class CampaignProgressionPortService implements CampaignProgressionPort {
         }
 
         Map<String, CampaignSummary> campaigns = campaignProgressionRepositoryPort
-                .getOpenedCampaignsByOrganisationUnits(userOrgUnitIds, date)
+                .getAllManagedAndNotClosedCampaignsByOrganisationUnits(userOrgUnitIds, date)
                 .stream().collect(Collectors.toMap(CampaignSummary::id, campaign -> campaign));
         List<String> campaignIds = new ArrayList<>(campaigns.keySet());
 
