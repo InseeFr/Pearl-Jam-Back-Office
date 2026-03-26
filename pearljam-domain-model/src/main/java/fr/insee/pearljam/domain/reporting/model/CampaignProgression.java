@@ -1,4 +1,3 @@
-// CampaignProgressionReport.java
 package fr.insee.pearljam.domain.reporting.model;
 
 public record CampaignProgression(String campaignId, String campaignLabel, float progressRate,
