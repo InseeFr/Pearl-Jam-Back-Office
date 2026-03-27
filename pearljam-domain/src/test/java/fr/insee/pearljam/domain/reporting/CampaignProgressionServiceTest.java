@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.reporting;
 
 import fr.insee.pearljam.domain.campaign.stub.CampaignProgressionRepositoryPortStub;
+import fr.insee.pearljam.domain.campaign.stub.CampaignStateCountRepositoryPortStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
@@ -53,7 +54,8 @@ class CampaignProgressionServiceTest {
             List<StateCount> stateCounts,
             List<CommunicationRequestCount> commCounts) {
         return new CampaignProgressionService(
-                new CampaignProgressionRepositoryPortStub(campaigns, stateCounts, commCounts),
+                new CampaignProgressionRepositoryPortStub(campaigns, commCounts),
+                new CampaignStateCountRepositoryPortStub(stateCounts),
                 new UserServiceStub(orgUnits)
         );
     }
