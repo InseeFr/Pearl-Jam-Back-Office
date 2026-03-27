@@ -1,7 +1,9 @@
 name: Build release candidate
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - develop
 
 jobs:
   check-version:
