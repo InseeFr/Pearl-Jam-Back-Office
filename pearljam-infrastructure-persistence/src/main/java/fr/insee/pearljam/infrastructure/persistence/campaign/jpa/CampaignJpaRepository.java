@@ -3,7 +3,7 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.jpa;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
@@ -27,7 +27,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 			+ "organization_unit_id IN (:OuIds) ", nativeQuery = true)
 	List<String> findAllCampaignIdsByOuIds(@Param("OuIds") List<String> ouIds);
 
-	@Query("SELECT DISTINCT new fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary(v.visibilityId.campaignId, v.campaign.label) " +
+	@Query("SELECT DISTINCT new fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary(v.visibilityId.campaignId, v.campaign.label) " +
 			"FROM VisibilityDB v JOIN v.campaign " +
 			"WHERE v.visibilityId.organizationUnitId IN (:ouIds) " +
 			"AND v.endDate > :date " +

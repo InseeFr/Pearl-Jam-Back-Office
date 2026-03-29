@@ -10,11 +10,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableTransactionManagement
 @ConfigurationPropertiesScan
 @EnableJpaRepositories
+@EnableScheduling
 @Slf4j
 public class PearlJamApplication {
 

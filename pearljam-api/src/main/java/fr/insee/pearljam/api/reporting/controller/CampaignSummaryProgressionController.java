@@ -1,33 +1,40 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.model.CampaignSummaryWithStateCount;
-import fr.insee.pearljam.domain.reporting.service.CampaignSummaryWithStateCountService;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummaryProgression;
+import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
-public class CampaignSummaryWithStateCountController {
-    private final CampaignSummaryWithStateCountService campaignSummaryWithStateCountService;
+@Validated
+public class CampaignSummaryProgressionController {
+    private final CampaignSummaryProgressionService campaignSummaryProgressionService;
 
     @Operation(summary = "Get summary of campaigns (based on my preferences), including state counts")
-    @GetMapping(Constants.API_REPORTING_CAMPAIGNS_SUMMARY_STATE_COUNTS)
+    @GetMapping(Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignSummaryWithStateCount> getCampaignSummaryWithStateCount(
+    public List<CampaignSummaryProgression> getCampaignSummaryWithStateCount(
+            @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-
-        return campaignSummaryWithStateCountService.getCampaignSummaryWithStateCount(userId);
+        if (day == null || day.isAfter(LocalDate.now())) {
+            day = LocalDate.now();
+        }
+        return campaignSummaryProgressionService.getCampaignSummaryProgression(userId, day);
     }
 }
 

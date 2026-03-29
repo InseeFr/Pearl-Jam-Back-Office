@@ -10,7 +10,6 @@ public class Constants {
 
 	public static final String REVIEWER = "reviewer";
 	public static final String GUEST = "GUEST";
-	public static final String AUTHORIZATION = "Authorization";
 
   public static final String API_QUEEN_INTERROGATIONS_STATEDATA = "/api/interrogations/state-data";
 
@@ -42,7 +41,9 @@ public class Constants {
   public static final String API_CAMPAIGNS_SU_CONTACTOUTCOMES = "/api/campaigns/survey-units/contact-outcomes";
 
   public static final String API_REPORTING_CAMPAIGNS_PROGRESS = "/api/reporting/campaigns/progress";
-  public static final String API_REPORTING_CAMPAIGNS_SUMMARY_STATE_COUNTS = "/api/reporting/campaigns/summary/state-counts";
+  public static final String API_REPORTING_CAMPAIGNS_SUMMARY = "/api/reporting/campaigns/summary";
+  public static final String API_REPORTING_INTERVIEWERS_PROGRESS = "/api/reporting/campaigns/{campaignId}/interviewers/progress";
+  public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
 
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";

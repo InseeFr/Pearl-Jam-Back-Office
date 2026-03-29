@@ -1,9 +1,6 @@
 package fr.insee.pearljam.api.web.exception;
 
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignOnGoingException;
-import fr.insee.pearljam.domain.campaign.service.exception.CommunicationTemplateNotFoundException;
-import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
-import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
@@ -16,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.ErrorResponse;
@@ -99,6 +95,11 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail noEntityFoundException(EntityNotFoundException e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CampaignNotFoundException.class)
+    public ProblemDetail noCampaignFoundException(CampaignNotFoundException e) {
         return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 

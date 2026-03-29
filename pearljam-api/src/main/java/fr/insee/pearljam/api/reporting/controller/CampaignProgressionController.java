@@ -1,7 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,9 +15,6 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.Instant;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,10 +27,12 @@ public class CampaignProgressionController {
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
     public List<CampaignProgression> getCampaignsProgression(
-            @RequestParam Instant date,
+            @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-
-        return campaignProgressionService.getCampaignsProgression(userId, date);
+        if (day == null || day.isAfter(LocalDate.now())) {
+            day = LocalDate.now();
+        }
+        return campaignProgressionService.getCampaignsProgression(userId, day);
     }
 }
 

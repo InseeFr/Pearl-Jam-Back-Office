@@ -3,7 +3,8 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import lombok.Getter;
@@ -48,6 +49,11 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
+        return List.of();
+    }
+
+    @Override
+    public List<CampaignWithVisibility> findCampaignWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return List.of();
     }
 
