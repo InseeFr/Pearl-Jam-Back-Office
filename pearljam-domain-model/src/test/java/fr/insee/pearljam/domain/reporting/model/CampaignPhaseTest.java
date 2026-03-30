@@ -47,7 +47,7 @@ class CampaignPhaseTest {
         assertThatThrownBy(() ->
                 CampaignPhase.fromDates(current, MANAGEMENT_START, COLLECTION_START, COLLECTION_END, END_DATE)
         ).isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("not yet visible");
+                .hasMessageContaining("not visible yet");
     }
 
     @Test

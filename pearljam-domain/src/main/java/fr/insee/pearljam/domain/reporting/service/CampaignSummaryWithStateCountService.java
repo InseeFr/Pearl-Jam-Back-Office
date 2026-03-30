@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.model.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.model.CampaignSummaryWithStateCount;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryWithStateCountPort;
@@ -34,9 +34,9 @@ public class CampaignSummaryWithStateCountService implements CampaignSummaryWith
 
         long currentTimestamp = dateService.getCurrentTimestamp();
         List<String> organizationUnitIds = userService
-                .getUserOUs(userId, true)
+                .getUserOUsModel(userId, true)
                 .stream()
-                .map(OrganizationUnitDto::getId)
+                .map(OrganizationUnitSummary::getId)
                 .toList();
 
         List<CampaignWithVisibility> userCampaignWithVisibility = campaignSummaryWithStateCountRepositoryPort.findByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
@@ -75,7 +75,7 @@ public class CampaignSummaryWithStateCountService implements CampaignSummaryWith
                 sc.vicCount() + sc.prcCount() + sc.aocCount() + sc.apsCount() + sc.insCount() + sc.wftCount(), // VIC/PRC/AOC/APS/INS/WFT
                 sc.tbrCount(),
                 sc.finCount() + sc.cloCount(), // FIN/CLO
-                0L // TODO
+                0L // TODO: calculate notAssigned when rule is known
         );
     }
 

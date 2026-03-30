@@ -165,14 +165,14 @@ class CampaignSummaryWithStateCountServiceTest {
                 13L, // finCount
                 14L, // cloCount
                 15L, // nvaCount
-                100L // total
+                120L // total
         );
 
         // WHEN
         var su = service.toSurveyUnitsStateCount(sc);
 
         // THEN
-        assertThat(su.allocated()).isEqualTo(100L);  // total
+        assertThat(su.allocated()).isEqualTo(120L);  // total
         assertThat(su.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10);  // VIC+PRC+AOC+APS+INS+WFT = 45
         assertThat(su.toReview()).isEqualTo(12L);  // tbrCount
         assertThat(su.completed()).isEqualTo(13 + 14);  // finCount + cloCount = 27

@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum CampaignPhase {
-    INITIAL_ASSIGNMENT("Affectation initiale"),
-    COLLECTION_IN_PROGRESS("Collecte en cours"),
-    COLLECTION_COMPLETED("Collecte terminée");
+    INITIAL_ASSIGNMENT,
+    COLLECTION_IN_PROGRESS,
+    COLLECTION_COMPLETED;
 
-    private final String label;
 
     public static CampaignPhase fromDates(
             long currentDate,
@@ -19,7 +18,7 @@ public enum CampaignPhase {
     ) {
 
         if (currentDate < managementStartDate) {
-            throw new IllegalStateException("Campaign not yet visible");
+            throw new IllegalStateException("Campaign not visible yet");
         }
 
         if (currentDate < collectionStartDate) {

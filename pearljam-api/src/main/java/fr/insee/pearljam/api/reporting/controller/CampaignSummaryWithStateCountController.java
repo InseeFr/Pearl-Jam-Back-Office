@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.model.CampaignSummaryWithStateCount;
 import fr.insee.pearljam.domain.reporting.service.CampaignSummaryWithStateCountService;
 import io.swagger.v3.oas.annotations.Operation;
