@@ -7,12 +7,12 @@ public record CampaignSummaryWithStateCount(String campaignId,
                                             Long collectionEndDate,
                                             Long endDate,
                                             CampaignPhase campaignPhase,
-                                            SurveyUnits surveyUnits) {
+                                            CampaignSummaryWithStateCountSurveyUnits surveyUnits) {
 
-    public record SurveyUnits(Long allocated,
-                              Long toProcessInterviewer,
-                              Long toReview,
-                              Long completed,
-                              Long notAssigned) {
+    public record CampaignSummaryWithStateCountSurveyUnits(Long allocated,
+                                                           Long toProcessInterviewer,
+                                                           Long toReview,
+                                                           Long completed,
+                                                           Long notAssigned) {
     }
 }

@@ -69,8 +69,8 @@ public class CampaignSummaryWithStateCountService implements CampaignSummaryWith
                 .collect(Collectors.toMap(StateCount::entityId, Function.identity()));
     }
 
-    CampaignSummaryWithStateCount.SurveyUnits toSurveyUnitsStateCount(StateCount sc) {
-        return new CampaignSummaryWithStateCount.SurveyUnits(
+    CampaignSummaryWithStateCount.CampaignSummaryWithStateCountSurveyUnits toSurveyUnitsStateCount(StateCount sc) {
+        return new CampaignSummaryWithStateCount.CampaignSummaryWithStateCountSurveyUnits(
                 sc.total(),
                 sc.vicCount() + sc.prcCount() + sc.aocCount() + sc.apsCount() + sc.insCount() + sc.wftCount(), // VIC/PRC/AOC/APS/INS/WFT
                 sc.tbrCount(),

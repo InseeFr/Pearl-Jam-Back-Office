@@ -71,7 +71,7 @@ public class CampaignProgressionService implements CampaignProgressionPort {
 
                     long allocated = s.total();
 
-                    CampaignProgression.SurveyUnits surveyUnits = new CampaignProgression.SurveyUnits(
+                    CampaignProgression.CampaignProgressionSurveyUnits surveyUnits = new CampaignProgression.CampaignProgressionSurveyUnits(
                             allocated,
                             s.nnsCount(),
                             s.insCount(),
