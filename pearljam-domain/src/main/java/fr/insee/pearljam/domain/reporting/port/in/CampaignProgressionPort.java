@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CampaignProgressionPort {
 
-    public List<CampaignProgression> getCampaignsProgression(String userId, Instant date);
+    List<CampaignProgression> getCampaignsProgression(String userId, Instant date);
 }

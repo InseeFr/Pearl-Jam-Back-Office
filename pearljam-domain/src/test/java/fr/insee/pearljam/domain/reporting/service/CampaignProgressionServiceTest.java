@@ -1,12 +1,12 @@
-package fr.insee.pearljam.domain.reporting;
+package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.stub.CampaignProgressionRepositoryPortStub;
+import fr.insee.pearljam.domain.campaign.stub.CampaignStateCountRepositoryPortStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.reporting.readmodel.CommunicationRequestCount;
 import fr.insee.pearljam.domain.reporting.readmodel.StateCount;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +53,8 @@ class CampaignProgressionServiceTest {
             List<StateCount> stateCounts,
             List<CommunicationRequestCount> commCounts) {
         return new CampaignProgressionService(
-                new CampaignProgressionRepositoryPortStub(campaigns, stateCounts, commCounts),
+                new CampaignProgressionRepositoryPortStub(campaigns, commCounts),
+                new CampaignStateCountRepositoryPortStub(stateCounts),
                 new UserServiceStub(orgUnits)
         );
     }

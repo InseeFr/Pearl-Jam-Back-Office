@@ -60,6 +60,7 @@ public class CampaignController {
 	 *         or
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get user preferred Campaigns")
 	@GetMapping(path = Constants.API_CAMPAIGNS)
 	public List<CampaignDto> getUserPreferredCampaigns() {

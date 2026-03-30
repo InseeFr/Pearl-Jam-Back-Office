@@ -8,7 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.4</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>fr.insee.pearljam</groupId>
@@ -18,7 +18,7 @@
     <name>Pearl-Jam-Back-Office Parent</name>
 
     <properties>
-        <revision>5.14.1</revision>
+        <revision>5.15.0</revision>
         <changelist></changelist>
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
@@ -28,7 +28,9 @@
         <sonar.organization>inseefr</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.java.binaries>target</sonar.java.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <cucumber.version>7.21.1</cucumber.version>
         <springdoc.version>3.0.2</springdoc.version>
         <archunit.version>1.4.1</archunit.version>

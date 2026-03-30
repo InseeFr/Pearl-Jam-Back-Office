@@ -1,17 +1,12 @@
 package fr.insee.pearljam.api.campaign.controller.dummy;
 
+import fr.insee.pearljam.contracts.campaign.dto.*;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
-import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.contracts.campaign.dto.CampaignSensitivityDto;
-import fr.insee.pearljam.contracts.campaign.dto.PortalDataDto;
-import fr.insee.pearljam.contracts.campaign.dto.CountDto;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -59,6 +54,7 @@ public class CampaignFakeService implements CampaignService {
     private CampaignResponseDto campaignToRetrieve = null;
 
     @Override
+    @Deprecated(forRemoval = true)
     public List<CampaignDto> getPreferredCampaigns(String userId) {
         return List.of();
     }
@@ -91,13 +87,13 @@ public class CampaignFakeService implements CampaignService {
     @Override
     public void createCampaign(CampaignCreateDto campaignDto)
             throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
-        if(shouldThrowCampaignAlreadyExistException) {
+        if (shouldThrowCampaignAlreadyExistException) {
             throw new CampaignAlreadyExistException();
         }
-        if(shouldThrowOrganizationalUnitNotFoundException) {
+        if (shouldThrowOrganizationalUnitNotFoundException) {
             throw new OrganizationalUnitNotFoundException();
         }
-        if(shouldThrowVisibilityHasInvalidDatesException) {
+        if (shouldThrowVisibilityHasInvalidDatesException) {
             throw new VisibilityHasInvalidDatesException();
         }
         campaignCreated = campaignDto;
@@ -111,10 +107,10 @@ public class CampaignFakeService implements CampaignService {
     @Override
     public void delete(String campaignId, boolean force) throws CampaignNotFoundException, CampaignOnGoingException {
         deleteForced = force;
-        if(shouldThrowCampaignNotFoundException) {
+        if (shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
-        if(shouldThrowCampaignOnGoingException) {
+        if (shouldThrowCampaignOnGoingException) {
             throw new CampaignOnGoingException();
         }
         deleted = true;
@@ -122,13 +118,13 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public void updateCampaign(String id, CampaignUpdateDto campaign) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
-        if(shouldThrowCampaignNotFoundException) {
+        if (shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
-        if(shouldThrowVisibilityNotFoundException) {
+        if (shouldThrowVisibilityNotFoundException) {
             throw new VisibilityNotFoundException();
         }
-        if(shouldThrowVisibilityHasInvalidDatesException) {
+        if (shouldThrowVisibilityHasInvalidDatesException) {
             throw new VisibilityHasInvalidDatesException();
         }
         campaignUpdated = campaign;
@@ -140,8 +136,8 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public CampaignResponseDto getCampaignDtoById(String campaignId) throws CampaignNotFoundException{
-        if(shouldThrowCampaignNotFoundException) {
+    public CampaignResponseDto getCampaignDtoById(String campaignId) throws CampaignNotFoundException {
+        if (shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
         return campaignToRetrieve;
@@ -164,7 +160,7 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException {
-        if(shouldThrowCampaignNotFoundException) {
+        if (shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
         }
         return portalDataToReturn;

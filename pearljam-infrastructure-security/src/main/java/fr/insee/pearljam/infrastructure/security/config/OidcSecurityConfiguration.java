@@ -283,6 +283,8 @@ public class OidcSecurityConfiguration {
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_PORTAL_DATA)
 						.hasAnyRole(adminRole, localUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
+						.hasAnyRole(adminRole, localUserRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_SUMMARY_STATE_COUNTS)
 						.hasAnyRole(adminRole, nationalUserRole, localUserRole)
 						.anyRequest()
 						.denyAll());
