@@ -1,8 +1,5 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import java.time.Instant;
-import java.util.List;
-
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.reporting.model.CampaignProgression;
 import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
@@ -15,6 +12,9 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

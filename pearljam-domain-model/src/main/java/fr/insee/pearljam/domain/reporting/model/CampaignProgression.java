@@ -1,9 +1,9 @@
 package fr.insee.pearljam.domain.reporting.model;
 
 public record CampaignProgression(String campaignId, String campaignLabel, float progressRate,
-                                  SurveyUnits surveyUnits) {
+                                  CampaignProgressionSurveyUnits surveyUnits) {
 
-    public record SurveyUnits(
+    public record CampaignProgressionSurveyUnits(
             Long allocated,
             Long notStarted,
             Long inProgress,
@@ -16,5 +16,6 @@ public record CampaignProgression(String campaignId, String campaignLabel, float
             Long started,
             Long noticeLetter,
             Long reminderLetter
-    ) {}
+    ) {
+    }
 }

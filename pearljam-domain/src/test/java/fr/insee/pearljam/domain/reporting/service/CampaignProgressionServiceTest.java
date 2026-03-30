@@ -125,7 +125,7 @@ class CampaignProgressionServiceTest {
                 List.of(commCount("campaign-1"))
         );
 
-        CampaignProgression.SurveyUnits su =
+        CampaignProgression.CampaignProgressionSurveyUnits su =
                 service.getCampaignsProgression("user-1", FIXED_DATE).getFirst().surveyUnits();
 
         assertThat(su.allocated()).isEqualTo(100L);
@@ -172,7 +172,7 @@ class CampaignProgressionServiceTest {
                 List.of() // no comm counts
         );
 
-        CampaignProgression.SurveyUnits su =
+        CampaignProgression.CampaignProgressionSurveyUnits su =
                 service.getCampaignsProgression("user-1", FIXED_DATE).getFirst().surveyUnits();
 
         assertThat(su.noticeLetter()).isZero();
