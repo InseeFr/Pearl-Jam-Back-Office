@@ -6,8 +6,10 @@ import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.campaign.dto.*;
+import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
+import fr.insee.pearljam.domain.campaign.service.CampaignOrganizationService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
@@ -38,6 +40,7 @@ import java.util.List;
 public class CampaignController {
 
 	private final CampaignService campaignService;
+	private final CampaignOrganizationService campaignOrganizationService;
 	private final ReferentService referentService;
 	private final AuthenticatedUserService authenticatedUserService;
 	@Value("${feature.deprecated.endpoints.enabled}")
@@ -215,6 +218,7 @@ public class CampaignController {
 	 * @param campaignId campaign id
 	 * @return {@link CampaignResponseDto} the campaign
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get target campaign")
 	@GetMapping(path = {Constants.API_CAMPAIGN_ID, Constants.API_CAMPAIGNS_ID})
 	public CampaignResponseDto getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
@@ -256,6 +260,13 @@ public class CampaignController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		return campaignService.findCampaignPortalData(id, userId);
 	}
+
+	@Operation(summary = "Get target campaign")
+	@GetMapping(path = "/api/campaigns/id/organization")
+	public CampaignOrganization getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
+		return campaignOrganizationService.getCampaignOrganization(campaignId);
+	}
+
 
 
 
