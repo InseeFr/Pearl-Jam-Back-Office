@@ -39,7 +39,7 @@ public class CampaignProgressionByInterviewersService implements CampaignProgres
                         .map(interviewerDailyStats -> new CampaignProgressionByInterviewers.Interviewer(
                                 interviewerDailyStats.getInterviewerFirstName() + " " + interviewerDailyStats.getInterviewerLastName(),
                                 interviewerDailyStats.getProgressRate(),
-                                CampaignProgressionByInterviewers.SurveyUnits.from(interviewerDailyStats)))
+                                CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits.from(interviewerDailyStats)))
                         .toList();
 
         CampaignDailyStats siteStat = campaignDailyStatsRepository
@@ -47,14 +47,14 @@ public class CampaignProgressionByInterviewersService implements CampaignProgres
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressionByInterviewers.OrganizationUnit site = new CampaignProgressionByInterviewers.OrganizationUnit(
                 siteStat.progressRate(),
-                CampaignProgressionByInterviewers.SurveyUnits.from(siteStat));
+                CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits.from(siteStat));
 
         CampaignDailyStats campaignStats = campaignDailyStatsRepository
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressionByInterviewers.Campaign total = new CampaignProgressionByInterviewers.Campaign(
                 campaignStats.progressRate(),
-                CampaignProgressionByInterviewers.SurveyUnits.from(campaignStats));
+                CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits.from(campaignStats));
 
         return new CampaignProgressionByInterviewers(interviewersProgression, site, total);
     }

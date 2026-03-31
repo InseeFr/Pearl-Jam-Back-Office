@@ -10,7 +10,7 @@ public record CampaignProgressionByInterviewers(
         OrganizationUnit site,
         Campaign campaign) {
 
-    public record SurveyUnits(
+    public record CampaignProgressionByInterviewersSurveyUnits(
             Long allocated,
             Long notStarted,
             Long inProgress,
@@ -24,8 +24,8 @@ public record CampaignProgressionByInterviewers(
             Long noticeLetter,
             Long reminderLetter
     ) {
-        public static SurveyUnits from(InterviewerDailyStats interviewerDailyStats) {
-            return new SurveyUnits(
+        public static CampaignProgressionByInterviewersSurveyUnits from(InterviewerDailyStats interviewerDailyStats) {
+            return new CampaignProgressionByInterviewersSurveyUnits(
                     interviewerDailyStats.getTotal(),
                     interviewerDailyStats.getVicCount(),
                     interviewerDailyStats.getInProgress(),
@@ -41,8 +41,8 @@ public record CampaignProgressionByInterviewers(
             );
         }
 
-        public static SurveyUnits from(CampaignDailyStats campaignDailyStats) {
-            return new SurveyUnits(
+        public static CampaignProgressionByInterviewersSurveyUnits from(CampaignDailyStats campaignDailyStats) {
+            return new CampaignProgressionByInterviewersSurveyUnits(
                     campaignDailyStats.getTotal(),
                     campaignDailyStats.getVicCount(),
                     campaignDailyStats.getInProgress(),
@@ -62,16 +62,16 @@ public record CampaignProgressionByInterviewers(
     public record Interviewer(
             String interviewerLabel,
             float progressRate,
-            SurveyUnits surveyUnits
+            CampaignProgressionByInterviewersSurveyUnits surveyUnits
     ) {}
 
     public record OrganizationUnit(
             float progressRate,
-            SurveyUnits surveyUnits
+            CampaignProgressionByInterviewersSurveyUnits surveyUnits
     ) {}
 
     public record Campaign(
             float progressRate,
-            SurveyUnits surveyUnits
+            CampaignProgressionByInterviewersSurveyUnits surveyUnits
     ) {}
 }

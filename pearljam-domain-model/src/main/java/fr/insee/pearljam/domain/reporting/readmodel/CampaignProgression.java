@@ -3,9 +3,9 @@ package fr.insee.pearljam.domain.reporting.readmodel;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 
 public record CampaignProgression(String campaignId, String campaignLabel, float progressRate,
-                                  SurveyUnits surveyUnits) {
+                                  CampaignProgressionSurveyUnits surveyUnits) {
 
-    public record SurveyUnits(
+    public record CampaignProgressionSurveyUnits(
             Long allocated,
             Long notStarted,
             Long inProgress,
@@ -19,8 +19,8 @@ public record CampaignProgression(String campaignId, String campaignLabel, float
             Long noticeLetter,
             Long reminderLetter
     ) {
-        public static SurveyUnits from(CampaignDailyStats campaignDailyStats) {
-            return new SurveyUnits(
+        public static CampaignProgressionSurveyUnits from(CampaignDailyStats campaignDailyStats) {
+            return new CampaignProgressionSurveyUnits(
                     campaignDailyStats.getTotal(),
                     campaignDailyStats.getVicCount(),
                     campaignDailyStats.getInProgress(),

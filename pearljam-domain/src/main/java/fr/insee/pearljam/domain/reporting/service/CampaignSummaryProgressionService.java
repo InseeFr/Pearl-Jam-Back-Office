@@ -67,7 +67,7 @@ public class CampaignSummaryProgressionService implements CampaignSummaryProgres
                                     campaign.collectionEndDate(),
                                     campaign.endDate()
                             ),
-                            CampaignSummaryProgression.SurveyUnits.from(stats)
+                            CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits.from(stats)
                     );
                 })
                 .toList();

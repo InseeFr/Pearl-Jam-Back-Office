@@ -8,16 +8,16 @@ public record CampaignSummaryProgression(String campaignId,
                                          Long collectionEndDate,
                                          Long endDate,
                                          CampaignPhase campaignPhase,
-                                         SurveyUnits surveyUnits) {
+                                         CampaignSummaryProgressionSurveyUnits surveyUnits) {
 
-    public record SurveyUnits(Long allocated,
-                              Long toProcessInterviewer,
-                              Long toReview,
-                              Long completed,
-                              Long notAssigned) {
+    public record CampaignSummaryProgressionSurveyUnits(Long allocated,
+                                                        Long toProcessInterviewer,
+                                                        Long toReview,
+                                                        Long completed,
+                                                        Long notAssigned) {
 
-        public static SurveyUnits from(CampaignDailyStats campaignDailyStats) {
-            return new SurveyUnits(
+        public static CampaignSummaryProgressionSurveyUnits from(CampaignDailyStats campaignDailyStats) {
+            return new CampaignSummaryProgressionSurveyUnits(
                     campaignDailyStats.getTotal(),
                     campaignDailyStats.getToProcessInterviewer(),
                     campaignDailyStats.getTbrCount(),

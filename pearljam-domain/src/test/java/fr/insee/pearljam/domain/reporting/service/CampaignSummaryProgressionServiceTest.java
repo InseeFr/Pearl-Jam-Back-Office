@@ -106,7 +106,7 @@ class CampaignSummaryProgressionServiceTest {
 
         List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
-        CampaignSummaryProgression.SurveyUnits su = result.getFirst().surveyUnits();
+        CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits su = result.getFirst().surveyUnits();
         assertThat(su.allocated()).isZero();
         assertThat(su.toProcessInterviewer()).isZero();
         assertThat(su.toReview()).isZero();
@@ -155,7 +155,7 @@ class CampaignSummaryProgressionServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        CampaignSummaryProgression.SurveyUnits su =
+        CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits su =
                 service.getCampaignSummaryProgression(USER_ID, DAY).getFirst().surveyUnits();
 
         assertThat(su.allocated()).isEqualTo(130);

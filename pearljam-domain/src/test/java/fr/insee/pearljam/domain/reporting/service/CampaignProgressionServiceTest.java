@@ -117,7 +117,7 @@ class CampaignProgressionServiceTest {
                 List.of(dailyStats("campaign-1", "Campaign One"))
         );
 
-        CampaignProgression.SurveyUnits su =
+        CampaignProgression.CampaignProgressionSurveyUnits su =
                 service.getCampaignsProgression("user-1", DAY).getFirst().surveyUnits();
 
         assertThat(su.allocated()).isEqualTo(100L);

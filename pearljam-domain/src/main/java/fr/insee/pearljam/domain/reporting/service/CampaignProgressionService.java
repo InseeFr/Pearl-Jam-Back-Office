@@ -58,7 +58,7 @@ public class CampaignProgressionService implements CampaignProgressionPort {
                             campaign.id(),
                             campaign.label(),
                             campaignDailyStats.progressRate(),
-                            CampaignProgression.SurveyUnits.from(campaignDailyStats)
+                            CampaignProgression.CampaignProgressionSurveyUnits.from(campaignDailyStats)
                     );
                 })
                 .toList();
