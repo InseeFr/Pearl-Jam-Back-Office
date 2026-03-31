@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 @RestController
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 @Validated
 public class CampaignProgressionByInterviewerController {
     private final CampaignProgressionByInterviewersPort progressionByInterviewersPort;
+    private final Clock clock;
 
     @Operation(summary = "Get campaign progression for each interviewer from daily stats snapshot")
     @Parameter(name = "userId", hidden = true)
@@ -36,8 +38,9 @@ public class CampaignProgressionByInterviewerController {
             @CurrentSecurityContext(expression = "authentication.name") String userId,
             @RequestParam(required = false) LocalDate day) throws CampaignNotFoundException {
 
-        if (day == null || day.isAfter(LocalDate.now())) {
-            day = LocalDate.now();
+        LocalDate now = LocalDate.now(clock);
+        if (day == null || day.isAfter(now)) {
+            day = now;
         }
         return progressionByInterviewersPort.getProgressionForDay(userId, campaignId, day);
     }

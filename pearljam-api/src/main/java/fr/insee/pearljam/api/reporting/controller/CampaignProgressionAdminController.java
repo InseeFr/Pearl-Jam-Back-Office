@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 @RestController
@@ -23,12 +24,13 @@ import java.time.LocalDate;
 public class CampaignProgressionAdminController {
 
     private final CampaignProgressionBatch batch;
+    private final Clock clock;
 
     @Operation(summary = "Trigger snapshot computation for a given day (admin only)")
     @PostMapping(Constants.API_ADMIN_REPORTING_SNAPSHOT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void computeSnapshot(@RequestParam @NotNull LocalDate date) {
-        if (date.isAfter(LocalDate.now())) {
+        if (date.isAfter(LocalDate.now(clock))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "date must not be in the future");
         }
         batch.run(date);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
 @Validated
 public class CampaignSummaryProgressionController {
     private final CampaignSummaryProgressionService campaignSummaryProgressionService;
+    private final Clock clock;
 
     @Operation(summary = "Get summary of campaigns (based on my preferences), including state counts")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
@@ -31,8 +33,9 @@ public class CampaignSummaryProgressionController {
     public List<CampaignSummaryProgression> getCampaignSummaryWithStateCount(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        if (day == null || day.isAfter(LocalDate.now())) {
-            day = LocalDate.now();
+        LocalDate now = LocalDate.now(clock);
+        if (day == null || day.isAfter(now)) {
+            day = now;
         }
         return campaignSummaryProgressionService.getCampaignSummaryProgression(userId, day);
     }
