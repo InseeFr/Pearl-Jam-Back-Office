@@ -120,17 +120,17 @@ class CampaignProgressionServiceTest {
         CampaignProgression.CampaignProgressionSurveyUnits su =
                 service.getCampaignsProgression("user-1", DAY).getFirst().surveyUnits();
 
-        assertThat(su.allocated()).isEqualTo(100L);
-        assertThat(su.notStarted()).isEqualTo(5L);
-        assertThat(su.inProgress()).isEqualTo(9L);
-        assertThat(su.pendingTransmission()).isEqualTo(6L);
-        assertThat(su.toReview()).isEqualTo(20L);
-        assertThat(su.validated()).isEqualTo(40L);
-        assertThat(su.preparingContact()).isEqualTo(6L);
-        assertThat(su.atLeastOneContact()).isEqualTo(7L);
-        assertThat(su.appoLongmentScheduled()).isEqualTo(8L);
-        assertThat(su.noticeLetter()).isEqualTo(15L);
-        assertThat(su.reminderLetter()).isEqualTo(25L);
+        assertThat(su.allocated()).isEqualTo(100L);        // total
+        assertThat(su.notStarted()).isEqualTo(4L);         // vic
+        assertThat(su.inProgress()).isEqualTo(30L);        // prc+aoc+aps+ins = 6+7+8+9
+        assertThat(su.pendingTransmission()).isEqualTo(6L);// wft
+        assertThat(su.toReview()).isEqualTo(20L);          // tbr
+        assertThat(su.validated()).isEqualTo(52L);         // fin+clo = 40+12
+        assertThat(su.preparingContact()).isEqualTo(6L);   // prc
+        assertThat(su.atLeastOneContact()).isEqualTo(7L);  // aoc
+        assertThat(su.appoLongmentScheduled()).isEqualTo(8L); // aps
+        assertThat(su.noticeLetter()).isEqualTo(15L);      // notice
+        assertThat(su.reminderLetter()).isEqualTo(25L);    // reminder
     }
 
     @Test
@@ -145,8 +145,7 @@ class CampaignProgressionServiceTest {
 
         List<CampaignProgression> result = service.getCampaignsProgression("user-1", DAY);
 
-        assertThat(result.getFirst().surveyUnits().allocated()).isZero();
-        assertThat(result.getFirst().progressRate()).isZero();
+        assertThat(result).isEmpty();
     }
 
     @Test

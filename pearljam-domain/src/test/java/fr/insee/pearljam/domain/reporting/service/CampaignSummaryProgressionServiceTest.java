@@ -81,6 +81,8 @@ class CampaignSummaryProgressionServiceTest {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
+        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
+                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
 
         List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
@@ -106,12 +108,7 @@ class CampaignSummaryProgressionServiceTest {
 
         List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
-        CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits su = result.getFirst().surveyUnits();
-        assertThat(su.allocated()).isZero();
-        assertThat(su.toProcessInterviewer()).isZero();
-        assertThat(su.toReview()).isZero();
-        assertThat(su.completed()).isZero();
-        assertThat(su.notAssigned()).isZero();
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -124,6 +121,9 @@ class CampaignSummaryProgressionServiceTest {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(c1, c2));
+        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
+                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
+                        CampaignDailyStats.empty("CAMP2", "Campaign Two")));
 
         List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
