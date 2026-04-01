@@ -4,7 +4,9 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressionByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +22,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CampaignProgressionByInterviewersServiceTest {
+class CampaignProgressByInterviewersServiceTest {
 
     static final LocalDate DAY = LocalDate.of(2025, 1, 15);
     static final String USER_ID = "user-1";
@@ -29,13 +31,13 @@ class CampaignProgressionByInterviewersServiceTest {
 
     UserService userService;
     CampaignDailyStatsRepositoryPort statsRepository;
-    CampaignProgressionByInterviewersService service;
+    CampaignProgressByInterviewersService service;
 
     @BeforeEach
     void setup() {
         userService = mock(UserService.class);
         statsRepository = mock(CampaignDailyStatsRepositoryPort.class);
-        service = new CampaignProgressionByInterviewersService(userService, statsRepository);
+        service = new CampaignProgressByInterviewersService(userService, statsRepository);
 
         when(userService.getUserOUsModel(USER_ID, false)).thenReturn(List.of(OU));
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of());
@@ -45,13 +47,13 @@ class CampaignProgressionByInterviewersServiceTest {
 
     @Test
     void shouldReturnEmptyInterviewers_whenNoInterviewerStats() throws CampaignNotFoundException {
-        CampaignProgressionByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).isEmpty();
         assertThat(result.site().progressRate()).isZero();
-        assertThat(result.site().surveyUnits().allocated()).isZero();
+        assertThat(result.site().states().allocated()).isZero();
         assertThat(result.campaign().progressRate()).isZero();
-        assertThat(result.campaign().surveyUnits().allocated()).isZero();
+        assertThat(result.campaign().states().allocated()).isZero();
     }
 
     @Test
@@ -62,7 +64,7 @@ class CampaignProgressionByInterviewersServiceTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressionByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).hasSize(1);
         assertThat(result.interviewers().getFirst().interviewerLabel()).isEqualTo("Jean Dupont");
@@ -93,23 +95,24 @@ class CampaignProgressionByInterviewersServiceTest {
         );
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressionByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
 
-        CampaignProgressionByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
+        CampaignProgressByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
         assertThat(interviewer.progressRate()).isCloseTo(72.0f, within(0.001f));
 
-        CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits su = interviewer.surveyUnits();
-        assertThat(su.allocated()).isEqualTo(100L);         // total
-        assertThat(su.notStarted()).isEqualTo(4L);          // vic
-        assertThat(su.inProgress()).isEqualTo(30L);         // prc+aoc+aps+ins = 6+7+8+9
-        assertThat(su.pendingTransmission()).isEqualTo(6L); // wft
-        assertThat(su.toReview()).isEqualTo(20L);           // tbr
-        assertThat(su.validated()).isEqualTo(52L);          // fin+clo = 40+12
-        assertThat(su.progressPreparation()).isEqualTo(6L); // prc
-        assertThat(su.withContact()).isEqualTo(7L);         // aoc
-        assertThat(su.withAppointment()).isEqualTo(8L);     // aps
-        assertThat(su.noticeLetter()).isEqualTo(15L);
-        assertThat(su.reminderLetter()).isEqualTo(25L);
+        StatesProgress states = interviewer.states();
+        CommunicationsProgress communications = interviewer.communications();
+        assertThat(states.allocated()).isEqualTo(100L);         // total
+        assertThat(states.notStarted()).isEqualTo(4L);          // vic
+        assertThat(states.inProgress()).isEqualTo(30L);         // prc+aoc+aps+ins = 6+7+8+9
+        assertThat(states.pendingTransmission()).isEqualTo(6L); // wft
+        assertThat(states.toReview()).isEqualTo(20L);           // tbr
+        assertThat(states.validated()).isEqualTo(52L);          // fin+clo = 40+12
+        assertThat(states.preparingContact()).isEqualTo(6L); // prc
+        assertThat(states.withContact()).isEqualTo(7L);         // aoc
+        assertThat(states.withAppointment()).isEqualTo(8L);     // aps
+        assertThat(communications.noticeLetter()).isEqualTo(15L);
+        assertThat(communications.reminderLetter()).isEqualTo(25L);
     }
 
     @Test
@@ -127,12 +130,12 @@ class CampaignProgressionByInterviewersServiceTest {
         when(statsRepository.findCampaignStats(anyString(), any()))
                 .thenReturn(Optional.of(campaignStat));
 
-        CampaignProgressionByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.site().progressRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.site().surveyUnits().allocated()).isEqualTo(100L);
+        assertThat(result.site().states().allocated()).isEqualTo(100L);
         assertThat(result.campaign().progressRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.campaign().surveyUnits().allocated()).isEqualTo(100L);
+        assertThat(result.campaign().states().allocated()).isEqualTo(100L);
     }
 
     @Test
@@ -148,11 +151,11 @@ class CampaignProgressionByInterviewersServiceTest {
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        CampaignProgressionByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).hasSize(2);
         assertThat(result.interviewers())
-                .extracting(CampaignProgressionByInterviewers.Interviewer::interviewerLabel)
+                .extracting(CampaignProgressByInterviewers.Interviewer::interviewerLabel)
                 .containsExactly("Jean Dupont", "Marie Martin");
     }
 }

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressionService;
+import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,21 +20,21 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CampaignSummaryProgressionControllerTest {
+class CampaignSummaryProgressControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignSummaryProgressionService summaryService;
+    private CampaignSummaryProgressService summaryService;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
     private static final Clock FIXED_CLOCK = Clock.fixed(
             FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     @BeforeEach
     void setup() {
-        summaryService = mock(CampaignSummaryProgressionService.class);
+        summaryService = mock(CampaignSummaryProgressService.class);
         when(summaryService.getCampaignSummaryProgression(anyString(), any())).thenReturn(List.of());
 
-        CampaignSummaryProgressionController controller =
-                new CampaignSummaryProgressionController(summaryService, FIXED_CLOCK);
+        CampaignSummaryProgressController controller =
+                new CampaignSummaryProgressController(summaryService, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())

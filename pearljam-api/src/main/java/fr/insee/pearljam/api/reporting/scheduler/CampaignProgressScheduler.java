@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnBooleanProperty(name = "${feature.stats-scheduling.enabled}")
-public class CampaignProgressionScheduler {
+public class CampaignProgressScheduler {
 
     private final CampaignProgressionBatch campaignProgressionBatch;
 

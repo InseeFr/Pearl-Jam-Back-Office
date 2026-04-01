@@ -4,9 +4,11 @@ import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgression;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressionPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgress;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressPort;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,14 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class CampaignProgressionService implements CampaignProgressionPort {
+public class CampaignProgressService implements CampaignProgressPort {
 
     private final CampaignRepository campaignRepository;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final UserService userService;
 
     @Override
-    public List<CampaignProgression> getCampaignsProgression(String userId, LocalDate day) {
+    public List<CampaignProgress> getCampaignsProgress(String userId, LocalDate day) {
         List<String> userOUIds = userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
 
@@ -54,11 +56,12 @@ public class CampaignProgressionService implements CampaignProgressionPort {
                 .filter(campaign -> statsByCampaign.containsKey(campaign.id()))
                 .map(campaign -> {
                     CampaignDailyStats campaignDailyStats = statsByCampaign.get(campaign.id());
-                    return new CampaignProgression(
+                    return new CampaignProgress(
                             campaign.id(),
                             campaign.label(),
                             campaignDailyStats.progressRate(),
-                            CampaignProgression.CampaignProgressionSurveyUnits.from(campaignDailyStats)
+                            StatesProgress.from(campaignDailyStats),
+                            CommunicationsProgress.from(campaignDailyStats)
                     );
                 })
                 .toList();

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
+import fr.insee.pearljam.domain.reporting.service.CampaignProgressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,21 +20,21 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CampaignProgressionControllerTest {
+class CampaignProgressControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressionService progressionService;
+    private CampaignProgressService progressionService;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
     private static final Clock FIXED_CLOCK = Clock.fixed(
             FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     @BeforeEach
     void setup() {
-        progressionService = mock(CampaignProgressionService.class);
-        when(progressionService.getCampaignsProgression(anyString(), any())).thenReturn(List.of());
+        progressionService = mock(CampaignProgressService.class);
+        when(progressionService.getCampaignsProgress(anyString(), any())).thenReturn(List.of());
 
-        CampaignProgressionController controller =
-                new CampaignProgressionController(progressionService, FIXED_CLOCK);
+        CampaignProgressController controller =
+                new CampaignProgressController(progressionService, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -50,7 +50,7 @@ class CampaignProgressionControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(progressionService).getCampaignsProgression(any(), dayCaptor.capture());
+        verify(progressionService).getCampaignsProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
     }
 
@@ -60,7 +60,7 @@ class CampaignProgressionControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(progressionService).getCampaignsProgression(any(), dayCaptor.capture());
+        verify(progressionService).getCampaignsProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 
@@ -73,7 +73,7 @@ class CampaignProgressionControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(progressionService).getCampaignsProgression(any(), dayCaptor.capture());
+        verify(progressionService).getCampaignsProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 }

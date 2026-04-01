@@ -4,11 +4,12 @@ import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummaryProgression;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressionPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummaryProgress;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressPort;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class CampaignSummaryProgressionService implements CampaignSummaryProgressionPort {
+public class CampaignSummaryProgressService implements CampaignSummaryProgressPort {
 
     private final CampaignRepository campaignRepository;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
@@ -29,7 +30,7 @@ public class CampaignSummaryProgressionService implements CampaignSummaryProgres
     private final DateService dateService;
 
     @Override
-    public List<CampaignSummaryProgression> getCampaignSummaryProgression(String userId, LocalDate day) {
+    public List<CampaignSummaryProgress> getCampaignSummaryProgression(String userId, LocalDate day) {
         long currentTimestamp = dateService.getCurrentTimestamp();
 
         List<String> ouIds = userService.getUserOUsModel(userId, true).stream()
@@ -54,7 +55,7 @@ public class CampaignSummaryProgressionService implements CampaignSummaryProgres
                 .filter(c -> statsByCampaign.containsKey(c.id()))
                 .map(campaign -> {
                     CampaignDailyStats stats = statsByCampaign.get(campaign.id());
-                    return new CampaignSummaryProgression(
+                    return new CampaignSummaryProgress(
                             campaign.id(),
                             campaign.label(),
                             campaign.collectionStartDate(),
@@ -67,7 +68,7 @@ public class CampaignSummaryProgressionService implements CampaignSummaryProgres
                                     campaign.collectionEndDate(),
                                     campaign.endDate()
                             ),
-                            CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits.from(stats)
+                            StatesSummaryProgress.from(stats)
                     );
                 })
                 .toList();

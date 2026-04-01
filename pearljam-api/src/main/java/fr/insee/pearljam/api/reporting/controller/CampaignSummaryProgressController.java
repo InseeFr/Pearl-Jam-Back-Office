@@ -1,41 +1,43 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.util.List;
-
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgression;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressionService;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummaryProgress;
+import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
-public class CampaignProgressionController {
-    private final CampaignProgressionService campaignProgressionService;
+@Validated
+public class CampaignSummaryProgressController {
+    private final CampaignSummaryProgressService campaignSummaryProgressionService;
     private final Clock clock;
 
-    @Operation(summary = "Get campaigns reporting")
-    @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
+    @Operation(summary = "Get summary of campaigns (based on my preferences), including state counts")
+    @GetMapping(Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProgression> getCampaignsProgression(
+    public List<CampaignSummaryProgress> getCampaignSummaryWithStateCount(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
         LocalDate now = LocalDate.now(clock);
         if (day == null || day.isAfter(now)) {
             day = now;
         }
-        return campaignProgressionService.getCampaignsProgression(userId, day);
+        return campaignSummaryProgressionService.getCampaignSummaryProgression(userId, day);
     }
 }
 

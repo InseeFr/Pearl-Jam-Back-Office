@@ -3,8 +3,8 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressionByInterviewersPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressionByInterviewers;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,14 +26,14 @@ import java.time.LocalDate;
 @Slf4j
 @RequiredArgsConstructor
 @Validated
-public class CampaignProgressionByInterviewerController {
-    private final CampaignProgressionByInterviewersPort progressionByInterviewersPort;
+public class CampaignProgressByInterviewerController {
+    private final CampaignProgressByInterviewersPort progressionByInterviewersPort;
     private final Clock clock;
 
     @Operation(summary = "Get campaign progression for each interviewer from daily stats snapshot")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(Constants.API_REPORTING_INTERVIEWERS_PROGRESS)
-    public CampaignProgressionByInterviewers getCampaignProgressionForInterviewersFromStats(
+    public CampaignProgressByInterviewers getCampaignProgressionForInterviewersFromStats(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @CurrentSecurityContext(expression = "authentication.name") String userId,
             @RequestParam(required = false) LocalDate day) throws CampaignNotFoundException {

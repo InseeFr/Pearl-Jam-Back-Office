@@ -3,8 +3,7 @@ package fr.insee.pearljam.domain.reporting.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignSummaryProgression;
+import fr.insee.pearljam.domain.reporting.readmodel.*;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
@@ -20,7 +19,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CampaignSummaryProgressionServiceTest {
+class CampaignSummaryProgressServiceTest {
 
     static final Long FIXED_TIMESTAMP = 1_000_000L;
     static final LocalDate DAY = LocalDate.of(2025, 1, 15);
@@ -32,7 +31,7 @@ class CampaignSummaryProgressionServiceTest {
     UserService userService;
     DateService dateService;
 
-    CampaignSummaryProgressionService service;
+    CampaignSummaryProgressService service;
 
     @BeforeEach
     void setup() {
@@ -41,7 +40,7 @@ class CampaignSummaryProgressionServiceTest {
         userService = mock(UserService.class);
         dateService = mock(DateService.class);
 
-        service = new CampaignSummaryProgressionService(
+        service = new CampaignSummaryProgressService(
                 campaignRepository,
                 campaignDailyStatsRepositoryPort,
                 userService,
@@ -57,7 +56,7 @@ class CampaignSummaryProgressionServiceTest {
     void shouldReturnEmptyList_whenUserHasNoOrgUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -68,7 +67,7 @@ class CampaignSummaryProgressionServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of());
 
-        List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -84,17 +83,17 @@ class CampaignSummaryProgressionServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
 
-        List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
         assertThat(result).hasSize(1);
-        CampaignSummaryProgression cs = result.getFirst();
+        CampaignSummaryProgress cs = result.getFirst();
         assertThat(cs.campaignId()).isEqualTo("CAMP1");
         assertThat(cs.campaignLabel()).isEqualTo("Campaign One");
         assertThat(cs.collectionStartDate()).isEqualTo(1_050_000L);
         assertThat(cs.collectionEndDate()).isEqualTo(1_100_000L);
         assertThat(cs.endDate()).isEqualTo(1_150_000L);
         assertThat(cs.campaignPhase()).isEqualTo(CampaignPhase.INITIAL_ASSIGNMENT);
-        assertThat(cs.surveyUnits().allocated()).isZero();
+        assertThat(cs.states().allocated()).isZero();
     }
 
     @Test
@@ -106,7 +105,7 @@ class CampaignSummaryProgressionServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
 
-        List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -125,10 +124,10 @@ class CampaignSummaryProgressionServiceTest {
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
                         CampaignDailyStats.empty("CAMP2", "Campaign Two")));
 
-        List<CampaignSummaryProgression> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(CampaignSummaryProgression::campaignId)
+        assertThat(result).extracting(CampaignSummaryProgress::campaignId)
                 .containsExactlyInAnyOrder("CAMP1", "CAMP2");
     }
 
@@ -146,7 +145,7 @@ class CampaignSummaryProgressionServiceTest {
                 9L,   // ins
                 10L,  // wft
                 11L, 12L, 13L, 14L, 15L, 10L,
-                130L, 0L, 0L
+                130L, 1L, 2L
         );
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
@@ -155,13 +154,13 @@ class CampaignSummaryProgressionServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        CampaignSummaryProgression.CampaignSummaryProgressionSurveyUnits su =
-                service.getCampaignSummaryProgression(USER_ID, DAY).getFirst().surveyUnits();
+        CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgression(USER_ID, DAY).getFirst();
+        StatesSummaryProgress states = campaignSummaryProgress.states();
 
-        assertThat(su.allocated()).isEqualTo(130);
-        assertThat(su.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
-        assertThat(su.toReview()).isEqualTo(12);
-        assertThat(su.completed()).isEqualTo(13 + 14); // fin + clo = 27
-        assertThat(su.notAssigned()).isEqualTo(10);
+        assertThat(states.allocated()).isEqualTo(130);
+        assertThat(states.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
+        assertThat(states.toReview()).isEqualTo(12);
+        assertThat(states.completed()).isEqualTo(13 + 14); // fin + clo = 27
+        assertThat(states.notAssigned()).isEqualTo(10);
     }
 }

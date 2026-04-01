@@ -2,8 +2,10 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressionByInterviewersPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressionByInterviewers;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,31 +23,33 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CampaignProgressionByInterviewerControllerTest {
+class CampaignProgressByInterviewerControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressionByInterviewersPort port;
+    private CampaignProgressByInterviewersPort port;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
     private static final Clock FIXED_CLOCK = Clock.fixed(
             FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
-    private static final CampaignProgressionByInterviewers EMPTY_RESULT = new CampaignProgressionByInterviewers(
+    private static final CampaignProgressByInterviewers EMPTY_RESULT = new CampaignProgressByInterviewers(
             List.of(),
-            new CampaignProgressionByInterviewers.OrganizationUnit(0f,
-                    new CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits(
-                            0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L)),
-            new CampaignProgressionByInterviewers.Campaign(0f,
-                    new CampaignProgressionByInterviewers.CampaignProgressionByInterviewersSurveyUnits(
-                            0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L))
+            new CampaignProgressByInterviewers.OrganizationUnit(0f,
+                    new StatesProgress(
+                            0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                    new CommunicationsProgress(0L, 0L)),
+            new CampaignProgressByInterviewers.Campaign(0f,
+                    new StatesProgress(
+                            0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                    new CommunicationsProgress(0L, 0L))
     );
 
     @BeforeEach
     void setup() throws CampaignNotFoundException {
-        port = mock(CampaignProgressionByInterviewersPort.class);
+        port = mock(CampaignProgressByInterviewersPort.class);
         when(port.getProgressionForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
 
-        CampaignProgressionByInterviewerController controller =
-                new CampaignProgressionByInterviewerController(port, FIXED_CLOCK);
+        CampaignProgressByInterviewerController controller =
+                new CampaignProgressByInterviewerController(port, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())

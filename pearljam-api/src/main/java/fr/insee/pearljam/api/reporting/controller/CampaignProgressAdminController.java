@@ -21,7 +21,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 @Validated
-public class CampaignProgressionAdminController {
+public class CampaignProgressAdminController {
 
     private final CampaignProgressionBatch batch;
     private final Clock clock;
