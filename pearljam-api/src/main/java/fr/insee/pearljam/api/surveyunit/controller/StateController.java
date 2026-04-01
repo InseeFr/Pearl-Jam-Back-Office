@@ -115,6 +115,7 @@ public class StateController {
    * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
+  @Deprecated(forRemoval = true)
   @Operation(summary = "Get campaignStateCount")
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_STATECOUNT)
   public ResponseEntity<StateCountCampaignDto> getCampaignStateCount(

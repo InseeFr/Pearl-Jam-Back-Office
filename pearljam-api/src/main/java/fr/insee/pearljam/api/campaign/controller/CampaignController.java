@@ -9,7 +9,7 @@ import fr.insee.pearljam.api.campaign.dto.*;
 import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
-import fr.insee.pearljam.domain.campaign.service.CampaignOrganizationService;
+import fr.insee.pearljam.domain.reporting.service.CampaignOrganizationService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -134,6 +135,7 @@ public class CampaignController {
 	 * @param id campaign id
 	 * @return CountDto counts
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get numberSUAbandoned")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_ABANDONED)
 	public CountDto getNbSUAbandoned(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
@@ -148,6 +150,7 @@ public class CampaignController {
 	 * @param campaignId campaign id
 	 * @return CountDto counts
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get numberSUNotAttributed")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED)
 	public CountDto getNbSUNotAttributed(@PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
@@ -260,14 +263,4 @@ public class CampaignController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		return campaignService.findCampaignPortalData(id, userId);
 	}
-
-	@Operation(summary = "Get target campaign")
-	@GetMapping(path = "/api/campaigns/id/organization")
-	public CampaignOrganization getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
-		return campaignOrganizationService.getCampaignOrganization(campaignId);
-	}
-
-
-
-
 }

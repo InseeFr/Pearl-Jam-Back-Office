@@ -1,5 +1,7 @@
 package fr.insee.pearljam.domain.campaign.model;
 
+import fr.insee.pearljam.domain.reporting.model.CampaignPhase;
+
 import java.util.List;
 
 public record CampaignOrganization(
@@ -9,33 +11,27 @@ public record CampaignOrganization(
         long collectionStartDate,
         long collectionEndDate,
         long endDate,
-        Phase phase,
+        CampaignPhase phase,
         List<Referent> referents,
-        Interviewer interviewers,
-        SurveyUnits surveyUnits
+        List<Interviewer> interviewers,
+        CampaignOrganizationSurveyUnit surveyUnits
 ) {
     public record Referent(
             String firstName,
             String lastName,
             String phoneNumber,
-            Role role
+            String role
     ) {}
+
     public record Interviewer(
             String id,
             String label,
-            int surveyUnits
+            Long surveyUnits
     ) {}
-    public record SurveyUnits(
-            int total,
-            int abandoned,
-            int notAffected
+
+    public record CampaignOrganizationSurveyUnit(
+            Long total,
+            Long abandoned,
+            Long notAffected
     ) {}
-    public enum Phase {
-        INITIAL_ASSIGNMENT,
-        COLLECTION_IN_PROGRESS,
-        COLLECTION_COMPLETED
-    }
-    public enum Role {
-        PRIMARY
-    }
 }
