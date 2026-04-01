@@ -47,7 +47,7 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldReturnEmptyInterviewers_whenNoInterviewerStats() throws CampaignNotFoundException {
-        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).isEmpty();
         assertThat(result.site().progressRate()).isZero();
@@ -63,7 +63,7 @@ class CampaignProgressByInterviewersServiceTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).hasSize(1);
         assertThat(result.interviewers().getFirst().interviewerLabel()).isEqualTo("Jean Dupont");
@@ -93,7 +93,7 @@ class CampaignProgressByInterviewersServiceTest {
         );
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         CampaignProgressByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
         assertThat(interviewer.progressRate()).isCloseTo(72.0f, within(0.001f));
@@ -128,7 +128,7 @@ class CampaignProgressByInterviewersServiceTest {
         when(statsRepository.findCampaignStats(anyString(), any()))
                 .thenReturn(Optional.of(campaignStat));
 
-        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.site().progressRate()).isCloseTo(50.0f, within(0.001f));
         assertThat(result.site().states().allocated()).isEqualTo(100L);
@@ -147,7 +147,7 @@ class CampaignProgressByInterviewersServiceTest {
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        CampaignProgressByInterviewers result = service.getProgressionForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         assertThat(result.interviewers()).hasSize(2);
         assertThat(result.interviewers())

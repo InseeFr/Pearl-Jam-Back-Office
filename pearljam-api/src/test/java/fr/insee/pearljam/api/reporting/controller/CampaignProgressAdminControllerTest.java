@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressionBatch;
+import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,14 +18,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CampaignProgressAdminControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressionBatch batch;
+    private CampaignProgressBatch batch;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
     private static final Clock FIXED_CLOCK = Clock.fixed(
             FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     @BeforeEach
     void setup() {
-        batch = mock(CampaignProgressionBatch.class);
+        batch = mock(CampaignProgressBatch.class);
         CampaignProgressAdminController controller = new CampaignProgressAdminController(batch, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)

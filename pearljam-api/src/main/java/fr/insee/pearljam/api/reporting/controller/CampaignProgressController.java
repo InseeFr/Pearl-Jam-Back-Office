@@ -22,20 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressController {
-    private final CampaignProgressService campaignProgressionService;
+    private final CampaignProgressService campaignProgressService;
     private final Clock clock;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProgress> getCampaignsProgression(
+    public List<CampaignProgress> getCampaignsProgress(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
         LocalDate now = LocalDate.now(clock);
         if (day == null || day.isAfter(now)) {
             day = now;
         }
-        return campaignProgressionService.getCampaignsProgress(userId, day);
+        return campaignProgressService.getCampaignsProgress(userId, day);
     }
 }
 

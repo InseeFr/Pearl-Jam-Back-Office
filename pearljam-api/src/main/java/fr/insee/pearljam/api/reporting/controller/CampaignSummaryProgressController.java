@@ -24,7 +24,7 @@ import java.util.List;
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 @Validated
 public class CampaignSummaryProgressController {
-    private final CampaignSummaryProgressService campaignSummaryProgressionService;
+    private final CampaignSummaryProgressService campaignSummaryProgressService;
     private final Clock clock;
 
     @Operation(summary = "Get summary of campaigns (based on my preferences), including state counts")
@@ -37,7 +37,7 @@ public class CampaignSummaryProgressController {
         if (day == null || day.isAfter(now)) {
             day = now;
         }
-        return campaignSummaryProgressionService.getCampaignSummaryProgression(userId, day);
+        return campaignSummaryProgressService.getCampaignSummaryProgress(userId, day);
     }
 }
 

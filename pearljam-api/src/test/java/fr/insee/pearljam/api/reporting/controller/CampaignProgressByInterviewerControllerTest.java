@@ -46,7 +46,7 @@ class CampaignProgressByInterviewerControllerTest {
     @BeforeEach
     void setup() throws CampaignNotFoundException {
         port = mock(CampaignProgressByInterviewersPort.class);
-        when(port.getProgressionForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
+        when(port.getProgressForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
 
         CampaignProgressByInterviewerController controller =
                 new CampaignProgressByInterviewerController(port, FIXED_CLOCK);
@@ -65,7 +65,7 @@ class CampaignProgressByInterviewerControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressionForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
     }
 
@@ -75,7 +75,7 @@ class CampaignProgressByInterviewerControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressionForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 
@@ -88,13 +88,13 @@ class CampaignProgressByInterviewerControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressionForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 
     @Test
     void shouldReturn404_whenCampaignNotFound() throws Exception {
-        when(port.getProgressionForDay(any(), anyString(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), anyString(), any())).thenThrow(new CampaignNotFoundException());
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/interviewers/progress"))
                 .andExpect(status().isNotFound());

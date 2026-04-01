@@ -27,13 +27,13 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Validated
 public class CampaignProgressByInterviewerController {
-    private final CampaignProgressByInterviewersPort progressionByInterviewersPort;
+    private final CampaignProgressByInterviewersPort progressByInterviewersPort;
     private final Clock clock;
 
-    @Operation(summary = "Get campaign progression for each interviewer from daily stats snapshot")
+    @Operation(summary = "Get campaign progress for each interviewer from daily stats snapshot")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(Constants.API_REPORTING_INTERVIEWERS_PROGRESS)
-    public CampaignProgressByInterviewers getCampaignProgressionForInterviewersFromStats(
+    public CampaignProgressByInterviewers getCampaignProgressForInterviewersFromStats(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @CurrentSecurityContext(expression = "authentication.name") String userId,
             @RequestParam(required = false) LocalDate day) throws CampaignNotFoundException {
@@ -42,7 +42,7 @@ public class CampaignProgressByInterviewerController {
         if (day == null || day.isAfter(now)) {
             day = now;
         }
-        return progressionByInterviewersPort.getProgressionForDay(userId, campaignId, day);
+        return progressByInterviewersPort.getProgressForDay(userId, campaignId, day);
     }
 }
 

@@ -11,7 +11,7 @@ import java.time.ZoneOffset;
 @Repository
 @RequiredArgsConstructor
 @Transactional
-public class CampaignProgressionSnapshot {
+public class CampaignProgressSnapshot {
 
     private final EntityManager em;
 

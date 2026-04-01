@@ -31,7 +31,7 @@ class CampaignSummaryProgressControllerTest {
     @BeforeEach
     void setup() {
         summaryService = mock(CampaignSummaryProgressService.class);
-        when(summaryService.getCampaignSummaryProgression(anyString(), any())).thenReturn(List.of());
+        when(summaryService.getCampaignSummaryProgress(anyString(), any())).thenReturn(List.of());
 
         CampaignSummaryProgressController controller =
                 new CampaignSummaryProgressController(summaryService, FIXED_CLOCK);
@@ -50,7 +50,7 @@ class CampaignSummaryProgressControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(summaryService).getCampaignSummaryProgression(any(), dayCaptor.capture());
+        verify(summaryService).getCampaignSummaryProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
     }
 
@@ -60,7 +60,7 @@ class CampaignSummaryProgressControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(summaryService).getCampaignSummaryProgression(any(), dayCaptor.capture());
+        verify(summaryService).getCampaignSummaryProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 
@@ -73,7 +73,7 @@ class CampaignSummaryProgressControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(summaryService).getCampaignSummaryProgression(any(), dayCaptor.capture());
+        verify(summaryService).getCampaignSummaryProgress(any(), dayCaptor.capture());
         assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 }

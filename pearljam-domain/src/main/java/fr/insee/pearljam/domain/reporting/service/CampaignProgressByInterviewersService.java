@@ -24,7 +24,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
 
     @Override
-    public CampaignProgressByInterviewers getProgressionForDay(String userId, String campaignId, LocalDate day) throws CampaignNotFoundException {
+    public CampaignProgressByInterviewers getProgressForDay(String userId, String campaignId, LocalDate day) throws CampaignNotFoundException {
         userService.checkUserAssociationToCampaign(campaignId, userId);
 
         List<String> userOUIds = userService.getUserOUsModel(userId, false).stream()
@@ -34,7 +34,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
         List<InterviewerDailyStats> interviewerStats =
                 campaignDailyStatsRepository.getInterviewerStats(campaignId, userOUIds, day);
 
-        List<CampaignProgressByInterviewers.Interviewer> interviewersProgression =
+        List<CampaignProgressByInterviewers.Interviewer> interviewersProgress =
                 interviewerStats.stream()
                         .map(interviewerDailyStats -> new CampaignProgressByInterviewers.Interviewer(
                                 interviewerDailyStats.getInterviewerFirstName() + " " + interviewerDailyStats.getInterviewerLastName(),
@@ -59,6 +59,6 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 StatesProgress.from(campaignStats),
                 CommunicationsProgress.from(campaignStats));
 
-        return new CampaignProgressByInterviewers(interviewersProgression, site, total);
+        return new CampaignProgressByInterviewers(interviewersProgress, site, total);
     }
 }

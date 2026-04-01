@@ -12,6 +12,7 @@ import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryP
 import fr.insee.pearljam.domain.reporting.readmodel.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CampaignSummaryProgressService implements CampaignSummaryProgressPort {
 
     private final CampaignRepository campaignRepository;
@@ -30,7 +32,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
     private final DateService dateService;
 
     @Override
-    public List<CampaignSummaryProgress> getCampaignSummaryProgression(String userId, LocalDate day) {
+    public List<CampaignSummaryProgress> getCampaignSummaryProgress(String userId, LocalDate day) {
         long currentTimestamp = dateService.getCurrentTimestamp();
 
         List<String> ouIds = userService.getUserOUsModel(userId, true).stream()

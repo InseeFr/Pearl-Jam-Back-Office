@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CampaignSummaryProgressPort {
 
-    List<CampaignSummaryProgress> getCampaignSummaryProgression(String userId, LocalDate day);
+    List<CampaignSummaryProgress> getCampaignSummaryProgress(String userId, LocalDate day);
 }

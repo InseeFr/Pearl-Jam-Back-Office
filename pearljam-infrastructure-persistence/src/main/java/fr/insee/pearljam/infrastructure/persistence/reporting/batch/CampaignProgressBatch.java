@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CampaignProgressionBatch {
+public class CampaignProgressBatch {
 
     private final PartitionManager partitionManager;
-    private final CampaignProgressionSnapshot snapshot;
+    private final CampaignProgressSnapshot snapshot;
 
     public void run(LocalDate day) {
         // create partitioned table if not exist within the month range

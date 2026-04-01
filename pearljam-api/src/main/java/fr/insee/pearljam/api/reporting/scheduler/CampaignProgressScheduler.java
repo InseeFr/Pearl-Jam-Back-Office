@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.scheduler;
 
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressionBatch;
+import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @ConditionalOnBooleanProperty(name = "${feature.stats-scheduling.enabled}")
 public class CampaignProgressScheduler {
 
-    private final CampaignProgressionBatch campaignProgressionBatch;
+    private final CampaignProgressBatch campaignProgressBatch;
 
     /**
      * Computes the daily snapshot for yesterday at 01:00 UTC.
@@ -25,6 +25,6 @@ public class CampaignProgressScheduler {
     public void computeYesterdaySnapshot() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         log.info("Scheduled snapshot computation for {}", yesterday);
-        campaignProgressionBatch.run(yesterday);
+        campaignProgressBatch.run(yesterday);
     }
 }

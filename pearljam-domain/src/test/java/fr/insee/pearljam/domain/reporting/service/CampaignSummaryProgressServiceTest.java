@@ -56,7 +56,7 @@ class CampaignSummaryProgressServiceTest {
     void shouldReturnEmptyList_whenUserHasNoOrgUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -67,7 +67,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of());
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -83,7 +83,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
 
         assertThat(result).hasSize(1);
         CampaignSummaryProgress cs = result.getFirst();
@@ -105,7 +105,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
 
         assertThat(result).isEmpty();
     }
@@ -124,7 +124,7 @@ class CampaignSummaryProgressServiceTest {
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
                         CampaignDailyStats.empty("CAMP2", "Campaign Two")));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgression(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting(CampaignSummaryProgress::campaignId)
@@ -154,7 +154,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgression(USER_ID, DAY).getFirst();
+        CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, DAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
         assertThat(states.allocated()).isEqualTo(130);

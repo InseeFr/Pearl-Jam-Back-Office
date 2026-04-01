@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressionBatch;
+import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @Validated
 public class CampaignProgressAdminController {
 
-    private final CampaignProgressionBatch batch;
+    private final CampaignProgressBatch batch;
     private final Clock clock;
 
     @Operation(summary = "Trigger snapshot computation for a given day (admin only)")

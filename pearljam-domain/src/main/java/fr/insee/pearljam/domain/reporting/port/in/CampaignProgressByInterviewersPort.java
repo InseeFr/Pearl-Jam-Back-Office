@@ -6,7 +6,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewe
 import java.time.LocalDate;
 
 public interface CampaignProgressByInterviewersPort {
-    CampaignProgressByInterviewers getProgressionForDay(String userId,
+    CampaignProgressByInterviewers getProgressForDay(String userId,
                                                         String campaignId,
                                                         LocalDate day) throws CampaignNotFoundException;
 }
