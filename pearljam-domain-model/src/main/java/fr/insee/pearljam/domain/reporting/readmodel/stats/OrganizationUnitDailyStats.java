@@ -12,8 +12,6 @@ import lombok.Setter;
 public class OrganizationUnitDailyStats {
     private String ouId;
     private String ouLabel;
-    private String campaignId;
-    private String campaignLabel;
     private Long nvmCount;
     private Long nnsCount;
     private Long anvCount;

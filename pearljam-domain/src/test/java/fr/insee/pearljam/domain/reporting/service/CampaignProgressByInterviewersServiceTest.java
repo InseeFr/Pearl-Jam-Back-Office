@@ -59,8 +59,7 @@ class CampaignProgressByInterviewersServiceTest {
     @Test
     void shouldMapInterviewerLabelCorrectly() throws CampaignNotFoundException {
         InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont", "ou-1", "Org 1",
-                CAMPAIGN_ID, "Campaign One",
+                "int-1", "Jean", "Dupont",
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
@@ -74,8 +73,7 @@ class CampaignProgressByInterviewersServiceTest {
     void shouldMapInterviewerSurveyUnitsAndProgressRate() throws CampaignNotFoundException {
         // total=100, tbr=20, fin=40, clo=12 → progress = (20+40+12)/100*100 = 72%
         InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont", "ou-1", "Org 1",
-                CAMPAIGN_ID, "Campaign One",
+                "int-1", "Jean", "Dupont",
                 1L, 5L, 2L, 3L,
                 4L,   // vic
                 6L,   // prc
@@ -141,12 +139,10 @@ class CampaignProgressByInterviewersServiceTest {
     @Test
     void shouldReturnMultipleInterviewers() throws CampaignNotFoundException {
         InterviewerDailyStats stats1 = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont", "ou-1", "Org 1",
-                CAMPAIGN_ID, "Campaign One",
+                "int-1", "Jean", "Dupont",
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0);
         InterviewerDailyStats stats2 = new InterviewerDailyStats(
-                "int-2", "Marie", "Martin", "ou-1", "Org 1",
-                CAMPAIGN_ID, "Campaign One",
+                "int-2", "Marie", "Martin",
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
