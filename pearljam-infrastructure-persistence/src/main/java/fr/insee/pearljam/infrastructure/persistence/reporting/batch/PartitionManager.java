@@ -32,18 +32,13 @@ public class PartitionManager {
     }
 
     private void createPartitionIfNotExists(String partitionName, LocalDate start, LocalDate end) {
-
         String sql = """
-            CREATE TABLE IF NOT EXISTS %s
-            PARTITION OF campaign_daily_stats
-            FOR VALUES FROM (:start) TO (:end)
-        """.formatted(partitionName);
+                CREATE TABLE IF NOT EXISTS %s
+                PARTITION OF campaign_daily_stats
+                FOR VALUES FROM ('%s') TO ('%s')
+            """.formatted(partitionName, start, end);
 
-
-        em.createNativeQuery(sql)
-                .setParameter("start", start)
-                .setParameter("end", end)
-                .executeUpdate();
+        em.createNativeQuery(sql).executeUpdate();
     }
 
     private void createIndexesIfNotExists(String partitionName) {
