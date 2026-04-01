@@ -11,6 +11,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CampaignProgressService implements CampaignProgressPort {
 
     private final CampaignRepository campaignRepository;
@@ -42,6 +44,7 @@ public class CampaignProgressService implements CampaignProgressPort {
                         userOUIds, day.atStartOfDay(ZoneOffset.UTC).toInstant());
 
         if (campaigns.isEmpty()) {
+            log.info("No opened campaigns found for {}", userId);
             return Collections.emptyList();
         }
 

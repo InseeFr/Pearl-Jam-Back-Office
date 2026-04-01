@@ -43,6 +43,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .findCampaignWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         if (campaigns.isEmpty()) {
+            log.info("No campaign visible for {}", userId);
             return Collections.emptyList();
         }
 
