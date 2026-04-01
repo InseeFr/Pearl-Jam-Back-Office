@@ -4,16 +4,16 @@ import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 
 public record StatesProgress(
-        Long allocated,
-        Long notStarted,
-        Long inProgress,
-        Long pendingTransmission,
-        Long toReview,
-        Long validated,
-        Long preparingContact,
-        Long withContact,
-        Long withAppointment,
-        Long started
+        long allocated,
+        long notStarted,
+        long inProgress,
+        long pendingTransmission,
+        long toReview,
+        long validated,
+        long preparingContact,
+        long withContact,
+        long withAppointment,
+        long started
 ) {
     public static StatesProgress from(CampaignDailyStats campaignDailyStats) {
         return new StatesProgress(

@@ -4,8 +4,8 @@ import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 
 public record CommunicationsProgress(
-        Long noticeLetter,
-        Long reminderLetter
+        long noticeLetter,
+        long reminderLetter
 ) {
     public static CommunicationsProgress from(CampaignDailyStats campaignDailyStats) {
         return new CommunicationsProgress(
