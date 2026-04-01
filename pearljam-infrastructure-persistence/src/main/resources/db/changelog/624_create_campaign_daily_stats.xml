@@ -40,4 +40,47 @@
         </sql>
     </changeSet>
 
+    <changeSet id="0624-3" author="davdarras">
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="campaign_id"
+                constraintName="fk_cds_campaign"
+                referencedTableName="campaign"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="organization_unit_id"
+                constraintName="fk_cds_ou"
+                referencedTableName="organization_unit"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="interviewer_id"
+                constraintName="fk_cds_interviewer"
+                referencedTableName="interviewer"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="0624-4" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX IF NOT EXISTS idx_closing_cause_su_date
+            ON closing_cause (survey_unit_id, date DESC);
+
+            CREATE INDEX idx_cds_campaign_id
+            ON campaign_daily_stats (campaign_id);
+
+            CREATE INDEX idx_cds_ou_id
+            ON campaign_daily_stats (organization_unit_id);
+
+            CREATE INDEX idx_cds_interviewer_id
+            ON campaign_daily_stats (interviewer_id);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
