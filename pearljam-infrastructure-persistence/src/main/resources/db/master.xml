@@ -109,4 +109,7 @@
 
 	<include file="changelog/621_remove_notnull_panel_contact_history.xml" relativeToChangelogFile="true"/>
 
+	<!-- daily stats table for campaign progression reporting -->
+	<include file="changelog/624_create_campaign_daily_stats.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

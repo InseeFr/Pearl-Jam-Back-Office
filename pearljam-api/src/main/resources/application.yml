@@ -35,6 +35,9 @@ feature:
     mail-sender:
   swagger:
     enabled: false
+  stats-scheduling:
+    enabled: false
+    survey-unit-stats-cron: "0 0 1 * * *"
 
 spring:
   mvc:

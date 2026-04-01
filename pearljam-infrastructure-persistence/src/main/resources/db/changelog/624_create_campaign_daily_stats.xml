@@ -1,0 +1,86 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0624-1" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE TABLE IF NOT EXISTS campaign_daily_stats (
+                day                  DATE         NOT NULL,
+                campaign_id          VARCHAR(50)  NOT NULL,
+                organization_unit_id VARCHAR(50)  NOT NULL,
+                interviewer_id       VARCHAR(50)  NOT NULL,
+                nvm_count    INTEGER NOT NULL DEFAULT 0,
+                nns_count    INTEGER NOT NULL DEFAULT 0,
+                anv_count    INTEGER NOT NULL DEFAULT 0,
+                vin_count    INTEGER NOT NULL DEFAULT 0,
+                vic_count    INTEGER NOT NULL DEFAULT 0,
+                prc_count    INTEGER NOT NULL DEFAULT 0,
+                aoc_count    INTEGER NOT NULL DEFAULT 0,
+                aps_count    INTEGER NOT NULL DEFAULT 0,
+                ins_count    INTEGER NOT NULL DEFAULT 0,
+                wft_count    INTEGER NOT NULL DEFAULT 0,
+                wfs_count    INTEGER NOT NULL DEFAULT 0,
+                tbr_count    INTEGER NOT NULL DEFAULT 0,
+                fin_count    INTEGER NOT NULL DEFAULT 0,
+                clo_count    INTEGER NOT NULL DEFAULT 0,
+                nva_count    INTEGER NOT NULL DEFAULT 0,
+                notice_count   INTEGER NOT NULL DEFAULT 0,
+                reminder_count INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (day, campaign_id, organization_unit_id, interviewer_id)
+            ) PARTITION BY RANGE (day);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0624-2" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX IF NOT EXISTS idx_cds_campaign_day_ou
+                ON campaign_daily_stats (campaign_id, day, organization_unit_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0624-3" author="davdarras">
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="campaign_id"
+                constraintName="fk_cds_campaign"
+                referencedTableName="campaign"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="organization_unit_id"
+                constraintName="fk_cds_ou"
+                referencedTableName="organization_unit"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="campaign_daily_stats"
+                baseColumnNames="interviewer_id"
+                constraintName="fk_cds_interviewer"
+                referencedTableName="interviewer"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="0624-4" author="davdarras" runInTransaction="false">
+        <sql dbms="postgresql">
+            CREATE INDEX IF NOT EXISTS idx_closing_cause_su_date
+            ON closing_cause (survey_unit_id, date DESC);
+
+            CREATE INDEX idx_cds_campaign_id
+            ON campaign_daily_stats (campaign_id);
+
+            CREATE INDEX idx_cds_ou_id
+            ON campaign_daily_stats (organization_unit_id);
+
+            CREATE INDEX idx_cds_interviewer_id
+            ON campaign_daily_stats (interviewer_id);
+        </sql>
+    </changeSet>
+</databaseChangeLog>
