@@ -22,6 +22,7 @@ public record CampaignProgressByInterviewers(
     ) {}
 
     public record Campaign(
+            long unaffected,
             float progressRate,
             StatesProgress states,
             CommunicationsProgress communications

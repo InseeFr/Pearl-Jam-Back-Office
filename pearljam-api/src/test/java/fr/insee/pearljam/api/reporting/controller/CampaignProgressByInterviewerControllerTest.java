@@ -37,7 +37,7 @@ class CampaignProgressByInterviewerControllerTest {
                     new StatesProgress(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgress(0L, 0L)),
-            new CampaignProgressByInterviewers.Campaign(0f,
+            new CampaignProgressByInterviewers.Campaign(0L, 0f,
                     new StatesProgress(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgress(0L, 0L))

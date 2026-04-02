@@ -57,6 +57,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressByInterviewers.Campaign total = new CampaignProgressByInterviewers.Campaign(
+                campaignStats.getUnaffectedCount(),
                 campaignStats.getProgressStateRate(),
                 StatesProgress.from(campaignStats),
                 CommunicationsProgress.from(campaignStats));
