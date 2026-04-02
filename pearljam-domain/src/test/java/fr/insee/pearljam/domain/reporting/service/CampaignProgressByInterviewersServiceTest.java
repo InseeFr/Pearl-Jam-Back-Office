@@ -60,7 +60,10 @@ class CampaignProgressByInterviewersServiceTest {
     void shouldMapInterviewerLabelCorrectly() throws CampaignNotFoundException {
         InterviewerDailyStats stats = new InterviewerDailyStats(
                 "int-1", "Jean", "Dupont",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
+                0L, 0L, 0L,                        // unaffected, notice, reminder
+                0L, 0L, 0L, 0L,                    // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
@@ -71,7 +74,7 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapInterviewerSurveyUnitsAndProgressRate() throws CampaignNotFoundException {
-        // total=100, tbr=20, fin=40, clo=12 → progress = (20+40+12)/100*100 = 72%
+        // allocated=133, tbr=20, fin=40, clo=12 → progress = (20+40+12)/133*100 ≈ 54.14%
         InterviewerDailyStats stats = new InterviewerDailyStats(
                 "int-1", "Jean", "Dupont",
                 1L, 5L, 2L, 3L,
@@ -87,20 +90,21 @@ class CampaignProgressByInterviewersServiceTest {
                 12L,  // clo
                 8L,   // nva
                 9L,   // unaffected
-                100L, // total
                 15L,  // notice
-                25L   // reminder
+                25L,  // reminder
+                0L, 0L, 0L, 0L,                     // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
         );
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         CampaignProgressByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
-        assertThat(interviewer.progressRate()).isCloseTo(72.0f, within(0.001f));
+        assertThat(interviewer.progressRate()).isCloseTo(54.135f, within(0.001f));
 
         StatesProgress states = interviewer.states();
         CommunicationsProgress communications = interviewer.communications();
-        assertThat(states.allocated()).isEqualTo(100L);         // total
+        assertThat(states.allocated()).isEqualTo(133L);         // computed
         assertThat(states.notStarted()).isEqualTo(4L);          // vic
         assertThat(states.inProgress()).isEqualTo(30L);         // prc+aoc+aps+ins = 6+7+8+9
         assertThat(states.pendingTransmission()).isEqualTo(6L); // wft
@@ -117,11 +121,12 @@ class CampaignProgressByInterviewersServiceTest {
     void shouldMapSiteAndCampaignStats_whenStatsExist() throws CampaignNotFoundException {
         CampaignDailyStats campaignStat = new CampaignDailyStats(
                 CAMPAIGN_ID, "Campaign One",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0L, 50L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // nvm, nns=50, anv..wfs
                 10L, 30L, 10L,  // tbr=10, fin=30, clo=10
-                0, 0,
-                100L, // total
-                0, 0);
+                0L, 0L,         // nva, unaffected
+                0L, 0L,         // notice, reminder
+                0L, 0L, 0L, 0L,                     // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
 
         when(statsRepository.findCampaignStatsForOrganizationUnits(anyString(), anyList(), any()))
                 .thenReturn(Optional.of(campaignStat));
@@ -140,10 +145,16 @@ class CampaignProgressByInterviewersServiceTest {
     void shouldReturnMultipleInterviewers() throws CampaignNotFoundException {
         InterviewerDailyStats stats1 = new InterviewerDailyStats(
                 "int-1", "Jean", "Dupont",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0);
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
+                0L, 0L, 0L,                        // unaffected, notice, reminder
+                0L, 0L, 0L, 0L,                    // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
         InterviewerDailyStats stats2 = new InterviewerDailyStats(
                 "int-2", "Marie", "Martin",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0);
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
+                0L, 0L, 0L,                        // unaffected, notice, reminder
+                0L, 0L, 0L, 0L,                    // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
