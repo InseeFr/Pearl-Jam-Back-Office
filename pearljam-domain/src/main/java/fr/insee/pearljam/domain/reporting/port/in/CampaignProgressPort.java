@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.port.in;
 
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgress;
 
 import java.time.LocalDate;
 import java.util.List;

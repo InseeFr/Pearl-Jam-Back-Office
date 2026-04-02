@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgress;
 import fr.insee.pearljam.domain.reporting.service.CampaignProgressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.readmodel;
+package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 
@@ -10,11 +10,11 @@ public record StatesSummaryProgress(long allocated,
 
     public static StatesSummaryProgress from(CampaignDailyStats campaignDailyStats) {
         return new StatesSummaryProgress(
-                campaignDailyStats.getTotal(),
-                campaignDailyStats.getToProcessInterviewer(),
-                campaignDailyStats.getTbrCount(),
-                campaignDailyStats.getValidated(),
-                campaignDailyStats.getUnaffected()
+                campaignDailyStats.getAllocatedStateCount(),
+                campaignDailyStats.getToProcessInterviewerStateCount(),
+                campaignDailyStats.getTbrStateCount(),
+                campaignDailyStats.getCompletedStateCount(),
+                campaignDailyStats.getUnaffectedCount()
         );
     }
 }

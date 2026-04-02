@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.readmodel;
+package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
 public record CampaignProgress(String campaignId,
                                String campaignLabel,

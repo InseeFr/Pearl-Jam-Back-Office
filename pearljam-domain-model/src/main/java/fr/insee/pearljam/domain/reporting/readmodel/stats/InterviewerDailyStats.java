@@ -13,38 +13,78 @@ public class InterviewerDailyStats {
     private String interviewerId;
     private String interviewerFirstName;
     private String interviewerLastName;
-    private long nvmCount;
-    private long nnsCount;
-    private long anvCount;
-    private long vinCount;
-    private long vicCount;
-    private long prcCount;
-    private long aocCount;
-    private long apsCount;
-    private long insCount;
-    private long wftCount;
-    private long wfsCount;
-    private long tbrCount;
-    private long finCount;
-    private long cloCount;
-    private long nvaCount;
-    private long unaffected;
-    private long total;
-    private long noticeCount;
-    private long reminderCount;
 
-    public float getProgressRate() {
-        if (total == 0) {
+    // =========================
+    // STATES
+    // =========================
+    // =========================
+    // STATES
+    // =========================
+    private long nvmStateCount;
+    private long nnsStateCount;
+    private long anvStateCount;
+    private long vinStateCount;
+    private long vicStateCount;
+    private long prcStateCount;
+    private long aocStateCount;
+    private long apsStateCount;
+    private long insStateCount;
+    private long wftStateCount;
+    private long wfsStateCount;
+    private long tbrStateCount;
+    private long finStateCount;
+    private long cloStateCount;
+    private long nvaStateCount;
+
+    private long unaffectedCount;
+
+
+    // =========================
+    // COMMUNICATION
+    // =========================
+    private long noticeCommunicationCount;
+    private long reminderCommunicationCount;
+
+    // =========================
+    // CLOSING CAUSE
+    // =========================
+    private long npaClosingCauseCount;
+    private long npiClosingCauseCount;
+    private long npxClosingCauseCount;
+    private long rowClosingCauseCount;
+
+    // =========================
+    // CONTACT OUTCOME
+    // =========================
+    private long inaContactOutcomeCount;
+    private long refContactOutcomeCount;
+    private long impContactOutcomeCount;
+    private long ucdContactOutcomeCount;
+    private long utrContactOutcomeCount;
+    private long alaContactOutcomeCount;
+    private long dukContactOutcomeCount;
+    private long nuhContactOutcomeCount;
+    private long noaContactOutcomeCount;
+
+    public float getProgressStateRate() {
+        long allocated = getAllocatedStateCount();
+        if (allocated == 0) {
             return 0f;
         }
-        return (float) (tbrCount + finCount + cloCount) * 100 / total;
+        return (float) (tbrStateCount + finStateCount + cloStateCount) * 100 / allocated;
     }
 
-    public long getValidated() {
-        return finCount + cloCount;
+    public long getCompletedStateCount() {
+        return finStateCount + cloStateCount;
     }
 
-    public long getInProgress() {
-        return prcCount + aocCount + apsCount + insCount;
+    public long getInProgressStateCount() {
+        return prcStateCount + aocStateCount + apsStateCount + insStateCount;
+    }
+
+    public long getAllocatedStateCount() {
+        return nnsStateCount + anvStateCount + vinStateCount + vicStateCount +
+                prcStateCount + aocStateCount + apsStateCount + insStateCount + wftStateCount +
+                wfsStateCount + tbrStateCount + finStateCount + cloStateCount;
     }
 }

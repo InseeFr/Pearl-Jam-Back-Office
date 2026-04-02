@@ -12,23 +12,52 @@ import lombok.Setter;
 public class OrganizationUnitDailyStats {
     private String ouId;
     private String ouLabel;
-    private long nvmCount;
-    private long nnsCount;
-    private long anvCount;
-    private long vinCount;
-    private long vicCount;
-    private long prcCount;
-    private long aocCount;
-    private long apsCount;
-    private long insCount;
-    private long wftCount;
-    private long wfsCount;
-    private long tbrCount;
-    private long finCount;
-    private long cloCount;
-    private long nvaCount;
-    private long unaffected;
-    private long total;
-    private long noticeCount;
-    private long reminderCount;
+
+    // =========================
+    // STATES
+    // =========================
+    private long nvmStateCount;
+    private long nnsStateCount;
+    private long anvStateCount;
+    private long vinStateCount;
+    private long vicStateCount;
+    private long prcStateCount;
+    private long aocStateCount;
+    private long apsStateCount;
+    private long insStateCount;
+    private long wftStateCount;
+    private long wfsStateCount;
+    private long tbrStateCount;
+    private long finStateCount;
+    private long cloStateCount;
+    private long nvaStateCount;
+
+    private long unaffectedCount;
+
+    // =========================
+    // COMMUNICATION
+    // =========================
+    private long noticeCommunicationCount;
+    private long reminderCommunicationCount;
+
+    // =========================
+    // CLOSING CAUSE
+    // =========================
+    private long npaClosingCauseCount;
+    private long npiClosingCauseCount;
+    private long npxClosingCauseCount;
+    private long rowClosingCauseCount;
+
+    // =========================
+    // CONTACT OUTCOME
+    // =========================
+    private long inaContactOutcomeCount;
+    private long refContactOutcomeCount;
+    private long impContactOutcomeCount;
+    private long ucdContactOutcomeCount;
+    private long utrContactOutcomeCount;
+    private long alaContactOutcomeCount;
+    private long dukContactOutcomeCount;
+    private long nuhContactOutcomeCount;
+    private long noaContactOutcomeCount;
 }

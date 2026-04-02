@@ -4,9 +4,9 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
-import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import org.junit.jupiter.api.BeforeEach;

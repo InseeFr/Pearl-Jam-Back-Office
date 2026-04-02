@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.readmodel;
+package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
 import lombok.RequiredArgsConstructor;
 

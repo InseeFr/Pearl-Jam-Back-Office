@@ -22,54 +22,53 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     private static final String CAMPAIGN_ID_PARAM = "campaignId";
     private static final String DAY_PARAM = "day";
 
+    private static final String DATA_SELECTION = """
+        COALESCE(SUM(cds.nvm_count),0) AS nvmStateCount,
+        COALESCE(SUM(cds.nns_count),0) AS nnsStateCount,
+        COALESCE(SUM(cds.anv_count),0) AS anvStateCount,
+        COALESCE(SUM(cds.vin_count),0) AS vinStateCount,
+        COALESCE(SUM(cds.vic_count),0) AS vicStateCount,
+        COALESCE(SUM(cds.prc_count),0) AS prcStateCount,
+        COALESCE(SUM(cds.aoc_count),0) AS aocStateCount,
+        COALESCE(SUM(cds.aps_count),0) AS apsStateCount,
+        COALESCE(SUM(cds.ins_count),0) AS insStateCount,
+        COALESCE(SUM(cds.wft_count),0) AS wftStateCount,
+        COALESCE(SUM(cds.wfs_count),0) AS wfsStateCount,
+        COALESCE(SUM(cds.tbr_count),0) AS tbrStateCount,
+        COALESCE(SUM(cds.fin_count),0) AS finStateCount,
+        COALESCE(SUM(cds.clo_count),0) AS cloStateCount,
+        COALESCE(SUM(cds.nva_count),0) AS nvaStateCount,
+        COALESCE(SUM(cds.notice_count),0) AS noticeCommunicationCount,
+        COALESCE(SUM(cds.reminder_count),0) AS reminderCommunicationCount,
+        COALESCE(SUM(cds.ina_count),0) AS inaContactOutcomeCount,
+        COALESCE(SUM(cds.ref_count),0) AS refContactOutcomeCount,
+        COALESCE(SUM(cds.imp_count),0) AS impContactOutcomeCount,
+        COALESCE(SUM(cds.ucd_count),0) AS ucdContactOutcomeCount,
+        COALESCE(SUM(cds.utr_count),0) AS utrContactOutcomeCount,
+        COALESCE(SUM(cds.ala_count),0) AS alaContactOutcomeCount,
+        COALESCE(SUM(cds.duk_count),0) AS dukContactOutcomeCount,
+        COALESCE(SUM(cds.nuh_count),0) AS nuhContactOutcomeCount,
+        COALESCE(SUM(cds.noa_count),0) AS noaContactOutcomeCount,
+        COALESCE(SUM(cds.npa_count),0) AS npaClosingCauseCount,
+        COALESCE(SUM(cds.npi_count),0) AS npiClosingCauseCount,
+        COALESCE(SUM(cds.npx_count),0) AS npxClosingCauseCount,
+        COALESCE(SUM(cds.row_count),0) AS rowClosingCauseCount""";
     private static final String CAMPAIGN_SQL = """
     SELECT
         c.id AS campaignId,
         c.label AS campaignLabel,
-        COALESCE(SUM(cds.nvm_count),0) AS nvmCount,
-        COALESCE(SUM(cds.nns_count),0) AS nnsCount,
-        COALESCE(SUM(cds.anv_count),0) AS anvCount,
-        COALESCE(SUM(cds.vin_count),0) AS vinCount,
-        COALESCE(SUM(cds.vic_count),0) AS vicCount,
-        COALESCE(SUM(cds.prc_count),0) AS prcCount,
-        COALESCE(SUM(cds.aoc_count),0) AS aocCount,
-        COALESCE(SUM(cds.aps_count),0) AS apsCount,
-        COALESCE(SUM(cds.ins_count),0) AS insCount,
-        COALESCE(SUM(cds.wft_count),0) AS wftCount,
-        COALESCE(SUM(cds.wfs_count),0) AS wfsCount,
-        COALESCE(SUM(cds.tbr_count),0) AS tbrCount,
-        COALESCE(SUM(cds.fin_count),0) AS finCount,
-        COALESCE(SUM(cds.clo_count),0) AS cloCount,
-        COALESCE(SUM(cds.nva_count),0) AS nvaCount,
-            COALESCE(
-                SUM(cds.nvm_count)
-                + SUM(cds.nns_count)
-                + SUM(cds.anv_count)
-                + SUM(cds.vin_count)
-                + SUM(cds.vic_count)
-                + SUM(cds.prc_count)
-                + SUM(cds.aoc_count)
-                + SUM(cds.aps_count)
-                + SUM(cds.ins_count)
-                + SUM(cds.wft_count)
-                + SUM(cds.wfs_count)
-                + SUM(cds.tbr_count)
-                + SUM(cds.fin_count)
-                + SUM(cds.clo_count)
-                , 0) AS total,
         (
             SELECT count(id) FROM survey_unit
             WHERE campaign_id = :campaignId
             AND interviewer_id is NULL
-        ) AS unaffected,
-        COALESCE(SUM(cds.notice_count),0) AS noticeCount,
-        COALESCE(SUM(cds.reminder_count),0) AS reminderCount
+        ) AS unaffectedCount,
+        %s
     FROM campaign_daily_stats cds
     JOIN campaign c ON c.id = cds.campaign_id
     WHERE cds.campaign_id = :campaignId
       AND cds.day = :day
     GROUP BY c.id, c.label
-    """;
+    """.formatted(DATA_SELECTION);
 
     @Override
     public Optional<CampaignDailyStats> findCampaignStats(String campaignId, LocalDate day) {
@@ -81,45 +80,13 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     }
 
     private static final String OUS_SQL = """
-        SELECT
-            COALESCE(SUM(nvm_count),0) AS nvmCount,
-            COALESCE(SUM(nns_count),0) AS nnsCount,
-            COALESCE(SUM(anv_count),0) AS anvCount,
-            COALESCE(SUM(vin_count),0) AS vinCount,
-            COALESCE(SUM(vic_count),0) AS vicCount,
-            COALESCE(SUM(prc_count),0) AS prcCount,
-            COALESCE(SUM(aoc_count),0) AS aocCount,
-            COALESCE(SUM(aps_count),0) AS apsCount,
-            COALESCE(SUM(ins_count),0) AS insCount,
-            COALESCE(SUM(wft_count),0) AS wftCount,
-            COALESCE(SUM(wfs_count),0) AS wfsCount,
-            COALESCE(SUM(tbr_count),0) AS tbrCount,
-            COALESCE(SUM(fin_count),0) AS finCount,
-            COALESCE(SUM(clo_count),0) AS cloCount,
-            COALESCE(SUM(nva_count),0) AS nvaCount,
-            COALESCE(
-                SUM(cds.nvm_count)
-                + SUM(cds.nns_count)
-                + SUM(cds.anv_count)
-                + SUM(cds.vin_count)
-                + SUM(cds.vic_count)
-                + SUM(cds.prc_count)
-                + SUM(cds.aoc_count)
-                + SUM(cds.aps_count)
-                + SUM(cds.ins_count)
-                + SUM(cds.wft_count)
-                + SUM(cds.wfs_count)
-                + SUM(cds.tbr_count)
-                + SUM(cds.fin_count)
-                + SUM(cds.clo_count)
-                , 0) AS total,
-            COALESCE(SUM(notice_count),0) AS noticeCount,
-            COALESCE(SUM(reminder_count),0) AS reminderCount
+    SELECT
+        %s
         FROM campaign_daily_stats cds
         WHERE campaign_id = :campaignId
           AND organization_unit_id IN (:ouIds)
           AND day = :day
-    """;
+    """.formatted(DATA_SELECTION);
 
     @Override
     public Optional<CampaignDailyStats> findCampaignStatsForOrganizationUnits(String campaignId, List<String> ouIds, LocalDate day) {
@@ -135,34 +102,15 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     SELECT
         ou.id AS ouId,
         ou.label AS ouLabel,
-        COALESCE(SUM(nvm_count),0) AS nvmCount,
-        COALESCE(SUM(nns_count),0) AS nnsCount,
-        COALESCE(SUM(anv_count),0) AS anvCount,
-        COALESCE(SUM(vin_count),0) AS vinCount,
-        COALESCE(SUM(vic_count),0) AS vicCount,
-        COALESCE(SUM(prc_count),0) AS prcCount,
-        COALESCE(SUM(aoc_count),0) AS aocCount,
-        COALESCE(SUM(aps_count),0) AS apsCount,
-        COALESCE(SUM(ins_count),0) AS insCount,
-        COALESCE(SUM(wft_count),0) AS wftCount,
-        COALESCE(SUM(wfs_count),0) AS wfsCount,
-        COALESCE(SUM(tbr_count),0) AS tbrCount,
-        COALESCE(SUM(fin_count),0) AS finCount,
-        COALESCE(SUM(clo_count),0) AS cloCount,
-        COALESCE(SUM(nva_count),0) AS nvaCount,
-        COALESCE(
-            SUM(cds.nns_count + cds.anv_count + cds.vin_count + cds.vic_count
-                  + cds.prc_count + cds.aoc_count + cds.aps_count + cds.ins_count + cds.wft_count
-                  + cds.wfs_count + cds.tbr_count + cds.fin_count + cds.clo_count), 0) AS total,
-        COALESCE(SUM(notice_count),0) AS noticeCount,
-        COALESCE(SUM(reminder_count),0) AS reminderCount
+        %s
     FROM campaign_daily_stats cds
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
     WHERE cds.campaign_id = :campaignId
     AND cds.organization_unit_id IN (:ouIds)
     AND cds.day = :day
     GROUP BY ou.id, ou.label;
-    """;
+    """.formatted(DATA_SELECTION);
+
     @Override
     public List<OrganizationUnitDailyStats> getOrganizationUnitsStats(
             String campaignId,
@@ -196,27 +144,8 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         SELECT
             c.id AS campaignId,
             c.label AS campaignLabel,
-            COALESCE(SUM(cds.nvm_count),0) AS nvmCount,
-            COALESCE(SUM(cds.nns_count),0) AS nnsCount,
-            COALESCE(SUM(cds.anv_count),0) AS anvCount,
-            COALESCE(SUM(cds.vin_count),0) AS vinCount,
-            COALESCE(SUM(cds.vic_count),0) AS vicCount,
-            COALESCE(SUM(cds.prc_count),0) AS prcCount,
-            COALESCE(SUM(cds.aoc_count),0) AS aocCount,
-            COALESCE(SUM(cds.aps_count),0) AS apsCount,
-            COALESCE(SUM(cds.ins_count),0) AS insCount,
-            COALESCE(SUM(cds.wft_count),0) AS wftCount,
-            COALESCE(SUM(cds.wfs_count),0) AS wfsCount,
-            COALESCE(SUM(cds.tbr_count),0) AS tbrCount,
-            COALESCE(SUM(cds.fin_count),0) AS finCount,
-            COALESCE(SUM(cds.clo_count),0) AS cloCount,
-            COALESCE(
-                SUM(cds.nns_count + cds.anv_count + cds.vin_count + cds.vic_count
-                  + cds.prc_count + cds.aoc_count + cds.aps_count + cds.ins_count + cds.wft_count
-                  + cds.wfs_count + cds.tbr_count + cds.fin_count + cds.clo_count), 0) AS total,
-            COALESCE(su.unaffected, 0) AS unaffected,
-            COALESCE(SUM(cds.notice_count),0) AS noticeCount,
-            COALESCE(SUM(cds.reminder_count),0) AS reminderCount
+            COALESCE(su.unaffected, 0) AS unaffectedCount,
+            %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
         LEFT JOIN su_counts su ON su.campaign_id = c.id
@@ -224,7 +153,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
          AND cds.organization_unit_id IN (:ouIds)
          AND cds.day = :day
         GROUP BY c.id, c.label, su.unaffected;
-    """;
+    """.formatted(DATA_SELECTION);
 
     @Override
     public List<CampaignDailyStats> getCampaignsStats(List<String> campaignIds, List<String> ouIds, LocalDate day) {
@@ -241,33 +170,14 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             interv.id AS interviewerId,
             interv.first_name AS interviewerFirstName,
             interv.last_name AS interviewerLastName,
-            COALESCE(SUM(nvm_count),0) AS nvmCount,
-            COALESCE(SUM(nns_count),0) AS nnsCount,
-            COALESCE(SUM(anv_count),0) AS anvCount,
-            COALESCE(SUM(vin_count),0) AS vinCount,
-            COALESCE(SUM(vic_count),0) AS vicCount,
-            COALESCE(SUM(prc_count),0) AS prcCount,
-            COALESCE(SUM(aoc_count),0) AS aocCount,
-            COALESCE(SUM(aps_count),0) AS apsCount,
-            COALESCE(SUM(ins_count),0) AS insCount,
-            COALESCE(SUM(wft_count),0) AS wftCount,
-            COALESCE(SUM(wfs_count),0) AS wfsCount,
-            COALESCE(SUM(tbr_count),0) AS tbrCount,
-            COALESCE(SUM(fin_count),0) AS finCount,
-            COALESCE(SUM(clo_count),0) AS cloCount,
-            COALESCE(SUM(nva_count),0) AS nvaCount,
-            COALESCE(SUM(cds.nns_count + cds.anv_count + cds.vin_count + cds.vic_count
-                  + cds.prc_count + cds.aoc_count + cds.aps_count + cds.ins_count + cds.wft_count
-                  + cds.wfs_count + cds.tbr_count + cds.fin_count + cds.clo_count), 0) as total,
-            COALESCE(SUM(notice_count),0) AS noticeCount,
-            COALESCE(SUM(reminder_count),0) AS reminderCount
+            %s
         FROM campaign_daily_stats cds
         JOIN interviewer interv ON interv.id = cds.interviewer_id
         WHERE cds.campaign_id = :campaignId
           AND cds.organization_unit_id IN (:ouIds)
           AND cds.day = :day
         GROUP BY interv.id, interv.first_name, interv.last_name
-    """;
+    """.formatted(DATA_SELECTION);
 
     @Override
     public List<InterviewerDailyStats> getInterviewerStats(

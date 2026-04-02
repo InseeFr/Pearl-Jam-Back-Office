@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.reporting.model;
 
 
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

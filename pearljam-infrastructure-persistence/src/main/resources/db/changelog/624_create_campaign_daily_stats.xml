@@ -83,4 +83,27 @@
             ON campaign_daily_stats (interviewer_id);
         </sql>
     </changeSet>
+
+    <changeSet id="0624-5" author="davdarras">
+        <addColumn tableName="campaign_daily_stats">
+            <column name="npx_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="npa_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="npi_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="row_count" type="INTEGER" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="0624-6" author="davdarras">
+        <addColumn tableName="campaign_daily_stats">
+            <column name="ina_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="ref_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="imp_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="ucd_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="utr_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="ala_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="duk_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="nuh_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="noa_count" type="INTEGER" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
