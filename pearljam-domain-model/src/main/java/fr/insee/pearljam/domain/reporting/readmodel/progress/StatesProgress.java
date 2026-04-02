@@ -1,7 +1,6 @@
 package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
 public record StatesProgress(
         long allocated,
@@ -15,33 +14,18 @@ public record StatesProgress(
         long withAppointment,
         long started
 ) {
-    public static StatesProgress from(CampaignDailyStats campaignDailyStats) {
+    public static StatesProgress from(AbstractDailyStats dailyStats) {
         return new StatesProgress(
-                campaignDailyStats.getAllocatedStateCount(),
-                campaignDailyStats.getVicStateCount(),
-                campaignDailyStats.getInProgressStateCount(),
-                campaignDailyStats.getWftStateCount(),
-                campaignDailyStats.getTbrStateCount(),
-                campaignDailyStats.getCompletedStateCount(),
-                campaignDailyStats.getPrcStateCount(),
-                campaignDailyStats.getAocStateCount(),
-                campaignDailyStats.getApsStateCount(),
-                campaignDailyStats.getInsStateCount()
-        );
-    }
-
-    public static StatesProgress from(InterviewerDailyStats interviewerDailyStats) {
-        return new StatesProgress(
-                interviewerDailyStats.getAllocatedStateCount(),
-                interviewerDailyStats.getVicStateCount(),
-                interviewerDailyStats.getInProgressStateCount(),
-                interviewerDailyStats.getWftStateCount(),
-                interviewerDailyStats.getTbrStateCount(),
-                interviewerDailyStats.getCompletedStateCount(),
-                interviewerDailyStats.getPrcStateCount(),
-                interviewerDailyStats.getAocStateCount(),
-                interviewerDailyStats.getApsStateCount(),
-                interviewerDailyStats.getInsStateCount()
+                dailyStats.getAllocatedStateCount(),
+                dailyStats.getVicStateCount(),
+                dailyStats.getInProgressStateCount(),
+                dailyStats.getWftStateCount(),
+                dailyStats.getTbrStateCount(),
+                dailyStats.getCompletedStateCount(),
+                dailyStats.getPrcStateCount(),
+                dailyStats.getAocStateCount(),
+                dailyStats.getApsStateCount(),
+                dailyStats.getInsStateCount()
         );
     }
 }

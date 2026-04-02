@@ -177,39 +177,32 @@ class CampaignCollectionServiceTest {
      * closing cause / contact outcome values for rate assertions.
      */
     static CampaignDailyStats dailyStats(String campaignId, String campaignLabel) {
-        return new CampaignDailyStats(
-                campaignId, campaignLabel,
-                0L,   // nvm
-                10L,  // nns
-                0L,   // anv
-                0L,   // vin
-                5L,   // vic
-                5L,   // prc
-                5L,   // aoc
-                5L,   // aps
-                5L,   // ins
-                5L,   // wft
-                0L,   // wfs
-                20L,  // tbr
-                30L,  // fin
-                10L,  // clo
-                0L,   // nva
-                0L,   // unaffected
-                0L,   // notice
-                0L,   // reminder
-                4L,   // npa
-                2L,   // npi
-                3L,   // npx
-                1L,   // row
-                20L,  // ina
-                5L,   // ref
-                3L,   // imp
-                1L,   // ucd
-                1L,   // utr
-                1L,   // ala
-                1L,   // duk
-                1L,   // nuh
-                1L    // noa
-        );
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId(campaignId);
+        stats.setCampaignLabel(campaignLabel);
+        stats.setNnsStateCount(10L);
+        stats.setVicStateCount(5L);
+        stats.setPrcStateCount(5L);
+        stats.setAocStateCount(5L);
+        stats.setApsStateCount(5L);
+        stats.setInsStateCount(5L);
+        stats.setWftStateCount(5L);
+        stats.setTbrStateCount(20L);
+        stats.setFinStateCount(30L);
+        stats.setCloStateCount(10L);
+        stats.setNpaClosingCauseCount(4L);
+        stats.setNpiClosingCauseCount(2L);
+        stats.setNpxClosingCauseCount(3L);
+        stats.setRowClosingCauseCount(1L);
+        stats.setInaContactOutcomeCount(20L);
+        stats.setRefContactOutcomeCount(5L);
+        stats.setImpContactOutcomeCount(3L);
+        stats.setUcdContactOutcomeCount(1L);
+        stats.setUtrContactOutcomeCount(1L);
+        stats.setAlaContactOutcomeCount(1L);
+        stats.setDukContactOutcomeCount(1L);
+        stats.setNuhContactOutcomeCount(1L);
+        stats.setNoaContactOutcomeCount(1L);
+        return stats;
     }
 }

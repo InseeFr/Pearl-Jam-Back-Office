@@ -49,7 +49,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 .findCampaignStatsForOrganizationUnits(campaignId, userOUIds, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressByInterviewers.OrganizationUnit site = new CampaignProgressByInterviewers.OrganizationUnit(
-                siteStat.progressStateRate(),
+                siteStat.getProgressStateRate(),
                 StatesProgress.from(siteStat),
                 CommunicationsProgress.from(siteStat));
 
@@ -57,7 +57,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressByInterviewers.Campaign total = new CampaignProgressByInterviewers.Campaign(
-                campaignStats.progressStateRate(),
+                campaignStats.getProgressStateRate(),
                 StatesProgress.from(campaignStats),
                 CommunicationsProgress.from(campaignStats));
 

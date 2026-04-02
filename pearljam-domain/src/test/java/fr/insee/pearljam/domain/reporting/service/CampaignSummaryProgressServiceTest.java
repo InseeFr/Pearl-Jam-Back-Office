@@ -137,22 +137,27 @@ class CampaignSummaryProgressServiceTest {
     void shouldMapDailyStatsToSurveyUnitsCorrectly() {
         CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        CampaignDailyStats stats = new CampaignDailyStats(
-                "CAMP1", "Campaign One",
-                1L, 2L, 3L, 4L,
-                5L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                10L,  // wft
-                11L, 12L, 13L, 14L, // wfs, tbr, fin, clo
-                15L,  // nva
-                10L,  // unaffected
-                1L, 2L, // notice, reminder
-                0L, 0L, 0L, 0L,                     // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
-        );
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId("CAMP1");
+        stats.setCampaignLabel("Campaign One");
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(2L);
+        stats.setAnvStateCount(3L);
+        stats.setVinStateCount(4L);
+        stats.setVicStateCount(5L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(10L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(12L);
+        stats.setFinStateCount(13L);
+        stats.setCloStateCount(14L);
+        stats.setNvaStateCount(15L);
+        stats.setUnaffectedCount(10L);
+        stats.setNoticeCommunicationCount(1L);
+        stats.setReminderCommunicationCount(2L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))

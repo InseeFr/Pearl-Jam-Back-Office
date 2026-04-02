@@ -1,66 +1,17 @@
 package fr.insee.pearljam.domain.reporting.readmodel.stats;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class CampaignDailyStats {
+public class CampaignDailyStats extends AbstractDailyStats {
 
     private String campaignId;
     private String campaignLabel;
-
-    // =========================
-    // STATES
-    // =========================
-    private long nvmStateCount;
-    private long nnsStateCount;
-    private long anvStateCount;
-    private long vinStateCount;
-    private long vicStateCount;
-    private long prcStateCount;
-    private long aocStateCount;
-    private long apsStateCount;
-    private long insStateCount;
-    private long wftStateCount;
-    private long wfsStateCount;
-    private long tbrStateCount;
-    private long finStateCount;
-    private long cloStateCount;
-    private long nvaStateCount;
-
     private long unaffectedCount;
-
-    // =========================
-    // COMMUNICATION
-    // =========================
-    private long noticeCommunicationCount;
-    private long reminderCommunicationCount;
-
-    // =========================
-    // CLOSING CAUSE
-    // =========================
-    private long npaClosingCauseCount;
-    private long npiClosingCauseCount;
-    private long npxClosingCauseCount;
-    private long rowClosingCauseCount;
-
-    // =========================
-    // CONTACT OUTCOME
-    // =========================
-    private long inaContactOutcomeCount;
-    private long refContactOutcomeCount;
-    private long impContactOutcomeCount;
-    private long ucdContactOutcomeCount;
-    private long utrContactOutcomeCount;
-    private long alaContactOutcomeCount;
-    private long dukContactOutcomeCount;
-    private long nuhContactOutcomeCount;
-    private long noaContactOutcomeCount;
 
     public static CampaignDailyStats empty(String id, String label) {
         CampaignDailyStats campaignDailyStats = new CampaignDailyStats();
@@ -71,72 +22,5 @@ public class CampaignDailyStats {
 
     public static CampaignDailyStats empty(String id) {
         return empty(id, null);
-    }
-
-    public float progressStateRate() {
-        long allocated = getAllocatedStateCount();
-        if (allocated == 0) {
-            return 0f;
-        }
-        return (float) (tbrStateCount + finStateCount + cloStateCount) * 100 / allocated;
-    }
-
-    public long getToProcessInterviewerStateCount() {
-        return vicStateCount + prcStateCount + aocStateCount + apsStateCount + insStateCount + wftStateCount;
-    }
-
-    public long getCompletedStateCount() {
-        return finStateCount + cloStateCount;
-    }
-
-    public long getInProgressStateCount() {
-        return prcStateCount + aocStateCount + apsStateCount + insStateCount;
-    }
-
-    public long getAllocatedStateCount() {
-        return nnsStateCount + anvStateCount + vinStateCount + vicStateCount +
-                prcStateCount + aocStateCount + apsStateCount + insStateCount + wftStateCount +
-                wfsStateCount + tbrStateCount + finStateCount + cloStateCount;
-    }
-
-    public long getOutOfScopeContactOutcomes() {
-        return ucdContactOutcomeCount + utrContactOutcomeCount + alaContactOutcomeCount +
-                nuhContactOutcomeCount + dukContactOutcomeCount + noaContactOutcomeCount;
-    }
-
-    public float getCollectionRate() {
-        long allocated = getAllocatedStateCount();
-        if (allocated == 0) {
-            return 0f;
-        }
-        return (float) inaContactOutcomeCount * 100 / allocated;
-    }
-
-    public float getWasteRate() {
-        long allocated = getAllocatedStateCount();
-        if (allocated == 0) {
-            return 0f;
-        }
-        return (float) (refContactOutcomeCount + impContactOutcomeCount + npiClosingCauseCount) * 100 / allocated;
-    }
-
-    public float getOutOfScopeRate() {
-        long allocated = getAllocatedStateCount();
-        if (allocated == 0) {
-            return 0f;
-        }
-        return (float) (getOutOfScopeContactOutcomes() + npxClosingCauseCount + rowClosingCauseCount) * 100 / allocated;
-    }
-
-    public long getTotalContactOutcomes() {
-        return inaContactOutcomeCount + impContactOutcomeCount + refContactOutcomeCount + getOutOfScopeContactOutcomes();
-    }
-
-    public long getOtherReasonClosingCauses() {
-        return npiClosingCauseCount + npxClosingCauseCount + rowClosingCauseCount;
-    }
-
-    public long getTotalClosingCauses() {
-        return npaClosingCauseCount + getOtherReasonClosingCauses();
     }
 }

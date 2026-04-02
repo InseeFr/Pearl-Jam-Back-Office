@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.readmodel.collect;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
 public record ContactOutcomesProgress(
         long accepted,
@@ -9,13 +9,13 @@ public record ContactOutcomesProgress(
         long outOfScope,
         long total
 ) {
-    public static ContactOutcomesProgress from(CampaignDailyStats campaignDailyStats) {
+    public static ContactOutcomesProgress from(AbstractDailyStats dailyStats) {
         return new ContactOutcomesProgress(
-                campaignDailyStats.getInaContactOutcomeCount(),
-                campaignDailyStats.getRefContactOutcomeCount(),
-                campaignDailyStats.getImpContactOutcomeCount(),
-                campaignDailyStats.getOutOfScopeContactOutcomes(),
-                campaignDailyStats.getTotalContactOutcomes()
+                dailyStats.getInaContactOutcomeCount(),
+                dailyStats.getRefContactOutcomeCount(),
+                dailyStats.getImpContactOutcomeCount(),
+                dailyStats.getOutOfScopeContactOutcomes(),
+                dailyStats.getTotalContactOutcomes()
         );
     }
 }

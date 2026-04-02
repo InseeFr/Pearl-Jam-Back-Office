@@ -23,29 +23,28 @@ class CampaignProgressServiceTest {
     static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
 
     static CampaignDailyStats dailyStats(String campaignId, String campaignLabel) {
-        return new CampaignDailyStats(
-                campaignId, campaignLabel,
-                1L,   // nvm
-                5L,   // nns
-                2L,   // anv
-                3L,   // vin
-                4L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                6L,   // wft
-                11L,  // wfs
-                20L,  // tbr
-                40L,  // fin
-                12L,  // clo
-                8L,   // nva
-                9L,   // unaffected
-                15L,  // notice
-                25L,  // reminder
-                0L, 0L, 0L, 0L,                     // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
-        );
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId(campaignId);
+        stats.setCampaignLabel(campaignLabel);
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(5L);
+        stats.setAnvStateCount(2L);
+        stats.setVinStateCount(3L);
+        stats.setVicStateCount(4L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(6L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(20L);
+        stats.setFinStateCount(40L);
+        stats.setCloStateCount(12L);
+        stats.setNvaStateCount(8L);
+        stats.setUnaffectedCount(9L);
+        stats.setNoticeCommunicationCount(15L);
+        stats.setReminderCommunicationCount(25L);
+        return stats;
     }
 
     private CampaignProgressService buildService(

@@ -1,17 +1,17 @@
 package fr.insee.pearljam.domain.reporting.readmodel.collect;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
 public record ClosingCausesProgress(
         long absenceInterviewer,
         long otherReasons,
         long totalClosed
 ) {
-    public static ClosingCausesProgress from(CampaignDailyStats campaignDailyStats) {
+    public static ClosingCausesProgress from(AbstractDailyStats dailyStats) {
         return new ClosingCausesProgress(
-                campaignDailyStats.getNpaClosingCauseCount(),
-                campaignDailyStats.getOtherReasonClosingCauses(),
-                campaignDailyStats.getTotalClosingCauses()
+                dailyStats.getNpaClosingCauseCount(),
+                dailyStats.getOtherReasonClosingCauses(),
+                dailyStats.getTotalClosingCauses()
         );
     }
 }

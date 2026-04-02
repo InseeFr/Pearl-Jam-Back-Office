@@ -1,23 +1,15 @@
 package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
 public record CommunicationsProgress(
         long noticeLetter,
         long reminderLetter
 ) {
-    public static CommunicationsProgress from(CampaignDailyStats campaignDailyStats) {
+    public static CommunicationsProgress from(AbstractDailyStats dailyStats) {
         return new CommunicationsProgress(
-                campaignDailyStats.getNoticeCommunicationCount(),
-                campaignDailyStats.getReminderCommunicationCount()
-        );
-    }
-
-    public static CommunicationsProgress from(InterviewerDailyStats interviewerDailyStats) {
-        return new CommunicationsProgress(
-                interviewerDailyStats.getNoticeCommunicationCount(),
-                interviewerDailyStats.getReminderCommunicationCount()
+                dailyStats.getNoticeCommunicationCount(),
+                dailyStats.getReminderCommunicationCount()
         );
     }
 }

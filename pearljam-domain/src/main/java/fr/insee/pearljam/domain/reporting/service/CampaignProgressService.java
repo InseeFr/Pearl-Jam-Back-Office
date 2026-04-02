@@ -62,7 +62,7 @@ public class CampaignProgressService implements CampaignProgressPort {
                     return new CampaignProgress(
                             campaign.id(),
                             campaign.label(),
-                            campaignDailyStats.progressStateRate(),
+                            campaignDailyStats.getProgressStateRate(),
                             StatesProgress.from(campaignDailyStats),
                             CommunicationsProgress.from(campaignDailyStats)
                     );

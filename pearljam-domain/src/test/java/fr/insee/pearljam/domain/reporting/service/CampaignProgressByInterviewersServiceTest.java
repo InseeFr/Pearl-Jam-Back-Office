@@ -58,12 +58,7 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapInterviewerLabelCorrectly() throws CampaignNotFoundException {
-        InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
-                0L, 0L, 0L,                        // unaffected, notice, reminder
-                0L, 0L, 0L, 0L,                    // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
+        InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
@@ -75,26 +70,24 @@ class CampaignProgressByInterviewersServiceTest {
     @Test
     void shouldMapInterviewerSurveyUnitsAndProgressRate() throws CampaignNotFoundException {
         // allocated=133, tbr=20, fin=40, clo=12 → progress = (20+40+12)/133*100 ≈ 54.14%
-        InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                1L, 5L, 2L, 3L,
-                4L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                6L,   // wft
-                11L,  // wfs
-                20L,  // tbr
-                40L,  // fin
-                12L,  // clo
-                8L,   // nva
-                9L,   // unaffected
-                15L,  // notice
-                25L,  // reminder
-                0L, 0L, 0L, 0L,                     // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
-        );
+        InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(5L);
+        stats.setAnvStateCount(2L);
+        stats.setVinStateCount(3L);
+        stats.setVicStateCount(4L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(6L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(20L);
+        stats.setFinStateCount(40L);
+        stats.setCloStateCount(12L);
+        stats.setNvaStateCount(8L);
+        stats.setNoticeCommunicationCount(15L);
+        stats.setReminderCommunicationCount(25L);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
@@ -119,14 +112,13 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapSiteAndCampaignStats_whenStatsExist() throws CampaignNotFoundException {
-        CampaignDailyStats campaignStat = new CampaignDailyStats(
-                CAMPAIGN_ID, "Campaign One",
-                0L, 50L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // nvm, nns=50, anv..wfs
-                10L, 30L, 10L,  // tbr=10, fin=30, clo=10
-                0L, 0L,         // nva, unaffected
-                0L, 0L,         // notice, reminder
-                0L, 0L, 0L, 0L,                     // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
+        CampaignDailyStats campaignStat = new CampaignDailyStats();
+        campaignStat.setCampaignId(CAMPAIGN_ID);
+        campaignStat.setCampaignLabel("Campaign One");
+        campaignStat.setNnsStateCount(50L);
+        campaignStat.setTbrStateCount(10L);
+        campaignStat.setFinStateCount(30L);
+        campaignStat.setCloStateCount(10L);
 
         when(statsRepository.findCampaignStatsForOrganizationUnits(anyString(), anyList(), any()))
                 .thenReturn(Optional.of(campaignStat));
@@ -143,18 +135,8 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldReturnMultipleInterviewers() throws CampaignNotFoundException {
-        InterviewerDailyStats stats1 = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
-                0L, 0L, 0L,                        // unaffected, notice, reminder
-                0L, 0L, 0L, 0L,                    // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
-        InterviewerDailyStats stats2 = new InterviewerDailyStats(
-                "int-2", "Marie", "Martin",
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, // states
-                0L, 0L, 0L,                        // unaffected, notice, reminder
-                0L, 0L, 0L, 0L,                    // closing causes
-                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L); // contact outcomes
+        InterviewerDailyStats stats1 = interviewerStats("int-1", "Jean", "Dupont");
+        InterviewerDailyStats stats2 = interviewerStats("int-2", "Marie", "Martin");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
@@ -164,5 +146,13 @@ class CampaignProgressByInterviewersServiceTest {
         assertThat(result.interviewers())
                 .extracting(CampaignProgressByInterviewers.Interviewer::interviewerLabel)
                 .containsExactly("Jean Dupont", "Marie Martin");
+    }
+
+    private InterviewerDailyStats interviewerStats(String interviewerId, String firstName, String lastName) {
+        InterviewerDailyStats stats = new InterviewerDailyStats();
+        stats.setInterviewerId(interviewerId);
+        stats.setInterviewerFirstName(firstName);
+        stats.setInterviewerLastName(lastName);
+        return stats;
     }
 }
