@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.readmodel;
+package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
@@ -9,15 +9,15 @@ public record CommunicationsProgress(
 ) {
     public static CommunicationsProgress from(CampaignDailyStats campaignDailyStats) {
         return new CommunicationsProgress(
-                campaignDailyStats.getNoticeCount(),
-                campaignDailyStats.getReminderCount()
+                campaignDailyStats.getNoticeCommunicationCount(),
+                campaignDailyStats.getReminderCommunicationCount()
         );
     }
 
     public static CommunicationsProgress from(InterviewerDailyStats interviewerDailyStats) {
         return new CommunicationsProgress(
-                interviewerDailyStats.getNoticeCount(),
-                interviewerDailyStats.getReminderCount()
+                interviewerDailyStats.getNoticeCommunicationCount(),
+                interviewerDailyStats.getReminderCommunicationCount()
         );
     }
 }
