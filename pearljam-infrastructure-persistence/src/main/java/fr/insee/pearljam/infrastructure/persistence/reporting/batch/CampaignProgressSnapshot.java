@@ -97,6 +97,7 @@ public class CampaignProgressSnapshot {
                 SELECT s.type
                 FROM state s
                 WHERE s.survey_unit_id = su.id
+                  AND s.date < :startOfNextDayEpoch
                 ORDER BY s.date DESC
                 LIMIT 1
             ) latest_state ON latest_state.type = 'CLO'
