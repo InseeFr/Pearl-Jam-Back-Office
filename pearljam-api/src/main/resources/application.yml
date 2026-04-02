@@ -37,7 +37,8 @@ feature:
     enabled: false
   stats-scheduling:
     enabled: false
-    survey-unit-stats-cron: "0 0 1 * * *"
+    today-cron: "0 */5 * * * *"
+    daily-cron: "0 0 1 * * *"
 
 spring:
   mvc:
