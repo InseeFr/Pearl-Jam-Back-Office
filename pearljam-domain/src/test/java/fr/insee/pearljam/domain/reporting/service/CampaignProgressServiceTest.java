@@ -34,16 +34,17 @@ class CampaignProgressServiceTest {
                 7L,   // aoc
                 8L,   // aps
                 9L,   // ins
-                6L,  // wft
+                6L,   // wft
                 11L,  // wfs
                 20L,  // tbr
                 40L,  // fin
                 12L,  // clo
-                8L,  // nva
-                9L,
-                100L, // total
+                8L,   // nva
+                9L,   // unaffected
                 15L,  // notice
-                25L   // reminder
+                25L,  // reminder
+                0L, 0L, 0L, 0L,                     // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
         );
     }
 
@@ -95,7 +96,7 @@ class CampaignProgressServiceTest {
 
     @Test
     void shouldComputeProgressRateCorrectly() {
-        // total=100, fin=40, tbr=20, clo=12 → (40+20+12)/100*100 = 72%
+        // allocated=133, tbr=20, fin=40, clo=12 → (20+40+12)/133*100 ≈ 54.14%
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
         CampaignProgressService service = buildService(
@@ -106,7 +107,7 @@ class CampaignProgressServiceTest {
 
         List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
 
-        assertThat(result.getFirst().progressRate()).isCloseTo(72.0f, within(0.001f));
+        assertThat(result.getFirst().progressRate()).isCloseTo(54.135f, within(0.001f));
     }
 
     @Test
@@ -124,7 +125,7 @@ class CampaignProgressServiceTest {
         StatesProgress states = campaignProgress.states();
         CommunicationsProgress communications = campaignProgress.communications();
 
-        assertThat(states.allocated()).isEqualTo(100L);        // total
+        assertThat(states.allocated()).isEqualTo(133L);        // computed
         assertThat(states.notStarted()).isEqualTo(4L);         // vic
         assertThat(states.inProgress()).isEqualTo(30L);        // prc+aoc+aps+ins = 6+7+8+9
         assertThat(states.pendingTransmission()).isEqualTo(6L);// wft

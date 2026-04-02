@@ -146,8 +146,12 @@ class CampaignSummaryProgressServiceTest {
                 8L,   // aps
                 9L,   // ins
                 10L,  // wft
-                11L, 12L, 13L, 14L, 15L, 10L,
-                130L, 1L, 2L
+                11L, 12L, 13L, 14L, // wfs, tbr, fin, clo
+                15L,  // nva
+                10L,  // unaffected
+                1L, 2L, // notice, reminder
+                0L, 0L, 0L, 0L,                     // closing causes
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L // contact outcomes
         );
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
@@ -159,7 +163,7 @@ class CampaignSummaryProgressServiceTest {
         CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, DAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
-        assertThat(states.allocated()).isEqualTo(130);
+        assertThat(states.allocated()).isEqualTo(104);
         assertThat(states.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
         assertThat(states.toReview()).isEqualTo(12);
         assertThat(states.completed()).isEqualTo(13 + 14); // fin + clo = 27
