@@ -302,6 +302,39 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
+    @DisplayName("Should count unaffected SUs only within requested OUs")
+    void getCampaignsStats_shouldFilterUnaffectedByOU() {
+        // Add an unaffected SU in OU2
+        SurveyUnitDB suUnaffected2 = new SurveyUnitDB();
+        suUnaffected2.setId("SU-UNAFF-2");
+        CampaignDB camp = campaignRepository.findById(CAMPAIGN_ID).orElseThrow();
+        OrganizationUnitDB ou2 = ouRepository.findById(OU2_ID).orElseThrow();
+        suUnaffected2.setCampaign(camp);
+        suUnaffected2.setOrganizationUnit(ou2);
+        suUnaffected2.setInterviewer(null);
+        surveyUnitRepository.save(suUnaffected2);
+        entityManager.flush();
+
+        // Filter on OU1 only → should see only 1 unaffected (the one from setup in OU1)
+        List<CampaignDailyStats> resultOU1 = adapter.getCampaignsStats(
+                List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
+        assertThat(resultOU1).hasSize(1);
+        assertThat(resultOU1.getFirst().getUnaffectedCount()).isEqualTo(1);
+
+        // Filter on OU2 only → should see only 1 unaffected (the one we just added in OU2)
+        List<CampaignDailyStats> resultOU2 = adapter.getCampaignsStats(
+                List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
+        assertThat(resultOU2).hasSize(1);
+        assertThat(resultOU2.getFirst().getUnaffectedCount()).isEqualTo(1);
+
+        // Both OUs → should see 2 unaffected
+        List<CampaignDailyStats> resultBoth = adapter.getCampaignsStats(
+                List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
+        assertThat(resultBoth).hasSize(1);
+        assertThat(resultBoth.getFirst().getUnaffectedCount()).isEqualTo(2);
+    }
+
+    @Test
     @DisplayName("Should return empty list when no campaigns match")
     void getCampaignsStats_shouldReturnEmpty_whenNoCampaigns() {
         List<CampaignDailyStats> result = adapter.getCampaignsStats(
@@ -345,6 +378,27 @@ class CampaignDailyStatsDaoAdapterTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getInterviewerId()).isEqualTo(INTW1_ID);
+    }
+
+    @Test
+    @DisplayName("Should aggregate interviewer stats across multiple OUs")
+    void getInterviewerStats_shouldAggregateAcrossOUs() {
+        // Add stats for INTW1 in OU2 (INTW1 already has stats in OU1 from setup)
+        insertStats(DAY, CAMPAIGN_ID, OU2_ID, INTW1_ID,
+                3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+
+        List<InterviewerDailyStats> result =
+                adapter.getInterviewerStats(CAMPAIGN_ID, List.of(OU1_ID, OU2_ID), DAY);
+
+        // INTW1 should appear once with aggregated values (OU1 + OU2)
+        // INTW2 stays with OU2 values only
+        InterviewerDailyStats intw1 = result.stream()
+                .filter(s -> s.getInterviewerId().equals(INTW1_ID)).findFirst().orElseThrow();
+        assertThat(intw1.getNvmStateCount()).isEqualTo(4);  // 1 (OU1) + 3 (OU2)
+        assertThat(intw1.getTbrStateCount()).isEqualTo(15);  // 12 (OU1) + 3 (OU2)
+        assertThat(intw1.getNpaClosingCauseCount()).isEqualTo(4);  // 1 + 3
+        assertThat(intw1.getInaContactOutcomeCount()).isEqualTo(8); // 5 + 3
     }
 
     @Test
