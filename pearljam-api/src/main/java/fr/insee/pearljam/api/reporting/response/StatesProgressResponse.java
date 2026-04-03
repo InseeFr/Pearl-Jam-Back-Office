@@ -1,8 +1,8 @@
-package fr.insee.pearljam.domain.reporting.readmodel.progress;
+package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
-public record StatesProgress(
+public record StatesProgressResponse(
         long allocated,
         long notStarted,
         long inProgress,
@@ -14,8 +14,8 @@ public record StatesProgress(
         long withAppointment,
         long started
 ) {
-    public static StatesProgress from(AbstractDailyStats dailyStats) {
-        return new StatesProgress(
+    public static StatesProgressResponse from(AbstractDailyStats dailyStats) {
+        return new StatesProgressResponse(
                 dailyStats.getAllocatedStateCount(),
                 dailyStats.getVicStateCount(),
                 dailyStats.getInProgressStateCount(),

@@ -5,8 +5,6 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPre
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,20 +129,17 @@ class CampaignProgressByInterviewersServiceTest {
 
         InterviewerDailyStats interviewer = result.interviewerStats().getFirst();
         assertThat(interviewer.getProgressStateRate()).isCloseTo(54.135f, within(0.001f));
-
-        StatesProgress states = StatesProgress.from(interviewer);
-        CommunicationsProgress communications = CommunicationsProgress.from(interviewer);
-        assertThat(states.allocated()).isEqualTo(133L);
-        assertThat(states.notStarted()).isEqualTo(4L);
-        assertThat(states.inProgress()).isEqualTo(30L);
-        assertThat(states.pendingTransmission()).isEqualTo(6L);
-        assertThat(states.toReview()).isEqualTo(20L);
-        assertThat(states.validated()).isEqualTo(52L);
-        assertThat(states.preparingContact()).isEqualTo(6L);
-        assertThat(states.withContact()).isEqualTo(7L);
-        assertThat(states.withAppointment()).isEqualTo(8L);
-        assertThat(communications.noticeLetter()).isEqualTo(15L);
-        assertThat(communications.reminderLetter()).isEqualTo(25L);
+        assertThat(interviewer.getAllocatedStateCount()).isEqualTo(133L);
+        assertThat(interviewer.getVicStateCount()).isEqualTo(4L);
+        assertThat(interviewer.getInProgressStateCount()).isEqualTo(30L);
+        assertThat(interviewer.getWftStateCount()).isEqualTo(6L);
+        assertThat(interviewer.getTbrStateCount()).isEqualTo(20L);
+        assertThat(interviewer.getCompletedStateCount()).isEqualTo(52L);
+        assertThat(interviewer.getPrcStateCount()).isEqualTo(6L);
+        assertThat(interviewer.getAocStateCount()).isEqualTo(7L);
+        assertThat(interviewer.getApsStateCount()).isEqualTo(8L);
+        assertThat(interviewer.getNoticeCommunicationCount()).isEqualTo(15L);
+        assertThat(interviewer.getReminderCommunicationCount()).isEqualTo(25L);
     }
 
     @Test
