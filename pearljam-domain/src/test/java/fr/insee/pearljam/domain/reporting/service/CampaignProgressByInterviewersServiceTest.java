@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,13 +37,15 @@ class CampaignProgressByInterviewersServiceTest {
 
     UserService userService;
     CampaignDailyStatsRepositoryPort statsRepository;
-    CampaignProgressByInterviewersService service;
+    CampaignReportingByInterviewersService service;
+    CampaignStatsByInterviewersPresenter<InterviewerStatsResult> passthroughPresenter;
 
     @BeforeEach
     void setup() {
         userService = mock(UserService.class);
         statsRepository = mock(CampaignDailyStatsRepositoryPort.class);
-        service = new CampaignProgressByInterviewersService(userService, statsRepository, FIXED_CLOCK);
+        service = new CampaignReportingByInterviewersService(userService, statsRepository, FIXED_CLOCK);
+        passthroughPresenter = InterviewerStatsResult::new;
 
         when(userService.getUserOUsModel(USER_ID, false)).thenReturn(List.of(OU));
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of());
@@ -53,7 +56,7 @@ class CampaignProgressByInterviewersServiceTest {
     @Test
     void shouldUseProvidedDay_whenDayIsInThePast() throws CampaignNotFoundException {
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
-        service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate);
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate, passthroughPresenter);
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         org.mockito.Mockito.verify(statsRepository).getInterviewerStats(anyString(), anyList(), dayCaptor.capture());
@@ -62,7 +65,7 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldDefaultToToday_whenDayIsNull() throws CampaignNotFoundException {
-        service.getProgressForDay(USER_ID, CAMPAIGN_ID, null);
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, null, passthroughPresenter);
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         org.mockito.Mockito.verify(statsRepository).getInterviewerStats(anyString(), anyList(), dayCaptor.capture());
@@ -72,7 +75,7 @@ class CampaignProgressByInterviewersServiceTest {
     @Test
     void shouldDefaultToToday_whenDayIsInTheFuture() throws CampaignNotFoundException {
         LocalDate futureDate = FIXED_TODAY.plusDays(10);
-        service.getProgressForDay(USER_ID, CAMPAIGN_ID, futureDate);
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, futureDate, passthroughPresenter);
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         org.mockito.Mockito.verify(statsRepository).getInterviewerStats(anyString(), anyList(), dayCaptor.capture());
@@ -81,13 +84,13 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldReturnEmptyInterviewers_whenNoInterviewerStats() throws CampaignNotFoundException {
-        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
+        InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
-        assertThat(result.interviewers()).isEmpty();
-        assertThat(result.site().progressRate()).isZero();
-        assertThat(result.site().states().allocated()).isZero();
-        assertThat(result.campaign().progressRate()).isZero();
-        assertThat(result.campaign().states().allocated()).isZero();
+        assertThat(result.interviewerStats()).isEmpty();
+        assertThat(result.siteStats().getProgressStateRate()).isZero();
+        assertThat(result.siteStats().getAllocatedStateCount()).isZero();
+        assertThat(result.campaignStats().getProgressStateRate()).isZero();
+        assertThat(result.campaignStats().getAllocatedStateCount()).isZero();
     }
 
     @Test
@@ -95,10 +98,11 @@ class CampaignProgressByInterviewersServiceTest {
         InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
+        InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
-        assertThat(result.interviewers()).hasSize(1);
-        assertThat(result.interviewers().getFirst().interviewerLabel()).isEqualTo("Jean Dupont");
+        assertThat(result.interviewerStats()).hasSize(1);
+        assertThat(result.interviewerStats().getFirst().getInterviewerFirstName()).isEqualTo("Jean");
+        assertThat(result.interviewerStats().getFirst().getInterviewerLastName()).isEqualTo("Dupont");
     }
 
     @Test
@@ -123,13 +127,13 @@ class CampaignProgressByInterviewersServiceTest {
         stats.setReminderCommunicationCount(25L);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
+        InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
-        CampaignProgressByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
-        assertThat(interviewer.progressRate()).isCloseTo(54.135f, within(0.001f));
+        InterviewerDailyStats interviewer = result.interviewerStats().getFirst();
+        assertThat(interviewer.getProgressStateRate()).isCloseTo(54.135f, within(0.001f));
 
-        StatesProgress states = interviewer.states();
-        CommunicationsProgress communications = interviewer.communications();
+        StatesProgress states = StatesProgress.from(interviewer);
+        CommunicationsProgress communications = CommunicationsProgress.from(interviewer);
         assertThat(states.allocated()).isEqualTo(133L);
         assertThat(states.notStarted()).isEqualTo(4L);
         assertThat(states.inProgress()).isEqualTo(30L);
@@ -158,12 +162,12 @@ class CampaignProgressByInterviewersServiceTest {
         when(statsRepository.findCampaignStats(anyString(), any()))
                 .thenReturn(Optional.of(campaignStat));
 
-        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
+        InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
-        assertThat(result.site().progressRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.site().states().allocated()).isEqualTo(100L);
-        assertThat(result.campaign().progressRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.campaign().states().allocated()).isEqualTo(100L);
+        assertThat(result.siteStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
+        assertThat(result.siteStats().getAllocatedStateCount()).isEqualTo(100L);
+        assertThat(result.campaignStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
+        assertThat(result.campaignStats().getAllocatedStateCount()).isEqualTo(100L);
     }
 
     @Test
@@ -173,12 +177,32 @@ class CampaignProgressByInterviewersServiceTest {
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
+        InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
-        assertThat(result.interviewers()).hasSize(2);
-        assertThat(result.interviewers())
-                .extracting(CampaignProgressByInterviewers.Interviewer::interviewerLabel)
-                .containsExactly("Jean Dupont", "Marie Martin");
+        assertThat(result.interviewerStats()).hasSize(2);
+        assertThat(result.interviewerStats())
+                .extracting(InterviewerDailyStats::getInterviewerFirstName, InterviewerDailyStats::getInterviewerLastName)
+                .containsExactly(tuple("Jean", "Dupont"), tuple("Marie", "Martin"));
+    }
+
+    @Test
+    void shouldPushOutputToPresenter() throws CampaignNotFoundException {
+        @SuppressWarnings("unchecked")
+        CampaignStatsByInterviewersPresenter<String> presenter = mock(CampaignStatsByInterviewersPresenter.class);
+
+        when(presenter.present(anyList(), any(), any())).thenReturn("presented");
+
+        String result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, presenter);
+
+        org.mockito.Mockito.verify(presenter).present(anyList(), any(CampaignDailyStats.class), any(CampaignDailyStats.class));
+        assertThat(result).isEqualTo("presented");
+    }
+
+    record InterviewerStatsResult(
+            List<InterviewerDailyStats> interviewerStats,
+            CampaignDailyStats siteStats,
+            CampaignDailyStats campaignStats
+    ) {
     }
 
     private InterviewerDailyStats interviewerStats(String interviewerId, String firstName, String lastName) {
