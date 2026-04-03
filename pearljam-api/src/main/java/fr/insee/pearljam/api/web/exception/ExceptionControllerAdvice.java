@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.web.exception;
 
 import fr.insee.pearljam.domain.campaign.service.exception.*;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
@@ -115,6 +116,11 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail exceptions(BadRequestException e) {
+        return generateResponseError(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FutureReportingDateException.class)
+    public ProblemDetail exceptions(FutureReportingDateException e) {
         return generateResponseError(e, HttpStatus.BAD_REQUEST);
     }
 

@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.reporting.response.CampaignProgressByInterviewersRe
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,5 +82,16 @@ class CampaignProgressByInterviewerControllerTest {
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/interviewers/progress"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenDayIsInTheFuture() throws Exception {
+        LocalDate futureDay = LocalDate.now().plusDays(1);
+        when(port.getProgressForDay(any(), eq("campaign-1"), eq(futureDay), any()))
+                .thenThrow(new FutureReportingDateException());
+
+        mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress")
+                        .param("day", futureDay.toString()))
+                .andExpect(status().isBadRequest());
     }
 }

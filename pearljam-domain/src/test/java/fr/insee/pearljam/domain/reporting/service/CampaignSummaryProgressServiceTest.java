@@ -10,6 +10,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +21,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,20 +80,12 @@ class CampaignSummaryProgressServiceTest {
     }
 
     @Test
-    void shouldDefaultToToday_whenDayIsInTheFuture() {
-        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
-                .thenReturn(List.of(camp));
-        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
-                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
+    void shouldThrow_whenDayIsInTheFuture() {
+        LocalDate futureDay = FIXED_TODAY.plusDays(10);
 
-        service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY.plusDays(10));
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        assertThatThrownBy(() -> service.getCampaignSummaryProgress(USER_ID, futureDay))
+                .isInstanceOf(FutureReportingDateException.class)
+                .hasMessage("date must not be in the future");
     }
 
     @Test
