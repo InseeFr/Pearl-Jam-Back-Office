@@ -4,9 +4,9 @@ import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignCollectionPort;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.collect.CampaignCollection;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class CampaignCollectionService implements CampaignCollectionPort {
+public class CampaignReportingService implements CampaignReportingPort {
 
     private final CampaignRepository campaignRepository;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
@@ -30,13 +30,13 @@ public class CampaignCollectionService implements CampaignCollectionPort {
     private final Clock clock;
 
     @Override
-    public List<CampaignCollection> getCampaignsCollection(String userId, LocalDate day) {
+    public <T> T getCampaignsStats(String userId, LocalDate day, CampaignStatsPresenter<T> presenter) {
         day = defaultDay(day);
         List<String> userOUIds = userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
 
         if (userOUIds.isEmpty()) {
-            return Collections.emptyList();
+            return presenter.present(Collections.emptyList());
         }
 
         List<CampaignSummary> campaigns = campaignRepository
@@ -45,7 +45,7 @@ public class CampaignCollectionService implements CampaignCollectionPort {
 
         if (campaigns.isEmpty()) {
             log.info("No opened campaigns found for {}", userId);
-            return Collections.emptyList();
+            return presenter.present(Collections.emptyList());
         }
 
         List<String> campaignIds = campaigns.stream().map(CampaignSummary::id).toList();
@@ -55,17 +55,11 @@ public class CampaignCollectionService implements CampaignCollectionPort {
                 .stream()
                 .collect(Collectors.toMap(CampaignDailyStats::getCampaignId, s -> s));
 
-        return campaigns.stream()
+        List<CampaignDailyStats> stats = campaigns.stream()
                 .filter(campaign -> statsByCampaign.containsKey(campaign.id()))
-                .map(campaign -> {
-                    CampaignDailyStats campaignDailyStats = statsByCampaign.get(campaign.id());
-                    return CampaignCollection.from(
-                            campaign.id(),
-                            campaign.label(),
-                            campaignDailyStats
-                    );
-                })
+                .map(campaign -> statsByCampaign.get(campaign.id()))
                 .toList();
+        return presenter.present(stats);
     }
 
     private LocalDate defaultDay(LocalDate day) {

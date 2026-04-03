@@ -1,8 +1,9 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.readmodel.collect.CampaignCollection;
-import fr.insee.pearljam.domain.reporting.service.CampaignCollectionService;
+import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,15 +22,15 @@ import java.util.List;
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignCollectionController {
-    private final CampaignCollectionService campaignCollectionService;
+    private final CampaignReportingPort campaignReportingService;
+    private final CampaignCollectionPresenter presenter;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_COLLECTION)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignCollection> getCampaignsCollect(
+    public List<CampaignCollectionResponse> getCampaignsCollect(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        return campaignCollectionService.getCampaignsCollection(userId, day);
+        return campaignReportingService.getCampaignsStats(userId, day, presenter);
     }
 }
-

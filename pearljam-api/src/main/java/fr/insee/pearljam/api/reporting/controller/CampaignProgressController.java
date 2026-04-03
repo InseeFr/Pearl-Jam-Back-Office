@@ -4,8 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgress;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressService;
+import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,14 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressController {
-    private final CampaignProgressService campaignProgressService;
+    private final CampaignReportingPort campaignReportingService;
+    private final CampaignProgressPresenter presenter;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProgress> getCampaignsProgress(
+    public List<CampaignProgressResponse> getCampaignsProgress(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        return campaignProgressService.getCampaignsProgress(userId, day);
+        return campaignReportingService.getCampaignsStats(userId, day, presenter);
     }
 }
