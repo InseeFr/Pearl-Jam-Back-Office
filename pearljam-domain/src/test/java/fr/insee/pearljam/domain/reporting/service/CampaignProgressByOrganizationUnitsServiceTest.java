@@ -9,8 +9,11 @@ import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.OrganizationUnitDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +25,9 @@ import static org.mockito.Mockito.when;
 
 class CampaignProgressByOrganizationUnitsServiceTest {
 
-    static final LocalDate DAY = LocalDate.of(2025, 1, 15);
+    static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
+    static final Clock FIXED_CLOCK = Clock.fixed(
+            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     static final String USER_ID = "user-1";
     static final String CAMPAIGN_ID = "campaign-1";
     static final OrganizationUnitSummary OU = new OrganizationUnitSummary("ou-1", "Org Unit 1");
@@ -35,7 +40,7 @@ class CampaignProgressByOrganizationUnitsServiceTest {
     void setup() {
         userService = mock(UserService.class);
         statsRepository = mock(CampaignDailyStatsRepositoryPort.class);
-        service = new CampaignProgressByOrganizationUnitsService(userService, statsRepository);
+        service = new CampaignProgressByOrganizationUnitsService(userService, statsRepository, FIXED_CLOCK);
 
         when(userService.getUserOUsModel(USER_ID, false)).thenReturn(List.of(OU));
         when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of());
@@ -43,8 +48,37 @@ class CampaignProgressByOrganizationUnitsServiceTest {
     }
 
     @Test
+    void shouldUseProvidedDay_whenDayIsInThePast() throws CampaignNotFoundException {
+        LocalDate pastDate = FIXED_TODAY.minusDays(5);
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getOrganizationUnitsStats(anyString(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsNull() throws CampaignNotFoundException {
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, null);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getOrganizationUnitsStats(anyString(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsInTheFuture() throws CampaignNotFoundException {
+        LocalDate futureDate = FIXED_TODAY.plusDays(10);
+        service.getProgressForDay(USER_ID, CAMPAIGN_ID, futureDate);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getOrganizationUnitsStats(anyString(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
     void shouldReturnEmptyOrganizationUnits_whenNoOuStats() throws CampaignNotFoundException {
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         assertThat(result.organizationUnits()).isEmpty();
         assertThat(result.campaign().progressRate()).isZero();
@@ -56,7 +90,7 @@ class CampaignProgressByOrganizationUnitsServiceTest {
         OrganizationUnitDailyStats stats = ouStats("ou-1", "Org Unit 1");
         when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         assertThat(result.organizationUnits()).hasSize(1);
         assertThat(result.organizationUnits().getFirst().organizationUnitLabel()).isEqualTo("Org Unit 1");
@@ -84,11 +118,9 @@ class CampaignProgressByOrganizationUnitsServiceTest {
         stats.setReminderCommunicationCount(25L);
         when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         CampaignProgressByOrganizationUnits.OrganizationUnit ou = result.organizationUnits().getFirst();
-        // allocated = nns+anv+vin+vic+prc+aoc+aps+ins+wft+wfs+tbr+fin+clo = 5+2+3+4+6+7+8+9+6+11+20+40+12 = 133
-        // progress = (tbr+fin+clo)/allocated*100 = (20+40+12)/133*100 ≈ 54.135%
         assertThat(ou.progressRate()).isCloseTo(54.135f, within(0.001f));
         assertThat(ou.states().allocated()).isEqualTo(133L);
         assertThat(ou.states().notStarted()).isEqualTo(4L);
@@ -114,7 +146,7 @@ class CampaignProgressByOrganizationUnitsServiceTest {
 
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(campaignStat));
 
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         assertThat(result.campaign().progressRate()).isCloseTo(50.0f, within(0.001f));
         assertThat(result.campaign().states().allocated()).isEqualTo(100L);
@@ -122,9 +154,7 @@ class CampaignProgressByOrganizationUnitsServiceTest {
 
     @Test
     void shouldUseEmptyCampaignStats_whenNoCampaignStatsExist() throws CampaignNotFoundException {
-        when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.empty());
-
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         assertThat(result.campaign().progressRate()).isZero();
         assertThat(result.campaign().states().allocated()).isZero();
@@ -137,7 +167,7 @@ class CampaignProgressByOrganizationUnitsServiceTest {
         when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
+        CampaignProgressByOrganizationUnits result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY);
 
         assertThat(result.organizationUnits()).hasSize(2);
         assertThat(result.organizationUnits())

@@ -12,8 +12,11 @@ import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgre
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +27,9 @@ import static org.mockito.Mockito.when;
 class CampaignSummaryProgressServiceTest {
 
     static final Long FIXED_TIMESTAMP = 1_000_000L;
-    static final LocalDate DAY = LocalDate.of(2025, 1, 15);
+    static final LocalDate FIXED_TODAY = LocalDate.of(2025, 1, 15);
+    static final Clock FIXED_CLOCK = Clock.fixed(
+            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     static final String USER_ID = "user-1";
     static final OrganizationUnitSummary OU = new OrganizationUnitSummary("ou-1", "OrganizationUnit 1");
 
@@ -46,7 +51,8 @@ class CampaignSummaryProgressServiceTest {
                 campaignRepository,
                 campaignDailyStatsRepositoryPort,
                 userService,
-                dateService
+                dateService,
+                FIXED_CLOCK
         );
 
         when(dateService.getCurrentTimestamp()).thenReturn(FIXED_TIMESTAMP);
@@ -55,10 +61,62 @@ class CampaignSummaryProgressServiceTest {
     }
 
     @Test
+    void shouldDefaultToToday_whenDayIsNull() {
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
+        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(camp));
+        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
+                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
+
+        service.getCampaignSummaryProgress(USER_ID, null);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsInTheFuture() {
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
+        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(camp));
+        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
+                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
+
+        service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY.plusDays(10));
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
+    void shouldUseProvidedDay_whenDayIsInThePast() {
+        LocalDate pastDate = FIXED_TODAY.minusDays(5);
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
+        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(camp));
+        when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
+                .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
+
+        service.getCampaignSummaryProgress(USER_ID, pastDate);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+    }
+
+    @Test
     void shouldReturnEmptyList_whenUserHasNoOrgUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -69,7 +127,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of());
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -85,7 +143,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
 
         assertThat(result).hasSize(1);
         CampaignSummaryProgress cs = result.getFirst();
@@ -107,7 +165,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -126,7 +184,7 @@ class CampaignSummaryProgressServiceTest {
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
                         CampaignDailyStats.empty("CAMP2", "Campaign Two")));
 
-        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, DAY);
+        List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting(CampaignSummaryProgress::campaignId)
@@ -165,7 +223,7 @@ class CampaignSummaryProgressServiceTest {
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, DAY).getFirst();
+        CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
         assertThat(states.allocated()).isEqualTo(104);
