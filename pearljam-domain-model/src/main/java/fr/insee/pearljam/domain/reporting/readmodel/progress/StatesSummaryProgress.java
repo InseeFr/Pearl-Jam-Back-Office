@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 
 public record StatesSummaryProgress(long allocated,
                                                     long toProcessInterviewer,

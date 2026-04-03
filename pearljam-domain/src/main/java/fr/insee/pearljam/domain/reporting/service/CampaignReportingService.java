@@ -7,7 +7,7 @@ import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSumma
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

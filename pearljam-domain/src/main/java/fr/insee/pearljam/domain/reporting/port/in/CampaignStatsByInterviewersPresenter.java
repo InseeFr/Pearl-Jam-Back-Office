@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.reporting.port.in;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 
 import java.util.List;
 
