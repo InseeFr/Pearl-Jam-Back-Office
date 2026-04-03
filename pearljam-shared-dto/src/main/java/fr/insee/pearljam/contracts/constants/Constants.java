@@ -44,6 +44,7 @@ public class Constants {
   public static final String API_REPORTING_CAMPAIGNS_COLLECTION = "/api/reporting/campaigns/collection";
   public static final String API_REPORTING_CAMPAIGNS_SUMMARY = "/api/reporting/campaigns/summary";
   public static final String API_REPORTING_INTERVIEWERS_PROGRESS = "/api/reporting/campaigns/{campaignId}/interviewers/progress";
+  public static final String API_REPORTING_OUS_PROGRESS = "/api/reporting/campaigns/{campaignId}/organization-units/progress";
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
 
   public static final String API_CAMPAIGN = "/api/campaign";
