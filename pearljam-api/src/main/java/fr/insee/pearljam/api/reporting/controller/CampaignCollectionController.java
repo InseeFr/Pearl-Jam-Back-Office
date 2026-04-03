@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import java.util.List;
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignCollectionController {
     private final CampaignCollectionService campaignCollectionService;
-    private final Clock clock;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_COLLECTION)
@@ -31,10 +29,6 @@ public class CampaignCollectionController {
     public List<CampaignCollection> getCampaignsCollect(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        LocalDate now = LocalDate.now(clock);
-        if (day == null || day.isAfter(now)) {
-            day = now;
-        }
         return campaignCollectionService.getCampaignsCollection(userId, day);
     }
 }

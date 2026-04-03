@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,9 +23,11 @@ public class CampaignProgressByOrganizationUnitsService implements CampaignProgr
 
     private final UserService userService;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
+    private final Clock clock;
 
     @Override
     public CampaignProgressByOrganizationUnits getProgressForDay(String userId, String campaignId, LocalDate day) throws CampaignNotFoundException {
+        day = defaultDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
 
         List<String> userOUIds = userService.getUserOUsModel(userId, false).stream()
@@ -39,5 +42,13 @@ public class CampaignProgressByOrganizationUnitsService implements CampaignProgr
                 .orElse(CampaignDailyStats.empty(campaignId));
 
         return CampaignProgressByOrganizationUnits.from(organizationUnitsStats, campaignStats);
+    }
+
+    private LocalDate defaultDay(LocalDate day) {
+        LocalDate now = LocalDate.now(clock);
+        if (day == null || day.isAfter(now)) {
+            return now;
+        }
+        return day;
     }
 }
