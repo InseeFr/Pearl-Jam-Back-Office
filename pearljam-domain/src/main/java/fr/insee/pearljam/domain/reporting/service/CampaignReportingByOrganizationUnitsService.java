@@ -3,9 +3,9 @@ package fr.insee.pearljam.domain.reporting.service;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByOrganizationUnitsPort;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByOrganizationUnits;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.OrganizationUnitDailyStats;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +19,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CampaignProgressByOrganizationUnitsService implements CampaignProgressByOrganizationUnitsPort {
+public class CampaignReportingByOrganizationUnitsService implements CampaignReportingByOrganizationUnitsPort {
 
     private final UserService userService;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final Clock clock;
 
     @Override
-    public CampaignProgressByOrganizationUnits getProgressForDay(String userId, String campaignId, LocalDate day) throws CampaignNotFoundException {
+    public <T> T getProgressForDay(String userId, String campaignId, LocalDate day,
+                                   CampaignStatsByOrganizationUnitsPresenter<T> presenter) throws CampaignNotFoundException {
         day = defaultDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
 
@@ -41,7 +42,7 @@ public class CampaignProgressByOrganizationUnitsService implements CampaignProgr
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
 
-        return CampaignProgressByOrganizationUnits.from(organizationUnitsStats, campaignStats);
+        return presenter.present(organizationUnitsStats, campaignStats);
     }
 
     private LocalDate defaultDay(LocalDate day) {
