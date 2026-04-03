@@ -2,9 +2,9 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
-import fr.insee.pearljam.domain.reporting.readmodel.collect.ClosingCausesProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.collect.CollectionRates;
-import fr.insee.pearljam.domain.reporting.readmodel.collect.ContactOutcomesProgress;
+import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
+import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
+import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +23,8 @@ public class CampaignCollectionPresenter implements CampaignStatsPresenter<List<
                 stats.getCampaignId(),
                 stats.getCampaignLabel(),
                 stats.getAllocatedStateCount(),
-                CollectionRates.from(stats),
-                ContactOutcomesProgress.from(stats),
-                ClosingCausesProgress.from(stats));
+                CollectionRatesResponse.from(stats),
+                ContactOutcomesProgressResponse.from(stats),
+                ClosingCausesProgressResponse.from(stats));
     }
 }

@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
+import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
+import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class CampaignProgressPresenter implements CampaignStatsPresenter<List<Ca
                 stats.getCampaignId(),
                 stats.getCampaignLabel(),
                 stats.getProgressStateRate(),
-                StatesProgress.from(stats),
-                CommunicationsProgress.from(stats));
+                StatesProgressResponse.from(stats),
+                CommunicationsProgressResponse.from(stats));
     }
 }

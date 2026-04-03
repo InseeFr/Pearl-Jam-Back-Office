@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.CampaignProgressByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
+import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
+import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import org.springframework.stereotype.Component;
@@ -23,18 +23,18 @@ public class CampaignProgressByInterviewersPresenter implements
                         .map(interviewer -> new CampaignProgressByInterviewersResponse.Interviewer(
                                 interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName(),
                                 interviewer.getProgressStateRate(),
-                                StatesProgress.from(interviewer),
-                                CommunicationsProgress.from(interviewer)))
+                                StatesProgressResponse.from(interviewer),
+                                CommunicationsProgressResponse.from(interviewer)))
                         .toList(),
                 new CampaignProgressByInterviewersResponse.OrganizationUnit(
                         siteStats.getProgressStateRate(),
-                        StatesProgress.from(siteStats),
-                        CommunicationsProgress.from(siteStats)),
+                        StatesProgressResponse.from(siteStats),
+                        CommunicationsProgressResponse.from(siteStats)),
                 new CampaignProgressByInterviewersResponse.Campaign(
                         campaignStats.getUnaffectedCount(),
                         campaignStats.getProgressStateRate(),
-                        StatesProgress.from(campaignStats),
-                        CommunicationsProgress.from(campaignStats))
+                        StatesProgressResponse.from(campaignStats),
+                        CommunicationsProgressResponse.from(campaignStats))
         );
     }
 }

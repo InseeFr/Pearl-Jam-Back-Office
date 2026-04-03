@@ -1,14 +1,14 @@
-package fr.insee.pearljam.domain.reporting.readmodel.collect;
+package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
-public record CollectionRates(
+public record CollectionRatesResponse(
         float collection,
         float waste,
         float outOfScope
 ) {
-    public static CollectionRates from(AbstractDailyStats dailyStats) {
-        return new CollectionRates(
+    public static CollectionRatesResponse from(AbstractDailyStats dailyStats) {
+        return new CollectionRatesResponse(
                 dailyStats.getCollectionRate(),
                 dailyStats.getWasteRate(),
                 dailyStats.getOutOfScopeRate()

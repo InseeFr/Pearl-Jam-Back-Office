@@ -5,8 +5,8 @@ import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUn
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
+import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
+import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,8 +30,8 @@ class CampaignProgressByOrganizationUnitControllerTest {
     private static final CampaignProgressByOrganizationUnitsResponse EMPTY_RESULT = new CampaignProgressByOrganizationUnitsResponse(
             List.of(),
             new CampaignProgressByOrganizationUnitsResponse.Campaign(0f,
-                    new StatesProgress(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-                    new CommunicationsProgress(0L, 0L))
+                    new StatesProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                    new CommunicationsProgressResponse(0L, 0L))
     );
 
     @BeforeEach

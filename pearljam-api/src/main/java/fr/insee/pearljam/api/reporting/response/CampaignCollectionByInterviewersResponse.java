@@ -1,16 +1,16 @@
-package fr.insee.pearljam.domain.reporting.readmodel.collect;
+package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 
 import java.util.List;
 
-public record CampaignCollectionByInterviewers(
+public record CampaignCollectionByInterviewersResponse(
         List<Interviewer> interviewers,
         OrganizationUnit site,
         Campaign campaign) {
 
-    public static CampaignCollectionByInterviewers from(
+    public static CampaignCollectionByInterviewersResponse from(
             List<InterviewerDailyStats> interviewerDailyStats,
             CampaignDailyStats campaignOusDailyStats,
             CampaignDailyStats campaignDailyStats) {
@@ -19,48 +19,48 @@ public record CampaignCollectionByInterviewers(
                 .map(intDailyStats -> new Interviewer(
                         intDailyStats.getInterviewerFirstName() + " " + intDailyStats.getInterviewerLastName(),
                         intDailyStats.getAllocatedStateCount(),
-                        CollectionRates.from(intDailyStats),
-                        ContactOutcomesProgress.from(intDailyStats),
-                        ClosingCausesProgress.from(intDailyStats)
+                        CollectionRatesResponse.from(intDailyStats),
+                        ContactOutcomesProgressResponse.from(intDailyStats),
+                        ClosingCausesProgressResponse.from(intDailyStats)
                 ))
                 .toList();
 
         OrganizationUnit site = new OrganizationUnit(
                 campaignOusDailyStats.getAllocatedStateCount(),
-                CollectionRates.from(campaignOusDailyStats),
-                ContactOutcomesProgress.from(campaignOusDailyStats),
-                ClosingCausesProgress.from(campaignOusDailyStats)
+                CollectionRatesResponse.from(campaignOusDailyStats),
+                ContactOutcomesProgressResponse.from(campaignOusDailyStats),
+                ClosingCausesProgressResponse.from(campaignOusDailyStats)
         );
 
         Campaign campaign = new Campaign(
                 campaignDailyStats.getAllocatedStateCount(),
                 campaignDailyStats.getUnaffectedCount(),
-                CollectionRates.from(campaignDailyStats),
-                ContactOutcomesProgress.from(campaignDailyStats),
-                ClosingCausesProgress.from(campaignDailyStats));
-        return new CampaignCollectionByInterviewers(interviewers, site, campaign);
+                CollectionRatesResponse.from(campaignDailyStats),
+                ContactOutcomesProgressResponse.from(campaignDailyStats),
+                ClosingCausesProgressResponse.from(campaignDailyStats));
+        return new CampaignCollectionByInterviewersResponse(interviewers, site, campaign);
     }
 
     public record Interviewer(
             String interviewerLabel,
             long allocated,
-            CollectionRates rates,
-            ContactOutcomesProgress outcomes,
-            ClosingCausesProgress closingCauses
+            CollectionRatesResponse rates,
+            ContactOutcomesProgressResponse outcomes,
+            ClosingCausesProgressResponse closingCauses
     ) {}
 
     public record OrganizationUnit(
             long allocated,
-            CollectionRates rates,
-            ContactOutcomesProgress outcomes,
-            ClosingCausesProgress closingCauses
+            CollectionRatesResponse rates,
+            ContactOutcomesProgressResponse outcomes,
+            ClosingCausesProgressResponse closingCauses
     ) {}
 
     public record Campaign(
             long allocated,
             long unaffected,
-            CollectionRates rates,
-            ContactOutcomesProgress outcomes,
-            ClosingCausesProgress closingCauses
+            CollectionRatesResponse rates,
+            ContactOutcomesProgressResponse outcomes,
+            ClosingCausesProgressResponse closingCauses
     ) {}
 }
