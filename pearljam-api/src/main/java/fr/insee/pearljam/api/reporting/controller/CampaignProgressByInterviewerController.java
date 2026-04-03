@@ -4,7 +4,7 @@ import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 
 import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

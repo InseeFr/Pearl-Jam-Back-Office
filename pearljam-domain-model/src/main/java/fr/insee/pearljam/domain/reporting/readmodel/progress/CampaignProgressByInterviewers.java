@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.readmodel;
+package fr.insee.pearljam.domain.reporting.readmodel.progress;
 
 
 import java.util.List;
@@ -22,6 +22,7 @@ public record CampaignProgressByInterviewers(
     ) {}
 
     public record Campaign(
+            long unaffected,
             float progressRate,
             StatesProgress states,
             CommunicationsProgress communications

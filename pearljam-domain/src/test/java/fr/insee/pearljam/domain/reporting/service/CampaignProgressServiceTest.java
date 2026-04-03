@@ -4,9 +4,9 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.campaign.stub.CampaignDailyStatsRepositoryPortStub;
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
@@ -23,28 +23,28 @@ class CampaignProgressServiceTest {
     static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
 
     static CampaignDailyStats dailyStats(String campaignId, String campaignLabel) {
-        return new CampaignDailyStats(
-                campaignId, campaignLabel,
-                1L,   // nvm
-                5L,   // nns
-                2L,   // anv
-                3L,   // vin
-                4L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                6L,  // wft
-                11L,  // wfs
-                20L,  // tbr
-                40L,  // fin
-                12L,  // clo
-                8L,  // nva
-                9L,
-                100L, // total
-                15L,  // notice
-                25L   // reminder
-        );
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId(campaignId);
+        stats.setCampaignLabel(campaignLabel);
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(5L);
+        stats.setAnvStateCount(2L);
+        stats.setVinStateCount(3L);
+        stats.setVicStateCount(4L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(6L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(20L);
+        stats.setFinStateCount(40L);
+        stats.setCloStateCount(12L);
+        stats.setNvaStateCount(8L);
+        stats.setUnaffectedCount(9L);
+        stats.setNoticeCommunicationCount(15L);
+        stats.setReminderCommunicationCount(25L);
+        return stats;
     }
 
     private CampaignProgressService buildService(
@@ -95,7 +95,7 @@ class CampaignProgressServiceTest {
 
     @Test
     void shouldComputeProgressRateCorrectly() {
-        // total=100, fin=40, tbr=20, clo=12 → (40+20+12)/100*100 = 72%
+        // allocated=133, tbr=20, fin=40, clo=12 → (20+40+12)/133*100 ≈ 54.14%
         CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
 
         CampaignProgressService service = buildService(
@@ -106,7 +106,7 @@ class CampaignProgressServiceTest {
 
         List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
 
-        assertThat(result.getFirst().progressRate()).isCloseTo(72.0f, within(0.001f));
+        assertThat(result.getFirst().progressRate()).isCloseTo(54.135f, within(0.001f));
     }
 
     @Test
@@ -124,7 +124,7 @@ class CampaignProgressServiceTest {
         StatesProgress states = campaignProgress.states();
         CommunicationsProgress communications = campaignProgress.communications();
 
-        assertThat(states.allocated()).isEqualTo(100L);        // total
+        assertThat(states.allocated()).isEqualTo(133L);        // computed
         assertThat(states.notStarted()).isEqualTo(4L);         // vic
         assertThat(states.inProgress()).isEqualTo(30L);        // prc+aoc+aps+ins = 6+7+8+9
         assertThat(states.pendingTransmission()).isEqualTo(6L);// wft

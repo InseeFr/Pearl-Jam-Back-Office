@@ -3,10 +3,12 @@ package fr.insee.pearljam.domain.reporting.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.readmodel.*;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,18 +137,27 @@ class CampaignSummaryProgressServiceTest {
     void shouldMapDailyStatsToSurveyUnitsCorrectly() {
         CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        CampaignDailyStats stats = new CampaignDailyStats(
-                "CAMP1", "Campaign One",
-                1L, 2L, 3L, 4L,
-                5L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                10L,  // wft
-                11L, 12L, 13L, 14L, 15L, 10L,
-                130L, 1L, 2L
-        );
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId("CAMP1");
+        stats.setCampaignLabel("Campaign One");
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(2L);
+        stats.setAnvStateCount(3L);
+        stats.setVinStateCount(4L);
+        stats.setVicStateCount(5L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(10L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(12L);
+        stats.setFinStateCount(13L);
+        stats.setCloStateCount(14L);
+        stats.setNvaStateCount(15L);
+        stats.setUnaffectedCount(10L);
+        stats.setNoticeCommunicationCount(1L);
+        stats.setReminderCommunicationCount(2L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
@@ -157,7 +168,7 @@ class CampaignSummaryProgressServiceTest {
         CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, DAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
-        assertThat(states.allocated()).isEqualTo(130);
+        assertThat(states.allocated()).isEqualTo(104);
         assertThat(states.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
         assertThat(states.toReview()).isEqualTo(12);
         assertThat(states.completed()).isEqualTo(13 + 14); // fin + clo = 27

@@ -5,7 +5,9 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.*;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 interviewerStats.stream()
                         .map(interviewerDailyStats -> new CampaignProgressByInterviewers.Interviewer(
                                 interviewerDailyStats.getInterviewerFirstName() + " " + interviewerDailyStats.getInterviewerLastName(),
-                                interviewerDailyStats.getProgressRate(),
+                                interviewerDailyStats.getProgressStateRate(),
                                 StatesProgress.from(interviewerDailyStats),
                                 CommunicationsProgress.from(interviewerDailyStats)))
                         .toList();
@@ -47,7 +49,7 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 .findCampaignStatsForOrganizationUnits(campaignId, userOUIds, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressByInterviewers.OrganizationUnit site = new CampaignProgressByInterviewers.OrganizationUnit(
-                siteStat.progressRate(),
+                siteStat.getProgressStateRate(),
                 StatesProgress.from(siteStat),
                 CommunicationsProgress.from(siteStat));
 
@@ -55,7 +57,8 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
         CampaignProgressByInterviewers.Campaign total = new CampaignProgressByInterviewers.Campaign(
-                campaignStats.progressRate(),
+                campaignStats.getUnaffectedCount(),
+                campaignStats.getProgressStateRate(),
                 StatesProgress.from(campaignStats),
                 CommunicationsProgress.from(campaignStats));
 

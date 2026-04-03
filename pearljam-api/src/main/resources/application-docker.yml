@@ -8,6 +8,10 @@ application:
     admin: admin
     webclient:
 feature:
+  stats-scheduling:
+    enabled: true
+    today-cron: "0 */5 * * * *"
+    daily-cron: "0 0 1 * * *"
   oidc:
     enabled: true
     auth-server-host: http://localhost:7080

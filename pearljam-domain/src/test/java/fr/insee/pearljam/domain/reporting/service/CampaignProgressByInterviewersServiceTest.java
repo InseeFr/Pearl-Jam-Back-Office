@@ -4,9 +4,9 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignProgressByInterviewers;
-import fr.insee.pearljam.domain.reporting.readmodel.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.StatesProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,9 +58,7 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapInterviewerLabelCorrectly() throws CampaignNotFoundException {
-        InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
@@ -71,36 +69,35 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapInterviewerSurveyUnitsAndProgressRate() throws CampaignNotFoundException {
-        // total=100, tbr=20, fin=40, clo=12 → progress = (20+40+12)/100*100 = 72%
-        InterviewerDailyStats stats = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                1L, 5L, 2L, 3L,
-                4L,   // vic
-                6L,   // prc
-                7L,   // aoc
-                8L,   // aps
-                9L,   // ins
-                6L,   // wft
-                11L,  // wfs
-                20L,  // tbr
-                40L,  // fin
-                12L,  // clo
-                8L,   // nva
-                9L,   // unaffected
-                100L, // total
-                15L,  // notice
-                25L   // reminder
-        );
+        // allocated=133, tbr=20, fin=40, clo=12 → progress = (20+40+12)/133*100 ≈ 54.14%
+        InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
+        stats.setNvmStateCount(1L);
+        stats.setNnsStateCount(5L);
+        stats.setAnvStateCount(2L);
+        stats.setVinStateCount(3L);
+        stats.setVicStateCount(4L);
+        stats.setPrcStateCount(6L);
+        stats.setAocStateCount(7L);
+        stats.setApsStateCount(8L);
+        stats.setInsStateCount(9L);
+        stats.setWftStateCount(6L);
+        stats.setWfsStateCount(11L);
+        stats.setTbrStateCount(20L);
+        stats.setFinStateCount(40L);
+        stats.setCloStateCount(12L);
+        stats.setNvaStateCount(8L);
+        stats.setNoticeCommunicationCount(15L);
+        stats.setReminderCommunicationCount(25L);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
         CampaignProgressByInterviewers result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, DAY);
 
         CampaignProgressByInterviewers.Interviewer interviewer = result.interviewers().getFirst();
-        assertThat(interviewer.progressRate()).isCloseTo(72.0f, within(0.001f));
+        assertThat(interviewer.progressRate()).isCloseTo(54.135f, within(0.001f));
 
         StatesProgress states = interviewer.states();
         CommunicationsProgress communications = interviewer.communications();
-        assertThat(states.allocated()).isEqualTo(100L);         // total
+        assertThat(states.allocated()).isEqualTo(133L);         // computed
         assertThat(states.notStarted()).isEqualTo(4L);          // vic
         assertThat(states.inProgress()).isEqualTo(30L);         // prc+aoc+aps+ins = 6+7+8+9
         assertThat(states.pendingTransmission()).isEqualTo(6L); // wft
@@ -115,13 +112,13 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldMapSiteAndCampaignStats_whenStatsExist() throws CampaignNotFoundException {
-        CampaignDailyStats campaignStat = new CampaignDailyStats(
-                CAMPAIGN_ID, "Campaign One",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                10L, 30L, 10L,  // tbr=10, fin=30, clo=10
-                0, 0,
-                100L, // total
-                0, 0);
+        CampaignDailyStats campaignStat = new CampaignDailyStats();
+        campaignStat.setCampaignId(CAMPAIGN_ID);
+        campaignStat.setCampaignLabel("Campaign One");
+        campaignStat.setNnsStateCount(50L);
+        campaignStat.setTbrStateCount(10L);
+        campaignStat.setFinStateCount(30L);
+        campaignStat.setCloStateCount(10L);
 
         when(statsRepository.findCampaignStatsForOrganizationUnits(anyString(), anyList(), any()))
                 .thenReturn(Optional.of(campaignStat));
@@ -138,12 +135,8 @@ class CampaignProgressByInterviewersServiceTest {
 
     @Test
     void shouldReturnMultipleInterviewers() throws CampaignNotFoundException {
-        InterviewerDailyStats stats1 = new InterviewerDailyStats(
-                "int-1", "Jean", "Dupont",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0);
-        InterviewerDailyStats stats2 = new InterviewerDailyStats(
-                "int-2", "Marie", "Martin",
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0);
+        InterviewerDailyStats stats1 = interviewerStats("int-1", "Jean", "Dupont");
+        InterviewerDailyStats stats2 = interviewerStats("int-2", "Marie", "Martin");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
@@ -153,5 +146,13 @@ class CampaignProgressByInterviewersServiceTest {
         assertThat(result.interviewers())
                 .extracting(CampaignProgressByInterviewers.Interviewer::interviewerLabel)
                 .containsExactly("Jean Dupont", "Marie Martin");
+    }
+
+    private InterviewerDailyStats interviewerStats(String interviewerId, String firstName, String lastName) {
+        InterviewerDailyStats stats = new InterviewerDailyStats();
+        stats.setInterviewerId(interviewerId);
+        stats.setInterviewerFirstName(firstName);
+        stats.setInterviewerLastName(lastName);
+        return stats;
     }
 }
