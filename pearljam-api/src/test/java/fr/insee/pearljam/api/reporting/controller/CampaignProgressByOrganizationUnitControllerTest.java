@@ -1,9 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByOrganizationUnitsPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUnitsResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByOrganizationUnitsPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByOrganizationUnits;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,22 +25,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CampaignProgressByOrganizationUnitControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressByOrganizationUnitsPort port;
+    private CampaignReportingByOrganizationUnitsPort port;
 
-    private static final CampaignProgressByOrganizationUnits EMPTY_RESULT = new CampaignProgressByOrganizationUnits(
+    private static final CampaignProgressByOrganizationUnitsResponse EMPTY_RESULT = new CampaignProgressByOrganizationUnitsResponse(
             List.of(),
-            new CampaignProgressByOrganizationUnits.Campaign(0f,
+            new CampaignProgressByOrganizationUnitsResponse.Campaign(0f,
                     new StatesProgress(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgress(0L, 0L))
     );
 
     @BeforeEach
     void setup() throws CampaignNotFoundException {
-        port = mock(CampaignProgressByOrganizationUnitsPort.class);
-        when(port.getProgressForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
+        port = mock(CampaignReportingByOrganizationUnitsPort.class);
+        when(port.getProgressForDay(anyString(), anyString(), any(), any())).thenReturn(EMPTY_RESULT);
 
         CampaignProgressByOrganizationUnitController controller =
-                new CampaignProgressByOrganizationUnitController(port);
+                new CampaignProgressByOrganizationUnitController(port, new CampaignProgressByOrganizationUnitsPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -55,7 +56,7 @@ class CampaignProgressByOrganizationUnitControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isEqualTo(day);
     }
 
@@ -65,13 +66,13 @@ class CampaignProgressByOrganizationUnitControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isNull();
     }
 
     @Test
     void shouldReturn404_whenCampaignNotFound() throws Exception {
-        when(port.getProgressForDay(any(), anyString(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundException());
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/organization-units/progress"))
                 .andExpect(status().isNotFound());
