@@ -8,6 +8,7 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewer
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class CampaignReportingByInterviewersService implements CampaignReporting
     @Override
     public <T> T getProgressForDay(String userId, String campaignId, LocalDate day,
                                    CampaignStatsByInterviewersPresenter<T> presenter) throws CampaignNotFoundException {
-        day = defaultDay(day);
+        day = resolveReportingDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
 
         List<String> userOUIds = userService.getUserOUsModel(userId, false).stream()
@@ -49,10 +50,13 @@ public class CampaignReportingByInterviewersService implements CampaignReporting
         return presenter.present(interviewerStats, siteStat, campaignStats);
     }
 
-    private LocalDate defaultDay(LocalDate day) {
+    private LocalDate resolveReportingDay(LocalDate day) {
         LocalDate now = LocalDate.now(clock);
-        if (day == null || day.isAfter(now)) {
+        if (day == null) {
             return now;
+        }
+        if (day.isAfter(now)) {
+            throw new FutureReportingDateException();
         }
         return day;
     }

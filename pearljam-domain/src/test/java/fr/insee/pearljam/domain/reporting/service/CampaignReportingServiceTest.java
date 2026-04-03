@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSumma
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +18,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -63,16 +65,12 @@ class CampaignReportingServiceTest {
     }
 
     @Test
-    void shouldDefaultToToday_whenDayIsInTheFuture() {
-        CampaignSummary campaign = new CampaignSummary("c1", "C1");
-        when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
-                .thenReturn(List.of(campaign));
+    void shouldThrow_whenDayIsInTheFuture() {
+        LocalDate futureDay = FIXED_TODAY.plusDays(10);
 
-        service.getCampaignsStats(USER_ID, FIXED_TODAY.plusDays(10), passthroughPresenter);
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        assertThatThrownBy(() -> service.getCampaignsStats(USER_ID, futureDay, passthroughPresenter))
+                .isInstanceOf(FutureReportingDateException.class)
+                .hasMessage("date must not be in the future");
     }
 
     @Test

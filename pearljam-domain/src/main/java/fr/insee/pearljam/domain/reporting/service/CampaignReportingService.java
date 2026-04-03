@@ -8,6 +8,7 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class CampaignReportingService implements CampaignReportingPort {
 
     @Override
     public <T> T getCampaignsStats(String userId, LocalDate day, CampaignStatsPresenter<T> presenter) {
-        day = defaultDay(day);
+        day = resolveReportingDay(day);
         List<String> userOUIds = userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
 
@@ -62,10 +63,13 @@ public class CampaignReportingService implements CampaignReportingPort {
         return presenter.present(stats);
     }
 
-    private LocalDate defaultDay(LocalDate day) {
+    private LocalDate resolveReportingDay(LocalDate day) {
         LocalDate now = LocalDate.now(clock);
-        if (day == null || day.isAfter(now)) {
+        if (day == null) {
             return now;
+        }
+        if (day.isAfter(now)) {
+            throw new FutureReportingDateException();
         }
         return day;
     }

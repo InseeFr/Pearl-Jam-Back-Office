@@ -11,6 +11,7 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
 
     @Override
     public List<CampaignSummaryProgress> getCampaignSummaryProgress(String userId, LocalDate day) {
-        day = defaultDay(day);
+        day = resolveReportingDay(day);
         long currentTimestamp = dateService.getCurrentTimestamp();
 
         List<String> ouIds = userService.getUserOUsModel(userId, true).stream()
@@ -80,10 +81,13 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .toList();
     }
 
-    private LocalDate defaultDay(LocalDate day) {
+    private LocalDate resolveReportingDay(LocalDate day) {
         LocalDate now = LocalDate.now(clock);
-        if (day == null || day.isAfter(now)) {
+        if (day == null) {
             return now;
+        }
+        if (day.isAfter(now)) {
+            throw new FutureReportingDateException();
         }
         return day;
     }
