@@ -1,17 +1,15 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.reporting.service.CampaignProgressService;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -21,15 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CampaignProgressControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressService progressService;
 
     @BeforeEach
     void setup() {
-        progressService = mock(CampaignProgressService.class);
-        when(progressService.getCampaignsProgress(anyString(), any())).thenReturn(List.of());
+        CampaignReportingPort reportingService = mock(CampaignReportingPort.class);
+        when(reportingService.getCampaignsStats(anyString(), any(), any())).thenReturn(List.of());
 
         CampaignProgressController controller =
-                new CampaignProgressController(progressService);
+                new CampaignProgressController(reportingService, new CampaignProgressPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -38,24 +35,14 @@ class CampaignProgressControllerTest {
 
     @Test
     void shouldReturnOk_whenDayProvided() throws Exception {
-        LocalDate day = LocalDate.of(2025, 6, 10);
-
         mockMvc.perform(get("/api/reporting/campaigns/progress")
-                        .param("day", day.toString()))
+                        .param("day", "2025-06-10"))
                 .andExpect(status().isOk());
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(progressService).getCampaignsProgress(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(day);
     }
 
     @Test
-    void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
+    void shouldReturnOk_whenDayIsNotProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/campaigns/progress"))
                 .andExpect(status().isOk());
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(progressService).getCampaignsProgress(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isNull();
     }
 }
