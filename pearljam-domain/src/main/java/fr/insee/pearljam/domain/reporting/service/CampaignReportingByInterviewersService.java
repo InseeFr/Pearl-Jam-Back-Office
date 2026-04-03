@@ -3,11 +3,9 @@ package fr.insee.pearljam.domain.reporting.service;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +19,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CampaignProgressByInterviewersService implements CampaignProgressByInterviewersPort {
+public class CampaignReportingByInterviewersService implements CampaignReportingByInterviewersPort {
 
     private final UserService userService;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final Clock clock;
 
     @Override
-    public CampaignProgressByInterviewers getProgressForDay(String userId, String campaignId, LocalDate day) throws CampaignNotFoundException {
+    public <T> T getProgressForDay(String userId, String campaignId, LocalDate day,
+                                   CampaignStatsByInterviewersPresenter<T> presenter) throws CampaignNotFoundException {
         day = defaultDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
 
@@ -39,33 +38,15 @@ public class CampaignProgressByInterviewersService implements CampaignProgressBy
         List<InterviewerDailyStats> interviewerStats =
                 campaignDailyStatsRepository.getInterviewerStats(campaignId, userOUIds, day);
 
-        List<CampaignProgressByInterviewers.Interviewer> interviewersProgress =
-                interviewerStats.stream()
-                        .map(interviewerDailyStats -> new CampaignProgressByInterviewers.Interviewer(
-                                interviewerDailyStats.getInterviewerFirstName() + " " + interviewerDailyStats.getInterviewerLastName(),
-                                interviewerDailyStats.getProgressStateRate(),
-                                StatesProgress.from(interviewerDailyStats),
-                                CommunicationsProgress.from(interviewerDailyStats)))
-                        .toList();
-
         CampaignDailyStats siteStat = campaignDailyStatsRepository
                 .findCampaignStatsForOrganizationUnits(campaignId, userOUIds, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
-        CampaignProgressByInterviewers.OrganizationUnit site = new CampaignProgressByInterviewers.OrganizationUnit(
-                siteStat.getProgressStateRate(),
-                StatesProgress.from(siteStat),
-                CommunicationsProgress.from(siteStat));
 
         CampaignDailyStats campaignStats = campaignDailyStatsRepository
                 .findCampaignStats(campaignId, day)
                 .orElse(CampaignDailyStats.empty(campaignId));
-        CampaignProgressByInterviewers.Campaign total = new CampaignProgressByInterviewers.Campaign(
-                campaignStats.getUnaffectedCount(),
-                campaignStats.getProgressStateRate(),
-                StatesProgress.from(campaignStats),
-                CommunicationsProgress.from(campaignStats));
 
-        return new CampaignProgressByInterviewers(interviewersProgress, site, total);
+        return presenter.present(interviewerStats, siteStat, campaignStats);
     }
 
     private LocalDate defaultDay(LocalDate day) {

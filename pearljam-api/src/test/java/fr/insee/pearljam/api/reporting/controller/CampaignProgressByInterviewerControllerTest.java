@@ -1,9 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByInterviewersPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressByInterviewersResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressByInterviewersPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignProgressByInterviewers;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CommunicationsProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesProgress;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +25,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CampaignProgressByInterviewerControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressByInterviewersPort port;
+    private CampaignReportingByInterviewersPort port;
 
-    private static final CampaignProgressByInterviewers EMPTY_RESULT = new CampaignProgressByInterviewers(
+    private static final CampaignProgressByInterviewersResponse EMPTY_RESULT = new CampaignProgressByInterviewersResponse(
             List.of(),
-            new CampaignProgressByInterviewers.OrganizationUnit(0f,
+            new CampaignProgressByInterviewersResponse.OrganizationUnit(0f,
                     new StatesProgress(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgress(0L, 0L)),
-            new CampaignProgressByInterviewers.Campaign(0L, 0f,
+            new CampaignProgressByInterviewersResponse.Campaign(0L, 0f,
                     new StatesProgress(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgress(0L, 0L))
@@ -40,11 +41,11 @@ class CampaignProgressByInterviewerControllerTest {
 
     @BeforeEach
     void setup() throws CampaignNotFoundException {
-        port = mock(CampaignProgressByInterviewersPort.class);
-        when(port.getProgressForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
+        port = mock(CampaignReportingByInterviewersPort.class);
+        when(port.getProgressForDay(anyString(), anyString(), any(), any())).thenReturn(EMPTY_RESULT);
 
         CampaignProgressByInterviewerController controller =
-                new CampaignProgressByInterviewerController(port);
+                new CampaignProgressByInterviewerController(port, new CampaignProgressByInterviewersPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -60,7 +61,7 @@ class CampaignProgressByInterviewerControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isEqualTo(day);
     }
 
@@ -70,13 +71,13 @@ class CampaignProgressByInterviewerControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
+        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isNull();
     }
 
     @Test
     void shouldReturn404_whenCampaignNotFound() throws Exception {
-        when(port.getProgressForDay(any(), anyString(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundException());
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/interviewers/progress"))
                 .andExpect(status().isNotFound());
