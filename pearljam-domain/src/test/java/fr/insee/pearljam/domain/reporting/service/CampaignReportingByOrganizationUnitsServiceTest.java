@@ -5,8 +5,8 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUni
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -10,7 +10,7 @@ import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
