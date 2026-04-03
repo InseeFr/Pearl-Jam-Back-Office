@@ -1,13 +1,13 @@
-package fr.insee.pearljam.domain.reporting.readmodel.progress;
+package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
-public record CommunicationsProgress(
+public record CommunicationsProgressResponse(
         long noticeLetter,
         long reminderLetter
 ) {
-    public static CommunicationsProgress from(AbstractDailyStats dailyStats) {
-        return new CommunicationsProgress(
+    public static CommunicationsProgressResponse from(AbstractDailyStats dailyStats) {
+        return new CommunicationsProgressResponse(
                 dailyStats.getNoticeCommunicationCount(),
                 dailyStats.getReminderCommunicationCount()
         );

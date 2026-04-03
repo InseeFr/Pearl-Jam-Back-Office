@@ -1,14 +1,14 @@
-package fr.insee.pearljam.domain.reporting.readmodel.collect;
+package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
 
-public record ClosingCausesProgress(
+public record ClosingCausesProgressResponse(
         long absenceInterviewer,
         long otherReasons,
         long totalClosed
 ) {
-    public static ClosingCausesProgress from(AbstractDailyStats dailyStats) {
-        return new ClosingCausesProgress(
+    public static ClosingCausesProgressResponse from(AbstractDailyStats dailyStats) {
+        return new ClosingCausesProgressResponse(
                 dailyStats.getNpaClosingCauseCount(),
                 dailyStats.getOtherReasonClosingCauses(),
                 dailyStats.getTotalClosingCauses()

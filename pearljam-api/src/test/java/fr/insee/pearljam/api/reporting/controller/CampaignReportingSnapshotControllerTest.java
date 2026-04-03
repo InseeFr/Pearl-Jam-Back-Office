@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CampaignProgressAdminControllerTest {
+class CampaignReportingSnapshotControllerTest {
 
     private MockMvc mockMvc;
     private CampaignProgressBatch batch;
@@ -26,7 +26,7 @@ class CampaignProgressAdminControllerTest {
     @BeforeEach
     void setup() {
         batch = mock(CampaignProgressBatch.class);
-        CampaignProgressAdminController controller = new CampaignProgressAdminController(batch, FIXED_CLOCK);
+        CampaignReportingSnapshotController controller = new CampaignReportingSnapshotController(batch, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
