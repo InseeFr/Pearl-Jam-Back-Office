@@ -2,8 +2,9 @@ package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignOrganizationRepository;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
@@ -24,7 +25,8 @@ import java.util.List;
 public class CampaignOrganizationService implements CampaignOrganizationPort {
 
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
-    private final CampaignOrganizationRepository campaignOrganizationRepository;
+    private final CampaignReferentRepository campaignReferentRepository;
+    private final CampaignVisibilityPort campaignVisibilityPort;
     private final UserService userService;
     private final DateService dateService;
     private final Clock clock;
@@ -34,13 +36,12 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
         LocalDate now = LocalDate.now(clock);
         List<String> userOUIds = getUserOUIds(userId);
 
-        CampaignWithVisibility campaign = campaignOrganizationRepository
-                .findCampaignVisibility(campaignId, userOUIds, userId);
-
         CampaignDailyStats campaignDailyStats = campaignDailyStatsRepositoryPort
                 .findCampaignStats(campaignId, now)
                 .orElseThrow(CampaignNotFoundException::new);
 
+        CampaignWithVisibility campaign = campaignVisibilityPort.findCampaignVisibility(campaignId, userOUIds, userId);
+        List<Referent> referents = campaignReferentRepository.getReferents(campaignId);
         List<InterviewerDailyStats> interviewerDailyStats = campaignDailyStatsRepositoryPort
                 .getInterviewerStats(campaignId, userOUIds, now);
 
@@ -52,7 +53,7 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 campaign.collectionEndDate(),
                 campaign.endDate(),
                 computePhase(campaign),
-                toReferentModels(campaignOrganizationRepository.getReferents(campaignId)),
+                toReferentModels(referents),
                 toInterviewerModels(interviewerDailyStats),
                 toSurveyUnitModel(campaignDailyStats));
     }
@@ -90,8 +91,8 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .toList();
     }
 
-    private CampaignOrganization.CampaignOrganizationSurveyUnit toSurveyUnitModel(CampaignDailyStats stats) {
-        return new CampaignOrganization.CampaignOrganizationSurveyUnit(
+    private CampaignOrganization.CampaignOrganizationSurveyUnitCount toSurveyUnitModel(CampaignDailyStats stats) {
+        return new CampaignOrganization.CampaignOrganizationSurveyUnitCount(
                 stats.getTotal(),
                 stats.getUnaffected());
     }

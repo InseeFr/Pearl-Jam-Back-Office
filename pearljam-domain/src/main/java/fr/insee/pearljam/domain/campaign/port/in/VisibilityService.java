@@ -9,6 +9,7 @@ import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundExc
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated(forRemoval = true)
 public interface VisibilityService {
 
     /**

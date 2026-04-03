@@ -1,10 +1,13 @@
 package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignOrganizationRepository;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.stub.CampaignDailyStatsRepositoryPortStub;
+import fr.insee.pearljam.domain.campaign.stub.CampaignVibilityPortStub;
 import fr.insee.pearljam.domain.campaign.stub.DateServiceStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
@@ -12,7 +15,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
-import fr.insee.pearljam.domain.reporting.service.stub.CampaignOrganizationRepositoryStub;
+import fr.insee.pearljam.domain.reporting.service.stub.CampaignReferentRepositoryStub;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CampaignOrganizationServiceTest {
-
-    private static final long NOW_MS         = Instant.now().toEpochMilli();
+    
+    private static final long NOW_MS         = FixedDateService.FIXED_TIMESTAMP;
     private static final long MGMT_START     = NOW_MS - 4000L;
     private static final long COLL_START     = NOW_MS - 2000L;
     private static final long COLL_END       = NOW_MS + 2000L;
@@ -88,12 +91,14 @@ class CampaignOrganizationServiceTest {
     }
 
     private CampaignOrganizationService buildService(
-            CampaignOrganizationRepository campaignRepo,
-            CampaignDailyStatsRepositoryPort statsRepo) {
+            CampaignReferentRepository campaignRepo,
+            CampaignDailyStatsRepositoryPort statsRepo,
+            CampaignVisibilityPort campaignVisibilityPort) {
 
         return new CampaignOrganizationService(
                 statsRepo,
                 campaignRepo,
+                campaignVisibilityPort,
                 new UserServiceStub(defaultOUs()),
                 new DateServiceStub() {
                 },
@@ -104,8 +109,9 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should return campaign organization with correct phase COLLECTION_IN_PROGRESS")
     void shouldReturnCampaignOrganizationWithCorrectPhase() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(defaultCampaign()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -124,8 +130,9 @@ class CampaignOrganizationServiceTest {
                 COLL_END, END_DATE);
 
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(campaign), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(campaign));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -143,8 +150,9 @@ class CampaignOrganizationServiceTest {
                 END_DATE);
 
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(campaign), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(campaign));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -155,8 +163,9 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should map referents correctly")
     void shouldMapReferents() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(defaultCampaign()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -171,8 +180,9 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should map interviewers with concatenated label")
     void shouldMapInterviewers() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(defaultCampaign()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -186,8 +196,10 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should map survey unit totals correctly")
     void shouldMapSurveyUnits() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(defaultCampaign()));
+
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
         assertThat(result.surveyUnits().total()).isEqualTo(10);
@@ -198,8 +210,10 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should throw CampaignNotFoundException when campaign stats not found")
     void shouldThrowWhenCampaignStatsNotFound() {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of()));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(), List.of()),
+                new CampaignVibilityPortStub(defaultCampaign()));
+
 
         assertThatThrownBy(() -> service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID))
                 .isInstanceOf(CampaignNotFoundException.class);
@@ -209,8 +223,9 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should return empty referents list when no referents exist")
     void shouldHandleEmptyReferents() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), List.of()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()));
+                new CampaignReferentRepositoryStub(List.of()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
+                new CampaignVibilityPortStub(defaultCampaign()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -221,8 +236,10 @@ class CampaignOrganizationServiceTest {
     @DisplayName("should return empty interviewers list when no interviewers exist")
     void shouldHandleEmptyInterviewers() throws CampaignNotFoundException {
         CampaignOrganizationService service = buildService(
-                new CampaignOrganizationRepositoryStub(List.of(defaultCampaign()), defaultReferents()),
-                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats())));
+                new CampaignReferentRepositoryStub(defaultReferents()),
+                new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), List.of()),
+                new CampaignVibilityPortStub(defaultCampaign()));
+
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 

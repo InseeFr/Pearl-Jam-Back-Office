@@ -15,7 +15,7 @@ public record CampaignOrganization(
         CampaignPhase phase,
         List<Referent> referents,
         List<Interviewer> interviewers,
-        CampaignOrganizationSurveyUnit surveyUnits
+        CampaignOrganizationSurveyUnitCount surveyUnits
 ) {
     public record Referent(
             String firstName,
@@ -30,7 +30,7 @@ public record CampaignOrganization(
             Long surveyUnits
     ) {}
 
-    public record CampaignOrganizationSurveyUnit(
+    public record CampaignOrganizationSurveyUnitCount(
             Long total,
             Long notAffected
     ) {}

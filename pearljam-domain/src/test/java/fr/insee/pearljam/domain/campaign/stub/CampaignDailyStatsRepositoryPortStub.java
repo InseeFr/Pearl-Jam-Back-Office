@@ -20,10 +20,6 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
         this.interviewerStats = interviewerStats;
     }
 
-    public CampaignDailyStatsRepositoryPortStub(List<CampaignDailyStats> campaignStats) {
-        this(campaignStats, List.of());
-    }
-
     @Override
     public List<CampaignDailyStats> getCampaignsStats(List<String> campaignIds, List<String> ouIds, LocalDate day) {
         return campaignStats;

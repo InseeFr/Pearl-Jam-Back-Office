@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.reporting.service;
 
+import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CampaignSummaryProgressService implements CampaignSummaryProgressPort {
 
-    private final CampaignRepository campaignRepository;
+    private final CampaignVisibilityPort campaignVisibilityPort;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final UserService userService;
     private final DateService dateService;
@@ -43,8 +44,8 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .map(OrganizationUnitSummary::getId)
                 .toList();
 
-        List<CampaignWithVisibility> campaigns = campaignRepository
-                .findCampaignWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
+        List<CampaignWithVisibility> campaigns = campaignVisibilityPort
+                .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         if (campaigns.isEmpty()) {
             log.info("No campaign visible for {}", userId);

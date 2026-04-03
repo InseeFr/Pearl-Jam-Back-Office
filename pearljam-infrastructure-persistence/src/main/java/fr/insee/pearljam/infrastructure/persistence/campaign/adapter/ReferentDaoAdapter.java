@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Deprecated(forRemoval = true)
 public class ReferentDaoAdapter implements ReferentRepository {
     private final ReferentJpaRepository referentRepository;
 

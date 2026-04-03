@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.reporting.service;
 
+import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
@@ -35,7 +36,7 @@ class CampaignSummaryProgressServiceTest {
     static final String USER_ID = "user-1";
     static final OrganizationUnitSummary OU = new OrganizationUnitSummary("ou-1", "OrganizationUnit 1");
 
-    CampaignRepository campaignRepository;
+    CampaignVisibilityPort campaignVisibilityPort;
     CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
     UserService userService;
     DateService dateService;
@@ -44,13 +45,13 @@ class CampaignSummaryProgressServiceTest {
 
     @BeforeEach
     void setup() {
-        campaignRepository = mock(CampaignRepository.class);
+        campaignVisibilityPort = mock(CampaignVisibilityPort.class);
         campaignDailyStatsRepositoryPort = mock(CampaignDailyStatsRepositoryPort.class);
         userService = mock(UserService.class);
         dateService = mock(DateService.class);
 
         service = new CampaignSummaryProgressService(
-                campaignRepository,
+                campaignVisibilityPort,
                 campaignDailyStatsRepositoryPort,
                 userService,
                 dateService,
@@ -114,7 +115,7 @@ class CampaignSummaryProgressServiceTest {
     @Test
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of());
 
         List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
@@ -128,7 +129,7 @@ class CampaignSummaryProgressServiceTest {
                 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
@@ -152,7 +153,7 @@ class CampaignSummaryProgressServiceTest {
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
 
         List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
@@ -168,7 +169,7 @@ class CampaignSummaryProgressServiceTest {
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(c1, c2));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
@@ -208,7 +209,7 @@ class CampaignSummaryProgressServiceTest {
         stats.setReminderCommunicationCount(2L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));

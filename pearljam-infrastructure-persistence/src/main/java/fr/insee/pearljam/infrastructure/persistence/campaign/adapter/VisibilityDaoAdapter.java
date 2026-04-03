@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
+@Deprecated(forRemoval = true)
 public class VisibilityDaoAdapter implements VisibilityRepository {
     private final VisibilityJpaRepository crudRepository;
 
