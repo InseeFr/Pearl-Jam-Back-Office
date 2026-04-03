@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignProgressController {
     private final CampaignProgressService campaignProgressService;
-    private final Clock clock;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
@@ -31,11 +29,6 @@ public class CampaignProgressController {
     public List<CampaignProgress> getCampaignsProgress(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        LocalDate now = LocalDate.now(clock);
-        if (day == null || day.isAfter(now)) {
-            day = now;
-        }
         return campaignProgressService.getCampaignsProgress(userId, day);
     }
 }
-

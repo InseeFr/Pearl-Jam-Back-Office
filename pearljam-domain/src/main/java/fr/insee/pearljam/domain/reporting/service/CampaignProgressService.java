@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +29,11 @@ public class CampaignProgressService implements CampaignProgressPort {
     private final CampaignRepository campaignRepository;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final UserService userService;
+    private final Clock clock;
 
     @Override
     public List<CampaignProgress> getCampaignsProgress(String userId, LocalDate day) {
+        day = defaultDay(day);
         List<String> userOUIds = userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
 
@@ -41,7 +43,7 @@ public class CampaignProgressService implements CampaignProgressPort {
 
         List<CampaignSummary> campaigns = campaignRepository
                 .findAllManagedAndNotClosedCampaignsByOuIds(
-                        userOUIds, day.atStartOfDay(ZoneOffset.UTC).toInstant());
+                        userOUIds, day.atStartOfDay(clock.getZone()).toInstant());
 
         if (campaigns.isEmpty()) {
             log.info("No opened campaigns found for {}", userId);
@@ -68,5 +70,13 @@ public class CampaignProgressService implements CampaignProgressPort {
                     );
                 })
                 .toList();
+    }
+
+    private LocalDate defaultDay(LocalDate day) {
+        LocalDate now = LocalDate.now(clock);
+        if (day == null || day.isAfter(now)) {
+            return now;
+        }
+        return day;
     }
 }

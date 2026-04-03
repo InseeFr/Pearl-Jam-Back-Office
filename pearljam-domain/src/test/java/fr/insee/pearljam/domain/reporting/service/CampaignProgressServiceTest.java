@@ -11,7 +11,9 @@ import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +21,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.within;
 
 class CampaignProgressServiceTest {
 
-    static final LocalDate DAY = LocalDate.of(2025, 1, 15);
+    static final LocalDate FIXED_TODAY = LocalDate.of(2025, 1, 15);
+    static final Clock FIXED_CLOCK = Clock.fixed(
+            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
 
     static CampaignDailyStats dailyStats(String campaignId, String campaignLabel) {
@@ -54,7 +58,8 @@ class CampaignProgressServiceTest {
         return new CampaignProgressService(
                 new CampaignRepositoryStub(campaigns),
                 new CampaignDailyStatsRepositoryPortStub(dailyStatsList),
-                new UserServiceStub(orgUnits)
+                new UserServiceStub(orgUnits),
+                FIXED_CLOCK
         );
     }
 
@@ -62,7 +67,7 @@ class CampaignProgressServiceTest {
     void shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
         CampaignProgressService service = buildService(List.of(), List.of(), List.of());
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -71,7 +76,7 @@ class CampaignProgressServiceTest {
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
         CampaignProgressService service = buildService(List.of(ORG_UNIT), List.of(), List.of());
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -86,7 +91,7 @@ class CampaignProgressServiceTest {
                 List.of(dailyStats("campaign-1", "Campaign One"))
         );
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().campaignId()).isEqualTo("campaign-1");
@@ -104,7 +109,7 @@ class CampaignProgressServiceTest {
                 List.of(dailyStats("campaign-1", "Campaign One"))
         );
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result.getFirst().progressRate()).isCloseTo(54.135f, within(0.001f));
     }
@@ -120,7 +125,7 @@ class CampaignProgressServiceTest {
         );
 
         CampaignProgress campaignProgress =
-                service.getCampaignsProgress("user-1", DAY).getFirst();
+                service.getCampaignsProgress("user-1", FIXED_TODAY).getFirst();
         StatesProgress states = campaignProgress.states();
         CommunicationsProgress communications = campaignProgress.communications();
 
@@ -147,7 +152,7 @@ class CampaignProgressServiceTest {
                 List.of()
         );
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -163,11 +168,37 @@ class CampaignProgressServiceTest {
                 List.of(dailyStats("campaign-1", "Campaign One"), dailyStats("campaign-2", "Campaign Two"))
         );
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting(CampaignProgress::campaignId)
                 .containsExactlyInAnyOrder("campaign-1", "campaign-2");
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsNull() {
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
+        CampaignProgressService service = buildService(
+                List.of(ORG_UNIT), List.of(campaign),
+                List.of(dailyStats("campaign-1", "Campaign One")));
+
+        List<CampaignProgress> withToday = service.getCampaignsProgress("user-1", FIXED_TODAY);
+        List<CampaignProgress> withNull = service.getCampaignsProgress("user-1", null);
+
+        assertThat(withNull).usingRecursiveComparison().isEqualTo(withToday);
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsInTheFuture() {
+        CampaignSummary campaign = new CampaignSummary("campaign-1", "Campaign One");
+        CampaignProgressService service = buildService(
+                List.of(ORG_UNIT), List.of(campaign),
+                List.of(dailyStats("campaign-1", "Campaign One")));
+
+        List<CampaignProgress> withToday = service.getCampaignsProgress("user-1", FIXED_TODAY);
+        List<CampaignProgress> withFuture = service.getCampaignsProgress("user-1", FIXED_TODAY.plusDays(10));
+
+        assertThat(withFuture).usingRecursiveComparison().isEqualTo(withToday);
     }
 
     @Test
@@ -181,7 +212,7 @@ class CampaignProgressServiceTest {
                 List.of(dailyStats("campaign-1", "Campaign One"))
         );
 
-        List<CampaignProgress> result = service.getCampaignsProgress("user-1", DAY);
+        List<CampaignProgress> result = service.getCampaignsProgress("user-1", FIXED_TODAY);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().campaignId()).isEqualTo("campaign-1");

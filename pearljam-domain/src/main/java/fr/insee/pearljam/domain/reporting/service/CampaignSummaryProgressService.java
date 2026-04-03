@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +31,11 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final UserService userService;
     private final DateService dateService;
+    private final Clock clock;
 
     @Override
     public List<CampaignSummaryProgress> getCampaignSummaryProgress(String userId, LocalDate day) {
+        day = defaultDay(day);
         long currentTimestamp = dateService.getCurrentTimestamp();
 
         List<String> ouIds = userService.getUserOUsModel(userId, true).stream()
@@ -75,5 +78,13 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                     );
                 })
                 .toList();
+    }
+
+    private LocalDate defaultDay(LocalDate day) {
+        LocalDate now = LocalDate.now(clock);
+        if (day == null || day.isAfter(now)) {
+            return now;
+        }
+        return day;
     }
 }

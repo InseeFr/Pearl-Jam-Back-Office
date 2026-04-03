@@ -8,9 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,9 +22,6 @@ class CampaignCollectionControllerTest {
 
     private MockMvc mockMvc;
     private CampaignCollectionService collectionService;
-    private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
-    private static final Clock FIXED_CLOCK = Clock.fixed(
-            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     @BeforeEach
     void setup() {
@@ -34,7 +29,7 @@ class CampaignCollectionControllerTest {
         when(collectionService.getCampaignsCollection(anyString(), any())).thenReturn(List.of());
 
         CampaignCollectionController controller =
-                new CampaignCollectionController(collectionService, FIXED_CLOCK);
+                new CampaignCollectionController(collectionService);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -43,37 +38,24 @@ class CampaignCollectionControllerTest {
 
     @Test
     void shouldReturnOk_whenDayProvided() throws Exception {
-        LocalDate pastDate = FIXED_TODAY.minusDays(5);
+        LocalDate day = LocalDate.of(2025, 6, 10);
 
         mockMvc.perform(get("/api/reporting/campaigns/collection")
-                        .param("day", pastDate.toString()))
+                        .param("day", day.toString()))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(collectionService).getCampaignsCollection(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        assertThat(dayCaptor.getValue()).isEqualTo(day);
     }
 
     @Test
-    void shouldDefaultToToday_whenDayIsNull() throws Exception {
+    void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/campaigns/collection"))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(collectionService).getCampaignsCollection(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
-    }
-
-    @Test
-    void shouldDefaultToToday_whenDayIsInTheFuture() throws Exception {
-        LocalDate futureDate = FIXED_TODAY.plusDays(10);
-
-        mockMvc.perform(get("/api/reporting/campaigns/collection")
-                        .param("day", futureDate.toString()))
-                .andExpect(status().isOk());
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(collectionService).getCampaignsCollection(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        assertThat(dayCaptor.getValue()).isNull();
     }
 }

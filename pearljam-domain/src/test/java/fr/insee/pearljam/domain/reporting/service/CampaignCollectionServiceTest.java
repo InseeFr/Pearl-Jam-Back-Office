@@ -12,8 +12,11 @@ import fr.insee.pearljam.domain.reporting.readmodel.collect.ContactOutcomesProgr
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +27,9 @@ import static org.mockito.Mockito.when;
 
 class CampaignCollectionServiceTest {
 
-    static final LocalDate DAY = LocalDate.of(2025, 1, 15);
+    static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
+    static final Clock FIXED_CLOCK = Clock.fixed(
+            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
     static final String USER_ID = "user-1";
     static final OrganizationUnitSummary ORG_UNIT = new OrganizationUnitSummary("ou-1", "Org Unit 1");
 
@@ -38,7 +43,7 @@ class CampaignCollectionServiceTest {
         campaignRepository = mock(CampaignRepository.class);
         statsRepository = mock(CampaignDailyStatsRepositoryPort.class);
         userService = mock(UserService.class);
-        service = new CampaignCollectionService(campaignRepository, statsRepository, userService);
+        service = new CampaignCollectionService(campaignRepository, statsRepository, userService, FIXED_CLOCK);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(ORG_UNIT));
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
@@ -51,14 +56,14 @@ class CampaignCollectionServiceTest {
     void shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, DAY);
+        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
-        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, DAY);
+        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -69,7 +74,7 @@ class CampaignCollectionServiceTest {
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
 
-        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, DAY);
+        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, FIXED_TODAY);
 
         assertThat(result).isEmpty();
     }
@@ -84,7 +89,7 @@ class CampaignCollectionServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, DAY);
+        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, FIXED_TODAY);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().campaignId()).isEqualTo("campaign-1");
@@ -105,7 +110,7 @@ class CampaignCollectionServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        CampaignCollection collection = service.getCampaignsCollection(USER_ID, DAY).getFirst();
+        CampaignCollection collection = service.getCampaignsCollection(USER_ID, FIXED_TODAY).getFirst();
 
         assertThat(collection.allocated()).isEqualTo(100L);
 
@@ -125,7 +130,7 @@ class CampaignCollectionServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        ContactOutcomesProgress outcomes = service.getCampaignsCollection(USER_ID, DAY)
+        ContactOutcomesProgress outcomes = service.getCampaignsCollection(USER_ID, FIXED_TODAY)
                 .getFirst().outcomes();
 
         assertThat(outcomes.accepted()).isEqualTo(20L);     // ina
@@ -145,7 +150,7 @@ class CampaignCollectionServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        ClosingCausesProgress closingCauses = service.getCampaignsCollection(USER_ID, DAY)
+        ClosingCausesProgress closingCauses = service.getCampaignsCollection(USER_ID, FIXED_TODAY)
                 .getFirst().closingCauses();
 
         assertThat(closingCauses.absenceInterviewer()).isEqualTo(4L);  // npa
@@ -165,11 +170,51 @@ class CampaignCollectionServiceTest {
                         dailyStats("campaign-1", "Campaign One"),
                         dailyStats("campaign-2", "Campaign Two")));
 
-        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, DAY);
+        List<CampaignCollection> result = service.getCampaignsCollection(USER_ID, FIXED_TODAY);
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting(CampaignCollection::campaignId)
                 .containsExactlyInAnyOrder("campaign-1", "campaign-2");
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsNull() {
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(ORG_UNIT));
+        CampaignSummary campaign = new CampaignSummary("c1", "C1");
+        when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
+                .thenReturn(List.of(campaign));
+        service.getCampaignsCollection(USER_ID, null);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
+    void shouldDefaultToToday_whenDayIsInTheFuture() {
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(ORG_UNIT));
+        CampaignSummary campaign = new CampaignSummary("c1", "C1");
+        when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
+                .thenReturn(List.of(campaign));
+        service.getCampaignsCollection(USER_ID, FIXED_TODAY.plusDays(10));
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+    }
+
+    @Test
+    void shouldUseProvidedDay_whenDayIsInThePast() {
+        LocalDate pastDate = FIXED_TODAY.minusDays(5);
+        when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(ORG_UNIT));
+        CampaignSummary campaign = new CampaignSummary("c1", "C1");
+        when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
+                .thenReturn(List.of(campaign));
+        service.getCampaignsCollection(USER_ID, pastDate);
+
+        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        org.mockito.Mockito.verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
+        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
     }
 
     /**

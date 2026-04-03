@@ -12,9 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,9 +25,6 @@ class CampaignProgressByOrganizationUnitControllerTest {
 
     private MockMvc mockMvc;
     private CampaignProgressByOrganizationUnitsPort port;
-    private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
-    private static final Clock FIXED_CLOCK = Clock.fixed(
-            FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     private static final CampaignProgressByOrganizationUnits EMPTY_RESULT = new CampaignProgressByOrganizationUnits(
             List.of(),
@@ -44,7 +39,7 @@ class CampaignProgressByOrganizationUnitControllerTest {
         when(port.getProgressForDay(anyString(), anyString(), any())).thenReturn(EMPTY_RESULT);
 
         CampaignProgressByOrganizationUnitController controller =
-                new CampaignProgressByOrganizationUnitController(port, FIXED_CLOCK);
+                new CampaignProgressByOrganizationUnitController(port);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -53,38 +48,25 @@ class CampaignProgressByOrganizationUnitControllerTest {
 
     @Test
     void shouldReturnOk_whenDayProvided() throws Exception {
-        LocalDate pastDate = FIXED_TODAY.minusDays(5);
+        LocalDate day = LocalDate.of(2025, 6, 10);
 
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress")
-                        .param("day", pastDate.toString()))
+                        .param("day", day.toString()))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        assertThat(dayCaptor.getValue()).isEqualTo(day);
     }
 
     @Test
-    void shouldDefaultToToday_whenDayIsNull() throws Exception {
+    void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress"))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
-    }
-
-    @Test
-    void shouldDefaultToToday_whenDayIsInTheFuture() throws Exception {
-        LocalDate futureDate = FIXED_TODAY.plusDays(10);
-
-        mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress")
-                        .param("day", futureDate.toString()))
-                .andExpect(status().isOk());
-
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        assertThat(dayCaptor.getValue()).isNull();
     }
 
     @Test
