@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.campaign.model;
 
-import fr.insee.pearljam.domain.reporting.model.CampaignPhase;
+
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
 
 import java.util.List;
 
@@ -31,7 +32,6 @@ public record CampaignOrganization(
 
     public record CampaignOrganizationSurveyUnit(
             Long total,
-            Long abandoned,
             Long notAffected
     ) {}
 }

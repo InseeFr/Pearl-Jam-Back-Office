@@ -6,10 +6,8 @@ import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.campaign.dto.*;
-import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
-import fr.insee.pearljam.domain.reporting.service.CampaignOrganizationService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
@@ -27,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +38,6 @@ import java.util.List;
 public class CampaignController {
 
 	private final CampaignService campaignService;
-	private final CampaignOrganizationService campaignOrganizationService;
 	private final ReferentService referentService;
 	private final AuthenticatedUserService authenticatedUserService;
 	@Value("${feature.deprecated.endpoints.enabled}")
