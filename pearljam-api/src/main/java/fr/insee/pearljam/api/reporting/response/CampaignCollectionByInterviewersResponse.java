@@ -2,9 +2,11 @@ package fr.insee.pearljam.api.reporting.response;
 
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+@Schema(name = "CampaignCollectionByInterviewers")
 public record CampaignCollectionByInterviewersResponse(
         List<Interviewer> interviewers,
         OrganizationUnit site,
