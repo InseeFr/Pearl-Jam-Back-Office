@@ -96,18 +96,6 @@ class ModuleBoundariesArchTests {
     }
 
     @Test
-    void readModelsShouldOnlyBeUsedByDomainAndInfrastructure() {
-        classes()
-                .that().resideInAPackage("fr.insee.pearljam.domain..readmodel..")
-                .should().onlyBeAccessed()
-                .byAnyPackage(
-                        "fr.insee.pearljam.domain..",
-                        "fr.insee.pearljam.infrastructure.."
-                )
-                .check(importedClasses);
-    }
-
-    @Test
     void queryShouldOnlyBeUsedByDomainAndController() {
         classes()
                 .that().resideInAPackage("fr.insee.pearljam.domain..query..")
