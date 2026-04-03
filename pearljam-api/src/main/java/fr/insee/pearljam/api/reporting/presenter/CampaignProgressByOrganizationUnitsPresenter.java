@@ -4,8 +4,8 @@ import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUn
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

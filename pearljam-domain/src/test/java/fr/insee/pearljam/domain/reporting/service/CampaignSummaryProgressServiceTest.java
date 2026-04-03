@@ -9,7 +9,7 @@ import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryP
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

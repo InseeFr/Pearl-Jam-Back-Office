@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.response;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.AbstractDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 
 public record CollectionRatesResponse(
         float collection,

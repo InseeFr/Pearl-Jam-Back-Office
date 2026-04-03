@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.response;
 
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 
 import java.util.List;
 
