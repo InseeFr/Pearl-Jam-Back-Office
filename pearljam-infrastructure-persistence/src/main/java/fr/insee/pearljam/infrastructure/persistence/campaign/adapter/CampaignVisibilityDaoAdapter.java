@@ -4,9 +4,11 @@ import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 @AllArgsConstructor
 public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
 
