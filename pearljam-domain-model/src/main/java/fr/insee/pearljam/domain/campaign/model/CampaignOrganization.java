@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.model;
 
 
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 
 import java.util.List;
 

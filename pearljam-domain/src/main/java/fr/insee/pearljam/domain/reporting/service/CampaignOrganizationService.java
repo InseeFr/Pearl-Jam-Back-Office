@@ -10,8 +10,8 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import lombok.AllArgsConstructor;
@@ -87,13 +87,13 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .map(i -> new CampaignOrganization.Interviewer(
                         i.getInterviewerId(),
                         i.getInterviewerFirstName() + " " + i.getInterviewerLastName(),
-                        i.getTotal()))
+                        i.getAllocatedStateCount()))
                 .toList();
     }
 
     private CampaignOrganization.CampaignOrganizationSurveyUnitCount toSurveyUnitModel(CampaignDailyStats stats) {
         return new CampaignOrganization.CampaignOrganizationSurveyUnitCount(
-                stats.getTotal(),
-                stats.getUnaffected());
+                stats.getAllocatedStateCount(),
+                stats.getUnaffectedCount());
     }
 }
