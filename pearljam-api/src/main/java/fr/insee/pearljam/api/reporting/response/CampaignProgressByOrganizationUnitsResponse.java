@@ -9,6 +9,7 @@ public record CampaignProgressByOrganizationUnitsResponse(
         List<OrganizationUnit> organizationUnits,
         Campaign campaign
 ) {
+    @Schema(name = "CampaignProgressByOrganizationUnitsOU")
     public record OrganizationUnit(
             String organizationUnitLabel,
             float progressRate,
@@ -17,6 +18,7 @@ public record CampaignProgressByOrganizationUnitsResponse(
     ) {
     }
 
+    @Schema(name = "CampaignProgressByOrganizationUnitsCampaign")
     public record Campaign(
             float progressRate,
             StatesProgressResponse states,

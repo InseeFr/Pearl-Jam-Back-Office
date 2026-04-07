@@ -43,6 +43,7 @@ public record CampaignCollectionByInterviewersResponse(
         return new CampaignCollectionByInterviewersResponse(interviewers, site, campaign);
     }
 
+    @Schema(name = "CampaignCollectionByInterviewersInterviewer")
     public record Interviewer(
             String interviewerLabel,
             long allocated,
@@ -51,6 +52,7 @@ public record CampaignCollectionByInterviewersResponse(
             ClosingCausesProgressResponse closingCauses
     ) {}
 
+    @Schema(name = "CampaignCollectionByInterviewersOU")
     public record OrganizationUnit(
             long allocated,
             CollectionRatesResponse rates,
@@ -58,6 +60,7 @@ public record CampaignCollectionByInterviewersResponse(
             ClosingCausesProgressResponse closingCauses
     ) {}
 
+    @Schema(name = "CampaignCollectionByInterviewersCampaign")
     public record Campaign(
             long allocated,
             long unaffected,
