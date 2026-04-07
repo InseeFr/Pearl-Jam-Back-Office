@@ -120,4 +120,6 @@ public interface SurveyUnitService {
 	List<String> getAllIdsByInterviewerId(String interviewerId);
 
 	void removeInterviewerLink(List<String> ids);
+
+    List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds);
 }

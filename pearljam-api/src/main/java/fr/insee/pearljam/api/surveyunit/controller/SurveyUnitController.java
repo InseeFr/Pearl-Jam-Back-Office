@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -36,14 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnitDB}
@@ -143,6 +136,19 @@ public class SurveyUnitController {
 	@GetMapping(Constants.API_ADMIN_SURVEYUNIT_DETAILS)
 	public SurveyUnitInterviewerResponseDto getAdminSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		return surveyUnitService.getSurveyUnitDetail(surveyUnitId);
+	}
+
+	/**
+	 * Admin way of getting survey-units
+	 *
+	 * @param surveyUnitIds the ids of expected survey-units
+	 * @return {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
+	 * {@link HttpStatus} FORBIDDEN
+	 */
+	@Operation(summary = "Get detail as admin of specific survey units")
+	@PostMapping(Constants.API_ADMIN_SURVEYUNITS_DETAILS)
+	public List<SurveyUnitInterviewerResponseDto> getAdminSurveyUnitsByIds(@RequestBody List<String> surveyUnitIds) {
+		return surveyUnitService.getSurveyUnitsDetails(surveyUnitIds);
 	}
 
 	/**

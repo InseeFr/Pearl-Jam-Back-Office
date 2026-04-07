@@ -741,4 +741,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	public void removeInterviewerLink(List<String> ids) {
 		surveyUnitRepository.setInterviewer(ids, null);
 	}
+
+	@Override
+	public List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds) {
+		return surveyUnitRepository
+				.findAllById(surveyUnitIds)
+				.stream()
+				.map(this::buildSurveyUnitInterviewerResponse)
+				.toList();
+	}
 }

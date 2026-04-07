@@ -79,8 +79,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -2176,6 +2175,20 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(11));	}
+
+	@Test
+	@Order(223)
+	void testPostSurveyUnitsDetailsAsAdmin() throws Exception {
+		mockMvc.perform(post("/api/admin/survey-units/details")
+						.with(authentication(ADMIN))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("[\"11\",\"12\",\"not-found\"]")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(2)))
+				.andExpect(jsonPath("$[0].id").value(11))
+				.andExpect(jsonPath("$[1].id").value(12));
+	}
 
 	/**
 	 * Test that the GET endpoint "api/api/survey-unit/{id}"
