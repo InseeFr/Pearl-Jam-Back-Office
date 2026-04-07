@@ -33,6 +33,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
         return new CampaignCollectionByOrganizationUnitsResponse(ous, campaign);
     }
 
+    @Schema(name = "CampaignCollectionByOrganizationUnitsOU")
     public record OrganizationUnit(
             String organizationUnitLabel,
             long allocated,
@@ -41,6 +42,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
             ClosingCausesProgressResponse closingCauses
     ) {}
 
+    @Schema(name = "CampaignCollectionByOrganizationUnitsCampaign")
     public record Campaign(
             long allocated,
             CollectionRatesResponse rates,

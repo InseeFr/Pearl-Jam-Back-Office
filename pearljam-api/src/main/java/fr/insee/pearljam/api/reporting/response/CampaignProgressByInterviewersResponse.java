@@ -10,6 +10,7 @@ public record CampaignProgressByInterviewersResponse(
         OrganizationUnit site,
         Campaign campaign
 ) {
+    @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(
             String interviewerLabel,
             float progressRate,
@@ -18,6 +19,7 @@ public record CampaignProgressByInterviewersResponse(
     ) {
     }
 
+    @Schema(name = "CampaignProgressByInterviewersOU")
     public record OrganizationUnit(
             float progressRate,
             StatesProgressResponse states,
@@ -25,6 +27,7 @@ public record CampaignProgressByInterviewersResponse(
     ) {
     }
 
+    @Schema(name = "CampaignProgressByInterviewersCampaign")
     public record Campaign(
             long unaffected,
             float progressRate,
