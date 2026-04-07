@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.web.exception;
 
+import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
@@ -171,6 +172,11 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(InterviewerNotFoundException.class)
     public ProblemDetail interviewerNotFoundException(Exception e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EndpointDisabledException.class)
+    public ProblemDetail endpointsDisabledException(EndpointDisabledException e) {
         return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 

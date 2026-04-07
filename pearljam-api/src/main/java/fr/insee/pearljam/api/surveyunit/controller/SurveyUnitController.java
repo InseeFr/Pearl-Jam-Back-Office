@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
+import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
+import org.springframework.beans.factory.annotation.Value;
 import tools.jackson.databind.JsonNode;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -59,6 +61,9 @@ public class SurveyUnitController {
 
 	private final SurveyUnitService surveyUnitService;
 	private final AuthenticatedUserService authenticatedUserService;
+
+	@Value("${feature.deprecated.endpoints.enabled}")
+	private final boolean deprecatedEndpointsEnabled;
 
 	/**
 	 * This method is used to post the list of SurveyUnit defined in request body
@@ -121,7 +126,7 @@ public class SurveyUnitController {
 	 *         {@link HttpStatus} FORBIDDEN
 	 */
 	@Operation(summary = "Get detail of specific survey unit ")
-	@GetMapping(path = {Constants.API_SURVEYUNIT_ID_INTERVIEWER, Constants.API_SURVEYUNIT_ID})
+	@GetMapping(path = {Constants.API_SURVEYUNIT_ID})
 	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
@@ -174,11 +179,16 @@ public class SurveyUnitController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to retrieve survey-units in temp-zone
 	 */
 	@Operation(summary = "GET all survey-units in temp-zone")
 	@GetMapping(Constants.API_SURVEYUNITS_TEMP_ZONE)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<Object> getSurveyUnitsInTempZone() {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		List<SurveyUnitTempZoneDB> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
 		log.info("GET survey-units in temp-zone resulting in 200");
 		return new ResponseEntity<>(surveyUnitTempZones, HttpStatus.OK);
@@ -373,13 +383,18 @@ public class SurveyUnitController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method returns the list of all survey-unit ids
 	 * 
 	 * @return List of {@link String}
 	 */
 	@Operation(summary = "Get survey units id")
 	@GetMapping(Constants.API_ADMIN_SURVEYUNITS)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<List<String>> getAllSurveyUnitsId() {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> suIds = surveyUnitService.getAllIds();
 		log.info("{} : GET admin survey units resulting in 200", userId);

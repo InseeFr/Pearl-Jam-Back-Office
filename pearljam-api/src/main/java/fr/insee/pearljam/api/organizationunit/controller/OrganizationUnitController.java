@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.organizationunit.controller;
 
+import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitContextDto;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +35,8 @@ public class OrganizationUnitController {
 	private final OrganizationUnitService organizationUnitService;
 	private final UserService userService;
 	private final AuthenticatedUserService authenticatedUserService;
+	@Value("${feature.deprecated.endpoints.enabled}")
+	private final boolean deprecatedEndpointsEnabled;
 
 	/**
 	 * This method is used to post the list of Organizational Units defined in
@@ -48,13 +52,18 @@ public class OrganizationUnitController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to post the Organization Unit defined in request body
 	 *
 	 */
 	@Operation(summary = "Create Organizational Unit and users associated")
 	@PostMapping(Constants.API_ORGANIZATIONUNIT)
+	@Deprecated(forRemoval = true)
 	public void postOrganizationUnit(@RequestBody OrganizationUnitContextDto organizationUnit)
 			throws OrganisationUnitAlreadyExistsException, OrganizationalUnitNotFoundException, NoOrganizationUnitException, UserAlreadyExistsException {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		organizationUnitService.createOrganizationUnits(Collections.singletonList(organizationUnit));
 	}
 
@@ -92,13 +101,18 @@ public class OrganizationUnitController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method try to delete target Organization Unit
 	 *
 	 * @param id id of the OU to delete
 	 */
 	@Operation(summary = "Delete an organization-unit")
 	@DeleteMapping(Constants.API_ORGANIZATIONUNIT_ID)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<Object> deleteOrganizationUnit(@PathVariable(value = "id") String id) {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		String userId = authenticatedUserService.getCurrentUserId();
 		HttpStatus response = organizationUnitService.delete(id);
 		log.info("{} : DELETE User resulting in {}", userId, response);

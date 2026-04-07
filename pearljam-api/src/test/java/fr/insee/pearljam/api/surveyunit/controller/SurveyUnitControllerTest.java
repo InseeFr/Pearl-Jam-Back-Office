@@ -69,7 +69,7 @@ class SurveyUnitControllerTest {
         ExceptionControllerAdvice exceptionControllerAdvice = MockMvcTestUtils.createExceptionControllerAdvice();
         Authentication authUser = AuthenticatedUserTestHelper.AUTH_ADMIN;
         AuthenticationUserFakeService authService = new AuthenticationUserFakeService(authUser);
-        SurveyUnitController surveyUnitController = new SurveyUnitController(surveyUnitService, authService);
+        SurveyUnitController surveyUnitController = new SurveyUnitController(surveyUnitService, authService, true);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(surveyUnitController)
                 .setControllerAdvice(exceptionControllerAdvice)

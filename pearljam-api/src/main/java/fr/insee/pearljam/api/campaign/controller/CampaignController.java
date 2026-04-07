@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +40,8 @@ public class CampaignController {
 	private final CampaignService campaignService;
 	private final ReferentService referentService;
 	private final AuthenticatedUserService authenticatedUserService;
+	@Value("${feature.deprecated.endpoints.enabled}")
+	private final boolean deprecatedEndpointsEnabled;
 
 	private static final String DEFAULT_FORCE_VALUE = "false";
 
@@ -54,6 +57,7 @@ public class CampaignController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to get the list of preferred Campaigns for current user
 	 *
 	 * @return List of {@link CampaignDto} if exist, {@link HttpStatus} NOT_FOUND,
@@ -71,6 +75,7 @@ public class CampaignController {
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to get the list of Campaigns for current user
 	 * 
 	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
@@ -79,7 +84,11 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Get user related Campaigns")
 	@GetMapping(path = Constants.API_CAMPAIGNS_PREFERENCES)
+	@Deprecated(forRemoval = true)
 	public List<CampaignPreferenceDto> getUserCampaigns() {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<CampaignPreferenceDto> lstCampaigns = campaignService.getCampaignPreferences(userId);
 		log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
@@ -199,6 +208,9 @@ public class CampaignController {
 	@Operation(summary = "get ongoing sensitive campaigns")
 	@GetMapping(value = Constants.API_CAMPAIGNS_ON_GOING, produces = "application/json")
 	public List<CampaignSensitivityDto> getCampaignSensitivityDto() {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		return campaignService.getCampaignSensitivityDto();
 	}
 
@@ -218,7 +230,11 @@ public class CampaignController {
 
 	@Operation(summary = "Get referents of targeted campaign")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_REFERENTS)
+	@Deprecated(forRemoval = true)
 	public List<ReferentDto> getReferents(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		campaignService.findById(id).orElseThrow(CampaignNotFoundException::new);
 		return referentService.findByCampaignId(id);
 	}
