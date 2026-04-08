@@ -364,7 +364,6 @@ class SurveyUnitIT {
 	@Test
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutSurveyUnitDetail() throws Exception {
-		long currentTimestamp = dateService.getCurrentTimestamp();
 		String updateJson = """
 			{
 			  "id": "20",
@@ -554,7 +553,7 @@ class SurveyUnitIT {
               "type": "VIC"
             },
             {
-              "id": 14,
+              "id": 13,
               "date": 1590504459838,
               "type": "AOC"
             }
@@ -576,68 +575,68 @@ class SurveyUnitIT {
             "type": "IMP",
             "totalNumberOfContactAttempts": 2
           },
-          "communicationRequests": [
-            {
-              "communicationTemplateId": "mesh3",
-              "campaignId": "VQS2021X00",
-              "meshuggahId": "mesh3",
-              "reason": "REFUSAL",
-              "emitter": "INTERVIEWER",
-              "status": [
-                {
-                  "date": 1719324511999,
-                  "status": "INITIATED"
-                },
-                {
-                  "date": """ + currentTimestamp + """
-                  ,
-                  "status": "READY"
-                }
-              ]
-            },
-            {
-              "communicationTemplateId": "mesh4",
-              "campaignId": "VQS2021X00",
-              "meshuggahId": "mesh4",
-              "reason": "UNREACHABLE",
-              "emitter": "INTERVIEWER",
-              "status": [
-                {
-                  "date": 1721903754205,
-                  "status": "INITIATED"
-                }
-              ]
-            },
-            {
-              "communicationTemplateId": "mesh4",
-              "campaignId": "VQS2021X00",
-              "meshuggahId": "mesh4",
-              "reason": "UNREACHABLE",
-              "emitter": "INTERVIEWER",
-              "status": [
-                {
-                  "date": 1721903754405,
-                  "status": "INITIATED"
-                },
-                {
-                  "date": 1719324512000,
-                  "status": "CANCELLED"
-                }
-              ]
-            },
-            {
-              "communicationTemplateId": "mesh3",
-              "campaignId": "VQS2021X00",
-              "meshuggahId": "mesh3",
-              "reason": "REFUSAL",
-              "emitter": "INTERVIEWER",
-              "status": [
-                {
-                  "date": 1721903754205,
-                  "status": "INITIATED"
-                }
-              ]
-            }
+          "communicationRequests":
+          [
+             {
+                "communicationTemplateId":"mesh3",
+                "campaignId":"VQS2021X00",
+                "meshuggahId":"mesh3",
+                "reason":"REFUSAL",
+                "emitter":"INTERVIEWER",
+                "status":[
+                   {
+                      "date":1721903754205,
+                      "status":"INITIATED"
+                   }
+                ]
+             },
+             {
+                "communicationTemplateId":"mesh3",
+                "campaignId":"VQS2021X00",
+                "meshuggahId":"mesh3",
+                "reason":"REFUSAL",
+                "emitter":"INTERVIEWER",
+                "status":[
+                   {
+                      "date":1719324511999,
+                      "status":"INITIATED"
+                   },
+                   {
+                      "date":1719324512000,
+                      "status":"READY"
+                   }
+                ]
+             },
+             {
+                "communicationTemplateId":"mesh4",
+                "campaignId":"VQS2021X00",
+                "meshuggahId":"mesh4",
+                "reason":"UNREACHABLE",
+                "emitter":"INTERVIEWER",
+                "status":[
+                   {
+                      "date":1719324511999,
+                      "status":"INITIATED"
+                   },
+                   {
+                      "date":1719324512000,
+                      "status":"CANCELLED"
+                   }
+                ]
+             },
+             {
+                "communicationTemplateId":"mesh4",
+                "campaignId":"VQS2021X00",
+                "meshuggahId":"mesh4",
+                "reason":"UNREACHABLE",
+                "emitter":"INTERVIEWER",
+                "status":[
+                   {
+                      "date":1721903754205,
+                      "status":"INITIATED"
+                   }
+                ]
+             }
           ],
           "nextContactHistory":
             {
