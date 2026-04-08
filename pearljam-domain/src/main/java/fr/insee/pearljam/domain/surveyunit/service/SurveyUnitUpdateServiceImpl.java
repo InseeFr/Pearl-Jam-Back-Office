@@ -140,7 +140,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
             return CommunicationRequest.create(
                     campaignId,
                     communicationRequestToCreate.communicationTemplateId(),
-                    communicationRequestToCreate.creationTimestamp(),
+                    creationTimestamp,
                     readyTimestamp,
                     communicationRequestToCreate.reason());
         }
@@ -150,7 +150,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         return CommunicationRequest.createCancelled(
                 campaignId,
                 communicationRequestToCreate.communicationTemplateId(),
-                communicationRequestToCreate.creationTimestamp(),
+                creationTimestamp,
                 dateService.getCurrentTimestamp(),
                 communicationRequestToCreate.reason());
     }
