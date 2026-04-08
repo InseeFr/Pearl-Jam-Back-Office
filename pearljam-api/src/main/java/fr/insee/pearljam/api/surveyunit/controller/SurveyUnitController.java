@@ -126,6 +126,7 @@ public class SurveyUnitController {
 	}
 
 	/**
+	 * @deprecated
 	 * Admin way of getting any survey-unit
 	 *
 	 * @param surveyUnitId the id of expected survey-unit
@@ -134,6 +135,7 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get detail as admin of specific survey unit ")
 	@GetMapping(Constants.API_ADMIN_SURVEYUNIT_DETAILS)
+	@Deprecated(forRemoval = true)
 	public SurveyUnitInterviewerResponseDto getAdminSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		return surveyUnitService.getSurveyUnitDetail(surveyUnitId);
 	}
