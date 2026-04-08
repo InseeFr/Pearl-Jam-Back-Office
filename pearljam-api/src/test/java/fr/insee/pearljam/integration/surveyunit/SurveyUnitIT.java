@@ -4,7 +4,6 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
-import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.exception.CommunicationTemplateNotFoundException;
 import org.json.JSONException;
 import org.junit.jupiter.api.DisplayName;
@@ -40,9 +39,6 @@ class SurveyUnitIT {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private DateService dateService;
 
 	@Test
 	@DisplayName("Should return survey units associated to the interviewer")
@@ -365,127 +361,6 @@ class SurveyUnitIT {
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutSurveyUnitDetail() throws Exception {
 		String updateJson = """
-			{
-			  "id": "20",
-			  "persons": [
-				{
-				  "id": 10,
-				  "title": "MISTER",
-				  "firstName": "Harriette",
-				  "lastName": "Raymond",
-				  "email": "test@test.com",
-				  "birthdate": 11111111,
-				  "privileged": true,
-				  "phoneNumbers": [
-					{
-					  "source": "FISCAL",
-					  "favorite": true,
-					  "number": "test"
-					}
-				  ]
-				}
-			  ],
-			  "address": {
-				"l1": "test1",
-				"l2": "test2",
-				"l3": "test3",
-				"l4": "test4",
-				"l5": "test5",
-				"l6": "test6",
-				"l7": "test7",
-				"elevator": true,
-				"building": "testBuilding",
-				"floor": "testFloor",
-				"door": "testDoor",
-				"staircase": "testStaircase",
-				"cityPriorityDistrict": true
-			  },
-			  "priority": false,
-			  "campaign": "VQS2021X00",
-			  "comments": [
-				{
-				  "type": "INTERVIEWER",
-				  "value": "test-interviewer-comment"
-				},
-				{
-				  "type": "MANAGEMENT",
-				  "value": "test-management-comment"
-				}
-			  ],
-			  "sampleIdentifiers": {
-				"bs": 20,
-				"ec": "2",
-				"le": 20,
-				"noi": 20,
-				"numfa": 20,
-				"rges": 20,
-				"ssech": 1,
-				"nolog": 20,
-				"nole": 20,
-				"autre": "20",
-				"nograp": "20"
-			  },
-			  "states": [
-				{
-				  "date": 1590504459838,
-				  "type": "AOC"
-				},
-				{
-				  "id": 9,
-				  "date": 1590504478334,
-				  "type": "VIC"
-				}
-			  ],
-			  "contactAttempts": [
-				{
-				  "date": 1589268626000,
-				  "status": "NOC",
-				  "medium": "TEL"
-				},
-				{
-				  "date": 1589268800000,
-				  "status": "INA",
-				  "medium": "TEL"
-				}
-			  ],
-			  "contactOutcome": {
-				"date": 1589268626000,
-				"type": "IMP",
-				"totalNumberOfContactAttempts": 2
-			  },
-			  "communicationRequests": [
-				{
-				  "communicationTemplateId": "mesh3",
-				  "reason": "REFUSAL",
-				  "creationTimestamp": 1721903754305
-				},
-				{
-				  "communicationTemplateId": "mesh4",
-				  "reason": "UNREACHABLE",
-				  "creationTimestamp": 1721903754405
-				}
-			  ],
-			  "nextContactHistory":
-				{
-				  "persons": [
-					{
-					  "title": "MISS",
-					  "firstName": "Futur",
-					  "lastName": "Anna",
-					  "phoneNumber":"+1234567890",
-					  "email":"futur.ama@ch.upd",
-					  "panel": true,
-					  "preferredContact": true
-					}
-				  ]
-				}
-			}
-			""";
-		MvcResult result =
-				mockMvc.perform(put("/api/survey-unit/20").with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON).content(updateJson).contentType(MediaType.APPLICATION_JSON)).andReturn();
-
-		String resultJson = result.getResponse().getContentAsString();
-		String expectedJson = """
         {
           "id": "20",
           "persons": [
@@ -548,14 +423,13 @@ class SurveyUnitIT {
           },
           "states": [
             {
+              "date": 1590504459838,
+              "type": "AOC"
+            },
+            {
               "id": 9,
               "date": 1590504478334,
               "type": "VIC"
-            },
-            {
-              "id": 13,
-              "date": 1590504459838,
-              "type": "AOC"
             }
           ],
           "contactAttempts": [
@@ -575,89 +449,212 @@ class SurveyUnitIT {
             "type": "IMP",
             "totalNumberOfContactAttempts": 2
           },
-          "communicationRequests":
-          [
-             {
-                "communicationTemplateId":"mesh3",
-                "campaignId":"VQS2021X00",
-                "meshuggahId":"mesh3",
-                "reason":"REFUSAL",
-                "emitter":"INTERVIEWER",
-                "status":[
-                   {
-                      "date":1721903754205,
-                      "status":"INITIATED"
-                   }
-                ]
-             },
-             {
-                "communicationTemplateId":"mesh3",
-                "campaignId":"VQS2021X00",
-                "meshuggahId":"mesh3",
-                "reason":"REFUSAL",
-                "emitter":"INTERVIEWER",
-                "status":[
-                   {
-                      "date":1719324511999,
-                      "status":"INITIATED"
-                   },
-                   {
-                      "date":1719324512000,
-                      "status":"READY"
-                   }
-                ]
-             },
-             {
-                "communicationTemplateId":"mesh4",
-                "campaignId":"VQS2021X00",
-                "meshuggahId":"mesh4",
-                "reason":"UNREACHABLE",
-                "emitter":"INTERVIEWER",
-                "status":[
-                   {
-                      "date":1719324511999,
-                      "status":"INITIATED"
-                   },
-                   {
-                      "date":1719324512000,
-                      "status":"CANCELLED"
-                   }
-                ]
-             },
-             {
-                "communicationTemplateId":"mesh4",
-                "campaignId":"VQS2021X00",
-                "meshuggahId":"mesh4",
-                "reason":"UNREACHABLE",
-                "emitter":"INTERVIEWER",
-                "status":[
-                   {
-                      "date":1721903754205,
-                      "status":"INITIATED"
-                   }
-                ]
-             }
-          ],
-          "nextContactHistory":
+          "communicationRequests": [
             {
-              "persons": [
-                {
-                  "id": 20,
-                  "title": "MISS",
-                  "firstName": "Futur",
-                  "lastName": "Anna",
-                  "phoneNumber": "+1234567890",
-                  "email":"futur.ama@ch.upd",
-                  "preferredContact": true
-                }
-              ]
+              "communicationTemplateId": "mesh3",
+              "reason": "REFUSAL",
+              "creationTimestamp": 1721903754305
+            },
+            {
+              "communicationTemplateId": "mesh4",
+              "reason": "UNREACHABLE",
+              "creationTimestamp": 1721903754405
             }
+          ],
+          "nextContactHistory": {
+            "persons": [
+              {
+                "title": "MISS",
+                "firstName": "Futur",
+                "lastName": "Anna",
+                "phoneNumber": "+1234567890",
+                "email": "futur.ama@ch.upd",
+                "panel": true,
+                "preferredContact": true
+              }
+            ]
+          }
         }
         """;
 
+		MvcResult result = mockMvc.perform(put("/api/survey-unit/20")
+						.with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
+						.accept(MediaType.APPLICATION_JSON)
+						.content(updateJson)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+		String resultJson = result.getResponse().getContentAsString();
+
+		String expectedJson = """
+			{
+			   "address":{
+				  "l1":"test1",
+				  "l2":"test2",
+				  "l3":"test3",
+				  "l4":"test4",
+				  "l5":"test5",
+				  "l6":"test6",
+				  "l7":"test7",
+				  "elevator":true,
+				  "building":"testBuilding",
+				  "floor":"testFloor",
+				  "door":"testDoor",
+				  "staircase":"testStaircase",
+				  "cityPriorityDistrict":true
+			   },
+			   "campaign":"VQS2021X00",
+			   "comments":[
+				  {
+					 "type":"MANAGEMENT",
+					 "value":"test-management-comment"
+				  },
+				  {
+					 "type":"INTERVIEWER",
+					 "value":"test-interviewer-comment"
+				  }
+			   ],
+			   "communicationRequests":[
+				  {
+					 "communicationTemplateId":"mesh4",
+					 "campaignId":"VQS2021X00",
+					 "meshuggahId":"mesh4",
+					 "reason":"UNREACHABLE",
+					 "emitter":"INTERVIEWER",
+					 "status":[
+						{
+						   "date":1719324511999,
+						   "status":"INITIATED"
+						},
+						{
+						   "date":1719324512000,
+						   "status":"CANCELLED"
+						}
+					 ]
+				  },
+				  {
+					 "communicationTemplateId":"mesh4",
+					 "campaignId":"VQS2021X00",
+					 "meshuggahId":"mesh4",
+					 "reason":"UNREACHABLE",
+					 "emitter":"INTERVIEWER",
+					 "status":[
+						{
+						   "date":1721903754205,
+						   "status":"INITIATED"
+						}
+					 ]
+				  },
+				  {
+					 "communicationTemplateId":"mesh3",
+					 "campaignId":"VQS2021X00",
+					 "meshuggahId":"mesh3",
+					 "reason":"REFUSAL",
+					 "emitter":"INTERVIEWER",
+					 "status":[
+						{
+						   "date":1719324511999,
+						   "status":"INITIATED"
+						},
+						{
+						   "date":1719324512000,
+						   "status":"READY"
+						}
+					 ]
+				  },
+				  {
+					 "communicationTemplateId":"mesh3",
+					 "campaignId":"VQS2021X00",
+					 "meshuggahId":"mesh3",
+					 "reason":"REFUSAL",
+					 "emitter":"INTERVIEWER",
+					 "status":[
+						{
+						   "date":1721903754205,
+						   "status":"INITIATED"
+						}
+					 ]
+				  }
+			   ],
+			   "contactAttempts":[
+				  {
+					 "date":1589268626000,
+					 "status":"NOC",
+					 "medium":"TEL"
+				  },
+				  {
+					 "date":1589268800000,
+					 "status":"INA",
+					 "medium":"TEL"
+				  }
+			   ],
+			   "contactOutcome":{
+				  "date":1589268626000,
+				  "type":"IMP",
+				  "totalNumberOfContactAttempts":2
+			   },
+			   "id":"20",
+			   "nextContactHistory":{
+				  "persons":[
+					 {
+						"id":20,
+						"title":"MISS",
+						"firstName":"Futur",
+						"lastName":"Anna",
+						"phoneNumber":"+1234567890",
+						"email":"futur.ama@ch.upd",
+						"preferredContact":true
+					 }
+				  ]
+			   },
+			   "persons":[
+				  {
+					 "id":10,
+					 "title":"MISTER",
+					 "firstName":"Harriette",
+					 "lastName":"Raymond",
+					 "email":"test@test.com",
+					 "birthdate":11111111,
+					 "privileged":true,
+					 "phoneNumbers":[
+						{
+						   "source":"FISCAL",
+						   "favorite":true,
+						   "number":"test"
+						}
+					 ]
+				  }
+			   ],
+			   "priority":false,
+			   "sampleIdentifiers":{
+				  "bs":20,
+				  "ec":"2",
+				  "le":20,
+				  "noi":20,
+				  "numfa":20,
+				  "rges":20,
+				  "ssech":1,
+				  "nolog":20,
+				  "nole":20,
+				  "autre":"20",
+				  "nograp":"20"
+			   },
+			   "states":[
+				  {
+					 "id":9,
+					 "date":1590504478334,
+					 "type":"VIC"
+				  },
+				  {
+					 "id":13,
+					 "date":1590504459838,
+					 "type":"AOC"
+				  }
+			   ]
+			}
+			""";
+
 		JSONAssert.assertEquals(expectedJson, resultJson, JSONCompareMode.NON_EXTENSIBLE);
 	}
-
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
 	 * return 200.
