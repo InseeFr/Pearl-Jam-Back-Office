@@ -8,13 +8,12 @@ import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.stub.CampaignDailyStatsRepositoryPortStub;
 import fr.insee.pearljam.domain.campaign.stub.CampaignVibilityPortStub;
-import fr.insee.pearljam.domain.campaign.stub.DateServiceStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.service.stub.CampaignReferentRepositoryStub;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.DisplayName;
@@ -57,8 +56,9 @@ class CampaignOrganizationServiceTest {
         CampaignDailyStats stats = new CampaignDailyStats();
         stats.setCampaignId(CAMPAIGN_ID);
         stats.setCampaignLabel("Survey to test");
-        stats.setTotal(10);
-        stats.setUnaffected(3);
+        stats.setUnaffectedCount(3);
+        stats.setAnvStateCount(5);
+        stats.setNnsStateCount(5);
         return stats;
     }
 
@@ -67,13 +67,12 @@ class CampaignOrganizationServiceTest {
         i1.setInterviewerId("INTERV1");
         i1.setInterviewerFirstName("Isabelle");
         i1.setInterviewerLastName("Interviewer 1");
-        i1.setTotal(5);
+        i1.setNnsStateCount(5);
 
         InterviewerDailyStats i2 = new InterviewerDailyStats();
         i2.setInterviewerId("INTERV2");
         i2.setInterviewerFirstName("Ingrid");
         i2.setInterviewerLastName("Interviewer 2");
-        i2.setTotal(2);
 
         return List.of(i1, i2);
     }
@@ -100,7 +99,7 @@ class CampaignOrganizationServiceTest {
                 campaignRepo,
                 campaignVisibilityPort,
                 new UserServiceStub(defaultOUs()),
-                new DateServiceStub() {
+                new FixedDateService() {
                 },
                 fixedClock());
     }

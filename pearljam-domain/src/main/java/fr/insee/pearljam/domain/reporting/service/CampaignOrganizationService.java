@@ -10,10 +10,10 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.stats.InterviewerDailyStats;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -4,7 +4,6 @@ import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
@@ -68,7 +67,7 @@ class CampaignSummaryProgressServiceTest {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
@@ -93,7 +92,7 @@ class CampaignSummaryProgressServiceTest {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        when(campaignRepository.findCampaignWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
