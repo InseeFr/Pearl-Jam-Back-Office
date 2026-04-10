@@ -156,6 +156,11 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
+    public List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds) {
+        return List.of();
+    }
+
+    @Override
     public SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnitDB surveyUnit) {
         return null;
     }

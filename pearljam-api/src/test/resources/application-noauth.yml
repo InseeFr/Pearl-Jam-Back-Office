@@ -44,7 +44,9 @@ logging:
 feature:
   oidc:
     enabled: false
-
+  deprecated:
+    endpoints:
+      enabled: true
 fr:
   insee:
     pearljam:

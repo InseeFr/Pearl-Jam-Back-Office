@@ -1,12 +1,12 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
+import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
@@ -30,12 +30,15 @@ class StateControllerTest {
   @Mock
   private StateService stateService;
 
-  @InjectMocks
+  @Mock
+  private RelatedOrganizationUnitService relatedOrganizationUnitService;
+
   private StateController stateController;
 
   @BeforeEach
   void setup() {
     MockitoAnnotations.openMocks(this); // Initialise les mocks
+    stateController = new StateController(stateService, relatedOrganizationUnitService, authenticatedUserService, true);
   }
 
   @Test
