@@ -5,11 +5,12 @@ import fr.insee.pearljam.contracts.campaign.dto.input.*;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.in.*;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.out.ReferentRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
@@ -64,6 +65,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final ReferentService referentService;
     private final ReferentRepository referentRepository;
     private final VisibilityService visibilityService;
+    private final CampaignVisibilityPort campaignVisibilityPort;
     private final DateService dateService;
     private final InterviewerCountRepository interviewerCountRepository;
     private final SurveyUnitCountService surveyUnitCountService;
@@ -82,7 +84,7 @@ public class CampaignServiceImpl implements CampaignService {
         List<CampaignDto> userCampaigns = campaignRepository.findByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
 
         for (CampaignDto campaign : userCampaigns) {
-            CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaign.getId(), organizationUnitIds);
+            CampaignVisibility campaignVisibility = campaignVisibilityPort.getCampaignVisibility(campaign.getId(), organizationUnitIds);
             campaign.setManagementStartDate(campaignVisibility.managementStartDate());
             campaign.setInterviewerStartDate(campaignVisibility.interviewerStartDate());
             campaign.setIdentificationPhaseStartDate(campaignVisibility.identificationPhaseStartDate());
@@ -357,7 +359,7 @@ public class CampaignServiceImpl implements CampaignService {
         List<InterviewerCount> interviewerCounts = interviewerCountRepository.findCampaignInterviewers(campaignId, organizationUnitIds);
 
         // Get campaign visibility dates (filtered by organization units)
-        CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaignId, organizationUnitIds);
+        CampaignVisibility campaignVisibility = campaignVisibilityPort.getCampaignVisibility(campaignId, organizationUnitIds);
 
         // Get survey unit counts from domain service
         SurveyUnitCounts surveyUnitCounts = surveyUnitCountService.getSurveyUnitCounts(campaignId, organizationUnitIds);

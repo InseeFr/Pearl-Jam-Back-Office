@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.campaign.model;
+package fr.insee.pearljam.domain.campaign.readmodel;
 
 /**
  * A class representing the visibility of a campaign for an organizational unit
@@ -12,6 +12,8 @@ package fr.insee.pearljam.domain.campaign.model;
  */
 
 public record CampaignVisibility(
+        String id,
+        String label,
         Long managementStartDate,
         Long interviewerStartDate,
         Long identificationPhaseStartDate,

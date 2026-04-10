@@ -1,9 +1,8 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +38,5 @@ public class VisibilityServiceImpl implements VisibilityService {
                 .orElseThrow(VisibilityNotFoundException::new);
         Visibility mergedVisibility = Visibility.merge(currentVisibility, visibilityToUpdate);
         visibilityRepository.updateDates(mergedVisibility);
-    }
-
-    @Override
-    public CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds) {
-        return visibilityRepository.getCampaignVisibility(idCampaign, ouIds);
     }
 }

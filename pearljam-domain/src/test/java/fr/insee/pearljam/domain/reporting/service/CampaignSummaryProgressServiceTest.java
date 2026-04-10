@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
@@ -65,7 +65,7 @@ class CampaignSummaryProgressServiceTest {
     @Test
     void shouldDefaultToToday_whenDayIsNull() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
@@ -90,7 +90,7 @@ class CampaignSummaryProgressServiceTest {
     void shouldUseProvidedDay_whenDayIsInThePast() {
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
@@ -124,7 +124,7 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldReturnOneCampaign_withCorrectMappingForDatesAndPhase() {
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One", 900_000L,
+        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One", 900_000L,
                 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
@@ -148,7 +148,7 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldUseZeroCounts_whenNoSnapshotForCampaign() {
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
@@ -162,9 +162,9 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldReturnMultipleCampaigns() {
-        CampaignWithVisibility c1 = new CampaignWithVisibility("CAMP1", "Campaign One",
+        CampaignVisibility c1 = new CampaignVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        CampaignWithVisibility c2 = new CampaignWithVisibility("CAMP2", "Campaign Two",
+        CampaignVisibility c2 = new CampaignVisibility("CAMP2", "Campaign Two",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
@@ -183,7 +183,7 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldMapDailyStatsToSurveyUnitsCorrectly() {
-        CampaignWithVisibility camp = new CampaignWithVisibility("CAMP1", "Campaign One",
+        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
                 900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
         CampaignDailyStats stats = new CampaignDailyStats();
         stats.setCampaignId("CAMP1");

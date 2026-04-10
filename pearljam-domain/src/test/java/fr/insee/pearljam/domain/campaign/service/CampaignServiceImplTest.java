@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.campaign.stub.CampaignVisibilityPortStub;
 import fr.insee.pearljam.domain.organizationunit.model.*;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -85,10 +86,11 @@ class CampaignServiceImplTest {
         ReferentFakeRepository referentRepository = new ReferentFakeRepository();
         InterviewerCountFakeRepository interviewerCountRepository = new InterviewerCountFakeRepository();
         SurveyUnitCountFakeService surveyUnitCountService = new SurveyUnitCountFakeService();
+        CampaignVisibilityPortStub campaignVisibilityPortStub = new CampaignVisibilityPortStub(null);
 
         campaignService = new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, surveyUnitService, preferenceService, referentService, referentRepository, visibilityService, dateService, interviewerCountRepository, surveyUnitCountService);
+                userService, surveyUnitService, preferenceService, referentService, referentRepository, visibilityService, campaignVisibilityPortStub, dateService, interviewerCountRepository, surveyUnitCountService);
     }
 
     // TODO : handle referent

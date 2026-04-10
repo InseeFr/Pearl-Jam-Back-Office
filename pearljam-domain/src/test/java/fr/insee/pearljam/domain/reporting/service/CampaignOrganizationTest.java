@@ -1,13 +1,13 @@
 package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
-import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.stub.CampaignDailyStatsRepositoryPortStub;
-import fr.insee.pearljam.domain.campaign.stub.CampaignVibilityPortStub;
+import fr.insee.pearljam.domain.campaign.stub.CampaignVisibilityPortStub;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
@@ -40,8 +40,8 @@ class CampaignOrganizationServiceTest {
     private static final String CAMPAIGN_ID = "CAMPAIGN_TEST_ID";
     private static final String USER_ID     = "USER_TEST_ID";
 
-    private CampaignWithVisibility defaultCampaign() {
-        return new CampaignWithVisibility(
+    private List<CampaignVisibility> defaultCampaigns() {
+        return List.of(new CampaignVisibility(
                 CAMPAIGN_ID,
                 "Survey to test",
                 MGMT_START,
@@ -49,7 +49,7 @@ class CampaignOrganizationServiceTest {
                 IDENT_START,
                 COLL_START,
                 COLL_END,
-                END_DATE);
+                END_DATE));
     }
 
     private CampaignDailyStats defaultCampaignStats() {
@@ -110,7 +110,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -122,7 +122,7 @@ class CampaignOrganizationServiceTest {
     @Test
     @DisplayName("should return INITIAL_ASSIGNMENT phase when before collection start")
     void shouldReturnInitialAssignmentPhase() throws CampaignNotFoundException {
-        CampaignWithVisibility campaign = new CampaignWithVisibility(
+        CampaignVisibility campaign = new CampaignVisibility(
                 CAMPAIGN_ID, "Survey on the Simpsons",
                 MGMT_START, INTERV_START, IDENT_START,
                 NOW_MS + 1_000L,  // collection hasn't started yet
@@ -131,7 +131,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(campaign));
+                new CampaignVisibilityPortStub(List.of(campaign)));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -141,7 +141,7 @@ class CampaignOrganizationServiceTest {
     @Test
     @DisplayName("should return COLLECTION_COMPLETED phase when after collection end")
     void shouldReturnCollectionCompletedPhase() throws CampaignNotFoundException {
-        CampaignWithVisibility campaign = new CampaignWithVisibility(
+        CampaignVisibility campaign = new CampaignVisibility(
                 CAMPAIGN_ID, "Survey to test",
                 MGMT_START, INTERV_START, IDENT_START,
                 NOW_MS - 3_000L,  // collection started
@@ -151,7 +151,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(campaign));
+                new CampaignVisibilityPortStub(List.of(campaign)));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -164,7 +164,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -181,7 +181,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -197,7 +197,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -211,7 +211,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(), List.of()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
 
         assertThatThrownBy(() -> service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID))
@@ -224,7 +224,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(List.of()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), defaultInterviewerStats()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);
 
@@ -237,7 +237,7 @@ class CampaignOrganizationServiceTest {
         CampaignOrganizationService service = buildService(
                 new CampaignReferentRepositoryStub(defaultReferents()),
                 new CampaignDailyStatsRepositoryPortStub(List.of(defaultCampaignStats()), List.of()),
-                new CampaignVibilityPortStub(defaultCampaign()));
+                new CampaignVisibilityPortStub(defaultCampaigns()));
 
 
         CampaignOrganization result = service.getCampaignOrganizations(USER_ID, CAMPAIGN_ID);

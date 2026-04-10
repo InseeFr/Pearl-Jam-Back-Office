@@ -3,8 +3,6 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.jpa;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -25,21 +23,6 @@ public interface VisibilityJpaRepository extends JpaRepository<VisibilityDB, Vis
 		WHERE su.id=?1
 		AND su.organizationUnit.id = vi.organizationUnit.id""")
 	VisibilityDB getVisibilityBySurveyUnitId(String surveyUnitId);
-
-	@Query(value = """
-		SELECT new fr.insee.pearljam.domain.campaign.model.CampaignVisibility(
-		    MIN(vi.managementStartDate),
-		    MIN(vi.interviewerStartDate),
-		    MIN(vi.identificationPhaseStartDate),
-		    MIN(vi.collectionStartDate),
-		    MAX(vi.collectionEndDate),
-		    MAX(vi.endDate)
-		)
-		FROM VisibilityDB vi
-		WHERE vi.campaign.id=:campaignId
-		AND vi.organizationUnit.id IN (:organizationalUnitIds)""")
-	CampaignVisibility getCampaignVisibility(@Param("campaignId") String campaignId,
-													   @Param("organizationalUnitIds") List<String> organizationalUnitIds);
 
 	@Query(value = """
 			SELECT

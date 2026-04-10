@@ -1,14 +1,13 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressPort;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
@@ -44,7 +43,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .map(OrganizationUnitSummary::getId)
                 .toList();
 
-        List<CampaignWithVisibility> campaigns = campaignVisibilityPort
+        List<CampaignVisibility> campaigns = campaignVisibilityPort
                 .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         if (campaigns.isEmpty()) {
@@ -52,7 +51,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
             return Collections.emptyList();
         }
 
-        List<String> campaignIds = campaigns.stream().map(CampaignWithVisibility::id).toList();
+        List<String> campaignIds = campaigns.stream().map(CampaignVisibility::id).toList();
 
         Map<String, CampaignDailyStats> statsByCampaign = campaignDailyStatsRepository
                 .getCampaignsStats(campaignIds, ouIds, day)

@@ -1,11 +1,11 @@
 package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
-import fr.insee.pearljam.domain.campaign.port.in.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
@@ -40,7 +40,7 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .findCampaignStats(campaignId, now)
                 .orElseThrow(CampaignNotFoundException::new);
 
-        CampaignWithVisibility campaign = campaignVisibilityPort.findCampaignVisibility(campaignId, userOUIds, userId);
+        CampaignVisibility campaign = campaignVisibilityPort.getCampaignVisibility(campaignId, userOUIds);
         List<Referent> referents = campaignReferentRepository.getReferents(campaignId);
         List<InterviewerDailyStats> interviewerDailyStats = campaignDailyStatsRepositoryPort
                 .getInterviewerStats(campaignId, userOUIds, now);
@@ -63,7 +63,7 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .stream().map(OrganizationUnitSummary::getId).toList();
     }
 
-    private CampaignPhase computePhase(CampaignWithVisibility campaign) {
+    private CampaignPhase computePhase(CampaignVisibility campaign) {
         return CampaignPhase.fromDates(
                 dateService.getCurrentTimestamp(),
                 campaign.managementStartDate(),

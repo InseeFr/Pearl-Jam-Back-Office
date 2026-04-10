@@ -1,10 +1,11 @@
 package fr.insee.pearljam.domain.campaign.service;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.service.dummy.VisibilityFakeRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
+import fr.insee.pearljam.domain.campaign.stub.CampaignVisibilityPortStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ class VisibilityServiceImplTest {
     private VisibilityFakeRepository visibilityRepository;
     private VisibilityServiceImpl visibilityService;
     private Visibility visibility1, visibility2, visibility3;
+    private CampaignVisibilityPortStub campaignVisibilityPortStub;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +42,13 @@ class VisibilityServiceImplTest {
         visibilityRepository.save(visibility1);
         visibilityRepository.save(visibility2);
         visibilityRepository.save(visibility3);
+
+        CampaignVisibility campaignVisibility =
+                new CampaignVisibility("1627845600000", "1627932000000",
+                        1628018400000L, 1628104800000L,
+                        1628191200000L, 1628277600000L, null, null);
+
+        campaignVisibilityPortStub = new CampaignVisibilityPortStub(List.of(campaignVisibility));
     }
 
     @Test
@@ -88,7 +97,7 @@ class VisibilityServiceImplTest {
         String campaignId = "campaign1";
         List<String> ouIds = List.of("ou1", "ou2");
 
-        CampaignVisibility campaignVisibility = visibilityService.getCampaignVisibility(campaignId, ouIds);
+        CampaignVisibility campaignVisibility = campaignVisibilityPortStub.getCampaignVisibility(campaignId, ouIds);
 
         assertThat(campaignVisibility)
                 .isEqualTo(VisibilityFakeRepository.CAMPAIGN_VISIBILITY);
