@@ -46,7 +46,7 @@ class CampaignControllerCreateTest {
         campaignService = new CampaignFakeService();
         ReferentFakeService referentService = new ReferentFakeService();
         AuthenticationUserFakeService authenticatedUserService = new AuthenticationUserFakeService(AuthenticatedUserTestHelper.AUTH_ADMIN);
-        CampaignController campaignController = new CampaignController(campaignService, referentService, authenticatedUserService);
+        CampaignController campaignController = new CampaignController(campaignService, referentService, authenticatedUserService, true);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(campaignController)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())

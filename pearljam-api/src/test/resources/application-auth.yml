@@ -50,7 +50,9 @@ feature:
     client-id:
     realm:
     principal-attribute: username
-
+  deprecated:
+    endpoints:
+      enabled: true
 fr:
   insee:
     pearljam:

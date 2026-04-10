@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
+import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,9 @@ public class StateController {
   private final StateService stateService;
   private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final AuthenticatedUserService authenticatedUserService;
+
+  @Value("${feature.deprecated.endpoints.enabled}")
+  private final boolean deprecatedEndpointsEnabled;
 
   /**
    * This method is used to count survey units by states, interviewer and campaign
@@ -129,6 +134,7 @@ public class StateController {
   }
 
   /**
+   * @deprecated
    * Return the sum of survey units states by interviewer as a list
    *
    * @param date
@@ -137,8 +143,12 @@ public class StateController {
    */
   @Operation(summary = "Get interviewersStateCount")
   @GetMapping(Constants.API_INTERVIEWERS_SU_STATECOUNT)
+  @Deprecated(forRemoval = true)
   public ResponseEntity<List<StateCountDto>> getInterviewersStateCount(
       @RequestParam(required = false, name = "date") Long date) {
+    if(!deprecatedEndpointsEnabled) {
+      throw new EndpointDisabledException();
+    }
     String userId = authenticatedUserService.getCurrentUserId();
     List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByInterviewer(userId,
         date);
@@ -151,6 +161,7 @@ public class StateController {
   }
 
   /**
+   * @deprecated
    * Return the sum of survey units states by campaign as a list
    *
    * @param date

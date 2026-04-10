@@ -20,7 +20,6 @@ public class Constants {
   public static final String API_INTERROGATIONS = "/api/interrogations";
   public static final String API_SURVEYUNITS_INTERVIEWERS = "/api/survey-units/interviewers";
   public static final String API_SURVEYUNITS_CLOSABLE = "/api/survey-units/closable";
-  public static final String API_SURVEYUNIT_ID_INTERVIEWER = "/api/interviewer/survey-unit/{id}";
   public static final String API_SURVEYUNIT_ID = "/api/survey-unit/{id}";
   public static final String API_SURVEYUNIT_ID_STATE = "/api/survey-unit/{id}/state/{state}";
   public static final String API_SURVEYUNIT_ID_STATES = "/api/survey-unit/{id}/states";
@@ -29,6 +28,7 @@ public class Constants {
   public static final String API_SURVEYUNIT_ID_CLOSE = "/api/survey-unit/{id}/close/{closingCause}";
   public static final String API_SURVEYUNIT_ID_CLOSINGCAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
   public static final String API_ADMIN_SURVEYUNIT_DETAILS = "/api/admin/survey-unit/{id}";
+  public static final String API_ADMIN_SURVEYUNITS_DETAILS = "/api/admin/survey-units/details";
 
 
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";

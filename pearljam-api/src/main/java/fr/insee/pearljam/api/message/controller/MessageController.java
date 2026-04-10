@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.message.controller;
 
+import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,13 +39,21 @@ public class MessageController{
 	private final SimpMessagingTemplate brokerMessagingTemplate;
 	private final AuthenticatedUserService authenticatedUserService;
 	private final MailSender mailSender;
+	@Value("${feature.deprecated.endpoints.enabled}")
+	private final boolean deprecatedEndpointsEnabled;
 
 	/**
+	 * @deprecated
 	 * This method is used to post a message
 	 */
 	@Operation(summary = "Post a message")
 	@PostMapping(Constants.API_MESSAGE)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<Object> postMessage(@RequestBody MessageDto message) {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
+
 		String userId = authenticatedUserService.getCurrentUserId();
 		String text = message.getText();
 		List<String> recipients = message.getRecipients();
@@ -57,14 +67,19 @@ public class MessageController{
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to mark a message as read with id: {id} as read for the
 	 * interviewer {idep}
 	 */
 	@Operation(summary = "Mark a message as read")
 	@PutMapping(Constants.API_MESSAGE_MARK_AS_READ)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<Object> postMessage(
 			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		HttpStatus returnCode = messageService.markAsRead(id, idep);
 		if (returnCode == HttpStatus.OK) {
 			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
@@ -74,14 +89,19 @@ public class MessageController{
 	}
 
 	/**
+	 * @deprecated
 	 * This method is used to mark a message as deleted with id: {id} as read for
 	 * the interviewer {idep}
 	 */
 	@Operation(summary = "Mark a message as deleted")
 	@PutMapping(Constants.API_MESSAGE_MARK_AS_DELETED)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<Object> postDeletedMessage(
 			@PathVariable(value = "id") Long id,
 			@PathVariable(value = "idep") String idep) {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		HttpStatus returnCode = messageService.markAsDeleted(id, idep);
 		if (returnCode == HttpStatus.OK) {
 			this.brokerMessagingTemplate.convertAndSend("/notifications/".concat(idep.toUpperCase()),
@@ -91,21 +111,31 @@ public class MessageController{
 	}
 
 	/**
+	 * @deprecated
 	 * Retrieves messages sent to the interviewer with id {id}
 	 */
 	@Operation(summary = "Get a message")
 	@GetMapping(Constants.API_MESSAGES_ID)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "id") String id) {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		List<MessageDto> messages = messageService.getMessages(id);
 		return new ResponseEntity<>(messages, HttpStatus.OK);
 	}
 
 	/**
+	 * @deprecated
 	 * Retrieves message history
 	 */
 	@Operation(summary = "Get the message history")
 	@GetMapping(Constants.API_MESSAGEHISTORY)
+	@Deprecated(forRemoval = true)
 	public ResponseEntity<List<MessageDto>> getMessageHistory() {
+		if(!deprecatedEndpointsEnabled) {
+			throw new EndpointDisabledException();
+		}
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<MessageDto> messages = messageService.getMessageHistory(userId);
 		return new ResponseEntity<>(messages, HttpStatus.OK);

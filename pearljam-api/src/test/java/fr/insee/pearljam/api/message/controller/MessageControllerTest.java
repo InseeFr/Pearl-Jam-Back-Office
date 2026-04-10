@@ -33,7 +33,7 @@ class MessageControllerTest {
         mailSender = new MailFakeSender();
         MessageFakeService messageService = new MessageFakeService();
         AuthenticationUserFakeService authenticatedUserService = new AuthenticationUserFakeService(AuthenticatedUserTestHelper.AUTH_ADMIN);
-        MessageController messageController = new MessageController(messageService, simpMessagingTemplate, authenticatedUserService, mailSender);
+        MessageController messageController = new MessageController(messageService, simpMessagingTemplate, authenticatedUserService, mailSender, true);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(messageController)

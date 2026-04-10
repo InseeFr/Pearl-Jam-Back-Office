@@ -125,7 +125,7 @@ class SurveyUnitIT {
 	@Test
 	void testGetSurveyUnitDetail() throws Exception {
 		MvcResult result =
-				mockMvc.perform(get("/api/interviewer/survey-unit/11").with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON)).andExpectAll(status().isOk()).andReturn();
+				mockMvc.perform(get("/api/survey-unit/11").with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON)).andExpectAll(status().isOk()).andReturn();
 
 		String resultJson = result.getResponse().getContentAsString();
 		String expectedJson = """
