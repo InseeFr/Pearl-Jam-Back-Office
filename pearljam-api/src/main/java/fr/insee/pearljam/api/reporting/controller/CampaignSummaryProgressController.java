@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
-import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ import java.util.List;
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 @Validated
 public class CampaignSummaryProgressController {
-    private final CampaignSummaryProgressService campaignSummaryProgressService;
+    private final CampaignSummaryProgressPort campaignSummaryProgressService;
 
     @Operation(summary = "Get summary of campaigns (based on my preferences), including state counts")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_SUMMARY)

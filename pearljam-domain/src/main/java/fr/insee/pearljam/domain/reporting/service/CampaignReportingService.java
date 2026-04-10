@@ -63,6 +63,39 @@ public class CampaignReportingService implements CampaignReportingPort {
         return presenter.present(stats);
     }
 
+    @Override
+    public <T> T getCampaignsStatsForInterviewer(String userId, LocalDate day, String interviewerId, CampaignStatsPresenter<T> presenter) {
+        day = resolveReportingDay(day);
+        List<String> userOUIds = userService.getUserOUsModel(userId, true)
+                .stream().map(OrganizationUnitSummary::getId).toList();
+
+        if (userOUIds.isEmpty()) {
+            return presenter.present(Collections.emptyList());
+        }
+
+        List<CampaignSummary> campaigns = campaignRepository
+                .findAllManagedAndNotClosedCampaignsByOuIds(
+                        userOUIds, day.atStartOfDay(clock.getZone()).toInstant());
+
+        if (campaigns.isEmpty()) {
+            log.info("No opened campaigns found for {}", userId);
+            return presenter.present(Collections.emptyList());
+        }
+
+        List<String> campaignIds = campaigns.stream().map(CampaignSummary::id).toList();
+
+        Map<String, CampaignDailyStats> statsByCampaign = campaignDailyStatsRepository
+                .getCampaignsStatsForInterviewer(interviewerId, campaignIds, userOUIds, day)
+                .stream()
+                .collect(Collectors.toMap(CampaignDailyStats::getCampaignId, s -> s));
+
+        List<CampaignDailyStats> stats = campaigns.stream()
+                .filter(campaign -> statsByCampaign.containsKey(campaign.id()))
+                .map(campaign -> statsByCampaign.get(campaign.id()))
+                .toList();
+        return presenter.present(stats);
+    }
+
     private LocalDate resolveReportingDay(LocalDate day) {
         LocalDate now = LocalDate.now(clock);
         if (day == null) {

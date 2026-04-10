@@ -165,6 +165,52 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
                 .list();
     }
 
+    private static final String INTERVIEWER_CAMPAIGNS_SQL = """
+        WITH filtered_campaigns AS (
+            SELECT c.id AS campaign_id
+            FROM campaign c
+            WHERE c.id IN (:campaignIds)
+        ),
+        su_counts AS (
+            SELECT
+                su.campaign_id,
+                COUNT(*) AS unaffected
+            FROM survey_unit su
+            JOIN filtered_campaigns fc
+              ON fc.campaign_id = su.campaign_id
+            WHERE su.organization_unit_id IN (:ouIds)
+            AND su.interviewer_id is NULL
+            GROUP BY su.campaign_id
+        )
+        SELECT
+            c.id AS campaignId,
+            c.label AS campaignLabel,
+            COALESCE(su.unaffected, 0) AS unaffectedCount,
+            %s
+        FROM campaign_daily_stats cds
+        JOIN campaign c ON c.id = cds.campaign_id
+        LEFT JOIN su_counts su ON su.campaign_id = c.id
+       WHERE cds.campaign_id IN (:campaignIds)
+         AND cds.organization_unit_id IN (:ouIds)
+         AND cds.day = :day
+         AND cds.interviewer_id = :interviewerId
+        GROUP BY c.id, c.label, su.unaffected;
+    """.formatted(DATA_SELECTION);
+
+    @Override
+    public List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
+                                                                    List<String> campaignIds,
+                                                                    List<String> ouIds,
+                                                                    LocalDate day) {
+        return jdbc.sql(INTERVIEWER_CAMPAIGNS_SQL)
+                .param("campaignIds", campaignIds)
+                .param(OU_IDS_PARAM, ouIds)
+                .param(DAY_PARAM, day)
+                .param("interviewerId", interviewerId)
+                .query(CampaignDailyStats.class)
+                .list();
+    }
+
     private static final String INTERVIEWER_SQL = """
         SELECT
             interv.id AS interviewerId,

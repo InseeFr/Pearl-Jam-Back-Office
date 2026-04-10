@@ -220,7 +220,7 @@ class CampaignSummaryProgressServiceTest {
         CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
-        assertThat(states.allocated()).isEqualTo(104);
+        assertThat(states.allocated()).isEqualTo(114);
         assertThat(states.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
         assertThat(states.toReview()).isEqualTo(12);
         assertThat(states.completed()).isEqualTo(13 + 14); // fin + clo = 27
