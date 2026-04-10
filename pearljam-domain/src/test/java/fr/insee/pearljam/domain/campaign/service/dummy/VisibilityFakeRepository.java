@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
@@ -11,11 +10,6 @@ import java.util.*;
 public class VisibilityFakeRepository implements VisibilityRepository {
 
     private final List<Visibility> visibilities = new ArrayList<>();
-    public static final CampaignVisibility CAMPAIGN_VISIBILITY =
-            new CampaignVisibility("1627845600000", "1627932000000",
-                    1628018400000L, 1628104800000L,
-                    1628191200000L, 1628277600000L, null, null);
-
 
     @Override
     public Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId) {

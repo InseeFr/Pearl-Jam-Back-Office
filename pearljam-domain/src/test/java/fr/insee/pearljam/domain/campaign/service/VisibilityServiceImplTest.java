@@ -23,6 +23,12 @@ class VisibilityServiceImplTest {
     private Visibility visibility1, visibility2, visibility3;
     private CampaignVisibilityPortStub campaignVisibilityPortStub;
 
+    private CampaignVisibility campaignVisibilityTest =
+            new CampaignVisibility("1627845600000", "1627932000000",
+                    1628018400000L, 1628104800000L,
+                    1628191200000L, 1628277600000L, null, null);
+
+
     @BeforeEach
     void setUp() {
         visibilityRepository = new VisibilityFakeRepository();
@@ -43,12 +49,8 @@ class VisibilityServiceImplTest {
         visibilityRepository.save(visibility2);
         visibilityRepository.save(visibility3);
 
-        CampaignVisibility campaignVisibility =
-                new CampaignVisibility("1627845600000", "1627932000000",
-                        1628018400000L, 1628104800000L,
-                        1628191200000L, 1628277600000L, null, null);
 
-        campaignVisibilityPortStub = new CampaignVisibilityPortStub(List.of(campaignVisibility));
+        campaignVisibilityPortStub = new CampaignVisibilityPortStub(List.of(campaignVisibilityTest));
     }
 
     @Test
@@ -100,6 +102,6 @@ class VisibilityServiceImplTest {
         CampaignVisibility campaignVisibility = campaignVisibilityPortStub.getCampaignVisibility(campaignId, ouIds);
 
         assertThat(campaignVisibility)
-                .isEqualTo(VisibilityFakeRepository.CAMPAIGN_VISIBILITY);
+                .isEqualTo(campaignVisibilityTest);
     }
 }
