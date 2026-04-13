@@ -75,7 +75,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * @deprecated
 	 * This method is used to get the list of Campaigns for current user
 	 * 
 	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
@@ -84,11 +83,7 @@ public class CampaignController {
 	 */
 	@Operation(summary = "Get user related Campaigns")
 	@GetMapping(path = Constants.API_CAMPAIGNS_PREFERENCES)
-	@Deprecated(forRemoval = true)
 	public List<CampaignPreferenceDto> getUserCampaigns() {
-		if(!deprecatedEndpointsEnabled) {
-			throw new EndpointDisabledException();
-		}
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<CampaignPreferenceDto> lstCampaigns = campaignService.getCampaignPreferences(userId);
 		log.info("User {} -> {} related campaigns found", userId, lstCampaigns.size());
