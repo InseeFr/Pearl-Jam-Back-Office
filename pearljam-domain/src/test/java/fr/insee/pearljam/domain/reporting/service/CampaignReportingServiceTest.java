@@ -10,7 +10,6 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -20,7 +19,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CampaignReportingServiceTest {
 
@@ -59,9 +60,7 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStats(USER_ID, null, passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        verify(statsRepository).getCampaignsStats(anyList(), anyList(), eq(FIXED_TODAY));
     }
 
     @Test
@@ -82,9 +81,7 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStats(USER_ID, pastDate, passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(statsRepository).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        verify(statsRepository).getCampaignsStats(anyList(), anyList(), eq(pastDate));
     }
 
     @Test
@@ -175,9 +172,7 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStatsForInterviewer(USER_ID, null, "interviewer-1", passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), eq(FIXED_TODAY));
     }
 
     @Test
@@ -200,9 +195,7 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStatsForInterviewer(USER_ID, pastDate, "interviewer-1", passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), eq(pastDate));
     }
 
     @Test
@@ -298,19 +291,11 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, interviewerId, passthroughPresenter);
 
-        ArgumentCaptor<List<String>> campaignIdsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<List<String>> ouIdsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-
         verify(statsRepository).getCampaignsStatsForInterviewer(
-                eq(interviewerId),
-                campaignIdsCaptor.capture(),
-                ouIdsCaptor.capture(),
-                dayCaptor.capture()
+                interviewerId,
+                List.of("c1"),
+                List.of("ou-1"),
+                FIXED_TODAY
         );
-
-        assertThat(campaignIdsCaptor.getValue()).containsExactly("c1");
-        assertThat(ouIdsCaptor.getValue()).containsExactly("ou-1");
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
     }
 }

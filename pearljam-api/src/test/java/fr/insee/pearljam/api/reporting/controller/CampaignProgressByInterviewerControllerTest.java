@@ -10,14 +10,12 @@ import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,9 +59,7 @@ class CampaignProgressByInterviewerControllerTest {
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
-        assertThat(dayCaptor.getValue()).isEqualTo(day);
+        verify(port).getProgressForDay(any(), eq("campaign-1"), eq(day), any());
     }
 
     @Test
@@ -71,9 +67,7 @@ class CampaignProgressByInterviewerControllerTest {
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress"))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
-        assertThat(dayCaptor.getValue()).isNull();
+        verify(port).getProgressForDay(any(), eq("campaign-1"), isNull(), any());
     }
 
     @Test
