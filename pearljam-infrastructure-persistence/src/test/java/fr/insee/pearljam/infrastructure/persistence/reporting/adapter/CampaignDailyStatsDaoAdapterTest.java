@@ -208,6 +208,8 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(stats.getFinStateCount()).isEqualTo(13);
         assertThat(stats.getNpaClosingCauseCount()).isEqualTo(1);
         assertThat(stats.getInaContactOutcomeCount()).isEqualTo(5);
+        assertThat(stats.getUnaffectedCount()).isEqualTo(1);
+        assertThat(stats.getAllocatedStateCount()).isEqualTo(105);
     }
 
     @Test
@@ -248,12 +250,15 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(ou1Stats.getOuLabel()).isEqualTo("Org Unit 1");
         assertThat(ou1Stats.getNvmStateCount()).isEqualTo(1);
         assertThat(ou1Stats.getTbrStateCount()).isEqualTo(12);
+        assertThat(ou1Stats.getUnaffectedCount()).isEqualTo(1);
+        assertThat(ou1Stats.getAllocatedStateCount()).isEqualTo(105);
 
         OrganizationUnitDailyStats ou2Stats = result.stream()
                 .filter(s -> s.getOuId().equals(OU2_ID)).findFirst().orElseThrow();
         assertThat(ou2Stats.getOuLabel()).isEqualTo("Org Unit 2");
         assertThat(ou2Stats.getNvmStateCount()).isEqualTo(10);
         assertThat(ou2Stats.getTbrStateCount()).isEqualTo(120);
+        assertThat(ou2Stats.getUnaffectedCount()).isZero();
     }
 
     @Test

@@ -81,6 +81,13 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
 
     private static final String OUS_SQL = """
     SELECT
+        (
+            SELECT COUNT(*)
+            FROM survey_unit su
+            WHERE su.campaign_id = :campaignId
+              AND su.organization_unit_id IN (:ouIds)
+              AND su.interviewer_id IS NULL
+        ) AS unaffectedCount,
         %s
         FROM campaign_daily_stats cds
         WHERE campaign_id = :campaignId
@@ -99,16 +106,28 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     }
 
     private static final String OUS_LIST_SQL = """
+    WITH su_counts AS (
+        SELECT
+            su.organization_unit_id,
+            COUNT(*) AS unaffected
+        FROM survey_unit su
+        WHERE su.campaign_id = :campaignId
+          AND su.organization_unit_id IN (:ouIds)
+          AND su.interviewer_id IS NULL
+        GROUP BY su.organization_unit_id
+    )
     SELECT
         ou.id AS ouId,
         ou.label AS ouLabel,
+        COALESCE(su.unaffected, 0) AS unaffectedCount,
         %s
     FROM campaign_daily_stats cds
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
+    LEFT JOIN su_counts su ON su.organization_unit_id = ou.id
     WHERE cds.campaign_id = :campaignId
     AND cds.organization_unit_id IN (:ouIds)
     AND cds.day = :day
-    GROUP BY ou.id, ou.label;
+    GROUP BY ou.id, ou.label, su.unaffected;
     """.formatted(DATA_SELECTION);
 
     @Override
