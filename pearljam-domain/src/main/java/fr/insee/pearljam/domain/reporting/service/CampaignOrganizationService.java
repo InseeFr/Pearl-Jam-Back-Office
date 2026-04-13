@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationStatsPresenter;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
@@ -13,7 +13,6 @@ import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryP
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
     private final Clock clock;
 
     @Override
-    public CampaignOrganization getCampaignOrganizations(String userId, String campaignId) throws CampaignNotFoundException {
+    public <T> T getCampaignOrganization(String userId, String campaignId, CampaignOrganizationStatsPresenter<T> presenter) throws CampaignNotFoundException {
         LocalDate now = LocalDate.now(clock);
         List<String> userOUIds = getUserOUIds(userId);
 
@@ -45,55 +44,11 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
         List<InterviewerDailyStats> interviewerDailyStats = campaignDailyStatsRepositoryPort
                 .getInterviewerStats(campaignId, userOUIds, now);
 
-        return new CampaignOrganization(
-                campaign.id(),
-                campaign.label(),
-                campaign.identificationPhaseStartDate(),
-                campaign.collectionStartDate(),
-                campaign.collectionEndDate(),
-                campaign.endDate(),
-                computePhase(campaign),
-                toReferentModels(referents),
-                toInterviewerModels(interviewerDailyStats),
-                toSurveyUnitModel(campaignDailyStats));
+        return presenter.present(campaignDailyStats, campaign, referents, interviewerDailyStats, dateService.getCurrentTimestamp());
     }
 
     private List<String> getUserOUIds(String userId) {
         return userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
-    }
-
-    private CampaignPhase computePhase(CampaignVisibility campaign) {
-        return CampaignPhase.fromDates(
-                dateService.getCurrentTimestamp(),
-                campaign.managementStartDate(),
-                campaign.collectionStartDate(),
-                campaign.collectionEndDate(),
-                campaign.endDate());
-    }
-
-    private List<CampaignOrganization.Referent> toReferentModels(List<Referent> referents) {
-        return referents.stream()
-                .map(r -> new CampaignOrganization.Referent(
-                        r.firstName(),
-                        r.lastName(),
-                        r.phoneNumber(),
-                        r.role()))
-                .toList();
-    }
-
-    private List<CampaignOrganization.Interviewer> toInterviewerModels(List<InterviewerDailyStats> stats) {
-        return stats.stream()
-                .map(i -> new CampaignOrganization.Interviewer(
-                        i.getInterviewerId(),
-                        i.getInterviewerFirstName() + " " + i.getInterviewerLastName(),
-                        i.getAllocatedStateCount()))
-                .toList();
-    }
-
-    private CampaignOrganization.CampaignOrganizationSurveyUnitCount toSurveyUnitModel(CampaignDailyStats stats) {
-        return new CampaignOrganization.CampaignOrganizationSurveyUnitCount(
-                stats.getAllocatedStateCount(),
-                stats.getUnaffectedCount());
     }
 }

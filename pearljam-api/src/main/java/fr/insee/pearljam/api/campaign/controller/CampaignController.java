@@ -217,7 +217,6 @@ public class CampaignController {
 	 * @param campaignId campaign id
 	 * @return {@link CampaignResponseDto} the campaign
 	 */
-	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get target campaign")
 	@GetMapping(path = {Constants.API_CAMPAIGN_ID, Constants.API_CAMPAIGNS_ID})
 	public CampaignResponseDto getCampaign(@NotBlank @PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {

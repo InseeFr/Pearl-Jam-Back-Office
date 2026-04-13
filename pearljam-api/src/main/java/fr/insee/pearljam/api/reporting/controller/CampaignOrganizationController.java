@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignOrganization;
+import fr.insee.pearljam.api.campaign.presenter.CampaignOrganizationPresenter;
+import fr.insee.pearljam.api.campaign.response.CampaignOrganizationResponse;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.service.CampaignOrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,14 +22,16 @@ import static fr.insee.pearljam.contracts.constants.Constants.API_CAMPAIGN_ORGAN
 public class CampaignOrganizationController {
 
     private final CampaignOrganizationService campaignOrganizationService;
+    private final CampaignOrganizationPresenter presenter;
+
 
     @Operation(summary = "Get campaign organization")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(path = API_CAMPAIGN_ORGANIZATION)
-    public CampaignOrganization getCampaign(
+    public CampaignOrganizationResponse getCampaign(
             @PathVariable @NotBlank String id,
             @CurrentSecurityContext(expression = "authentication.name") String userId)
             throws CampaignNotFoundException {
-        return campaignOrganizationService.getCampaignOrganizations(userId, id);
+        return campaignOrganizationService.getCampaignOrganization(userId, id, presenter);
     }
 }
