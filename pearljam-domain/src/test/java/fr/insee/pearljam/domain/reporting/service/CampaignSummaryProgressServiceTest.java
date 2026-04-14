@@ -13,7 +13,6 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class CampaignSummaryProgressServiceTest {
@@ -74,9 +74,7 @@ class CampaignSummaryProgressServiceTest {
 
         service.getCampaignSummaryProgress(USER_ID, null);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), eq(FIXED_TODAY));
     }
 
     @Test
@@ -101,9 +99,7 @@ class CampaignSummaryProgressServiceTest {
 
         service.getCampaignSummaryProgress(USER_ID, pastDate);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        org.mockito.Mockito.verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        verify(campaignDailyStatsRepositoryPort).getCampaignsStats(anyList(), anyList(), eq(pastDate));
     }
 
     @Test
@@ -220,7 +216,7 @@ class CampaignSummaryProgressServiceTest {
         CampaignSummaryProgress campaignSummaryProgress = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY).getFirst();
         StatesSummaryProgress states = campaignSummaryProgress.states();
 
-        assertThat(states.allocated()).isEqualTo(104);
+        assertThat(states.allocated()).isEqualTo(114);
         assertThat(states.toProcessInterviewer()).isEqualTo(5 + 6 + 7 + 8 + 9 + 10); // VIC+PRC+AOC+APS+INS+WFT = 45
         assertThat(states.toReview()).isEqualTo(12);
         assertThat(states.completed()).isEqualTo(13 + 14); // fin + clo = 27

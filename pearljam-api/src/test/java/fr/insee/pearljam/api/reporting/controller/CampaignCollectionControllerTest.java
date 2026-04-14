@@ -60,4 +60,28 @@ class CampaignCollectionControllerTest {
                         .param("day", futureDay.toString()))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldReturnOk_whenInterviewerIdAndDayProvided() throws Exception {
+        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
+                        .param("day", "2025-06-10"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnOk_whenInterviewerIdAndDayIsNotProvided() throws Exception {
+        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenInterviewerIdAndDayIsInTheFuture() throws Exception {
+        LocalDate futureDay = LocalDate.now().plusDays(1);
+        when(reportingService.getCampaignsStatsForInterviewer(any(), eq(futureDay), any(), any()))
+                .thenThrow(new FutureReportingDateException());
+
+        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
+                        .param("day", futureDay.toString()))
+                .andExpect(status().isBadRequest());
+    }
 }

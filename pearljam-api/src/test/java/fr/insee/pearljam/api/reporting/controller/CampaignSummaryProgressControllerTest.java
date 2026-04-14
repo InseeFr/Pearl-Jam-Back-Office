@@ -5,16 +5,15 @@ import fr.insee.pearljam.domain.reporting.service.CampaignSummaryProgressService
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,9 +46,7 @@ class CampaignSummaryProgressControllerTest {
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(summaryService).getCampaignSummaryProgress(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(day);
+        verify(summaryService).getCampaignSummaryProgress(any(), eq(day));
     }
 
     @Test
@@ -57,9 +54,7 @@ class CampaignSummaryProgressControllerTest {
         mockMvc.perform(get("/api/reporting/campaigns/summary"))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(summaryService).getCampaignSummaryProgress(any(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isNull();
+        verify(summaryService).getCampaignSummaryProgress(any(), isNull());
     }
 
     @Test

@@ -23,4 +23,9 @@ public class CampaignDailyStats extends AbstractDailyStats {
     public static CampaignDailyStats empty(String id) {
         return empty(id, null);
     }
+
+    @Override
+    public long getAllocatedStateCount() {
+        return super.getAllocatedStateCount() + unaffectedCount;
+    }
 }

@@ -11,17 +11,16 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizatio
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,9 +64,7 @@ class CampaignCollectionByOrganizationUnitControllerTest {
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
-        assertThat(dayCaptor.getValue()).isEqualTo(day);
+        verify(port).getProgressForDay(any(), eq("campaign-1"), eq(day), any());
     }
 
     @Test
@@ -75,9 +72,7 @@ class CampaignCollectionByOrganizationUnitControllerTest {
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/collection"))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
-        assertThat(dayCaptor.getValue()).isNull();
+        verify(port).getProgressForDay(any(), eq("campaign-1"), isNull(), any());
     }
 
     @Test

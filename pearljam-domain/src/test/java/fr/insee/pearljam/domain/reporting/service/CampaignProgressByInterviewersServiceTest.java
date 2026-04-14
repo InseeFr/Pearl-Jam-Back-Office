@@ -10,7 +10,6 @@ import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class CampaignProgressByInterviewersServiceTest {
@@ -58,18 +58,14 @@ class CampaignProgressByInterviewersServiceTest {
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate, passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        org.mockito.Mockito.verify(statsRepository).getInterviewerStats(anyString(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(pastDate);
+        verify(statsRepository).getInterviewerStats(anyString(), anyList(), eq(pastDate));
     }
 
     @Test
     void shouldDefaultToToday_whenDayIsNull() throws CampaignNotFoundException {
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, null, passthroughPresenter);
 
-        ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        org.mockito.Mockito.verify(statsRepository).getInterviewerStats(anyString(), anyList(), dayCaptor.capture());
-        assertThat(dayCaptor.getValue()).isEqualTo(FIXED_TODAY);
+        verify(statsRepository).getInterviewerStats(anyString(), anyList(), eq(FIXED_TODAY));
     }
 
     @Test

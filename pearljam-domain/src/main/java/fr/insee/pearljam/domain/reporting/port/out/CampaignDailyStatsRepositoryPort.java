@@ -39,4 +39,12 @@ public interface CampaignDailyStatsRepositoryPort {
      * aggregated across the given organization units for the given day snapshot.
      */
     List<CampaignDailyStats> getCampaignsStats(List<String> campaignIds, List<String> ouIds, LocalDate day);
+
+    /**
+     * Returns one {@link CampaignDailyStats} per campaign (with id and label),
+     * aggregated across the given organization units for the given day snapshot for the given interviewer.
+     */
+    List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
+                                                             List<String> campaignIds,
+                                                             List<String> userOUIds, LocalDate day);
 }

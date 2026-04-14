@@ -10,4 +10,10 @@ import lombok.Setter;
 public class OrganizationUnitDailyStats extends AbstractDailyStats {
     private String ouId;
     private String ouLabel;
+    private long unaffectedCount;
+
+    @Override
+    public long getAllocatedStateCount() {
+        return super.getAllocatedStateCount() + unaffectedCount;
+    }
 }
