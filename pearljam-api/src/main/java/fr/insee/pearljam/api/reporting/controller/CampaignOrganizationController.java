@@ -28,7 +28,7 @@ public class CampaignOrganizationController {
     @Operation(summary = "Get campaign organization")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(path = API_CAMPAIGN_ORGANIZATION)
-    public CampaignOrganizationResponse getCampaign(
+    public CampaignOrganizationResponse getCampaignOrganization(
             @PathVariable @NotBlank String id,
             @CurrentSecurityContext(expression = "authentication.name") String userId)
             throws CampaignNotFoundException {
