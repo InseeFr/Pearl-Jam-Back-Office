@@ -26,6 +26,11 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
     }
 
     @Override
+    public List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId, List<String> campaignIds, List<String> userOUIds, LocalDate day) {
+        return List.of();
+    }
+
+    @Override
     public Optional<CampaignDailyStats> findCampaignStats(String campaignId, LocalDate day) {
         return campaignStats.stream()
                 .filter(s -> campaignId.equals(s.getCampaignId()))
