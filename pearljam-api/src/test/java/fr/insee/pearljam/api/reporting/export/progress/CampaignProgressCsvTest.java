@@ -26,20 +26,20 @@ class CampaignProgressCsvTest {
 
         assertThat(headers.values()).hasSize(14);
         assertThat(headers.values()).containsExactly(
-                "Enquête",
-                "Taux d'avancement",
-                "Confiées",
-                "Non commencées",
-                "En cours enquêteur",
-                "En attente de transmission enquêteur",
-                "À lire",
-                "Validées terminées",
-                "En préparation",
-                "Au moins un repérage ou un contact",
-                "RDV pris",
-                "Questionnaire démarré",
-                "Lettre avis",
-                "Relances"
+                ProgressCsvHeaders.CAMPAIGN_LABEL.getHeaderName(),
+                ProgressCsvHeaders.PROGRESS_RATE.getHeaderName(),
+                ProgressCsvHeaders.ALLOCATED.getHeaderName(),
+                ProgressCsvHeaders.NOT_STARTED.getHeaderName(),
+                ProgressCsvHeaders.IN_PROGRESS.getHeaderName(),
+                ProgressCsvHeaders.PENDING_TRANSMISSION.getHeaderName(),
+                ProgressCsvHeaders.TO_REVIEW.getHeaderName(),
+                ProgressCsvHeaders.VALIDATED.getHeaderName(),
+                ProgressCsvHeaders.PREPARING_CONTACT.getHeaderName(),
+                ProgressCsvHeaders.WITH_CONTACT.getHeaderName(),
+                ProgressCsvHeaders.WITH_APPOINTMENT.getHeaderName(),
+                ProgressCsvHeaders.STARTED.getHeaderName(),
+                ProgressCsvHeaders.NOTICE_LETTER.getHeaderName(),
+                ProgressCsvHeaders.REMINDER_LETTER.getHeaderName()
         );
     }
 
