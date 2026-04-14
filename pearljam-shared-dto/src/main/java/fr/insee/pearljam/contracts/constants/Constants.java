@@ -41,13 +41,16 @@ public class Constants {
   public static final String API_CAMPAIGNS_SU_CONTACTOUTCOMES = "/api/campaigns/survey-units/contact-outcomes";
 
   public static final String API_REPORTING_CAMPAIGNS_PROGRESS = "/api/reporting/campaigns/progress";
+  public static final String API_REPORTING_CAMPAIGNS_PROGRESS_EXPORT = "/api/reporting/campaigns/progress/export";
   public static final String API_REPORTING_CAMPAIGNS_COLLECTION = "/api/reporting/campaigns/collection";
   public static final String API_REPORTING_CAMPAIGNS_SUMMARY = "/api/reporting/campaigns/summary";
   public static final String API_REPORTING_INTERVIEWERS_PROGRESS = "/api/reporting/campaigns/{campaignId}/interviewers/progress";
+  public static final String API_REPORTING_INTERVIEWERS_PROGRESS_EXPORT = "/api/reporting/campaigns/{campaignId}/interviewers/progress/export";
   public static final String API_REPORTING_INTERVIEWERS_COLLECTION = "/api/reporting/campaigns/{campaignId}/interviewers/collection";
   public static final String API_REPORTING_INTERVIEWER_CAMPAIGNS_PROGRESS = "/api/reporting/interviewers/{interviewerId}/campaigns/progress";
   public static final String API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION = "/api/reporting/interviewers/{interviewerId}/campaigns/collection";
   public static final String API_REPORTING_OUS_PROGRESS = "/api/reporting/campaigns/{campaignId}/organization-units/progress";
+  public static final String API_REPORTING_OUS_PROGRESS_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/progress/export";
   public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
 
