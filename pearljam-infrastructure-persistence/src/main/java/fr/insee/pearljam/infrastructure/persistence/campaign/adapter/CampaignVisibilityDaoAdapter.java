@@ -15,48 +15,48 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
     private final EntityManager em;
 
     private static final String JPQL_CAMPAIGNS_WITH_VISIBILITY = """
-            SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
-                camp.id,
-                camp.label,
-                MIN(vi.managementStartDate),
-                MIN(vi.interviewerStartDate),
-                MIN(vi.identificationPhaseStartDate),
-                MIN(vi.collectionStartDate),
-                MAX(vi.collectionEndDate),
-                MAX(vi.endDate)
-            )
-            FROM CampaignDB camp
-            JOIN camp.visibilities vi
-            JOIN vi.organizationUnit ou
-            WHERE vi.managementStartDate <= :date
-            AND vi.endDate > :date
-            AND NOT EXISTS (
-                SELECT 1
-                FROM UserDB u
-                JOIN u.campaigns c2
-                WHERE LOWER(u.id) = LOWER(:userId)
-                AND c2 = camp
-            )
-            AND ou.id in (:ouIds)
-            GROUP BY camp.id, camp.label
-            """;
+        SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
+            camp.id,
+            camp.label,
+            MIN(vi.managementStartDate),
+            MIN(vi.interviewerStartDate),
+            MIN(vi.identificationPhaseStartDate),
+            MIN(vi.collectionStartDate),
+            MAX(vi.collectionEndDate),
+            MAX(vi.endDate)
+        )
+        FROM CampaignDB camp
+        JOIN camp.visibilities vi
+        JOIN vi.organizationUnit ou
+        WHERE vi.managementStartDate <= :date
+        AND vi.endDate > :date
+        AND NOT EXISTS (
+            SELECT 1
+            FROM UserDB u
+            JOIN u.campaigns c2
+            WHERE LOWER(u.id) = LOWER(:userId)
+            AND c2 = camp
+        )
+        AND ou.id in (:ouIds)
+        GROUP BY camp.id, camp.label
+        """;
 
     private static final String JPQL_CAMPAIGN_VISIBILITY = """
-            SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
-     		  	vi.campaign.id,
-                vi.campaign.label,
-     		    MIN(vi.managementStartDate),
-     		    MIN(vi.interviewerStartDate),
-     		    MIN(vi.identificationPhaseStartDate),
-     		    MIN(vi.collectionStartDate),
-     		    MAX(vi.collectionEndDate),
-     		    MAX(vi.endDate)
-     		)
-     		FROM VisibilityDB vi
-     		WHERE vi.campaign.id=:campaignId
-     		AND vi.organizationUnit.id IN (:orgUnitIds)
-     		GROUP BY vi.campaign.id, vi.campaign.label
-            """;
+        SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
+            vi.campaign.id,
+            vi.campaign.label,
+            MIN(vi.managementStartDate),
+            MIN(vi.interviewerStartDate),
+            MIN(vi.identificationPhaseStartDate),
+            MIN(vi.collectionStartDate),
+            MAX(vi.collectionEndDate),
+            MAX(vi.endDate)
+        )
+        FROM VisibilityDB vi
+        WHERE vi.campaign.id=:campaignId
+        AND vi.organizationUnit.id IN (:orgUnitIds)
+        GROUP BY vi.campaign.id, vi.campaign.label
+        """;
 
     @Override
     public List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(
