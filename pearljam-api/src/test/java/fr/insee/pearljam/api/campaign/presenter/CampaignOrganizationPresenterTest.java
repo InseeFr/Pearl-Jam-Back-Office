@@ -146,7 +146,7 @@ class CampaignOrganizationPresenterTest {
 
         CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
 
-        assertThat(result.surveyUnits().total()).isEqualTo(80L);
+        assertThat(result.surveyUnits().total()).isEqualTo(100L);
         assertThat(result.surveyUnits().notAffected()).isEqualTo(20L);
     }
 
@@ -193,7 +193,7 @@ class CampaignOrganizationPresenterTest {
             assertThat(response.phase()).isEqualTo(CampaignPhase.COLLECTION_IN_PROGRESS);
             assertThat(response.referents()).hasSize(1);
             assertThat(response.interviewers()).hasSize(1);
-            assertThat(response.surveyUnits().total()).isEqualTo(55L);
+            assertThat(response.surveyUnits().total()).isEqualTo(65L);
             assertThat(response.surveyUnits().notAffected()).isEqualTo(10L);
         });
     }
