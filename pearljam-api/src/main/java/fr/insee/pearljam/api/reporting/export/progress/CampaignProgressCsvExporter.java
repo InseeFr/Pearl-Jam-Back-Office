@@ -21,11 +21,6 @@ public class CampaignProgressCsvExporter extends AbstractCsvExporter {
     public ResponseEntity<byte[]> export(String userId, LocalDate date) {
         List<CampaignProgressResponse> data = campaignReportingPort.getCampaignsStats(userId, date, presenter);
         CampaignProgressCsv csv = CampaignProgressCsv.from(data);
-        return buildResponse(csv, userId, date);
-    }
-
-    @Override
-    protected String getExportLabel() {
-        return "Avancement_enquetes";
+        return buildResponse(csv, userId + "_Avancement_enquetes", date);
     }
 }

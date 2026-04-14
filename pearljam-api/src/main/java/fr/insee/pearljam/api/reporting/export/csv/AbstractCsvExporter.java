@@ -13,11 +13,9 @@ public abstract class AbstractCsvExporter {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
-    protected abstract String getExportLabel();
-
-    protected final ResponseEntity<byte[]> buildResponse(CsvExportable csvData, String userId, LocalDate date) {
+    protected final ResponseEntity<byte[]> buildResponse(CsvExportable csvData, String label, LocalDate date) {
         String csvContent = generateCsvContent(csvData);
-        String filename = generateFilename(userId, date);
+        String filename = generateFilename(label, date);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -41,7 +39,7 @@ public abstract class AbstractCsvExporter {
         }
     }
 
-    private String generateFilename(String userId, LocalDate date) {
-        return userId + "_" + getExportLabel() + "_" + date.format(DATE_FORMAT) + ".csv";
+    private String generateFilename(String label, LocalDate date) {
+        return label + "_" + date.format(DATE_FORMAT) + ".csv";
     }
 }

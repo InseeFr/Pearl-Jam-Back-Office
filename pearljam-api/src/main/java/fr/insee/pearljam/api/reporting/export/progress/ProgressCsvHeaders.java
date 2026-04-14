@@ -9,7 +9,8 @@ import java.util.List;
 public enum ProgressCsvHeaders {
     // specific headers
     CAMPAIGN_LABEL("Enquête"),
-    INTERVIEWER_LABEL("Enquêteur"),
+    INTERVIEWER_ID("Idep"),
+    INTERVIEWER_LABEL("Nom prénom"),
     ORGANIZATION_UNIT_LABEL("Site"),
 
     // common headers
