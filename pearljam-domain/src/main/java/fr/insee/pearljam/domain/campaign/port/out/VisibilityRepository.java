@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.port.out;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
@@ -9,14 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VisibilityRepository {
-
-    /**
-     *
-     * @param idCampaign campaign id
-     * @param ouIds organisational unit ids
-     * @return the campaign visibility
-     */
-    CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds);
 
     /**
      *

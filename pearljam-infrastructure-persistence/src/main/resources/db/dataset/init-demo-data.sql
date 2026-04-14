@@ -1202,3 +1202,6 @@ SELECT setval(
     COALESCE((SELECT MAX(id) FROM public.address), 0) + 1,
     false
 );
+
+INSERT INTO public.referent (campaign_id, first_name, last_name, role, phone_number) VALUES
+    ('SIMPSONS2020X00', 'John', 'Doe', 'PRIMARY', '0101010101');

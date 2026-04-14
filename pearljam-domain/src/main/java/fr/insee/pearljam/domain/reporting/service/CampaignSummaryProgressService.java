@@ -1,13 +1,13 @@
 package fr.insee.pearljam.domain.reporting.service;
 
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressPort;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignWithVisibility;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CampaignSummaryProgressService implements CampaignSummaryProgressPort {
 
-    private final CampaignRepository campaignRepository;
+    private final CampaignVisibilityPort campaignVisibilityPort;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
     private final UserService userService;
     private final DateService dateService;
@@ -43,15 +43,15 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .map(OrganizationUnitSummary::getId)
                 .toList();
 
-        List<CampaignWithVisibility> campaigns = campaignRepository
-                .findCampaignWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
+        List<CampaignVisibility> campaigns = campaignVisibilityPort
+                .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         if (campaigns.isEmpty()) {
             log.info("No campaign visible for {}", userId);
             return Collections.emptyList();
         }
 
-        List<String> campaignIds = campaigns.stream().map(CampaignWithVisibility::id).toList();
+        List<String> campaignIds = campaigns.stream().map(CampaignVisibility::id).toList();
 
         Map<String, CampaignDailyStats> statsByCampaign = campaignDailyStatsRepository
                 .getCampaignsStats(campaignIds, ouIds, day)

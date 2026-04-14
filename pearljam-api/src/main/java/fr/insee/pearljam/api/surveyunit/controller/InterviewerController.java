@@ -108,6 +108,7 @@ public class InterviewerController {
 	 * @return List of {@link InterviewerDB} if exists, {@link HttpStatus} NOT_FOUND,
 	 *         or {@link HttpStatus} FORBIDDEN
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get interviewers for target campaign")
 	@GetMapping(path = Constants.API_CAMPAIGN_ID_INTERVIEWERS)
 	public List<InterviewerDto> getInterviewersByCampaignForCurrentUser(@PathVariable(value = "id") String id)throws CampaignNotFoundException {

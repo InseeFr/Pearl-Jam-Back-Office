@@ -1,6 +1,6 @@
 package fr.insee.pearljam.contracts.campaign.dto;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
 import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 

@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.port.in;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
@@ -26,16 +25,6 @@ public interface VisibilityService {
      * @throws VisibilityHasInvalidDatesException if problems when updating
      */
     void updateVisibility(Visibility visibilityToUpdate) throws VisibilityNotFoundException, VisibilityHasInvalidDatesException;
-
-    /**
-     * Return a global visibility for a campaign, taking into account all visibilities for the campaign
-     * and define the period the campaign is opened by checking all the visibilities of the organisational units for
-     * this campaign
-     * @param idCampaign campaign id
-     * @param ouIds organisational unit ids
-     * @return the campaign visibility
-     */
-    CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds);
 
     /**
      *

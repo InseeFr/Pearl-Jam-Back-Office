@@ -1,6 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 
 import fr.insee.pearljam.domain.campaign.model.*;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.organizationunit.model.*;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
@@ -8,7 +9,7 @@ import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.Orga
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
@@ -45,6 +46,9 @@ class VisibilityDaoAdapterTest {
 
     @Autowired
     private VisibilityDaoAdapter visibilityDaoAdapter;
+
+    @Autowired
+    private CampaignVisibilityPort campaignVisibilityPort;
 
     private CampaignDB campaign;
     private OrganizationUnitDB organizationUnit;
@@ -119,7 +123,7 @@ class VisibilityDaoAdapterTest {
                 organizationUnit2.getId());
 
         // When
-        CampaignVisibility campaignVisibility = visibilityDaoAdapter.getCampaignVisibility(campaign.getId(), ouIds);
+        CampaignVisibility campaignVisibility = campaignVisibilityPort.getCampaignVisibility(campaign.getId(), ouIds);
 
         // Then
         assertThat(campaignVisibility).isNotNull();

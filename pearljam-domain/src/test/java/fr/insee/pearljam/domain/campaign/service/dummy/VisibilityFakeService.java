@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
@@ -47,11 +46,6 @@ public class VisibilityFakeService implements VisibilityService {
                 .findFirst()
                 .orElseThrow(VisibilityNotFoundException::new);
         visibilityUpdated = visibilityToUpdate;
-    }
-
-    @Override
-    public CampaignVisibility getCampaignVisibility(String idCampaign, List<String> ouIds) {
-        return null;
     }
 
     @Override

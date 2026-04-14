@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
@@ -17,12 +16,6 @@ import java.util.Optional;
 @Repository
 public class VisibilityDaoAdapter implements VisibilityRepository {
     private final VisibilityJpaRepository crudRepository;
-
-    @Override
-    public CampaignVisibility getCampaignVisibility(String campaignId, List<String> ouIds) {
-        return crudRepository
-                .getCampaignVisibility(campaignId, ouIds);
-    }
 
     @Override
     public Optional<Visibility> findVisibility(String campaignId, String organizationalUnitId) {
