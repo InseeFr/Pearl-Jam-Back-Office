@@ -56,7 +56,7 @@ class CampaignProgressExportControllerTest {
                 .andExpect(header().string("Content-Disposition",
                         org.hamcrest.Matchers.containsString("Avancement_enquetes")))
                 .andExpect(header().string("Content-Disposition",
-                        org.hamcrest.Matchers.containsString("2025-06-10.csv")));
+                        org.hamcrest.Matchers.containsString("10062025.csv")));
     }
 
     @Test

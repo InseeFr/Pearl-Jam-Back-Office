@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public abstract class AbstractCsvExporter {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
     protected abstract String getExportLabel();
 
