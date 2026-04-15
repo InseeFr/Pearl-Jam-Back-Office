@@ -190,7 +190,7 @@ class CampaignOrganizationPresenterTest {
         assertThat(result).satisfies(response -> {
             assertThat(response.campaignId()).isEqualTo("camp-1");
             assertThat(response.campaignLabel()).isEqualTo("Test Campaign");
-            assertThat(response.email()).isEqualTo("test@insee.fr");
+            assertThat(response.campaignEmail()).isEqualTo("test@insee.fr");
             assertThat(response.phase()).isEqualTo(CampaignPhase.COLLECTION_IN_PROGRESS);
             assertThat(response.referents()).hasSize(1);
             assertThat(response.interviewers()).hasSize(1);
