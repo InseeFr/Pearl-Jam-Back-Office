@@ -40,3 +40,4 @@ build/
 
 *.DS_Store
 /.apt_generated_tests/
+/node_modules/
