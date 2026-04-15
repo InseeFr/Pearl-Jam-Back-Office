@@ -18,6 +18,7 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
         SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
             camp.id,
             camp.label,
+            camp.email,
             MIN(vi.managementStartDate),
             MIN(vi.interviewerStartDate),
             MIN(vi.identificationPhaseStartDate),
@@ -45,6 +46,7 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
         SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
             vi.campaign.id,
             vi.campaign.label,
+            vi.campaign.email,
             MIN(vi.managementStartDate),
             MIN(vi.interviewerStartDate),
             MIN(vi.identificationPhaseStartDate),

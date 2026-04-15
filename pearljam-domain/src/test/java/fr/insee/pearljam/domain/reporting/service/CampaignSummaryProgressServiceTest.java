@@ -65,8 +65,10 @@ class CampaignSummaryProgressServiceTest {
     @Test
     void shouldDefaultToToday_whenDayIsNull() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility camp = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
@@ -90,8 +92,10 @@ class CampaignSummaryProgressServiceTest {
     void shouldUseProvidedDay_whenDayIsInThePast() {
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility camp = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
@@ -124,8 +128,10 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldReturnOneCampaign_withCorrectMappingForDatesAndPhase() {
-        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One", 900_000L,
-                950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility camp = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
@@ -148,8 +154,10 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldUseZeroCounts_whenNoSnapshotForCampaign() {
-        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility camp = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
@@ -162,10 +170,14 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldReturnMultipleCampaigns() {
-        CampaignVisibility c1 = new CampaignVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
-        CampaignVisibility c2 = new CampaignVisibility("CAMP2", "Campaign Two",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility c1 = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility c2 = new CampaignVisibility(
+                "CAMP2", "Campaign Two", "camp2@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
@@ -183,8 +195,10 @@ class CampaignSummaryProgressServiceTest {
 
     @Test
     void shouldMapDailyStatsToSurveyUnitsCorrectly() {
-        CampaignVisibility camp = new CampaignVisibility("CAMP1", "Campaign One",
-                900_000L, 950_000L, 1_000_000L, 1_050_000L, 1_100_000L, 1_150_000L);
+        CampaignVisibility camp = new CampaignVisibility(
+                "CAMP1", "Campaign One", "camp1@insee.fr",
+                900_000L, 950_000L, 1_000_000L,
+                1_050_000L, 1_100_000L, 1_150_000L);
         CampaignDailyStats stats = new CampaignDailyStats();
         stats.setCampaignId("CAMP1");
         stats.setCampaignLabel("Campaign One");

@@ -23,6 +23,7 @@ public class CampaignOrganizationPresenter implements CampaignOrganizationStatsP
                 return new CampaignOrganizationResponse(
                         campaignVisibility.id(),
                         campaignVisibility.label(),
+                        campaignVisibility.email(),
                         campaignVisibility.identificationPhaseStartDate(),
                         campaignVisibility.collectionStartDate(),
                         campaignVisibility.collectionEndDate(),
