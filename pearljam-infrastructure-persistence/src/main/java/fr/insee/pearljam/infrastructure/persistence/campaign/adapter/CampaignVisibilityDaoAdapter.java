@@ -39,7 +39,7 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
             AND c2 = camp
         )
         AND ou.id in (:ouIds)
-        GROUP BY camp.id, camp.label
+        GROUP BY camp.id, camp.label, camp.email
         """;
 
     private static final String JPQL_CAMPAIGN_VISIBILITY = """
@@ -57,7 +57,7 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
         FROM VisibilityDB vi
         WHERE vi.campaign.id=:campaignId
         AND vi.organizationUnit.id IN (:orgUnitIds)
-        GROUP BY vi.campaign.id, vi.campaign.label
+        GROUP BY vi.campaign.id, vi.campaign.label, vi.campaign.email
         """;
 
     @Override
