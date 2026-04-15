@@ -62,7 +62,7 @@ class CampaignOrganizationPresenterTest {
     @DisplayName("should calculate INITIAL_ASSIGNMENT phase when before collection start")
     void shouldCalculateInitialAssignmentPhase() {
         CampaignVisibility campaign = new CampaignVisibility(
-                "camp-1", "Test Campaign",
+                "camp-1", "Test Campaign", "test@insee.fr",
                 MGMT_START, INTERV_START, IDENT_START,
                 NOW_MS + 1000L,  // collection not started yet
                 COLL_END, END_DATE);
@@ -77,7 +77,7 @@ class CampaignOrganizationPresenterTest {
     @DisplayName("should calculate COLLECTION_COMPLETED phase when after collection end")
     void shouldCalculateCollectionCompletedPhase() {
         CampaignVisibility campaign = new CampaignVisibility(
-                "camp-1", "Test Campaign",
+                "camp-1", "Test Campaign", "test@insee.fr",
                 MGMT_START, INTERV_START, IDENT_START,
                 NOW_MS - 3000L,  // collection started
                 NOW_MS - 1000L,  // collection ended
@@ -190,6 +190,7 @@ class CampaignOrganizationPresenterTest {
         assertThat(result).satisfies(response -> {
             assertThat(response.campaignId()).isEqualTo("camp-1");
             assertThat(response.campaignLabel()).isEqualTo("Test Campaign");
+            assertThat(response.email()).isEqualTo("test@insee.fr");
             assertThat(response.phase()).isEqualTo(CampaignPhase.COLLECTION_IN_PROGRESS);
             assertThat(response.referents()).hasSize(1);
             assertThat(response.interviewers()).hasSize(1);
@@ -200,7 +201,7 @@ class CampaignOrganizationPresenterTest {
 
     private CampaignVisibility createCampaignVisibility() {
         return new CampaignVisibility(
-                "camp-1", "Test Campaign",
+                "camp-1", "Test Campaign", "test@insee.fr",
                 MGMT_START, INTERV_START, IDENT_START,
                 COLL_START, COLL_END, END_DATE);
     }
