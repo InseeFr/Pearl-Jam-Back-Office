@@ -38,7 +38,13 @@
 
 ### Moyenne Priorite
 
-- [ ] Tester un workflow complet de bout en bout et noter les points de friction
+- [x] Tester un workflow complet de bout en bout et noter les points de friction
+      (commit `33e4d2c4` — workflow-refactoring sur "REA" dans MessageServiceImpl,
+      5 frictions hautes/moyennes corrigees, 2 reportees ci-dessous)
+- [ ] Renumeroter le catalogue de refactorings dans `skills/refactoring.md`
+      (manque R2 entre R1 et R3) — friction basse detectee au test workflow
+- [ ] Reevaluer la limite globale de 15 interventions dans `coordination.md`
+      (un refactoring multi-modules atteint ~20 interventions) — friction basse
 - [ ] Ajouter un skill `sonar-rules.md` avec les exceptions specifiques au projet
       (pas une copie de la doc SonarCloud — uniquement les regles custom et faux positifs)
 - [x] Enrichir `skills/clean-code.md` avec des exemples specifiques Pearl Jam
