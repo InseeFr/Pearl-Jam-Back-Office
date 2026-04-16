@@ -28,16 +28,16 @@ Pour chaque itération du plan, vérifier :
 ## Format de Réponse
 
 ```
-🔍 REVUE DU PLAN DE REFACTORING
+REVUE DU PLAN DE REFACTORING
 
 ### Itération 1 — [Nom]
-- ✅ Pertinence : [OK | À revoir]
-- ⚠️ Risque réévalué : [Faible → Moyen] — Raison : [explication]
-- 💡 Suggestion : [amélioration proposée]
+- Pertinence : [OK | À revoir]
+- Risque réévalué : [Faible → Moyen] — Raison : [explication]
+- Suggestion : [amélioration proposée]
 
 ### Itération 2 — [Nom]
-- ❌ Rejet : [raison]
-- 🔄 Alternative proposée : [description]
+- Rejet : [raison]
+- Alternative proposée : [description]
 
 ---
 

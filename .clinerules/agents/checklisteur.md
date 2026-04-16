@@ -26,19 +26,19 @@ Tu découpes les demandes utilisateur en tâches atomiques, séquencées, et tra
 Le fichier `checklist.md` doit toujours suivre ce template :
 
 ```markdown
-# 📋 Checklist — [Titre de la feature/tâche]
+# Checklist — [Titre de la feature/tâche]
 
-## 📅 Date : [JJ/MM/AAAA]
-## 🎯 Objectif : [Description concise]
-## 📐 Architecture : [Modules impactés]
+## Date : [JJ/MM/AAAA]
+## Objectif : [Description concise]
+## Architecture : [Modules impactés]
 
-## 🔍 ANALYSE INITIALE (LeCheckListeur)
+## ANALYSE INITIALE (LeCheckListeur)
 
 - [x] Analyser le code existant lié à la demande
 - [x] Identifier les couches impactées
 - [x] Créer la checklist
 
-## 🛠️ IMPLÉMENTATION (LeCodeur)
+## IMPLEMENTATION (LeCodeur)
 
 ### 1. [Nom de la sous-tâche — Couche Domain]
 - [ ] [Action précise avec fichier cible]
@@ -50,14 +50,14 @@ Le fichier `checklist.md` doit toujours suivre ce template :
 ### 3. [Nom de la sous-tâche — Couche API]
 - [ ] [Action précise avec fichier cible]
 
-## ✅ VALIDATION (LeSuperviseurDeTache)
+## VALIDATION (LeSuperviseurDeTache)
 
 - [ ] Tous les tests existants passent (0 régression)
 - [ ] Build Maven complet OK
 - [ ] Respect architecture hexagonale vérifié
 - [ ] Checklist complète
 
-## 🎯 LIVRABLES
+## LIVRABLES
 
 - [ ] [Fichier 1 créé/modifié]
 - [ ] [Fichier 2 créé/modifié]
@@ -75,20 +75,20 @@ Le fichier `checklist.md` doit toujours suivre ce template :
 ### Demande : "Ajouter un endpoint GET /api/campaigns/{id}/interviewers"
 
 ```markdown
-# 📋 Checklist — Endpoint liste des enquêteurs par campagne
+# Checklist — Endpoint liste des enquêteurs par campagne
 
-## 📅 Date : 15/04/2026
-## 🎯 Objectif : Exposer la liste des enquêteurs affectés à une campagne
-## 📐 Architecture : pearljam-domain, pearljam-api, pearljam-infrastructure-persistence
+## Date : 15/04/2026
+## Objectif : Exposer la liste des enquêteurs affectés à une campagne
+## Architecture : pearljam-domain, pearljam-api, pearljam-infrastructure-persistence
 
-## 🔍 ANALYSE INITIALE (LeCheckListeur)
+## ANALYSE INITIALE (LeCheckListeur)
 
 - [x] Vérifier l'existence de InterviewerRepository (port out) → existe
 - [x] Vérifier l'existence d'un service de campagne → CampaignService existe
 - [x] Identifier le read model nécessaire → à créer
 - [x] Créer la checklist
 
-## 🛠️ IMPLÉMENTATION (LeCodeur)
+## IMPLEMENTATION (LeCodeur)
 
 ### 1. Read Model — pearljam-domain (couche Domain)
 - [ ] Créer `CampaignInterviewerSummary` record dans `domain/campaign/readmodel/`
@@ -121,14 +121,14 @@ Le fichier `checklist.md` doit toujours suivre ce template :
 ### 7. DTO de Réponse — pearljam-api
 - [ ] Créer `CampaignInterviewerResponse` record
 
-## ✅ VALIDATION (LeSuperviseurDeTache)
+## VALIDATION (LeSuperviseurDeTache)
 
 - [ ] Tests existants passent
 - [ ] Build Maven OK
 - [ ] Architecture hexagonale respectée (pas d'import infrastructure dans domain)
 - [ ] Checklist complète
 
-## 🎯 LIVRABLES
+## LIVRABLES
 
 - [ ] CampaignInterviewerSummary.java
 - [ ] CampaignRepository mis à jour

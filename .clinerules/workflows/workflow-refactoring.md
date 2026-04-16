@@ -40,8 +40,8 @@ L'utilisateur tape `workflow-refactoring` suivi du périmètre à analyser
 
 ```
 ---
-🤖 LeRefactoAnalyste prend la main — Étape 1 du workflow-refactoring
-📋 Objectif : Analyser la qualité et proposer un plan d'amélioration
+[Agent] LeRefactoAnalyste prend la main — Étape 1 du workflow-refactoring
+Objectif : Analyser la qualité et proposer un plan d'amélioration
 ---
 ```
 
@@ -55,8 +55,8 @@ Actions :
 
 ```
 ---
-🤖 LeRefactoAnalysteChallenger prend la main — Étape 2 du workflow-refactoring
-📋 Objectif : Challenger le plan pour une qualité optimale
+[Agent] LeRefactoAnalysteChallenger prend la main — Étape 2 du workflow-refactoring
+Objectif : Challenger le plan pour une qualité optimale
 ---
 ```
 
@@ -74,8 +74,8 @@ Actions :
 
 ```
 ---
-🤖 LeCheckListeur prend la main — Étape 3 du workflow-refactoring
-📋 Objectif : Transformer le plan validé en checklist
+[Agent] LeCheckListeur prend la main — Étape 3 du workflow-refactoring
+Objectif : Transformer le plan validé en checklist
 ---
 ```
 
@@ -96,24 +96,49 @@ Le refactoring suit ensuite la même logique que `workflow-coding` :
 ```
 Utilisateur : workflow-refactoring StateServiceImpl.java
 
-🤖 LeRefactoAnalyste :
-  📊 Note : 4/10
-  🔴 @Service dans le domaine
-  🔴 Import d'entité JPA
-  🟡 Méthode de 76 lignes
+[Agent] LeRefactoAnalyste :
+  Note : 4/10
+  @Service dans le domaine
+  Import d'entité JPA
+  Méthode de 76 lignes
   Plan : 3 itérations
 
-🤖 LeRefactoAnalysteChallenger :
-  ✅ Itération 1 validée
-  ⚠️ Itération 2 : risque sous-estimé → réévalué à Élevé
-  ✅ Itération 3 validée avec modification
+[Agent] LeRefactoAnalysteChallenger :
+  Itération 1 validée
+  Itération 2 : risque sous-estimé → réévalué à Élevé
+  Itération 3 validée avec modification
 
-🤖 LeCheckListeur :
-  📋 Checklist créée avec 12 tâches sur 3 itérations
+[Agent] LeCheckListeur :
+  Checklist créée avec 12 tâches sur 3 itérations
 
 Utilisateur : OK, go
 
-🤖 LeCodeur :
+[Agent] LeCodeur :
   Implémentation itération 1...
   [... boucle standard workflow-coding ...]
 ```
+
+## Limites d'Itération
+
+| Boucle | Max | Action si dépassé |
+|---|---|---|
+| RefactoAnalyste → RefactoChallenger → RefactoAnalyste (plan rejeté) | 2 allers-retours | Escalade utilisateur |
+| Boucles workflow-coding (Réparateur, Build, Checklist) | Voir `workflow-coding.md` | Idem |
+
+Quand une limite est atteinte, l'agent courant produit un **rapport de blocage** :
+
+```
+BLOCAGE — [NomAgent] — Limite atteinte ([N] tentatives)
+
+Contexte : [ce qui était tenté]
+Tentatives :
+  1. [action] → [résultat]
+  2. [action] → [résultat]
+
+Cause probable : [diagnostic]
+Suggestion : [piste pour l'utilisateur]
+
+En attente d'intervention utilisateur.
+```
+
+L'orchestrateur présente ce rapport à l'utilisateur. **Aucun agent ne continue tant que l'utilisateur n'a pas décidé.**

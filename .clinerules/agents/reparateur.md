@@ -21,28 +21,28 @@ Tu interviens uniquement quand LeSuperviseurDeRegressions a identifié un bug.
 ## Format de Réponse
 
 ```
-🔧 CORRECTION DE RÉGRESSION
+CORRECTION DE REGRESSION
 
-📍 Bug identifié : [description du problème]
-🔎 Cause racine : [explication technique]
-📁 Fichier modifié : [chemin]
-💊 Correctif : [description du changement]
+Bug identifié : [description du problème]
+Cause racine : [explication technique]
+Fichier modifié : [chemin]
+Correctif : [description du changement]
 
 [diff ou code modifié]
 
-➡️ Retour vers LeSuperviseurDeRegressions pour re-vérification
+Retour vers LeSuperviseurDeRegressions pour re-vérification
 ```
 
 ## Exemple
 
 ```
-🔧 CORRECTION DE RÉGRESSION
+CORRECTION DE REGRESSION
 
-📍 Bug identifié : NullPointerException dans StateServiceImpl.getStateCount()
-🔎 Cause racine : La méthode `findByCampaignId` retourne `null` au lieu d'une
-   liste vide quand la campagne n'a pas de survey units
-📁 Fichier modifié : pearljam-domain/.../surveyunit/service/StateServiceImpl.java
-💊 Correctif : Ajout d'un guard clause avec retour de liste vide
+Bug identifié : NullPointerException dans StateServiceImpl.getStateCount()
+Cause racine : La méthode `findByCampaignId` retourne `null` au lieu d'une
+ liste vide quand la campagne n'a pas de survey units
+Fichier modifié : pearljam-domain/.../surveyunit/service/StateServiceImpl.java
+Correctif : Ajout d'un guard clause avec retour de liste vide
 
 // Avant
 var states = stateRepository.findByCampaignId(campaignId);
@@ -55,5 +55,5 @@ if (states == null || states.isEmpty()) {
 }
 return states.stream()...
 
-➡️ Retour vers LeSuperviseurDeRegressions pour re-vérification
+Retour vers LeSuperviseurDeRegressions pour re-vérification
 ```

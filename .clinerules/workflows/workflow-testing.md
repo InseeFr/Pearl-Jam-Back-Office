@@ -48,8 +48,8 @@ L'utilisateur tape `workflow-testing` ou transition depuis `workflow-coding`.
 
 ```
 ---
-🤖 LeCheckListeur prend la main — Étape 1 du workflow-testing
-📋 Objectif : Identifier les tests nécessaires pour couverture 100%
+[Agent] LeCheckListeur prend la main — Étape 1 du workflow-testing
+Objectif : Identifier les tests nécessaires pour couverture 100%
 ---
 ```
 
@@ -64,7 +64,7 @@ Actions :
 
 **Section ajoutée à la checklist :**
 ```markdown
-## 🧪 TESTS (LeTesteur)
+## TESTS (LeTesteur)
 
 ### 1. Tests Domain — [ServiceName]Test
 - [ ] Cas nominal : [description]
@@ -86,8 +86,8 @@ Actions :
 
 ```
 ---
-🤖 LeTesteur prend la main — Étape 2 du workflow-testing
-📋 Objectif : Écrire les tests listés dans la checklist
+[Agent] LeTesteur prend la main — Étape 2 du workflow-testing
+Objectif : Écrire les tests listés dans la checklist
 ---
 ```
 
@@ -101,8 +101,8 @@ Actions :
 
 ```
 ---
-🤖 LeSuperviseurDeTache prend la main — Étape 3 du workflow-testing
-📋 Objectif : Exécuter les tests et vérifier la complétion
+[Agent] LeSuperviseurDeTache prend la main — Étape 3 du workflow-testing
+Objectif : Exécuter les tests et vérifier la complétion
 ---
 ```
 
@@ -115,15 +115,40 @@ Actions :
 
 **Rapport final :**
 ```
-✅ RAPPORT DE TESTS — [Date]
+RAPPORT DE TESTS — [Date]
 
 Tests écrits : [N]
 Tests passent : [N/N]
 Couverture estimée : [%]
 
-📁 Fichiers de test créés :
+Fichiers de test créés :
 - [fichier 1]
 - [fichier 2]
 
-🎉 Workflow-testing terminé avec succès.
+Workflow-testing terminé avec succès.
 ```
+
+## Limites d'Itération
+
+| Boucle | Max | Action si dépassé |
+|---|---|---|
+| Testeur → SuperviseurDeTache → Testeur (test KO) | 5 tours | Escalade utilisateur |
+| Testeur → SuperviseurDeTache → Testeur (tests manquants) | 2 tours | Escalade utilisateur |
+
+Quand une limite est atteinte, l'agent courant produit un **rapport de blocage** :
+
+```
+BLOCAGE — [NomAgent] — Limite atteinte ([N] tentatives)
+
+Contexte : [ce qui était tenté]
+Tentatives :
+  1. [action] → [résultat]
+  2. [action] → [résultat]
+
+Cause probable : [diagnostic]
+Suggestion : [piste pour l'utilisateur]
+
+En attente d'intervention utilisateur.
+```
+
+L'orchestrateur présente ce rapport à l'utilisateur. **Aucun agent ne continue tant que l'utilisateur n'a pas décidé.**

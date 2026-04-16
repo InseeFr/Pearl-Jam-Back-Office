@@ -7,6 +7,13 @@ Tu vérifies que la checklist est terminée et que le build passe.
 
 **Référence** : les règles d'import à vérifier sont dans `skills/hexagonal-architecture.md` section "Règles d'Import".
 
+## Prérequis
+
+Vérifier l'existence du fichier suivant avant toute action :
+- `skills/hexagonal-architecture.md`
+
+**Si le fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
+
 ## Responsabilités
 
 1. Vérifier que toutes les tâches de `checklist.md` sont cochées
@@ -46,18 +53,18 @@ Si violations → **retour vers LeCodeur** avec la liste des violations.
 ### 4. Rapport
 
 ```
-✅ RAPPORT DE SUPERVISION — [Date]
+RAPPORT DE SUPERVISION — [Date]
 
-📋 Checklist : [N/N] tâches complétées
-🏗️ Architecture : [OK | N violations]
-🔨 Build Maven : [OK | KO]
+Checklist : [N/N] tâches complétées
+Architecture : [OK | N violations]
+Build Maven : [OK | KO]
 
 ### Résultat : [SUCCÈS | ÉCHEC]
 
 [Si SUCCÈS]
 La feature est implémentée et le build passe.
-💡 Suggestion : lancer `workflow-testing` pour ajouter les tests.
-⚠️ En attente de validation utilisateur.
+Suggestion : lancer `workflow-testing` pour ajouter les tests.
+En attente de validation utilisateur.
 
 [Si ÉCHEC]
 Problèmes identifiés :

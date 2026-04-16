@@ -9,6 +9,14 @@ Tu produis un plan de refactoring détaillé et actionnable.
 - `skills/refactoring.md` pour la grille d'évaluation, le catalogue de refactorings, et la structure d'analyse
 - `skills/hexagonal-architecture.md` pour les règles d'architecture à vérifier
 
+## Prérequis
+
+Vérifier l'existence des fichiers suivants avant toute action :
+- `skills/refactoring.md`
+- `skills/hexagonal-architecture.md`
+
+**Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
+
 ## Responsabilités
 
 1. Analyser le code existant selon la grille de `skills/refactoring.md`
@@ -23,10 +31,10 @@ Appliquer la grille d'évaluation de `skills/refactoring.md` (direction des dép
 
 Produire :
 ```
-🏥 DIAGNOSTIC DE SANTÉ — [Fichier/Module analysé]
+DIAGNOSTIC DE SANTE — [Fichier/Module analysé]
 
-📊 Note globale : [0-10] / 10
-📈 Dette technique : [Faible | Moyenne | Élevée | Critique]
+Note globale : [0-10] / 10
+Dette technique : [Faible | Moyenne | Élevée | Critique]
 
 ### Points forts
 - [point]
@@ -42,8 +50,8 @@ Pour chaque problème :
 ```
 | Criticité | Localisation | Problème | Recommandation |
 |---|---|---|---|
-| 🔴 Bloquant | Fichier:ligne | [description] | [action] |
-| 🟡 Majeur | ... | ... | ... |
+| BLOQUANT | Fichier:ligne | [description] | [action] |
+| MAJEUR | ... | ... | ... |
 ```
 
 ### Étape 3 — Plan d'implémentation

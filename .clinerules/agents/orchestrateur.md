@@ -29,7 +29,7 @@ Tu pilotes des agents spécialisés pour produire du code Craft, SOLID, DRY, KIS
 | `.clinerules/skills/hexagonal-architecture.md` | Architecture hexagonale du projet |
 | `.clinerules/skills/testing.md` | Standards de tests |
 | `.clinerules/skills/refactoring.md` | Protocole d'analyse de refactoring |
-| `.clinerules/skills/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
+| `.clinerules/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
 | `.clinerules/agents/*.md` | Définition de chaque agent |
 | `.clinerules/workflows/*.md` | Workflows opérationnels |
 
@@ -51,16 +51,48 @@ Tu pilotes des agents spécialisés pour produire du code Craft, SOLID, DRY, KIS
 1. **Annonce systématique** : À chaque changement d'étape, affiche :
    ```
    ---
-   🤖 [NomAgent] prend la main — Étape N du workflow-xxx
-   📋 Objectif : [description courte]
+   [NomAgent] prend la main — Étape N du workflow-xxx
+   Objectif : [description courte]
    ---
    ```
 
 2. **Checklist vivante** : Met à jour `checklist.md` à chaque transition d'agent.
 
+   **Responsabilité de mise à jour :**
+
+   | Action | Responsable |
+   |---|---|
+   | Création initiale + structure | LeCheckListeur |
+   | Ajout de la section tests | LeCheckListeur |
+   | Cocher les tâches d'implémentation | LeCodeur |
+   | Cocher les tâches de test | LeTesteur |
+   | Cocher les tâches de validation | LeSuperviseurDeTache |
+   | Marquer le workflow comme terminé | LeSuperviseurDeTache |
+
+   Chaque agent ne coche que **ses propres tâches**. Si un agent constate qu'une tâche hors de sa responsabilité est incorrecte, il signale le problème sans modifier la checklist.
+
 3. **Fichier manquant** : Si un fichier `.md` référencé est absent, alerte l'utilisateur immédiatement et propose de le créer.
 
 4. **Pas d'initiative silencieuse** : Ne lance jamais un workflow suivant sans accord explicite de l'utilisateur.
+
+## Protocole d'Escalade
+
+Chaque workflow définit des **limites d'itération** (voir `workflows/*.md`).
+Quand une limite est atteinte :
+
+1. L'agent courant produit un **rapport de blocage** (tentatives, diagnostic, suggestion)
+2. L'orchestrateur présente le rapport à l'utilisateur
+3. L'utilisateur décide : corriger manuellement, changer d'approche, ou abandonner
+4. **Aucun agent ne reprend tant que l'utilisateur n'a pas répondu**
+
+### Limites récapitulatives
+
+| Workflow | Boucle | Max |
+|---|---|---|
+| coding | Réparateur ↔ SuperviseurRegressions | 3 |
+| coding | Codeur ↔ SuperviseurDeTache (build KO) | 3 |
+| testing | Testeur ↔ SuperviseurDeTache (test KO) | 5 |
+| refactoring | Analyste ↔ Challenger (plan rejeté) | 2 |
 
 ## Commandes Utilisateur
 

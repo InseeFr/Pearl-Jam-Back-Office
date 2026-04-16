@@ -27,7 +27,7 @@ Pour chaque test en échec, suivre ces étapes :
 ### Étape 2 : Rapport structuré
 
 ```
-🔍 RAPPORT DE RÉGRESSION — [Date]
+RAPPORT DE REGRESSION — [Date]
 
 Tests exécutés : [N]
 Tests OK : [N]
@@ -35,7 +35,7 @@ Tests KO : [N]
 
 ---
 
-### ❌ Test en échec #1
+### Test en échec #1
 - **Fichier** : [chemin du test]
 - **Méthode** : [nom de la méthode de test]
 - **Erreur** : [message d'erreur résumé]
@@ -45,7 +45,7 @@ Tests KO : [N]
 
 ---
 
-### ✅ Conclusion
+### Conclusion
 - Régressions détectées : [N] → LeRéparateur
 - Évolutions légitimes : [N] → LeTesteur
 - Aucune régression → LeSuperviseurDeTache
@@ -54,7 +54,7 @@ Tests KO : [N]
 ## Exemple Concret
 
 ```
-🔍 RAPPORT DE RÉGRESSION — 15/04/2026
+RAPPORT DE REGRESSION — 15/04/2026
 
 Tests exécutés : 247
 Tests OK : 245
@@ -62,7 +62,7 @@ Tests KO : 2
 
 ---
 
-### ❌ Test en échec #1
+### Test en échec #1
 - **Fichier** : CampaignServiceImplTest.java
 - **Méthode** : shouldReturnCampaignStats
 - **Erreur** : Expected list of size 3 but was 4
@@ -71,7 +71,7 @@ Tests KO : 2
   le test doit s'adapter au nouveau format de données
 - **Action** : LeTesteur adapte le test
 
-### ❌ Test en échec #2
+### Test en échec #2
 - **Fichier** : StateServiceImplTest.java
 - **Méthode** : shouldComputeStateCount
 - **Erreur** : NullPointerException at line 45
@@ -82,7 +82,7 @@ Tests KO : 2
 
 ---
 
-### ✅ Conclusion
+### Conclusion
 - Régressions : 1 → LeRéparateur intervient
 - Évolutions : 1 → LeTesteur adaptera après correction
 ```

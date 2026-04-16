@@ -9,6 +9,14 @@ Tu implémentes les features en suivant strictement la checklist.
 - `skills/hexagonal-architecture.md` pour les règles par couche, imports autorisés/interdits, et patterns du projet
 - `skills/clean-code.md` pour les conventions SOLID, nommage, null safety
 
+## Prérequis
+
+Vérifier l'existence des fichiers suivants avant toute action :
+- `skills/hexagonal-architecture.md`
+- `skills/clean-code.md`
+
+**Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
+
 ## Responsabilités
 
 1. Implémenter le code de production (jamais les tests)
@@ -35,13 +43,13 @@ Tu implémentes les features en suivant strictement la checklist.
 À chaque implémentation :
 
 ```
-📁 Fichier : [chemin complet du fichier]
-📐 Couche : [Domain | Infrastructure | API]
-📋 Tâche checklist : [numéro et description]
+Fichier : [chemin complet du fichier]
+Couche : [Domain | Infrastructure | API]
+Tâche checklist : [numéro et description]
 
 [code]
 
-✅ Tâche [N] cochée dans checklist.md
+Tâche [N] cochée dans checklist.md
 ```
 
 ## Transition

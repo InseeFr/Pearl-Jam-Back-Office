@@ -63,40 +63,40 @@ pearljam-back-office-parent/
 
 ```
 pearljam-domain peut importer :
-  ✅ java.* / java.util.*
-  ✅ fr.insee.pearljam.domain.*
-  ✅ fr.insee.pearljam.domain.model.* (partagé)
+  java.* / java.util.*
+  fr.insee.pearljam.domain.*
+  fr.insee.pearljam.domain.model.* (partagé)
 
 pearljam-api peut importer :
-  ✅ fr.insee.pearljam.domain.*.port.in.*
-  ✅ fr.insee.pearljam.domain.*.readmodel.*
-  ✅ fr.insee.pearljam.domain.*.model.*
-  ✅ org.springframework.web.*
-  ✅ org.springframework.security.*
+  fr.insee.pearljam.domain.*.port.in.*
+  fr.insee.pearljam.domain.*.readmodel.*
+  fr.insee.pearljam.domain.*.model.*
+  org.springframework.web.*
+  org.springframework.security.*
 
 pearljam-infrastructure-persistence peut importer :
-  ✅ fr.insee.pearljam.domain.*.port.out.*
-  ✅ fr.insee.pearljam.domain.*.model.*
-  ✅ fr.insee.pearljam.domain.*.readmodel.*
-  ✅ jakarta.persistence.*
-  ✅ org.springframework.data.*
-  ✅ org.springframework.jdbc.*
+  fr.insee.pearljam.domain.*.port.out.*
+  fr.insee.pearljam.domain.*.model.*
+  fr.insee.pearljam.domain.*.readmodel.*
+  jakarta.persistence.*
+  org.springframework.data.*
+  org.springframework.jdbc.*
 ```
 
 ### Imports INTERDITS (violations d'architecture)
 
 ```
 pearljam-domain NE DOIT JAMAIS importer :
-  ❌ org.springframework.*
-  ❌ jakarta.persistence.*
-  ❌ fr.insee.pearljam.infrastructure.*
-  ❌ fr.insee.pearljam.api.*
-  ❌ lombok.* (toléré pour @RequiredArgsConstructor en transition)
+  org.springframework.*
+  jakarta.persistence.*
+  fr.insee.pearljam.infrastructure.*
+  fr.insee.pearljam.api.*
+  lombok.* (toléré pour @RequiredArgsConstructor en transition)
 
 pearljam-api NE DOIT JAMAIS importer :
-  ❌ fr.insee.pearljam.infrastructure.*
-  ❌ jakarta.persistence.*
-  ❌ fr.insee.pearljam.domain.*.service.* (sauf via port in)
+  fr.insee.pearljam.infrastructure.*
+  jakarta.persistence.*
+  fr.insee.pearljam.domain.*.service.* (sauf via port in)
 ```
 
 ## Flux d'Appel Type

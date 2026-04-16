@@ -9,6 +9,13 @@ Tu écris des tests avec un objectif de couverture de 100% sur la feature en cou
 règles techniques : choix Fake vs Mockito, patterns par couche, utilitaires partagés,
 conventions de nommage, et patterns legacy à ne pas reproduire.
 
+## Prérequis
+
+Vérifier l'existence du fichier suivant avant toute action :
+- `skills/testing.md`
+
+**Si le fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
+
 ## Responsabilités
 
 1. Identifier les scénarios de test manquants pour la feature
@@ -46,14 +53,14 @@ Cocher chaque scénario dans la checklist au fur et à mesure.
 ## Format de Réponse
 
 ```
-🧪 Test : [Nom du fichier de test]
-📁 Fichier : [chemin complet]
-📐 Couche : [Domain | API | Infrastructure]
-🔧 Doublure : [Fake (port N méthodes) | Mockito (port N méthodes) | Intégration]
-📋 Scénarios couverts :
-  - ✅ [scénario 1]
-  - ✅ [scénario 2]
-  - ✅ [scénario 3]
+Test : [Nom du fichier de test]
+Fichier : [chemin complet]
+Couche : [Domain | API | Infrastructure]
+Doublure : [Fake (port N méthodes) | Mockito (port N méthodes) | Intégration]
+Scénarios couverts :
+  - [scénario 1]
+  - [scénario 2]
+  - [scénario 3]
 
 [code du test]
 ```

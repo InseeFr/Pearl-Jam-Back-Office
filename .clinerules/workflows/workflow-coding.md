@@ -64,8 +64,8 @@ L'utilisateur tape `workflow-coding` suivi d'une description de la feature à im
 
 ```
 ---
-🤖 LeCheckListeur prend la main — Étape 1 du workflow-coding
-📋 Objectif : Analyser la demande et créer la checklist
+[Agent] LeCheckListeur prend la main — Étape 1 du workflow-coding
+Objectif : Analyser la demande et créer la checklist
 ---
 ```
 
@@ -85,8 +85,8 @@ Actions :
 
 ```
 ---
-🤖 LeCodeur prend la main — Étape 2 du workflow-coding
-📋 Objectif : Implémenter les tâches de la checklist
+[Agent] LeCodeur prend la main — Étape 2 du workflow-coding
+Objectif : Implémenter les tâches de la checklist
 ---
 ```
 
@@ -106,8 +106,8 @@ Actions :
 
 ```
 ---
-🤖 LeSuperviseurDeRegressions prend la main — Étape 3 du workflow-coding
-📋 Objectif : Vérifier qu'aucune régression n'a été introduite
+[Agent] LeSuperviseurDeRegressions prend la main — Étape 3 du workflow-coding
+Objectif : Vérifier qu'aucune régression n'a été introduite
 ---
 ```
 
@@ -130,8 +130,8 @@ Actions :
 
 ```
 ---
-🤖 LeSuperviseurDeTache prend la main — Étape 4 du workflow-coding
-📋 Objectif : Vérifier la complétion et lancer le build
+[Agent] LeSuperviseurDeTache prend la main — Étape 4 du workflow-coding
+Objectif : Vérifier la complétion et lancer le build
 ---
 ```
 
@@ -149,6 +149,35 @@ Actions :
 **Branche 4C — Tout OK** :
 → LeCheckListeur propose `workflow-testing`
 → **ATTEND la validation utilisateur** (ne lance jamais automatiquement)
+
+## Limites d'Itération
+
+| Boucle | Max | Action si dépassé |
+|---|---|---|
+| SuperviseurRegressions → Réparateur → SuperviseurRegressions | 3 tours | Escalade utilisateur |
+| Codeur → SuperviseurDeTache → Codeur (build KO) | 3 tours | Escalade utilisateur |
+| Codeur → SuperviseurDeTache → Codeur (checklist incomplète) | 2 tours | Escalade utilisateur |
+
+Quand une limite est atteinte, l'agent courant produit un **rapport de blocage** :
+
+```
+BLOCAGE — [NomAgent] — Limite atteinte ([N] tentatives)
+
+Contexte : [ce qui était tenté]
+Tentatives :
+  1. [action] → [résultat]
+  2. [action] → [résultat]
+  3. [action] → [résultat]
+
+Cause probable : [diagnostic]
+Suggestion : [piste pour l'utilisateur]
+
+En attente d'intervention utilisateur.
+```
+
+L'orchestrateur présente ce rapport à l'utilisateur. **Aucun agent ne continue tant que l'utilisateur n'a pas décidé.**
+
+---
 
 ## Commandes Maven Utilisées
 
