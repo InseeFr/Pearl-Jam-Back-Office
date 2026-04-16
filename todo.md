@@ -41,8 +41,8 @@
 - [ ] Tester un workflow complet de bout en bout et noter les points de friction
 - [ ] Ajouter un skill `sonar-rules.md` avec les exceptions specifiques au projet
       (pas une copie de la doc SonarCloud — uniquement les regles custom et faux positifs)
-- [ ] Enrichir `skills/clean-code.md` avec des exemples specifiques Pearl Jam
-      (les exemples actuels sont generiques)
+- [x] Enrichir `skills/clean-code.md` avec des exemples specifiques Pearl Jam
+      (commit `df9b176b` — magic value "REA", SRP MessageServiceImpl, records reporting)
 - [x] Documenter les decisions d'architecture en attente dans `hexagonal-architecture.md`
       section "Points d'Attention" (commit `438da75c` — exemples reels du codebase)
 
