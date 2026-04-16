@@ -194,11 +194,96 @@ public class StateDaoAdapter implements StateRepository {
 ## Points d'Attention (État Actuel)
 
 Le projet est en cours de migration vers une architecture hexagonale pure.
-Certaines violations existent encore :
+Les violations suivantes existent dans le code et sont à corriger
+progressivement via `workflow-refactoring`. **Ne pas les reproduire dans
+du nouveau code.**
 
-1. `@Service` et `@Transactional` dans certains services du domaine
-2. Imports d'entités JPA dans des services du domaine
-3. DTOs techniques retournés directement par les services domaine
-4. Lombok utilisé dans le domaine
+### 1. Annotations Spring dans le Domain (bloquant à terme)
 
-Ces violations sont à corriger progressivement via `workflow-refactoring`.
+`@Service`, `@Component`, `@Transactional` et autres annotations Spring sont
+présentes dans de nombreux services du domaine (~15 fichiers). Exemples :
+
+```
+pearljam-domain/.../organizationunit/service/OrganizationUnitServiceImpl.java
+  → @Service + @Transactional
+pearljam-domain/.../surveyunit/service/StateServiceImpl.java
+  → @Service + @Transactional
+pearljam-domain/.../message/service/MessageServiceImpl.java
+  → @Service + @Transactional + SimpMessagingTemplate (WebSocket Spring)
+pearljam-domain/.../campaign/service/CurrentDateService.java
+  → @Component
+```
+
+**Cible** : déclarer les beans dans une `@Configuration` côté infrastructure
+ou API. Le domaine reste du Java pur.
+
+### 2. Entités JPA référencées depuis le Domain (bloquant)
+
+Les entités `*DB` (CampaignDB, MessageDB, UserDB, InterviewerDB, etc.)
+fuient dans des ports et services du domaine :
+
+```
+Ports OUT qui exposent des entités JPA :
+  pearljam-domain/.../campaign/port/out/CampaignRepository.java    → CampaignDB
+  pearljam-domain/.../campaign/port/out/ReferentRepository.java    → ReferentDB
+  pearljam-domain/.../message/port/out/MessageRepository.java      → MessageDB
+  pearljam-domain/.../message/port/out/MessageStatusRepository.java → MessageStatusDB
+  pearljam-domain/.../organizationunit/port/out/OrganizationUnitRepository.java → OrganizationUnitDB
+  pearljam-domain/.../organizationunit/port/out/UserRepository.java → UserDB
+
+Ports IN qui exposent des entités JPA :
+  pearljam-domain/.../campaign/port/in/CampaignService.java        → CampaignDB
+
+Services qui importent des entités JPA :
+  pearljam-domain/.../message/service/MessageServiceImpl.java
+  pearljam-domain/.../campaign/service/PreferenceServiceImpl.java
+```
+
+**Cible** : remplacer par des modèles domain ou des read models
+(voir `skills/refactoring.md` §R1 et §R4). L'entité JPA ne franchit
+jamais la frontière de l'adaptateur.
+
+### 3. Types de présentation dans des Ports In (majeur)
+
+`HttpStatus` (type Spring Web) apparaît dans plusieurs ports in et
+services du domaine :
+
+```
+pearljam-domain/.../organizationunit/port/in/OrganizationUnitService.java
+pearljam-domain/.../message/port/in/MessageService.java
+pearljam-domain/.../campaign/port/in/PreferenceService.java
+pearljam-domain/.../shared/model/Response.java
+```
+
+**Cible** : les exceptions métier sont levées par le domaine, le mapping
+vers un code HTTP est fait par l'`ExceptionControllerAdvice` côté API.
+
+### 4. Types Spring Data dans les ports OUT (majeur)
+
+`Pageable` (Spring Data) est exposé dans `CampaignRepository` (port out)
+et dans `MessageServiceImpl`. `Pageable` est un concept d'infrastructure
+qui ne doit pas traverser la frontière.
+
+**Cible** : utiliser le record domain `PageResult<T>` + des paramètres
+primitifs (`int page, int size`) dans les ports out. Voir aussi la
+mémoire projet sur ce sujet.
+
+### 5. Lombok dans le Domain (toléré temporairement)
+
+45 occurrences de `import lombok.*` dans 25 fichiers du domaine,
+principalement `@RequiredArgsConstructor`, `@Getter`, `@Setter`.
+
+**Cible** : constructeurs et records explicites. Lombok reste toléré
+dans l'infrastructure et l'API pour la transition.
+
+## Ordre Recommandé de Refactoring
+
+Quand on s'attaque à un bounded context, l'ordre qui minimise les
+régressions est :
+
+1. Extraire le modèle domain pur à partir de l'entité JPA (record ou classe finale).
+2. Introduire le mapper Entity ↔ Domain dans l'adaptateur.
+3. Remplacer le type de retour du port out (entité → modèle domain).
+4. Remplacer le type de retour du port in et du service.
+5. Retirer `@Service` / `@Transactional` du service domain (les déplacer en `@Configuration`).
+6. Retirer Lombok en dernier (le moins risqué, mais le plus verbeux).
