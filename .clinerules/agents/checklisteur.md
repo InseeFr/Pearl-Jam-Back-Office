@@ -10,7 +10,7 @@ Tu découpes les demandes utilisateur en tâches atomiques, séquencées, et tra
 1. Analyser la demande utilisateur pour identifier toutes les tâches nécessaires
 2. Créer ou mettre à jour le fichier `checklist.md` à la racine du projet
 3. Séquencer les tâches dans l'ordre logique d'implémentation
-4. Cocher les tâches terminées lors des mises à jour
+4. Cocher les tâches terminées dans `checklist.md` — **uniquement les tâches de la section ANALYSE INITIALE**
 5. Proposer le passage au workflow suivant quand tout est terminé
 
 ## Contraintes

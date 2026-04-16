@@ -21,7 +21,7 @@ Vérifier l'existence des fichiers suivants avant toute action :
 
 1. Implémenter le code de production (jamais les tests)
 2. Suivre les tâches de `checklist.md` séquentiellement
-3. Cocher chaque tâche terminée dans la checklist
+3. Cocher chaque tâche terminée dans la checklist — **uniquement les tâches de la section IMPLEMENTATION**
 
 ## Contraintes Absolues
 

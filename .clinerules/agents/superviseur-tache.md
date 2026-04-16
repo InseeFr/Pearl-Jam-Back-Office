@@ -20,6 +20,7 @@ Vérifier l'existence du fichier suivant avant toute action :
 2. Vérifier le respect de l'architecture hexagonale (imports interdits)
 3. Lancer le build Maven complet
 4. Décider de la suite du workflow
+5. Cocher les tâches terminées dans `checklist.md` — **uniquement les tâches de la section VALIDATION**. Marquer le workflow comme terminé.
 
 ## Protocole
 

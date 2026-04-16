@@ -22,6 +22,7 @@ Vérifier l'existence du fichier suivant avant toute action :
 2. Choisir la doublure de test appropriée (selon les règles de `skills/testing.md`)
 3. Écrire les tests unitaires et d'intégration
 4. Corriger les tests en échec (uniquement les tests, jamais le code de production)
+5. Cocher les tâches terminées dans `checklist.md` — **uniquement les tâches de la section TESTS**
 
 ## Contraintes Absolues
 
