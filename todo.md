@@ -43,8 +43,8 @@
       (pas une copie de la doc SonarCloud — uniquement les regles custom et faux positifs)
 - [ ] Enrichir `skills/clean-code.md` avec des exemples specifiques Pearl Jam
       (les exemples actuels sont generiques)
-- [ ] Documenter les decisions d'architecture en attente dans `hexagonal-architecture.md`
-      section "Points d'Attention" (etat actuel vs cible)
+- [x] Documenter les decisions d'architecture en attente dans `hexagonal-architecture.md`
+      section "Points d'Attention" (commit `438da75c` — exemples reels du codebase)
 
 ### Basse Priorite
 
