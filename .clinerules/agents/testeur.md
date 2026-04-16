@@ -66,6 +66,101 @@ Scénarios couverts :
 [code du test]
 ```
 
+## Exemple (suite de la feature "endpoint interviewers par campagne")
+
+### Test du contrôleur avec MockMvc + Fake
+
+```
+Test : CampaignControllerTest
+Fichier : pearljam-api/src/test/java/fr/insee/pearljam/api/campaign/controller/CampaignControllerTest.java
+Couche : API
+Doublure : Fake (port CampaignService — >6 méthodes mais la règle projet impose Fake pour les contrôleurs)
+Scénarios couverts :
+  - GET 200 : renvoie la liste des enquêteurs d'une campagne existante
+  - GET 404 : campagne inexistante (CampaignNotFoundException)
+  - GET 200 : liste vide si la campagne n'a pas d'enquêteurs
+
+package fr.insee.pearljam.api.campaign.controller;
+
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.domain.campaign.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignInterviewerSummary;
+import fr.insee.pearljam.fake.CampaignServiceFake;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+class CampaignControllerTest {
+
+    private MockMvc mockMvc;
+    private CampaignServiceFake campaignService;
+
+    @BeforeEach
+    void setup() {
+        campaignService = new CampaignServiceFake();
+        var controller = new CampaignController(campaignService);
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(controller)
+            .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should return interviewers when campaign exists")
+    void shouldReturnInterviewersWhenCampaignExists() throws Exception {
+        campaignService.setInterviewers(List.of(
+            new CampaignInterviewerSummary("itw-1", "Alice", "Martin", "alice@example.fr")
+        ));
+
+        mockMvc.perform(get("/api/campaigns/SIMPSONS2020X00/interviewers")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].interviewerId").value("itw-1"))
+            .andExpect(jsonPath("$[0].firstName").value("Alice"));
+    }
+
+    @Test
+    @DisplayName("Should return 404 when campaign does not exist")
+    void shouldReturnNotFoundWhenCampaignMissing() throws Exception {
+        campaignService.setShouldThrowCampaignNotFoundException(true);
+
+        mockMvc.perform(get("/api/campaigns/unknown/interviewers")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcTestUtils.apiErrorMatches(
+                HttpStatus.NOT_FOUND, "/api/campaigns/unknown/interviewers",
+                CampaignNotFoundException.MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Should return empty list when campaign has no interviewers")
+    void shouldReturnEmptyListWhenNoInterviewers() throws Exception {
+        campaignService.setInterviewers(List.of());
+
+        mockMvc.perform(get("/api/campaigns/SIMPSONS2020X00/interviewers")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isEmpty());
+    }
+}
+```
+
+**Points à noter dans cet exemple** :
+- Assertions AssertJ via `jsonPath` + `apiErrorMatches` (utilitaire partagé) — jamais `assertEquals`.
+- Fake de `CampaignService` piloté par flags (`setShouldThrowCampaignNotFoundException`) — pas de `when/thenReturn` Mockito.
+- Nommage `shouldXxxWhenYyy` + `@DisplayName` conformément aux conventions de `skills/testing.md`.
+- Le Fake est dans un package `fake/`, pas `stub/` ni `dummy/`.
+
 ## Transition
 
 - **Vers LeSuperviseurDeTache** : quand tous les tests sont écrits et passent

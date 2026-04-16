@@ -52,6 +52,79 @@ Tâche checklist : [numéro et description]
 Tâche [N] cochée dans checklist.md
 ```
 
+## Exemple (suite de la checklist "endpoint interviewers par campagne")
+
+### Tâche 1 — Read Model dans le domaine
+
+```
+Fichier : pearljam-domain/src/main/java/fr/insee/pearljam/domain/campaign/readmodel/CampaignInterviewerSummary.java
+Couche : Domain
+Tâche checklist : 1. Créer CampaignInterviewerSummary
+
+package fr.insee.pearljam.domain.campaign.readmodel;
+
+public record CampaignInterviewerSummary(
+    String interviewerId,
+    String firstName,
+    String lastName,
+    String email
+) {}
+
+Tâche 1 cochée dans checklist.md
+```
+
+### Tâche 5 — Adaptateur JPA (Infrastructure)
+
+```
+Fichier : pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/campaign/adapter/CampaignInterviewerDaoAdapter.java
+Couche : Infrastructure
+Tâche checklist : 5. Implémenter findInterviewersByCampaignId
+
+package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
+
+import fr.insee.pearljam.domain.campaign.port.out.CampaignInterviewerRepository;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignInterviewerSummary;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class CampaignInterviewerDaoAdapter implements CampaignInterviewerRepository {
+
+    private final JdbcClient jdbcClient;
+
+    @Override
+    public List<CampaignInterviewerSummary> findInterviewersByCampaignId(String campaignId) {
+        return jdbcClient.sql("""
+                SELECT i.id, i.first_name, i.last_name, i.email
+                FROM interviewer i
+                JOIN survey_unit su ON su.interviewer_id = i.id
+                WHERE su.campaign_id = :campaignId
+                GROUP BY i.id, i.first_name, i.last_name, i.email
+                """)
+            .param("campaignId", campaignId)
+            .query((rs, _) -> new CampaignInterviewerSummary(
+                rs.getString("id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("email")
+            ))
+            .list();
+    }
+}
+
+Tâche 5 cochée dans checklist.md
+```
+
+**Points à noter dans cet exemple** :
+- L'adaptateur est dans `infrastructure-persistence`, pas dans le domaine.
+- Il importe le port (`CampaignInterviewerRepository`) et le read model (`CampaignInterviewerSummary`) depuis le domaine — direction conforme à l'architecture hexagonale.
+- Pas d'entité JPA qui sort de l'adaptateur — le read model est construit directement depuis le `ResultSet`.
+- Text block SQL (Java 25) + `JdbcClient` (Spring Boot 4) conformément au Pattern 1 de `skills/hexagonal-architecture.md`.
+
 ## Transition
 
 - **Vers LeSuperviseurDeRegressions** : après avoir terminé toutes les tâches d'implémentation

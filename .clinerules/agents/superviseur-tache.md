@@ -73,6 +73,46 @@ Problèmes identifiés :
 - [problème 2] → [agent responsable]
 ```
 
+## Exemples
+
+### Cas SUCCÈS
+
+```
+RAPPORT DE SUPERVISION — 16/04/2026
+
+Checklist : 8/8 tâches complétées
+Architecture : OK (0 violation détectée)
+Build Maven : OK (./mvnw clean verify — 247 tests passés en 2m 31s)
+
+### Résultat : SUCCÈS
+
+La feature est implémentée et le build passe.
+Suggestion : lancer `workflow-testing` pour ajouter les tests de la nouvelle feature.
+En attente de validation utilisateur.
+```
+
+### Cas ÉCHEC — build KO et violation d'architecture
+
+```
+RAPPORT DE SUPERVISION — 16/04/2026
+
+Checklist : 7/8 tâches complétées
+Architecture : 1 violation détectée
+Build Maven : KO (1 erreur de compilation)
+
+### Résultat : ÉCHEC
+
+Problèmes identifiés :
+- Checklist incomplète : tâche 6 (DTO de réponse CampaignInterviewerResponse) non cochée
+  → LeCodeur
+- Violation architecture : import `fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB`
+  détecté dans `pearljam-domain/.../CampaignServiceImpl.java:42`
+  → LeCodeur (remplacer par le read model Domain)
+- Build KO : CampaignController.java:58 — symbole `CampaignInterviewerResponse` introuvable
+  (conséquence directe de la tâche 6 non faite)
+  → LeCodeur
+```
+
 ## Transition
 
 - **Vers LeCodeur** : si checklist incomplète, violations d'architecture, ou build KO
