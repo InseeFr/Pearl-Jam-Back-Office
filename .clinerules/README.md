@@ -9,8 +9,8 @@ Ce dossier contient les prompts, skills et workflows pour piloter un LLM
 
 ```
 .clinerules/
-├── orchestrateur.md              # Point d'entrée — System Prompt principal
-├── agents/                       # Définition de chaque agent spécialisé
+├── agents/
+│   ├── orchestrateur.md          # System Prompt principal (identité + entry points)
 │   ├── checklisteur.md           # Découpe les tâches, maintient la checklist
 │   ├── codeur.md                 # Implémente le code (jamais les tests)
 │   ├── testeur.md                # Écrit les tests (couverture 100%)
@@ -19,13 +19,15 @@ Ce dossier contient les prompts, skills et workflows pour piloter un LLM
 │   ├── superviseur-tache.md      # Valide la complétion, lance le build
 │   ├── refacto-analyste.md       # Propose un plan de refactoring
 │   └── refacto-challenger.md     # Challenge le plan de refactoring
+├── orchestration/
+│   └── coordination.md           # Matrice d'agents, règles de transition, escalade
 ├── skills/                       # Connaissances partagées entre agents
 │   ├── clean-code.md             # Règles SOLID, Clean Code, conventions Java 25
 │   ├── hexagonal-architecture.md # Architecture du projet, règles d'import
 │   ├── testing.md                # Standards de tests, patterns par couche
 │   ├── refactoring.md            # Catalogue de refactorings, grille d'évaluation
 │   ├── escalation.md             # Protocole d'escalade et rapport de blocage
-│   └── project-context.md        # Commandes build, config, Liquibase, Docker (dans skills/)
+│   └── project-context.md        # Commandes build, config, Liquibase, Docker
 ├── workflows/                    # Workflows opérationnels
 │   ├── workflow-coding.md        # Développement d'une feature
 │   ├── workflow-testing.md       # Ajout de tests
