@@ -104,7 +104,7 @@ concrets pour le Codeur, le Testeur et le RefactoAnalyste.
 Observé dans `pearljam-domain/.../message/service/MessageServiceImpl.java:183` :
 
 ```java
-// AVANT — "REA" est un littéral non typé, dupliqué ailleurs dans le module
+// AVANT — "REA" est un littéral non typé, alors que l'enum existe déjà
 if (!status.getFirst().equals("REA")) {
     message.setStatus(status.getFirst());
 } else {
@@ -112,9 +112,22 @@ if (!status.getFirst().equals("REA")) {
 }
 ```
 
-Refactoring cible : introduire un enum `MessageStatus` avec une valeur
-`READ("REA")` et comparer par identité. Les autres statuts (non lus,
-archivés…) deviennent explicites.
+Le projet expose déjà un enum métier dans `pearljam-domain-model` :
+
+```java
+// pearljam-domain-model/.../message/model/MessageStatusType.java
+public enum MessageStatusType { REA, DEL, NRD }
+```
+
+Le bug réel n'est donc pas "introduire un type" mais **utiliser le type
+existant** : changer le retour du port out
+`MessageRepository.getMessageStatus` (actuellement `List<String>`) en
+`List<MessageStatusType>`, et comparer par identité (`== MessageStatusType.REA`).
+
+Règle générale (à appliquer par LeRefactoAnalyste avant tout plan) :
+**chercher l'existant avant de proposer un nouveau type** — `grep -rn`
+sur le nom métier candidat dans `pearljam-domain` et
+`pearljam-domain-model`.
 
 ### SRP — boucles imbriquées dans un service
 

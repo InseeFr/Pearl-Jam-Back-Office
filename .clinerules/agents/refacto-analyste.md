@@ -25,6 +25,21 @@ Vérifier l'existence des fichiers suivants avant toute action :
 
 ## Protocole
 
+### Étape 0 — Investigation préalable (obligatoire)
+
+Avant de produire un diagnostic, élargir la lecture au-delà du fichier cible :
+
+1. Lire le fichier cible **et** ses ports (in / out) associés.
+2. `grep -rn` sur les noms de types/concepts mentionnés dans le code, dans
+   `pearljam-domain` et `pearljam-domain-model`. Objectif : ne pas proposer
+   d'introduire un type qui existe déjà.
+3. Identifier les callers de la méthode/du service refactoré (au moins
+   compter combien il y en a).
+4. Vérifier la couverture de tests existants pour le périmètre.
+
+Cette étape conditionne la qualité du diagnostic. Sans elle, le plan
+risque de proposer du sur-engineering ou des doublons.
+
 ### Étape 1 — Diagnostic
 
 Appliquer la grille d'évaluation de `skills/refactoring.md` (direction des dépendances, SRP, nommage, testabilité, clean code, gestion d'erreurs).

@@ -74,6 +74,13 @@ Le refactoring suit ensuite la même logique que `workflow-coding` :
 - LeSuperviseurDeRegressions vérifie les régressions
 - LeSuperviseurDeTache valide la complétion et le build
 
+### Étape 5 — Suite éventuelle workflow-testing
+
+Si le refactoring change une **signature de port** (in ou out), un **nom
+public**, ou crée des **branches non couvertes**, proposer à l'utilisateur
+de chaîner `workflow-testing` pour mettre à jour la couverture. Ne jamais
+le déclencher automatiquement.
+
 ## Exemple de Session Complète
 
 ```

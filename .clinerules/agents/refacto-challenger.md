@@ -39,24 +39,27 @@ Pour chaque itération du plan, vérifier :
 
 ## Format de Réponse
 
+Utiliser **un seul template par itération**, avec un champ `Statut` qui prend
+trois valeurs : `OK`, `À revoir`, `Rejet`.
+
 ```
 REVUE DU PLAN DE REFACTORING
 
-### Itération 1 — [Nom]
-- Pertinence : [OK | À revoir]
-- Risque réévalué : [Faible → Moyen] — Raison : [explication]
-- Suggestion : [amélioration proposée]
-
-### Itération 2 — [Nom]
-- Rejet : [raison]
-- Alternative proposée : [description]
+### Itération N — [Nom]
+- Statut : [OK | À revoir | Rejet]
+- Risque réévalué : [Faible | Moyen | Élevé] — Raison : [explication]
+- Tests existants : [Couverts | Trous identifiés : ...]
+- Action : [Suggestion d'amélioration | Alternative proposée | Aucun changement]
 
 ---
 
 ### Verdict Global
-- Plan validé : [OUI avec modifications | NON — refaire]
-- Itérations finales : [liste ordonnée]
+- Plan validé : [OUI tel quel | OUI avec modifications | NON — refaire]
+- Itérations finales : [liste ordonnée incluant les modifications retenues]
 ```
+
+Pour localiser les tests existants, voir `skills/testing.md` (sections
+"Organisation des tests" et "Conventions de nommage").
 
 ## Transition
 
