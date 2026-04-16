@@ -27,7 +27,7 @@ Pour chaque problème :
 
 | Champ | Description |
 |---|---|
-| **Criticité** | 🔴 Bloquant, 🟡 Majeur, 🟢 Mineur |
+| **Criticité** | Bloquant, Majeur, Mineur |
 | **Localisation** | Fichier et ligne(s) |
 | **Problème** | Description précise de la violation |
 | **Recommandation** | Action corrective concrète |
@@ -48,7 +48,7 @@ Roadmap itérative avec :
 
 **Avant :**
 ```java
-// ❌ Dans le domaine — import d'infrastructure
+// AVANT — Dans le domaine, import d'infrastructure (interdit)
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 
 public List<InterviewerCountDto> getInterviewerCount(String campaignId) {
@@ -58,15 +58,15 @@ public List<InterviewerCountDto> getInterviewerCount(String campaignId) {
 
 **Après :**
 ```java
-// ✅ Port Out dans le domaine
+// APRÈS — Port Out dans le domaine
 public interface InterviewerCountRepository {
     List<InterviewerCount> countByCampaign(String campaignId);
 }
 
-// ✅ Read Model dans le domaine
+// Read Model dans le domaine
 public record InterviewerCount(String interviewerId, String name, long count) {}
 
-// ✅ Adaptateur dans l'infrastructure
+// Adaptateur dans l'infrastructure
 @Repository
 @RequiredArgsConstructor
 public class InterviewerCountDaoAdapter implements InterviewerCountRepository {

@@ -17,11 +17,11 @@ Il prescrit une stratégie unifiée de doublures de test et distingue le legacy 
 
 ---
 
-## ⚠️ Legacy vs Cible
+## Legacy vs Cible
 
 Le projet est en migration. **Ne jamais reproduire le legacy dans du nouveau code.**
 
-| Aspect | ❌ Legacy | ✅ Cible |
+| Aspect | Legacy | Cible |
 |---|---|---|
 | 404 dans le contrôleur | `if (result == null) return NOT_FOUND` | Exception métier + `ExceptionControllerAdvice` |
 | Tests contrôleur | Mockito + `ResponseEntity` direct | Fake + MockMvc + `apiErrorMatches()` |
@@ -296,7 +296,7 @@ class CampaignReportingServiceTest {
 
         service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "itw-123", stats -> stats);
 
-        // ✅ verify justifié : on vérifie un paramètre métier significatif
+        // verify justifié : on vérifie un paramètre métier significatif
         verify(statsRepository).getCampaignsStatsForInterviewer(
             eq("itw-123"), anyList(), anyList(), eq(FIXED_TODAY));
     }
@@ -410,11 +410,11 @@ Règles dans `ModuleBoundariesArchTests.java` :
 
 | Règle | Statut |
 |---|---|
-| API → JPA repositories | ❌ Interdit |
-| Domain → API | ❌ Interdit |
-| Domain → Infrastructure (sauf entities) | ⚠️ Toléré temporairement |
-| Contracts → API ou Infrastructure | ❌ Interdit |
-| Infrastructure → API | ❌ Interdit |
+| API → JPA repositories | Interdit |
+| Domain → API | Interdit |
+| Domain → Infrastructure (sauf entities) | Toléré temporairement |
+| Contracts → API ou Infrastructure | Interdit |
+| Infrastructure → API | Interdit |
 
 ---
 

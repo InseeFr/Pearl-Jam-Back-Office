@@ -25,7 +25,7 @@ Il sert de référence pour les agents LeCodeur, LeTesteur et LeRefactoAnalyste.
 
 ### Clean Code
 
-| Règle | ✅ Bon | ❌ Mauvais |
+| Règle | Bon | Mauvais |
 |---|---|---|
 | Nommage expressif | `findActiveInterviewersByCampaign()` | `getData()` |
 | Nommage métier | `archiveSurveyUnit()` | `updateStatusInDb()` |
@@ -39,7 +39,7 @@ Il sert de référence pour les agents LeCodeur, LeTesteur et LeRefactoAnalyste.
 ### Méthodes surchargées
 
 ```java
-// ❌ AVANT — mélange validation, logique, I/O
+// AVANT — mélange validation, logique, I/O
 public ResponseEntity<?> exportCsv(String campaignId) {
     if (campaignId == null) throw new BadRequest();      // validation
     var data = repository.findAll(campaignId);            // I/O
@@ -47,7 +47,7 @@ public ResponseEntity<?> exportCsv(String campaignId) {
     return ResponseEntity.ok(String.join("\n", csv));     // présentation
 }
 
-// ✅ APRÈS — séparation des responsabilités
+// APRÈS — séparation des responsabilités
 // Contrôleur : validation + délégation
 // Service : logique métier
 // Presenter : transformation en CSV
@@ -56,10 +56,10 @@ public ResponseEntity<?> exportCsv(String campaignId) {
 ### Magic Values
 
 ```java
-// ❌ AVANT
+// AVANT
 if (state.equals("ANV")) { ... }
 
-// ✅ APRÈS  
+// APRÈS
 public enum SurveyUnitState {
     ANV("À ne pas visiter"),
     VIN("Visite initiale"),
@@ -71,13 +71,13 @@ if (state == SurveyUnitState.ANV) { ... }
 ### Null Safety
 
 ```java
-// ❌ AVANT
+// AVANT
 public List<State> getStates(String campaignId) {
     var result = repository.find(campaignId);
     return result; // peut être null
 }
 
-// ✅ APRÈS
+// APRÈS
 public List<State> getStates(String campaignId) {
     var result = repository.find(campaignId);
     return result != null ? result : List.of();
@@ -87,10 +87,10 @@ public List<State> getStates(String campaignId) {
 ### Performance
 
 ```java
-// ❌ Inutile sur une petite collection
+// Inutile sur une petite collection
 data.parallelStream().map(...)
 
-// ✅ Simple et suffisant
+// Simple et suffisant
 data.stream().map(...)
 ```
 
