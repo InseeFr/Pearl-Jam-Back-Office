@@ -14,6 +14,7 @@ package fr.insee.pearljam.domain.campaign.readmodel;
 public record CampaignVisibility(
         String id,
         String label,
+        String email,
         Long managementStartDate,
         Long interviewerStartDate,
         Long identificationPhaseStartDate,

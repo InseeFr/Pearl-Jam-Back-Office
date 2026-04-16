@@ -80,6 +80,7 @@ class CampaignOrganizationServiceTest {
         return new CampaignVisibility(
                 CAMPAIGN_ID,
                 "Survey to test",
+                "CAMPAIGN_TEST_EMAIL@insee.fr",
                 MGMT_START,
                 INTERV_START,
                 IDENT_START,

@@ -24,7 +24,7 @@ class VisibilityServiceImplTest {
     private CampaignVisibilityPortStub campaignVisibilityPortStub;
 
     private CampaignVisibility campaignVisibilityTest =
-            new CampaignVisibility("1627845600000", "1627932000000",
+            new CampaignVisibility("1627845600000", "1627932000000", "test@insee.fr",
                     1628018400000L, 1628104800000L,
                     1628191200000L, 1628277600000L, null, null);
 

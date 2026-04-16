@@ -11,6 +11,7 @@ import java.util.List;
 public record CampaignOrganizationResponse(
         String campaignId,
         String campaignLabel,
+        String campaignEmail,
         long identificationPhaseStartDate,
         long collectionStartDate,
         long collectionEndDate,
