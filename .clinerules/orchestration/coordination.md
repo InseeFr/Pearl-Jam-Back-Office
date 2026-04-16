@@ -44,6 +44,16 @@ la mécanique de coordination, pour faciliter les évolutions indépendantes.
    tâche hors de sa responsabilité est incorrecte, il signale le problème sans
    modifier la checklist.
 
+   **Traçage des modifications** — chaque agent qui modifie `checklist.md` y
+   appose un commentaire HTML en fin de fichier au format :
+
+   ```markdown
+   <!-- updated by: LeCodeur @ 2026-04-16T14:30 -->
+   ```
+
+   Permet de détecter les dérives (agent qui modifie hors de son périmètre) et
+   d'auditer le déroulé du workflow a posteriori.
+
 3. **Fichier manquant** — si un fichier `.md` référencé (skill, agent, workflow)
    est absent, alerte l'utilisateur immédiatement et propose de le créer.
    Aucun agent ne continue tant que la ressource n'est pas en place.
@@ -64,8 +74,9 @@ Responsabilités de l'orchestrateur :
 
 1. **Compter les itérations** pour chaque boucle identifiée dans le workflow
    actif (ex : allers-retours Réparateur ↔ SuperviseurRegressions).
-2. **Tenir le compteur global** (15 interventions maximum par workflow, toutes
-   boucles confondues).
+2. **Tenir le compteur global** (25 interventions maximum par workflow, toutes
+   boucles confondues — voir « Limites récapitulatives » ci-dessous pour la
+   justification).
 3. **Détecter le dépassement** avant de relancer l'agent qui franchirait la limite.
 4. **Déclencher l'escalade** lorsque la limite est atteinte :
    - Charger le contenu de `skills/escalation.md` dans le contexte.
@@ -85,5 +96,12 @@ Responsabilités de l'orchestrateur :
 | testing | Testeur ↔ SuperviseurDeTache (test KO) | 3 |
 | refactoring | Analyste ↔ Challenger (plan rejeté) | 2 |
 
-Une limite globale de **15 interventions d'agent par workflow** s'applique en
+Une limite globale de **25 interventions d'agent par workflow** s'applique en
 complément pour prévenir les boucles combinées.
+
+Justification du seuil : un refactoring multi-modules réaliste consomme
+~20 interventions (3 itérations × ~6 agents enchaînés : Codeur, Testeur,
+SuperviseurRegressions, Réparateur, SuperviseurDeTache, retours CheckListeur).
+Le seuil précédent de 15 déclenchait l'escalade prématurément sur des cas
+légitimes. 25 garde une marge contre les vraies boucles infinies sans
+bloquer la production normale.

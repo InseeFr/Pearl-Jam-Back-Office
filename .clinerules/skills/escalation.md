@@ -18,7 +18,7 @@ un **rapport de blocage** standard, et attend une décision utilisateur.
 individuels sont stateless et ne peuvent pas compter leurs propres invocations
 de façon fiable. C'est donc l'orchestrateur qui :
 
-- Tient les compteurs par boucle et le compteur global (15 interventions max par workflow).
+- Tient les compteurs par boucle et le compteur global (25 interventions max par workflow).
 - Détecte le franchissement de limite **avant** de relancer un agent.
 - Charge ce fichier dans le contexte de l'agent courant au moment du blocage
   (ou produit lui-même le rapport si l'agent n'est pas en mesure de le faire).
@@ -65,9 +65,11 @@ Les limites détaillées sont définies dans chaque `workflows/*.md`. Vue d'ense
 | testing | Testeur ↔ SuperviseurDeTache (tests manquants) | 2 |
 | refactoring | RefactoAnalyste ↔ RefactoChallenger (plan rejeté) | 2 |
 
-Une **limite globale** de 15 interventions d'agent par workflow
+Une **limite globale** de 25 interventions d'agent par workflow
 s'applique en complément, pour prévenir les pathologies combinées
-(plusieurs boucles qui se relancent mutuellement).
+(plusieurs boucles qui se relancent mutuellement). Ce seuil tient compte
+d'un refactoring multi-modules réaliste (~20 interventions) — voir
+`orchestration/coordination.md` pour la justification.
 
 ## Procédure Orchestrateur
 

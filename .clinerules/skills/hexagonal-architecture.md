@@ -240,7 +240,7 @@ Services qui importent des entités JPA :
 ```
 
 **Cible** : remplacer par des modèles domain ou des read models
-(voir `skills/refactoring.md` §R1 et §R4). L'entité JPA ne franchit
+(voir `skills/refactoring.md` §R1 et §R3). L'entité JPA ne franchit
 jamais la frontière de l'adaptateur.
 
 ### 3. Types de présentation dans des Ports In (majeur)

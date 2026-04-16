@@ -90,7 +90,7 @@ public class InterviewerCountDaoAdapter implements InterviewerCountRepository {
 }
 ```
 
-### R3 : Découper un Service trop gros (SRP)
+### R2 : Découper un Service trop gros (SRP)
 
 **Problème** : Un service mélange autorisation, logique métier et mapping.
 
@@ -121,7 +121,7 @@ public class StateServiceImpl implements StateService {
 // Gestion d'erreurs dans un ExceptionHandler (api)
 ```
 
-### R4 : Remplacer les DTOs techniques par des Read Models
+### R3 : Remplacer les DTOs techniques par des Read Models
 
 **Problème** : Le service domaine retourne des DTOs techniques (`StateCountDto`).
 
@@ -144,7 +144,7 @@ public record StateCountResponse(String state, long count) {
 }
 ```
 
-### R5 : Externaliser le CSV/Export du Contrôleur
+### R4 : Externaliser le CSV/Export du Contrôleur
 
 **Problème** : Logique d'export CSV dans un contrôleur.
 
