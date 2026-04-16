@@ -9,18 +9,30 @@ workflows et par l'orchestrateur.
 ## Principe
 
 Aucun agent ne boucle indéfiniment. Dès qu'une limite définie dans le workflow
-est atteinte, l'agent courant **arrête** son action, produit un **rapport de
-blocage** standard, et rend la main à l'orchestrateur qui attend une décision
-utilisateur.
+est atteinte, l'orchestrateur **arrête** la boucle, produit (ou fait produire)
+un **rapport de blocage** standard, et attend une décision utilisateur.
+
+## Propriété du protocole
+
+**L'orchestrateur est le propriétaire du protocole d'escalade.** Les agents
+individuels sont stateless et ne peuvent pas compter leurs propres invocations
+de façon fiable. C'est donc l'orchestrateur qui :
+
+- Tient les compteurs par boucle et le compteur global (15 interventions max par workflow).
+- Détecte le franchissement de limite **avant** de relancer un agent.
+- Charge ce fichier dans le contexte de l'agent courant au moment du blocage
+  (ou produit lui-même le rapport si l'agent n'est pas en mesure de le faire).
+
+Les prompts d'agent individuels n'ont pas besoin de référencer ce document :
+l'orchestrateur l'injecte à la demande.
 
 ## Règles
 
-1. **Compter les itérations** : chaque agent impliqué dans une boucle incrémente
-   un compteur mental (ou l'indique explicitement dans ses rapports : `tentative 2/3`).
-2. **Arrêt strict à la limite** : ne jamais dépasser la limite, même si
-   "une tentative de plus pourrait marcher".
-3. **Rapport obligatoire** : produire le template ci-dessous avant de rendre la main.
-4. **Pas de redémarrage silencieux** : aucun agent ne reprend tant que
+1. **Arrêt strict à la limite** : l'orchestrateur ne relance jamais une boucle
+   qui franchirait la limite, même si "une tentative de plus pourrait marcher".
+2. **Rapport obligatoire** : le template ci-dessous est produit avant de rendre
+   la main à l'utilisateur.
+3. **Pas de redémarrage silencieux** : aucun agent ne reprend tant que
    l'utilisateur n'a pas répondu.
 
 ## Template de Rapport de Blocage

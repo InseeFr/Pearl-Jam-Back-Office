@@ -82,6 +82,29 @@ Défini en détail dans `skills/escalation.md` (template de rapport, règles
 d'arrêt, procédure orchestrateur). Chaque workflow définit ses propres
 **limites d'itération** (voir `workflows/*.md`).
 
+### Propriété du protocole
+
+**C'est l'orchestrateur qui porte l'escalade**, pas les agents. Les agents
+individuels sont stateless : ils ne savent pas combien de fois ils ont été
+invoqués dans la boucle courante. Ils n'ont donc **pas besoin de référencer
+`skills/escalation.md`** dans leur prompt.
+
+Responsabilités de l'orchestrateur :
+
+1. **Compter les itérations** pour chaque boucle identifiée dans le workflow actif
+   (par exemple : nombre d'allers-retours Réparateur ↔ SuperviseurRegressions).
+2. **Tenir le compteur global** (15 interventions maximum par workflow, toutes
+   boucles confondues).
+3. **Détecter le dépassement** avant de relancer l'agent qui franchirait la limite.
+4. **Déclencher l'escalade** lorsque la limite est atteinte :
+   - Charger le contenu de `skills/escalation.md` dans le contexte.
+   - Demander à l'agent courant de produire le rapport selon le template, **en
+     lui fournissant explicitement le template et l'historique des tentatives**.
+   - À défaut (agent muet ou indisponible), produire le rapport lui-même à
+     partir du journal d'interventions.
+5. **Présenter le rapport à l'utilisateur** et attendre une décision avant
+   toute reprise.
+
 ### Limites récapitulatives
 
 | Workflow | Boucle | Max |
