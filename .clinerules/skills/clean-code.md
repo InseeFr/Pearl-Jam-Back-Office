@@ -94,6 +94,103 @@ data.parallelStream().map(...)
 data.stream().map(...)
 ```
 
+## Exemples observés dans Pearl Jam
+
+Les snippets ci-dessous sont tirés du code actuel et servent de repères
+concrets pour le Codeur, le Testeur et le RefactoAnalyste.
+
+### Magic value — statuts de messagerie
+
+Observé dans `pearljam-domain/.../message/service/MessageServiceImpl.java:183` :
+
+```java
+// AVANT — "REA" est un littéral non typé, dupliqué ailleurs dans le module
+if (!status.getFirst().equals("REA")) {
+    message.setStatus(status.getFirst());
+} else {
+    messagesDeleted.add(message);
+}
+```
+
+Refactoring cible : introduire un enum `MessageStatus` avec une valeur
+`READ("REA")` et comparer par identité. Les autres statuts (non lus,
+archivés…) deviennent explicites.
+
+### SRP — boucles imbriquées dans un service
+
+`MessageServiceImpl.getMessages(...)` (lignes 160-194) mélange :
+
+- récupération des OUs d'un utilisateur via `userService` ;
+- dé-duplication manuelle d'IDs via une liste + `contains` ;
+- récupération de chaque statut en boucle (N+1 query) ;
+- filtrage des messages "supprimés" par exclusion.
+
+Refactoring cible : extraire `findVisibleMessageIdsFor(interviewerId)`
+et `applyReadStatus(messages, interviewerId)`. La requête N+1 se
+remplace par un port dédié `MessageStatusRepository.findStatusesFor(ids, interviewerId)`.
+
+### Nommage métier — bons exemples à reproduire
+
+Les read models de reporting illustrent le nommage métier cible :
+
+```java
+// pearljam-domain/.../reporting/readmodel/Interviewer.java
+public record Interviewer(String id, String label, Long surveyUnitCount) {}
+
+// pearljam-domain/.../reporting/readmodel/Referent.java
+public record Referent(String firstName, String lastName, String phoneNumber, String role) {}
+```
+
+Trois points à reproduire :
+
+- `record` plutôt que classe + getters/setters.
+- Nom du type au singulier, sans suffixe technique (`Dto`, `Bean`).
+- Pas d'annotation Spring/JPA — pur modèle domain.
+
+### Null Safety — collection vide vs null
+
+Observé à la fois dans les adaptateurs JdbcClient et dans certains
+services : `.list()` de `JdbcClient` ne retourne jamais `null`. À
+l'inverse, certains anciens codes retournent `null` au lieu de
+`List.of()`. Règle absolue côté domain :
+
+```java
+// Règle : un port out retourne toujours une List non nulle
+public interface CampaignRepository {
+    List<Campaign> findByUser(String userId); // jamais null, List.of() si vide
+}
+```
+
+### Exception métier — bons exemples à reproduire
+
+Le pattern cible est appliqué dans plusieurs services :
+
+```java
+// pearljam-domain/.../campaign/service/ReferentServiceImpl.java:23
+if (campaign.isEmpty()) {
+    throw new CampaignNotFoundException();
+}
+
+// pearljam-domain/.../surveyunit/service/StateServiceImpl.java:66
+throw new InterviewerNotFoundException(interviewerId);
+```
+
+L'`ExceptionControllerAdvice` côté API convertit ces exceptions en
+404 `ApiError` — le service ne manipule aucun code HTTP.
+
+Anti-pattern à ne pas reproduire (même fichier, ligne 119) :
+
+```java
+// AVANT — nommage technique (Entity) dans une exception du domaine
+// Importée depuis fr.insee.pearljam.domain.shared.exception — la classe
+// est bien dans le domaine mais son nom parle d'entité, pas de métier
+throw new EntityNotFoundException(String.format("Survey unit %s not found", id));
+```
+
+Cible : remplacer par `SurveyUnitNotFoundException` (exception métier
+du bounded context `surveyunit`, comme `CampaignNotFoundException` et
+`InterviewerNotFoundException` déjà en place).
+
 ## Conventions Java 25
 
 - Utiliser `record` pour les Value Objects, DTOs, Read Models
