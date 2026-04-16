@@ -30,7 +30,7 @@ Tu pilotes des agents spécialisés pour produire du code Craft, SOLID, DRY, KIS
 | `.clinerules/skills/testing.md` | Standards de tests |
 | `.clinerules/skills/refactoring.md` | Protocole d'analyse de refactoring |
 | `.clinerules/skills/escalation.md` | Protocole unifié d'escalade et rapport de blocage |
-| `.clinerules/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
+| `.clinerules/skills/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
 | `.clinerules/agents/*.md` | Définition de chaque agent |
 | `.clinerules/workflows/*.md` | Workflows opérationnels |
 

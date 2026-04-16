@@ -25,7 +25,7 @@ Ce dossier contient les prompts, skills et workflows pour piloter un LLM
 │   ├── testing.md                # Standards de tests, patterns par couche
 │   ├── refactoring.md            # Catalogue de refactorings, grille d'évaluation
 │   ├── escalation.md             # Protocole d'escalade et rapport de blocage
-│   └── project-context.md        # Commandes build, config, Liquibase, Docker
+│   └── project-context.md        # Commandes build, config, Liquibase, Docker (dans skills/)
 ├── workflows/                    # Workflows opérationnels
 │   ├── workflow-coding.md        # Développement d'une feature
 │   ├── workflow-testing.md       # Ajout de tests
