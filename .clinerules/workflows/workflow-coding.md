@@ -4,56 +4,20 @@
 
 L'utilisateur tape `workflow-coding` suivi d'une description de la feature à implémenter.
 
-## Diagramme de Flux
+## Table de Transition
 
-```
-┌─────────────────┐
-│  LeCheckListeur  │ ── Analyse la demande, crée checklist.md
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│    LeCodeur      │ ── Implémente les tâches séquentiellement
-└────────┬────────┘
-         ▼
-┌──────────────────────────────┐
-│ LeSuperviseurDeRegressions   │ ── Lance les tests existants
-└────────┬─────────────────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-  Tests     Tests
-  KO        OK
-    │         │
-    ▼         │
-┌──────────┐  │
-│LeRéparateur│ │
-└────┬─────┘  │
-     │        │
-     └──►─────┘
-         │
-         ▼
-┌──────────────────────┐
-│ LeSuperviseurDeTache │ ── Vérifie checklist + build
-└────────┬─────────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-  Checklist  Tout
-  incomplète complété
-    │         │
-    ▼         ▼
-  Retour    Build Maven
-  LeCodeur    │
-         ┌───┴───┐
-         ▼       ▼
-       Build    Build
-       KO       OK
-         │       │
-         ▼       ▼
-       LeCodeur  LeCheckListeur
-       répare    propose workflow-testing
-                 (attend validation utilisateur)
-```
+| Étape | Agent courant | Sortie attendue | Condition | Agent suivant |
+|---|---|---|---|---|
+| 1 | LeCheckListeur | `checklist.md` validée par l'utilisateur | Checklist OK | LeCodeur |
+| 2 | LeCodeur | Toutes les tâches d'implémentation cochées | Implémentation terminée | LeSuperviseurDeRegressions |
+| 3 | LeSuperviseurDeRegressions | Rapport de régression | Régression détectée | LeRéparateur |
+| 3 | LeSuperviseurDeRegressions | Rapport de régression | 0 régression | LeSuperviseurDeTache |
+| 3b | LeRéparateur | Correctif appliqué | Retour systématique | LeSuperviseurDeRegressions |
+| 4 | LeSuperviseurDeTache | Rapport de supervision | Checklist incomplète | LeCodeur |
+| 4 | LeSuperviseurDeTache | Rapport de supervision | Build KO | LeCodeur |
+| 4 | LeSuperviseurDeTache | Rapport de supervision | Tout OK | LeCheckListeur (propose `workflow-testing`, attend validation utilisateur) |
+
+Principe : ordre strict Domain → Infrastructure → API à l'étape 2.
 
 ## Déroulé Détaillé
 

@@ -4,43 +4,17 @@
 
 L'utilisateur tape `workflow-testing` ou transition depuis `workflow-coding`.
 
-## Diagramme de Flux
+## Table de Transition
 
-```
-┌─────────────────┐
-│  LeCheckListeur  │ ── Liste les tests nécessaires (couverture 100%)
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│   LeTesteur      │ ── Écrit les tests
-└────────┬────────┘
-         ▼
-┌──────────────────────┐
-│ LeSuperviseurDeTache │ ── Exécute les tests
-└────────┬─────────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-  Tests     Tests
-  KO        OK
-    │         │
-    ▼         │
-  LeTesteur   │
-  corrige     │
-  le test     │
-    │         │
-    └──►─────┘
-         │
-         ▼
-    ┌────┴────┐
-    ▼         ▼
-  Tests     Tous les
-  restants  tests faits
-    │         │
-    ▼         ▼
-  Retour    ✅ Succès
-  LeTesteur Informer l'utilisateur
-```
+| Étape | Agent courant | Sortie attendue | Condition | Agent suivant |
+|---|---|---|---|---|
+| 1 | LeCheckListeur | Section TESTS ajoutée à `checklist.md` | Liste validée | LeTesteur |
+| 2 | LeTesteur | Tests écrits et cochés | Tous les tests rédigés | LeSuperviseurDeTache |
+| 3 | LeSuperviseurDeTache | Résultat d'exécution des tests | Test KO | LeTesteur (corrige le test, jamais le code de prod) |
+| 3 | LeSuperviseurDeTache | Résultat d'exécution des tests | Tests OK mais scénarios manquants | LeTesteur |
+| 3 | LeSuperviseurDeTache | Rapport final | Tous tests OK et couverts | Fin — informer l'utilisateur |
+
+Principe : LeTesteur ne touche **jamais** au code de production, même pour faire passer un test.
 
 ## Déroulé Détaillé
 

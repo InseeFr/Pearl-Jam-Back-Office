@@ -5,34 +5,17 @@
 L'utilisateur tape `workflow-refactoring` suivi du périmètre à analyser
 (fichier, package, module, ou feature).
 
-## Diagramme de Flux
+## Table de Transition
 
-```
-┌──────────────────┐
-│ LeRefactoAnalyste │ ── Analyse qualité, propose plan
-└────────┬─────────┘
-         ▼
-┌────────────────────────────┐
-│ LeRefactoAnalysteChallenger │ ── Challenge le plan
-└────────┬───────────────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-  Plan      Plan
-  rejeté    validé
-    │         │
-    ▼         ▼
-  Retour    LeCheckListeur
-  Analyste  transforme en tâches
-              │
-              ▼
-         ┌──────────┐
-         │ LeCodeur  │ ── Applique le refactoring
-         └────┬─────┘
-              ▼
-      [Boucle workflow-coding]
-      (Superviseur Régressions → Superviseur Tâche → Build)
-```
+| Étape | Agent courant | Sortie attendue | Condition | Agent suivant |
+|---|---|---|---|---|
+| 1 | LeRefactoAnalyste | Diagnostic + plan itératif | Plan produit | LeRefactoAnalysteChallenger |
+| 2 | LeRefactoAnalysteChallenger | Revue du plan | Plan rejeté | LeRefactoAnalyste |
+| 2 | LeRefactoAnalysteChallenger | Revue du plan | Plan validé | LeCheckListeur |
+| 3 | LeCheckListeur | `checklist.md` issue du plan | Checklist validée utilisateur | LeCodeur |
+| 4+ | LeCodeur | Refactoring appliqué | — | Enchaîne sur le workflow-coding (régressions → supervision → build) |
+
+Principe : LeCodeur ne modifie pas les tests pendant un refactoring ; les ajustements de tests relèvent de `workflow-testing`.
 
 ## Déroulé Détaillé
 
