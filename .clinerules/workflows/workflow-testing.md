@@ -130,25 +130,11 @@ Workflow-testing terminé avec succès.
 
 ## Limites d'Itération
 
-| Boucle | Max | Action si dépassé |
-|---|---|---|
-| Testeur → SuperviseurDeTache → Testeur (test KO) | 5 tours | Escalade utilisateur |
-| Testeur → SuperviseurDeTache → Testeur (tests manquants) | 2 tours | Escalade utilisateur |
+| Boucle | Max |
+|---|---|
+| Testeur → SuperviseurDeTache → Testeur (test KO) | 3 tours |
+| Testeur → SuperviseurDeTache → Testeur (tests manquants) | 2 tours |
 
-Quand une limite est atteinte, l'agent courant produit un **rapport de blocage** :
-
-```
-BLOCAGE — [NomAgent] — Limite atteinte ([N] tentatives)
-
-Contexte : [ce qui était tenté]
-Tentatives :
-  1. [action] → [résultat]
-  2. [action] → [résultat]
-
-Cause probable : [diagnostic]
-Suggestion : [piste pour l'utilisateur]
-
-En attente d'intervention utilisateur.
-```
-
-L'orchestrateur présente ce rapport à l'utilisateur. **Aucun agent ne continue tant que l'utilisateur n'a pas décidé.**
+Quand une limite est atteinte, appliquer le protocole unifié de
+`skills/escalation.md` (template de rapport, règles d'arrêt, procédure
+orchestrateur).

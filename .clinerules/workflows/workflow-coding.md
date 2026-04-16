@@ -152,30 +152,15 @@ Actions :
 
 ## Limites d'Itération
 
-| Boucle | Max | Action si dépassé |
-|---|---|---|
-| SuperviseurRegressions → Réparateur → SuperviseurRegressions | 3 tours | Escalade utilisateur |
-| Codeur → SuperviseurDeTache → Codeur (build KO) | 3 tours | Escalade utilisateur |
-| Codeur → SuperviseurDeTache → Codeur (checklist incomplète) | 2 tours | Escalade utilisateur |
+| Boucle | Max |
+|---|---|
+| SuperviseurRegressions → Réparateur → SuperviseurRegressions | 3 tours |
+| Codeur → SuperviseurDeTache → Codeur (build KO) | 3 tours |
+| Codeur → SuperviseurDeTache → Codeur (checklist incomplète) | 2 tours |
 
-Quand une limite est atteinte, l'agent courant produit un **rapport de blocage** :
-
-```
-BLOCAGE — [NomAgent] — Limite atteinte ([N] tentatives)
-
-Contexte : [ce qui était tenté]
-Tentatives :
-  1. [action] → [résultat]
-  2. [action] → [résultat]
-  3. [action] → [résultat]
-
-Cause probable : [diagnostic]
-Suggestion : [piste pour l'utilisateur]
-
-En attente d'intervention utilisateur.
-```
-
-L'orchestrateur présente ce rapport à l'utilisateur. **Aucun agent ne continue tant que l'utilisateur n'a pas décidé.**
+Quand une limite est atteinte, appliquer le protocole unifié de
+`skills/escalation.md` (template de rapport, règles d'arrêt, procédure
+orchestrateur).
 
 ---
 

@@ -29,6 +29,7 @@ Tu pilotes des agents spécialisés pour produire du code Craft, SOLID, DRY, KIS
 | `.clinerules/skills/hexagonal-architecture.md` | Architecture hexagonale du projet |
 | `.clinerules/skills/testing.md` | Standards de tests |
 | `.clinerules/skills/refactoring.md` | Protocole d'analyse de refactoring |
+| `.clinerules/skills/escalation.md` | Protocole unifié d'escalade et rapport de blocage |
 | `.clinerules/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
 | `.clinerules/agents/*.md` | Définition de chaque agent |
 | `.clinerules/workflows/*.md` | Workflows opérationnels |
@@ -77,13 +78,9 @@ Tu pilotes des agents spécialisés pour produire du code Craft, SOLID, DRY, KIS
 
 ## Protocole d'Escalade
 
-Chaque workflow définit des **limites d'itération** (voir `workflows/*.md`).
-Quand une limite est atteinte :
-
-1. L'agent courant produit un **rapport de blocage** (tentatives, diagnostic, suggestion)
-2. L'orchestrateur présente le rapport à l'utilisateur
-3. L'utilisateur décide : corriger manuellement, changer d'approche, ou abandonner
-4. **Aucun agent ne reprend tant que l'utilisateur n'a pas répondu**
+Défini en détail dans `skills/escalation.md` (template de rapport, règles
+d'arrêt, procédure orchestrateur). Chaque workflow définit ses propres
+**limites d'itération** (voir `workflows/*.md`).
 
 ### Limites récapitulatives
 
@@ -91,8 +88,11 @@ Quand une limite est atteinte :
 |---|---|---|
 | coding | Réparateur ↔ SuperviseurRegressions | 3 |
 | coding | Codeur ↔ SuperviseurDeTache (build KO) | 3 |
-| testing | Testeur ↔ SuperviseurDeTache (test KO) | 5 |
+| testing | Testeur ↔ SuperviseurDeTache (test KO) | 3 |
 | refactoring | Analyste ↔ Challenger (plan rejeté) | 2 |
+
+Une limite globale de **15 interventions d'agent par workflow** s'applique
+en complément pour prévenir les boucles combinées.
 
 ## Commandes Utilisateur
 
