@@ -35,6 +35,41 @@ Pour chaque test en échec, suivre ces étapes :
 | **Erreur de compilation** | Import manquant, signature changée | → LeCodeur corrige |
 | **Erreur d'infrastructure** | DB non dispo, config manquante | → Ignorer (CI/CD concern) |
 
+### Heuristique : Régression ou Évolution légitime ?
+
+Le piège est de classer en "évolution légitime" un vrai bug introduit par
+la feature en cours. Pour trancher, appliquer cet arbre de décision dans
+l'ordre :
+
+1. **Le changement de comportement est-il explicitement décrit dans la checklist ?**
+   (ex : tâche "Ajouter le champ `refusalUnits` au read model", "Supprimer la méthode X")
+   - OUI → **Évolution légitime** : le test adapte son attendu au nouveau contrat.
+   - NON → continuer à l'étape 2.
+
+2. **Le test échoue-t-il sur un pattern legacy documenté dans `skills/testing.md` ?**
+   (ex : `assertEquals` au lieu d'AssertJ, `if result == null` dans un contrôleur,
+   Fake dans package `dummy/`)
+   - OUI → **Évolution légitime** : migration du test vers le pattern cible.
+   - NON → continuer à l'étape 3.
+
+3. **Le test vérifie-t-il une invariance métier (règle du domaine, contrat d'API publié) ?**
+   - OUI → **Régression** : le nouveau code a cassé une règle qui doit tenir.
+     Le code de prod est fautif, pas le test.
+   - NON → continuer à l'étape 4.
+
+4. **Le test échoue-t-il sur un détail d'implémentation interne ?**
+   (ex : ordre des appels, structure interne non exposée, champ privé)
+   - OUI → **Évolution légitime** : le test était trop couplé à l'implémentation,
+     le réécrire en testant le comportement observable.
+   - NON → **Régression par défaut** : en cas de doute, on considère régression
+     et on renvoie au Réparateur. Un bug silencieux est plus coûteux qu'un
+     aller-retour en trop.
+
+**Règle de sûreté** : une exception non déclarée (`NullPointerException`,
+`IllegalStateException` non attendue) est **toujours** une régression, même
+si le test était "déjà fragile". Un test fragile qui devient rouge signale
+un code rendu plus fragile.
+
 ### Étape 2 : Rapport structuré
 
 ```
@@ -77,7 +112,8 @@ Tests KO : 2
 - **Fichier** : CampaignServiceImplTest.java
 - **Méthode** : shouldReturnCampaignStats
 - **Erreur** : Expected list of size 3 but was 4
-- **Catégorie** : Évolution légitime
+- **Catégorie** : Évolution légitime (heuristique étape 1 : la checklist inclut
+  explicitement "Ajouter le champ `refusalUnits` au read model CampaignStats")
 - **Cause probable** : Le nouveau champ `refusalUnits` a été ajouté au read model,
   le test doit s'adapter au nouveau format de données
 - **Action** : LeTesteur adapte le test
@@ -86,7 +122,8 @@ Tests KO : 2
 - **Fichier** : StateServiceImplTest.java
 - **Méthode** : shouldComputeStateCount
 - **Erreur** : NullPointerException at line 45
-- **Catégorie** : Régression
+- **Catégorie** : Régression (règle de sûreté : NPE non déclarée =
+  régression, même si l'heuristique étape 4 n'est pas conclusive)
 - **Cause probable** : La modification de `StateRepository` a introduit
   un cas null non géré
 - **Action** : LeRéparateur corrige le code
