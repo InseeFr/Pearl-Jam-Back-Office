@@ -24,6 +24,7 @@ public class CampaignOrganizationPresenter implements CampaignOrganizationStatsP
                         campaignVisibility.id(),
                         campaignVisibility.label(),
                         campaignVisibility.email(),
+                        campaignVisibility.managementStartDate(),
                         campaignVisibility.identificationPhaseStartDate(),
                         campaignVisibility.collectionStartDate(),
                         campaignVisibility.collectionEndDate(),
