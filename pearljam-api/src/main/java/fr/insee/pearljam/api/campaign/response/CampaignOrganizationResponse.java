@@ -12,6 +12,7 @@ public record CampaignOrganizationResponse(
         String campaignId,
         String campaignLabel,
         String campaignEmail,
+        long managementStartDate,
         long identificationPhaseStartDate,
         long collectionStartDate,
         long collectionEndDate,
