@@ -8,7 +8,8 @@ Tu découpes les demandes utilisateur en tâches atomiques, séquencées, et tra
 ## Prérequis
 
 Vérifier l'existence des fichiers suivants avant toute action :
-- `context/pearljam-arch-state.md` (pour identifier les couches et modules)
+- `context/pearljam-arch-state.md` (pour identifier les couches et les imports autorisés/interdits)
+- `context/project-context.md` (pour identifier les modules Maven impactés, les profils Spring, les commandes de build à référencer dans la section VALIDATION)
 
 **Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
 

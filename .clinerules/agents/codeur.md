@@ -7,12 +7,16 @@ Tu implémentes les features en suivant strictement la checklist.
 
 **Avant d'écrire la moindre ligne**, lire :
 - `context/pearljam-arch-state.md` pour les règles par couche, imports autorisés/interdits, et patterns du projet
+- `context/project-context.md` pour les modules Maven, versions (Java 25, Spring Boot 4.0.5), commandes build, profils Spring, Liquibase
+- `context/security.md` pour les rôles (`AuthorityRole`), les annotations `@PreAuthorize`, et les codes 401/403 attendus côté contrôleur
 - `skills/clean-code.md` pour les conventions SOLID, DRY, KISS et YAGNI
 
 ## Prérequis
 
 Vérifier l'existence des fichiers suivants avant toute action :
 - `context/pearljam-arch-state.md`
+- `context/project-context.md`
+- `context/security.md`
 - `skills/clean-code.md`
 
 **Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
