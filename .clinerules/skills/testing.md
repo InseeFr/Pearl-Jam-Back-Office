@@ -18,6 +18,24 @@ intégration `@SpringBootTest`, Cucumber, ArchUnit), voir
 - **JSONAssert** : comparaison JSON
 - **Spring Boot Test** : pour les tests d'intégration — voir `testing-integration.md`
 
+## Organisation des tests
+
+| Type | Emplacement |
+|---|---|
+| Test unitaire (service, controller) | `[module]/src/test/java/.../[Feature]Test.java` |
+| Test d'intégration | `pearljam-api/src/test/java/fr/insee/pearljam/integration/.../[Feature]IT.java` |
+| Test de mapper JPA ↔ Domain | `[module]/src/test/java/.../[Mapper]Test.java` |
+| Test de contrôleur `standaloneSetup` | même module que le contrôleur |
+| Cucumber (features + stepdefs) | `pearljam-api/src/test/java/fr/insee/pearljam/features/` + `src/test/resources/features/` |
+| ArchUnit | `pearljam-api/src/test/java/fr/insee/pearljam/config/*ArchTests.java` |
+| Fake (doublure) | `[module]/src/test/java/.../fake/[Port]Fake.java` |
+
+### Packages de doublures
+
+- **Nouveau code** : `fake/` uniquement.
+- **Legacy** : `dummy/` et `stub/` coexistent — migrer quand on modifie le
+  test, pas refondre par principe.
+
 ---
 
 ## Legacy vs Cible
@@ -408,5 +426,5 @@ void shouldComputeIdentificationState(Identification id,
 ## Voir aussi
 
 - `testing-integration.md` — tests d'adaptateurs, IT Spring Boot, Cucumber, ArchUnit, mappers
-- `context/pearljam-test-patterns.md` — tailles de ports projet, utilitaires partagés
 - `context/security.md` — scénarios d'auth, `AuthenticatedUserTestHelper`
+- `context/pearljam-arch-state.md` — frontières hexagonales testées par ArchUnit

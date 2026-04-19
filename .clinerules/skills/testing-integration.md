@@ -290,8 +290,7 @@ Les scripts SQL sont sous `src/test/resources/db/` et `src/test/resources/datase
 
 ## Voir aussi
 
-- `testing.md` — stratégie Fake/Mock, services Domain, contrôleurs MockMvc
-- `context/pearljam-test-patterns.md` — tailles de ports, utilitaires partagés
+- `testing.md` — stratégie Fake/Mock, organisation des tests, contrôleurs MockMvc
 - `context/security.md` — scénarios 401/403, `AuthenticatedUserTestHelper`
 - `context/pearljam-arch-state.md` — principes hexagonaux testés par ArchUnit
 - `context/project-context.md` — profils Spring, Liquibase, Docker Compose

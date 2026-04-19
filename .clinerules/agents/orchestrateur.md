@@ -23,8 +23,8 @@ voir `context/project-context.md`.
 | `orchestration/coordination.md`     | Matrice des agents, règles de transition, protocole d'escalade |
 | `skills/clean-code.md`              | Règles Clean Code & SOLID |
 | `context/pearljam-arch-state.md`    | Architecture hexagonale : principes, imports, patterns, violations |
-| `context/pearljam-test-patterns.md` | Patterns de tests, tailles de ports référentielles |
-| `skills/testing.md`                 | Standards de tests |
+| `skills/testing.md`                 | Standards de tests unitaires (stratégie Fake/Mock, controllers MockMvc) |
+| `skills/testing-integration.md`     | Standards IT (Spring Boot, adaptateurs, mappers, Cucumber, ArchUnit) |
 | `context/security.md`               | OIDC, rôles, auth tests, codes 401/403 |
 | `skills/refactoring.md`             | Protocole d'analyse de refactoring |
 | `skills/escalation.md`              | Template de rapport de blocage et procédure |

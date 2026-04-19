@@ -21,14 +21,14 @@ Ce dossier contient les prompts, skills et workflows pour piloter un LLM
 │   └── refacto-challenger.md     # Challenge le plan de refactoring
 ├── orchestration/
 │   └── coordination.md           # Matrice d'agents, règles de transition, escalade
-├── context/                      # Snapshots projet (architecture, tests, setup)
+├── context/                      # Snapshots projet (architecture, sécurité, setup)
 │   ├── pearljam-arch-state.md    # Architecture hexagonale : principes, imports, violations
-│   ├── pearljam-test-patterns.md # Patterns de tests et tailles de ports référentielles
 │   ├── security.md               # OIDC, rôles, AuthenticatedUserTestHelper, 401/403
 │   └── project-context.md        # Versions, commandes build, config, Liquibase, Docker
 ├── skills/                       # Connaissances partagées entre agents
 │   ├── clean-code.md             # Règles SOLID, Clean Code, conventions Java 25
-│   ├── testing.md                # Standards de tests, patterns par couche
+│   ├── testing.md                # Stratégie Fake/Mock, services Domain, controllers MockMvc
+│   ├── testing-integration.md    # IT Spring Boot, adaptateurs, mappers, Cucumber, ArchUnit
 │   ├── refactoring.md            # Catalogue de refactorings, grille d'évaluation
 │   └── escalation.md             # Protocole d'escalade et rapport de blocage
 ├── workflows/                    # Workflows opérationnels
