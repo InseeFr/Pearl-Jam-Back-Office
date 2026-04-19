@@ -2,18 +2,21 @@
 
 ## Objectif
 
-Ce document définit les standards de tests **cibles** du projet.
-Il prescrit une stratégie unifiée de doublures de test et distingue le legacy à ne pas reproduire.
+Ce document définit les standards de tests **unitaires et de contrôleur**
+(stratégie de doublures, services Domain, contrôleurs MockMvc,
+paramétrés). Il couvre 70% des tests écrits.
+
+Pour les tests qui touchent l'infrastructure réelle (adaptateurs JPA/JDBC,
+intégration `@SpringBootTest`, Cucumber, ArchUnit), voir
+`testing-integration.md`.
 
 ## Stack de Test
 
 - **JUnit 5** + **AssertJ** (exclusivement — jamais JUnit `assertEquals`)
 - **Mockito** : usage restreint (voir règles ci-dessous)
-- **MockMvc** : tests de contrôleurs (standaloneSetup)
+- **MockMvc** : tests de contrôleurs (`standaloneSetup`)
 - **JSONAssert** : comparaison JSON
-- **Spring Boot Test** : tests d'intégration (`@SpringBootTest`)
-- **Cucumber** : tests BDD
-- **ArchUnit** : frontières de modules
+- **Spring Boot Test** : pour les tests d'intégration — voir `testing-integration.md`
 
 ---
 
@@ -53,7 +56,7 @@ Un Fake pour ça coûte 10 lignes, ne cassera presque jamais, et documente le co
 | Service via port **≤ 6 méthodes** | Petit | **Fake** | Lisible, stable, documente le contrat |
 | Service via port **> 6 méthodes** | Gros | **Mockito** | Évite 20+ méthodes vides, résiste aux évolutions du port |
 | Contrôleur via port entrant | Variable | **Fake** | Teste le vrai comportement HTTP (MockMvc) |
-| Adaptateur (persistence) | — | **Test d'intégration** | Tester la vraie requête SQL, pas du câblage |
+| Adaptateur (persistence) | — | **Test d'intégration** | voir `testing-integration.md` |
 | Date/temps | 1 méthode | **FixedDateService** | Fake du port `DateService` |
 
 Le seuil de 6 est une heuristique : au-delà, le ratio "méthodes utilisées / méthodes
@@ -63,7 +66,7 @@ Le seuil de 6 est une heuristique : au-delà, le ratio "méthodes utilisées / m
 
 ```
 Je teste un ADAPTATEUR (persistence/http) ?
-  └─ OUI → Test d'intégration (@SpringBootTest + vraie DB)
+  └─ OUI → Test d'intégration (voir testing-integration.md)
   └─ NON → Je teste un SERVICE ou un CONTRÔLEUR
        └─ Le port a-t-il ≤ 6 méthodes ?
             └─ OUI → Fake (package fake/)
@@ -209,7 +212,7 @@ void setUp() {
 
 ---
 
-## Tests par Couche
+## Tests par Couche (unit & web)
 
 ### 1. Tests de Service Domain — Fake (port petit)
 
@@ -360,38 +363,11 @@ class CampaignControllerTest {
 | `JsonTestHelper.toJson(object)` | Sérialise pour comparaison JSON |
 | `AuthenticatedUserTestHelper.AUTH_ADMIN` | Token admin pré-configuré |
 
-### 4. Tests d'Adaptateur (intégration uniquement)
+Note : `standaloneSetup` ne déclenche **pas** la chaîne Spring Security.
+Pour vérifier les règles `requestMatchers(...).hasAnyRole(...)` et les
+codes 401/403 réels, voir `testing-integration.md` et `security.md`.
 
-Un adaptateur transforme des appels JPA/JDBC en modèles domain.
-Le mocker ou le faker ne vérifierait rien d'utile.
-**Seul un test d'intégration avec une vraie DB est pertinent.**
-
-```java
-@ActiveProfiles(profiles = {"auth", "test"})
-@AutoConfigureMockMvc
-@ContextConfiguration
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
-class VisibilityIT {
-
-    @Autowired private MockMvc mockMvc;
-
-    @Test
-    void testGetVisibilities() throws Exception {
-        var result = mockMvc.perform(
-                get("/api/campaign/SIMPSONS2020X00/visibilities")
-                    .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andReturn();
-
-        JSONAssert.assertEquals(expected,
-            result.getResponse().getContentAsString(),
-            JSONCompareMode.NON_EXTENSIBLE);
-    }
-}
-```
-
-### 5. Tests Paramétrés
+### 4. Tests Paramétrés
 
 ```java
 @ParameterizedTest
@@ -404,18 +380,6 @@ void shouldComputeIdentificationState(Identification id,
 }
 ```
 
-### 6. Tests d'Architecture (ArchUnit)
-
-Règles dans `ModuleBoundariesArchTests.java` :
-
-| Règle | Statut |
-|---|---|
-| API → JPA repositories | Interdit |
-| Domain → API | Interdit |
-| Domain → Infrastructure (sauf entities) | Toléré temporairement |
-| Contracts → API ou Infrastructure | Interdit |
-| Infrastructure → API | Interdit |
-
 ---
 
 ## Conventions (nouveau code)
@@ -425,7 +389,7 @@ Règles dans `ModuleBoundariesArchTests.java` :
 - **Pattern** : Given/When/Then
 - **Doublures** : Fake dans `fake/` pour ports ≤ 6 méthodes, Mockito sinon
 - **Contrôleurs** : toujours Fake (flags/getters) + MockMvc
-- **Adaptateurs** : test d'intégration uniquement
+- **Adaptateurs** : test d'intégration (voir `testing-integration.md`)
 - **Temps** : `FixedDateService` (Fake du port `DateService`)
 - **Pas de** : `@Disabled`, `@Ignore`, `@Order`, état partagé entre tests
 
@@ -439,3 +403,10 @@ Règles dans `ModuleBoundariesArchTests.java` :
 - [ ] JSON comparé avec JSONAssert pour réponses complexes
 - [ ] État du Fake vérifié après action
 - [ ] Ne pas toucher aux tests legacy sauf refactoring explicite
+- [ ] Scénarios sécurité (401/403) — voir `context/security.md` et `testing-integration.md`
+
+## Voir aussi
+
+- `testing-integration.md` — tests d'adaptateurs, IT Spring Boot, Cucumber, ArchUnit, mappers
+- `context/pearljam-test-patterns.md` — tailles de ports projet, utilitaires partagés
+- `context/security.md` — scénarios d'auth, `AuthenticatedUserTestHelper`
