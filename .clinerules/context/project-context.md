@@ -1,10 +1,8 @@
 # Skill : Contexte Projet — Pearl Jam Back Office
 
-## Objectif
-
-Ce document capture les informations opérationnelles du projet : commandes de build,
-configuration, profils de test, infrastructure locale. Il sert de référence pour tous
-les agents quand ils doivent exécuter des commandes ou comprendre l'environnement.
+> Source unique sur l'environnement opérationnel : versions, modules,
+> commandes build, configuration, profils, Liquibase, Docker, conventions.
+> Dernière MAJ : 2026-04-19.
 
 ## Versions
 
@@ -12,9 +10,30 @@ les agents quand ils doivent exécuter des commandes ou comprendre l'environneme
 |---|---|
 | Java | 25 |
 | Spring Boot | 4.0.5 |
-| Maven (wrapper) | via `./mvnw` |
+| Spring Framework | 7 (transitif) |
+| Spring Security | 7 (OIDC) |
+| Maven | via wrapper `./mvnw` |
 | PostgreSQL (local) | via Docker Compose |
 | Keycloak (local) | via Docker Compose |
+
+## Package racine
+
+`fr.insee.pearljam`
+
+## Modules Maven
+
+```
+pearljam-back-office-parent/
+├── pearljam-domain-model              # Value Objects, enums partagés
+├── pearljam-domain                    # Logique métier, ports (in/out), services
+├── pearljam-shared-dto                # DTOs partagés entre modules
+├── pearljam-shared-persistence-model  # Entités persistence partagées
+├── pearljam-infrastructure-persistence# Adaptateurs DB (JPA, JdbcClient)
+├── pearljam-infrastructure-http       # Clients HTTP sortants (@HttpExchange)
+├── pearljam-infrastructure-security   # Auth OIDC, sécurité
+├── pearljam-api                       # REST controllers, config Spring, Swagger
+└── pearljam-coverage                  # Agrégation JaCoCo
+```
 
 ## Commandes Build & Run
 
@@ -39,22 +58,13 @@ les agents quand ils doivent exécuter des commandes ou comprendre l'environneme
 
 # Couverture JaCoCo
 ./mvnw -Pcoverage test
-# Rapport dans pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
-```
+# Rapport : pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
 
-## Modules Maven
+# Build complet sans tests
+./mvnw compile -pl pearljam-domain,pearljam-api,pearljam-infrastructure-persistence
 
-```
-pearljam-back-office-parent/
-├── pearljam-domain-model          # Value Objects, enums partagés
-├── pearljam-domain                # Logique métier, ports (in/out), services
-├── pearljam-shared-dto            # DTOs partagés entre modules
-├── pearljam-shared-persistence-model # Entités persistence partagées
-├── pearljam-infrastructure-persistence # Adaptateurs DB (JPA, JdbcClient)
-├── pearljam-infrastructure-http   # Clients HTTP sortants
-├── pearljam-infrastructure-security # Auth OIDC, sécurité
-├── pearljam-api                   # REST controllers, config Spring, Swagger
-└── pearljam-coverage              # Agrégation JaCoCo
+# Vérif architecture (ArchUnit)
+./mvnw test -pl pearljam-api -Dtest=ModuleBoundariesArchTests
 ```
 
 ## Configuration & Profils
@@ -72,7 +82,7 @@ pearljam-back-office-parent/
 
 ### Feature flags
 
-Les fonctionnalités sont activées via des propriétés `feature.*` dans `application.yml` :
+Propriétés `feature.*` dans `application.yml` :
 - `feature.oidc.*` : configuration OIDC (auth-server-host, realm, client-id)
 - `feature.swagger.enabled` : active Swagger UI (Springdoc)
 
@@ -83,7 +93,7 @@ Les fonctionnalités sont activées via des propriétés `feature.*` dans `appli
 ```
 pearljam-infrastructure-persistence/src/main/resources/
 └── db/
-    ├── master.xml              # Point d'entrée Liquibase (inclut les changelogs)
+    ├── master.xml              # Point d'entrée Liquibase
     └── changelog/
         ├── 130_notification.xml
         ├── 200_dates.xml
@@ -93,19 +103,17 @@ pearljam-infrastructure-persistence/src/main/resources/
         ├── 620_indexes_for_campaign_stats.xml
         ├── 621_indexes_for_closable_su.xml
         ├── 624_create_campaign_daily_stats.xml
-        └── ...
+        └── NNN_description.xml
 ```
 
-### Convention de nommage des changelogs
+### Convention de nommage
 
 - Préfixe numérique croissant : `NNN_description.xml`
 - Liquibase s'exécute au démarrage de l'application
-- Les changements de schéma doivent être enregistrés via `master.xml`
+- Changements de schéma enregistrés via `master.xml`
 - **Ne jamais modifier un changelog déjà appliqué** — créer un nouveau fichier
 
 ## Suites de Tests
-
-### Tests unitaires et d'intégration
 
 | Classe / Pattern | Type | Module |
 |---|---|---|
@@ -114,9 +122,9 @@ pearljam-infrastructure-persistence/src/main/resources/
 | `TestAuthKeyCloak` | Suite auth Keycloak | `pearljam-api` |
 | `TestNoAuth` | Suite sans auth | `pearljam-api` |
 | `CucumberTestRunner` | Runner Cucumber | `pearljam-api` |
-| `ModuleBoundariesArchTests` | Tests ArchUnit | `pearljam-api` |
+| `ModuleBoundariesArchTests` | ArchUnit | `pearljam-api` |
 
-### Fichiers Cucumber
+### Cucumber
 
 ```
 pearljam-api/src/test/resources/features/
@@ -129,17 +137,23 @@ pearljam-api/src/test/resources/features/
 pearljam-api/
 ├── Dockerfile            # Image de l'API
 ├── compose.yml           # Stack locale (PostgreSQL + Keycloak)
-└── container/            # Scripts et config pour les conteneurs
+└── container/            # Scripts et config des conteneurs
 ```
 
 ### Lancer la stack locale
 
 ```bash
 cd pearljam-api
-./mvnw spring-boot:run   # Lance l'API connectée à la stack
+./mvnw spring-boot:run   # API connectée à la stack docker
 ```
 
 ## Conventions de Code
+
+### Langue
+
+- **Code et commentaires en anglais** (identifiants, Javadoc, messages
+  d'exception, messages de commit techniques).
+- **Prompts et documentation agents en français** (ce dossier `.clinerules`).
 
 ### Nommage
 
@@ -147,12 +161,12 @@ cd pearljam-api
 - Classes : `UpperCamelCase`
 - Méthodes/champs : `lowerCamelCase`
 - Respecter le nommage existant même si historiquement incorrect
-  (exemple : le package `bussinessrules` conserve sa typo)
+  (exemple : le package `bussinessrules` conserve sa typo).
 
 ### Règles de contribution
 
-- **Ne pas reformater** du code non modifié
-- **Conventional Commits** : `feat:`, `fix:`, `chore:`, `docs:`, `test:`
-- Un commit = un changement focalisé (pas de mélange refactoring + feature)
-- Référencer le ticket/issue dans la PR
-- Documenter les changements d'API (exemples requête/réponse)
+- **Ne pas reformater** du code non modifié.
+- **Conventional Commits** : `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`.
+- Un commit = un changement focalisé (pas de mélange refactoring + feature).
+- Référencer le ticket/issue dans la PR.
+- Documenter les changements d'API (exemples requête/réponse).

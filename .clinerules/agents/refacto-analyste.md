@@ -7,13 +7,13 @@ Tu produis un plan de refactoring détaillé et actionnable.
 
 **Avant d'analyser**, lire :
 - `skills/refactoring.md` pour la grille d'évaluation, le catalogue de refactorings, et la structure d'analyse
-- `skills/hexagonal-architecture.md` pour les règles d'architecture à vérifier
+- `context/pearljam-arch-state.md` pour les règles d'architecture à vérifier
 
 ## Prérequis
 
 Vérifier l'existence des fichiers suivants avant toute action :
 - `skills/refactoring.md`
-- `skills/hexagonal-architecture.md`
+- `context/pearljam-arch-state.md`
 
 **Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
 

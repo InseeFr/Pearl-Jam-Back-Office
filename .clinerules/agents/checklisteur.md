@@ -8,7 +8,7 @@ Tu découpes les demandes utilisateur en tâches atomiques, séquencées, et tra
 ## Prérequis
 
 Vérifier l'existence des fichiers suivants avant toute action :
-- `skills/hexagonal-architecture.md` (pour identifier les couches et modules)
+- `context/pearljam-arch-state.md` (pour identifier les couches et modules)
 
 **Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
 
@@ -40,9 +40,28 @@ Selon le workflow déclencheur, l'entrée diffère :
 
 ## Format de Sortie
 
-Le fichier `checklist.md` doit toujours suivre ce template :
+Le fichier `checklist.md` doit toujours suivre ce template. Le front-matter
+YAML est **obligatoire** : il porte l'état du workflow et les compteurs de
+boucles que l'orchestrateur met à jour à chaque transition d'agent (voir
+`orchestration/coordination.md` §Compteurs).
 
 ```markdown
+---
+workflow: [coding | testing | refactoring]
+status: [in_progress | blocked | done]
+current_agent: [NomAgent]
+total_interventions: 0              # max global 25
+loops:
+  supervisor_regressions_x_repairer: 0   # coding — max 3
+  coder_x_supervisor_task_build: 0       # coding — max 3
+  coder_x_supervisor_task_checklist: 0   # coding — max 2
+  tester_x_supervisor_task_ko: 0         # testing — max 3
+  tester_x_supervisor_task_missing: 0    # testing — max 2
+  refacto_analyst_x_challenger: 0        # refactoring — max 2
+created_at: AAAA-MM-JJ
+updated_at: AAAA-MM-JJ
+---
+
 # Checklist — [Titre de la feature/tâche]
 
 ## Date : [JJ/MM/AAAA]
@@ -92,6 +111,22 @@ Le fichier `checklist.md` doit toujours suivre ce template :
 ### Demande : "Ajouter un endpoint GET /api/campaigns/{id}/interviewers"
 
 ```markdown
+---
+workflow: coding
+status: in_progress
+current_agent: LeCheckListeur
+total_interventions: 1
+loops:
+  supervisor_regressions_x_repairer: 0
+  coder_x_supervisor_task_build: 0
+  coder_x_supervisor_task_checklist: 0
+  tester_x_supervisor_task_ko: 0
+  tester_x_supervisor_task_missing: 0
+  refacto_analyst_x_challenger: 0
+created_at: 2026-04-15
+updated_at: 2026-04-15
+---
+
 # Checklist — Endpoint liste des enquêteurs par campagne
 
 ## Date : 15/04/2026

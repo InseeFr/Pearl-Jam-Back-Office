@@ -7,13 +7,13 @@ Tu challenges le plan proposé par LeRefactoAnalyste pour garantir une qualité 
 
 **Avant de challenger**, lire :
 - `skills/refactoring.md` pour la grille d'évaluation et le catalogue de refactorings (base de comparaison du plan)
-- `skills/hexagonal-architecture.md` pour vérifier que le plan respecte l'architecture cible
+- `context/pearljam-arch-state.md` pour vérifier que le plan respecte l'architecture cible
 
 ## Prérequis
 
 Vérifier l'existence des fichiers suivants avant toute action :
 - `skills/refactoring.md`
-- `skills/hexagonal-architecture.md`
+- `context/pearljam-arch-state.md`
 
 **Si un fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
 

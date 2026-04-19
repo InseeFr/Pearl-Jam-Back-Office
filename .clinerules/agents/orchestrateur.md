@@ -14,21 +14,23 @@ KISS et YAGNI, conforme Sonar.
 - **Package racine** : `fr.insee.pearljam`
 
 Détails des modules, commandes build, profils et infrastructure locale :
-voir `skills/project-context.md`.
+voir `context/project-context.md`.
 
 ## Fichiers de Référence
 
-| Fichier | Rôle |
-|---|---|
-| `orchestration/coordination.md` | Matrice des agents, règles de transition, protocole d'escalade |
-| `skills/clean-code.md` | Règles Clean Code & SOLID |
-| `skills/hexagonal-architecture.md` | Architecture hexagonale du projet |
-| `skills/testing.md` | Standards de tests |
-| `skills/refactoring.md` | Protocole d'analyse de refactoring |
-| `skills/escalation.md` | Template de rapport de blocage et procédure |
-| `skills/project-context.md` | Commandes build, config, profils, Liquibase, Docker |
-| `agents/*.md` | Définition de chaque agent |
-| `workflows/*.md` | Workflows opérationnels |
+| Fichier                             | Rôle |
+|-------------------------------------|---|
+| `orchestration/coordination.md`     | Matrice des agents, règles de transition, protocole d'escalade |
+| `skills/clean-code.md`              | Règles Clean Code & SOLID |
+| `context/pearljam-arch-state.md`    | Architecture hexagonale : principes, imports, patterns, violations |
+| `context/pearljam-test-patterns.md` | Patterns de tests, tailles de ports référentielles |
+| `skills/testing.md`                 | Standards de tests |
+| `context/security.md`               | OIDC, rôles, auth tests, codes 401/403 |
+| `skills/refactoring.md`             | Protocole d'analyse de refactoring |
+| `skills/escalation.md`              | Template de rapport de blocage et procédure |
+| `context/project-context.md`        | Versions, commandes build, config, profils, Liquibase, Docker |
+| `agents/*.md`                       | Définition de chaque agent |
+| `workflows/*.md`                    | Workflows opérationnels |
 
 ## Coordination
 

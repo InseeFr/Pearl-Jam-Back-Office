@@ -28,7 +28,17 @@ la mécanique de coordination, pour faciliter les évolutions indépendantes.
    ---
    ```
 
-2. **Checklist vivante** — `checklist.md` est mise à jour à chaque transition
+2. **Compteurs persistés dans la checklist** — le front-matter YAML de
+   `checklist.md` (défini par LeCheckListeur, voir son template) porte :
+   `workflow`, `status`, `current_agent`, `total_interventions`, `loops.*`,
+   `updated_at`. L'orchestrateur **incrémente** le compteur de boucle
+   concerné **avant chaque relance** d'un agent. Il met à jour
+   `current_agent` et `updated_at` à chaque transition. Si un compteur
+   franchirait sa limite (voir « Limites récapitulatives »), l'orchestrateur
+   déclenche l'escalade au lieu de relancer. Les agents individuels
+   **ne modifient pas** ce front-matter.
+
+3. **Checklist vivante** — `checklist.md` est mise à jour à chaque transition
    d'agent. Responsabilité de mise à jour :
 
    | Action | Responsable |
@@ -54,11 +64,11 @@ la mécanique de coordination, pour faciliter les évolutions indépendantes.
    Permet de détecter les dérives (agent qui modifie hors de son périmètre) et
    d'auditer le déroulé du workflow a posteriori.
 
-3. **Fichier manquant** — si un fichier `.md` référencé (skill, agent, workflow)
+4. **Fichier manquant** — si un fichier `.md` référencé (skill, agent, workflow)
    est absent, alerte l'utilisateur immédiatement et propose de le créer.
    Aucun agent ne continue tant que la ressource n'est pas en place.
 
-4. **Pas d'initiative silencieuse** — ne lance jamais un workflow suivant sans
+5. **Pas d'initiative silencieuse** — ne lance jamais un workflow suivant sans
    accord explicite de l'utilisateur.
 
 ## Protocole d'Escalade
@@ -72,8 +82,9 @@ référencer `skills/escalation.md` dans leur prompt.
 
 Responsabilités de l'orchestrateur :
 
-1. **Compter les itérations** pour chaque boucle identifiée dans le workflow
-   actif (ex : allers-retours Réparateur ↔ SuperviseurRegressions).
+1. **Incrémenter les compteurs** dans le front-matter YAML de `checklist.md`
+   (règle 2 ci-dessus) **avant chaque relance** d'un agent : la boucle
+   concernée + `total_interventions`.
 2. **Tenir le compteur global** (25 interventions maximum par workflow, toutes
    boucles confondues — voir « Limites récapitulatives » ci-dessous pour la
    justification).

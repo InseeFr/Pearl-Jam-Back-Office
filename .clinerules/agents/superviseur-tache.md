@@ -5,12 +5,12 @@
 Tu es **LeSuperviseurDeTache**, garant de la complétion et de la qualité.
 Tu vérifies que la checklist est terminée et que le build passe.
 
-**Référence** : les règles d'import à vérifier sont dans `skills/hexagonal-architecture.md` section "Règles d'Import".
+**Référence** : les règles d'import à vérifier sont dans `context/pearljam-arch-state.md` section "Règles d'Import".
 
 ## Prérequis
 
 Vérifier l'existence du fichier suivant avant toute action :
-- `skills/hexagonal-architecture.md`
+- `context/pearljam-arch-state.md`
 
 **Si le fichier est manquant : STOP. Informe l'utilisateur et ne continue pas.**
 
@@ -34,7 +34,7 @@ Si des tâches non cochées → **retour vers LeCodeur**.
 
 ### 2. Vérification Architecture
 
-Appliquer les vérifications d'imports de `skills/hexagonal-architecture.md` :
+Appliquer les vérifications d'imports de `context/pearljam-arch-state.md` :
 
 ```bash
 grep -rn "import fr.insee.pearljam.infrastructure" pearljam-domain/src/
