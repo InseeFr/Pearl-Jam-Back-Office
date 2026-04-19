@@ -234,7 +234,7 @@ public class StateDaoAdapter implements StateRepository {
 
 ## Violations connues (état de migration)
 
-### 1. Annotations Spring dans le Domain — bloquant à terme
+### 1. Annotations Spring dans le Domain — toléré
 
 `@Service`, `@Component`, `@Transactional` présents dans ~15 fichiers du domaine.
 
@@ -243,8 +243,6 @@ Exemples :
 - `domain/surveyunit/service/StateServiceImpl` → `@Service` + `@Transactional`
 - `domain/message/service/MessageServiceImpl` → `@Service` + `@Transactional` + `SimpMessagingTemplate` (WebSocket)
 - `domain/campaign/service/CurrentDateService` → `@Component`
-
-**Cible** : déclaration des beans en `@Configuration` côté infra/api. Domaine = Java pur.
 
 ### 2. Entités JPA dans le Domain — bloquant
 
@@ -359,5 +357,3 @@ Pour attaquer un bounded context :
 2. Introduire le mapper Entity ↔ Domain dans l'adaptateur.
 3. Remplacer le type de retour du port out (entité → modèle domain).
 4. Remplacer le type de retour du port in et du service.
-5. Retirer `@Service` / `@Transactional` du service domain (les déplacer en `@Configuration`).
-6. Retirer Lombok en dernier (le moins risqué, mais le plus verbeux).
