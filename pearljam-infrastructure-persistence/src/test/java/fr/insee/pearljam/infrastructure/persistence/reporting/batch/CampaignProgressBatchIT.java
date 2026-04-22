@@ -511,15 +511,15 @@ class CampaignProgressBatchIT {
     }
 
     @Test
-    @DisplayName("Should count multiple READY communication requests for same SU")
-    void shouldCountMultipleReadyRequestsForSameSU() {
+    @DisplayName("Should count notice_count once per survey unit even if multiple NOTICE requests are READY")
+    void shouldDeduplicateNoticeCountPerSurveyUnit() {
         CommunicationTemplateDBId templateId = new CommunicationTemplateDBId("meshuggah-multi", campaign.getId());
         CommunicationTemplateDB template = new CommunicationTemplateDB(
                 templateId, CommunicationMedium.LETTER, CommunicationType.NOTICE, campaign);
         campaign.setCommunicationTemplates(List.of(template));
         campaignRepository.save(campaign);
 
-        // SU with 2 separate NOTICE communication requests, both READY
+        // 1 SU with 2 separate NOTICE communication requests, both READY → notice_count must be 1
         SurveyUnitDB su = createSurveyUnit("SU-MULTI", campaign, ou1, interviewer1);
         su.getStates().add(new StateDB(BEFORE_DAY, su, StateType.PRC));
 
@@ -545,7 +545,45 @@ class CampaignProgressBatchIT {
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
         assertThat(result).isPresent();
-        assertThat(result.get().getNoticeCommunicationCount()).isEqualTo(2);
+        assertThat(result.get().getNoticeCommunicationCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Should count reminder_count once per survey unit even if multiple REMINDER requests are READY")
+    void shouldDeduplicateReminderCountPerSurveyUnit() {
+        CommunicationTemplateDBId templateId = new CommunicationTemplateDBId("meshuggah-remind-multi", campaign.getId());
+        CommunicationTemplateDB template = new CommunicationTemplateDB(
+                templateId, CommunicationMedium.LETTER, CommunicationType.REMINDER, campaign);
+        campaign.setCommunicationTemplates(List.of(template));
+        campaignRepository.save(campaign);
+
+        // 1 SU with 2 separate REMINDER communication requests, both READY → reminder_count must be 1
+        SurveyUnitDB su = createSurveyUnit("SU-REMIND-MULTI", campaign, ou1, interviewer1);
+        su.getStates().add(new StateDB(BEFORE_DAY, su, StateType.PRC));
+
+        CommunicationRequestDB req1 = new CommunicationRequestDB(
+                null, templateId, CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.TOOL, su, new ArrayList<>());
+        req1.getStatus().add(new CommunicationRequestStatusDB(
+                null, BEFORE_DAY, CommunicationStatusType.READY, req1));
+        su.getCommunicationRequests().add(req1);
+
+        CommunicationRequestDB req2 = new CommunicationRequestDB(
+                null, templateId, CommunicationRequestReason.UNREACHABLE,
+                CommunicationRequestEmitter.TOOL, su, new ArrayList<>());
+        req2.getStatus().add(new CommunicationRequestStatusDB(
+                null, BEFORE_DAY - 1000, CommunicationStatusType.READY, req2));
+        su.getCommunicationRequests().add(req2);
+
+        surveyUnitRepository.save(su);
+        entityManager.flush();
+
+        batch.run(DAY);
+        entityManager.clear();
+
+        Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
+        assertThat(result).isPresent();
+        assertThat(result.get().getReminderCommunicationCount()).isEqualTo(1);
     }
 
     @Test
