@@ -59,8 +59,8 @@ public class CampaignProgressSnapshot {
                 su.campaign_id,
                 su.organization_unit_id,
                 su.interviewer_id,
-                SUM(CASE WHEN ct.type = 'NOTICE'   THEN 1 ELSE 0 END) AS notice_count,
-                SUM(CASE WHEN ct.type = 'REMINDER' THEN 1 ELSE 0 END) AS reminder_count
+                COUNT(DISTINCT CASE WHEN ct.type = 'NOTICE'   THEN su.id END) AS notice_count,
+                COUNT(DISTINCT CASE WHEN ct.type = 'REMINDER' THEN su.id END) AS reminder_count
             FROM communication_request cr
             JOIN survey_unit su ON su.id = cr.survey_unit_id
             JOIN communication_template ct
