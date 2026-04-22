@@ -22,7 +22,7 @@ public class CampaignCollectionPresenter implements CampaignStatsPresenter<List<
         return new CampaignCollectionResponse(
                 stats.getCampaignId(),
                 stats.getCampaignLabel(),
-                stats.getAllocatedStateCount(),
+                stats.getAllocatedCount(),
                 CollectionRatesResponse.from(stats),
                 ContactOutcomesProgressResponse.from(stats),
                 ClosingCausesProgressResponse.from(stats));

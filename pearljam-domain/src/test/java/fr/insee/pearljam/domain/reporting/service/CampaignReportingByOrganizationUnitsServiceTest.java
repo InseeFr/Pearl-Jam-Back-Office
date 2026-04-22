@@ -80,7 +80,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
 
         assertThat(result.organizationUnitStats()).isEmpty();
         assertThat(result.campaignStats().getProgressStateRate()).isZero();
-        assertThat(result.campaignStats().getAllocatedStateCount()).isZero();
+        assertThat(result.campaignStats().getAllocatedCount()).isZero();
     }
 
     @Test
@@ -120,7 +120,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
 
         OrganizationUnitDailyStats ou = result.organizationUnitStats().getFirst();
         assertThat(ou.getProgressStateRate()).isCloseTo(54.135f, within(0.001f));
-        assertThat(ou.getAllocatedStateCount()).isEqualTo(133L);
+        assertThat(ou.getAllocatedCount()).isEqualTo(133L);
         assertThat(ou.getVicStateCount()).isEqualTo(4L);
         assertThat(ou.getInProgressStateCount()).isEqualTo(30L);
         assertThat(ou.getWftStateCount()).isEqualTo(6L);
@@ -147,7 +147,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
         OrganizationUnitStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
         assertThat(result.campaignStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.campaignStats().getAllocatedStateCount()).isEqualTo(100L);
+        assertThat(result.campaignStats().getAllocatedCount()).isEqualTo(100L);
     }
 
     @Test
@@ -155,7 +155,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
         OrganizationUnitStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
         assertThat(result.campaignStats().getProgressStateRate()).isZero();
-        assertThat(result.campaignStats().getAllocatedStateCount()).isZero();
+        assertThat(result.campaignStats().getAllocatedCount()).isZero();
     }
 
     @Test

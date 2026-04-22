@@ -23,20 +23,20 @@ public class CampaignCollectionByInterviewersPresenter implements
                 interviewerStats.stream()
                         .map(interviewer -> new CampaignCollectionByInterviewersResponse.Interviewer(
                                 interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName(),
-                                interviewer.getAllocatedStateCount(),
+                                interviewer.getAllocatedCount(),
                                 CollectionRatesResponse.from(interviewer),
                                 ContactOutcomesProgressResponse.from(interviewer),
                                 ClosingCausesProgressResponse.from(interviewer)
                         ))
                         .toList(),
                 new CampaignCollectionByInterviewersResponse.OrganizationUnit(
-                        siteStats.getAllocatedStateCount(),
+                        siteStats.getAllocatedCount(),
                         CollectionRatesResponse.from(siteStats),
                         ContactOutcomesProgressResponse.from(siteStats),
                         ClosingCausesProgressResponse.from(siteStats)
                 ),
                 new CampaignCollectionByInterviewersResponse.Campaign(
-                        campaignStats.getAllocatedStateCount(),
+                        campaignStats.getAllocatedCount(),
                         campaignStats.getUnaffectedCount(),
                         CollectionRatesResponse.from(campaignStats),
                         ContactOutcomesProgressResponse.from(campaignStats),

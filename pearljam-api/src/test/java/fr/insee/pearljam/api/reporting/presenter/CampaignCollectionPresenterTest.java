@@ -21,7 +21,7 @@ class CampaignCollectionPresenterTest {
         assertThat(result).singleElement().satisfies(response -> {
             assertThat(response.campaignId()).isEqualTo("camp-1");
             assertThat(response.campaignLabel()).isEqualTo("Campaign 1");
-            assertThat(response.allocated()).isEqualTo(stats.getAllocatedStateCount());
+            assertThat(response.allocated()).isEqualTo(stats.getAllocatedCount());
             assertThat(response.rates().collection()).isEqualTo(stats.getCollectionRate());
             assertThat(response.outcomes().total()).isEqualTo(stats.getTotalContactOutcomes());
             assertThat(response.closingCauses().totalClosed()).isEqualTo(stats.getTotalClosingCauses());

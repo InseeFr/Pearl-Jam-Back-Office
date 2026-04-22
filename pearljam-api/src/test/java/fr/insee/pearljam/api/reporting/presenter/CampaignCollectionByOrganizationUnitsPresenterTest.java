@@ -24,12 +24,12 @@ class CampaignCollectionByOrganizationUnitsPresenterTest {
 
         assertThat(result.organizationUnits()).singleElement().satisfies(organizationUnit -> {
             assertThat(organizationUnit.organizationUnitLabel()).isEqualTo("OU North");
-            assertThat(organizationUnit.allocated()).isEqualTo(organizationUnitStats.getAllocatedStateCount());
+            assertThat(organizationUnit.allocated()).isEqualTo(organizationUnitStats.getAllocatedCount());
             assertThat(organizationUnit.rates().collection()).isEqualTo(organizationUnitStats.getCollectionRate());
             assertThat(organizationUnit.outcomes().accepted()).isEqualTo(organizationUnitStats.getInaContactOutcomeCount());
             assertThat(organizationUnit.closingCauses().totalClosed()).isEqualTo(organizationUnitStats.getTotalClosingCauses());
         });
-        assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedStateCount());
+        assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedCount());
         assertThat(result.campaign().rates().outOfScope()).isEqualTo(campaignStats.getOutOfScopeRate());
     }
 }

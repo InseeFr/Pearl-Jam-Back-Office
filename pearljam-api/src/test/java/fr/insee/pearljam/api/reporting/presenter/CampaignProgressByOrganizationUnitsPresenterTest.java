@@ -29,6 +29,6 @@ class CampaignProgressByOrganizationUnitsPresenterTest {
             assertThat(organizationUnit.communications().noticeLetter()).isEqualTo(organizationUnitStats.getNoticeCommunicationCount());
         });
         assertThat(result.campaign().progressRate()).isEqualTo(campaignStats.getProgressStateRate());
-        assertThat(result.campaign().states().allocated()).isEqualTo(campaignStats.getAllocatedStateCount());
+        assertThat(result.campaign().states().allocated()).isEqualTo(campaignStats.getAllocatedCount());
     }
 }

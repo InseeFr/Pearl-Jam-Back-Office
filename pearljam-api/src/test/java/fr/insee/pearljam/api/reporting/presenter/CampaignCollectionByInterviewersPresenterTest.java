@@ -23,14 +23,14 @@ class CampaignCollectionByInterviewersPresenterTest {
 
         assertThat(result.interviewers()).singleElement().satisfies(interviewer -> {
             assertThat(interviewer.interviewerLabel()).isEqualTo("Jane Doe");
-            assertThat(interviewer.allocated()).isEqualTo(interviewerStats.getAllocatedStateCount());
+            assertThat(interviewer.allocated()).isEqualTo(interviewerStats.getAllocatedCount());
             assertThat(interviewer.rates().waste()).isEqualTo(interviewerStats.getWasteRate());
             assertThat(interviewer.outcomes().outOfScope()).isEqualTo(interviewerStats.getOutOfScopeContactOutcomes());
             assertThat(interviewer.closingCauses().otherReasons()).isEqualTo(interviewerStats.getOtherReasonClosingCauses());
         });
-        assertThat(result.site().allocated()).isEqualTo(siteStats.getAllocatedStateCount());
+        assertThat(result.site().allocated()).isEqualTo(siteStats.getAllocatedCount());
         assertThat(result.site().outcomes().total()).isEqualTo(siteStats.getTotalContactOutcomes());
-        assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedStateCount());
+        assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedCount());
         assertThat(result.campaign().unaffected()).isEqualTo(42L);
     }
 }

@@ -22,14 +22,14 @@ public class CampaignCollectionByOrganizationUnitsPresenter implements
                 organizationUnitStats.stream()
                         .map(organizationUnit -> new CampaignCollectionByOrganizationUnitsResponse.OrganizationUnit(
                                 organizationUnit.getOuLabel(),
-                                organizationUnit.getAllocatedStateCount(),
+                                organizationUnit.getAllocatedCount(),
                                 CollectionRatesResponse.from(organizationUnit),
                                 ContactOutcomesProgressResponse.from(organizationUnit),
                                 ClosingCausesProgressResponse.from(organizationUnit)
                         ))
                         .toList(),
                 new CampaignCollectionByOrganizationUnitsResponse.Campaign(
-                        campaignStats.getAllocatedStateCount(),
+                        campaignStats.getAllocatedCount(),
                         CollectionRatesResponse.from(campaignStats),
                         ContactOutcomesProgressResponse.from(campaignStats),
                         ClosingCausesProgressResponse.from(campaignStats)

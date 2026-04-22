@@ -82,9 +82,9 @@ class CampaignProgressByInterviewersServiceTest {
 
         assertThat(result.interviewerStats()).isEmpty();
         assertThat(result.siteStats().getProgressStateRate()).isZero();
-        assertThat(result.siteStats().getAllocatedStateCount()).isZero();
+        assertThat(result.siteStats().getAllocatedCount()).isZero();
         assertThat(result.campaignStats().getProgressStateRate()).isZero();
-        assertThat(result.campaignStats().getAllocatedStateCount()).isZero();
+        assertThat(result.campaignStats().getAllocatedCount()).isZero();
     }
 
     @Test
@@ -125,7 +125,7 @@ class CampaignProgressByInterviewersServiceTest {
 
         InterviewerDailyStats interviewer = result.interviewerStats().getFirst();
         assertThat(interviewer.getProgressStateRate()).isCloseTo(54.135f, within(0.001f));
-        assertThat(interviewer.getAllocatedStateCount()).isEqualTo(133L);
+        assertThat(interviewer.getAllocatedCount()).isEqualTo(133L);
         assertThat(interviewer.getVicStateCount()).isEqualTo(4L);
         assertThat(interviewer.getInProgressStateCount()).isEqualTo(30L);
         assertThat(interviewer.getWftStateCount()).isEqualTo(6L);
@@ -156,9 +156,9 @@ class CampaignProgressByInterviewersServiceTest {
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
         assertThat(result.siteStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.siteStats().getAllocatedStateCount()).isEqualTo(100L);
+        assertThat(result.siteStats().getAllocatedCount()).isEqualTo(100L);
         assertThat(result.campaignStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
-        assertThat(result.campaignStats().getAllocatedStateCount()).isEqualTo(100L);
+        assertThat(result.campaignStats().getAllocatedCount()).isEqualTo(100L);
     }
 
     @Test

@@ -25,7 +25,11 @@ public class CampaignDailyStats extends AbstractDailyStats {
     }
 
     @Override
-    public long getAllocatedStateCount() {
-        return super.getAllocatedStateCount() + unaffectedCount;
+    public long getAllocatedCount() {
+        return super.getAllocatedCount() + unaffectedCount;
+    }
+
+    public long getAllocatedInterviewersCount() {
+        return super.getAllocatedCount();
     }
 }

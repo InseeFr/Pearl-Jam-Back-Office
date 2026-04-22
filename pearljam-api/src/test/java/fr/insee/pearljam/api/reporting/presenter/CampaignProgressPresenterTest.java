@@ -22,7 +22,7 @@ class CampaignProgressPresenterTest {
             assertThat(response.campaignId()).isEqualTo("camp-1");
             assertThat(response.campaignLabel()).isEqualTo("Campaign 1");
             assertThat(response.progressRate()).isEqualTo(stats.getProgressStateRate());
-            assertThat(response.states().allocated()).isEqualTo(stats.getAllocatedStateCount());
+            assertThat(response.states().allocated()).isEqualTo(stats.getAllocatedCount());
             assertThat(response.states().validated()).isEqualTo(stats.getCompletedStateCount());
             assertThat(response.communications().noticeLetter()).isEqualTo(stats.getNoticeCommunicationCount());
         });
