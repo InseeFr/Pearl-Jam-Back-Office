@@ -1,11 +1,11 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
-import java.util.List;
-import java.util.Set;
-
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
@@ -13,113 +13,114 @@ import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewe
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import jakarta.servlet.http.HttpServletRequest;
-
-import tools.jackson.databind.JsonNode;
-import fr.insee.pearljam.domain.surveyunit.model.*;
 import org.springframework.http.HttpStatus;
+import tools.jackson.databind.JsonNode;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Service for the SurveyUnit entity
- * 
+ *
  * @author scorcaud
  *
  */
 public interface SurveyUnitService {
 
-	SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnitDB surveyUnit);
+    SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnitDB surveyUnit);
 
-	/**
-	 * Retrieve the SurveyUnitDetail entity by Id and UserId
-	 *
-	 * @param userId       user id
-	 * @param surveyUnitId survey unit id
-	 * @return {@link SurveyUnitForInterviewer}
-	 */
-	SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId);
+    /**
+     * Retrieve the SurveyUnitDetail entity by Id and UserId
+     *
+     * @param userId       user id
+     * @param surveyUnitId survey unit id
+     * @return {@link SurveyUnitForInterviewer}
+     */
+    SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId);
 
-	SurveyUnitInterviewerResponseDto getSurveyUnitDetail(String surveyUnitId);
+    SurveyUnitInterviewerResponseDto getSurveyUnitDetail(String surveyUnitId);
 
-	/**
-	 * Retrieve all the SurveyUnit entity by userId
-	 * 
-	 * @param userId
-	 * @return {@link List} of {@link SurveyUnitDto}
-	 */
-	List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended);
+    /**
+     * Retrieve all the SurveyUnit entity by userId
+     *
+     * @param userId
+     * @return {@link List} of {@link SurveyUnitDto}
+     */
+    List<SurveyUnitDto> getSurveyUnitDto(String userId, Boolean extended);
 
-	/**
-	 * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in
-	 * parameter
-	 * 
-	 * @param userId
-	 * @param id
-	 * @param surveyUnitUpdateDto
-	 * @return {@link SurveyUnitDetailDto}
-	 */
-	SurveyUnitDetailDto updateSurveyUnit(String userId, String id,
-										 SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
+    /**
+     * Update the SurveyUnit by Id and UserId with the SurveyUnitDetailDto passed in
+     * parameter
+     *
+     * @param userId
+     * @param id
+     * @param surveyUnitUpdateDto
+     * @return {@link SurveyUnitDetailDto}
+     */
+    SurveyUnitDetailDto updateSurveyUnit(String userId, String id,
+                                         SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
 
-	/**
-	 * @param userId
-	 * @param id
-	 * @param state
-	 * @return {@link HttpStatus}
-	 */
-	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
+    /**
+     * @param userId
+     * @param id
+     * @param state
+     * @return {@link HttpStatus}
+     */
+    Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
 
-	/**
-	 * @param listSU
-	 * @param state
-	 * @return {@link HttpStatus}
-	 */
-	HttpStatus addStateToSurveyUnit(String listSU, StateType state);
+    /**
+     * @param listSU
+     * @param state
+     * @return {@link HttpStatus}
+     */
+    HttpStatus addStateToSurveyUnit(String listSU, StateType state);
 
-	/**
-	 * @param suId
-	 * @return {@link List} of {@link StateDto}
-	 */
-	List<StateDto> getListStatesBySurveyUnitId(String suId);
+    /**
+     * @param suId
+     * @return {@link List} of {@link StateDto}
+     */
+    List<StateDto> getListStatesBySurveyUnitId(String suId);
 
-	/**
-	 *
-	 * @param surveyUnitId survey unit id
-	 * @return {@link SurveyUnitDB} the survey unit
-	 */
-	SurveyUnitDB getSurveyUnit(String surveyUnitId);
+    /**
+     *
+     * @param surveyUnitId survey unit id
+     * @return {@link SurveyUnitDB} the survey unit
+     */
+    SurveyUnitDB getSurveyUnit(String surveyUnitId);
 
-	List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
+    List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
 
-	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
+    List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(HttpServletRequest request, String userId);
 
-	HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
+    HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 
-	HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
+    HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
 
-	Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits);
+    HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
 
-	Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
+    Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits);
 
-	boolean checkHabilitationInterviewer(String userId, String id);
+    Response createSurveyUnitInterviewerLinks(List<SurveyUnitInterviewerLinkDto> surveyUnitInterviewerLink);
 
-	boolean checkHabilitationReviewer(String userId, String id);
+    boolean checkHabilitationInterviewer(String userId, String id);
 
-	void delete(String surveyUnitId);
+    boolean checkHabilitationReviewer(String userId, String id);
 
-	void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit);
+    void delete(String surveyUnitId);
 
-	List<SurveyUnitTempZoneDB> getAllSurveyUnitTempZone();
+    void saveSurveyUnitToTempZone(String id, String userId, JsonNode surveyUnit);
 
-	boolean canBeSeenByInterviewer(String suId);
+    List<SurveyUnitTempZoneDB> getAllSurveyUnitTempZone();
 
-	List<String> getAllIds();
+    boolean canBeSeenByInterviewer(String suId);
 
-	List<String> getAllIdsByCampaignId(String campaignId);
+    List<String> getAllIds();
 
-	List<String> getAllIdsByInterviewerId(String interviewerId);
+    List<String> getAllIdsByCampaignId(String campaignId);
 
-	void removeInterviewerLink(List<String> ids);
+    List<String> getAllIdsByInterviewerId(String interviewerId);
+
+    void removeInterviewerLink(List<String> ids);
 
     List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds);
 }

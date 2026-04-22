@@ -1,19 +1,13 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
-import tools.jackson.databind.JsonNode;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
@@ -22,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import tools.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Set;
@@ -78,6 +73,11 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     @Override
     public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
         throw new IllegalArgumentException("not implemented yet");
+    }
+
+    @Override
+    public List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(HttpServletRequest request, String userId) {
+        return List.of();
     }
 
     @Override

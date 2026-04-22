@@ -1,21 +1,22 @@
 package fr.insee.pearljam.api.surveyunit.controller.dummy;
 
-import tools.jackson.databind.JsonNode;
+import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import tools.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Set;
@@ -38,11 +39,11 @@ public class SurveyUnitFakeService implements SurveyUnitService {
 
     @Override
     public SurveyUnitDetailDto updateSurveyUnit(String userId, String surveyUnitId, SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException {
-        if(shouldThrowSurveyUnitException) {
+        if (shouldThrowSurveyUnitException) {
             throw new SurveyUnitNotFoundException(surveyUnitId);
         }
 
-        if(shouldThrowPersonException) {
+        if (shouldThrowPersonException) {
             throw new PersonNotFoundException();
         }
         surveyUnitUpdated = surveyUnitUpdateDto;
@@ -71,6 +72,11 @@ public class SurveyUnitFakeService implements SurveyUnitService {
 
     @Override
     public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
+        throw new IllegalArgumentException("not implemented yet");
+    }
+
+    @Override
+    public List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(HttpServletRequest request, String userId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
