@@ -68,6 +68,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     WHERE cds.campaign_id = :campaignId
       AND cds.day = :day
     GROUP BY c.id, c.label
+    ORDER by c.label ASC
     """.formatted(DATA_SELECTION);
 
     @Override
@@ -127,7 +128,8 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     WHERE cds.campaign_id = :campaignId
     AND cds.organization_unit_id IN (:ouIds)
     AND cds.day = :day
-    GROUP BY ou.id, ou.label, su.unaffected;
+    GROUP BY ou.id, ou.label, su.unaffected
+    ORDER by ou.label ASC;
     """.formatted(DATA_SELECTION);
 
     @Override
@@ -171,7 +173,8 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
        WHERE cds.campaign_id IN (:campaignIds)
          AND cds.organization_unit_id IN (:ouIds)
          AND cds.day = :day
-        GROUP BY c.id, c.label, su.unaffected;
+        GROUP BY c.id, c.label, su.unaffected
+        ORDER by c.label ASC;
     """.formatted(DATA_SELECTION);
 
     @Override
@@ -213,7 +216,8 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
          AND cds.organization_unit_id IN (:ouIds)
          AND cds.day = :day
          AND cds.interviewer_id = :interviewerId
-        GROUP BY c.id, c.label, su.unaffected;
+        GROUP BY c.id, c.label, su.unaffected
+        ORDER by c.label ASC;
     """.formatted(DATA_SELECTION);
 
     @Override
@@ -242,6 +246,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
           AND cds.organization_unit_id IN (:ouIds)
           AND cds.day = :day
         GROUP BY interv.id, interv.first_name, interv.last_name
+        ORDER by interv.first_name ASC, interv.last_name ASC
     """.formatted(DATA_SELECTION);
 
     @Override
