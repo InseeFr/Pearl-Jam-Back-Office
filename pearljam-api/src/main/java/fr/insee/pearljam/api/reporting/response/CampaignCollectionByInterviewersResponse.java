@@ -20,7 +20,7 @@ public record CampaignCollectionByInterviewersResponse(
         List<Interviewer> interviewers = interviewerDailyStats.stream()
                 .map(intDailyStats -> new Interviewer(
                         intDailyStats.getInterviewerFirstName() + " " + intDailyStats.getInterviewerLastName(),
-                        intDailyStats.getAllocatedStateCount(),
+                        intDailyStats.getAllocatedCount(),
                         CollectionRatesResponse.from(intDailyStats),
                         ContactOutcomesProgressResponse.from(intDailyStats),
                         ClosingCausesProgressResponse.from(intDailyStats)
@@ -28,14 +28,14 @@ public record CampaignCollectionByInterviewersResponse(
                 .toList();
 
         OrganizationUnit site = new OrganizationUnit(
-                campaignOusDailyStats.getAllocatedStateCount(),
+                campaignOusDailyStats.getAllocatedCount(),
                 CollectionRatesResponse.from(campaignOusDailyStats),
                 ContactOutcomesProgressResponse.from(campaignOusDailyStats),
                 ClosingCausesProgressResponse.from(campaignOusDailyStats)
         );
 
         Campaign campaign = new Campaign(
-                campaignDailyStats.getAllocatedStateCount(),
+                campaignDailyStats.getAllocatedCount(),
                 campaignDailyStats.getUnaffectedCount(),
                 CollectionRatesResponse.from(campaignDailyStats),
                 ContactOutcomesProgressResponse.from(campaignDailyStats),

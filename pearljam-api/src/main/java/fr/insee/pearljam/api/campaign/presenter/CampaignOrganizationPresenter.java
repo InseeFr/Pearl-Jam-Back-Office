@@ -46,10 +46,10 @@ public class CampaignOrganizationPresenter implements CampaignOrganizationStatsP
                                 .map(i -> new CampaignOrganizationResponse.Interviewer(
                                         i.getInterviewerId(),
                                         i.getInterviewerFirstName() + " " + i.getInterviewerLastName(),
-                                        i.getAllocatedStateCount()))
+                                         i.getAllocatedCount()))
                                 .toList(),
                         new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(
-                                campaignDailyStats.getAllocatedStateCount(),
+                                campaignDailyStats.getAllocatedCount(),
                                 campaignDailyStats.getUnaffectedCount()));
     }
 }

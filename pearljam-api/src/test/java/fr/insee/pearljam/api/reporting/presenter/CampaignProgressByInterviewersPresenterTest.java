@@ -28,7 +28,7 @@ class CampaignProgressByInterviewersPresenterTest {
             assertThat(interviewer.communications().reminderLetter()).isEqualTo(interviewerStats.getReminderCommunicationCount());
         });
         assertThat(result.site().progressRate()).isEqualTo(siteStats.getProgressStateRate());
-        assertThat(result.site().states().allocated()).isEqualTo(siteStats.getAllocatedStateCount());
+        assertThat(result.site().states().allocated()).isEqualTo(siteStats.getAllocatedCount());
         assertThat(result.campaign().unaffected()).isEqualTo(42L);
         assertThat(result.campaign().states().validated()).isEqualTo(campaignStats.getCompletedStateCount());
     }

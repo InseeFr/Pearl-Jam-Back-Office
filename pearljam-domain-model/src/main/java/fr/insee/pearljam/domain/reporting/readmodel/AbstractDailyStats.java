@@ -44,7 +44,7 @@ public abstract class AbstractDailyStats {
     private long noaContactOutcomeCount;
 
     public float getProgressStateRate() {
-        long allocated = getAllocatedStateCount();
+        long allocated = getAllocatedCount();
         if (allocated == 0) {
             return 0f;
         }
@@ -63,7 +63,7 @@ public abstract class AbstractDailyStats {
         return prcStateCount + aocStateCount + apsStateCount + insStateCount;
     }
 
-    public long getAllocatedStateCount() {
+    public long getAllocatedCount() {
         return nnsStateCount + anvStateCount + vinStateCount + vicStateCount
                 + prcStateCount + aocStateCount + apsStateCount + insStateCount + wftStateCount
                 + wfsStateCount + tbrStateCount + finStateCount + cloStateCount;
@@ -75,7 +75,7 @@ public abstract class AbstractDailyStats {
     }
 
     public float getCollectionRate() {
-        long allocated = getAllocatedStateCount();
+        long allocated = getAllocatedCount();
         if (allocated == 0) {
             return 0f;
         }
@@ -83,7 +83,7 @@ public abstract class AbstractDailyStats {
     }
 
     public float getWasteRate() {
-        long allocated = getAllocatedStateCount();
+        long allocated = getAllocatedCount();
         if (allocated == 0) {
             return 0f;
         }
@@ -91,7 +91,7 @@ public abstract class AbstractDailyStats {
     }
 
     public float getOutOfScopeRate() {
-        long allocated = getAllocatedStateCount();
+        long allocated = getAllocatedCount();
         if (allocated == 0) {
             return 0f;
         }

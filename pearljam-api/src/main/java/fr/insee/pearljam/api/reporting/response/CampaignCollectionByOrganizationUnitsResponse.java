@@ -18,7 +18,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
         List<OrganizationUnit> ous = organizationUnitDailyStats.stream()
                 .map(ouStats -> new OrganizationUnit(
                         ouStats.getOuLabel(),
-                        ouStats.getAllocatedStateCount(),
+                        ouStats.getAllocatedCount(),
                         CollectionRatesResponse.from(ouStats),
                         ContactOutcomesProgressResponse.from(ouStats),
                         ClosingCausesProgressResponse.from(ouStats)
@@ -26,7 +26,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
                 .toList();
 
         Campaign campaign = new Campaign(
-                campaignDailyStats.getAllocatedStateCount(),
+                campaignDailyStats.getAllocatedCount(),
                 CollectionRatesResponse.from(campaignDailyStats),
                 ContactOutcomesProgressResponse.from(campaignDailyStats),
                 ClosingCausesProgressResponse.from(campaignDailyStats));

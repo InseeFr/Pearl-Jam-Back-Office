@@ -209,7 +209,7 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(stats.getNpaClosingCauseCount()).isEqualTo(1);
         assertThat(stats.getInaContactOutcomeCount()).isEqualTo(5);
         assertThat(stats.getUnaffectedCount()).isEqualTo(1);
-        assertThat(stats.getAllocatedStateCount()).isEqualTo(105);
+        assertThat(stats.getAllocatedCount()).isEqualTo(105);
     }
 
     @Test
@@ -230,7 +230,7 @@ class CampaignDailyStatsDaoAdapterTest {
                 adapter.findCampaignStatsForOrganizationUnits(CAMPAIGN_ID, List.of("UNKNOWN-OU"), DAY);
         // SUM over zero rows with COALESCE returns a single row of zeros
         assertThat(result).isPresent();
-        assertThat(result.get().getAllocatedStateCount()).isZero();
+        assertThat(result.get().getAllocatedCount()).isZero();
     }
 
     // ---- getOrganizationUnitsStats ----
@@ -251,7 +251,7 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(ou1Stats.getNvmStateCount()).isEqualTo(1);
         assertThat(ou1Stats.getTbrStateCount()).isEqualTo(12);
         assertThat(ou1Stats.getUnaffectedCount()).isEqualTo(1);
-        assertThat(ou1Stats.getAllocatedStateCount()).isEqualTo(105);
+        assertThat(ou1Stats.getAllocatedCount()).isEqualTo(105);
 
         OrganizationUnitDailyStats ou2Stats = result.stream()
                 .filter(s -> s.getOuId().equals(OU2_ID)).findFirst().orElseThrow();

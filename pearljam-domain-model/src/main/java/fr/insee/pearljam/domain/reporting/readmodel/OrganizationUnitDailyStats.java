@@ -13,7 +13,7 @@ public class OrganizationUnitDailyStats extends AbstractDailyStats {
     private long unaffectedCount;
 
     @Override
-    public long getAllocatedStateCount() {
-        return super.getAllocatedStateCount() + unaffectedCount;
+    public long getAllocatedCount() {
+        return super.getAllocatedCount() + unaffectedCount;
     }
 }
