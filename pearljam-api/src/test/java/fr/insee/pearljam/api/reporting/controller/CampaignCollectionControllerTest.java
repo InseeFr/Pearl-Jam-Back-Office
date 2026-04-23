@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionForInterviewerPresenter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
@@ -28,9 +29,12 @@ class CampaignCollectionControllerTest {
     void setup() {
         reportingService = mock(CampaignReportingPort.class);
         when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of());
+        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
 
-        CampaignCollectionController controller =
-                new CampaignCollectionController(reportingService, new CampaignCollectionPresenter());
+        CampaignCollectionController controller = new CampaignCollectionController(
+                reportingService,
+                new CampaignCollectionPresenter(),
+                new CampaignCollectionForInterviewerPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())

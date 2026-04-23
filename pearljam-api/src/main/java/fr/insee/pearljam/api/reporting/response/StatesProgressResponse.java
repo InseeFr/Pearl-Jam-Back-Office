@@ -18,7 +18,7 @@ public record StatesProgressResponse(
 ) {
     public static StatesProgressResponse from(AbstractDailyStats dailyStats) {
         return new StatesProgressResponse(
-                dailyStats.getAllocatedStateCount(),
+                dailyStats.getAllocatedCount(),
                 dailyStats.getVicStateCount(),
                 dailyStats.getInProgressStateCount(),
                 dailyStats.getWftStateCount(),

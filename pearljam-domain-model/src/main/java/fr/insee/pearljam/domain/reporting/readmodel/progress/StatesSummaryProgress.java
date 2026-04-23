@@ -10,7 +10,7 @@ public record StatesSummaryProgress(long allocated,
 
     public static StatesSummaryProgress from(CampaignDailyStats campaignDailyStats) {
         return new StatesSummaryProgress(
-                campaignDailyStats.getAllocatedStateCount(),
+                campaignDailyStats.getAllocatedCount(),
                 campaignDailyStats.getToProcessInterviewerStateCount(),
                 campaignDailyStats.getTbrStateCount(),
                 campaignDailyStats.getCompletedStateCount(),
