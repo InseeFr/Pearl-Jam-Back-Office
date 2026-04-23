@@ -3,7 +3,6 @@ package fr.insee.pearljam.domain.surveyunit.port.in;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -89,8 +88,6 @@ public interface SurveyUnitService {
     SurveyUnitDB getSurveyUnit(String surveyUnitId);
 
     List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
-
-    List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(HttpServletRequest request, String userId);
 
     HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 

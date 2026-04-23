@@ -26,7 +26,6 @@ import fr.insee.pearljam.domain.surveyunit.port.out.*;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewer;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -109,6 +108,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
         return toSurveyUnitInterviewerResponseDto(surveyUnitForInterviewer);
     }
+
 
     @Override
     public SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId) {
@@ -408,46 +408,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
     }
 
     @Transactional(readOnly = true)
+    @Deprecated(forRemoval = true)
     public List<ClosableSurveyUnitDto> getClosableSurveyUnits(
             HttpServletRequest request,
             String userId) {
 
-        ClosableSurveyUnitsData closableData = getClosableSurveyUnitsData(request, userId);
-
-        return closableData.closableSurveyUnitProjections()
-                .parallelStream()
-                .map(closableSurveyUnitProjection -> {
-                    String surveyUnitId = closableSurveyUnitProjection.getId();
-                    return ClosableSurveyUnitDto.from(
-                            closableData.candidatesById().get(surveyUnitId),
-                            closableSurveyUnitProjection,
-                            closableData.questionnaireStates().get(surveyUnitId) == null ? QUESTIONNAIRE_STATE_UNAVAILABLE : closableData.questionnaireStates().get(surveyUnitId)
-                    );
-                })
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(
-            HttpServletRequest request,
-            String userId) {
-
-        ClosableSurveyUnitsData closableData = getClosableSurveyUnitsData(request, userId);
-
-        return closableData.closableSurveyUnitProjections()
-                .parallelStream()
-                .map(closableSurveyUnitProjection -> {
-                    String surveyUnitId = closableSurveyUnitProjection.getId();
-                    return SurveyUnitToClose.from(
-                            closableData.candidatesById().get(surveyUnitId),
-                            closableSurveyUnitProjection,
-                            closableData.questionnaireStates().get(surveyUnitId) == null ? QUESTIONNAIRE_STATE_UNAVAILABLE : closableData.questionnaireStates().get(surveyUnitId)
-                    );
-                })
-                .toList();
-    }
-
-    private ClosableSurveyUnitsData getClosableSurveyUnitsData(HttpServletRequest request, String userId) {
         List<String> lstOuIds = userService.getUserOUs(userId, true).stream()
                 .map(OrganizationUnitDto::getId)
                 .toList();
@@ -458,7 +423,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
                 surveyUnitRepository.findClosableCandidates(now, lstOuIds);
 
         if (candidates.isEmpty()) {
-            return new ClosableSurveyUnitsData(List.of(), Map.of(), List.of(), Map.of());
+            return List.of();
         }
 
         Map<String, ClosableSurveyUnitCandidateView> candidatesById =
@@ -481,14 +446,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
         List<ClosableSurveyUnitView> closableSurveyUnitProjections =
                 surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
 
-        return new ClosableSurveyUnitsData(candidates, candidatesById, closableSurveyUnitProjections, questionnaireStates);
-    }
-
-    private record ClosableSurveyUnitsData(
-            List<ClosableSurveyUnitCandidateView> candidates,
-            Map<String, ClosableSurveyUnitCandidateView> candidatesById,
-            List<ClosableSurveyUnitView> closableSurveyUnitProjections,
-            Map<String, String> questionnaireStates) {
+        return closableSurveyUnitProjections
+                .parallelStream()
+                .map(closableSurveyUnitProjection -> {
+                    String surveyUnitId = closableSurveyUnitProjection.getId();
+                    return ClosableSurveyUnitDto.from(
+                            candidatesById.get(surveyUnitId),
+                            closableSurveyUnitProjection,
+                            questionnaireStates.get(surveyUnitId) == null ? QUESTIONNAIRE_STATE_UNAVAILABLE : questionnaireStates.get(surveyUnitId)
+                    );
+                })
+                .toList();
     }
 
     private boolean isClosable(ClosableSurveyUnitCandidateView candidate, String questionnaireState) {
@@ -506,12 +474,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
         return neverTransmitted || inaWithoutQuestionnaire;
     }
 
+
     private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
                                                                          Set<String> lstSu) {
         Map<String, String> mapResult = new HashMap<>();
         try {
-            ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(request,
-                    lstSu);
+            ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(lstSu);
             log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
             InterrogationOkNokDto object = result.getBody();
             HttpStatusCode responseCode = result.getStatusCode();

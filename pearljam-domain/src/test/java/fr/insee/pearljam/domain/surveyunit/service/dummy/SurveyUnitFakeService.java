@@ -7,7 +7,6 @@ import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
@@ -73,11 +72,6 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     @Override
     public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId) {
         throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
-    public List<SurveyUnitToClose> getClosableSurveyUnitsForReporting(HttpServletRequest request, String userId) {
-        return List.of();
     }
 
     @Override

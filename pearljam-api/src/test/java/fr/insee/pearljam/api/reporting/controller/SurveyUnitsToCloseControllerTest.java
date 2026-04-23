@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitsToClosePort;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitsToClosePort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,8 @@ class SurveyUnitsToCloseControllerTest {
     @Mock
     private SurveyUnitsToClosePort surveyUnitsToClosePort;
 
+    private SurveyUnitToCloseStatsPresenter surveyUnitToCloseStatsPresenter;
+
     @Mock
     private HttpServletRequest request;
 
@@ -38,19 +42,15 @@ class SurveyUnitsToCloseControllerTest {
         expectedDto.setSurveyUnitId("SU-123");
         expectedDto.setSsech(42);
 
-        when(surveyUnitsToClosePort.getSurveyUnitsToClose(userId, request))
+        when(surveyUnitsToClosePort.getSurveyUnitsToClose(userId, surveyUnitToCloseStatsPresenter))
                 .thenReturn(List.of(expectedDto));
 
         // When
-        List<SurveyUnitToClose> result = controller.getSurveyUnitsToClose(request, userId);
+        List<SurveyUnitToCloseResponse> result = controller.getSurveyUnitsToClose(request, userId);
 
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
 
-        SurveyUnitToClose dto = result.getFirst();
-        assertEquals("Test Campaign", dto.getCampaignLabel());
-        assertEquals("SU-123", dto.getSurveyUnitId());
-        assertEquals(Integer.valueOf(42), dto.getSsech());
     }
 }

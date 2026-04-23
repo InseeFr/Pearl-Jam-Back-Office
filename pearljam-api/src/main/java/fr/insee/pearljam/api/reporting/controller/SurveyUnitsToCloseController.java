@@ -1,8 +1,9 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToClosePresenter;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitsToClosePort;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToClose;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitsToClosePort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,13 +25,14 @@ import java.util.List;
 public class SurveyUnitsToCloseController {
 
     private final SurveyUnitsToClosePort surveyUnitsToClosePort;
+    private final SurveyUnitToClosePresenter presenter;
 
     @Operation(summary = "Get survey units to close for reporting")
     @GetMapping(Constants.API_REPORTING_SURVEYUNITS_TO_CLOSE)
     @Parameter(name = "userId", hidden = true)
-    public List<SurveyUnitToClose> getSurveyUnitsToClose(
+    public List<SurveyUnitToCloseResponse> getSurveyUnitsToClose(
             HttpServletRequest request,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        return surveyUnitsToClosePort.getSurveyUnitsToClose(userId, request);
+        return surveyUnitsToClosePort.getSurveyUnitsToClose(userId, presenter);
     }
 }

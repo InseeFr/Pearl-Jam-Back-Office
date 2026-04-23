@@ -1,0 +1,15 @@
+package fr.insee.pearljam.domain.surveyunit.port.in;
+
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
+
+import java.util.List;
+import java.util.Map;
+
+public interface SurveyUnitToCloseStatsPresenter<T> {
+    T present(List<ClosableSurveyUnitView> projections,
+              Map<String, ClosableSurveyUnitCandidateView> candidatesById,
+              Map<String, String> questionnaireStates);
+
+    T empty();
+}
