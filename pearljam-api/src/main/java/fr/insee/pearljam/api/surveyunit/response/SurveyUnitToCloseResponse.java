@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeTy
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.jspecify.annotations.Nullable;
 
 
 @Schema(name = "SurveyUnitToClose")
@@ -27,7 +28,7 @@ public record SurveyUnitToCloseResponse(
         return new SurveyUnitToCloseResponse(
                 projection.getCampaignLabel(),
                 projection.getId(),
-                projection.getInterviewerFirstName() + " " + projection.getInterviewerLastName(),
+                getInterviewerLabel(projection),
                 projection.getSsech(),
                 candidate.getCurrentStateType() != null
                         ? candidate.getCurrentStateType().name()
@@ -36,5 +37,11 @@ public record SurveyUnitToCloseResponse(
                 questionnaireState,
                 projection.getClosingCauseType()
         );
+    }
+
+    private static @Nullable String getInterviewerLabel(ClosableSurveyUnitView projection) {
+        return (projection.getInterviewerFirstName() != null && projection.getInterviewerLastName() != null) ?
+                (projection.getInterviewerFirstName() + " " + projection.getInterviewerLastName()).trim() :
+                null;
     }
 }
