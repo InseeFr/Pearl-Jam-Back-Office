@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
+
 @Component
 public class SurveyUnitToClosePresenter implements SurveyUnitToCloseStatsPresenter<List<SurveyUnitToCloseResponse>> {
-
-    private static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
 
     @Override
     public List<SurveyUnitToCloseResponse> present(

@@ -165,6 +165,9 @@ public class Constants {
   public static final String NOTICE_COUNT = "noticeCount";
   public static final String REMINDER_COUNT = "reminderCount";
 
+  public static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
+
+
   public static final List<String> STATE_COUNT_FIELDS = List.of(NVM_COUNT, NNS_COUNT, ANV_COUNT,
       VIN_COUNT, VIC_COUNT, PRC_COUNT, AOC_COUNT, APS_COUNT, INS_COUNT, WFT_COUNT, WFS_COUNT, TBR_COUNT, FIN_COUNT,
       CLO_COUNT, NVA_COUNT, TOTAL_COUNT, NOTICE_COUNT, REMINDER_COUNT);

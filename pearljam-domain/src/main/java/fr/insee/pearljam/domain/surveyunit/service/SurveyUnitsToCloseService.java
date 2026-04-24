@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,8 +37,8 @@ public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
     private final DateService dateService;
     private final SurveyUnitRepository surveyUnitRepository;
     private final QuestionnaireStateClient questionnaireStateClient;
+    private final SurveyUnitToClosePolicy surveyUnitToClosePolicy;
 
-    private static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
 
 
     @Override
@@ -67,7 +69,7 @@ public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
 
         Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
                 candidates.parallelStream()
-                        .filter(candidate -> isClosable(candidate, questionnaireStates.get(candidate.getId())))
+                        .filter(candidate -> surveyUnitToClosePolicy.isClosable(candidate, questionnaireStates.get(candidate.getId())))
                         .collect(Collectors.toMap(
                                 ClosableSurveyUnitCandidateView::getId,
                                 Function.identity()
@@ -81,26 +83,6 @@ public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
                 candidatesById,
                 questionnaireStates
         );
-    }
-
-    boolean isClosable(ClosableSurveyUnitCandidateView candidate, String questionnaireState) {
-        StateType currentState = candidate.getCurrentStateType();
-        ContactOutcomeType outcomeType = candidate.getContactOutcomeType();
-
-        boolean neverTransmitted =
-                currentState != null
-                && !Set.of(StateType.TBR, StateType.FIN, StateType.CLO).contains(currentState);
-
-        boolean inaWithoutQuestionnaire =
-                outcomeType == ContactOutcomeType.INA
-                && (questionnaireState == null || QUESTIONNAIRE_STATE_UNAVAILABLE.equals(questionnaireState));
-
-
-        if (neverTransmitted) {
-            return true;
-        }
-
-        return currentState != null && !currentState.equals(StateType.CLO) && inaWithoutQuestionnaire;
     }
 
 

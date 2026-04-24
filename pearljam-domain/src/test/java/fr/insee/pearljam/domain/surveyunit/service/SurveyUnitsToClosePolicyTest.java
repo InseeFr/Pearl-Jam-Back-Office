@@ -1,50 +1,28 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDataDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokResponseDto;
-import fr.insee.pearljam.domain.campaign.port.in.DateService;
-import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
-import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
-import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
-import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-class SurveyUnitsToCloseServiceTest {
+class SurveyUnitsToClosePolicyTest {
 
-    private SurveyUnitsToCloseService service;
+    private SurveyUnitToClosePolicy service;
 
     @BeforeEach
     void setUp() {
-        service = new SurveyUnitsToCloseService(null, null, null, null);
+        service = new SurveyUnitToClosePolicy();
     }
 
     @ParameterizedTest
