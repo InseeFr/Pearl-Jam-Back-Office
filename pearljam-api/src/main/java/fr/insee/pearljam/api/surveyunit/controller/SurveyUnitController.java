@@ -1,37 +1,42 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
-import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
-import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.JsonNode;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.domain.security.model.AuthorityRole;
-import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
-import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
+import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.security.model.AuthorityRole;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.JsonNode;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnitDB}
@@ -55,10 +60,9 @@ public class SurveyUnitController {
 
     /**
      * This method is used to post the list of SurveyUnit defined in request body
-     *
      * @param surveyUnits survey units to create
      * @return List of {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
-     * {@link HttpStatus} FORBIDDEN
+     *         {@link HttpStatus} FORBIDDEN
      */
     @Operation(summary = "Create survey-units")
     @PostMapping(Constants.API_SURVEYUNITS)
@@ -75,7 +79,7 @@ public class SurveyUnitController {
      * interviewer defined in request body
      *
      * @return List of {@link SurveyUnitDB} if exist, {@link HttpStatus} NOT_FOUND, or
-     * {@link HttpStatus} FORBIDDEN
+     *         {@link HttpStatus} FORBIDDEN
      */
     @Operation(summary = "Assign SurveyUnits to interviewers")
     @PostMapping(Constants.API_SURVEYUNITS_INTERVIEWERS)
@@ -91,7 +95,7 @@ public class SurveyUnitController {
      * This method is used to get the list of SurveyUnit for current interviewer
      *
      * @return List of {@link SurveyUnitDB} if exist, {@link HttpStatus} NOT_FOUND, or
-     * {@link HttpStatus} FORBIDDEN
+     *         {@link HttpStatus} FORBIDDEN
      */
     @Operation(summary = "Get SurveyUnits")
     @GetMapping(path = {Constants.API_SURVEYUNITS, Constants.API_INTERROGATIONS})
@@ -112,7 +116,7 @@ public class SurveyUnitController {
      *
      * @param surveyUnitId the id of reporting unit
      * @return {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
-     * {@link HttpStatus} FORBIDDEN
+     *         {@link HttpStatus} FORBIDDEN
      */
     @Operation(summary = "Get detail of specific survey unit ")
     @GetMapping(path = {Constants.API_SURVEYUNIT_ID})
@@ -122,10 +126,12 @@ public class SurveyUnitController {
     }
 
     /**
+     * @deprecated
+     * Admin way of getting any survey-unit
+     *
      * @param surveyUnitId the id of expected survey-unit
      * @return {@link SurveyUnitDB} if exists, {@link HttpStatus} NOT_FOUND, or
      * {@link HttpStatus} FORBIDDEN
-     * @deprecated Admin way of getting any survey-unit
      */
     @Operation(summary = "Get detail as admin of specific survey unit ")
     @GetMapping(Constants.API_ADMIN_SURVEYUNIT_DETAILS)
@@ -149,9 +155,8 @@ public class SurveyUnitController {
 
     /**
      * This method is used to update a specific survey unit
-     *
      * @param surveyUnitUpdateDto survey unit information to update
-     * @param id                  survey unit id
+     * @param id survey unit id
      * @return {@link SurveyUnitDetailDto}
      * @throws EntityNotFoundException exception thrown if entity not found
      */
@@ -182,13 +187,14 @@ public class SurveyUnitController {
     }
 
     /**
-     * @deprecated This method is used to retrieve survey-units in temp-zone
+     * @deprecated
+     * This method is used to retrieve survey-units in temp-zone
      */
     @Operation(summary = "GET all survey-units in temp-zone")
     @GetMapping(Constants.API_SURVEYUNITS_TEMP_ZONE)
     @Deprecated(forRemoval = true)
     public ResponseEntity<Object> getSurveyUnitsInTempZone() {
-        if (!deprecatedEndpointsEnabled) {
+        if(!deprecatedEndpointsEnabled) {
             throw new EndpointDisabledException();
         }
         List<SurveyUnitTempZoneDB> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
@@ -200,7 +206,7 @@ public class SurveyUnitController {
      * This method is used to update the state of a survey unit
      *
      * @param surveyUnitId survey unit id
-     * @param state        state to set
+     * @param state state to set
      * @return {@link HttpStatus}
      */
     @Operation(summary = "Update the state of Survey Units listed in request body")
@@ -266,10 +272,10 @@ public class SurveyUnitController {
     /**
      * This method is used to get survey units of a specific campaign
      *
-     * @param id    campaign id
+     * @param id campaign id
      * @param state search survey unit with this state
      * @return list of {@link SurveyUnitCampaignDto} if exists, else
-     * {@link HttpStatus} FORBIDDEN or NOT_FOUND
+     *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
      */
     @Operation(summary = "Get Survey Units in target campaign")
     @GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
@@ -288,9 +294,8 @@ public class SurveyUnitController {
 
     /**
      * This method is used to check if a user has access to an SU
-     *
      * @param surveyUnitId survey unit id
-     * @param role         role to check
+     * @param role role to check
      * @return {@link HabilitationDto} the habilitation object
      */
     @Operation(summary = "Check habilitation")
@@ -338,7 +343,7 @@ public class SurveyUnitController {
      *
      * @param id survey unit it
      * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
-     * or NOT_FOUND
+     *         or NOT_FOUND
      */
     @Operation(summary = "Get states of given survey unit")
     @GetMapping(Constants.API_SURVEYUNIT_ID_STATES)
@@ -359,7 +364,7 @@ public class SurveyUnitController {
      *
      * @param request http servlet request
      * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
-     * or NOT_FOUND
+     *         or NOT_FOUND
      */
     @Operation(summary = "Get closable survey units")
     @GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
@@ -387,14 +392,16 @@ public class SurveyUnitController {
     }
 
     /**
+     * @deprecated
+     * This method returns the list of all survey-unit ids
+     *
      * @return List of {@link String}
-     * @deprecated This method returns the list of all survey-unit ids
      */
     @Operation(summary = "Get survey units id")
     @GetMapping(Constants.API_ADMIN_SURVEYUNITS)
     @Deprecated(forRemoval = true)
     public ResponseEntity<List<String>> getAllSurveyUnitsId() {
-        if (!deprecatedEndpointsEnabled) {
+        if(!deprecatedEndpointsEnabled) {
             throw new EndpointDisabledException();
         }
         String userId = authenticatedUserService.getCurrentUserId();
