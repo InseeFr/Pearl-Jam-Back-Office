@@ -31,7 +31,6 @@ public class SurveyUnitsToCloseController {
     @GetMapping(Constants.API_REPORTING_SURVEYUNITS_TO_CLOSE)
     @Parameter(name = "userId", hidden = true)
     public List<SurveyUnitToCloseResponse> getSurveyUnitsToClose(
-            HttpServletRequest request,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
         return surveyUnitsToClosePort.getSurveyUnitsToClose(userId, presenter);
     }
