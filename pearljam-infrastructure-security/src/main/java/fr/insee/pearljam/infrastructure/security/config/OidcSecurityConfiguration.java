@@ -40,7 +40,7 @@ public class OidcSecurityConfiguration {
     /**
      * Configure spring security filter chain to handle swagger urls
      *
-     * @param http           Http Security configuration object
+     * @param http Http Security configuration object
      * @param oidcProperties oidc properties
      * @return the spring security filter chain
      * @throws Exception exception
@@ -58,10 +58,10 @@ public class OidcSecurityConfiguration {
 
     /**
      *
-     * @param http                           Http Security configuration object
+     * @param http  Http Security configuration object
      * @param customAuthenticationEntrypoint customAuthenticationEntrypoint
-     * @param customAccessDeniedHandler      customAccessDeniedHandler
-     * @param roleProperties                 role properties
+     * @param customAccessDeniedHandler customAccessDeniedHandler
+     * @param roleProperties role properties
      * @return the spring security filter chain
      */
     @Bean
@@ -95,7 +95,6 @@ public class OidcSecurityConfiguration {
 
     /**
      * Add security on endpoints
-     *
      * @param http Http security configuration
      */
     private void authorizeRequests(HttpSecurity http) {
@@ -292,9 +291,15 @@ public class OidcSecurityConfiguration {
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_COLLECTION)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_COLLECTION_EXPORT)
+                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_PROGRESS)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_PROGRESS_EXPORT)
+                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION)
+                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION_EXPORT)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWERS_PROGRESS)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
@@ -306,14 +311,25 @@ public class OidcSecurityConfiguration {
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWERS_COLLECTION)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWERS_COLLECTION_EXPORT)
+                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_OUS_COLLECTION)
+                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_OUS_COLLECTION_EXPORT)
                         .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
                         .hasAnyRole(adminRole, nationalUserRole, localUserRole)
-                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_SURVEYUNITS_TO_CLOSE)
-                        .hasAnyRole(adminRole, localUserRole, nationalUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ORGANIZATION)
                         .hasAnyRole(adminRole, nationalUserRole, localUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ORGANIZATION_EXPORT)
+                        .hasAnyRole(adminRole, nationalUserRole, localUserRole)
+                        .requestMatchers(HttpMethod.POST, Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
+                        .hasAnyRole(adminRole, nationalUserRole, localUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_PROGRESS_EXPORT)
+                        .hasAnyRole(adminRole, nationalUserRole, localUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_REPORTING_SURVEYUNITS_TO_CLOSE)
+                        .hasAnyRole(adminRole, nationalUserRole, localUserRole)
+
                         .anyRequest()
                         .denyAll());
     }
