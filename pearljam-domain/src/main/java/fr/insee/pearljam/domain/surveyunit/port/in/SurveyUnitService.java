@@ -1,24 +1,21 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
-import java.util.List;
-import java.util.Set;
-
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewer;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
-import jakarta.servlet.http.HttpServletRequest;
-
-import tools.jackson.databind.JsonNode;
-import fr.insee.pearljam.domain.surveyunit.model.*;
 import org.springframework.http.HttpStatus;
+import tools.jackson.databind.JsonNode;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Service for the SurveyUnit entity
@@ -89,7 +86,7 @@ public interface SurveyUnitService {
 	 */
 	SurveyUnitDB getSurveyUnit(String surveyUnitId);
 
-	List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request, String userId);
+	List<ClosableSurveyUnitDto> getClosableSurveyUnits(String userId);
 
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 

@@ -2,26 +2,18 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToClosePresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitsToClosePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -106,6 +98,7 @@ class SurveyUnitsToCloseControllerTest {
                         ]
                         """));
     }
+
 
 
     @Test

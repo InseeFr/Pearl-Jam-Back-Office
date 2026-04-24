@@ -4,8 +4,6 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitsToClosePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
@@ -31,7 +29,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STAT
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
+public class SurveyUnitToCloseService implements SurveyUnitsToClosePort {
 
     private final UserService userService;
     private final DateService dateService;
