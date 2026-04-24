@@ -1,9 +1,9 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitsToClosePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
@@ -43,8 +43,8 @@ public class SurveyUnitToCloseService implements SurveyUnitsToClosePort {
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitToCloseStatsPresenter<T> presenter) {
 
 
-        List<String> lstOuIds = userService.getUserOUs(userId, true).stream()
-                .map(OrganizationUnitDto::getId)
+        List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
+                .map(OrganizationUnitSummary::getId)
                 .toList();
 
         long now = dateService.getCurrentTimestamp();
