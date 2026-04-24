@@ -368,6 +368,7 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get closable survey units")
 	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
+	@Deprecated(forRemoval = true)
 	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
 
 		String userId = authenticatedUserService.getCurrentUserId();
