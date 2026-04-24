@@ -95,7 +95,12 @@ public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
                 outcomeType == ContactOutcomeType.INA
                 && (questionnaireState == null || QUESTIONNAIRE_STATE_UNAVAILABLE.equals(questionnaireState));
 
-        return neverTransmitted || inaWithoutQuestionnaire;
+
+        if (neverTransmitted) {
+            return true;
+        }
+
+        return currentState != null && !currentState.equals(StateType.CLO) && inaWithoutQuestionnaire;
     }
 
 
