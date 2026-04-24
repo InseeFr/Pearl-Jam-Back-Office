@@ -486,8 +486,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			Set<String> lstSu) {
 		Map<String, String> mapResult = new HashMap<>();
 		try {
-			ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(request,
-					lstSu);
+			ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(lstSu);
 			log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 			InterrogationOkNokDto object = result.getBody();
 			HttpStatusCode responseCode = result.getStatusCode();
