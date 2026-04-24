@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 public record SurveyUnitToCloseResponse(
         String campaignLabel,
         String surveyUnitId,
+        String surveyUnitDisplayName,
         String interviewerLabel,
         Integer ssech,
         String identificationState,
@@ -28,6 +29,7 @@ public record SurveyUnitToCloseResponse(
         return new SurveyUnitToCloseResponse(
                 projection.getCampaignLabel(),
                 projection.getId(),
+                projection.getDisplayName(),
                 getInterviewerLabel(projection),
                 projection.getSsech(),
                 candidate.getCurrentStateType() != null
