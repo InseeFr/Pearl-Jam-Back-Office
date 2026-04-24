@@ -31,7 +31,6 @@ import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewe
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -432,7 +431,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 								Function.identity()
 						));
 
-		final Map<String, String> questionnaireStates = getQuestionnaireStatesFromDataCollection(request, candidatesById.keySet());
+		final Map<String, String> questionnaireStates = getQuestionnaireStatesFromDataCollection(candidatesById.keySet());
 
 		Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
 				candidates.parallelStream()
@@ -474,7 +473,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 
-	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
+	private Map<String, String> getQuestionnaireStatesFromDataCollection(
 			Set<String> lstSu) {
 		Map<String, String> mapResult = new HashMap<>();
 		try {
