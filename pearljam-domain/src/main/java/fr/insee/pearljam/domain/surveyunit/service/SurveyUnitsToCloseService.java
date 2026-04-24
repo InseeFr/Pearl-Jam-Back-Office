@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.service;
+package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
@@ -83,7 +83,7 @@ public class SurveyUnitsToCloseService implements SurveyUnitsToClosePort {
         );
     }
 
-    private boolean isClosable(ClosableSurveyUnitCandidateView candidate, String questionnaireState) {
+    boolean isClosable(ClosableSurveyUnitCandidateView candidate, String questionnaireState) {
         StateType currentState = candidate.getCurrentStateType();
         ContactOutcomeType outcomeType = candidate.getContactOutcomeType();
 
