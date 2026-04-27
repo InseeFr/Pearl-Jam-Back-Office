@@ -1,12 +1,14 @@
 package fr.insee.pearljam.domain.reporting.service;
 
+import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
 import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPort;
 import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -75,10 +77,10 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
                 dto.getContactOutcome() != null ? dto.getContactOutcome().toString() : "",
                 dto.getInterviewer() != null ? dto.getInterviewer().getId() : "",
                 dto.getInterviewer() != null ?
-                    (dto.getInterviewer().getFirstName() + " " + dto.getInterviewer().getLastName()).trim() : "",
+                    (dto.getInterviewer().getInterviewerFirstName() + " " + dto.getInterviewer().getInterviewerLastName()).trim() : "",
                 dto.getViewed() != null ? dto.getViewed() : false,
                 dto.getComments() != null && !dto.getComments().isEmpty() ?
-                    dto.getComments().get(0).getValue() : ""
+                    dto.getComments().get(0).value() : ""
         );
     }
 }
