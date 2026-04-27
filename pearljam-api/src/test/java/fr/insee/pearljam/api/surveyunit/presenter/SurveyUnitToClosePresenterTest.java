@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -48,7 +49,7 @@ class SurveyUnitToClosePresenterTest {
         assertEquals("id1", response.surveyUnitId());
         assertEquals("Display", response.surveyUnitDisplayName());
         assertEquals("John Doe", response.interviewerLabel());
-        assertEquals("WFT", response.identificationState());
+        assertEquals(IdentificationState.MISSING.name(), response.identificationState());
         assertEquals(ContactOutcomeType.INA, response.contactOutcome());
         assertEquals("COMPLETED", response.questionnaireState());
     }
@@ -70,7 +71,7 @@ class SurveyUnitToClosePresenterTest {
         // THEN
         var response = result.getFirst();
 
-        assertNull(response.identificationState());
+        assertEquals(IdentificationState.MISSING.name(), response.identificationState());
         assertNull(response.contactOutcome());
     }
 

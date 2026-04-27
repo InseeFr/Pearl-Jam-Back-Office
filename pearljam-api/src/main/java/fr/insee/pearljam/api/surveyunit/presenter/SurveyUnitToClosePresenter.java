@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -31,11 +33,6 @@ public class SurveyUnitToClosePresenter implements SurveyUnitToCloseStatsPresent
 
                     var candidate = candidatesById.get(id);
 
-                    String identificationState =
-                            candidate != null && candidate.getCurrentStateType() != null
-                                    ? candidate.getCurrentStateType().name()
-                                    : null;
-
                     ContactOutcomeType contactOutcome =
                             candidate != null ? candidate.getContactOutcomeType() : null;
 
@@ -52,7 +49,7 @@ public class SurveyUnitToClosePresenter implements SurveyUnitToCloseStatsPresent
                             projection.getDisplayName(),
                             interviewerLabel,
                             projection.getSsech(),
-                            identificationState,
+                            computeIdentificationState(projection).name(),
                             contactOutcome,
                             questionnaireState,
                             projection.getClosingCauseType()
@@ -70,6 +67,43 @@ public class SurveyUnitToClosePresenter implements SurveyUnitToCloseStatsPresent
         return Stream.of(firstName, lastName)
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
+    }
+
+    private static IdentificationState computeIdentificationState(ClosableSurveyUnitView p) {
+        return IdentificationState.getState(
+                toModelIdentification(p),
+                p.getCampaignIdentificationConfiguration()
+        );
+    }
+    private static Identification toModelIdentification(ClosableSurveyUnitView p) {
+        boolean allNull =
+                p.getIdentification() == null
+                && p.getAccess() == null
+                && p.getSituation() == null
+                && p.getCategory() == null
+                && p.getOccupant() == null
+                && p.getIndividualStatus() == null
+                && p.getInterviewerCanProcess() == null
+                && p.getNumberOfRespondents() == null
+                && p.getPresentInPreviousHome() == null
+                && p.getHouseholdComposition() == null
+                && p.getIdentificationType() == null;
+
+        if (allNull) return null;
+
+        return Identification.builder()
+                .identificationType(p.getIdentificationType())
+                .identification(p.getIdentification())
+                .access(p.getAccess())
+                .situation(p.getSituation())
+                .category(p.getCategory())
+                .occupant(p.getOccupant())
+                .individualStatus(p.getIndividualStatus())
+                .interviewerCanProcess(p.getInterviewerCanProcess())
+                .numberOfRespondents(p.getNumberOfRespondents())
+                .presentInPreviousHome(p.getPresentInPreviousHome())
+                .householdComposition(p.getHouseholdComposition())
+                .build();
     }
 
     @Override
