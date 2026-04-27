@@ -4,7 +4,7 @@ import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.stub.ClosingCauseRepositoryStub;
-import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitPortStub;
+import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitExistencePortStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,12 +19,12 @@ class SurveyUnitClosingTest {
 
     private SurveyUnitClosing surveyUnitClosing;
     private ClosingCauseRepositoryStub closingCauseRepository;
-    private SurveyUnitPortStub surveyUnitPort;
+    private SurveyUnitExistencePortStub surveyUnitPort;
 
     @BeforeEach
     void setUp() {
         closingCauseRepository = new ClosingCauseRepositoryStub();
-        surveyUnitPort = new SurveyUnitPortStub();
+        surveyUnitPort = new SurveyUnitExistencePortStub();
         surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort);
     }
 

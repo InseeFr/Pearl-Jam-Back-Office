@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.domain.campaign.service.dummy.SurveyUnitRepositoryStub;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("SurveyUnit Service Tests")
 class SurveyUnitTest {
-    private SurveyUnitPort surveyUnitPort;
+    private SurveyUnitExistencePort surveyUnitExistencePort;
     private SurveyUnitRepository surveyUnitRepository;
 
     @BeforeEach
     void setUp()
     {
         surveyUnitRepository = new SurveyUnitRepositoryStub();
-        surveyUnitPort = new SurveyUnitService(surveyUnitRepository);
+        surveyUnitExistencePort = new SurveyUnitExistenceService(surveyUnitRepository);
     }
 
     @Test
@@ -29,7 +29,7 @@ class SurveyUnitTest {
     {
         String surveyUnitId = "TEST_ID";
         surveyUnitRepository.save(buildDefaultSurveyUnit(surveyUnitId));
-        assertTrue(surveyUnitPort.existsSurveyUnitById(surveyUnitId));
+        assertTrue(surveyUnitExistencePort.existsSurveyUnitById(surveyUnitId));
     }
 
     @Test
@@ -37,7 +37,7 @@ class SurveyUnitTest {
     void shouldReturnFalseIfSurveyDoesNotExist()
     {
         String surveyUnitId = "TEST_ID";
-        assertFalse(surveyUnitPort.existsSurveyUnitById(surveyUnitId));
+        assertFalse(surveyUnitExistencePort.existsSurveyUnitById(surveyUnitId));
     }
 
     SurveyUnitDB buildDefaultSurveyUnit(String surveyUnitId)

@@ -2,7 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
@@ -17,7 +17,7 @@ import java.util.List;
 public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
     private final ClosingCauseRepository closingCauseRepository;
-    private final SurveyUnitPort surveyUnitPort;
+    private final SurveyUnitExistencePort surveyUnitExistencePort;
 
     @Override
     @Transactional
@@ -25,7 +25,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         for(String suId : surveyUnitIds)
         {
-            if(!surveyUnitPort.existsSurveyUnitById(suId))
+            if(!surveyUnitExistencePort.existsSurveyUnitById(suId))
             {
                 throw new SurveyUnitNotFoundException(suId);
             }

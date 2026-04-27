@@ -6,12 +6,9 @@ import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Repository
 @RequiredArgsConstructor
@@ -59,13 +56,11 @@ public class ClosingCauseDaoAdapter implements ClosingCauseRepository {
     }
 
     @Override
-    @Transactional(propagation = MANDATORY)
     public void addClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType closingCause) {
         closingCauseJpaRepository.addClosingCauseToSurveyUnit(surveyUnitId, closingCause.toString());
     }
 
     @Override
-    @Transactional(propagation = MANDATORY)
     public boolean existsClosingCauseFromSurveyUnitId(String surveyUnitId) {
         return closingCauseJpaRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId);
     }
