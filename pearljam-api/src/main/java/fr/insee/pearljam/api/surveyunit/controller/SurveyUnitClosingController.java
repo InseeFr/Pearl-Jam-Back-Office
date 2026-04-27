@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.request.CloseSurveyUnitsRequest;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static fr.insee.pearljam.contracts.constants.Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS;
 
@@ -31,9 +32,9 @@ public class SurveyUnitClosingController {
     @PostMapping(API_SURVEYUNIT_CLOSE_SURVEYUNITS)
     public ResponseEntity<Void> addClosingCauseToMultipleSurveyUnits(
             @PathVariable("closingCause") ClosingCauseType closingCause,
-            @RequestBody @Valid CloseSurveyUnitsRequest request) {
+            @Valid @RequestBody List<String> surveyUnitIds) {
 
-        surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(request.getSurveyUnitIds(), closingCause);
+        surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, closingCause);
         return ResponseEntity.noContent().build();
     }
 }
