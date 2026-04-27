@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewDto;
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPresenter;
+import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewStatsPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 public class SurveyUnitToReviewPresenter implements
-        SurveyUnitToReviewPresenter<SurveyUnitToReviewResponse> {
+        SurveyUnitToReviewStatsPresenter<SurveyUnitToReviewResponse> {
 
     @Override
     public SurveyUnitToReviewResponse present(Page<SurveyUnitToReview> surveyUnits) {

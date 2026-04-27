@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
  *
  * @param <T> the type of response this presenter produces
  */
-public interface SurveyUnitToReviewPresenter<T> {
+public interface SurveyUnitToReviewStatsPresenter<T> {
 
     /**
      * Presents the paginated survey units to review in the appropriate response format.
