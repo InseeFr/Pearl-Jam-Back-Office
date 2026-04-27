@@ -12,6 +12,7 @@ public record CampaignProgressByInterviewersResponse(
 ) {
     @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(
+            String interviewerId,
             String interviewerLabel,
             float progressRate,
             StatesProgressResponse states,

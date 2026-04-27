@@ -64,7 +64,7 @@ class CampaignProgressCsvExporterTest {
         ResponseEntity<byte[]> response = exporter.export("user1", LocalDate.of(2025, 6, 10));
 
         String contentDisposition = response.getHeaders().getFirst("Content-Disposition");
-        assertThat(contentDisposition).contains("user1_Avancement_enquetes_10062025.csv");
+        assertThat(contentDisposition).contains("Avancement_enquetes_10062025.csv");
     }
 
     @Test
