@@ -61,8 +61,6 @@ public class Constants {
   public static final String API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION_EXPORT = "/api/reporting/interviewers/{interviewerId}/campaigns/collection/export";
   public static final String API_REPORTING_OUS_PROGRESS = "/api/reporting/campaigns/{campaignId}/organization-units/progress";
   public static final String API_REPORTING_OUS_PROGRESS_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/progress/export";
-  public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
-  public static final String API_REPORTING_OUS_COLLECTION_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/collection/export";
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
   public static final String API_REPORTING_SURVEY_UNITS_TO_REVIEW = "/api/reporting/survey-units/to-review";
 
