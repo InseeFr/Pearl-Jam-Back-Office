@@ -6,12 +6,12 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-public class SurveyUnitFakeRepository implements SurveyUnitRepository {
+public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
+
+    HashMap<String, SurveyUnitDB> surveyUnitDBs = new HashMap<>();
+
     @Override
     public List<String> findIdsByInterviewerIdWithinVisibilityScope(String interviewerId, Long now, List<String> visibleTypes) {
         return List.of();
@@ -109,7 +109,7 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public SurveyUnitDB save(SurveyUnitDB surveyUnit) {
-        return surveyUnit;
+        return surveyUnitDBs.put(surveyUnit.getId(), surveyUnit);
     }
 
     @Override
@@ -129,6 +129,6 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public boolean existsById(String surveyUnitId) {
-        return false;
+        return surveyUnitDBs.containsKey(surveyUnitId);
     }
 }
