@@ -313,6 +313,19 @@ class SurveyUnitUpdateServiceImplTest {
 		assertThat(identificationResult.getSurveyUnit()).isEqualTo(surveyUnit);
 	}
 
+	@Test
+	@DisplayName("Should update lastUpdated when survey unit is updated")
+	void testUpdateLastUpdated01() {
+		assertThat(surveyUnit.getLastUpdated()).isEqualTo(0L);
+
+		List<CommentDto> comments = List.of(
+				new CommentDto(CommentType.INTERVIEWER, "test comment")
+		);
+		surveyUnitDto = createSurveyUnitDto(null, comments, null, null, null);
+		surveyUnitService.updateSurveyUnitInfos(surveyUnit, surveyUnitDto);
+
+		assertThat(surveyUnit.getLastUpdated()).isEqualTo(FixedDateService.FIXED_TIMESTAMP);
+	}
 	private static Stream<Arguments> contactAttemptConversions() {
 
 		return Stream.of(

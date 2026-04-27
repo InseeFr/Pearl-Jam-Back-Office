@@ -479,6 +479,10 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 			nativeQuery = true)
 	List<String> findExistingIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
 
-
-	long findLastUpdatedById(String surveyUnitId);
+	@Query("""
+			    select su.lastUpdated
+			    from SurveyUnitDB su
+			    where su.id = :surveyUnitId
+			""")
+	Long findLastUpdatedById(@Param("surveyUnitId")String surveyUnitId);
 }

@@ -1,10 +1,7 @@
 package fr.insee.pearljam.contracts.surveyunit.dto.surveyunit;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
@@ -16,61 +13,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SurveyUnitDto {
-	/**
-	 * Id of the SurveyUnit
-	 */
 	private String id;
-
-	/**
-	 * Id of the Campaign
-	 */
 	private String campaign;
-
-	/**
-	 * Label of the Campaign
-	 */
 	private String campaignLabel;
 
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long managementStartDate;
-
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long interviewerStartDate;
-
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long identificationPhaseStartDate;
-
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long collectionStartDate;
-
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long collectionEndDate;
-
-	/**
-	 * Start Date of the Campaign
-	 */
 	private Long endDate;
 
 	private IdentificationConfiguration identificationConfiguration;
-	private long lastUpdated;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private boolean collectNextContacts;
 	private boolean useLetterCommunication;
 
-	private List<PersonDto> persons;
-
-	private AddressDto address;
+	private long lastUpdated;
 
 	public SurveyUnitDto(String idSurveyUnit, CampaignDto campaign, SurveyUnitVisibilityDto visibility) {
 		this.id = idSurveyUnit;

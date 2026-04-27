@@ -60,7 +60,8 @@ class SurveyUnitIT {
 				          "contactOutcomeConfiguration":"F2F",
 				          "contactAttemptConfiguration":"F2F",
 				          "useLetterCommunication": true,
-				          "collectNextContacts":false
+				          "collectNextContacts":false,
+				          "lastUpdated":123
 				       },
 				       {
 				          "id":"12",
@@ -76,7 +77,8 @@ class SurveyUnitIT {
 				          "contactOutcomeConfiguration":"F2F",
 				          "contactAttemptConfiguration":"F2F",
 				          "useLetterCommunication": true,
-				          "collectNextContacts":false
+				          "collectNextContacts":false,
+				          "lastUpdated":123
 				       },
 				       {
 						 "id":"25",
@@ -92,7 +94,8 @@ class SurveyUnitIT {
 						 "contactOutcomeConfiguration":"F2F",
 						 "contactAttemptConfiguration":"F2F",
 						 "useLetterCommunication":false,
-				          "collectNextContacts":false
+				          "collectNextContacts":false,
+				          "lastUpdated":123
 					   },
 				       {
 				          "id":"20",
@@ -108,7 +111,8 @@ class SurveyUnitIT {
 				          "contactOutcomeConfiguration":"TEL",
 				          "contactAttemptConfiguration":"TEL",
 				          "useLetterCommunication": false,
-				          "collectNextContacts":false
+				          "collectNextContacts":false,
+				          "lastUpdated":123
 				       }
 				    ]
 				""";
@@ -220,13 +224,13 @@ class SurveyUnitIT {
 				   },
 				   "states":[
 				      {
-				         "id":1,
-				         "date":111112111,
+				         "id":2,
+				         "date":110111111,
 				         "type":"VIN"
 				      },
 				      {
-				         "id":7,
-				         "date":101111111,
+				         "id":3,
+				         "date":111112111,
 				         "type":"TBR"
 				      }
 				   ],
@@ -454,13 +458,13 @@ class SurveyUnitIT {
 				   },
 				   "states":[
 				      {
-				         "id":1,
-				         "date":111112111,
+				         "id":2,
+				         "date":110111111,
 				         "type":"VIN"
 				      },
 				      {
-				         "id":7,
-				         "date":101111111,
+				         "id":3,
+				         "date":111112111,
 				         "type":"TBR"
 				      }
 				   ],
@@ -653,7 +657,8 @@ class SurveyUnitIT {
 				       }
 				    ],
 				    "contactHistory":[]
-				 }""";
+					 }
+				""";
 		String putUrl = "/api/survey-unit/20";
 		mockMvc.perform(put(putUrl).with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)).accept(MediaType.APPLICATION_JSON).content(updateJson).contentType(MediaType.APPLICATION_JSON)).andExpect(MockMvcTestUtils.apiErrorMatches(HttpStatus.NOT_FOUND, putUrl, CommunicationTemplateNotFoundException.MESSAGE));
 	}
@@ -722,7 +727,7 @@ class SurveyUnitIT {
 				      "location":"29270",
 				      "city":"Carhaix",
 				      "closingCause":"NPI",
-				      "state":"VIN",
+				      "state":"TBR",
 				      "interviewer":{
 				         "id":"INTW1",
 				         "interviewerFirstName":"Margie",
@@ -738,24 +743,51 @@ class SurveyUnitIT {
 	@DisplayName("Should return survey units for a campaign filtered by state")
 	void testGetSurveyUnitsByCampaign02() throws Exception {
 		MvcResult mvcResult =
-				mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units?state=VIN").with(authentication(AuthenticatedUserTestHelper.AUTH_LOCAL_USER)).accept(MediaType.APPLICATION_JSON)).andReturn();
+				mockMvc.perform(get("/api/campaign/VQS2021X00/survey-units?state=VIC").with(authentication(AuthenticatedUserTestHelper.AUTH_LOCAL_USER)).accept(MediaType.APPLICATION_JSON)).andReturn();
 
 		String contentResult = mvcResult.getResponse().getContentAsString();
 		String expectedResult = """
 				[
 				   {
-				      "id":"11",
-				      "displayName":"business-id-11",
+				      "id":"20",
+				      "displayName":"business-id-20",
 				      "ssech":1,
-				      "location":"29270",
-				      "city":"Carhaix",
-				      "closingCause":"NPI",
+				      "location":"59620",
+				      "city":"Aulnoye-Aimeries",
 				      "viewed": false,
-				      "state":"VIN",
+				      "state":"VIC",
 				      "interviewer":{
 				         "id":"INTW1",
 				         "interviewerFirstName":"Margie",
 				         "interviewerLastName":"Lucas"
+				      }
+				   },
+				   {
+				      "id":"21",
+				      "displayName":"business-id-21",
+				      "ssech":1,
+				      "location":"38200",
+				      "city":"Vienne",
+				      "viewed": false,
+				      "state":"VIC",
+				      "interviewer":{
+				         "id":"INTW2",
+				         "interviewerFirstName":"Carlton",
+				         "interviewerLastName":"Campbell"
+				      }
+				   },
+				   {
+				      "id":"23",
+				      "displayName":"business-id-23",
+				      "ssech":1,
+				      "location":"35000",
+				      "city":"Rennes",
+				      "viewed": false,
+				      "state":"VIC",
+				      "interviewer":{
+				         "id":"INTW4",
+				         "interviewerFirstName":"Melody",
+				         "interviewerLastName":"Grant"
 				      }
 				   }
 				]

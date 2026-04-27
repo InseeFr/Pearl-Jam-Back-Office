@@ -418,7 +418,6 @@ class TestAuthKeyCloak {
 		assertThat(surveyUnit.getClosingCause().getType()).isEqualTo(ClosingCauseType.NPI);
 	}
 
-
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 404 when campaign Id is false

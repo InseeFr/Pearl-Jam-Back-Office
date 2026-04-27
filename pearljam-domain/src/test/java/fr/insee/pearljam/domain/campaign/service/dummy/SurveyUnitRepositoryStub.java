@@ -135,4 +135,9 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
                 .filter(surveyUnitDBs::containsKey)
                 .toList();
     }
+
+    @Override
+    public long findLastUpdatedById(String surveyUnitId) {
+        return 0;
+    }
 }

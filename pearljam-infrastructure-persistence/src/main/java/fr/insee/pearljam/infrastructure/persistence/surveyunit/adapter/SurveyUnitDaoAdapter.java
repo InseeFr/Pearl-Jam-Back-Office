@@ -141,6 +141,7 @@ public class SurveyUnitDaoAdapter implements SurveyUnitRepository {
 
     @Override
     public long findLastUpdatedById(String surveyUnitId) {
-        return surveyUnitJpaRepository.findLastUpdatedById(surveyUnitId);
+        return Optional.ofNullable(surveyUnitJpaRepository.findLastUpdatedById(surveyUnitId))
+                .orElse(0L);
     }
 }
