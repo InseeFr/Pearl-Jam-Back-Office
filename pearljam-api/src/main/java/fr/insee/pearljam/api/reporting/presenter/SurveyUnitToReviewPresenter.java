@@ -31,7 +31,7 @@ public class SurveyUnitToReviewPresenter implements
     private SurveyUnitToReviewDto mapToDto(SurveyUnitToReview surveyUnit) {
         return new SurveyUnitToReviewDto(
                 surveyUnit.id(),
-                "Campaign Label", // TODO: Implement campaign label resolution
+                surveyUnit.campaignLabel(),
                 surveyUnit.contactOutcome(),
                 surveyUnit.interviewerName(),
                 surveyUnit.viewed(),
