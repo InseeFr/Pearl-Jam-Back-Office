@@ -42,6 +42,8 @@ class InterviewerCampaignsCollectionControllerTest {
     @Test
     @DisplayName("Returns 200 OK when interviewerId and day are provided")
     void shouldReturnOk_whenInterviewerIdAndDayProvided() throws Exception {
+        // Given
+        // When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk());
@@ -50,6 +52,8 @@ class InterviewerCampaignsCollectionControllerTest {
     @Test
     @DisplayName("Returns 200 OK when interviewerId is provided without day")
     void shouldReturnOk_whenInterviewerIdAndDayIsNotProvided() throws Exception {
+        // Given
+        // When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1"))
                 .andExpect(status().isOk());
     }

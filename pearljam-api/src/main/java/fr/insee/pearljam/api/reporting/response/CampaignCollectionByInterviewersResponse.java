@@ -19,6 +19,7 @@ public record CampaignCollectionByInterviewersResponse(
 
         List<Interviewer> interviewers = interviewerDailyStats.stream()
                 .map(intDailyStats -> new Interviewer(
+                        intDailyStats.getInterviewerId(),
                         intDailyStats.getInterviewerFirstName() + " " + intDailyStats.getInterviewerLastName(),
                         intDailyStats.getAllocatedCount(),
                         CollectionRatesResponse.from(intDailyStats),
@@ -45,6 +46,7 @@ public record CampaignCollectionByInterviewersResponse(
 
     @Schema(name = "CampaignCollectionByInterviewersInterviewer")
     public record Interviewer(
+            String interviewerId,
             String interviewerLabel,
             long allocated,
             CollectionRatesResponse rates,
