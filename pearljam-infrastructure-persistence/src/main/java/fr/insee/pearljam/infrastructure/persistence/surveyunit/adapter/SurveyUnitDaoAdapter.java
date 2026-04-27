@@ -133,4 +133,9 @@ public class SurveyUnitDaoAdapter implements SurveyUnitRepository {
     public void deleteById(String surveyUnitId) {
         surveyUnitJpaRepository.deleteById(surveyUnitId);
     }
+
+    @Override
+    public boolean existsById(String surveyUnitId) {
+        return surveyUnitJpaRepository.existsById(surveyUnitId);
+    }
 }

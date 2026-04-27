@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.port.out;
 
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface ClosingCauseRepository {
     List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse);
 
     void deleteBySurveyUnitId(String surveyUnitId);
+
+    void addClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
+
+    boolean existsClosingCauseFromSurveyUnitId(String surveyUnitId);
 }

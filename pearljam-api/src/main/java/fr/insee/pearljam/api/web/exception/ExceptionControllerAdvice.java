@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.web.exception;
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
@@ -182,6 +183,11 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ProblemDetail existingUserOnCreationException(Exception e) {
+        return generateResponseError(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ClosingCauseAlreadyExistsException.class)
+    public ProblemDetail closingCauseAlreadyExistsException(Exception e) {
         return generateResponseError(e, HttpStatus.CONFLICT);
     }
 

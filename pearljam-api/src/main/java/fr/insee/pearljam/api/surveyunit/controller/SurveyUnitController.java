@@ -249,6 +249,7 @@ public class SurveyUnitController {
 	 * @param closingCause closing cause to add
 	 * @return {@link HttpStatus}
 	 */
+    @Deprecated(forRemoval = true)
 	@Operation(summary = "Add Closing cause")
 	@PutMapping(Constants.API_SURVEYUNIT_ID_CLOSINGCAUSE)
 	public ResponseEntity<Object> updateClosingCause(

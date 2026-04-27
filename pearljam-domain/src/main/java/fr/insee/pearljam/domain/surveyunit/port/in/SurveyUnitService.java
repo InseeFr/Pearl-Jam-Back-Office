@@ -95,6 +95,7 @@ public interface SurveyUnitService {
 
 	HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
 
+    @Deprecated
 	HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
 
 	Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits);

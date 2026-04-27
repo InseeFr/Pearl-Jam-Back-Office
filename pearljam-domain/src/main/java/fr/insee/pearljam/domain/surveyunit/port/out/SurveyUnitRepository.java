@@ -56,4 +56,6 @@ public interface SurveyUnitRepository {
     List<SurveyUnitDB> findAllById(Iterable<String> ids);
 
     void deleteById(String surveyUnitId);
+
+    boolean existsById(String surveyUnitId);
 }

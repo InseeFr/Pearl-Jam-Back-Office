@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.persistence.closingcause.jpa;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -10,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB, Long> {
-	
-	List<ClosingCauseDB> findBySurveyUnitId(String surveyUnitId);
 
 	void deleteBySurveyUnitId(String surveyUnitId);
 	
@@ -210,4 +209,15 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
                                                                  @Param("ouIds") List<String> ouIds,
                                                                  @Param("dateToUse") Long dateToUse);
 
-}
+    @Modifying
+    @Query(value = "INSERT INTO closing_cause (survey_unit_id, type, date) " +
+            "VALUES (:surveyUnitId, :closingCauseType, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000)",
+            nativeQuery = true)
+    void addClosingCauseToSurveyUnit(@Param("surveyUnitId") String surveyUnitId,
+                                     @Param("closingCauseType") String closingCauseType);
+
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+            "FROM closing_cause " +
+            "WHERE survey_unit_id = :surveyUnitId",
+            nativeQuery = true)
+    boolean existsClosingCauseFromSurveyUnitId(@Param("surveyUnitId") String surveyUnitId);    }

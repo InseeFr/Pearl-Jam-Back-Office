@@ -126,4 +126,9 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
     public void deleteById(String surveyUnitId) {
         // not used at this moment
     }
+
+    @Override
+    public boolean existsById(String surveyUnitId) {
+        return false;
+    }
 }
