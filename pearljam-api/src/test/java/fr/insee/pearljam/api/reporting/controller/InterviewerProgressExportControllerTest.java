@@ -10,6 +10,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -53,7 +54,9 @@ class InterviewerProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK with CSV content type when date is provided")
     void shouldReturnOk_withCsvContentType() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
@@ -61,7 +64,9 @@ class InterviewerProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns an attachment whose filename includes the date")
     void shouldReturnAttachmentWithFilename() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
@@ -70,12 +75,15 @@ class InterviewerProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns a CSV starting with the BOM and the expected headers")
     void shouldReturnCsvWithBomAndHeaders() throws Exception {
+        // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
 
+        // Then
         String csv = new String(content);
         assertThat(csv).startsWith("\uFEFF")
                 .contains(ProgressCsvHeaders.INTERVIEWER_LABEL.getHeaderName())
@@ -83,7 +91,9 @@ class InterviewerProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns a CSV with one data row per interviewer returned by the port")
     void shouldReturnCsvWithDataRows() throws Exception {
+        // Given
         CampaignProgressByInterviewersResponse response = new CampaignProgressByInterviewersResponse(
                 List.of(new CampaignProgressByInterviewersResponse.Interviewer(
                         "JDUP",
@@ -95,11 +105,13 @@ class InterviewerProgressExportControllerTest {
         );
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(response);
 
+        // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
 
+        // Then
         String csv = new String(content);
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(2);
@@ -107,17 +119,22 @@ class InterviewerProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 404 Not Found when campaign does not exist")
     void shouldReturn404_whenCampaignNotFound() throws Exception {
+        // Given
         when(port.getProgressForDay(any(), any(), any(), any()))
                 .thenThrow(new CampaignNotFoundException());
 
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/unknown/interviewers/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @DisplayName("Returns 400 Bad Request when date is missing")
     void shouldReturnBadRequest_whenDateIsMissing() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export"))
                 .andExpect(status().isBadRequest());
     }
