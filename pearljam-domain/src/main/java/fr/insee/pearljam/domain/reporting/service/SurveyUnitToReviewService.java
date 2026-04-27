@@ -1,14 +1,16 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCampaignDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPort;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPresenter;
-import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
+import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewStatsPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,14 +33,26 @@ import java.util.stream.Collectors;
 public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
 
     private final SurveyUnitService surveyUnitService;
-    private final SurveyUnitToReviewRepositoryPort surveyUnitToReviewRepository;
+    private final UserService userService;
+    private final CampaignVisibilityPort campaignVisibilityPort;
+    private final DateService dateService;
 
     @Override
-    public <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewStatsPresenter<T> presenter) {
         log.info("Retrieving survey units to review for user: {}", userId);
 
-        // Get all survey units in TBR state for the user using existing service
-        Set<SurveyUnitCampaignDto> tbrSurveyUnits = surveyUnitService.getSurveyUnitByCampaign(userId, null, StateType.TBR);
+        long currentTimestamp = dateService.getCurrentTimestamp();
+
+        List<String> ouIds = userService.getUserOUsModel(userId, true).stream()
+                .map(OrganizationUnitSummary::getId)
+                .toList();
+
+        List<CampaignVisibility> campaigns = campaignVisibilityPort
+                .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
+        // Get all survey units in TBR state for the user's campaigns
+        Set<SurveyUnitCampaignDto> tbrSurveyUnits = campaigns.stream()
+                .flatMap(campaign -> surveyUnitService.getSurveyUnitByCampaign(campaign.id(), userId, StateType.TBR).stream())
+                .collect(Collectors.toSet());
 
         if (tbrSurveyUnits.isEmpty()) {
             log.warn("No survey units to review found for user: {}", userId);
@@ -80,7 +94,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
                     (dto.getInterviewer().getInterviewerFirstName() + " " + dto.getInterviewer().getInterviewerLastName()).trim() : "",
                 dto.getViewed() != null ? dto.getViewed() : false,
                 dto.getComments() != null && !dto.getComments().isEmpty() ?
-                    dto.getComments().get(0).value() : ""
+                    dto.getComments().getFirst().value() : ""
         );
     }
 }
