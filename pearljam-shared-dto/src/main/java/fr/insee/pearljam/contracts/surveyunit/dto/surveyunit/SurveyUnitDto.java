@@ -62,6 +62,7 @@ public class SurveyUnitDto {
 	private Long endDate;
 
 	private IdentificationConfiguration identificationConfiguration;
+	private long lastUpdated;
 	private ContactOutcomeConfiguration contactOutcomeConfiguration;
 	private ContactAttemptConfiguration contactAttemptConfiguration;
 	private boolean collectNextContacts;
@@ -86,5 +87,6 @@ public class SurveyUnitDto {
 		this.contactAttemptConfiguration = campaign.getContactAttemptConfiguration();
 		this.contactOutcomeConfiguration = campaign.getContactOutcomeConfiguration();
 		this.collectNextContacts = campaign.isCollectNextContacts();
+		this.lastUpdated = 0L; // Default value, will be set from repository
 	}
 }

@@ -160,10 +160,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 				.toList();
 
 		return surveyUnitDtoIds.stream()
-				.map(idSurveyUnit -> new SurveyUnitDto(idSurveyUnit,
-						campaignRepository.findDtoBySurveyUnitId(idSurveyUnit),
-						SurveyUnitVisibilityDto.fromModel(
-								visibilityRepository.getVisibilityBySurveyUnitId(idSurveyUnit))))
+				.map(idSurveyUnit -> {
+					long lastUpdate = surveyUnitRepository.findLastUpdatedById(idSurveyUnit);
+					SurveyUnitDto dto = new SurveyUnitDto(idSurveyUnit,
+							campaignRepository.findDtoBySurveyUnitId(idSurveyUnit),
+							SurveyUnitVisibilityDto.fromModel(
+									visibilityRepository.getVisibilityBySurveyUnitId(idSurveyUnit)));
+
+						dto.setLastUpdated(lastUpdate);
+
+					return dto;
+				})
 				.toList();
 	}
 

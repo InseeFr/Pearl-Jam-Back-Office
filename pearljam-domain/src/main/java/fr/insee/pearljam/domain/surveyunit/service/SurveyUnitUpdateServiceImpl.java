@@ -49,6 +49,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
     @Transactional
     @Override
     public void updateSurveyUnitInfos(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
+        long timestamp = dateService.getCurrentTimestamp();
         if(surveyUnitUpdateDto.comments() != null) {
             Set<Comment> commentsToUpdate = surveyUnitUpdateDto.comments().stream()
                     .map(commentDto -> CommentDto.toModel(surveyUnit.getId(), commentDto))
@@ -57,7 +58,6 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
             surveyUnit.updateComments(commentsToUpdate);
         }
         if(surveyUnitUpdateDto.communicationRequests() != null) {
-            Long timestamp = dateService.getCurrentTimestamp();
             List<CommunicationRequest> communicationRequestsToCreate =
                     surveyUnitUpdateDto.communicationRequests()
                             .stream()
@@ -88,6 +88,7 @@ public class SurveyUnitUpdateServiceImpl implements SurveyUnitUpdateService {
         Optional.ofNullable(surveyUnitUpdateDto.nextContactHistory())
                 .map(NextContactHistoryDto::toModel)
                 .ifPresent(surveyUnit::updateNextContactHistory);
+        surveyUnit.setLastUpdated(timestamp);
     }
 
     // when DCD and DUU values are not used anymore => to be removed

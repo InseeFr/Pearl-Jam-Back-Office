@@ -58,4 +58,6 @@ public interface SurveyUnitRepository {
     void deleteById(String surveyUnitId);
 
     List<String> findExistingIds(List<String> surveyUnitIds);
+
+    long findLastUpdatedById(String surveyUnitId);
 }

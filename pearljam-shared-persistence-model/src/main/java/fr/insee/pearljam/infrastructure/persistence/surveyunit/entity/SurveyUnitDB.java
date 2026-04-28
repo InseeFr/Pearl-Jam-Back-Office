@@ -70,6 +70,12 @@ public class SurveyUnitDB implements Serializable {
 	private Boolean move = false;
 
 	/**
+	 * Last updated timestamp
+	 */
+	@Column(name = "last_updated")
+	private long lastUpdated = 0L;
+
+	/**
 	 * display name (business id)
 	 */
 	@Column
