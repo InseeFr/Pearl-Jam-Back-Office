@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewDto;
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
 import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewStatsPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,9 @@ import java.util.List;
 @Component
 public class SurveyUnitToReviewPresenter implements
         SurveyUnitToReviewStatsPresenter<SurveyUnitToReviewResponse> {
+
+    @Value("${application.external.service.datacollection-ui-url}")
+    private String datacollectionUiUrl;
 
     @Override
     public SurveyUnitToReviewResponse present(Page<SurveyUnitToReview> surveyUnits) {
@@ -35,7 +39,7 @@ public class SurveyUnitToReviewPresenter implements
                 surveyUnit.contactOutcome(),
                 surveyUnit.interviewerName(),
                 surveyUnit.viewed(),
-                "/read-only/" + surveyUnit.id(), // TODO: Implement proper URL generation
+                datacollectionUiUrl + "/review/interrogations/" + surveyUnit.id(),
                 surveyUnit.lastComment()
         );
     }
