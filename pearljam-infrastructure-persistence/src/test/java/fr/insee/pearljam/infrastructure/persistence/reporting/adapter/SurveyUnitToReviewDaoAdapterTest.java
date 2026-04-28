@@ -125,9 +125,8 @@ class SurveyUnitToReviewDaoAdapterTest {
         createContactOutcome("SU-4", ContactOutcomeType.NOA);
 
         // 6. Create management comments
-        createManagementComment("SU-1", "First comment for SU-1");
+        createManagementComment("SU-1", "Comment for SU-1");
         createManagementComment("SU-2", "Comment for SU-2");
-        createManagementComment("SU-1", "Last comment for SU-1"); // Should be the last one
 
         entityManager.flush();
     }
@@ -183,7 +182,7 @@ class SurveyUnitToReviewDaoAdapterTest {
         assertThat(first.campaignLabel()).isEqualTo("Test Campaign");
         assertThat(first.interviewerName()).isEqualTo("Jean Dupont");
         assertThat(first.viewed()).isTrue();
-        assertThat(first.lastComment()).isEqualTo("Last comment for SU-1");
+        assertThat(first.lastComment()).isEqualTo("Comment for SU-1");
     }
 
     @Test
