@@ -55,9 +55,9 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
                 campaignIds, ouIds, search, pageable);
 
         if (page.isEmpty()) {
-            log.warn("No survey units to review found for user: {}", userId);
+            log.warn("No survey units to review found for user: {} with search parameter: {}", userId, search);
         } else {
-            log.info("Found {} survey units to review for user: {}", page.getTotalElements(), userId);
+            log.info("Found {} survey units to review for user: {} with search parameter: {}", page.getTotalElements(), userId, search);
         }
 
         return presenter.present(page);
