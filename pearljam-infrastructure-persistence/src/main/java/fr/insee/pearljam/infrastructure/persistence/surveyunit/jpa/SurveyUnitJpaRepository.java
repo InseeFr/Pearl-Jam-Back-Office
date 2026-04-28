@@ -424,10 +424,6 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	List<String> findAllIdsByInterviewerId(@Param("interviewerId") String interviewerId);
 
 	@Query(value="SELECT COUNT(*) FROM survey_unit "
-			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId", nativeQuery=true)
-	Integer countUnallocatedSurveyUnitsByCampaignId(@Param("campaignId") String campaignId);
-
-	@Query(value="SELECT COUNT(*) FROM survey_unit "
 			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId AND organization_unit_id IN (:organizationUnitIds)", nativeQuery=true)
 	Integer countUnallocatedSurveyUnitsByCampaignIdAndOrganizationUnitIdIn(@Param("campaignId") String campaignId, @Param("organizationUnitIds") List<String> organizationUnitIds);
 
