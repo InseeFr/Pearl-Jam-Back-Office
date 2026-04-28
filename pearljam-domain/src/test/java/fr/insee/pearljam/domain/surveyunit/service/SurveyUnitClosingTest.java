@@ -45,6 +45,7 @@ class SurveyUnitClosingTest {
 
         // Then
         assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
+        assertEquals(1, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
@@ -64,7 +65,9 @@ class SurveyUnitClosingTest {
         // Then
         surveyUnitIds.forEach(id -> {
             assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(id));
+            assertEquals(type, closingCauseRepository.getClosingCauseType(id));
         });
+        assertEquals(3, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
@@ -83,6 +86,7 @@ class SurveyUnitClosingTest {
                 .hasMessageContaining(surveyUnitId);
 
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
+        assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
@@ -94,7 +98,7 @@ class SurveyUnitClosingTest {
         ClosingCauseType type = ClosingCauseType.ROW;
 
         surveyUnitPort.addExistingSurveyUnit(surveyUnitId);
-        closingCauseRepository.addClosingCauseToSurveyUnit(surveyUnitId, ClosingCauseType.NPA);
+        closingCauseRepository.addInitialClosingCauseToSurveyUnit(surveyUnitId, ClosingCauseType.NPA);
 
         // When/Then
         assertThatThrownBy(() ->
@@ -102,11 +106,13 @@ class SurveyUnitClosingTest {
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining(surveyUnitId);
+
+        assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
-    @DisplayName("Should fail on first invalid survey unit in multiple units")
-    void shouldFailOnFirstInvalidSurveyUnit() {
+    @DisplayName("Should throw exception when some survey units don't exist - batch validation")
+    void shouldThrowExceptionForMissingSurveyUnitsInBatch() {
         // Given
         List<String> surveyUnitIds = Arrays.asList("SU001", "INVALID", "SU003");
         ClosingCauseType type = ClosingCauseType.NPA;
@@ -114,25 +120,22 @@ class SurveyUnitClosingTest {
         surveyUnitPort.addExistingSurveyUnit("SU001");
         surveyUnitPort.addExistingSurveyUnit("SU003");
 
-        // When/Then
+        // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
                 surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining("INVALID");
 
-        // Verify first unit was processed
-        assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU001"));
-        assertEquals(type, closingCauseRepository.getClosingCauseType("SU001"));
-
-        // Verify third unit was never processed
+        // With batch processing, NONE should be processed if validation fails
+        assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU001"));
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU003"));
-        assertEquals(1, closingCauseRepository.getAddedClosingCausesCount());
+        assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
-    @DisplayName("Should fail when closing cause already exists for one of multiple units")
-    void shouldFailWhenClosingCauseExistsForOneUnit() {
+    @DisplayName("Should throw exception when closing cause exists for some units - batch validation")
+    void shouldThrowExceptionWhenClosingCauseExistsInBatch() {
         // Given
         List<String> surveyUnitIds = Arrays.asList("SU001", "SU002", "SU003");
         ClosingCauseType type = ClosingCauseType.NPI;
@@ -142,26 +145,19 @@ class SurveyUnitClosingTest {
         surveyUnitPort.addExistingSurveyUnit("SU003");
 
         closingCauseRepository.addInitialClosingCauseToSurveyUnit("SU002", ClosingCauseType.NPX);
-        closingCauseRepository.setAddedClosingCausesCount(0);
 
-        // When/Then
+        // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
                 surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining("SU002");
 
-        // Verify first unit was processed
-        assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU001"));
-        assertEquals(type, closingCauseRepository.getClosingCauseType("SU001"));
-
-        // Verify second unit remained unchanged
+        // With batch processing, NONE should be processed if validation fails
+        assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU001"));
         assertEquals(ClosingCauseType.NPX, closingCauseRepository.getClosingCauseType("SU002"));
-
-        // Verify third unit was never processed
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU003"));
-
-        assertEquals(1, closingCauseRepository.getAddedClosingCausesCount());
+        assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
@@ -184,6 +180,7 @@ class SurveyUnitClosingTest {
     @DisplayName("Should process survey units with all closing cause types")
     void shouldProcessAllClosingCauseTypes() {
         // Test each enum value
+        int expectedCount = 0;
         for (ClosingCauseType type : ClosingCauseType.values()) {
             String surveyUnitId = "SU_" + type.name();
             List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
@@ -196,8 +193,28 @@ class SurveyUnitClosingTest {
 
             assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
             assertEquals(type, closingCauseRepository.getClosingCauseType(surveyUnitId));
+            expectedCount++;
         }
 
-        assertEquals(4, closingCauseRepository.getAddedClosingCausesCount());
+        assertEquals(expectedCount, closingCauseRepository.getAddedClosingCausesCount());
+    }
+
+    @Test
+    @DisplayName("Should throw exception with multiple missing survey units")
+    void shouldThrowExceptionWithAllMissingSurveyUnits() {
+        // Given
+        List<String> surveyUnitIds = Arrays.asList("INVALID1", "INVALID2", "INVALID3");
+        ClosingCauseType type = ClosingCauseType.NPA;
+
+        // When/Then
+        assertThatThrownBy(() ->
+                surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        )
+                .isInstanceOf(SurveyUnitNotFoundException.class)
+                .hasMessageContaining("INVALID1")
+                .hasMessageContaining("INVALID2")
+                .hasMessageContaining("INVALID3");
+
+        assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
     }
 }

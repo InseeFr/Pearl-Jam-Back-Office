@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class SurveyUnitExistenceService implements SurveyUnitExistencePort {
@@ -14,7 +16,9 @@ public class SurveyUnitExistenceService implements SurveyUnitExistencePort {
 
     @Override
     @Transactional
-    public boolean existsSurveyUnitById(String surveyUnitId) {
-        return surveyUnitRepository.existsById(surveyUnitId);
+    public List<String> findExistingIds(List<String> surveyUnitIds) {
+        return surveyUnitRepository.findExistingIds(surveyUnitIds);
     }
+
+
 }

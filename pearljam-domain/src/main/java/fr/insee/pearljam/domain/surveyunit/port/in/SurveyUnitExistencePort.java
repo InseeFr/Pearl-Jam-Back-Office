@@ -1,5 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
+import java.util.List;
+
 public interface SurveyUnitExistencePort {
-    public boolean existsSurveyUnitById(String surveyUnitId);
+    List<String> findExistingIds(List<String> surveyUnitIds);
 }

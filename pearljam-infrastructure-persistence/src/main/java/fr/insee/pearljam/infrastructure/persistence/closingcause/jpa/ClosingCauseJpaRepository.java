@@ -209,15 +209,18 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
                                                                  @Param("ouIds") List<String> ouIds,
                                                                  @Param("dateToUse") Long dateToUse);
 
-    @Modifying
-    @Query(value = "INSERT INTO closing_cause (survey_unit_id, type, date) " +
-            "VALUES (:surveyUnitId, :closingCauseType, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000)",
-            nativeQuery = true)
-    void addClosingCauseToSurveyUnit(@Param("surveyUnitId") String surveyUnitId,
-                                     @Param("closingCauseType") String closingCauseType);
+	@Modifying
+	@Query(value = """
+    INSERT INTO closing_cause (survey_unit_id, type, date)
+    SELECT id, :type, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
+    FROM survey_unit
+    WHERE id IN (:surveyUnitIds)
+    AND id NOT IN (SELECT DISTINCT survey_unit_id FROM closing_cause)
+    """, nativeQuery = true)
+	void addClosingCauseToSurveyUnits(@Param("surveyUnitIds") List<String> surveyUnitIds,
+									  @Param("type") String type);
 
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
-            "FROM closing_cause " +
-            "WHERE survey_unit_id = :surveyUnitId",
-            nativeQuery = true)
-    boolean existsClosingCauseFromSurveyUnitId(@Param("surveyUnitId") String surveyUnitId);    }
+	@Query(value = "SELECT DISTINCT survey_unit_id FROM closing_cause " +
+			"WHERE survey_unit_id IN (:surveyUnitIds)",
+			nativeQuery = true)
+	List<String> findSurveyUnitIdsWithClosingCause(@Param("surveyUnitIds") List<String> surveyUnitIds);    }

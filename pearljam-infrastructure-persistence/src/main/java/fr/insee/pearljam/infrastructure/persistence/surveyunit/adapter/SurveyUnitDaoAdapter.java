@@ -135,7 +135,7 @@ public class SurveyUnitDaoAdapter implements SurveyUnitRepository {
     }
 
     @Override
-    public boolean existsById(String surveyUnitId) {
-        return surveyUnitJpaRepository.existsById(surveyUnitId);
+    public List<String> findExistingIds(List<String> surveyUnitIds) {
+        return surveyUnitJpaRepository.findExistingIds(surveyUnitIds);
     }
 }

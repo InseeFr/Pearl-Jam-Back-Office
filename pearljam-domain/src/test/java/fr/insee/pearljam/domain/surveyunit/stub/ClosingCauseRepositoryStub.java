@@ -12,14 +12,9 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class ClosingCauseRepositoryStub  implements ClosingCauseRepository {
+public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
     private final Map<String, ClosingCauseType> closingCauses = new HashMap<>();
-    int addedClosingCausesCount;
-
-    @Override
-    public boolean existsClosingCauseFromSurveyUnitId(String surveyUnitId) {
-        return closingCauses.containsKey(surveyUnitId);
-    }
+    private int addedClosingCausesCount;
 
     @Override
     public Map<String, Long> getStateClosedByClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
@@ -58,20 +53,39 @@ public class ClosingCauseRepositoryStub  implements ClosingCauseRepository {
 
     @Override
     public void deleteBySurveyUnitId(String surveyUnitId) {
-        //not used
+        closingCauses.remove(surveyUnitId);
     }
 
     @Override
-    public void addClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType type) {
-        addedClosingCausesCount++;
-        closingCauses.put(surveyUnitId, type);
+    public void addClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
+        for (String surveyUnitId : surveyUnitIds) {
+            closingCauses.put(surveyUnitId, closingCause);
+            addedClosingCausesCount++;
+        }
     }
 
+    @Override
+    public List<String> findSurveyUnitIdsWithClosingCause(List<String> surveyUnitIds) {
+        return surveyUnitIds.stream()
+                .filter(closingCauses::containsKey)
+                .toList();
+    }
+
+    // Helper methods for testing
     public void addInitialClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType type) {
         closingCauses.put(surveyUnitId, type);
     }
 
+    public boolean existsClosingCauseFromSurveyUnitId(String surveyUnitId) {
+        return closingCauses.containsKey(surveyUnitId);
+    }
+
     public ClosingCauseType getClosingCauseType(String surveyUnitId) {
         return closingCauses.get(surveyUnitId);
+    }
+
+    public void reset() {
+        closingCauses.clear();
+        addedClosingCausesCount = 0;
     }
 }

@@ -23,18 +23,27 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     @Transactional
     public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type) {
 
-        for(String suId : surveyUnitIds)
-        {
-            if(!surveyUnitExistencePort.existsSurveyUnitById(suId))
-            {
-                throw new SurveyUnitNotFoundException(suId);
-            }
+        // Check all survey units exist (1 query)
+        List<String> existingSurveyUnits = surveyUnitExistencePort.findExistingIds(surveyUnitIds);
+        List<String> missingSurveyUnits = surveyUnitIds.stream()
+                .filter(id -> !existingSurveyUnits.contains(id))
+                .toList();
 
-            if(closingCauseRepository.existsClosingCauseFromSurveyUnitId(suId)) {
-                throw new ClosingCauseAlreadyExistsException(suId);
-            }
-
-            closingCauseRepository.addClosingCauseToSurveyUnit(suId, type);
+        if (!missingSurveyUnits.isEmpty()) {
+            throw new SurveyUnitNotFoundException(
+                    "Survey units not found: " + String.join(", ", missingSurveyUnits)
+            );
         }
+
+        List<String> surveyUnitsWithClosingCause =
+                closingCauseRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
+
+        if (!surveyUnitsWithClosingCause.isEmpty()) {
+            throw new ClosingCauseAlreadyExistsException(
+                    "Closing causes already exist for: " + String.join(", ", surveyUnitsWithClosingCause)
+            );
+        }
+
+        closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
     }
 }

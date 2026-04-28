@@ -57,5 +57,5 @@ public interface SurveyUnitRepository {
 
     void deleteById(String surveyUnitId);
 
-    boolean existsById(String surveyUnitId);
+    List<String> findExistingIds(List<String> surveyUnitIds);
 }

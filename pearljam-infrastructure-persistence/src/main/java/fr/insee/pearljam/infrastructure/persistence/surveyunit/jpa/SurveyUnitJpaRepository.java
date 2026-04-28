@@ -478,4 +478,8 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     WHERE su.id IN (:ids)
     """, nativeQuery = true)
 	List<ClosableSurveyUnitView> findClosableSurveyUnits(@Param("ids") Set<String> ids);
+
+	@Query(value = "SELECT id FROM survey_unit WHERE id IN (:surveyUnitIds)",
+			nativeQuery = true)
+	List<String> findExistingIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
 }

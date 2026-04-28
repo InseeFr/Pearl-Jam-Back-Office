@@ -23,7 +23,7 @@ public interface ClosingCauseRepository {
 
     void deleteBySurveyUnitId(String surveyUnitId);
 
-    void addClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
+    void addClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause);
 
-    boolean existsClosingCauseFromSurveyUnitId(String surveyUnitId);
+    List<String> findSurveyUnitIdsWithClosingCause(List<String> surveyUnitIds);
 }

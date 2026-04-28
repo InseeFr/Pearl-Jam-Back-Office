@@ -10,7 +10,7 @@ import java.util.*;
 
 public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
 
-    HashMap<String, SurveyUnitDB> surveyUnitDBs = new HashMap<>();
+    private final HashMap<String, SurveyUnitDB> surveyUnitDBs = new HashMap<>();
 
     @Override
     public List<String> findIdsByInterviewerIdWithinVisibilityScope(String interviewerId, Long now, List<String> visibleTypes) {
@@ -104,16 +104,18 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
 
     @Override
     public Optional<SurveyUnitDB> findById(String surveyUnitId) {
-        return Optional.empty();
+        return Optional.ofNullable(surveyUnitDBs.get(surveyUnitId));
     }
 
     @Override
     public SurveyUnitDB save(SurveyUnitDB surveyUnit) {
-        return surveyUnitDBs.put(surveyUnit.getId(), surveyUnit);
+        surveyUnitDBs.put(surveyUnit.getId(), surveyUnit);
+        return surveyUnit;
     }
 
     @Override
     public List<SurveyUnitDB> saveAll(List<SurveyUnitDB> surveyUnits) {
+        surveyUnits.forEach(this::save);
         return surveyUnits;
     }
 
@@ -124,11 +126,13 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
 
     @Override
     public void deleteById(String surveyUnitId) {
-        // not used at this moment
+        surveyUnitDBs.remove(surveyUnitId);
     }
 
     @Override
-    public boolean existsById(String surveyUnitId) {
-        return surveyUnitDBs.containsKey(surveyUnitId);
+    public List<String> findExistingIds(List<String> surveyUnitIds) {
+        return surveyUnitIds.stream()
+                .filter(surveyUnitDBs::containsKey)
+                .toList();
     }
 }
