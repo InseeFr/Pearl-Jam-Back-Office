@@ -29,18 +29,14 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
                 .toList();
 
         if (!missingSurveyUnits.isEmpty()) {
-            throw new SurveyUnitNotFoundException(
-                    "Survey units not found: " + String.join(", ", missingSurveyUnits)
-            );
+            throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
         }
 
         List<String> surveyUnitsWithClosingCause =
                 closingCauseRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
 
         if (!surveyUnitsWithClosingCause.isEmpty()) {
-            throw new ClosingCauseAlreadyExistsException(
-                    "Closing causes already exist for: " + String.join(", ", surveyUnitsWithClosingCause)
-            );
+            throw new ClosingCauseAlreadyExistsException(String.join(", ", surveyUnitsWithClosingCause));
         }
 
         closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
