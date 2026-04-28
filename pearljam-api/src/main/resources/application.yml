@@ -15,6 +15,7 @@ application:
   external:
     service:
       datacollection-url:
+      datacollection-ui-url: https://datacollection-ui
       mail-url:
 
 feature:
