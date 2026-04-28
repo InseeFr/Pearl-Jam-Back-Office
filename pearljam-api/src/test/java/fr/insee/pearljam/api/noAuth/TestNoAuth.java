@@ -1,11 +1,11 @@
 package fr.insee.pearljam.api.noAuth;
 
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import tools.jackson.databind.json.JsonMapper;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
@@ -20,15 +20,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for no Authentication */
@@ -43,18 +46,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestNoAuth {
 
 	private final MessageJpaRepository messageRepository;
-	private final ClosingCauseJpaRepository closingCauseRepository;
+	private final SurveyUnitJpaRepository surveyUnitRepository;
 	private final MockMvc mockMvc;
 
-	@Test
 	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
 	void testPutClosingCauseNoPreviousClosingCause() throws Exception {
 		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPI")
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
+		Optional<SurveyUnitDB> surveyUnitDBOptional = surveyUnitRepository.findById("11");
+		SurveyUnitDB surveyUnit = surveyUnitDBOptional.orElseThrow();
+		assertThat(surveyUnit.getClosingCause().getType()).isEqualTo(ClosingCauseType.NPI);
 	}
 
 	/**

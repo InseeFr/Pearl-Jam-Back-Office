@@ -75,7 +75,7 @@ class CampaignServiceImplTest {
         existingCampaign.setVisibilities(existingCampaignVisibilities);
 
         UserFakeRepository userRepository = new UserFakeRepository();
-        SurveyUnitFakeRepository surveyUnitRepository = new SurveyUnitFakeRepository();
+        SurveyUnitRepositoryStub surveyUnitRepository = new SurveyUnitRepositoryStub();
         OrganizationUnitFakeRepository organizationUnitRepository = new OrganizationUnitFakeRepository();
         organizationUnitRepository.setOrganizationUnits(List.of(existingOrganizationUnit));
         MessageFakeRepository messageRepository = new MessageFakeRepository();

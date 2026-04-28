@@ -6,12 +6,12 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-public class SurveyUnitFakeRepository implements SurveyUnitRepository {
+public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
+
+    private final HashMap<String, SurveyUnitDB> surveyUnitDBs = new HashMap<>();
+
     @Override
     public List<String> findIdsByInterviewerIdWithinVisibilityScope(String interviewerId, Long now, List<String> visibleTypes) {
         return List.of();
@@ -104,16 +104,18 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public Optional<SurveyUnitDB> findById(String surveyUnitId) {
-        return Optional.empty();
+        return Optional.ofNullable(surveyUnitDBs.get(surveyUnitId));
     }
 
     @Override
     public SurveyUnitDB save(SurveyUnitDB surveyUnit) {
+        surveyUnitDBs.put(surveyUnit.getId(), surveyUnit);
         return surveyUnit;
     }
 
     @Override
     public List<SurveyUnitDB> saveAll(List<SurveyUnitDB> surveyUnits) {
+        surveyUnits.forEach(this::save);
         return surveyUnits;
     }
 
@@ -124,6 +126,13 @@ public class SurveyUnitFakeRepository implements SurveyUnitRepository {
 
     @Override
     public void deleteById(String surveyUnitId) {
-        // not used at this moment
+        surveyUnitDBs.remove(surveyUnitId);
+    }
+
+    @Override
+    public List<String> findExistingIds(List<String> surveyUnitIds) {
+        return surveyUnitIds.stream()
+                .filter(surveyUnitDBs::containsKey)
+                .toList();
     }
 }

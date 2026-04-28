@@ -27,7 +27,6 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
@@ -79,6 +78,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -413,10 +413,11 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPI, closingCauses.getFirst().getType());
-
+		Optional<SurveyUnitDB> surveyUnitDBOptional = surveyUnitRepository.findById("11");
+		SurveyUnitDB surveyUnit = surveyUnitDBOptional.orElseThrow();
+		assertThat(surveyUnit.getClosingCause().getType()).isEqualTo(ClosingCauseType.NPI);
 	}
+
 
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
@@ -431,43 +432,6 @@ class TestAuthKeyCloak {
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
-	}
-
-	@Test
-	@Order(8)
-	void testPutClosingCausePreviousClosingCause() throws Exception {
-		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPA")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-
-		List<ClosingCauseDB> closingCauses = closingCauseRepository.findBySurveyUnitId("11");
-		assertEquals(ClosingCauseType.NPA, closingCauses.getFirst().getType());
-
-	}
-
-	@Test
-	@Order(9)
-	void testPutCloseSU() throws Exception {
-		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
-
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "tbrCount", 4L),
-						checkJsonPath(ouJsonPath, "rowCount", 0L));
-
-		mockMvc.perform(put("/api/survey-unit/14/close/ROW")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "tbrCount", 3L),
-						checkJsonPath(ouJsonPath, "rowCount", 1L));
 	}
 
 	/**
@@ -519,6 +483,43 @@ class TestAuthKeyCloak {
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(8)
+	void testPutClosingCausePreviousClosingCause() throws Exception {
+		mockMvc.perform(put("/api/survey-unit/11/closing-cause/NPA")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		Optional<SurveyUnitDB> surveyUnitDBOptional = surveyUnitRepository.findById("11");
+		SurveyUnitDB surveyUnit = surveyUnitDBOptional.orElseThrow();
+		assertThat(surveyUnit.getClosingCause().getType()).isEqualTo(ClosingCauseType.NPA);
+	}
+
+	@Test
+	@Order(9)
+	void testPutCloseSU() throws Exception {
+		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
+
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(status().isOk(),
+						checkJsonPath(ouJsonPath, "tbrCount", 4L),
+						checkJsonPath(ouJsonPath, "rowCount", 0L));
+
+		mockMvc.perform(put("/api/survey-unit/14/close/ROW")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/state-count")
+						.with(authentication(LOCAL_USER))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpectAll(status().isOk(),
+						checkJsonPath(ouJsonPath, "tbrCount", 3L),
+						checkJsonPath(ouJsonPath, "rowCount", 1L));
 	}
 
 	/**

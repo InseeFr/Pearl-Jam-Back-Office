@@ -106,4 +106,15 @@ class ModuleBoundariesArchTests {
                 ).allowEmptyShould(true)
                 .check(importedClasses);
     }
+
+    @Test
+    void requestShouldOnlyBeUsedByRestControllers() {
+        classes()
+                .that().resideInAPackage("fr.insee.pearljam.api..request..")
+                .should().onlyBeAccessed()
+                .byAnyPackage(
+                        "fr.insee.pearljam.api..controller.."
+                ).allowEmptyShould(true)
+                .check(importedClasses);
+    }
 }

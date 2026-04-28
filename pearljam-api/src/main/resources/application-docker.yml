@@ -1,9 +1,8 @@
-# Content must be copied in application-default.yml if working with compose
 application:
   corsOrigins: http://localhost:3000,http://localhost:5173
   roles:
     interviewer: interviewer
-    local_user:
+    local_user: gestionnaire
     national_user: gestionnaire
     admin: admin
     webclient:
