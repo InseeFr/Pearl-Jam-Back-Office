@@ -44,38 +44,44 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
         String sortClause = buildSortClause(pageable);
 
         String sql = """
-            SELECT
-                su.id as surveyUnitId,
-                c.label as campaignLabel,
-                co.type as contact_outcome,
-                i.id as interviewerId,
-                i.first_name as interviewerFirstName,
-                i.last_name as interviewerLastName,
-                su.viewed,
-                c.id as campaignId,
-                (
-                    SELECT c2.value
-                    FROM comment c2
-                    WHERE c2.survey_unit_id = su.id
-                    AND c2.type = 'MANAGEMENT'
-                    LIMIT 1
-                ) as lastComment
-            FROM survey_unit su
-            JOIN campaign c ON su.campaign_id = c.id
-            LEFT JOIN interviewer i ON su.interviewer_id = i.id
-            LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
-            WHERE EXISTS (
-                SELECT 1
-                FROM state s
-                WHERE s.survey_unit_id = su.id
-                AND s.type = 'TBR'
-            )
-            AND su.campaign_id IN (:campaignIds)
-            AND su.organization_unit_id IN (:ouIds)
-            """ + searchCondition + """
-            """ + sortClause + """
-            LIMIT :limit OFFSET :offset
-            """;
+                             SELECT
+                                 su.id AS surveyUnitId,
+                                 c.label AS campaignLabel,
+                                 co.type AS contact_outcome,
+                                 i.id AS interviewerId,
+                                 i.first_name AS interviewerFirstName,
+                                 i.last_name AS interviewerLastName,
+                                 su.viewed,
+                                 c.id AS campaignId,
+                                 (
+                                     SELECT c2.value
+                                     FROM comment c2
+                                     WHERE c2.survey_unit_id = su.id
+                                       AND c2.type = 'MANAGEMENT'
+                                     LIMIT 1
+                                 ) AS lastComment
+                             FROM survey_unit su
+                             JOIN campaign c
+                                 ON su.campaign_id = c.id
+                             LEFT JOIN interviewer i
+                                 ON su.interviewer_id = i.id
+                             LEFT JOIN contact_outcome co
+                                 ON co.survey_unit_id = su.id
+                             JOIN LATERAL (
+                                 SELECT s.type AS current_state
+                                 FROM state s
+                                 WHERE s.survey_unit_id = su.id
+                                 ORDER BY s.date DESC
+                                 LIMIT 1
+                             ) ls
+                                 ON TRUE
+                             WHERE ls.current_state = 'TBR'
+                               AND su.campaign_id IN (:campaignIds)
+                               AND su.organization_unit_id IN (:ouIds)
+                             """ + searchCondition + """
+                             """ + sortClause + """
+                             LIMIT :limit OFFSET :offset
+                             """;
 
         return jdbc.sql(sql)
                 .param("campaignIds", campaignIds)
@@ -91,26 +97,23 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
         String searchCondition = buildSearchCondition(search);
 
         String sql = """
-            SELECT COUNT(DISTINCT su.id)
-            FROM survey_unit su
-            JOIN campaign c ON su.campaign_id = c.id
-            LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
-            LEFT JOIN interviewer i ON su.interviewer_id = i.id
-            WHERE EXISTS (
-                SELECT 1
-                FROM state s
-                WHERE s.survey_unit_id = su.id
-                AND s.type = 'TBR'
-            )
-            AND EXISTS (
-                SELECT 1
-                FROM comment c2
-                WHERE c2.survey_unit_id = su.id
-                AND c2.type = 'MANAGEMENT'
-            )
-            AND su.campaign_id IN (:campaignIds)
-            AND su.organization_unit_id IN (:ouIds)
-            """ + searchCondition;
+                             SELECT COUNT(DISTINCT su.id)
+                             FROM survey_unit su
+                             JOIN campaign c ON su.campaign_id = c.id
+                             LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
+                             LEFT JOIN interviewer i ON su.interviewer_id = i.id
+                             JOIN LATERAL (
+                                 SELECT s.type AS current_state
+                                 FROM state s
+                                 WHERE s.survey_unit_id = su.id
+                                 ORDER BY s.date DESC
+                                 LIMIT 1
+                             ) ls
+                                 ON TRUE
+                             WHERE ls.current_state = 'TBR'
+                                AND su.campaign_id IN (:campaignIds)
+                                AND su.organization_unit_id IN (:ouIds)
+                             """ + searchCondition;
 
         return jdbc.sql(sql)
                 .param("campaignIds", campaignIds)
@@ -125,12 +128,12 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
             return "";
         }
         return """
-            AND (
-                LOWER(c.label) LIKE LOWER(:search) OR
-                LOWER(su.id) LIKE LOWER(:search) OR
-                LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE LOWER(:search)
-            )
-            """;
+                AND (
+                    LOWER(c.label) LIKE LOWER(:search) OR
+                    LOWER(su.id) LIKE LOWER(:search) OR
+                    LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE LOWER(:search)
+                )
+                """;
     }
 
     private String buildSortClause(Pageable pageable) {
