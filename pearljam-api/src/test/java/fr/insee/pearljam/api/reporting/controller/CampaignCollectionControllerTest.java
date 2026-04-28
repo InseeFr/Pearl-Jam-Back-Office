@@ -42,6 +42,8 @@ class CampaignCollectionControllerTest {
     @Test
     @DisplayName("Returns 200 OK when day is provided")
     void shouldReturnOk_whenDayProvided() throws Exception {
+        // Given
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/collection")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk());
@@ -50,6 +52,8 @@ class CampaignCollectionControllerTest {
     @Test
     @DisplayName("Returns 200 OK when day is not provided")
     void shouldReturnOk_whenDayIsNotProvided() throws Exception {
+        // Given
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/collection"))
                 .andExpect(status().isOk());
     }
