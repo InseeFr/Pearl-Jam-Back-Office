@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.reporting.presenter;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionByOrganizationUnitsResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,13 +16,17 @@ class CampaignCollectionByOrganizationUnitsPresenterTest {
             new CampaignCollectionByOrganizationUnitsPresenter();
 
     @Test
+    @DisplayName("Maps organization unit and campaign stats to collection response")
     void shouldMapOrganizationUnitAndCampaignStatsToCollectionResponse() {
+        // Given
         OrganizationUnitDailyStats organizationUnitStats = ReportingPresenterTestData.organizationUnitStats("OU North");
         CampaignDailyStats campaignStats = ReportingPresenterTestData.campaignStats("camp-1", "Campaign 1", 7L);
 
+        // When
         CampaignCollectionByOrganizationUnitsResponse result =
                 presenter.present(List.of(organizationUnitStats), campaignStats);
 
+        // Then
         assertThat(result.organizationUnits()).singleElement().satisfies(organizationUnit -> {
             assertThat(organizationUnit.organizationUnitLabel()).isEqualTo("OU North");
             assertThat(organizationUnit.allocated()).isEqualTo(organizationUnitStats.getAllocatedCount());
