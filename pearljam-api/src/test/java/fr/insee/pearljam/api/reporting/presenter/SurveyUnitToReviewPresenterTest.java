@@ -122,7 +122,7 @@ class SurveyUnitToReviewPresenterTest {
 
         // Verify pagination information
         assertThat(result.page()).isZero();
-        assertThat(result.size()).isZero();
+        assertThat(result.size()).isEqualTo(5);
         assertThat(result.totalElements()).isEqualTo(1);
         assertThat(result.totalPages()).isEqualTo(1);
     }
