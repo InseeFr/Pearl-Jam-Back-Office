@@ -220,7 +220,9 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
 	void addClosingCauseToSurveyUnits(@Param("surveyUnitIds") List<String> surveyUnitIds,
 									  @Param("type") String type);
 
-	@Query(value = "SELECT DISTINCT survey_unit_id FROM closing_cause " +
-			"WHERE survey_unit_id IN (:surveyUnitIds)",
+	@Query(value = """
+    SELECT DISTINCT survey_unit_id FROM closing_cause
+    WHERE survey_unit_id IN (:surveyUnitIds)
+    """,
 			nativeQuery = true)
 	List<String> findSurveyUnitIdsWithClosingCause(@Param("surveyUnitIds") List<String> surveyUnitIds);    }
