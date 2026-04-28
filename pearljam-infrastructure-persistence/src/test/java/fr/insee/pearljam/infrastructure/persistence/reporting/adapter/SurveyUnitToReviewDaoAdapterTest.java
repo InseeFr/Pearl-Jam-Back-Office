@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
 import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
 import fr.insee.pearljam.domain.surveyunit.model.Comment;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
@@ -16,6 +17,7 @@ import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.Organiz
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter.CommentDaoAdapter;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ContactOutcomeDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
@@ -110,11 +112,11 @@ class SurveyUnitToReviewDaoAdapterTest {
         interviewerRepository.save(intw2);
 
         // 4. Create survey units with TBR state
-        createSurveyUnitWithState("SU-1", CAMPAIGN_ID, OU1_ID, INTW1_ID, "TBR");
-        createSurveyUnitWithState("SU-2", CAMPAIGN_ID, OU1_ID, INTW2_ID, "TBR");
-        createSurveyUnitWithState("SU-3", CAMPAIGN_ID, OU2_ID, INTW1_ID, "TBR");
-        createSurveyUnitWithState("SU-4", CAMPAIGN_ID, OU2_ID, INTW2_ID, "TBR");
-        createSurveyUnitWithState("SU-5", CAMPAIGN_ID, OU1_ID, INTW1_ID, "NVM"); // Not TBR, should not appear
+        createSurveyUnitWithState("SU-1", CAMPAIGN_ID, OU1_ID, INTW1_ID, StateType.TBR);
+        createSurveyUnitWithState("SU-2", CAMPAIGN_ID, OU1_ID, INTW2_ID, StateType.TBR);
+        createSurveyUnitWithState("SU-3", CAMPAIGN_ID, OU2_ID, INTW1_ID, StateType.TBR);
+        createSurveyUnitWithState("SU-4", CAMPAIGN_ID, OU2_ID, INTW2_ID, StateType.TBR);
+        createSurveyUnitWithState("SU-5", CAMPAIGN_ID, OU1_ID, INTW1_ID, StateType.NVM); // Not TBR, should not appear
 
         // 5. Create contact outcomes
         createContactOutcome("SU-1", ContactOutcomeType.INA);
@@ -130,7 +132,7 @@ class SurveyUnitToReviewDaoAdapterTest {
         entityManager.flush();
     }
 
-    private void createSurveyUnitWithState(String suId, String campaignId, String ouId, String interviewerId, String state) {
+    private void createSurveyUnitWithState(String suId, String campaignId, String ouId, String interviewerId, StateType state) {
         SurveyUnitDB su = new SurveyUnitDB();
         su.setId(suId);
         su.setCampaign(campaignRepository.findById(campaignId).orElseThrow());
@@ -138,6 +140,13 @@ class SurveyUnitToReviewDaoAdapterTest {
         su.setInterviewer(interviewerId != null ? interviewerRepository.findById(interviewerId).orElseThrow(() -> new IllegalArgumentException("Interviewer not found: " + interviewerId)) : null);
         su.setViewed(suId.equals("SU-1")); // SU-1 is marked as viewed
         surveyUnitRepository.save(su);
+
+        StateDB st = new StateDB();
+        st.setSurveyUnit(su);
+        st.setType(state); // StateType.TBR ou "NVM"
+        st.setDate(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+
+        stateRepository.save(st);
     }
 
     private void createContactOutcome(String suId, ContactOutcomeType outcomeType) {
@@ -185,7 +194,7 @@ class SurveyUnitToReviewDaoAdapterTest {
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "t@t.com", false, false);
         campaignRepository.save(campaign2);
-        createSurveyUnitWithState("SU-C2-1", "CAMP-TEST-2", OU1_ID, INTW1_ID, "TBR");
+        createSurveyUnitWithState("SU-C2-1", "CAMP-TEST-2", OU1_ID, INTW1_ID, StateType.TBR);
         entityManager.flush();
 
         Page<SurveyUnitToReview> result = adapter.findSurveyUnitsToReview(
@@ -253,7 +262,7 @@ class SurveyUnitToReviewDaoAdapterTest {
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "t@t.com", false, false);
         campaignRepository.save(campaign2);
-        createSurveyUnitWithState("SU-C2-1", "CAMP-TEST-2", OU1_ID, INTW1_ID, "TBR");
+        createSurveyUnitWithState("SU-C2-1", "CAMP-TEST-2", OU1_ID, INTW1_ID, StateType.TBR);
         entityManager.flush();
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("campaignLabel").ascending());
