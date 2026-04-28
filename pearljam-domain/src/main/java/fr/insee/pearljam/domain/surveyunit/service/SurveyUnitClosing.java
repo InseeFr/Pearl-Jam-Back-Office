@@ -23,7 +23,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     @Transactional
     public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type) {
 
-        // Check all survey units exist (1 query)
         List<String> existingSurveyUnits = surveyUnitExistencePort.findExistingIds(surveyUnitIds);
         List<String> missingSurveyUnits = surveyUnitIds.stream()
                 .filter(id -> !existingSurveyUnits.contains(id))
