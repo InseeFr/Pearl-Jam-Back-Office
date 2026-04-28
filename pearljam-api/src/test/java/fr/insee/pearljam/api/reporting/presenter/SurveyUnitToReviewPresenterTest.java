@@ -89,10 +89,10 @@ class SurveyUnitToReviewPresenterTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.content()).isEmpty();
-        assertThat(result.page()).isEqualTo(0);
+        assertThat(result.page()).isZero();
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result.totalElements()).isEqualTo(0);
-        assertThat(result.totalPages()).isEqualTo(0);
+        assertThat(result.totalElements()).isZero();
+        assertThat(result.totalPages()).isZero();
     }
 
     @Test
@@ -121,8 +121,8 @@ class SurveyUnitToReviewPresenterTest {
         });
 
         // Verify pagination information
-        assertThat(result.page()).isEqualTo(0);
-        assertThat(result.size()).isEqualTo(5);
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isZero();
         assertThat(result.totalElements()).isEqualTo(1);
         assertThat(result.totalPages()).isEqualTo(1);
     }
