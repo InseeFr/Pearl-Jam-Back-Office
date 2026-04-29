@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface SurveyUnitClosingPort {
     void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitId, ClosingCauseType type);
+
+    <T> T getSurveyUnitsToClose(String userId, SurveyUnitToCloseStatsPresenter<T> presenter);
+
 }

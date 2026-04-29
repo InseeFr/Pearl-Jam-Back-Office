@@ -1,9 +1,8 @@
 package fr.insee.pearljam.infrastructure.security.config;
 
-import java.util.Collection;
-
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
 
 /**
  * Spring security configuration when using OIDC auth
@@ -310,7 +309,7 @@ public class OidcSecurityConfiguration {
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
 						.hasAnyRole(adminRole, nationalUserRole, localUserRole)
-						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_SURVEYUNITS_TO_CLOSE)
+						.requestMatchers(HttpMethod.GET, Constants.API_SURVEYUNITS_TO_CLOSE)
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ORGANIZATION)
 						.hasAnyRole(adminRole, nationalUserRole, localUserRole)

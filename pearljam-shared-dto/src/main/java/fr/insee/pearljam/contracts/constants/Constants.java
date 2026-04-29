@@ -29,10 +29,12 @@ public class Constants {
   public static final String API_SURVEYUNIT_ID_CLOSINGCAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
   public static final String API_ADMIN_SURVEYUNIT_DETAILS = "/api/admin/survey-unit/{id}";
   public static final String API_ADMIN_SURVEYUNITS_DETAILS = "/api/admin/survey-units/details";
-  public static final String API_SURVEYUNIT_CLOSE_SURVEYUNITS = "/api/survey-units/closures";
+  public static final String API_SURVEYUNITS_CLOSE = "/api/survey-units/close";
 
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
+  public static final String API_SURVEYUNITS_TO_CLOSE = "/api/survey-units/to-close";
+
 
   public static final String API_CAMPAIGNS = "/api/campaigns";
   public static final String API_ADMIN_CAMPAIGNS = "/api/admin/campaigns";
@@ -58,7 +60,6 @@ public class Constants {
   public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
   public static final String API_REPORTING_OUS_COLLECTION_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/collection/export";
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
-  public static final String API_REPORTING_SURVEYUNITS_TO_CLOSE = "/api/reporting/survey-units/to-close";
 
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
