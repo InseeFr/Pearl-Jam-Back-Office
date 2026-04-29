@@ -6,8 +6,8 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
@@ -43,7 +43,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     private final DateService dateService;
     private final SurveyUnitRepository surveyUnitRepository;
     private final QuestionnaireStateClient questionnaireStateClient;
-    private final SurveyUnitToClosePolicy surveyUnitToClosePolicy;
+    private final SurveyUnitClosablePolicy surveyUnitClosablePolicy;
 
     @Override
     @Transactional
@@ -71,7 +71,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     @Override
-    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitToCloseStatsPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
 
 
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
@@ -98,7 +98,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
                 candidates.parallelStream()
-                        .filter(candidate -> surveyUnitToClosePolicy.isClosable(candidate, questionnaireStates.get(candidate.getId())))
+                        .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, questionnaireStates.get(candidate.getId())))
                         .collect(Collectors.toMap(
                                 ClosableSurveyUnitCandidateView::getId,
                                 Function.identity()

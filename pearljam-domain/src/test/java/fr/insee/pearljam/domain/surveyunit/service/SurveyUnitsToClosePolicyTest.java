@@ -10,19 +10,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
 class SurveyUnitsToClosePolicyTest {
 
-    private SurveyUnitToClosePolicy service;
+    private SurveyUnitClosablePolicy service;
 
     @BeforeEach
     void setUp() {
-        service = new SurveyUnitToClosePolicy();
+        service = new SurveyUnitClosablePolicy();
     }
 
     @ParameterizedTest

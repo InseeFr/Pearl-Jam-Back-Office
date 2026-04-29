@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SurveyUnitToClosePresenterTest {
+class SurveyUnitClosingApiPresenterTest {
 
     @Test
     void should_map_projection_and_candidate_correctly() {
@@ -36,7 +36,7 @@ class SurveyUnitToClosePresenterTest {
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of("id1", candidate);
         Map<String, String> questionnaireStates = Map.of("id1", "COMPLETED");
 
-        var presenter = new SurveyUnitToClosePresenter();
+        var presenter = new SurveyUnitClosingApiPresenter();
 
         // WHEN
         var result = presenter.present(List.of(projection), candidates, questionnaireStates);
@@ -63,7 +63,7 @@ class SurveyUnitToClosePresenterTest {
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of(); // empty
         Map<String, String> questionnaireStates = Map.of();
 
-        var presenter = new SurveyUnitToClosePresenter();
+        var presenter = new SurveyUnitClosingApiPresenter();
 
         // WHEN
         var result = presenter.present(List.of(projection), candidates, questionnaireStates);
@@ -81,7 +81,7 @@ class SurveyUnitToClosePresenterTest {
         ClosableSurveyUnitView projection = mock(ClosableSurveyUnitView.class);
         when(projection.getId()).thenReturn("id1");
 
-        var presenter = new SurveyUnitToClosePresenter();
+        var presenter = new SurveyUnitClosingApiPresenter();
 
         // WHEN
         var result = presenter.present(List.of(projection), Map.of(), Map.of());
@@ -97,7 +97,7 @@ class SurveyUnitToClosePresenterTest {
         when(projection.getInterviewerFirstName()).thenReturn("John");
         when(projection.getInterviewerLastName()).thenReturn(null);
 
-        var presenter = new SurveyUnitToClosePresenter();
+        var presenter = new SurveyUnitClosingApiPresenter();
 
         var result = presenter.present(List.of(projection), Map.of(), Map.of());
 

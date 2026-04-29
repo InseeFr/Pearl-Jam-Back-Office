@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class SurveyUnitToClosePolicy {
+public class SurveyUnitClosablePolicy {
 
     public boolean isClosable(
             ClosableSurveyUnitCandidateView candidate,

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.controller.request.CloseSurveyUnitsRequest;
-import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToClosePresenter;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
@@ -31,7 +31,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.API_SURVEYUNITS_CL
 public class SurveyUnitClosingController {
 
     private final SurveyUnitClosingPort surveyUnitClosingPort;
-    private final SurveyUnitToClosePresenter presenter;
+    private final SurveyUnitClosingApiPresenter presenter;
 
     /**
      * Add closing cause to multiple survey units

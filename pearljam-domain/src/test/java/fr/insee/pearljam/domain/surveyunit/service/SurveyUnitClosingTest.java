@@ -9,7 +9,7 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToCloseStatsPresenter;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -42,7 +42,7 @@ class SurveyUnitClosingTest {
     DateService dateService = new FixedDateService();
     SurveyUnitRepository surveyUnitRepository;
     QuestionnaireStateClient questionnaireStateClient;
-    SurveyUnitToClosePolicy surveyUnitToClosePolicy;
+    SurveyUnitClosablePolicy surveyUnitClosablePolicy;
 
 
     @BeforeEach
@@ -52,8 +52,8 @@ class SurveyUnitClosingTest {
         surveyUnitPort = new SurveyUnitExistencePortStub();
         surveyUnitRepository = mock (SurveyUnitRepository.class);
         questionnaireStateClient = mock(QuestionnaireStateClient.class);
-        surveyUnitToClosePolicy = new SurveyUnitToClosePolicy();
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository,questionnaireStateClient, surveyUnitToClosePolicy);
+        surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository,questionnaireStateClient, surveyUnitClosablePolicy);
     }
 
     @Test
@@ -262,8 +262,8 @@ class SurveyUnitClosingTest {
         verify(presenter).empty();
     }
 
-    private <T> SurveyUnitToCloseStatsPresenter<T> mockPresenter() {
-        return mock(SurveyUnitToCloseStatsPresenter.class);
+    private <T> SurveyUnitClosingPresenter<T> mockPresenter() {
+        return mock(SurveyUnitClosingPresenter.class);
     }
 
     private ClosableSurveyUnitCandidateView mockCandidate(
