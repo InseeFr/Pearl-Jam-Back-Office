@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.response;
 
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "StatesInterviewerProgress")
@@ -16,9 +16,9 @@ public record StatesInterviewerProgressResponse(
         long withAppointment,
         long started
 ) {
-    public static StatesInterviewerProgressResponse from(CampaignDailyStats stats) {
+    public static StatesInterviewerProgressResponse from(InterviewerCampaignDailyStats stats) {
         return new StatesInterviewerProgressResponse(
-                stats.getAllocatedInterviewersCount(),
+                stats.getAllocatedCount(),
                 stats.getVicStateCount(),
                 stats.getInProgressStateCount(),
                 stats.getWftStateCount(),

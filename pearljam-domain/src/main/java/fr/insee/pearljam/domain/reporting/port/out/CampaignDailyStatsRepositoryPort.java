@@ -1,6 +1,7 @@
 package fr.insee.pearljam.domain.reporting.port.out;
 
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 
@@ -41,10 +42,10 @@ public interface CampaignDailyStatsRepositoryPort {
     List<CampaignDailyStats> getCampaignsStats(List<String> campaignIds, List<String> ouIds, LocalDate day);
 
     /**
-     * Returns one {@link CampaignDailyStats} per campaign (with id and label),
+     * Returns one {@link InterviewerCampaignDailyStats} per campaign (with id and label),
      * aggregated across the given organization units for the given day snapshot for the given interviewer.
      */
-    List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
-                                                             List<String> campaignIds,
-                                                             List<String> userOUIds, LocalDate day);
+    List<InterviewerCampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
+                                                                        List<String> campaignIds,
+                                                                        List<String> userOUIds, LocalDate day);
 }
