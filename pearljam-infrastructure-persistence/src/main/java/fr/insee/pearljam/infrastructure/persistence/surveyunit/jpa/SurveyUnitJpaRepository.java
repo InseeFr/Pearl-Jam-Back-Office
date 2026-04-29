@@ -424,10 +424,6 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	List<String> findAllIdsByInterviewerId(@Param("interviewerId") String interviewerId);
 
 	@Query(value="SELECT COUNT(*) FROM survey_unit "
-			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId", nativeQuery=true)
-	Integer countUnallocatedSurveyUnitsByCampaignId(@Param("campaignId") String campaignId);
-
-	@Query(value="SELECT COUNT(*) FROM survey_unit "
 			+ "WHERE interviewer_id IS NULL AND campaign_id=:campaignId AND organization_unit_id IN (:organizationUnitIds)", nativeQuery=true)
 	Integer countUnallocatedSurveyUnitsByCampaignIdAndOrganizationUnitIdIn(@Param("campaignId") String campaignId, @Param("organizationUnitIds") List<String> organizationUnitIds);
 
@@ -482,4 +478,11 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	@Query(value = "SELECT id FROM survey_unit WHERE id IN (:surveyUnitIds)",
 			nativeQuery = true)
 	List<String> findExistingIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
+
+	@Query("""
+			    select su.lastUpdated
+			    from SurveyUnitDB su
+			    where su.id = :surveyUnitId
+			""")
+	Long findLastUpdatedById(@Param("surveyUnitId")String surveyUnitId);
 }

@@ -112,4 +112,7 @@
 	<!-- daily stats table for campaign progression reporting -->
 	<include file="changelog/624_create_campaign_daily_stats.xml" relativeToChangelogFile="true"/>
 
+	<!-- add last_updated field to survey_unit -->
+	<include file="changelog/630_add_last_updated_to_survey_unit.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

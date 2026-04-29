@@ -30,4 +30,5 @@ public class SurveyUnitDetailDto {
 	private List<CommunicationRequestResponseDto> communicationRequests;
 	private PreviousContactHistoryDto previousContactHistory;
 	private NextContactHistoryDto nextContactHistory;
+	private long lastUpdated;
 }

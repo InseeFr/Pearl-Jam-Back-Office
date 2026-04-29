@@ -385,7 +385,7 @@ class TestAuthKeyCloak {
 						checkJsonPath(ouJsonPath, "nvmCount", 0L),
 						checkJsonPath(ouJsonPath, "nnsCount", 0L),
 						checkJsonPath(ouJsonPath, "anvCount", 0L),
-						checkJsonPath(ouJsonPath, "vinCount", 1L),
+						checkJsonPath(ouJsonPath, "vinCount", 0L),
 						checkJsonPath(ouJsonPath, "vicCount", 0L),
 						checkJsonPath(ouJsonPath, "prcCount", 0L),
 						checkJsonPath(ouJsonPath, "aocCount", 0L),
@@ -393,7 +393,7 @@ class TestAuthKeyCloak {
 						checkJsonPath(ouJsonPath, "insCount", 0L),
 						checkJsonPath(ouJsonPath, "wftCount", 0L),
 						checkJsonPath(ouJsonPath, "wfsCount", 0L),
-						checkJsonPath(ouJsonPath, "tbrCount", 4L),
+						checkJsonPath(ouJsonPath, "tbrCount", 5L),
 						checkJsonPath(ouJsonPath, "finCount", 0L),
 						checkJsonPath(ouJsonPath, "cloCount", 0L),
 						checkJsonPath(ouJsonPath, "nvaCount", 0L),
@@ -417,7 +417,6 @@ class TestAuthKeyCloak {
 		SurveyUnitDB surveyUnit = surveyUnitDBOptional.orElseThrow();
 		assertThat(surveyUnit.getClosingCause().getType()).isEqualTo(ClosingCauseType.NPI);
 	}
-
 
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
@@ -451,7 +450,7 @@ class TestAuthKeyCloak {
 						jsonPath("$.nvmCount").value(0L),
 						jsonPath("$.nnsCount").value(0L),
 						jsonPath("$.anvCount").value(0L),
-						jsonPath("$.vinCount").value(1L),
+						jsonPath("$.vinCount").value(0L),
 						jsonPath("$.vicCount").value(0L),
 						jsonPath("$.prcCount").value(0L),
 						jsonPath("$.aocCount").value(0L),
@@ -459,7 +458,7 @@ class TestAuthKeyCloak {
 						jsonPath("$.insCount").value(0L),
 						jsonPath("$.wftCount").value(0L),
 						jsonPath("$.wfsCount").value(0L),
-						jsonPath("$.tbrCount").value(1L),
+						jsonPath("$.tbrCount").value(2L),
 						jsonPath("$.finCount").value(0L),
 						jsonPath("$.cloCount").value(0L),
 						jsonPath("$.nvaCount").value(0L),
@@ -507,7 +506,7 @@ class TestAuthKeyCloak {
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "tbrCount", 4L),
+						checkJsonPath(ouJsonPath, "tbrCount", 5L),
 						checkJsonPath(ouJsonPath, "rowCount", 0L));
 
 		mockMvc.perform(put("/api/survey-unit/14/close/ROW")
@@ -518,7 +517,7 @@ class TestAuthKeyCloak {
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "tbrCount", 3L),
+						checkJsonPath(ouJsonPath, "tbrCount", 4L),
 						checkJsonPath(ouJsonPath, "rowCount", 1L));
 	}
 
