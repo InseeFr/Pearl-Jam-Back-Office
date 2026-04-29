@@ -22,4 +22,9 @@ public class InterviewerCampaignDailyStats extends AbstractDailyStats {
     public static InterviewerCampaignDailyStats empty(String id) {
         return empty(id, null);
     }
+
+    @Override
+    public long getAllocatedCount() {
+        return getAllocatedFromStateCounts();
+    }
 }

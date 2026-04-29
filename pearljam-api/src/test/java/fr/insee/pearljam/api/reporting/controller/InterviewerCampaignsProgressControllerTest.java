@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +40,7 @@ class InterviewerCampaignsProgressControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK when interviewerId and day are provided")
     void shouldReturnOk_whenInterviewerIdAndDayProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/progress", "interviewer1")
                         .param("day", "2025-06-10"))
@@ -46,17 +48,21 @@ class InterviewerCampaignsProgressControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK when interviewerId is provided without day")
     void shouldReturnOk_whenInterviewerIdAndDayIsNotProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/progress", "interviewer1"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @DisplayName("Returns 400 Bad Request when day is in the future")
     void shouldReturnBadRequest_whenInterviewerIdAndDayIsInTheFuture() throws Exception {
+        // Given
         LocalDate futureDay = LocalDate.now().plusDays(1);
         when(reportingService.getCampaignsStatsForInterviewer(any(), eq(futureDay), any(), any()))
                 .thenThrow(new FutureReportingDateException());
 
+        // When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/progress", "interviewer1")
                         .param("day", futureDay.toString()))
                 .andExpect(status().isBadRequest());

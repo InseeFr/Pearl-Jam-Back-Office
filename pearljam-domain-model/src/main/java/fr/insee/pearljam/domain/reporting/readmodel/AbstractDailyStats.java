@@ -63,7 +63,9 @@ public abstract class AbstractDailyStats {
         return prcStateCount + aocStateCount + apsStateCount + insStateCount;
     }
 
-    public long getAllocatedCount() {
+    public abstract long getAllocatedCount();
+
+    protected long getAllocatedFromStateCounts() {
         return nnsStateCount + anvStateCount + vinStateCount + vicStateCount
                 + prcStateCount + aocStateCount + apsStateCount + insStateCount + wftStateCount
                 + wfsStateCount + tbrStateCount + finStateCount + cloStateCount;
