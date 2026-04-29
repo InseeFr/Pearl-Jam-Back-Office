@@ -5,8 +5,10 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
+import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,8 @@ class CampaignReportingServiceTest {
     CampaignDailyStatsRepositoryPort statsRepository;
     UserService userService;
     CampaignReportingService service;
-    CampaignStatsPresenter<List<CampaignDailyStats>> passthroughPresenter;
+    CampaignStatsPresenter<List<CampaignDailyStats>> campaignPassthroughPresenter;
+    InterviewerCampaignsStatsPresenter<List<InterviewerCampaignDailyStats>> interviewerPassthroughPresenter;
 
     @BeforeEach
     void setup() {
@@ -43,7 +46,8 @@ class CampaignReportingServiceTest {
         statsRepository = mock(CampaignDailyStatsRepositoryPort.class);
         userService = mock(UserService.class);
         service = new CampaignReportingService(campaignRepository, statsRepository, userService, FIXED_CLOCK);
-        passthroughPresenter = stats -> stats;
+        campaignPassthroughPresenter = stats -> stats;
+        interviewerPassthroughPresenter = stats -> stats;
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
@@ -58,7 +62,7 @@ class CampaignReportingServiceTest {
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
 
-        service.getCampaignsStats(USER_ID, null, passthroughPresenter);
+        service.getCampaignsStats(USER_ID, null, campaignPassthroughPresenter);
 
         verify(statsRepository).getCampaignsStats(anyList(), anyList(), eq(FIXED_TODAY));
     }
@@ -67,7 +71,7 @@ class CampaignReportingServiceTest {
     void shouldThrow_whenDayIsInTheFuture() {
         LocalDate futureDay = FIXED_TODAY.plusDays(10);
 
-        assertThatThrownBy(() -> service.getCampaignsStats(USER_ID, futureDay, passthroughPresenter))
+        assertThatThrownBy(() -> service.getCampaignsStats(USER_ID, futureDay, campaignPassthroughPresenter))
                 .isInstanceOf(FutureReportingDateException.class)
                 .hasMessage("date must not be in the future");
     }
@@ -79,7 +83,7 @@ class CampaignReportingServiceTest {
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
 
-        service.getCampaignsStats(USER_ID, pastDate, passthroughPresenter);
+        service.getCampaignsStats(USER_ID, pastDate, campaignPassthroughPresenter);
 
         verify(statsRepository).getCampaignsStats(anyList(), anyList(), eq(pastDate));
     }
@@ -88,14 +92,14 @@ class CampaignReportingServiceTest {
     void shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, passthroughPresenter);
+        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, campaignPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyList_whenNoCampaigns() {
-        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, passthroughPresenter);
+        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, campaignPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
@@ -106,7 +110,7 @@ class CampaignReportingServiceTest {
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
 
-        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, passthroughPresenter);
+        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, campaignPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
@@ -121,7 +125,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, passthroughPresenter);
+        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, campaignPassthroughPresenter);
 
         assertThat(result).containsExactly(stats);
     }
@@ -138,7 +142,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, passthroughPresenter);
+        List<CampaignDailyStats> result = service.getCampaignsStats(USER_ID, FIXED_TODAY, campaignPassthroughPresenter);
 
         assertThat(result).containsExactly(stats1, stats2);
     }
@@ -170,7 +174,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStatsForInterviewer(anyString(), anyList(), anyList(), any()))
                 .thenReturn(List.of());
 
-        service.getCampaignsStatsForInterviewer(USER_ID, null, "interviewer-1", passthroughPresenter);
+        service.getCampaignsStatsForInterviewer(USER_ID, null, "interviewer-1", interviewerPassthroughPresenter);
 
         verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), eq(FIXED_TODAY));
     }
@@ -179,7 +183,7 @@ class CampaignReportingServiceTest {
     void getCampaignsStatsForInterviewer_shouldThrow_whenDayIsInTheFuture() {
         LocalDate futureDay = FIXED_TODAY.plusDays(10);
 
-        assertThatThrownBy(() -> service.getCampaignsStatsForInterviewer(USER_ID, futureDay, "interviewer-1", passthroughPresenter))
+        assertThatThrownBy(() -> service.getCampaignsStatsForInterviewer(USER_ID, futureDay, "interviewer-1", interviewerPassthroughPresenter))
                 .isInstanceOf(FutureReportingDateException.class)
                 .hasMessage("date must not be in the future");
     }
@@ -193,7 +197,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStatsForInterviewer(anyString(), anyList(), anyList(), any()))
                 .thenReturn(List.of());
 
-        service.getCampaignsStatsForInterviewer(USER_ID, pastDate, "interviewer-1", passthroughPresenter);
+        service.getCampaignsStatsForInterviewer(USER_ID, pastDate, "interviewer-1", interviewerPassthroughPresenter);
 
         verify(statsRepository).getCampaignsStatsForInterviewer(eq("interviewer-1"), anyList(), anyList(), eq(pastDate));
     }
@@ -202,14 +206,14 @@ class CampaignReportingServiceTest {
     void getCampaignsStatsForInterviewer_shouldReturnEmptyList_whenUserHasNoOrganizationUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of());
 
-        List<CampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", passthroughPresenter);
+        List<InterviewerCampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", interviewerPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void getCampaignsStatsForInterviewer_shouldReturnEmptyList_whenNoCampaigns() {
-        List<CampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", passthroughPresenter);
+        List<InterviewerCampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", interviewerPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
@@ -222,7 +226,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStatsForInterviewer(anyString(), anyList(), anyList(), any()))
                 .thenReturn(List.of());
 
-        List<CampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", passthroughPresenter);
+        List<InterviewerCampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", interviewerPassthroughPresenter);
 
         assertThat(result).isEmpty();
     }
@@ -230,14 +234,14 @@ class CampaignReportingServiceTest {
     @Test
     void getCampaignsStatsForInterviewer_shouldReturnCampaignDailyStats_whenStatsExist() {
         CampaignSummary campaign = new CampaignSummary("c1", "Campaign One");
-        CampaignDailyStats stats = CampaignDailyStats.empty("c1", "Campaign One");
+        InterviewerCampaignDailyStats stats = InterviewerCampaignDailyStats.empty("c1", "Campaign One");
 
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
         when(statsRepository.getCampaignsStatsForInterviewer(anyString(), anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        List<CampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", passthroughPresenter);
+        List<InterviewerCampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", interviewerPassthroughPresenter);
 
         assertThat(result).containsExactly(stats);
     }
@@ -246,15 +250,15 @@ class CampaignReportingServiceTest {
     void getCampaignsStatsForInterviewer_shouldReturnMultipleCampaigns() {
         CampaignSummary c1 = new CampaignSummary("c1", "Campaign One");
         CampaignSummary c2 = new CampaignSummary("c2", "Campaign Two");
-        CampaignDailyStats stats1 = CampaignDailyStats.empty("c1", "Campaign One");
-        CampaignDailyStats stats2 = CampaignDailyStats.empty("c2", "Campaign Two");
+        InterviewerCampaignDailyStats stats1 = InterviewerCampaignDailyStats.empty("c1", "Campaign One");
+        InterviewerCampaignDailyStats stats2 = InterviewerCampaignDailyStats.empty("c2", "Campaign Two");
 
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(c1, c2));
         when(statsRepository.getCampaignsStatsForInterviewer(anyString(), anyList(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
-        List<CampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", passthroughPresenter);
+        List<InterviewerCampaignDailyStats> result = service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, "interviewer-1", interviewerPassthroughPresenter);
 
         assertThat(result).containsExactly(stats1, stats2);
     }
@@ -262,9 +266,9 @@ class CampaignReportingServiceTest {
     @Test
     void getCampaignsStatsForInterviewer_shouldPushOutputToPresenter() {
         CampaignSummary campaign = new CampaignSummary("c1", "Campaign One");
-        CampaignDailyStats stats = CampaignDailyStats.empty("c1", "Campaign One");
+        InterviewerCampaignDailyStats stats = InterviewerCampaignDailyStats.empty("c1", "Campaign One");
         @SuppressWarnings("unchecked")
-        CampaignStatsPresenter<String> presenter = mock(CampaignStatsPresenter.class);
+        InterviewerCampaignsStatsPresenter<String> presenter = mock(InterviewerCampaignsStatsPresenter.class);
 
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
                 .thenReturn(List.of(campaign));
@@ -281,7 +285,7 @@ class CampaignReportingServiceTest {
     @Test
     void getCampaignsStatsForInterviewer_shouldCallRepositoryWithCorrectParameters() {
         CampaignSummary campaign = new CampaignSummary("c1", "Campaign One");
-        CampaignDailyStats stats = CampaignDailyStats.empty("c1", "Campaign One");
+        InterviewerCampaignDailyStats stats = InterviewerCampaignDailyStats.empty("c1", "Campaign One");
         String interviewerId = "interviewer-123";
 
         when(campaignRepository.findAllManagedAndNotClosedCampaignsByOuIds(anyList(), any()))
@@ -289,7 +293,7 @@ class CampaignReportingServiceTest {
         when(statsRepository.getCampaignsStatsForInterviewer(eq(interviewerId), anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));
 
-        service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, interviewerId, passthroughPresenter);
+        service.getCampaignsStatsForInterviewer(USER_ID, FIXED_TODAY, interviewerId, interviewerPassthroughPresenter);
 
         verify(statsRepository).getCampaignsStatsForInterviewer(
                 interviewerId,

@@ -1,9 +1,6 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
-import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.*;
 
 final class ReportingPresenterTestData {
 
@@ -15,6 +12,14 @@ final class ReportingPresenterTestData {
         stats.setCampaignId(campaignId);
         stats.setCampaignLabel(campaignLabel);
         stats.setUnaffectedCount(unaffectedCount);
+        applyBaseStats(stats);
+        return stats;
+    }
+
+    static InterviewerCampaignDailyStats interviewerCampaignStats(String campaignId, String campaignLabel) {
+        InterviewerCampaignDailyStats stats = new InterviewerCampaignDailyStats();
+        stats.setCampaignId(campaignId);
+        stats.setCampaignLabel(campaignLabel);
         applyBaseStats(stats);
         return stats;
     }

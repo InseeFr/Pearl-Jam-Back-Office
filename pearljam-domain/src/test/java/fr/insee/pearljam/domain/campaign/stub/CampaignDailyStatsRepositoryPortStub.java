@@ -2,6 +2,7 @@ package fr.insee.pearljam.domain.campaign.stub;
 
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 
@@ -26,7 +27,7 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
     }
 
     @Override
-    public List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId, List<String> campaignIds, List<String> userOUIds, LocalDate day) {
+    public List<InterviewerCampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId, List<String> campaignIds, List<String> userOUIds, LocalDate day) {
         return List.of();
     }
 

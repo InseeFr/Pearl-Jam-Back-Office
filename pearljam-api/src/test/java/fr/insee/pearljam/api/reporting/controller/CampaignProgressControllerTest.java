@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignProgressForInterviewerPresenter;
+import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsProgressPresenter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
@@ -34,7 +34,7 @@ class CampaignProgressControllerTest {
         CampaignProgressController controller = new CampaignProgressController(
                 reportingService,
                 new CampaignProgressPresenter(),
-                new CampaignProgressForInterviewerPresenter());
+                new InterviewerCampaignsProgressPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())

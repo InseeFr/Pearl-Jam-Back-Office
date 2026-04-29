@@ -28,8 +28,4 @@ public class CampaignDailyStats extends AbstractDailyStats {
     public long getAllocatedCount() {
         return super.getAllocatedCount() + unaffectedCount;
     }
-
-    public long getAllocatedInterviewersCount() {
-        return super.getAllocatedCount();
-    }
 }

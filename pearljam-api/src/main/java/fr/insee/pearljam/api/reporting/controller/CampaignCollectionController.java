@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionForInterviewerPresenter;
+import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignCollectionInterviewerResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +29,7 @@ import java.util.List;
 public class CampaignCollectionController {
     private final CampaignReportingPort campaignReportingService;
     private final CampaignCollectionPresenter presenter;
-    private final CampaignCollectionForInterviewerPresenter interviewerPresenter;
+    private final InterviewerCampaignsCollectionPresenter interviewerPresenter;
 
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_COLLECTION)
@@ -43,7 +43,7 @@ public class CampaignCollectionController {
     @Operation(summary = "Get interviewer campaigns reporting")
     @GetMapping(Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignCollectionInterviewerResponse> getInterviewerCampaignsCollection(
+    public List<InterviewerCampaignCollectionResponse> getInterviewerCampaignsCollection(
             @PathVariable String interviewerId,
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {

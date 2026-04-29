@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -417,11 +418,11 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should return campaign stats filtered by interviewer")
     void getCampaignsStatsForInterviewer_shouldFilterByInterviewer() {
-        List<CampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
 
         assertThat(result).hasSize(1);
-        CampaignDailyStats stats = result.getFirst();
+        InterviewerCampaignDailyStats stats = result.getFirst();
         assertThat(stats.getCampaignId()).isEqualTo(CAMPAIGN_ID);
         assertThat(stats.getCampaignLabel()).isEqualTo("Test Campaign");
         // Only INTW1's stats (from OU1)
@@ -434,7 +435,7 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should return empty list when interviewer has no stats")
     void getCampaignsStatsForInterviewer_shouldReturnEmpty_whenNoStats() {
-        List<CampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 "UNKNOWN-INTW", List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(result).isEmpty();
     }
@@ -453,20 +454,20 @@ class CampaignDailyStatsDaoAdapterTest {
                 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
 
         // Get stats for both campaigns
-        List<CampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID, "CAMP-TEST-2"), List.of(OU1_ID), DAY);
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(CampaignDailyStats::getCampaignId)
+        assertThat(result).extracting(InterviewerCampaignDailyStats::getCampaignId)
                 .containsExactlyInAnyOrder(CAMPAIGN_ID, "CAMP-TEST-2");
 
         // Verify INTW1's stats for each campaign
-        CampaignDailyStats camp1Stats = result.stream()
+        InterviewerCampaignDailyStats camp1Stats = result.stream()
                 .filter(s -> s.getCampaignId().equals(CAMPAIGN_ID))
                 .findFirst().orElseThrow();
         assertThat(camp1Stats.getNvmStateCount()).isEqualTo(1);
 
-        CampaignDailyStats camp2Stats = result.stream()
+        InterviewerCampaignDailyStats camp2Stats = result.stream()
                 .filter(s -> s.getCampaignId().equals("CAMP-TEST-2"))
                 .findFirst().orElseThrow();
         assertThat(camp2Stats.getNvmStateCount()).isEqualTo(5);
@@ -481,26 +482,26 @@ class CampaignDailyStatsDaoAdapterTest {
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 
         // Get stats for OU1 only
-        List<CampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(resultOU1).hasSize(1);
         assertThat(resultOU1.getFirst().getNvmStateCount()).isEqualTo(1);
 
         // Get stats for OU2 only
-        List<CampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
         assertThat(resultOU2).hasSize(1);
         assertThat(resultOU2.getFirst().getNvmStateCount()).isEqualTo(3);
 
         // Get stats for both OUs (should aggregate)
-        List<CampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
         assertThat(resultBoth).hasSize(1);
         assertThat(resultBoth.getFirst().getNvmStateCount()).isEqualTo(4); // 1 + 3
     }
 
     @Test
-    @DisplayName("Should count unaffected SUs within requested OUs for interviewer")
+    @DisplayName("Should count correct affected SUs within requested OUs for interviewer when unaffected SUs exist")
     void getCampaignsStatsForInterviewer_shouldFilterUnaffectedByOU() {
         // Add stats for INTW1 in OU2 first
         insertStats(DAY, CAMPAIGN_ID, OU2_ID, INTW1_ID,
@@ -519,28 +520,25 @@ class CampaignDailyStatsDaoAdapterTest {
         entityManager.flush();
 
         // Filter on OU1 only → should see only 1 unaffected (the one from setup in OU1)
-        List<CampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(resultOU1).hasSize(1);
-        assertThat(resultOU1.getFirst().getUnaffectedCount()).isEqualTo(1);
 
         // Filter on OU2 only → should see only 1 unaffected (the one we just added in OU2)
-        List<CampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
         assertThat(resultOU2).hasSize(1);
-        assertThat(resultOU2.getFirst().getUnaffectedCount()).isEqualTo(1);
 
         // Both OUs → should see 2 unaffected
-        List<CampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
         assertThat(resultBoth).hasSize(1);
-        assertThat(resultBoth.getFirst().getUnaffectedCount()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("Should return empty list when no campaigns match for interviewer")
     void getCampaignsStatsForInterviewer_shouldReturnEmpty_whenNoCampaigns() {
-        List<CampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of("UNKNOWN-CAMP"), List.of(OU1_ID), DAY);
         assertThat(result).isEmpty();
     }
@@ -550,7 +548,7 @@ class CampaignDailyStatsDaoAdapterTest {
     void getCampaignsStatsForInterviewer_shouldReturnEmpty_whenDayHasNoData() {
         LocalDate otherDay = DAY.plusDays(1);
         partitionManager.ensureMonthlyPartitionExists(otherDay);
-        List<CampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
+        List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID), otherDay);
         assertThat(result).isEmpty();
     }

@@ -2,6 +2,7 @@ package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import lombok.RequiredArgsConstructor;
@@ -188,49 +189,31 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     }
 
     private static final String INTERVIEWER_CAMPAIGNS_SQL = """
-        WITH filtered_campaigns AS (
-            SELECT c.id AS campaign_id
-            FROM campaign c
-            WHERE c.id IN (:campaignIds)
-        ),
-        su_counts AS (
-            SELECT
-                su.campaign_id,
-                COUNT(*) AS unaffected
-            FROM survey_unit su
-            JOIN filtered_campaigns fc
-              ON fc.campaign_id = su.campaign_id
-            WHERE su.organization_unit_id IN (:ouIds)
-            AND su.interviewer_id is NULL
-            GROUP BY su.campaign_id
-        )
         SELECT
             c.id AS campaignId,
             c.label AS campaignLabel,
-            COALESCE(su.unaffected, 0) AS unaffectedCount,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
-        LEFT JOIN su_counts su ON su.campaign_id = c.id
        WHERE cds.campaign_id IN (:campaignIds)
          AND cds.organization_unit_id IN (:ouIds)
          AND cds.day = :day
          AND cds.interviewer_id = :interviewerId
-        GROUP BY c.id, c.label, su.unaffected
+        GROUP BY c.id, c.label
         ORDER by c.label ASC;
     """.formatted(DATA_SELECTION);
 
     @Override
-    public List<CampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
-                                                                    List<String> campaignIds,
-                                                                    List<String> ouIds,
-                                                                    LocalDate day) {
+    public List<InterviewerCampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId,
+                                                                               List<String> campaignIds,
+                                                                               List<String> ouIds,
+                                                                               LocalDate day) {
         return jdbc.sql(INTERVIEWER_CAMPAIGNS_SQL)
                 .param("campaignIds", campaignIds)
                 .param(OU_IDS_PARAM, ouIds)
                 .param(DAY_PARAM, day)
                 .param("interviewerId", interviewerId)
-                .query(CampaignDailyStats.class)
+                .query(InterviewerCampaignDailyStats.class)
                 .list();
     }
 
@@ -246,7 +229,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
           AND cds.organization_unit_id IN (:ouIds)
           AND cds.day = :day
         GROUP BY interv.id, interv.first_name, interv.last_name
-        ORDER by interv.first_name ASC, interv.last_name ASC
+        ORDER by interv.last_name ASC, interv.first_name ASC
     """.formatted(DATA_SELECTION);
 
     @Override
