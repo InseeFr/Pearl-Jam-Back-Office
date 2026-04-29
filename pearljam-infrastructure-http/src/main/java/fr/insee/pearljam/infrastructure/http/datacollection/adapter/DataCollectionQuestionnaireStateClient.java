@@ -1,13 +1,12 @@
 package fr.insee.pearljam.infrastructure.http.datacollection.adapter;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
