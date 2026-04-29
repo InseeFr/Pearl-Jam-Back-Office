@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +40,7 @@ class CampaignProgressControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK when day is provided")
     void shouldReturnOk_whenDayProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/campaigns/progress")
                         .param("day", "2025-06-10"))
@@ -46,17 +48,21 @@ class CampaignProgressControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK when day is not provided")
     void shouldReturnOk_whenDayIsNotProvided() throws Exception {
         mockMvc.perform(get("/api/reporting/campaigns/progress"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @DisplayName("Returns 400 Bad Request when day is in the future")
     void shouldReturnBadRequest_whenDayIsInTheFuture() throws Exception {
+        // Given
         LocalDate futureDay = LocalDate.now().plusDays(1);
         when(reportingService.getCampaignsStats(any(), eq(futureDay), any()))
                 .thenThrow(new FutureReportingDateException());
 
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress")
                         .param("day", futureDay.toString()))
                 .andExpect(status().isBadRequest());
