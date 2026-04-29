@@ -316,7 +316,7 @@ class SurveyUnitUpdateServiceImplTest {
 	@Test
 	@DisplayName("Should update lastUpdated when survey unit is updated")
 	void testUpdateLastUpdated01() {
-		assertThat(surveyUnit.getLastUpdated()).isEqualTo(0L);
+		assertThat(surveyUnit.getLastUpdated()).isZero();
 
 		List<CommentDto> comments = List.of(
 				new CommentDto(CommentType.INTERVIEWER, "test comment")
