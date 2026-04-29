@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.reporting.presenter;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,13 +15,17 @@ class CampaignProgressByInterviewersPresenterTest {
     private final CampaignProgressByInterviewersPresenter presenter = new CampaignProgressByInterviewersPresenter();
 
     @Test
+    @DisplayName("Maps interviewer and campaign stats to progress response")
     void shouldMapInterviewerAndCampaignStatsToProgressResponse() {
+        // Given
         InterviewerDailyStats interviewerStats = ReportingPresenterTestData.interviewerStats("Jane", "Doe");
         CampaignDailyStats siteStats = ReportingPresenterTestData.campaignStats("camp-1", "Campaign 1", 5L);
         CampaignDailyStats campaignStats = ReportingPresenterTestData.campaignStats("camp-1", "Campaign 1", 42L);
 
+        // When
         CampaignProgressByInterviewersResponse result = presenter.present(List.of(interviewerStats), siteStats, campaignStats);
 
+        // Then
         assertThat(result.interviewers()).singleElement().satisfies(interviewer -> {
             assertThat(interviewer.interviewerLabel()).isEqualTo("Jane Doe");
             assertThat(interviewer.progressRate()).isEqualTo(interviewerStats.getProgressStateRate());
