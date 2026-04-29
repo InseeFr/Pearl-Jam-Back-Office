@@ -4,10 +4,10 @@ import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
+import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
+import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class CampaignReportingService implements CampaignReportingPort {
+public class InterviewerCampaignsReportingService implements InterviewerCampaignsReportingPort {
 
     private final CampaignRepository campaignRepository;
     private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepository;
@@ -31,7 +31,7 @@ public class CampaignReportingService implements CampaignReportingPort {
     private final Clock clock;
 
     @Override
-    public <T> T getCampaignsStats(String userId, LocalDate day, CampaignStatsPresenter<T> presenter) {
+    public <T> T getCampaignsStatsForInterviewer(String userId, LocalDate day, String interviewerId, InterviewerCampaignsStatsPresenter<T> presenter) {
         day = resolveReportingDay(day);
         List<String> userOUIds = userService.getUserOUsModel(userId, true)
                 .stream().map(OrganizationUnitSummary::getId).toList();
@@ -51,12 +51,12 @@ public class CampaignReportingService implements CampaignReportingPort {
 
         List<String> campaignIds = campaigns.stream().map(CampaignSummary::id).toList();
 
-        Map<String, CampaignDailyStats> statsByCampaign = campaignDailyStatsRepository
-                .getCampaignsStats(campaignIds, userOUIds, day)
+        Map<String, InterviewerCampaignDailyStats> statsByCampaign = campaignDailyStatsRepository
+                .getCampaignsStatsForInterviewer(interviewerId, campaignIds, userOUIds, day)
                 .stream()
-                .collect(Collectors.toMap(CampaignDailyStats::getCampaignId, s -> s));
+                .collect(Collectors.toMap(InterviewerCampaignDailyStats::getCampaignId, s -> s));
 
-        List<CampaignDailyStats> stats = campaigns.stream()
+        List<InterviewerCampaignDailyStats> stats = campaigns.stream()
                 .filter(campaign -> statsByCampaign.containsKey(campaign.id()))
                 .map(campaign -> statsByCampaign.get(campaign.id()))
                 .toList();

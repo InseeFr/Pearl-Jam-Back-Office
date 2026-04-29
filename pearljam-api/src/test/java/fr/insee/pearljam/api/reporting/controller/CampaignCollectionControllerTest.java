@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
@@ -29,12 +28,10 @@ class CampaignCollectionControllerTest {
     void setup() {
         reportingService = mock(CampaignReportingPort.class);
         when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of());
-        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
 
         CampaignCollectionController controller = new CampaignCollectionController(
                 reportingService,
-                new CampaignCollectionPresenter(),
-                new InterviewerCampaignsCollectionPresenter());
+                new CampaignCollectionPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -61,30 +58,6 @@ class CampaignCollectionControllerTest {
                 .thenThrow(new FutureReportingDateException());
 
         mockMvc.perform(get("/api/reporting/campaigns/collection")
-                        .param("day", futureDay.toString()))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldReturnOk_whenInterviewerIdAndDayProvided() throws Exception {
-        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
-                        .param("day", "2025-06-10"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldReturnOk_whenInterviewerIdAndDayIsNotProvided() throws Exception {
-        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldReturnBadRequest_whenInterviewerIdAndDayIsInTheFuture() throws Exception {
-        LocalDate futureDay = LocalDate.now().plusDays(1);
-        when(reportingService.getCampaignsStatsForInterviewer(any(), eq(futureDay), any(), any()))
-                .thenThrow(new FutureReportingDateException());
-
-        mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
                         .param("day", futureDay.toString()))
                 .andExpect(status().isBadRequest());
     }
