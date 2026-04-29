@@ -8,6 +8,7 @@ import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,7 +42,9 @@ class CampaignProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 200 OK with CSV content type when date is provided")
     void shouldReturnOk_withCsvContentType() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
@@ -49,7 +52,9 @@ class CampaignProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns an attachment whose filename includes the date")
     void shouldReturnAttachmentWithFilename() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
@@ -60,12 +65,16 @@ class CampaignProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns a CSV starting with the BOM and the expected headers")
     void shouldReturnCsvWithBomAndHeaders() throws Exception {
+        // Given
+        // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
 
+        // Then
         String csv = new String(content);
         assertThat(csv)
                 .startsWith("\uFEFF")
@@ -74,7 +83,9 @@ class CampaignProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns a CSV with one data row per campaign returned by the port")
     void shouldReturnCsvWithDataRows() throws Exception {
+        // Given
         CampaignProgressResponse response = new CampaignProgressResponse(
                 "camp-1", "Enquête Test", 75.5f,
                 new StatesProgressResponse(10, 2, 3, 4, 5, 6, 7, 8, 9, 1),
@@ -82,11 +93,13 @@ class CampaignProgressExportControllerTest {
         );
         when(reportingPort.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
 
+        // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/progress/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
 
+        // Then
         String csv = new String(content);
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(2);
@@ -94,7 +107,9 @@ class CampaignProgressExportControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 400 Bad Request when date is missing")
     void shouldReturnBadRequest_whenDateIsMissing() throws Exception {
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress/export"))
                 .andExpect(status().isBadRequest());
     }

@@ -9,6 +9,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -54,32 +55,47 @@ class CampaignProgressByInterviewersServiceTest {
     }
 
     @Test
+    @DisplayName("Uses the provided day when it is in the past")
     void shouldUseProvidedDay_whenDayIsInThePast() throws CampaignNotFoundException {
+        // Given
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
+
+        // When
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate, passthroughPresenter);
 
+        // Then
         verify(statsRepository).getInterviewerStats(anyString(), anyList(), eq(pastDate));
     }
 
     @Test
+    @DisplayName("Defaults to today when the day is null")
     void shouldDefaultToToday_whenDayIsNull() throws CampaignNotFoundException {
+        // Given / When
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, null, passthroughPresenter);
 
+        // Then
         verify(statsRepository).getInterviewerStats(anyString(), anyList(), eq(FIXED_TODAY));
     }
 
     @Test
+    @DisplayName("Throws FutureReportingDateException when the day is in the future")
     void shouldThrow_whenDayIsInTheFuture() {
+        // Given
         LocalDate futureDate = FIXED_TODAY.plusDays(10);
+
+        // When / Then
         assertThatThrownBy(() -> service.getProgressForDay(USER_ID, CAMPAIGN_ID, futureDate, passthroughPresenter))
                 .isInstanceOf(FutureReportingDateException.class)
                 .hasMessage("date must not be in the future");
     }
 
     @Test
+    @DisplayName("Returns empty interviewers and zero site/campaign stats when no interviewer stats exist")
     void shouldReturnEmptyInterviewers_whenNoInterviewerStats() throws CampaignNotFoundException {
+        // Given / When
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
+        // Then
         assertThat(result.interviewerStats()).isEmpty();
         assertThat(result.siteStats().getProgressStateRate()).isZero();
         assertThat(result.siteStats().getAllocatedCount()).isZero();
@@ -88,18 +104,23 @@ class CampaignProgressByInterviewersServiceTest {
     }
 
     @Test
+    @DisplayName("Maps interviewer first and last name correctly")
     void shouldMapInterviewerLabelCorrectly() throws CampaignNotFoundException {
+        // Given
         InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
+        // When
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
+        // Then
         assertThat(result.interviewerStats()).hasSize(1);
         assertThat(result.interviewerStats().getFirst().getInterviewerFirstName()).isEqualTo("Jean");
         assertThat(result.interviewerStats().getFirst().getInterviewerLastName()).isEqualTo("Dupont");
     }
 
     @Test
+    @DisplayName("Computes interviewer state counts and progress rate from raw daily stats")
     void shouldMapInterviewerSurveyUnitsAndProgressRate() throws CampaignNotFoundException {
         InterviewerDailyStats stats = interviewerStats("int-1", "Jean", "Dupont");
         stats.setNvmStateCount(1L);
@@ -121,8 +142,10 @@ class CampaignProgressByInterviewersServiceTest {
         stats.setReminderCommunicationCount(25L);
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
 
+        // When
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
+        // Then
         InterviewerDailyStats interviewer = result.interviewerStats().getFirst();
         assertThat(interviewer.getProgressStateRate()).isCloseTo(54.135f, within(0.001f));
         assertThat(interviewer.getAllocatedCount()).isEqualTo(133L);
@@ -139,7 +162,9 @@ class CampaignProgressByInterviewersServiceTest {
     }
 
     @Test
+    @DisplayName("Maps site and campaign stats from repository when stats exist")
     void shouldMapSiteAndCampaignStats_whenStatsExist() throws CampaignNotFoundException {
+        // Given
         CampaignDailyStats campaignStat = new CampaignDailyStats();
         campaignStat.setCampaignId(CAMPAIGN_ID);
         campaignStat.setCampaignLabel("Campaign One");
@@ -153,8 +178,10 @@ class CampaignProgressByInterviewersServiceTest {
         when(statsRepository.findCampaignStats(anyString(), any()))
                 .thenReturn(Optional.of(campaignStat));
 
+        // When
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
+        // Then
         assertThat(result.siteStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
         assertThat(result.siteStats().getAllocatedCount()).isEqualTo(100L);
         assertThat(result.campaignStats().getProgressStateRate()).isCloseTo(50.0f, within(0.001f));
@@ -162,14 +189,18 @@ class CampaignProgressByInterviewersServiceTest {
     }
 
     @Test
+    @DisplayName("Returns all interviewers when several have stats")
     void shouldReturnMultipleInterviewers() throws CampaignNotFoundException {
+        // Given
         InterviewerDailyStats stats1 = interviewerStats("int-1", "Jean", "Dupont");
         InterviewerDailyStats stats2 = interviewerStats("int-2", "Marie", "Martin");
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
+        // When
         InterviewerStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
+        // Then
         assertThat(result.interviewerStats()).hasSize(2);
         assertThat(result.interviewerStats())
                 .extracting(InterviewerDailyStats::getInterviewerFirstName, InterviewerDailyStats::getInterviewerLastName)
@@ -177,14 +208,18 @@ class CampaignProgressByInterviewersServiceTest {
     }
 
     @Test
+    @DisplayName("Pushes output through the custom presenter")
     void shouldPushOutputToPresenter() throws CampaignNotFoundException {
+        // Given
         @SuppressWarnings("unchecked")
         CampaignStatsByInterviewersPresenter<String> presenter = mock(CampaignStatsByInterviewersPresenter.class);
 
         when(presenter.present(anyList(), any(), any())).thenReturn("presented");
 
+        // When
         String result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, presenter);
 
+        // Then
         org.mockito.Mockito.verify(presenter).present(anyList(), any(CampaignDailyStats.class), any(CampaignDailyStats.class));
         assertThat(result).isEqualTo("presented");
     }
