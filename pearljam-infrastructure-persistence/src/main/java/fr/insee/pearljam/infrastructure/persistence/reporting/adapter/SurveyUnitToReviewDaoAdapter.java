@@ -40,7 +40,6 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
     private List<SurveyUnitToReview> executeMainQuery(
             List<String> campaignIds, List<String> ouIds, String search, Pageable pageable) {
 
-        String searchCondition = buildSearchCondition(search);
         String sortClause = buildSortClause(pageable);
 
         String sql = """
@@ -78,7 +77,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                              WHERE ls.current_state = 'TBR'
                                AND su.campaign_id IN (:campaignIds)
                                AND su.organization_unit_id IN (:ouIds)
-                             """ + searchCondition + """
+                             """ + buildSearchCondition(search) + """
                              """ + sortClause + """
                              LIMIT :limit OFFSET :offset
                              """;
@@ -94,8 +93,6 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
     }
 
     private long executeCountQuery(List<String> campaignIds, List<String> ouIds, String search) {
-        String searchCondition = buildSearchCondition(search);
-
         String sql = """
                              SELECT COUNT(DISTINCT su.id)
                              FROM survey_unit su
@@ -113,7 +110,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                              WHERE ls.current_state = 'TBR'
                                 AND su.campaign_id IN (:campaignIds)
                                 AND su.organization_unit_id IN (:ouIds)
-                             """ + searchCondition;
+                             """ + buildSearchCondition(search);
 
         return jdbc.sql(sql)
                 .param("campaignIds", campaignIds)
@@ -129,9 +126,9 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
         }
         return """
                 AND (
-                    LOWER(c.label) LIKE LOWER(:search) OR
-                    LOWER(su.id) LIKE LOWER(:search) OR
-                    LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE LOWER(:search)
+                    LOWER(c.label) LIKE :search OR
+                    LOWER(su.id) LIKE :search OR
+                    LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE :search
                 )
                 """;
     }
@@ -146,21 +143,29 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
             if (sortClause.length() > 9) {
                 sortClause.append(", ");
             }
-            sortClause.append(getSortColumn(order.getProperty()))
+            // Validate and sanitize the sort property to prevent SQL injection
+            String safeColumn = getSafeSortColumn(order.getProperty());
+            sortClause.append(safeColumn)
                     .append(" ")
                     .append(order.getDirection());
         });
         return sortClause.toString() + " ";
     }
 
-    private String getSortColumn(String property) {
-        return switch (property.toLowerCase()) {
+    private String getSafeSortColumn(String property) {
+        // Validate and sanitize the property to prevent SQL injection
+        if (property == null || property.trim().isEmpty()) {
+            return "su.id";
+        }
+
+        // Use a map for safe lookup instead of direct string manipulation
+        return switch (property.toLowerCase().trim()) {
             case "campaignlabel" -> "c.label";
             case "contactoutcome" -> "co.type";
             case "interviewername" -> "CONCAT(i.first_name, ' ', i.last_name)";
             case "viewed" -> "su.viewed";
             case "lastcomment" -> "lastComment";
-            default -> "su.id";
+            default -> "su.id"; // Default safe column
         };
     }
 
