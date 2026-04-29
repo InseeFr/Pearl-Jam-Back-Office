@@ -2,7 +2,8 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewDto;
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
-import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,17 +15,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SurveyUnitToReviewPresenterTest {
+class SurveyUnitToReviewApiPresenterTest {
 
-    private SurveyUnitToReviewPresenter presenter;
+    private SurveyUnitToReviewApiPresenter presenter;
     private static final String DATACOLLECTION_UI_URL = "https://datacollection-ui";
 
     @BeforeEach
     void setUp() {
-        presenter = new SurveyUnitToReviewPresenter();
+        presenter = new SurveyUnitToReviewApiPresenter();
         // Inject the datacollectionUiUrl using reflection since it's a private field
         try {
-            var field = SurveyUnitToReviewPresenter.class.getDeclaredField("datacollectionUiUrl");
+            var field = SurveyUnitToReviewApiPresenter.class.getDeclaredField("datacollectionUiUrl");
             field.setAccessible(true);
             field.set(presenter, DATACOLLECTION_UI_URL);
         } catch (Exception e) {

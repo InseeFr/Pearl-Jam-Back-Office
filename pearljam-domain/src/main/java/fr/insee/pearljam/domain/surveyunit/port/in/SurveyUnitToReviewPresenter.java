@@ -1,6 +1,6 @@
-package fr.insee.pearljam.domain.reporting.port.in;
+package fr.insee.pearljam.domain.surveyunit.port.in;
 
-import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.springframework.data.domain.Page;
 
 /**
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
  *
  * @param <T> the type of response this presenter produces
  */
-public interface SurveyUnitToReviewStatsPresenter<T> {
+public interface SurveyUnitToReviewPresenter<T> {
 
     /**
      * Presents the paginated survey units to review in the appropriate response format.

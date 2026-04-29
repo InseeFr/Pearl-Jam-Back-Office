@@ -1,11 +1,11 @@
-package fr.insee.pearljam.api.reporting.controller;
+package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.SurveyUnitToReviewPresenter;
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,11 +40,11 @@ class SurveyUnitToReviewControllerTest {
     @BeforeEach
     void setup() {
         port = mock(SurveyUnitToReviewPort.class);
-        when(port.getSurveyUnitsToReview(anyString(), anyString(), any(Pageable.class), any(SurveyUnitToReviewPresenter.class)))
+        when(port.getSurveyUnitsToReview(anyString(), anyString(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class)))
                 .thenReturn(EMPTY_RESULT);
 
         SurveyUnitToReviewController controller =
-                new SurveyUnitToReviewController(port, new SurveyUnitToReviewPresenter());
+                new SurveyUnitToReviewController(port, new SurveyUnitToReviewApiPresenter());
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -56,7 +56,7 @@ class SurveyUnitToReviewControllerTest {
     void shouldReturnOk_whenSearchProvided() throws Exception {
         String searchTerm = "test-search";
 
-        mockMvc.perform(get(Constants.API_REPORTING_SURVEY_UNITS_TO_REVIEW)
+        mockMvc.perform(get(Constants.API_SURVEY_UNITS_TO_REVIEW)
                         .param("search", searchTerm)
                         .param("page", "0")
                         .param("size", "20")
@@ -64,24 +64,24 @@ class SurveyUnitToReviewControllerTest {
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class), eq(searchTerm), any(Pageable.class), any(SurveyUnitToReviewPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class), eq(searchTerm), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
     void shouldPassNullSearch_whenSearchIsNotProvided() throws Exception {
-        mockMvc.perform(get(Constants.API_REPORTING_SURVEY_UNITS_TO_REVIEW)
+        mockMvc.perform(get(Constants.API_SURVEY_UNITS_TO_REVIEW)
                         .param("page", "0")
                         .param("size", "20")
                         .param("sort", "id,asc")
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class), isNull(), any(Pageable.class), any(SurveyUnitToReviewPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
     void shouldPassCorrectPagination() throws Exception {
-        mockMvc.perform(get(Constants.API_REPORTING_SURVEY_UNITS_TO_REVIEW)
+        mockMvc.perform(get(Constants.API_SURVEY_UNITS_TO_REVIEW)
                         .param("page", "2")
                         .param("size", "50")
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
@@ -93,7 +93,7 @@ class SurveyUnitToReviewControllerTest {
                 nullable(String.class),
                 any(),
                 pageableCaptor.capture(),
-                any(SurveyUnitToReviewPresenter.class)
+                any(SurveyUnitToReviewApiPresenter.class)
         );
 
         Pageable pageable = pageableCaptor.getValue();

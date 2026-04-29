@@ -6,9 +6,10 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPresenter;
+import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitToReviewService;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ class SurveyUnitToReviewServiceTest {
     CampaignVisibilityPort campaignVisibilityPort;
     SurveyUnitToReviewRepositoryPort surveyUnitToReviewRepositoryPort;
     DateService dateService;
-    SurveyUnitToReviewStatsPresenter<Object> presenter;
+    SurveyUnitToReviewPresenter<Object> presenter;
     SurveyUnitToReviewService service;
     static final String USER_ID = "user-1";
 
@@ -71,7 +72,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), any(), any()))
                 .thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
@@ -111,7 +112,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), any(), any()))
                 .thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
@@ -141,7 +142,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), isNull(), any()))
                 .thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
@@ -172,7 +173,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), eq(""), any()))
                 .thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
@@ -202,7 +203,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), any(), eq(pageable)))
                 .thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
@@ -241,7 +242,7 @@ class SurveyUnitToReviewServiceTest {
                 anyList(), anyList(), eq(search), eq(pageable)))
                 .thenReturn(page);
 
-        presenter = mock(SurveyUnitToReviewStatsPresenter.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(page)).thenReturn("RESULT");
 
         // WHEN

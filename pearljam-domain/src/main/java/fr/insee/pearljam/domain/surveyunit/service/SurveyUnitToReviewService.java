@@ -1,14 +1,14 @@
-package fr.insee.pearljam.domain.reporting.service;
+package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPort;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewStatsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPresenter;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,7 +33,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
     private final DateService dateService;
 
     @Override
-    public <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewStatsPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
         log.info("Retrieving survey units to review for user: {}", userId);
 
         long currentTimestamp = dateService.getCurrentTimestamp();

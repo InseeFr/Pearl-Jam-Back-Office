@@ -1,9 +1,9 @@
-package fr.insee.pearljam.api.reporting.controller;
+package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.SurveyUnitToReviewPresenter;
 import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.port.in.SurveyUnitToReviewPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurveyUnitToReviewController {
 
     private final SurveyUnitToReviewPort surveyUnitToReviewPort;
-    private final SurveyUnitToReviewPresenter presenter;
+    private final SurveyUnitToReviewApiPresenter presenter;
 
     @Operation(summary = "Get survey units to review with pagination",
             description = "Returns a paginated list of survey units that need to be reviewed")
     @Parameter(name = "userId", hidden = true)
-    @GetMapping(Constants.API_REPORTING_SURVEY_UNITS_TO_REVIEW)
+    @GetMapping(Constants.API_SURVEY_UNITS_TO_REVIEW)
     public SurveyUnitToReviewResponse getSurveyUnitsToReview(
             Pageable pageable,
             @RequestParam(required = false) String search,

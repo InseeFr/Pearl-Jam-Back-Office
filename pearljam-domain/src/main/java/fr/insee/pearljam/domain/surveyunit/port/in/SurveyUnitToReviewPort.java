@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.reporting.port.in;
+package fr.insee.pearljam.domain.surveyunit.port.in;
 
 import org.springframework.data.domain.Pageable;
 
@@ -18,5 +18,5 @@ public interface SurveyUnitToReviewPort {
      * @param <T> the type of response returned by the presenter
      * @return a paginated response of survey units to review
      */
-    <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewStatsPresenter<T> presenter);
+    <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter);
 }

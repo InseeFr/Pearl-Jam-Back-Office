@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.reporting.port.out;
 
-import fr.insee.pearljam.domain.reporting.readmodel.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
