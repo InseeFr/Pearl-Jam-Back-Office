@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
-import fr.insee.pearljam.api.campaign.presenter.CampaignOrganizationPresenter;
-import fr.insee.pearljam.api.campaign.response.CampaignOrganizationResponse;
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationStatsPresenter;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,12 +27,12 @@ class CampaignOrganizationCsvExporterTest {
 
     private CampaignOrganizationCsvExporter exporter;
     private CampaignOrganizationPort port;
-    private CampaignOrganizationPresenter presenter;
+    private CampaignOrganizationCsvPresenter presenter;
 
     @BeforeEach
     void setup() {
         port = mock(CampaignOrganizationPort.class);
-        presenter = mock(CampaignOrganizationPresenter.class);
+        presenter = mock(CampaignOrganizationCsvPresenter.class);
         exporter = new CampaignOrganizationCsvExporter(port, presenter);
     }
 
@@ -40,16 +40,16 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Returns CSV with headers and Non attribuées/Total Site rows when no interviewers")
     void shouldReturnCsvWithHeadersAndDefaultRows_whenNoInterviewers() {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of());
+        CampaignOrganizationCsv csv = createCsv("Test Campaign", List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
 
         // Then
-        String csv = new String(result.getBody());
-        String[] lines = csv.split("\r\n");
+        String csvString = new String(result.getBody());
+        String[] lines = csvString.split("\r\n");
         assertThat(lines).hasSize(3);
         assertThat(lines[0]).contains("Nom Prénom Enquêteur;Idep Enquêteur;Nombre d'UE");
         assertThat(lines[1]).contains("Non attribuées");
@@ -60,18 +60,20 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Returns CSV with interviewer rows, Non attribuées and Total Site rows")
     void shouldReturnCsvWithInterviewerRows() {
         // Given
-        CampaignOrganizationResponse.Interviewer interviewer = 
-                new CampaignOrganizationResponse.Interviewer("ID001", "John Doe", 10L);
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of(interviewer));
+        List<CsvRow> rows = new ArrayList<>();
+        rows.add(CsvRow.from("John Doe", "ID001", 10L));
+        rows.add(CsvRow.from(CampaignOrganizationCsv.NOT_AFFECTED, "", 5L));
+        rows.add(CsvRow.from(CampaignOrganizationCsv.TOTAL_SITE, "", 15L));
+        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Test Campaign", rows);
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
 
         // Then
-        String csv = new String(result.getBody());
-        String[] lines = csv.split("\r\n");
+        String csvString = new String(result.getBody());
+        String[] lines = csvString.split("\r\n");
         assertThat(lines).hasSize(4);
         assertThat(lines[1]).contains("John Doe;ID001;10");
         assertThat(lines[2]).contains("Non attribuées");
@@ -83,9 +85,9 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Generates correct filename with campaign label and date")
     void shouldGenerateCorrectFilename(String campaignLabel, String expectedFilenamePart, LocalDate date) {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", campaignLabel, List.of());
+        CampaignOrganizationCsv csv = createCsv(campaignLabel, List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", date);
@@ -107,25 +109,25 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Returns CSV starting with the UTF-8 BOM")
     void shouldReturnCsvStartingWithBom() {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of());
+        CampaignOrganizationCsv csv = createCsv("Test Campaign", List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
 
         // Then
-        String csv = new String(result.getBody());
-        assertThat(csv).startsWith("\uFEFF");
+        String csvString = new String(result.getBody());
+        assertThat(csvString).startsWith("\uFEFF");
     }
 
     @Test
     @DisplayName("Returns text/plain content type")
     void shouldReturnTextPlainContentType() {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of());
+        CampaignOrganizationCsv csv = createCsv("Test Campaign", List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
@@ -138,9 +140,9 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Calls port with correct userId, campaignId and presenter parameters")
     void shouldCallPortWithCorrectParameters() {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of());
+        CampaignOrganizationCsv csv = createCsv("Test Campaign", List.of());
         when(port.getCampaignOrganization(eq("test-user"), eq("test-campaign"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         exporter.export("test-user", "test-campaign", LocalDate.of(2025, 6, 10));
@@ -153,9 +155,9 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Returns HTTP 200 OK status")
     void shouldReturnHttp200Ok() {
         // Given
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", List.of());
+        CampaignOrganizationCsv csv = createCsv("Test Campaign", List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
@@ -168,37 +170,30 @@ class CampaignOrganizationCsvExporterTest {
     @DisplayName("Handles multiple interviewers correctly")
     void shouldHandleMultipleInterviewers() {
         // Given
-        CampaignOrganizationResponse.Interviewer interviewer1 = 
-                new CampaignOrganizationResponse.Interviewer("ID001", "Alice Smith", 5L);
-        CampaignOrganizationResponse.Interviewer interviewer2 = 
-                new CampaignOrganizationResponse.Interviewer("ID002", "Bob Jones", 8L);
-        CampaignOrganizationResponse response = createResponse("camp-1", "Test Campaign", 
-                List.of(interviewer1, interviewer2));
+        List<CsvRow> rows = new ArrayList<>();
+        rows.add(CsvRow.from("Alice Smith", "ID001", 5L));
+        rows.add(CsvRow.from("Bob Jones", "ID002", 8L));
+        rows.add(CsvRow.from(CampaignOrganizationCsv.NOT_AFFECTED, "", 5L));
+        rows.add(CsvRow.from(CampaignOrganizationCsv.TOTAL_SITE, "", 13L));
+        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Test Campaign", rows);
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
-                .thenReturn(response);
+                .thenReturn(csv);
 
         // When
         ResponseEntity<byte[]> result = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
 
         // Then
-        String csv = new String(result.getBody());
-        String[] lines = csv.split("\r\n");
+        String csvString = new String(result.getBody());
+        String[] lines = csvString.split("\r\n");
         assertThat(lines).hasSize(5);
         assertThat(lines[1]).contains("Alice Smith;ID001;5");
         assertThat(lines[2]).contains("Bob Jones;ID002;8");
     }
 
-    private CampaignOrganizationResponse createResponse(String campaignId, String campaignLabel, 
-            List<CampaignOrganizationResponse.Interviewer> interviewers) {
-        return new CampaignOrganizationResponse(
-                campaignId,
-                campaignLabel,
-                "email@test.com",
-                1L, 1L, 1L, 1L, 1L,
-                null,
-                List.of(),
-                interviewers,
-                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(15L, 5L)
-        );
+    private CampaignOrganizationCsv createCsv(String campaignLabel, List<CsvRow> additionalRows) {
+        List<CsvRow> rows = new ArrayList<>(additionalRows);
+        rows.add(CsvRow.from(CampaignOrganizationCsv.NOT_AFFECTED, "", 5L));
+        rows.add(CsvRow.from(CampaignOrganizationCsv.TOTAL_SITE, "", 15L));
+        return new CampaignOrganizationCsv(campaignLabel, rows);
     }
 }

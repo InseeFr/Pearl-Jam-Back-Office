@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportable {
+public record CampaignOrganizationCsv(String campaignLabel, List<CsvRow> rows) implements CsvExportable {
 
      static final String NOT_AFFECTED = "Non attribuées";
      static final String TOTAL_SITE = "Total Site";
@@ -37,7 +37,7 @@ public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportabl
                 response.surveyUnits().total()
         ));
 
-        return new CampaignOrganizationCsv(rows);
+        return new CampaignOrganizationCsv(response.campaignLabel(), rows);
     }
 
     @Override

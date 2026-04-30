@@ -1,7 +1,4 @@
 package fr.insee.pearljam.api.reporting.export.campaignorganization;
-
-
-
 import fr.insee.pearljam.api.campaign.response.CampaignOrganizationResponse;
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import org.junit.jupiter.api.Test;
@@ -11,12 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
+
 import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsv.NOT_AFFECTED;
 import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsv.TOTAL_SITE;
 import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvHeaders.*;
 import static org.assertj.core.api.Assertions.assertThat;
-
-
 
 class CampaignOrganizationCsvTest {
 
@@ -129,7 +125,6 @@ class CampaignOrganizationCsvTest {
         for (CsvRow row : csv.rows()) {
             assertThat(row.values()).hasSameSizeAs(headers.values());
         }
-
     }
 
 
@@ -146,7 +141,6 @@ class CampaignOrganizationCsvTest {
         for (CsvRow row : csv.rows()) {
             assertThat(row.values()).hasSameSizeAs(headers.values());
         }
-
     }
 
 
@@ -171,20 +165,22 @@ class CampaignOrganizationCsvTest {
         List<CsvRow> manualRows = List.of(
                 CsvRow.from("Test", "123", "10")
         );
-        CampaignOrganizationCsv csv = new CampaignOrganizationCsv(manualRows);
+        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Test Campaign", manualRows);
 
 
         assertThat(csv.rows()).isEqualTo(manualRows);
+        assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
     }
 
 
 
     @Test
     void shouldReturnEmptyRowsFromEmptyConstructor() {
-        CampaignOrganizationCsv csv = new CampaignOrganizationCsv(List.of());
+        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Empty Campaign", List.of());
 
 
         assertThat(csv.rows()).isEmpty();
+        assertThat(csv.campaignLabel()).isEqualTo("Empty Campaign");
     }
 
 
