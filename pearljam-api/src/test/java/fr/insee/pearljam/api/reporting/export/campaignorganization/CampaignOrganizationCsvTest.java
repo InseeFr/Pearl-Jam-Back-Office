@@ -41,7 +41,7 @@ class CampaignOrganizationCsvTest {
 
 
         assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values()).containsExactly("Non attribuées", "", "0");
+        assertThat(csv.rows().get(0).values()).containsExactly("Not affected", "", "0");
         assertThat(csv.rows().get(1).values()).containsExactly("Total Site", "", "0");
     }
 

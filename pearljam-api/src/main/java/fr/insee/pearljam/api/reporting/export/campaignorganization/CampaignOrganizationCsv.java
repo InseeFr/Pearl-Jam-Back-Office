@@ -10,7 +10,7 @@ import java.util.List;
 
 public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportable {
 
-    private static final String NON_ATTRIBUEES = "Non attribuées";
+    private static final String NOT_AFFECTED = "Non attribuées";
     private static final String TOTAL_SITE = "Total Site";
 
     public static CampaignOrganizationCsv from(CampaignOrganizationResponse response) {
@@ -23,14 +23,14 @@ public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportabl
                 interviewer.surveyUnits()
         )));
 
-        // Add "Non attribuées" row
+        // Add NOT_AFFECTED row
         rows.add(CsvRow.from(
-                NON_ATTRIBUEES,
+                NOT_AFFECTED,
                 "",
                 response.surveyUnits().notAffected()
         ));
 
-        // Add "Total Site" row
+        // Add TOTAL_SITE row
         rows.add(CsvRow.from(
                 TOTAL_SITE,
                 "",
