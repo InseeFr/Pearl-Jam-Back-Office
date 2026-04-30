@@ -165,7 +165,7 @@ class CampaignOrganizationCsvTest {
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(response);
 
 
-        assertThat(csv.rows().get(0).values()).containsExactly("", "", "");
+        assertThat(csv.rows().getFirst().values()).containsExactly("", "", "");
     }
 
 
