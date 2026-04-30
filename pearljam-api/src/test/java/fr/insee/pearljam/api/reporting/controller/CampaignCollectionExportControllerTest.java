@@ -1,11 +1,9 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsv;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvExporter;
-import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
-import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
-import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
-import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
+import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvPresenter;
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,10 +29,10 @@ class CampaignCollectionExportControllerTest {
     @BeforeEach
     void setup() {
         reportingPort = mock(CampaignReportingPort.class);
-        when(reportingPort.getCampaignsStats(any(), any(), any())).thenReturn(List.of());
+        when(reportingPort.getCampaignsStats(any(), any(), any())).thenReturn(new CampaignCollectionCsv(List.of()));
 
         CampaignCollectionCsvExporter exporter =
-                new CampaignCollectionCsvExporter(new CampaignCollectionPresenter(), reportingPort);
+                new CampaignCollectionCsvExporter(new CampaignCollectionCsvPresenter(), reportingPort);
         CampaignCollectionExportController controller = new CampaignCollectionExportController(exporter);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -67,7 +65,7 @@ class CampaignCollectionExportControllerTest {
                 .andReturn().getResponse().getContentAsByteArray();
 
         String csv = new String(content);
-        assertThat(csv).startsWith("﻿")
+        assertThat(csv).startsWith("\uFEFF")
                 .contains("Enquête")
                 .contains("Taux de collecte")
                 .contains("Confiées");
@@ -75,21 +73,18 @@ class CampaignCollectionExportControllerTest {
 
     @Test
     void shouldReturnCsvWithDataRows() throws Exception {
-        CampaignCollectionResponse response = new CampaignCollectionResponse(
-                "camp-1", "Enquête Test", 100L,
-                new CollectionRatesResponse(50f, 25f, 10f),
-                new ContactOutcomesProgressResponse(1L, 2L, 3L, 4L, 10L),
-                new ClosingCausesProgressResponse(5L, 6L, 11L)
-        );
-        when(reportingPort.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
+        CampaignCollectionCsv csv = new CampaignCollectionCsv(List.of(
+                CsvRow.from("Enquête Test", 50f, 25f, 10f, 1L, 2L, 3L, 4L, 10L, 5L, 6L, 11L, 100L)
+        ));
+        when(reportingPort.getCampaignsStats(any(), any(), any())).thenReturn(csv);
 
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/collection/export")
                         .param("date", "2025-06-10"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
 
-        String csv = new String(content);
-        String[] lines = csv.split("\r\n");
+        String csvContent = new String(content);
+        String[] lines = csvContent.split("\r\n");
         assertThat(lines).hasSize(2);
         assertThat(lines[1]).startsWith("Enquête Test;50.0;25.0;10.0;");
     }
