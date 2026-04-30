@@ -1,11 +1,9 @@
 package fr.insee.pearljam.api.reporting.export.progress;
 
-import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsProgressPresenter;
-import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.StatesInterviewerProgressResponse;
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -25,15 +23,20 @@ class InterviewerCampaignsProgressCsvExporterTest {
     @BeforeEach
     void setup() {
         port = mock(InterviewerCampaignsReportingPort.class);
-        exporter = new InterviewerCampaignsProgressCsvExporter(new InterviewerCampaignsProgressPresenter(), port);
+        exporter = new InterviewerCampaignsProgressCsvExporter(new InterviewerCampaignsProgressCsvPresenter(), port);
     }
 
     @Test
+    @DisplayName("Returns CSV with headers only when no data is available")
     void shouldReturnCsvWithHeadersOnly_whenNoData() {
-        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        // Given
+        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
+                .thenReturn(new InterviewerCampaignsProgressCsv(List.of()));
 
+        // When
         ResponseEntity<byte[]> response = exporter.export("user1", "JDUP", LocalDate.of(2025, 6, 10));
 
+        // Then
         assert response.getBody() != null;
         String csv = new String(response.getBody());
         String[] lines = csv.split("\r\n");
@@ -42,50 +45,67 @@ class InterviewerCampaignsProgressCsvExporterTest {
     }
 
     @Test
+    @DisplayName("Returns CSV with data rows when campaigns are available")
     void shouldReturnCsvWithDataRows() {
-        InterviewerCampaignsProgressResponse progressResponse = new InterviewerCampaignsProgressResponse(
-                "camp-1", "Enquête 1", 75.5f,
-                new StatesInterviewerProgressResponse(10, 2, 3, 4, 5, 6, 7, 8, 9, 1),
-                new CommunicationsProgressResponse(11, 12)
-        );
-        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of(progressResponse));
+        // Given
+        InterviewerCampaignsProgressCsv csv = new InterviewerCampaignsProgressCsv(List.of(
+                CsvRow.from("Enquête 1", 75.5f, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12)
+        ));
+        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(csv);
 
+        // When
         ResponseEntity<byte[]> response = exporter.export("user1", "JDUP", LocalDate.of(2025, 6, 10));
 
+        // Then
         assert response.getBody() != null;
-        String csv = new String(response.getBody());
-        String[] lines = csv.split("\r\n");
+        String csvContent = new String(response.getBody());
+        String[] lines = csvContent.split("\r\n");
         assertThat(lines).hasSize(2);
         assertThat(lines[1]).startsWith("Enquête 1;75.5;");
     }
 
     @Test
+    @DisplayName("Generates filename with interviewer id and date in the Content-Disposition header")
     void shouldGenerateFilenameWithInterviewerIdAndDate() {
-        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        // Given
+        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
+                .thenReturn(new InterviewerCampaignsProgressCsv(List.of()));
 
+        // When
         ResponseEntity<byte[]> response = exporter.export("user1", "JDUP", LocalDate.of(2025, 6, 10));
 
+        // Then
         String contentDisposition = response.getHeaders().getFirst("Content-Disposition");
         assertThat(contentDisposition).contains("JDUP_Avancement_10062025.csv");
     }
 
     @Test
+    @DisplayName("Returns CSV starting with the UTF-8 BOM")
     void shouldReturnCsvStartingWithBom() {
-        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        // Given
+        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
+                .thenReturn(new InterviewerCampaignsProgressCsv(List.of()));
 
+        // When
         ResponseEntity<byte[]> response = exporter.export("user1", "JDUP", LocalDate.of(2025, 6, 10));
 
+        // Then
         assert response.getBody() != null;
         String csv = new String(response.getBody());
-        assertThat(csv).startsWith("﻿");
+        assertThat(csv).startsWith("\uFEFF");
     }
 
     @Test
+    @DisplayName("Returns text/plain content type")
     void shouldReturnTextPlainContentType() {
-        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        // Given
+        when(port.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
+                .thenReturn(new InterviewerCampaignsProgressCsv(List.of()));
 
+        // When
         ResponseEntity<byte[]> response = exporter.export("user1", "JDUP", LocalDate.of(2025, 6, 10));
 
+        // Then
         assertThat(response.getHeaders().getContentType()).hasToString("text/plain");
     }
 }
