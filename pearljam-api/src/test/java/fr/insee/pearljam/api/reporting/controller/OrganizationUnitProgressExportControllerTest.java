@@ -1,10 +1,9 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressCsv;
 import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressCsvExporter;
-import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByOrganizationUnitsPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUnitsResponse;
-import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
+import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressCsvPresenter;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
@@ -29,21 +28,14 @@ class OrganizationUnitProgressExportControllerTest {
     private MockMvc mockMvc;
     private CampaignReportingByOrganizationUnitsPort port;
 
-    private static final StatesProgressResponse STATES = new StatesProgressResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    private static final CommunicationsProgressResponse COMMUNICATIONS = new CommunicationsProgressResponse(0, 0);
-
-    private static final CampaignProgressByOrganizationUnitsResponse EMPTY_RESULT = new CampaignProgressByOrganizationUnitsResponse(
-            List.of(),
-            new CampaignProgressByOrganizationUnitsResponse.Campaign(0f, STATES, COMMUNICATIONS)
-    );
-
     @BeforeEach
     void setup() throws CampaignNotFoundException {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
-        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(EMPTY_RESULT);
+        when(port.getProgressForDay(any(), any(), any(), any()))
+                .thenReturn(new OrganizationUnitProgressCsv(List.of()));
 
         OrganizationUnitProgressCsvExporter exporter =
-                new OrganizationUnitProgressCsvExporter(new CampaignProgressByOrganizationUnitsPresenter(), port);
+                new OrganizationUnitProgressCsvExporter(new OrganizationUnitProgressCsvPresenter(), port);
         OrganizationUnitProgressExportController controller = new OrganizationUnitProgressExportController(exporter);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -92,14 +84,10 @@ class OrganizationUnitProgressExportControllerTest {
     @DisplayName("Returns a CSV with one data row per organization unit returned by the port")
     void shouldReturnCsvWithDataRows() throws Exception {
         // Given
-        CampaignProgressByOrganizationUnitsResponse response = new CampaignProgressByOrganizationUnitsResponse(
-                List.of(new CampaignProgressByOrganizationUnitsResponse.OrganizationUnit(
-                        "Site Paris", 75.5f,
-                        new StatesProgressResponse(10, 2, 3, 4, 5, 6, 7, 8, 9, 1),
-                        new CommunicationsProgressResponse(11, 12))),
-                new CampaignProgressByOrganizationUnitsResponse.Campaign(0f, STATES, COMMUNICATIONS)
-        );
-        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(response);
+        OrganizationUnitProgressCsv csv = new OrganizationUnitProgressCsv(List.of(
+                CsvRow.from("Site Paris", 75.5f, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12)
+        ));
+        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(csv);
 
         // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress/export")
@@ -108,8 +96,8 @@ class OrganizationUnitProgressExportControllerTest {
                 .andReturn().getResponse().getContentAsByteArray();
 
         // Then
-        String csv = new String(content);
-        String[] lines = csv.split("\r\n");
+        String csvContent = new String(content);
+        String[] lines = csvContent.split("\r\n");
         assertThat(lines).hasSize(2);
         assertThat(lines[1]).startsWith("Site Paris;75.5;");
     }
@@ -130,8 +118,7 @@ class OrganizationUnitProgressExportControllerTest {
     @Test
     @DisplayName("Returns 400 Bad Request when date is missing")
     void shouldReturnBadRequest_whenDateIsMissing() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress/export"))
                 .andExpect(status().isBadRequest());
     }
