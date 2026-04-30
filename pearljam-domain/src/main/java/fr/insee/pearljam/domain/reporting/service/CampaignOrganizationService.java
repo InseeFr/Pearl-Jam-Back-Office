@@ -6,7 +6,7 @@ import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
@@ -31,13 +31,13 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
     private final Clock clock;
 
     @Override
-    public <T> T getCampaignOrganization(String userId, String campaignId, CampaignOrganizationStatsPresenter<T> presenter) throws CampaignNotFoundException {
+    public <T> T getCampaignOrganization(String userId, String campaignId, CampaignOrganizationStatsPresenter<T> presenter) {
         LocalDate now = LocalDate.now(clock);
         List<String> userOUIds = getUserOUIds(userId);
 
         CampaignDailyStats campaignDailyStats = campaignDailyStatsRepositoryPort
                 .findCampaignStats(campaignId, now)
-                .orElseThrow(CampaignNotFoundException::new);
+                .orElseThrow(CampaignNotFoundExceptionRuntime::new);
 
         CampaignVisibility campaign = campaignVisibilityPort.getCampaignVisibility(campaignId, userOUIds);
         List<Referent> referents = campaignReferentRepository.getReferents(campaignId);

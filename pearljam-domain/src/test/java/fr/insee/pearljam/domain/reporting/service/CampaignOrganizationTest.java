@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.reporting.service;
 
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
@@ -22,7 +23,6 @@ import fr.insee.pearljam.domain.campaign.port.out.CampaignReferentRepository;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
 import org.junit.jupiter.api.DisplayName;
@@ -128,7 +128,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should use current date when fetching campaign stats")
-    void shouldUseCurrentDate() throws CampaignNotFoundException {
+    void shouldUseCurrentDate()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
 
         service.getCampaignOrganization(USER_ID, CAMPAIGN_ID, passthroughPresenter);
@@ -144,12 +144,12 @@ class CampaignOrganizationServiceTest {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.getCampaignOrganization(USER_ID, CAMPAIGN_ID, passthroughPresenter))
-                .isInstanceOf(CampaignNotFoundException.class);
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 
     @Test
     @DisplayName("should pass campaign stats to presenter")
-    void shouldPassCampaignStatsToPresenter() throws CampaignNotFoundException {
+    void shouldPassCampaignStatsToPresenter()  {
         CampaignDailyStats stats = defaultCampaignStats();
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(stats));
 
@@ -162,7 +162,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should pass campaign visibility to presenter")
-    void shouldPassCampaignVisibilityToPresenter() throws CampaignNotFoundException {
+    void shouldPassCampaignVisibilityToPresenter()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
         CampaignVisibility campaign = defaultCampaign();
         when(visibilityPort.getCampaignVisibility(anyString(), anyList())).thenReturn(campaign);
@@ -175,7 +175,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should pass referents to presenter")
-    void shouldPassReferentsToPresenter() throws CampaignNotFoundException {
+    void shouldPassReferentsToPresenter()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
         List<Referent> referents = defaultReferents();
         when(referentRepository.getReferents(CAMPAIGN_ID)).thenReturn(referents);
@@ -191,7 +191,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should pass interviewer stats to presenter")
-    void shouldPassInterviewerStatsToPresenter() throws CampaignNotFoundException {
+    void shouldPassInterviewerStatsToPresenter()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
         List<InterviewerDailyStats> interviewerStats = defaultInterviewerStats();
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(interviewerStats);
@@ -205,7 +205,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should pass current timestamp to presenter")
-    void shouldPassCurrentTimestampToPresenter() throws CampaignNotFoundException {
+    void shouldPassCurrentTimestampToPresenter()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
 
         CampaignOrganizationResult result = service.getCampaignOrganization(USER_ID, CAMPAIGN_ID, passthroughPresenter);
@@ -215,7 +215,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should handle empty referents")
-    void shouldHandleEmptyReferents() throws CampaignNotFoundException {
+    void shouldHandleEmptyReferents()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
         when(referentRepository.getReferents(CAMPAIGN_ID)).thenReturn(List.of());
 
@@ -226,7 +226,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should handle empty interviewer stats")
-    void shouldHandleEmptyInterviewers() throws CampaignNotFoundException {
+    void shouldHandleEmptyInterviewers()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
         when(statsRepository.getInterviewerStats(anyString(), anyList(), any())).thenReturn(List.of());
 
@@ -237,7 +237,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should fetch stats for correct campaign and OUs")
-    void shouldFetchStatsForCorrectCampaignAndOUs() throws CampaignNotFoundException {
+    void shouldFetchStatsForCorrectCampaignAndOUs()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
 
         service.getCampaignOrganization(USER_ID, CAMPAIGN_ID, passthroughPresenter);
@@ -249,7 +249,7 @@ class CampaignOrganizationServiceTest {
 
     @Test
     @DisplayName("should push output to custom presenter")
-    void shouldPushOutputToPresenter() throws CampaignNotFoundException {
+    void shouldPushOutputToPresenter()  {
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.of(defaultCampaignStats()));
 
         @SuppressWarnings("unchecked")
