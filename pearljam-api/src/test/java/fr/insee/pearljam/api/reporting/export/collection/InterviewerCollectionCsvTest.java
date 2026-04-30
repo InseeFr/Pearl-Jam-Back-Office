@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionByInterviewersResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InterviewerCollectCsvTest {
+class InterviewerCollectionCsvTest {
 
     private static final CollectionRatesResponse RATES = new CollectionRatesResponse(50f, 25f, 10f);
     private static final ContactOutcomesProgressResponse OUTCOMES =
@@ -20,37 +20,37 @@ class InterviewerCollectCsvTest {
 
     @Test
     void shouldHaveInterviewerLabelThenIdAsFirstHeaders() {
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(emptyResponse());
-        assertThat(csv.headers().values().get(0)).isEqualTo("Nom prénom");
-        assertThat(csv.headers().values().get(1)).isEqualTo("Idep");
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(emptyResponse());
+        assertThat(csv.headers().values().get(0)).isEqualTo(CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName());
+        assertThat(csv.headers().values().get(1)).isEqualTo(CollectionCsvHeaders.INTERVIEWER_ID.getHeaderName());
     }
 
     @Test
     void shouldHaveAllExpectedHeadersInOrder() {
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(emptyResponse());
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(emptyResponse());
 
         assertThat(csv.headers().values()).hasSize(14);
         assertThat(csv.headers().values()).containsExactly(
-                CollectCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
-                CollectCsvHeaders.INTERVIEWER_ID.getHeaderName(),
-                CollectCsvHeaders.COLLECTION_RATE.getHeaderName(),
-                CollectCsvHeaders.WASTE_RATE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
-                CollectCsvHeaders.ACCEPTED.getHeaderName(),
-                CollectCsvHeaders.REFUSED.getHeaderName(),
-                CollectCsvHeaders.UNREACHABLE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
-                CollectCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
-                CollectCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
-                CollectCsvHeaders.OTHER_REASONS.getHeaderName(),
-                CollectCsvHeaders.TOTAL_CLOSED.getHeaderName(),
-                CollectCsvHeaders.ALLOCATED.getHeaderName()
+                CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
+                CollectionCsvHeaders.INTERVIEWER_ID.getHeaderName(),
+                CollectionCsvHeaders.COLLECTION_RATE.getHeaderName(),
+                CollectionCsvHeaders.WASTE_RATE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
+                CollectionCsvHeaders.ACCEPTED.getHeaderName(),
+                CollectionCsvHeaders.REFUSED.getHeaderName(),
+                CollectionCsvHeaders.UNREACHABLE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
+                CollectionCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
+                CollectionCsvHeaders.OTHER_REASONS.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_CLOSED.getHeaderName(),
+                CollectionCsvHeaders.ALLOCATED.getHeaderName()
         );
     }
 
     @Test
     void shouldReturnEmptyRows_whenNoInterviewers() {
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(emptyResponse());
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(emptyResponse());
         assertThat(csv.rows()).isEmpty();
     }
 
@@ -61,7 +61,7 @@ class InterviewerCollectCsvTest {
                         "INT1", "Jane Doe", 100L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(response);
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(response);
 
         assertThat(csv.rows()).hasSize(1);
         assertThat(csv.rows().getFirst().values()).containsExactly(
@@ -84,7 +84,7 @@ class InterviewerCollectCsvTest {
                         "INT2", "John Smith", 50L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(response);
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(response);
 
         assertThat(csv.rows()).hasSize(2);
         assertThat(csv.rows().get(0).values().get(0)).isEqualTo("Jane Doe");
@@ -100,7 +100,7 @@ class InterviewerCollectCsvTest {
                         "INT1", "Jane Doe", 100L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        InterviewerCollectCsv csv = InterviewerCollectCsv.from(response);
+        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(response);
 
         assertThat(csv.rows().getFirst().values()).hasSameSizeAs(csv.headers().values());
     }

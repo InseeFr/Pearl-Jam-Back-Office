@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collect.CampaignCollectionCsvExporter;
+import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvExporter;
 import fr.insee.pearljam.contracts.constants.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

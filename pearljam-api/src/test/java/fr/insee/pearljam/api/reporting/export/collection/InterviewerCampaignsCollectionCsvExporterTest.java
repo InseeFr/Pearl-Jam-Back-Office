@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
@@ -40,7 +40,7 @@ class InterviewerCampaignsCollectionCsvExporterTest {
         String csv = new String(response.getBody());
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(1);
-        assertThat(lines[0]).contains(CollectCsvHeaders.CAMPAIGN_LABEL.getHeaderName());
+        assertThat(lines[0]).contains(CollectionCsvHeaders.CAMPAIGN_LABEL.getHeaderName());
     }
 
     @Test

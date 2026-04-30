@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collect.InterviewerCollectCsvExporter;
+import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvExporter;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +27,7 @@ import java.time.LocalDate;
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 public class CampaignCollectionByInterviewerExportController {
 
-    private final InterviewerCollectCsvExporter csvExporter;
+    private final InterviewerCollectionCsvExporter csvExporter;
 
     @Operation(summary = "Export campaign collection by interviewers as CSV file")
     @GetMapping(Constants.API_REPORTING_INTERVIEWERS_COLLECTION_EXPORT)

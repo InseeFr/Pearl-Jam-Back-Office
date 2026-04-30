@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import lombok.Getter;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public enum CollectCsvHeaders {
+public enum CollectionCsvHeaders {
     // specific headers
     CAMPAIGN_LABEL("Enquête"),
     INTERVIEWER_ID("Idep"),
@@ -30,11 +30,11 @@ public enum CollectCsvHeaders {
     @Getter
     private final String headerName;
 
-    CollectCsvHeaders(String headerName) {
+    CollectionCsvHeaders(String headerName) {
         this.headerName = headerName;
     }
 
-    public static List<CollectCsvHeaders> commonHeaders() {
+    public static List<CollectionCsvHeaders> commonHeaders() {
         return List.of(
                 COLLECTION_RATE, WASTE_RATE, OUT_OF_SCOPE_RATE,
                 ACCEPTED, REFUSED, UNREACHABLE, OUT_OF_SCOPE, TOTAL_OUTCOMES,
@@ -43,8 +43,8 @@ public enum CollectCsvHeaders {
         );
     }
 
-    public static List<CollectCsvHeaders> buildHeaders(List<CollectCsvHeaders> prefixHeaders) {
-        List<CollectCsvHeaders> headers = new ArrayList<>(prefixHeaders);
+    public static List<CollectionCsvHeaders> buildHeaders(List<CollectionCsvHeaders> prefixHeaders) {
+        List<CollectionCsvHeaders> headers = new ArrayList<>(prefixHeaders);
         headers.addAll(commonHeaders());
         return Collections.unmodifiableList(headers);
     }
