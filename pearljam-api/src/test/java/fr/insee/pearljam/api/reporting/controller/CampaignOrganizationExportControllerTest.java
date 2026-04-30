@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvExporter;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +64,7 @@ class CampaignOrganizationExportControllerTest {
 
         // When/Then
         assertThatThrownBy(() -> controller.exportCampaignOrganizationAsCsv(campaignId, date, userId))
-                .isInstanceOf(CampaignNotFoundException.class);
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
         verify(csvExporter).export(userId, campaignId, date);
     }
 
