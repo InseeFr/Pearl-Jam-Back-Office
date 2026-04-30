@@ -1,11 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsv;
 import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsvExporter;
+import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsvPresenter;
 import fr.insee.pearljam.api.reporting.export.progress.ProgressCsvHeaders;
-import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsProgressPresenter;
-import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.StatesInterviewerProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,10 +31,11 @@ class InterviewerCampaignsProgressExportControllerTest {
     @BeforeEach
     void setup() {
         reportingPort = mock(InterviewerCampaignsReportingPort.class);
-        when(reportingPort.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        when(reportingPort.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
+                .thenReturn(new InterviewerCampaignsProgressCsv(List.of()));
 
         InterviewerCampaignsProgressCsvExporter exporter =
-                new InterviewerCampaignsProgressCsvExporter(new InterviewerCampaignsProgressPresenter(), reportingPort);
+                new InterviewerCampaignsProgressCsvExporter(new InterviewerCampaignsProgressCsvPresenter(), reportingPort);
         InterviewerCampaignsProgressExportController controller =
                 new InterviewerCampaignsProgressExportController(exporter);
         mockMvc = MockMvcBuilders
@@ -80,7 +80,7 @@ class InterviewerCampaignsProgressExportControllerTest {
         // Then
         String csv = new String(content);
         assertThat(csv)
-                .startsWith("﻿")
+                .startsWith("\uFEFF")
                 .contains(ProgressCsvHeaders.CAMPAIGN_LABEL.getHeaderName())
                 .contains(ProgressCsvHeaders.PROGRESS_RATE.getHeaderName());
     }
@@ -89,12 +89,10 @@ class InterviewerCampaignsProgressExportControllerTest {
     @DisplayName("Returns a CSV with one data row per campaign returned by the port")
     void shouldReturnCsvWithDataRows() throws Exception {
         // Given
-        InterviewerCampaignsProgressResponse response = new InterviewerCampaignsProgressResponse(
-                "camp-1", "Enquête Test", 75.5f,
-                new StatesInterviewerProgressResponse(10, 2, 3, 4, 5, 6, 7, 8, 9, 1),
-                new CommunicationsProgressResponse(11, 12)
-        );
-        when(reportingPort.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of(response));
+        InterviewerCampaignsProgressCsv csv = new InterviewerCampaignsProgressCsv(List.of(
+                CsvRow.from("Enquête Test", 75.5f, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12)
+        ));
+        when(reportingPort.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(csv);
 
         // When
         byte[] content = mockMvc.perform(get("/api/reporting/interviewers/JDUP/campaigns/progress/export")
@@ -103,8 +101,8 @@ class InterviewerCampaignsProgressExportControllerTest {
                 .andReturn().getResponse().getContentAsByteArray();
 
         // Then
-        String csv = new String(content);
-        String[] lines = csv.split("\r\n");
+        String csvContent = new String(content);
+        String[] lines = csvContent.split("\r\n");
         assertThat(lines).hasSize(2);
         assertThat(lines[1]).startsWith("Enquête Test;75.5;");
     }
