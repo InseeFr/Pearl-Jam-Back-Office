@@ -1,11 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
+import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.reporting.export.progress.InterviewerProgressCsv;
 import fr.insee.pearljam.api.reporting.export.progress.InterviewerProgressCsvExporter;
+import fr.insee.pearljam.api.reporting.export.progress.InterviewerProgressCsvPresenter;
 import fr.insee.pearljam.api.reporting.export.progress.ProgressCsvHeaders;
-import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByInterviewersPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignProgressByInterviewersResponse;
-import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
-import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
@@ -30,22 +29,13 @@ class InterviewerProgressExportControllerTest {
     private MockMvc mockMvc;
     private CampaignReportingByInterviewersPort port;
 
-    private static final StatesProgressResponse STATES = new StatesProgressResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    private static final CommunicationsProgressResponse COMMUNICATIONS = new CommunicationsProgressResponse(0, 0);
-
-    private static final CampaignProgressByInterviewersResponse EMPTY_RESULT = new CampaignProgressByInterviewersResponse(
-            List.of(),
-            new CampaignProgressByInterviewersResponse.OrganizationUnit(0f, STATES, COMMUNICATIONS),
-            new CampaignProgressByInterviewersResponse.Campaign(0, 0f, STATES, COMMUNICATIONS)
-    );
-
     @BeforeEach
     void setup() throws CampaignNotFoundException {
         port = mock(CampaignReportingByInterviewersPort.class);
-        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(EMPTY_RESULT);
+        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(new InterviewerProgressCsv(List.of()));
 
         InterviewerProgressCsvExporter exporter =
-                new InterviewerProgressCsvExporter(new CampaignProgressByInterviewersPresenter(), port);
+                new InterviewerProgressCsvExporter(new InterviewerProgressCsvPresenter(), port);
         InterviewerProgressExportController controller = new InterviewerProgressExportController(exporter);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -94,16 +84,10 @@ class InterviewerProgressExportControllerTest {
     @DisplayName("Returns a CSV with one data row per interviewer returned by the port")
     void shouldReturnCsvWithDataRows() throws Exception {
         // Given
-        CampaignProgressByInterviewersResponse response = new CampaignProgressByInterviewersResponse(
-                List.of(new CampaignProgressByInterviewersResponse.Interviewer(
-                        "JDUP",
-                        "Jean Dupont", 75.5f,
-                        new StatesProgressResponse(10, 2, 3, 4, 5, 6, 7, 8, 9, 1),
-                        new CommunicationsProgressResponse(11, 12))),
-                new CampaignProgressByInterviewersResponse.OrganizationUnit(0f, STATES, COMMUNICATIONS),
-                new CampaignProgressByInterviewersResponse.Campaign(0, 0f, STATES, COMMUNICATIONS)
-        );
-        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(response);
+        InterviewerProgressCsv csv = new InterviewerProgressCsv(List.of(
+                CsvRow.from("Jean Dupont", "JDUP", 75.5f, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12)
+        ));
+        when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(csv);
 
         // When
         byte[] content = mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/progress/export")
@@ -112,8 +96,8 @@ class InterviewerProgressExportControllerTest {
                 .andReturn().getResponse().getContentAsByteArray();
 
         // Then
-        String csv = new String(content);
-        String[] lines = csv.split("\r\n");
+        String csvContent = new String(content);
+        String[] lines = csvContent.split("\r\n");
         assertThat(lines).hasSize(2);
         assertThat(lines[1]).startsWith("Jean Dupont;JDUP;75.5;");
     }
