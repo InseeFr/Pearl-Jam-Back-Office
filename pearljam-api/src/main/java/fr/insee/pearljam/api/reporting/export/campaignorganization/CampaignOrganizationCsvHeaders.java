@@ -1,8 +1,8 @@
-package fr.insee.pearljam.api.reporting.export.collectorganization;
+package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
 import lombok.Getter;
 
-public enum OrganizationCsvHeaders {
+public enum CampaignOrganizationCsvHeaders {
     INTERVIEWER_LABEL("Nom Prénom Enquêteur"),
     INTERVIEWER_ID("Idep Enquêteur"),
     SURVEY_UNITS_COUNT("Nombre d'UE");
@@ -10,7 +10,7 @@ public enum OrganizationCsvHeaders {
     @Getter
     private final String headerName;
 
-    OrganizationCsvHeaders(String headerName) {
+    CampaignOrganizationCsvHeaders(String headerName) {
         this.headerName = headerName;
     }
 }

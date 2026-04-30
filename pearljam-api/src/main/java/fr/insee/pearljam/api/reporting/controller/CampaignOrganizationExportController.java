@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collectorganization.CampaignOrganizationCsvExporter;
+import fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvExporter;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;

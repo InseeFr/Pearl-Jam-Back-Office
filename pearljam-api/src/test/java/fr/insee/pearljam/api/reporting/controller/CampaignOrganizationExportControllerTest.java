@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collectorganization.CampaignOrganizationCsvExporter;
+import fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvExporter;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

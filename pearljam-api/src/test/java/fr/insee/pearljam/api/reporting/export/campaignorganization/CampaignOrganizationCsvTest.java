@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collectorganization;
+package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
 
 

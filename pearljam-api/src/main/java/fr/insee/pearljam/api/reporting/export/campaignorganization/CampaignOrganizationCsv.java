@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collectorganization;
+package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
 import fr.insee.pearljam.api.campaign.response.CampaignOrganizationResponse;
 import fr.insee.pearljam.api.reporting.export.csv.CsvExportable;
@@ -17,13 +17,11 @@ public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportabl
         List<CsvRow> rows = new ArrayList<>();
 
         // Add rows for each interviewer
-        response.interviewers().forEach(interviewer -> {
-            rows.add(CsvRow.from(
-                    interviewer.label(),
-                    interviewer.id(),
-                    interviewer.surveyUnits()
-            ));
-        });
+        response.interviewers().forEach(interviewer -> rows.add(CsvRow.from(
+                interviewer.label(),
+                interviewer.id(),
+                interviewer.surveyUnits()
+        )));
 
         // Add "Non attribuées" row
         rows.add(CsvRow.from(
@@ -45,8 +43,8 @@ public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportabl
     @Override
     public CsvRow headers() {
         return CsvRow.from(
-                Arrays.stream(OrganizationCsvHeaders.values())
-                        .map(OrganizationCsvHeaders::getHeaderName)
+                Arrays.stream(CampaignOrganizationCsvHeaders.values())
+                        .map(CampaignOrganizationCsvHeaders::getHeaderName)
                         .toArray()
         );
     }
