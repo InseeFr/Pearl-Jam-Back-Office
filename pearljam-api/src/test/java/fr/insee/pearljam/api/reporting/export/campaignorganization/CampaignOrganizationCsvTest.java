@@ -11,29 +11,24 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
-
+import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvHeaders.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 
 class CampaignOrganizationCsvTest {
 
-
-
     @Test
     void shouldHaveAllHeadersFromEnum() {
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
         CsvRow headers = csv.headers();
 
-
         assertThat(headers.values()).containsExactly(
-                "Nom Prénom Enquêteur",
-                "Idep Enquêteur",
-                "Nombre d'UE"
+                INTERVIEWER_LABEL.getHeaderName(),
+                INTERVIEWER_ID.getHeaderName(),
+                SURVEY_UNITS_COUNT.getHeaderName()
         );
     }
-
-
 
     @Test
     void shouldReturnEmptyRows_whenNoInterviewers() {
