@@ -148,7 +148,7 @@ class CampaignOrganizationCsvExporterTest {
         exporter.export("test-user", "test-campaign", LocalDate.of(2025, 6, 10));
 
         // Then
-        verify(port).getCampaignOrganization(eq("test-user"), eq("test-campaign"), eq(presenter));
+        verify(port).getCampaignOrganization("test-user", "test-campaign", eq(presenter));
     }
 
     @Test
