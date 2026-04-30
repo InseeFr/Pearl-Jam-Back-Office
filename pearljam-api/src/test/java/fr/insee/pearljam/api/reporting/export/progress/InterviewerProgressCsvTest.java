@@ -16,13 +16,13 @@ class InterviewerProgressCsvTest {
     private static final CommunicationsProgressResponse COMMUNICATIONS = new CommunicationsProgressResponse(11, 12);
 
     @Test
-    @DisplayName("Has interviewer id label as the first header")
+    @DisplayName("Has interviewer label as the first header")
     void shouldHaveInterviewerLabelAsFirstHeader() {
         // Given
         InterviewerProgressCsv csv = InterviewerProgressCsv.from(emptyResponse());
 
         // When / Then
-        assertThat(csv.headers().values().getFirst()).isEqualTo(ProgressCsvHeaders.INTERVIEWER_ID.getHeaderName());
+        assertThat(csv.headers().values().getFirst()).isEqualTo(ProgressCsvHeaders.INTERVIEWER_LABEL.getHeaderName());
     }
 
     @Test
@@ -34,8 +34,8 @@ class InterviewerProgressCsvTest {
         // When / Then
         assertThat(csv.headers().values()).hasSize(15);
         assertThat(csv.headers().values()).containsExactly(
-                ProgressCsvHeaders.INTERVIEWER_ID.getHeaderName(),
                 ProgressCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
+                ProgressCsvHeaders.INTERVIEWER_ID.getHeaderName(),
                 ProgressCsvHeaders.PROGRESS_RATE.getHeaderName(),
                 ProgressCsvHeaders.ALLOCATED.getHeaderName(),
                 ProgressCsvHeaders.NOT_STARTED.getHeaderName(),
@@ -76,8 +76,8 @@ class InterviewerProgressCsvTest {
         // Then
         assertThat(csv.rows()).hasSize(1);
         assertThat(csv.rows().getFirst().values()).containsExactly(
-                "JDUP",
                 "Jean Dupont",
+                "JDUP",
                 "75.5",
                 "10", "2", "3", "4", "5", "6",
                 "7", "8", "9", "1",
@@ -99,8 +99,8 @@ class InterviewerProgressCsvTest {
 
         // Then
         assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values().getFirst()).isEqualTo("JDUP");
-        assertThat(csv.rows().get(1).values().getFirst()).isEqualTo("MMAR");
+        assertThat(csv.rows().get(0).values().getFirst()).isEqualTo("Jean Dupont");
+        assertThat(csv.rows().get(1).values().getFirst()).isEqualTo("Marie Martin");
     }
 
     @Test
