@@ -115,7 +115,7 @@ class InterviewerProgressExportControllerTest {
         String csv = new String(content);
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(2);
-        assertThat(lines[1]).startsWith("JDUP;Jean Dupont;75.5;");
+        assertThat(lines[1]).startsWith("Jean Dupont;JDUP;75.5;");
     }
 
     @Test
