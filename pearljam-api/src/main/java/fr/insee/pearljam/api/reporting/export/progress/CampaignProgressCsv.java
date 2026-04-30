@@ -2,9 +2,7 @@ package fr.insee.pearljam.api.reporting.export.progress;
 
 import fr.insee.pearljam.api.reporting.export.csv.CsvExportable;
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
-import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record CampaignProgressCsv(List<CsvRow> rows) implements CsvExportable {
@@ -12,19 +10,6 @@ public record CampaignProgressCsv(List<CsvRow> rows) implements CsvExportable {
     public static final List<ProgressCsvHeaders> CSV_HEADERS = ProgressCsvHeaders.buildHeaders(
             List.of(ProgressCsvHeaders.CAMPAIGN_LABEL)
     );
-
-    public static CampaignProgressCsv from(List<CampaignProgressResponse> responses) {
-        List<CsvRow> rows = responses.stream()
-                .map(response -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(response.campaignLabel());
-                    values.addAll(ProgressCsvRow.commonValues(
-                            response.progressRate(), response.states(), response.communications()));
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
-        return new CampaignProgressCsv(rows);
-    }
 
     @Override
     public CsvRow headers() {
