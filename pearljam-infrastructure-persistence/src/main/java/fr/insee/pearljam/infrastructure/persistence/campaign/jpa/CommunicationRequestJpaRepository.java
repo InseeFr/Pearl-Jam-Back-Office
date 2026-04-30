@@ -82,8 +82,8 @@ public interface CommunicationRequestJpaRepository extends
   @Query(value = """
           SELECT
               su.campaign_id AS campaignId,
-              SUM(CASE WHEN ct.type = 'NOTICE' THEN 1 ELSE 0 END) AS noticeCount,
-              SUM(CASE WHEN ct.type = 'REMINDER' THEN 1 ELSE 0 END) AS reminderCount
+              COUNT(DISTINCT CASE WHEN ct.type = 'NOTICE' THEN su.id END) AS noticeCount,
+              COUNT(DISTINCT CASE WHEN ct.type = 'REMINDER' THEN su.id END) AS reminderCount
           FROM communication_request cr
           JOIN survey_unit su ON su.id = cr.survey_unit_id
           JOIN communication_template ct
