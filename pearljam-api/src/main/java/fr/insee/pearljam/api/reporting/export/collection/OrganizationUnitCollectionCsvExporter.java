@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.export.csv.AbstractCsvExporter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionByOrganizationUnitsPresenter;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
-public class OrganizationUnitCollectCsvExporter extends AbstractCsvExporter {
+public class OrganizationUnitCollectionCsvExporter extends AbstractCsvExporter {
 
     private final CampaignCollectionByOrganizationUnitsPresenter presenter;
     private final CampaignReportingByOrganizationUnitsPort campaignReportingByOrganizationUnitsPort;
@@ -22,7 +22,7 @@ public class OrganizationUnitCollectCsvExporter extends AbstractCsvExporter {
             throws CampaignNotFoundException {
         CampaignCollectionByOrganizationUnitsResponse data =
                 campaignReportingByOrganizationUnitsPort.getProgressForDay(userId, campaignId, date, presenter);
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(data);
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(data);
         return buildResponse(csv, campaignId + "_Avancement_collecte_sites", date);
     }
 }

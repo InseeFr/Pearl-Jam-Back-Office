@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionByOrganizationUnitsResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrganizationUnitCollectCsvTest {
+class OrganizationUnitCollectionCsvTest {
 
     private static final CollectionRatesResponse RATES = new CollectionRatesResponse(50f, 25f, 10f);
     private static final ContactOutcomesProgressResponse OUTCOMES =
@@ -20,35 +20,35 @@ class OrganizationUnitCollectCsvTest {
 
     @Test
     void shouldHaveOrganizationUnitLabelAsFirstHeader() {
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(emptyResponse());
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(emptyResponse());
         assertThat(csv.headers().values().getFirst()).isEqualTo("Site");
     }
 
     @Test
     void shouldHaveAllExpectedHeadersInOrder() {
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(emptyResponse());
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(emptyResponse());
 
         assertThat(csv.headers().values()).hasSize(13);
         assertThat(csv.headers().values()).containsExactly(
-                CollectCsvHeaders.ORGANIZATION_UNIT_LABEL.getHeaderName(),
-                CollectCsvHeaders.COLLECTION_RATE.getHeaderName(),
-                CollectCsvHeaders.WASTE_RATE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
-                CollectCsvHeaders.ACCEPTED.getHeaderName(),
-                CollectCsvHeaders.REFUSED.getHeaderName(),
-                CollectCsvHeaders.UNREACHABLE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
-                CollectCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
-                CollectCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
-                CollectCsvHeaders.OTHER_REASONS.getHeaderName(),
-                CollectCsvHeaders.TOTAL_CLOSED.getHeaderName(),
-                CollectCsvHeaders.ALLOCATED.getHeaderName()
+                CollectionCsvHeaders.ORGANIZATION_UNIT_LABEL.getHeaderName(),
+                CollectionCsvHeaders.COLLECTION_RATE.getHeaderName(),
+                CollectionCsvHeaders.WASTE_RATE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
+                CollectionCsvHeaders.ACCEPTED.getHeaderName(),
+                CollectionCsvHeaders.REFUSED.getHeaderName(),
+                CollectionCsvHeaders.UNREACHABLE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
+                CollectionCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
+                CollectionCsvHeaders.OTHER_REASONS.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_CLOSED.getHeaderName(),
+                CollectionCsvHeaders.ALLOCATED.getHeaderName()
         );
     }
 
     @Test
     void shouldReturnEmptyRows_whenNoOrganizationUnits() {
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(emptyResponse());
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(emptyResponse());
         assertThat(csv.rows()).isEmpty();
     }
 
@@ -59,7 +59,7 @@ class OrganizationUnitCollectCsvTest {
                         "Site Paris", 100L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(response);
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(response);
 
         assertThat(csv.rows()).hasSize(1);
         assertThat(csv.rows().getFirst().values()).containsExactly(
@@ -81,7 +81,7 @@ class OrganizationUnitCollectCsvTest {
                         "Site Lyon", 50L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(response);
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(response);
 
         assertThat(csv.rows()).hasSize(2);
         assertThat(csv.rows().get(0).values().getFirst()).isEqualTo("Site Paris");
@@ -95,7 +95,7 @@ class OrganizationUnitCollectCsvTest {
                         "Site Paris", 100L, RATES, OUTCOMES, CLOSING_CAUSES)
         ));
 
-        OrganizationUnitCollectCsv csv = OrganizationUnitCollectCsv.from(response);
+        OrganizationUnitCollectionCsv csv = OrganizationUnitCollectionCsv.from(response);
 
         assertThat(csv.rows().getFirst().values()).hasSameSizeAs(csv.headers().values());
     }

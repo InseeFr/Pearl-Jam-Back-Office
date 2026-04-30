@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.export.csv.CsvExportable;
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
@@ -7,25 +7,25 @@ import fr.insee.pearljam.api.reporting.response.CampaignCollectionByInterviewers
 import java.util.ArrayList;
 import java.util.List;
 
-public record InterviewerCollectCsv(List<CsvRow> rows) implements CsvExportable {
+public record InterviewerCollectionCsv(List<CsvRow> rows) implements CsvExportable {
 
-    public static final List<CollectCsvHeaders> CSV_HEADERS = CollectCsvHeaders.buildHeaders(
-            List.of(CollectCsvHeaders.INTERVIEWER_LABEL, CollectCsvHeaders.INTERVIEWER_ID)
+    public static final List<CollectionCsvHeaders> CSV_HEADERS = CollectionCsvHeaders.buildHeaders(
+            List.of(CollectionCsvHeaders.INTERVIEWER_LABEL, CollectionCsvHeaders.INTERVIEWER_ID)
     );
 
-    public static InterviewerCollectCsv from(CampaignCollectionByInterviewersResponse response) {
+    public static InterviewerCollectionCsv from(CampaignCollectionByInterviewersResponse response) {
         List<CsvRow> rows = response.interviewers().stream()
                 .map(interviewer -> {
                     List<Object> values = new ArrayList<>();
                     values.add(interviewer.interviewerLabel());
                     values.add(interviewer.interviewerId());
-                    values.addAll(CollectCsvRow.commonValues(
+                    values.addAll(CollectionCsvRow.commonValues(
                             interviewer.rates(), interviewer.outcomes(), interviewer.closingCauses(),
                             interviewer.allocated()));
                     return CsvRow.from(values.toArray());
                 })
                 .toList();
-        return new InterviewerCollectCsv(rows);
+        return new InterviewerCollectionCsv(rows);
     }
 
     @Override
@@ -33,7 +33,7 @@ public record InterviewerCollectCsv(List<CsvRow> rows) implements CsvExportable 
         return CsvRow.from(
                 CSV_HEADERS
                         .stream()
-                        .map(CollectCsvHeaders::getHeaderName)
+                        .map(CollectionCsvHeaders::getHeaderName)
                         .toArray());
     }
 }

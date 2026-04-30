@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-class CollectCsvRow {
+class CollectionCsvRow {
 
     static List<Object> commonValues(CollectionRatesResponse rates,
                                      ContactOutcomesProgressResponse outcomes,

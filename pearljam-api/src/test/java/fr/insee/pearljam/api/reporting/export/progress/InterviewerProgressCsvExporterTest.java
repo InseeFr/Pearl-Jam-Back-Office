@@ -48,7 +48,7 @@ class InterviewerProgressCsvExporterTest {
         String csv = new String(response.getBody());
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(1);
-        assertThat(lines[0]).contains(ProgressCsvHeaders.INTERVIEWER_ID.getHeaderName());
+        assertThat(lines[0]).contains(ProgressCsvHeaders.INTERVIEWER_LABEL.getHeaderName());
     }
 
     @Test
@@ -74,7 +74,7 @@ class InterviewerProgressCsvExporterTest {
         String csv = new String(response.getBody());
         String[] lines = csv.split("\r\n");
         assertThat(lines).hasSize(2);
-        assertThat(lines[1]).startsWith("JDUP;Jean Dupont;75.5;");
+        assertThat(lines[1]).startsWith("Jean Dupont;JDUP;75.5;");
     }
 
     @Test

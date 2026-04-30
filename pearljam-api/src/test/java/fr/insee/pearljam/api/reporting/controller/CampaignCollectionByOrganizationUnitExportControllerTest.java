@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collect.OrganizationUnitCollectCsvExporter;
+import fr.insee.pearljam.api.reporting.export.collection.OrganizationUnitCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionByOrganizationUnitsPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionByOrganizationUnitsResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
@@ -46,8 +46,8 @@ class CampaignCollectionByOrganizationUnitExportControllerTest {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(EMPTY_RESULT);
 
-        OrganizationUnitCollectCsvExporter exporter =
-                new OrganizationUnitCollectCsvExporter(new CampaignCollectionByOrganizationUnitsPresenter(), port);
+        OrganizationUnitCollectionCsvExporter exporter =
+                new OrganizationUnitCollectionCsvExporter(new CampaignCollectionByOrganizationUnitsPresenter(), port);
         CampaignCollectionByOrganizationUnitExportController controller =
                 new CampaignCollectionByOrganizationUnitExportController(exporter);
         mockMvc = MockMvcBuilders

@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.collect;
+package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
@@ -30,19 +30,19 @@ class CampaignCollectionCsvTest {
 
         assertThat(csv.headers().values()).hasSize(13);
         assertThat(csv.headers().values()).containsExactly(
-                CollectCsvHeaders.CAMPAIGN_LABEL.getHeaderName(),
-                CollectCsvHeaders.COLLECTION_RATE.getHeaderName(),
-                CollectCsvHeaders.WASTE_RATE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
-                CollectCsvHeaders.ACCEPTED.getHeaderName(),
-                CollectCsvHeaders.REFUSED.getHeaderName(),
-                CollectCsvHeaders.UNREACHABLE.getHeaderName(),
-                CollectCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
-                CollectCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
-                CollectCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
-                CollectCsvHeaders.OTHER_REASONS.getHeaderName(),
-                CollectCsvHeaders.TOTAL_CLOSED.getHeaderName(),
-                CollectCsvHeaders.ALLOCATED.getHeaderName()
+                CollectionCsvHeaders.CAMPAIGN_LABEL.getHeaderName(),
+                CollectionCsvHeaders.COLLECTION_RATE.getHeaderName(),
+                CollectionCsvHeaders.WASTE_RATE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE_RATE.getHeaderName(),
+                CollectionCsvHeaders.ACCEPTED.getHeaderName(),
+                CollectionCsvHeaders.REFUSED.getHeaderName(),
+                CollectionCsvHeaders.UNREACHABLE.getHeaderName(),
+                CollectionCsvHeaders.OUT_OF_SCOPE.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_OUTCOMES.getHeaderName(),
+                CollectionCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
+                CollectionCsvHeaders.OTHER_REASONS.getHeaderName(),
+                CollectionCsvHeaders.TOTAL_CLOSED.getHeaderName(),
+                CollectionCsvHeaders.ALLOCATED.getHeaderName()
         );
     }
 

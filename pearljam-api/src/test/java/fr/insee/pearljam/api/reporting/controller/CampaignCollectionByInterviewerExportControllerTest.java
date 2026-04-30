@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collect.InterviewerCollectCsvExporter;
+import fr.insee.pearljam.api.reporting.export.collection.CollectionCsvHeaders;
+import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionByInterviewersPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionByInterviewersResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
@@ -47,8 +48,8 @@ class CampaignCollectionByInterviewerExportControllerTest {
         port = mock(CampaignReportingByInterviewersPort.class);
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(EMPTY_RESULT);
 
-        InterviewerCollectCsvExporter exporter =
-                new InterviewerCollectCsvExporter(new CampaignCollectionByInterviewersPresenter(), port);
+        InterviewerCollectionCsvExporter exporter =
+                new InterviewerCollectionCsvExporter(new CampaignCollectionByInterviewersPresenter(), port);
         CampaignCollectionByInterviewerExportController controller =
                 new CampaignCollectionByInterviewerExportController(exporter);
         mockMvc = MockMvcBuilders
@@ -83,10 +84,10 @@ class CampaignCollectionByInterviewerExportControllerTest {
 
         String csv = new String(content);
         assertThat(csv).startsWith("﻿")
-                .contains("Nom prénom")
-                .contains("Idep")
-                .contains("Taux de collecte")
-                .contains("Confiées");
+                .contains(CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName())
+                .contains(CollectionCsvHeaders.INTERVIEWER_ID.getHeaderName())
+                .contains(CollectionCsvHeaders.COLLECTION_RATE.getHeaderName())
+                .contains(CollectionCsvHeaders.ALLOCATED.getHeaderName());
     }
 
     @Test

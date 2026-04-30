@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.collect.CampaignCollectionCsvExporter;
+import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
