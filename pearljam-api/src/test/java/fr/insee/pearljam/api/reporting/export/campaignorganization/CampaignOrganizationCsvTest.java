@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
+import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsv.NOT_AFFECTED;
+import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsv.TOTAL_SITE;
 import static fr.insee.pearljam.api.reporting.export.campaignorganization.CampaignOrganizationCsvHeaders.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,10 +36,9 @@ class CampaignOrganizationCsvTest {
     void shouldReturnEmptyRows_whenNoInterviewers() {
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
 
-
         assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values()).containsExactly("Not affected", "", "0");
-        assertThat(csv.rows().get(1).values()).containsExactly("Total Site", "", "0");
+        assertThat(csv.rows().get(0).values()).containsExactly(NOT_AFFECTED, "", "0");
+        assertThat(csv.rows().get(1).values()).containsExactly(TOTAL_SITE, "", "0");
     }
 
 

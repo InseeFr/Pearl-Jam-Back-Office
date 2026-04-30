@@ -10,8 +10,8 @@ import java.util.List;
 
 public record CampaignOrganizationCsv(List<CsvRow> rows) implements CsvExportable {
 
-    private static final String NOT_AFFECTED = "Non attribuées";
-    private static final String TOTAL_SITE = "Total Site";
+     static final String NOT_AFFECTED = "Non attribuées";
+     static final String TOTAL_SITE = "Total Site";
 
     public static CampaignOrganizationCsv from(CampaignOrganizationResponse response) {
         List<CsvRow> rows = new ArrayList<>();
