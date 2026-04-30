@@ -1,8 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.export.csv.AbstractCsvExporter;
-import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionByInterviewersPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignCollectionByInterviewersResponse;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +13,13 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class InterviewerCollectionCsvExporter extends AbstractCsvExporter {
 
-    private final CampaignCollectionByInterviewersPresenter presenter;
+    private final InterviewerCollectionCsvPresenter presenter;
     private final CampaignReportingByInterviewersPort campaignReportingByInterviewersPort;
 
     public ResponseEntity<byte[]> export(String userId, String campaignId, LocalDate date)
             throws CampaignNotFoundException {
-        CampaignCollectionByInterviewersResponse data =
+        InterviewerCollectionCsv csv =
                 campaignReportingByInterviewersPort.getProgressForDay(userId, campaignId, date, presenter);
-        InterviewerCollectionCsv csv = InterviewerCollectionCsv.from(data);
         return buildResponse(csv, campaignId + "_Avancement_collecte_enqueteurs", date);
     }
 }
