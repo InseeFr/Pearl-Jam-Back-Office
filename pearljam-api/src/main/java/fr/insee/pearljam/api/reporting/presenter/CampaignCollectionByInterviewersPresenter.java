@@ -22,7 +22,6 @@ public class CampaignCollectionByInterviewersPresenter implements
         return new CampaignCollectionByInterviewersResponse(
                 interviewerStats.stream()
                         .map(interviewer -> new CampaignCollectionByInterviewersResponse.Interviewer(
-                                interviewer.getInterviewerId(),
                                 interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName(),
                                 interviewer.getAllocatedCount(),
                                 CollectionRatesResponse.from(interviewer),

@@ -21,7 +21,6 @@ public class CampaignProgressByInterviewersPresenter implements
         return new CampaignProgressByInterviewersResponse(
                 interviewerStats.stream()
                         .map(interviewer -> new CampaignProgressByInterviewersResponse.Interviewer(
-                                interviewer.getInterviewerId(),
                                 interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName(),
                                 interviewer.getProgressStateRate(),
                                 StatesProgressResponse.from(interviewer),
