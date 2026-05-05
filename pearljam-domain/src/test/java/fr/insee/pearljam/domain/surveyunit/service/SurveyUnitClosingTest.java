@@ -6,7 +6,6 @@ import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokR
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
@@ -302,9 +301,9 @@ class SurveyUnitClosingTest {
                 List.of(),
                 List.of(new InterrogationOkNokResponseDto("SU1"))
         );
-        Map<String, QuestionnaireState> states = Map.of(
-                "SU1", QuestionnaireState.OK,
-                "SU2", QuestionnaireState.NOK
+        Map<String, String> states = Map.of(
+                "SU1", "COMPLETED",
+                "SU2", "NOTOK"
         );
         when(questionnaireStatePort.getStates(any()))
                 .thenReturn(states);

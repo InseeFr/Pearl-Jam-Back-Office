@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.http.datacollection.adapter;
 
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStatePort;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,9 @@ public class QuestionnaireStateHttpAdapter implements QuestionnaireStatePort {
     private final QuestionnaireStateClient client;
 
     @Override
-    public Map<String, QuestionnaireState> getStates(Set<String> ids) {
+    public Map<String, String> getStates(Set<String> ids) {
 
-        Map<String, QuestionnaireState> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
 
         try {
             ResponseEntity<InterrogationOkNokDto> response =
@@ -40,14 +40,14 @@ public class QuestionnaireStateHttpAdapter implements QuestionnaireStatePort {
             }
 
             body.interrogationOK()
-                    .forEach(su -> result.put(su.id(), QuestionnaireState.OK));
+                    .forEach(su -> result.put(su.id(), su.stateData().getState()));
 
             body.interrogationNOK()
-                    .forEach(su -> result.put(su.id(), QuestionnaireState.NOK));
+                    .forEach(su -> result.put(su.id(), su.stateData().getState()));
 
         } catch (Exception e) {
             log.error("Fallback UNAVAILABLE", e);
-            ids.forEach(id -> result.put(id, QuestionnaireState.UNAVAILABLE));
+            ids.forEach(id -> result.put(id, Constants.QUESTIONNAIRE_STATE_UNAVAILABLE));
         }
 
         return result;

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -14,7 +14,7 @@ public class SurveyUnitClosablePolicy {
 
     public boolean isClosable(
             ClosableSurveyUnitCandidateView candidate,
-            QuestionnaireState questionnaireState) {
+            String questionnaireState) {
 
         if (candidate.getCurrentStateType() == null) {
             return false;
@@ -31,10 +31,10 @@ public class SurveyUnitClosablePolicy {
 
     private boolean isInaWithoutQuestionnaire(
             ClosableSurveyUnitCandidateView c,
-            QuestionnaireState  questionnaireState) {
+            String questionnaireState) {
 
         return c.getContactOutcomeType() == ContactOutcomeType.INA
-               && (questionnaireState == null || QuestionnaireState.UNAVAILABLE.equals(questionnaireState))
+               && (questionnaireState == null || Constants.QUESTIONNAIRE_STATE_UNAVAILABLE.equals(questionnaireState))
                && c.getCurrentStateType() != StateType.CLO;
     }
 }

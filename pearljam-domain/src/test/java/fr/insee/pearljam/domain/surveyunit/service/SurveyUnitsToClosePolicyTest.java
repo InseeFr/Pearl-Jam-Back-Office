@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -30,7 +29,7 @@ class SurveyUnitsToClosePolicyTest {
     void testClosableEvaluation01(
             StateType state,
             ContactOutcomeType outcome,
-            QuestionnaireState questionnaireState,
+            String questionnaireState,
             boolean expected) {
 
         // Given
@@ -57,29 +56,29 @@ class SurveyUnitsToClosePolicyTest {
 
             return Stream.of(
                     // ===== NEVER TRANSMITTED =====
-                    Arguments.of(StateType.WFT, ContactOutcomeType.REF, QuestionnaireState.UNAVAILABLE, true),
+                    Arguments.of(StateType.WFT, ContactOutcomeType.REF, "UNAVAILABLE", true),
                     Arguments.of(StateType.INS, ContactOutcomeType.INA, null, true),
 
                     // ===== CLO =====
                     Arguments.of(StateType.CLO, ContactOutcomeType.INA, null, false),
-                    Arguments.of(StateType.CLO, ContactOutcomeType.REF, QuestionnaireState.UNAVAILABLE, false),
+                    Arguments.of(StateType.CLO, ContactOutcomeType.REF, "UNAVAILABLE", false),
 
                     // ===== INA + questionnaire missing =====
                     Arguments.of(StateType.FIN, ContactOutcomeType.INA, null, true),
 
                     // ===== INA + questionnaire unavailable =====
-                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, QuestionnaireState.UNAVAILABLE, true),
+                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, "UNAVAILABLE", true),
 
                     // ===== INA + questionnaire exists =====
-                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, QuestionnaireState.OK, false),
+                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, "COMPLETED", false),
 
                     // ===== NOT INA =====
                     Arguments.of(StateType.FIN, ContactOutcomeType.REF, null, false),
-                    Arguments.of(StateType.TBR, ContactOutcomeType.REF, QuestionnaireState.UNAVAILABLE, false),
+                    Arguments.of(StateType.TBR, ContactOutcomeType.REF, "UNAVAILABLE", false),
 
                     // ===== EDGE CASES =====
                     Arguments.of(null, ContactOutcomeType.INA, null, false),
-                    Arguments.of(null, ContactOutcomeType.REF, QuestionnaireState.UNAVAILABLE, false)
+                    Arguments.of(null, ContactOutcomeType.REF, "UNAVAILABLE", false)
             );
     }
 }

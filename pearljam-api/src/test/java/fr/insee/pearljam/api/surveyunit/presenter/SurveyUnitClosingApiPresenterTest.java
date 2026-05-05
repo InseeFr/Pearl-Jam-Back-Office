@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -35,7 +34,7 @@ class SurveyUnitClosingApiPresenterTest {
         when(candidate.getContactOutcomeType()).thenReturn(ContactOutcomeType.INA);
 
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of("id1", candidate);
-        Map<String, QuestionnaireState> questionnaireStates = Map.of("id1", QuestionnaireState.OK);
+        Map<String, String> questionnaireStates = Map.of("id1", "COMPLETED");
 
         var presenter = new SurveyUnitClosingApiPresenter();
 
@@ -44,7 +43,7 @@ class SurveyUnitClosingApiPresenterTest {
 
         // THEN
         assertEquals(1, result.size());
-        var response = result.get(0);
+        var response = result.getFirst();
 
         assertEquals("Campaign", response.campaignLabel());
         assertEquals("id1", response.surveyUnitId());
@@ -62,7 +61,7 @@ class SurveyUnitClosingApiPresenterTest {
         when(projection.getId()).thenReturn("id1");
 
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of(); // empty
-        Map<String, QuestionnaireState> questionnaireStates = Map.of();
+        Map<String, String> questionnaireStates = Map.of();
 
         var presenter = new SurveyUnitClosingApiPresenter();
 

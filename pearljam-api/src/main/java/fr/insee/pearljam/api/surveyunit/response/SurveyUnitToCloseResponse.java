@@ -1,6 +1,5 @@
 package fr.insee.pearljam.api.surveyunit.response;
 
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +14,6 @@ public record SurveyUnitToCloseResponse(
         Integer ssech,
         String identificationState,
         ContactOutcomeType contactOutcome,
-        QuestionnaireState questionnaireState,
+        String questionnaireState,
         ClosingCauseType closingCause
 ) {}

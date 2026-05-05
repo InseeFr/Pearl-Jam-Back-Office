@@ -5,7 +5,6 @@ import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
@@ -92,7 +91,7 @@ class SurveyUnitClosingControllerTest {
     void shouldReturnSurveyUnitsToClose() throws Exception {
         when(surveyUnitClosingPort.getSurveyUnitsToClose(any(), any()))
                 .thenReturn(List.of(
-                        new SurveyUnitToCloseResponse("C1","SU1","Name","Interviewer",1,"ANV",null, QuestionnaireState.UNAVAILABLE,null)
+                        new SurveyUnitToCloseResponse("C1","SU1","Name","Interviewer",1,"ANV",null, "UNAVAILABLE",null)
                 ));
 
         mockMvc.perform(get(Constants.API_SURVEYUNITS_TO_CLOSE))

@@ -3,7 +3,6 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
@@ -87,7 +86,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
                                 Function.identity()
                         ));
 
-        Map<String, QuestionnaireState> states =
+        Map<String, String> states =
                 questionnaireStatePort.getStates(candidatesById.keySet());
 
         Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =

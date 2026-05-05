@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
-import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -25,7 +25,7 @@ public class SurveyUnitClosingApiPresenter implements SurveyUnitClosingPresenter
     public List<SurveyUnitToCloseResponse> present(
             List<ClosableSurveyUnitView> projections,
             Map<String, ClosableSurveyUnitCandidateView> candidatesById,
-            Map<String, QuestionnaireState> questionnaireStates
+            Map<String, String> questionnaireStates
     ) {
 
         return projections.stream()
@@ -33,7 +33,7 @@ public class SurveyUnitClosingApiPresenter implements SurveyUnitClosingPresenter
                 .toList();
     }
 
-    private @NonNull Function<ClosableSurveyUnitView, SurveyUnitToCloseResponse> toResponse(Map<String, ClosableSurveyUnitCandidateView> candidatesById, Map<String, QuestionnaireState> questionnaireStates) {
+    private @NonNull Function<ClosableSurveyUnitView, SurveyUnitToCloseResponse> toResponse(Map<String, ClosableSurveyUnitCandidateView> candidatesById, Map<String, String> questionnaireStates) {
         return projection -> {
             String id = projection.getId();
 
@@ -44,9 +44,9 @@ public class SurveyUnitClosingApiPresenter implements SurveyUnitClosingPresenter
 
             String interviewerLabel = buildInterviewerLabel(projection);
 
-            QuestionnaireState  questionnaireState = questionnaireStates.getOrDefault(
+            String questionnaireState = questionnaireStates.getOrDefault(
                     id,
-                    QuestionnaireState.UNAVAILABLE
+                    Constants.QUESTIONNAIRE_STATE_UNAVAILABLE
             );
 
             return new SurveyUnitToCloseResponse(
