@@ -1,8 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokResponseDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
@@ -297,10 +295,7 @@ class SurveyUnitClosingTest {
                 .thenReturn(List.of(candidate1, candidate2));
 
         // Setup questionnaire states
-        InterrogationOkNokDto interrogationOkNokDto = new InterrogationOkNokDto(
-                List.of(),
-                List.of(new InterrogationOkNokResponseDto("SU1"))
-        );
+
         Map<String, String> states = Map.of(
                 "SU1", "COMPLETED",
                 "SU2", "NOTOK"
