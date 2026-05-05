@@ -6,11 +6,12 @@ import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.InterrogationOkNokR
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
-import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
+import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStatePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
@@ -21,11 +22,11 @@ import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitExistencePortStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,7 +42,7 @@ class SurveyUnitClosingTest {
     UserService userService;
     DateService dateService = new FixedDateService();
     SurveyUnitRepository surveyUnitRepository;
-    QuestionnaireStateClient questionnaireStateClient;
+    QuestionnaireStatePort questionnaireStatePort;
     SurveyUnitClosablePolicy surveyUnitClosablePolicy;
 
 
@@ -51,9 +52,9 @@ class SurveyUnitClosingTest {
         closingCauseRepository = new ClosingCauseRepositoryStub();
         surveyUnitPort = new SurveyUnitExistencePortStub();
         surveyUnitRepository = mock (SurveyUnitRepository.class);
-        questionnaireStateClient = mock(QuestionnaireStateClient.class);
+        questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository,questionnaireStateClient, surveyUnitClosablePolicy);
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy);
     }
 
     @Test
@@ -301,8 +302,12 @@ class SurveyUnitClosingTest {
                 List.of(),
                 List.of(new InterrogationOkNokResponseDto("SU1"))
         );
-        when(questionnaireStateClient.getQuestionnairesStateFromDataCollection(any()))
-                .thenReturn(ResponseEntity.ok(interrogationOkNokDto));
+        Map<String, QuestionnaireState> states = Map.of(
+                "SU1", QuestionnaireState.OK,
+                "SU2", QuestionnaireState.NOK
+        );
+        when(questionnaireStatePort.getStates(any()))
+                .thenReturn(states);
 
         // Setup projections
         var projection1 = mockProjection("SU1");
@@ -317,25 +322,4 @@ class SurveyUnitClosingTest {
         verify(presenter).present(anyList(), any(), any());
     }
 
-    @Test
-    void shouldHandleQuestionnaireStateClientError() {
-        // Setup user OUs
-        when(userService.getUserOUs(any(), anyBoolean()))
-                .thenReturn(List.of(new OrganizationUnitDto("OU1", "OU1")));
-
-        // Setup candidates
-        var candidate = mockCandidate("SU", StateType.FIN, ContactOutcomeType.INA);
-        when(surveyUnitRepository.findClosableCandidates(anyLong(), any()))
-                .thenReturn(List.of(candidate));
-
-        // Setup questionnaire state client error
-        when(questionnaireStateClient.getQuestionnairesStateFromDataCollection(any()))
-                .thenThrow(new RuntimeException("API error"));
-
-        var presenter = mockPresenter();
-
-        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
-
-        verify(presenter).present(anyList(), any(), any());
-    }
 }

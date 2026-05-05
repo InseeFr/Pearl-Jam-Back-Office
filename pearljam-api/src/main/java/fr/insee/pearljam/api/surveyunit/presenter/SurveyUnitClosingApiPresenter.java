@@ -3,19 +3,20 @@ package fr.insee.pearljam.api.surveyunit.presenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
+import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
 
 @Component
 public class SurveyUnitClosingApiPresenter implements SurveyUnitClosingPresenter<List<SurveyUnitToCloseResponse>> {
@@ -24,38 +25,42 @@ public class SurveyUnitClosingApiPresenter implements SurveyUnitClosingPresenter
     public List<SurveyUnitToCloseResponse> present(
             List<ClosableSurveyUnitView> projections,
             Map<String, ClosableSurveyUnitCandidateView> candidatesById,
-            Map<String, String> questionnaireStates
+            Map<String, QuestionnaireState> questionnaireStates
     ) {
 
         return projections.stream()
-                .map(projection -> {
-                    String id = projection.getId();
-
-                    var candidate = candidatesById.get(id);
-
-                    ContactOutcomeType contactOutcome =
-                            candidate != null ? candidate.getContactOutcomeType() : null;
-
-                    String interviewerLabel = buildInterviewerLabel(projection);
-
-                    String questionnaireState = questionnaireStates.getOrDefault(
-                            id,
-                            QUESTIONNAIRE_STATE_UNAVAILABLE
-                    );
-
-                    return new SurveyUnitToCloseResponse(
-                            projection.getCampaignLabel(),
-                            projection.getId(),
-                            projection.getDisplayName(),
-                            interviewerLabel,
-                            projection.getSsech(),
-                            computeIdentificationState(projection).name(),
-                            contactOutcome,
-                            questionnaireState,
-                            projection.getClosingCauseType()
-                    );
-                })
+                .map(toResponse(candidatesById, questionnaireStates))
                 .toList();
+    }
+
+    private @NonNull Function<ClosableSurveyUnitView, SurveyUnitToCloseResponse> toResponse(Map<String, ClosableSurveyUnitCandidateView> candidatesById, Map<String, QuestionnaireState> questionnaireStates) {
+        return projection -> {
+            String id = projection.getId();
+
+            var candidate = candidatesById.get(id);
+
+            ContactOutcomeType contactOutcome =
+                    candidate != null ? candidate.getContactOutcomeType() : null;
+
+            String interviewerLabel = buildInterviewerLabel(projection);
+
+            QuestionnaireState  questionnaireState = questionnaireStates.getOrDefault(
+                    id,
+                    QuestionnaireState.UNAVAILABLE
+            );
+
+            return new SurveyUnitToCloseResponse(
+                    projection.getCampaignLabel(),
+                    projection.getId(),
+                    projection.getDisplayName(),
+                    interviewerLabel,
+                    projection.getSsech(),
+                    computeIdentificationState(projection).name(),
+                    contactOutcome,
+                    questionnaireState,
+                    projection.getClosingCauseType()
+            );
+        };
     }
 
     private String buildInterviewerLabel(ClosableSurveyUnitView projection) {

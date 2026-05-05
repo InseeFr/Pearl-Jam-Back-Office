@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -29,7 +30,7 @@ class SurveyUnitsToClosePolicyTest {
     void shouldEvaluateClosableCorrectly(
             StateType state,
             ContactOutcomeType outcome,
-            String questionnaireState,
+            QuestionnaireState questionnaireState,
             boolean expected) {
 
         var candidate = mockCandidate(state, outcome);
