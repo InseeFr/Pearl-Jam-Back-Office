@@ -10,8 +10,6 @@ import fr.insee.pearljam.domain.surveyunit.model.QuestionnaireState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.AddClosingCausePort;
-import fr.insee.pearljam.domain.surveyunit.port.in.GetSurveyUnitsToClosePort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStatePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
@@ -39,8 +37,6 @@ import static org.mockito.Mockito.*;
 class SurveyUnitClosingTest {
 
     private SurveyUnitClosing surveyUnitClosing;
-    private AddClosingCausePort addClosingCausePort;
-    private GetSurveyUnitsToClosePort getSurveyUnitsToClosePort;
     private ClosingCauseRepositoryStub closingCauseRepository;
     private SurveyUnitExistencePortStub surveyUnitPort;
     UserService userService;
@@ -59,8 +55,6 @@ class SurveyUnitClosingTest {
         questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
         surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy);
-        addClosingCausePort = surveyUnitClosing;
-        getSurveyUnitsToClosePort = surveyUnitClosing;
     }
 
     @Test
@@ -75,7 +69,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         );
 
         // Then
@@ -94,7 +88,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         );
 
         // Then
@@ -115,7 +109,7 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining(surveyUnitId);
@@ -137,7 +131,7 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining(surveyUnitId);
@@ -157,7 +151,7 @@ class SurveyUnitClosingTest {
 
         // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining("INVALID");
@@ -183,7 +177,7 @@ class SurveyUnitClosingTest {
 
         // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining("SU002");
@@ -204,7 +198,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         );
 
         // Then
@@ -223,7 +217,7 @@ class SurveyUnitClosingTest {
             surveyUnitPort.addExistingSurveyUnit(surveyUnitId);
 
             assertDoesNotThrow(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
             );
 
             assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
@@ -243,7 +237,7 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        addClosingCausePort.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining("INVALID1")
@@ -264,7 +258,7 @@ class SurveyUnitClosingTest {
 
         var presenter = mockPresenter();
 
-        getSurveyUnitsToClosePort.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
 
         verify(presenter).empty();
     }
@@ -323,7 +317,7 @@ class SurveyUnitClosingTest {
 
         var presenter = mockPresenter();
 
-        getSurveyUnitsToClosePort.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
 
         verify(presenter).present(anyList(), any(), any());
     }
