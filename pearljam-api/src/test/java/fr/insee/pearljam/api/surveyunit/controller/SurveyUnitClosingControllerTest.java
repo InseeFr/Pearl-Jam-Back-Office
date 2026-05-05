@@ -61,7 +61,7 @@ class SurveyUnitClosingControllerTest {
         request.setClosingCauseType(ClosingCauseType.NPA);
 
         // when / then
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isNoContent());
@@ -81,7 +81,7 @@ class SurveyUnitClosingControllerTest {
         request.setSurveyUnitIds(List.of("11"));
         request.setClosingCauseType(ClosingCauseType.NPA);
 
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isConflict());

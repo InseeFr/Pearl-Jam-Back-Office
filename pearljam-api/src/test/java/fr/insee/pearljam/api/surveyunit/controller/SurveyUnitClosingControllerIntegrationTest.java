@@ -44,7 +44,7 @@ class SurveyUnitClosingControllerIntegrationTest {
         request.setSurveyUnitIds(List.of(surveyUnitId));
         request.setClosingCauseType(ClosingCauseType.NPA);
 
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isNoContent());
@@ -61,7 +61,7 @@ class SurveyUnitClosingControllerIntegrationTest {
         request.setSurveyUnitIds(List.of("NONEXISTENT"));
         request.setClosingCauseType(ClosingCauseType.NPA);
 
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isNotFound());
@@ -75,7 +75,7 @@ class SurveyUnitClosingControllerIntegrationTest {
         request.setSurveyUnitIds(ids);
         request.setClosingCauseType(ClosingCauseType.NPA);
 
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isNotFound());
@@ -94,7 +94,7 @@ class SurveyUnitClosingControllerIntegrationTest {
         request.setSurveyUnitIds(List.of(surveyUnitId));
         request.setClosingCauseType(ClosingCauseType.NPA);
 
-        mockMvc.perform(post(Constants.API_SURVEYUNITS_CLOSE)
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isConflict());
