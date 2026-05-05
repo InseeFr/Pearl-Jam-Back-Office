@@ -45,6 +45,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
+
 /**
  * @author scorcaud
  *
@@ -59,7 +61,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
 	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
-	private static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
 
 	private final SurveyUnitRepository surveyUnitRepository;
 	private final SurveyUnitTempZoneRepository surveyUnitTempZoneRepository;

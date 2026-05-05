@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static fr.insee.pearljam.contracts.constants.Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS;
-
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -36,7 +34,7 @@ public class SurveyUnitClosingController {
     /**
      * Add closing cause to multiple survey units
      */
-    @PostMapping(API_SURVEYUNIT_CLOSE_SURVEYUNITS)
+    @PostMapping(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
     public ResponseEntity<Void> addClosingCauseToMultipleSurveyUnits(
             @RequestBody @Valid CloseSurveyUnitsRequest request) {
 

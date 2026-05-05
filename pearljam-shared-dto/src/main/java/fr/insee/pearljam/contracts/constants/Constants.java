@@ -131,6 +131,7 @@ public class Constants {
   public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
   public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
 
+  public static final String  QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
   // Front expected variables names
 
   public static final String NVM_COUNT = "nvmCount";
