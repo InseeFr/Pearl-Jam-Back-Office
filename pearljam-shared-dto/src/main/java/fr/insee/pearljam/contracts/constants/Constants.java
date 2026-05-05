@@ -29,7 +29,7 @@ public class Constants {
   public static final String API_SURVEYUNIT_ID_CLOSINGCAUSE = "/api/survey-unit/{id}/closing-cause/{closingCause}";
   public static final String API_ADMIN_SURVEYUNIT_DETAILS = "/api/admin/survey-unit/{id}";
   public static final String API_ADMIN_SURVEYUNITS_DETAILS = "/api/admin/survey-units/details";
-  public static final String API_SURVEYUNITS_CLOSE = "/api/survey-units/close";
+  public static final String API_SURVEYUNIT_CLOSE_SURVEYUNITS = "/api/survey-units/closures";
 
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
@@ -167,9 +167,6 @@ public class Constants {
   public static final String NOA_COUNT = "noaCount";
   public static final String NOTICE_COUNT = "noticeCount";
   public static final String REMINDER_COUNT = "reminderCount";
-
-  public static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
-
 
   public static final List<String> STATE_COUNT_FIELDS = List.of(NVM_COUNT, NNS_COUNT, ANV_COUNT,
       VIN_COUNT, VIC_COUNT, PRC_COUNT, AOC_COUNT, APS_COUNT, INS_COUNT, WFT_COUNT, WFS_COUNT, TBR_COUNT, FIN_COUNT,
