@@ -18,9 +18,13 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldHaveAllHeadersFromEnum() {
+        // Given
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
+
+        // When
         CsvRow headers = csv.headers();
 
+        // Then
         assertThat(headers.values()).containsExactly(
                 INTERVIEWER_LABEL.getHeaderName(),
                 INTERVIEWER_ID.getHeaderName(),
@@ -30,25 +34,31 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldReturnEmptyRows_whenNoInterviewers() {
+        // Given
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
 
-        assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values()).containsExactly(NOT_AFFECTED, "", "0");
-        assertThat(csv.rows().get(1).values()).containsExactly(TOTAL_SITE, "", "0");
+        // When
+        List<CsvRow> rows = csv.rows();
+
+        // Then
+        assertThat(rows).hasSize(2);
+        assertThat(rows.get(0).values()).containsExactly(NOT_AFFECTED, "", "0");
+        assertThat(rows.get(1).values()).containsExactly(TOTAL_SITE, "", "0");
     }
 
 
 
     @Test
     void shouldMapSingleInterviewerToRow() {
-        CampaignOrganizationResponse.Interviewer interviewer = 
+        // Given
+        CampaignOrganizationResponse.Interviewer interviewer =
                 new CampaignOrganizationResponse.Interviewer("ID001", "John Doe", 10L);
         CampaignOrganizationResponse response = createResponseWithInterviewers(List.of(interviewer));
 
-
+        // When
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(response);
 
-
+        // Then
         assertThat(csv.rows()).hasSize(3);
         assertThat(csv.rows().get(0).values()).containsExactly("John Doe", "ID001", "10");
         assertThat(csv.rows().get(1).values()).containsExactly("Non attribuées", "", "5");
@@ -59,16 +69,17 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldMapMultipleInterviewersToRows() {
-        CampaignOrganizationResponse.Interviewer interviewer1 = 
+        // Given
+        CampaignOrganizationResponse.Interviewer interviewer1 =
                 new CampaignOrganizationResponse.Interviewer("ID001", "Alice Smith", 5L);
-        CampaignOrganizationResponse.Interviewer interviewer2 = 
+        CampaignOrganizationResponse.Interviewer interviewer2 =
                 new CampaignOrganizationResponse.Interviewer("ID002", "Bob Jones", 8L);
-        CampaignOrganizationResponse response = createResponseWithInterviewers(List.of(interviewer1, interviewer2), 15L, 2L);
+        CampaignOrganizationResponse response = createResponseWithInterviewers(List.of(interviewer1, interviewer2), 2L);
 
-
+        // When
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(response);
 
-
+        // Then
         assertThat(csv.rows()).hasSize(4);
         assertThat(csv.rows().get(0).values()).containsExactly("Alice Smith", "ID001", "5");
         assertThat(csv.rows().get(1).values()).containsExactly("Bob Jones", "ID002", "8");
@@ -80,20 +91,25 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldIncludeNonAttributedAndTotalRows() {
+        // Given
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
 
+        // When
+        List<CsvRow> rows = csv.rows();
 
-        assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values().get(0)).isEqualTo("Non attribuées");
-        assertThat(csv.rows().get(0).values().get(1)).isEmpty();
-        assertThat(csv.rows().get(1).values().get(0)).isEqualTo("Total Site");
-        assertThat(csv.rows().get(1).values().get(1)).isEmpty();
+        // Then
+        assertThat(rows).hasSize(2);
+        assertThat(rows.get(0).values().get(0)).isEqualTo("Non attribuées");
+        assertThat(rows.get(0).values().get(1)).isEmpty();
+        assertThat(rows.get(1).values().get(0)).isEqualTo("Total Site");
+        assertThat(rows.get(1).values().get(1)).isEmpty();
     }
 
 
 
     @Test
     void shouldHandleNullSurveyUnitsCount() {
+        // Given
         CampaignOrganizationResponse response = new CampaignOrganizationResponse(
                 "camp-1",
                 "Campaign 1",
@@ -105,10 +121,10 @@ class CampaignOrganizationCsvTest {
                 new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(null, null)
         );
 
-
+        // When
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(response);
 
-
+        // Then
         assertThat(csv.rows()).hasSize(2);
         assertThat(csv.rows().get(0).values()).containsExactly("Non attribuées", "", "");
         assertThat(csv.rows().get(1).values()).containsExactly("Total Site", "", "");
@@ -118,11 +134,15 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldHaveRowSizeMatchingHeaderSize() {
+        // Given
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(createEmptyResponse());
-
-
         CsvRow headers = csv.headers();
-        for (CsvRow row : csv.rows()) {
+
+        // When
+        List<CsvRow> rows = csv.rows();
+
+        // Then
+        for (CsvRow row : rows) {
             assertThat(row.values()).hasSameSizeAs(headers.values());
         }
     }
@@ -131,14 +151,18 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldHaveRowSizeMatchingHeaderSize_WithInterviewers() {
-        CampaignOrganizationResponse.Interviewer interviewer = 
+        // Given
+        CampaignOrganizationResponse.Interviewer interviewer =
                 new CampaignOrganizationResponse.Interviewer("ID001", "Test User", 3L);
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(
                 createResponseWithInterviewers(List.of(interviewer)));
-
-
         CsvRow headers = csv.headers();
-        for (CsvRow row : csv.rows()) {
+
+        // When
+        List<CsvRow> rows = csv.rows();
+
+        // Then
+        for (CsvRow row : rows) {
             assertThat(row.values()).hasSameSizeAs(headers.values());
         }
     }
@@ -147,14 +171,15 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldHandleInterviewerWithNullValues() {
-        CampaignOrganizationResponse.Interviewer interviewer = 
+        // Given
+        CampaignOrganizationResponse.Interviewer interviewer =
                 new CampaignOrganizationResponse.Interviewer(null, null, null);
         CampaignOrganizationResponse response = createResponseWithInterviewers(List.of(interviewer));
 
-
+        // When
         CampaignOrganizationCsv csv = CampaignOrganizationCsv.from(response);
 
-
+        // Then
         assertThat(csv.rows().getFirst().values()).containsExactly("", "", "");
     }
 
@@ -162,12 +187,15 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldReturnRowsFromConstructor() {
+        // Given
         List<CsvRow> manualRows = List.of(
                 CsvRow.from("Test", "123", "10")
         );
+
+        // When
         CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Test Campaign", manualRows);
 
-
+        // Then
         assertThat(csv.rows()).isEqualTo(manualRows);
         assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
     }
@@ -176,9 +204,13 @@ class CampaignOrganizationCsvTest {
 
     @Test
     void shouldReturnEmptyRowsFromEmptyConstructor() {
-        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Empty Campaign", List.of());
+        // Given
+        List<CsvRow> emptyRows = List.of();
 
+        // When
+        CampaignOrganizationCsv csv = new CampaignOrganizationCsv("Empty Campaign", emptyRows);
 
+        // Then
         assertThat(csv.rows()).isEmpty();
         assertThat(csv.campaignLabel()).isEqualTo("Empty Campaign");
     }
@@ -202,11 +234,11 @@ class CampaignOrganizationCsvTest {
 
     private CampaignOrganizationResponse createResponseWithInterviewers(
             List<CampaignOrganizationResponse.Interviewer> interviewers) {
-        return createResponseWithInterviewers(interviewers, 15L, 5L);
+        return createResponseWithInterviewers(interviewers, 5L);
     }
 
     private CampaignOrganizationResponse createResponseWithInterviewers(
-            List<CampaignOrganizationResponse.Interviewer> interviewers, Long total, Long notAffected) {
+            List<CampaignOrganizationResponse.Interviewer> interviewers, Long notAffected) {
         return new CampaignOrganizationResponse(
                 "camp-1",
                 "Campaign 1",
@@ -215,7 +247,7 @@ class CampaignOrganizationCsvTest {
                 null,
                 List.of(),
                 interviewers,
-                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(total, notAffected)
+                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(15L, notAffected)
         );
     }
 
