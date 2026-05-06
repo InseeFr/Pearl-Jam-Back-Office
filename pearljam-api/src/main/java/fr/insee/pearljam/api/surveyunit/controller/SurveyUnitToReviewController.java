@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "13. Reporting", description = "Endpoints for reporting")
+@Tag(name = "02. Survey-units", description = "Endpoints for survey-units")
 @Slf4j
 @RequiredArgsConstructor
 @Validated
