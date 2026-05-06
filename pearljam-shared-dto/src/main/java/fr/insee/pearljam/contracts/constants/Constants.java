@@ -31,14 +31,17 @@ public class Constants {
   public static final String API_ADMIN_SURVEYUNITS_DETAILS = "/api/admin/survey-units/details";
   public static final String API_SURVEYUNIT_CLOSE_SURVEYUNITS = "/api/survey-units/closures";
 
-    public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
+  public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
+  public static final String API_SURVEYUNITS_TO_CLOSE = "/api/survey-units/to-close";
+
 
   public static final String API_CAMPAIGNS = "/api/campaigns";
   public static final String API_ADMIN_CAMPAIGNS = "/api/admin/campaigns";
   public static final String API_INTERVIEWER_CAMPAIGNS = "/api/interviewer/campaigns";
   public static final String API_CAMPAIGNS_SU_STATECOUNT = "/api/campaigns/survey-units/state-count";
   public static final String API_CAMPAIGNS_SU_CONTACTOUTCOMES = "/api/campaigns/survey-units/contact-outcomes";
+
 
   public static final String API_REPORTING_CAMPAIGNS_PROGRESS = "/api/reporting/campaigns/progress";
   public static final String API_REPORTING_CAMPAIGNS_PROGRESS_EXPORT = "/api/reporting/campaigns/progress/export";
@@ -58,6 +61,7 @@ public class Constants {
   public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
   public static final String API_REPORTING_OUS_COLLECTION_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/collection/export";
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
+
 
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
@@ -127,6 +131,7 @@ public class Constants {
   public static final String API_ENUM_CONTACT_OUTCOME = "/api/enum/contact-outcome";
   public static final String API_ENUM_CONTACT_ATTEMPT = "/api/enum/contact-attempt";
 
+  public static final String  QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
   // Front expected variables names
 
   public static final String NVM_COUNT = "nvmCount";

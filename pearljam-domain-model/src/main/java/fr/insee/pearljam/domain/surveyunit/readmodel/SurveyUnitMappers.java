@@ -1,13 +1,14 @@
-package fr.insee.pearljam.contracts.surveyunit.dto;
+package fr.insee.pearljam.domain.surveyunit.readmodel;
 
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public final class SurveyUnitDtoMappers {
-    private SurveyUnitDtoMappers() {}
+public final class SurveyUnitMappers {
+    private SurveyUnitMappers() {
+    }
 
     public static String computeLocation(String l6) {
         if (l6 == null || !l6.trim().contains(" ")) {

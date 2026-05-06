@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -1060,7 +1061,7 @@ class TestAuthKeyCloak {
             jsonPath("$.[?(@.id == '21')]").exists(),
             jsonPath("$.[?(@.id == '23')]").exists(),
             jsonPath("$.[?(@.id == '20')].ssech").value(1),
-            jsonPath("$.[?(@.id == '20')].questionnaireState").value("UNAVAILABLE")
+            jsonPath("$.[?(@.id == '20')].questionnaireState").value(QUESTIONNAIRE_STATE_UNAVAILABLE)
         );
 	}
 

@@ -1,13 +1,13 @@
 package fr.insee.pearljam.contracts.surveyunit.dto.closable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fr.insee.pearljam.contracts.surveyunit.dto.SurveyUnitDtoMappers;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
-import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitMappers;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,11 +39,11 @@ public class ClosableSurveyUnitDto {
                 candidate.getId(),
                 projection.getDisplayName(),
                 projection.getSsech(),
-                SurveyUnitDtoMappers.computeLocation(projection.getAddressL6()),
-                SurveyUnitDtoMappers.computeCity(projection.getAddressL6()),
+                SurveyUnitMappers.computeLocation(projection.getAddressL6()),
+                SurveyUnitMappers.computeCity(projection.getAddressL6()),
                 projection.getFinalizationDate(),
                 projection.getCampaignLabel(),
-                SurveyUnitDtoMappers.computeClosingCause(projection.getClosingCauseType(), candidate.getCurrentStateType()),
+                SurveyUnitMappers.computeClosingCause(projection.getClosingCauseType(), candidate.getCurrentStateType()),
                 candidate.getCurrentStateType(),
                 questionnaireState,
                 candidate.getContactOutcomeType() == null ? null : new ClosableContactOutcomeDto(candidate.getContactOutcomeType()),
@@ -55,16 +55,16 @@ public class ClosableSurveyUnitDto {
     private static Identification toModelIdentification(ClosableSurveyUnitView p) {
         boolean allNull =
                 p.getIdentification() == null
-                        && p.getAccess() == null
-                        && p.getSituation() == null
-                        && p.getCategory() == null
-                        && p.getOccupant() == null
-                        && p.getIndividualStatus() == null
-                        && p.getInterviewerCanProcess() == null
-                        && p.getNumberOfRespondents() == null
-                        && p.getPresentInPreviousHome() == null
-                        && p.getHouseholdComposition() == null
-                        && p.getIdentificationType() == null;
+                && p.getAccess() == null
+                && p.getSituation() == null
+                && p.getCategory() == null
+                && p.getOccupant() == null
+                && p.getIndividualStatus() == null
+                && p.getInterviewerCanProcess() == null
+                && p.getNumberOfRespondents() == null
+                && p.getPresentInPreviousHome() == null
+                && p.getHouseholdComposition() == null
+                && p.getIdentificationType() == null;
 
         if (allNull) return null;
 

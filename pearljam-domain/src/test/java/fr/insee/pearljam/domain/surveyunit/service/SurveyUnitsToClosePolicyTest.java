@@ -1,0 +1,84 @@
+package fr.insee.pearljam.domain.surveyunit.service;
+
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class SurveyUnitsToClosePolicyTest {
+
+    private SurveyUnitClosablePolicy service;
+
+    @BeforeEach
+    void init() {
+        service = new SurveyUnitClosablePolicy();
+    }
+
+    @ParameterizedTest
+    @MethodSource("closableCases")
+    @org.junit.jupiter.api.DisplayName("When evaluating closable survey units, should return correct result")
+    void testClosableEvaluation01(
+            StateType state,
+            ContactOutcomeType outcome,
+            String questionnaireState,
+            boolean expected) {
+
+        // Given
+        var candidate = mockCandidate(state, outcome);
+
+        // When
+        boolean result = service.isClosable(candidate, questionnaireState);
+
+        // Then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    private ClosableSurveyUnitCandidateView mockCandidate(
+            StateType state,
+            ContactOutcomeType outcome) {
+
+        ClosableSurveyUnitCandidateView mock = mock(ClosableSurveyUnitCandidateView.class);
+        when(mock.getCurrentStateType()).thenReturn(state);
+        when(mock.getContactOutcomeType()).thenReturn(outcome);
+        return mock;
+    }
+
+    private static Stream<Arguments> closableCases() {
+
+            return Stream.of(
+                    // ===== NEVER TRANSMITTED =====
+                    Arguments.of(StateType.WFT, ContactOutcomeType.REF, "UNAVAILABLE", true),
+                    Arguments.of(StateType.INS, ContactOutcomeType.INA, null, true),
+
+                    // ===== CLO =====
+                    Arguments.of(StateType.CLO, ContactOutcomeType.INA, null, false),
+                    Arguments.of(StateType.CLO, ContactOutcomeType.REF, "UNAVAILABLE", false),
+
+                    // ===== INA + questionnaire missing =====
+                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, null, true),
+
+                    // ===== INA + questionnaire unavailable =====
+                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, "UNAVAILABLE", true),
+
+                    // ===== INA + questionnaire exists =====
+                    Arguments.of(StateType.FIN, ContactOutcomeType.INA, "COMPLETED", false),
+
+                    // ===== NOT INA =====
+                    Arguments.of(StateType.FIN, ContactOutcomeType.REF, null, false),
+                    Arguments.of(StateType.TBR, ContactOutcomeType.REF, "UNAVAILABLE", false),
+
+                    // ===== EDGE CASES =====
+                    Arguments.of(null, ContactOutcomeType.INA, null, false),
+                    Arguments.of(null, ContactOutcomeType.REF, "UNAVAILABLE", false)
+            );
+    }
+}

@@ -1,42 +1,37 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.JsonNode;
-import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCampaignDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitCreationDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDetailDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerResponseDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
-import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.JsonNode;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * SurveyUnitController is the Controller managing {@link SurveyUnitDB}
@@ -368,10 +363,11 @@ public class SurveyUnitController {
 	 */
 	@Operation(summary = "Get closable survey units")
 	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
+	@Deprecated(forRemoval = true)
 	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
 
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits(request, userId);
+		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits( userId);
 		log.info("Retrieved closable survey units");
 		return lstSu;
 	}

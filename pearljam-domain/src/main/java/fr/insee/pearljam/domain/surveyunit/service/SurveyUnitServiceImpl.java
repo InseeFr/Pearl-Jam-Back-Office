@@ -1,46 +1,36 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.json.JsonMapper;
 import fr.insee.pearljam.contracts.campaign.dto.output.CommunicationTemplateResponseDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.NextContactHistoryDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.model.*;
+import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.NextContactHistoryDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.IdentificationDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
+import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
+import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitUpdateService;
+import fr.insee.pearljam.domain.surveyunit.port.out.*;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
-import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.campaign.port.in.CommunicationTemplateService;
-import fr.insee.pearljam.domain.campaign.port.in.DateService;
-import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
-import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewer;
-import fr.insee.pearljam.domain.surveyunit.port.out.AddressRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitTempZoneRepository;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitUpdateService;
-import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,11 +38,14 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.*;
-import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STATE_UNAVAILABLE;
 
 /**
  * @author scorcaud
@@ -65,7 +58,6 @@ import java.util.stream.Collectors;
 public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private static final String GUEST = "GUEST";
-	private static final String QUESTIONNAIRE_STATE_UNAVAILABLE = "UNAVAILABLE";
 
 	private static final String SU_ID_NOT_FOUND_FOR_INTERVIEWER = "Survey Unit {} not found in DB for interviewer {}";
 	private static final String SU_ID_NOT_FOUND = "Survey unit with id {} was not found in database";
@@ -417,7 +409,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Transactional(readOnly = true)
 	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(
-			HttpServletRequest request,
 			String userId) {
 
 		List<String> lstOuIds = userService.getUserOUs(userId, true).stream()
@@ -440,7 +431,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 								Function.identity()
 						));
 
-		final Map<String, String> questionnaireStates = getQuestionnaireStatesFromDataCollection(request, candidatesById.keySet());
+		final Map<String, String> questionnaireStates = getQuestionnaireStatesFromDataCollection(candidatesById.keySet());
 
 		Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
 				candidates.parallelStream()
@@ -482,12 +473,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 
-	private Map<String, String> getQuestionnaireStatesFromDataCollection(HttpServletRequest request,
+	private Map<String, String> getQuestionnaireStatesFromDataCollection(
 			Set<String> lstSu) {
 		Map<String, String> mapResult = new HashMap<>();
 		try {
-			ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(request,
-					lstSu);
+			ResponseEntity<InterrogationOkNokDto> result = questionnaireStateClient.getQuestionnairesStateFromDataCollection(lstSu);
 			log.info("GET state from data collection service call resulting in {}", result.getStatusCode());
 			InterrogationOkNokDto object = result.getBody();
 			HttpStatusCode responseCode = result.getStatusCode();
