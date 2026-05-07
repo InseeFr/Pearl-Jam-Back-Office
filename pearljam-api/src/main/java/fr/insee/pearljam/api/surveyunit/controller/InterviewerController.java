@@ -2,13 +2,13 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignVisibilityPeriodDto;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @Tag(name = "04. Interviewers", description = "Endpoints for interviewers")
@@ -55,7 +54,7 @@ public class InterviewerController {
 	 */
 	@Operation(summary = "Get interviewers")
 	@GetMapping(path = Constants.API_INTERVIEWERS)
-	public Set<InterviewerDto> getListInterviewers() {
+	public List<InterviewerDto> getListInterviewers() {
 
 		return interviewerService.getInterviewersForCurrentUser();
 	}

@@ -34,7 +34,7 @@ class InterviewerCampaignDailyStatsTest {
     }
 
     @Test
-    @DisplayName("getWasteRate equals (ref + imp + npi) * 100 / allocated")
+    @DisplayName("getWasteRate equals (ref + imp + npa) * 100 / allocated")
     void wasteRate_shouldDivideRefImpNpiByAllocated() {
         // Given
         InterviewerCampaignDailyStats stats = populated();
@@ -43,7 +43,7 @@ class InterviewerCampaignDailyStatsTest {
         float rate = stats.getWasteRate();
 
         // Then
-        assertThat(rate).isEqualTo(10f);
+        assertThat(rate).isEqualTo(12f);
     }
 
     @Test
