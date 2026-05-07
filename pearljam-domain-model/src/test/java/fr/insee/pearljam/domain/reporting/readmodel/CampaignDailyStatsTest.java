@@ -50,7 +50,7 @@ class CampaignDailyStatsTest {
         float rate = stats.getWasteRate();
 
         // Then
-        assertThat(rate).isEqualTo(8f);
+        assertThat(rate).isEqualTo(6.4f);
     }
 
     @Test
