@@ -52,7 +52,7 @@ public interface InterviewerJpaRepository extends JpaRepository<InterviewerDB, S
 			    INNER JOIN SurveyUnitDB su
 			        ON su.interviewer.id = interv.id
 			    WHERE (su.organizationUnit.id IN (:ouIds) OR 'GUEST' IN (:ouIds))
-				ORDER BY interv.lastName, interv.firstName
+				ORDER BY LOWER(interv.lastName), LOWER(interv.firstName)
 			""")
 	List<InterviewerDB> findInterviewersByOrganizationUnits(@Param("ouIds") List<String> ouIds);
 
