@@ -1,22 +1,21 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignVisibilityPeriodDto;
-import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
-import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
+import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
+import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
-import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
-import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
+import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -98,7 +97,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 	}
 
 	@Override
-	public Set<InterviewerDto> getInterviewersForCurrentUser() {
+	public List<InterviewerDto> getInterviewersForCurrentUser() {
 		String userId = authenticatedUserService.getCurrentUserId();
 		List<String> lstOuId = userService.getUserOUs(userId, true).stream().map(OrganizationUnitDto::getId)
 				.toList();
@@ -108,7 +107,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 						interviewer.getFirstName(),
 						interviewer.getLastName(),
 						null))
-				.collect(Collectors.toSet());
+				.toList();
 	}
 
 	@Override

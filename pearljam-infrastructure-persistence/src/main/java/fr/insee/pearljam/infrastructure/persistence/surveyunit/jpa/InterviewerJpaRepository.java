@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa;
 
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,6 +52,7 @@ public interface InterviewerJpaRepository extends JpaRepository<InterviewerDB, S
 			    INNER JOIN SurveyUnitDB su
 			        ON su.interviewer.id = interv.id
 			    WHERE (su.organizationUnit.id IN (:ouIds) OR 'GUEST' IN (:ouIds))
+				ORDER BY interv.lastName, interv.firstName
 			""")
 	List<InterviewerDB> findInterviewersByOrganizationUnits(@Param("ouIds") List<String> ouIds);
 
