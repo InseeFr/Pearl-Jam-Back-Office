@@ -72,7 +72,7 @@ class SurveyUnitToReviewApiPresenterTest {
         });
 
         // Verify pagination information
-        assertThat(result.page()).isEqualTo(0);
+        assertThat(result.page()).isZero();
         assertThat(result.size()).isEqualTo(10);
         assertThat(result.totalElements()).isEqualTo(20);
         assertThat(result.totalPages()).isEqualTo(2);

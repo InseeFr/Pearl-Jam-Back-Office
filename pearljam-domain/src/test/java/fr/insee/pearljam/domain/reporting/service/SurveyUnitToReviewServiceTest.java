@@ -101,7 +101,7 @@ class SurveyUnitToReviewServiceTest {
         long now = dateService.getCurrentTimestamp();
 
         when(userService.getUserOUsModel(USER_ID, true))
-                .thenReturn(List.of()); // 👈 aucun OU
+                .thenReturn(List.of());
 
         when(campaignVisibilityPort
                 .findCampaignsWithVisibilityByUserAndManagementVisibility(
@@ -236,7 +236,7 @@ class SurveyUnitToReviewServiceTest {
         );
 
         Page<SurveyUnitToReview> page =
-                new PageImpl<>(content, pageable, 5); // 👈 TOTAL = 5
+                new PageImpl<>(content, pageable, 5);
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
                 anyList(), anyList(), eq(search), eq(pageable)))
