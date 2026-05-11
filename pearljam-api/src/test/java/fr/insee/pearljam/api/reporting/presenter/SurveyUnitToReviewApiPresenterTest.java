@@ -38,8 +38,8 @@ class SurveyUnitToReviewApiPresenterTest {
     void shouldMapSurveyUnitToReviewPageToResponse() {
         // Given
         List<SurveyUnitToReview> surveyUnits = List.of(
-                createSurveyUnitToReview("SU-1", "Campaign 2024", "CONTACTED", "INT-001", "John Doe", false, "First comment"),
-                createSurveyUnitToReview("SU-2", "Campaign 2024", "NOT_CONTACTED", "INT-002", "Jane Smith", true, "Second comment")
+                createSurveyUnitToReview("SU-1", "Campaign 2024", "CONTACTED", "INT-001", "John","Doe", false, "First comment"),
+                createSurveyUnitToReview("SU-2", "Campaign 2024", "NOT_CONTACTED", "INT-002", "Jane", "Smith", true, "Second comment")
         );
 
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits, PageRequest.of(0, 10), 20);
@@ -55,7 +55,7 @@ class SurveyUnitToReviewApiPresenterTest {
             assertThat(dto.id()).isEqualTo("SU-1");
             assertThat(dto.campaignLabel()).isEqualTo("Campaign 2024");
             assertThat(dto.contactOutcome()).isEqualTo("CONTACTED");
-            assertThat(dto.interviewerNameLabel()).isEqualTo("John Doe");
+            assertThat(dto.interviewerLabel()).isEqualTo("John Doe");
             assertThat(dto.viewed()).isFalse();
             assertThat(dto.readOnlyUrl()).isEqualTo(DATACOLLECTION_UI_URL + "/review/interrogations/SU-1");
             assertThat(dto.lastComment()).isEqualTo("First comment");
@@ -65,7 +65,7 @@ class SurveyUnitToReviewApiPresenterTest {
             assertThat(dto.id()).isEqualTo("SU-2");
             assertThat(dto.campaignLabel()).isEqualTo("Campaign 2024");
             assertThat(dto.contactOutcome()).isEqualTo("NOT_CONTACTED");
-            assertThat(dto.interviewerNameLabel()).isEqualTo("Jane Smith");
+            assertThat(dto.interviewerLabel()).isEqualTo("Jane Smith");
             assertThat(dto.viewed()).isTrue();
             assertThat(dto.readOnlyUrl()).isEqualTo(DATACOLLECTION_UI_URL + "/review/interrogations/SU-2");
             assertThat(dto.lastComment()).isEqualTo("Second comment");
@@ -101,7 +101,7 @@ class SurveyUnitToReviewApiPresenterTest {
     void shouldHandleNullValues() {
         // Given
         List<SurveyUnitToReview> surveyUnits = List.of(
-                createSurveyUnitToReview("SU-NULL", null, null, null, null, null, null)
+                createSurveyUnitToReview("SU-NULL", null, null, null, null, null,null, null)
         );
 
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits, PageRequest.of(0, 5), 1);
@@ -115,7 +115,7 @@ class SurveyUnitToReviewApiPresenterTest {
             assertThat(dto.id()).isEqualTo("SU-NULL");
             assertThat(dto.campaignLabel()).isNull();
             assertThat(dto.contactOutcome()).isNull();
-            assertThat(dto.interviewerNameLabel()).isNull();
+            assertThat(dto.interviewerLabel()).isNull();
             assertThat(dto.viewed()).isNull();
             assertThat(dto.readOnlyUrl()).isEqualTo(DATACOLLECTION_UI_URL + "/review/interrogations/SU-NULL");
             assertThat(dto.lastComment()).isNull();
@@ -133,7 +133,7 @@ class SurveyUnitToReviewApiPresenterTest {
     void shouldConstructReadOnlyUrlCorrectly() {
         // Given
         List<SurveyUnitToReview> surveyUnits = List.of(
-                createSurveyUnitToReview("SU-TEST-123", "Test Campaign", "TEST_OUTCOME", "TEST-INT", "Test Interviewer", true, "Test comment")
+                createSurveyUnitToReview("SU-TEST-123", "Test Campaign", "TEST_OUTCOME", "TEST-INT", "Test", "Interviewer", true,"Test comment")
         );
 
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits);
@@ -147,8 +147,9 @@ class SurveyUnitToReviewApiPresenterTest {
     }
 
     private SurveyUnitToReview createSurveyUnitToReview(String id, String campaignLabel, String contactOutcome,
-                                                       String interviewerId, String interviewerName,
+                                                       String interviewerId,
+                                                        String interviewerFirstName, String interviewerLastName,
                                                        Boolean viewed, String lastComment) {
-        return new SurveyUnitToReview(id, campaignLabel, contactOutcome, interviewerId, interviewerName, viewed, lastComment);
+        return new SurveyUnitToReview(id, campaignLabel, contactOutcome, interviewerId, interviewerFirstName, interviewerLastName, viewed, lastComment);
     }
 }

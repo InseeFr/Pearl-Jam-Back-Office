@@ -9,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class SurveyUnitToReviewApiPresenter implements
@@ -37,10 +40,19 @@ public class SurveyUnitToReviewApiPresenter implements
                 surveyUnit.id(),
                 surveyUnit.campaignLabel(),
                 surveyUnit.contactOutcome(),
-                surveyUnit.interviewerName(),
+                buildInterviewerLabel(surveyUnit.interviewerFirstName(), surveyUnit.interviewerLastName()),
                 surveyUnit.viewed(),
                 datacollectionUiUrl + "/review/interrogations/" + surveyUnit.id(),
                 surveyUnit.lastComment()
         );
+    }
+
+    private String buildInterviewerLabel(String firstName, String lastName ) {;
+
+        if (firstName == null && lastName == null) return null;
+
+        return Stream.of(firstName, lastName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" "));
     }
 }

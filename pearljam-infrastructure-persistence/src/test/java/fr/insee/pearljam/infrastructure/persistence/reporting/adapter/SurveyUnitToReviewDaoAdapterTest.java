@@ -180,7 +180,8 @@ class SurveyUnitToReviewDaoAdapterTest {
         SurveyUnitToReview first = result.getContent().getFirst();
         assertThat(first.id()).isEqualTo("SU-1");
         assertThat(first.campaignLabel()).isEqualTo("Test Campaign");
-        assertThat(first.interviewerName()).isEqualTo("Jean Dupont");
+        assertThat(first.interviewerFirstName()).isEqualTo("Jean");
+        assertThat(first.interviewerLastName()).isEqualTo("Dupont");
         assertThat(first.viewed()).isTrue();
         assertThat(first.lastComment()).isEqualTo("Comment for SU-1");
     }

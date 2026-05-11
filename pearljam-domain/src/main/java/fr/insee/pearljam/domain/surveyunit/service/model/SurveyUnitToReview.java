@@ -9,7 +9,8 @@ package fr.insee.pearljam.domain.surveyunit.service.model;
  * @param campaignLabel the label of the campaign
  * @param contactOutcome the contact outcome of the survey unit
  * @param interviewerId the identifier of the interviewer
- * @param interviewerName the name of the interviewer
+ * @param interviewerFirstName the first name of the interviewer
+ * @param interviewerLastName the last name of the interviewer
  * @param viewed whether the survey unit has been viewed
  * @param lastComment the last comment on the survey unit
  */
@@ -18,7 +19,8 @@ public record SurveyUnitToReview(
         String campaignLabel,
         String contactOutcome,
         String interviewerId,
-        String interviewerName,
+        String interviewerFirstName,
+        String interviewerLastName,
         Boolean viewed,
         String lastComment
 ) {

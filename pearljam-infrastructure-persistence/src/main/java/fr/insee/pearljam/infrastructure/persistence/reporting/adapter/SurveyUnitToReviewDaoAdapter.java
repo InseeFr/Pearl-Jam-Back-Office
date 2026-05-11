@@ -175,7 +175,8 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                 rs.getString("campaignLabel"),
                 rs.getString("contact_outcome"),
                 rs.getString("interviewerId"),
-                (rs.getString("interviewerFirstName") + " " + rs.getString("interviewerLastName")).trim(),
+                rs.getString("interviewerFirstName"),
+                rs.getString("interviewerLastName"),
                 rs.getBoolean("viewed"),
                 rs.getString("lastComment")
         );

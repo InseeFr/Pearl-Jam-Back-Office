@@ -1,15 +1,17 @@
 package fr.insee.pearljam.integration.campaign;
 
-import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
+import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.ReferentDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import org.json.JSONArray;
@@ -19,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -218,7 +220,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         CampaignDB campaignCreated = campaignOptional.get();
         assertCampaignInfos(campaignCreated, campaignId, "An other campaign", "test.email@plop.com",
-                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.HOUSETEL,
                 ContactOutcomeConfiguration.F2F);
         assertThat(campaignCreated.getVisibilities()).hasSize(2);
         assertThat(campaignCreated.getVisibilities())
@@ -322,7 +324,7 @@ class CampaignIT {
         assertThat(campaignOptional).isPresent();
         CampaignDB campaignUpdated = campaignOptional.get();
         assertCampaignInfos(campaignUpdated, campaignId, "An other campaign", "test.test@sdf.com",
-                ContactAttemptConfiguration.F2F, IdentificationConfiguration.IASCO,
+                ContactAttemptConfiguration.F2F, IdentificationConfiguration.HOUSETEL,
                 ContactOutcomeConfiguration.TEL);
         assertThat(campaignUpdated.getVisibilities()).hasSize(2);
         assertThat(campaignUpdated.getVisibilities())

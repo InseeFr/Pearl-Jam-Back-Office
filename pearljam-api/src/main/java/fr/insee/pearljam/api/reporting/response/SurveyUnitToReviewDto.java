@@ -14,7 +14,7 @@ public record SurveyUnitToReviewDto(
         String contactOutcome,
 
         @Schema(description = "Interviewer name", example = "John Doe")
-        String interviewerNameLabel,
+        String interviewerLabel,
 
         @Schema(description = "Whether the survey unit has been viewed", example = "false")
         Boolean viewed,
