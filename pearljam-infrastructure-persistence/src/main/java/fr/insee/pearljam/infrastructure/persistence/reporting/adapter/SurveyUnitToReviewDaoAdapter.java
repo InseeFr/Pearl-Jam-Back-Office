@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO adapter implementation for SurveyUnitToReviewRepositoryPort.
@@ -22,6 +24,21 @@ import java.util.List;
 public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositoryPort {
 
     private final JdbcClient jdbc;
+
+    private static final Map<String, String> ALLOWED_SORTS = Map.of(
+            "campaignLabel", "c.label",
+            "surveyUnitId", "su.id",
+            "interviewerLastName", "i.last_name",
+            "contactOutcome", "co.type"
+    );
+
+    private static final String SEARCH_CONDITION = """
+    AND (
+        LOWER(c.label) LIKE :search OR
+        LOWER(su.id) LIKE :search OR
+        LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE :search
+    )
+    """;
 
     @Override
     public Page<SurveyUnitToReview> findSurveyUnitsToReview(
@@ -39,8 +56,6 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
 
     private List<SurveyUnitToReview> executeMainQuery(
             List<String> campaignIds, List<String> ouIds, String search, Pageable pageable) {
-
-        String sortClause = buildSortClause(pageable);
 
         String sql = """
                              SELECT
@@ -78,7 +93,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                                AND su.campaign_id IN (:campaignIds)
                                AND su.organization_unit_id IN (:ouIds)
                              """ + buildSearchCondition(search) + """
-                             """ + sortClause + """
+                             """ + buildSortClause(pageable) + """
                              LIMIT :limit OFFSET :offset
                              """;
 
@@ -133,40 +148,25 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                 """;
     }
 
+
+
     private String buildSortClause(Pageable pageable) {
+
         if (pageable.getSort().isEmpty()) {
-            return "ORDER BY su.id ASC ";
+            return " ORDER BY su.id ASC ";
         }
 
-        StringBuilder sortClause = new StringBuilder("ORDER BY ");
-        pageable.getSort().forEach(order -> {
-            if (sortClause.length() > 9) {
-                sortClause.append(", ");
-            }
-            // Validate and sanitize the sort property to prevent SQL injection
-            String safeColumn = getSafeSortColumn(order.getProperty());
-            sortClause.append(safeColumn)
-                    .append(" ")
-                    .append(order.getDirection());
-        });
-        return sortClause.toString() + " ";
-    }
+        Sort.Order order = pageable.getSort().iterator().next();
 
-    private String getSafeSortColumn(String property) {
-        // Validate and sanitize the property to prevent SQL injection
-        if (property == null || property.trim().isEmpty()) {
-            return "su.id";
+        String column = ALLOWED_SORTS.get(order.getProperty());
+
+        if (column == null) {
+            throw new IllegalArgumentException("Invalid sort column");
         }
 
-        // Use a map for safe lookup instead of direct string manipulation
-        return switch (property.toLowerCase().trim()) {
-            case "campaignlabel" -> "c.label";
-            case "contactoutcome" -> "co.type";
-            case "interviewername" -> "CONCAT(i.first_name, ' ', i.last_name)";
-            case "viewed" -> "su.viewed";
-            case "lastcomment" -> "lastComment";
-            default -> "su.id"; // Default safe column
-        };
+        String direction = order.isDescending() ? "DESC" : "ASC";
+
+        return " ORDER BY " + column + " " + direction + " ";
     }
 
     private SurveyUnitToReview mapToSurveyUnitToReview(ResultSet rs, int rowNum) throws SQLException {
