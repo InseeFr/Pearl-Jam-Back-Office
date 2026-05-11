@@ -229,7 +229,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
           AND cds.organization_unit_id IN (:ouIds)
           AND cds.day = :day
         GROUP BY interv.id, interv.first_name, interv.last_name
-        ORDER by interv.last_name ASC, interv.first_name ASC
+        ORDER by LOWER(interv.last_name) ASC, LOWER(interv.first_name) ASC
     """.formatted(DATA_SELECTION);
 
     @Override
