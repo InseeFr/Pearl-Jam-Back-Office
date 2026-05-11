@@ -1,16 +1,16 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignSummaryProgressPort;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
-import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,6 +61,10 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
 
         return campaigns.stream()
                 .filter(c -> statsByCampaign.containsKey(c.id()))
+                .sorted(Comparator.comparing(
+                        CampaignVisibility::label,
+                        String.CASE_INSENSITIVE_ORDER
+                ))
                 .map(campaign -> {
                     CampaignDailyStats stats = statsByCampaign.get(campaign.id());
                     return new CampaignSummaryProgress(
@@ -78,6 +83,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                             StatesSummaryProgress.from(stats)
                     );
                 })
+
                 .toList();
     }
 

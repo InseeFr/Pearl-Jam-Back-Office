@@ -31,14 +31,16 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 			"FROM VisibilityDB v JOIN v.campaign " +
 			"WHERE v.visibilityId.organizationUnitId IN (:ouIds) " +
 			"AND v.endDate > :date " +
-			"AND v.managementStartDate <= :date")
+			"AND v.managementStartDate <= :date "+
+			"ORDER BY v.campaign.label")
 	List<CampaignSummary> findAllManagedAndNotClosedCampaignByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = """
 		SELECT DISTINCT(campaign_id) FROM visibility
 		WHERE organization_unit_id IN (:ouIds)
 		AND management_start_date <= :date
-		AND end_date > :date
+		AND end_date > :date .
+		ORDER BY campaign.label
 		""", nativeQuery = true)
 	List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
