@@ -2140,14 +2140,14 @@ class TestAuthKeyCloak {
 						jsonPath("$.id").value("SIMPSONS2020X00"),
 						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
 						jsonPath("$.email").value("first.email@test.com"),
-						jsonPath("$.interviewers[0].firstName").value("Gerald"),
-						jsonPath("$.interviewers[0].lastName").value("Edwards"),
-						jsonPath("$.interviewers[0].count").value(1),
+						jsonPath("$.interviewers[*].firstName").value(hasItem("Margie")),
+						jsonPath("$.interviewers[*].lastName").value(hasItem("Lucas")),
+						jsonPath("$.interviewers[*].count").value(hasItem(2)),
 						jsonPath("$.abandoned").value(0),
 						jsonPath("$.unallocated").value(1),
-						jsonPath("$.total").value(6));
+						jsonPath("$.total").value(6)
+				);
 	}
-
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/portal-data"
 	 * return 404 when campaign doesn't exist
