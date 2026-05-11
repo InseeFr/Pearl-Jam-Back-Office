@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public record PersonDto(
         Long id,
-        @NotNull
         Title title,
         @NotNull
         String firstName,

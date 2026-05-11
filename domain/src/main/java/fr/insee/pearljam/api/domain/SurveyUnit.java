@@ -339,7 +339,24 @@ public class SurveyUnit implements Serializable {
 		Set<PersonDB> existingPersons = this.getPersons();
 
 		Set<PersonDB> personsDBToUpdate = personsToUpdate.stream()
-				.map(newPerson -> PersonDB.fromModel(newPerson, null, this))
+				.map(newPerson -> {
+					// Force new entity creation by setting ID to null for persons without contactHistory
+					// Set default title to MISTER if null
+					Title title = newPerson.title() != null ? newPerson.title() : Title.MISTER;
+					Person personWithoutId = new Person(
+							null, // Force ID to null to create new entity
+							title,
+							newPerson.firstName(),
+							newPerson.lastName(),
+							newPerson.email(),
+							newPerson.birthdate(),
+							newPerson.privileged(),
+							newPerson.isPanel(),
+							newPerson.phoneNumbers(),
+							newPerson.contactHistory()
+					);
+					return PersonDB.fromModel(personWithoutId, null, this);
+				})
 				.collect(Collectors.toSet());
 
 		// we remove persons not linked to contactHistory, handled appart

@@ -8,6 +8,8 @@ import fr.insee.pearljam.api.dto.organizationunit.OrganizationUnitDto;
 import fr.insee.pearljam.api.dto.state.StateDto;
 import fr.insee.pearljam.api.dto.surveyunit.*;
 import fr.insee.pearljam.api.repository.*;
+
+import java.util.Comparator;
 import fr.insee.pearljam.api.service.SurveyUnitService;
 import fr.insee.pearljam.api.service.SurveyUnitUpdateService;
 import fr.insee.pearljam.api.service.UserService;
@@ -162,6 +164,17 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			surveyUnitOpt = surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(surveyUnitId, userId);
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
+
+		// Check if survey unit has been moved (MULTIMODE_MOVED event)
+		if (surveyUnit.getOtherModeQuestionnaireState() != null && !surveyUnit.getOtherModeQuestionnaireState().isEmpty()) {
+			Optional<OtherModeQuestionnaireState> lastState = surveyUnit.getOtherModeQuestionnaireState().stream()
+				.max(Comparator.comparing(OtherModeQuestionnaireState::getDate));
+			if (lastState.isPresent() && "MULTIMODE_MOVED".equals(lastState.get().getState())) {
+				log.warn("Survey Unit {} has been moved (last state is MULTIMODE_MOVED), update is not allowed", surveyUnitId);
+				return new SurveyUnitDetailDto(surveyUnit);
+			}
+		}
+
 		surveyUnit.setMove(surveyUnitUpdate.move());
 		updateAddress(surveyUnit, surveyUnitUpdate);
 

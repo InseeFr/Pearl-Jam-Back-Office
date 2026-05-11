@@ -2,6 +2,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.adapter;
 
 import fr.insee.pearljam.api.domain.State;
 import fr.insee.pearljam.api.domain.StateType;
+import fr.insee.pearljam.api.domain.Title;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.serverside.MovedSurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.surveyunit.entity.PersonDB;
@@ -27,10 +28,14 @@ public class MovedSurveyUnitDaoAdapter implements MovedSurveyUnitRepository {
             // Update identification to set demenagementWeb to true instead of resetting it
             unit.setIdentificationDemenagementWeb(true);
 
+            // Remove all contact histories before removing persons
+            unit.getContactHistory().clear();
+
             // Remove all persons and create a new one with only firstName and lastName
             unit.getPersons().clear();
 
             var newPerson = new PersonDB();
+            newPerson.setTitle(Title.MISTER);
             newPerson.setFirstName("PRENOM");
             newPerson.setLastName("NOM");
             newPerson.setSurveyUnit(unit);
