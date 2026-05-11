@@ -28,6 +28,7 @@ public class InterviewerCountDaoAdapter implements InterviewerCountRepository {
             WHERE su.campaign.id = :campaignId
               AND (su.organizationUnit.id IN :organizationUnitIds OR 'GUEST' IN :organizationUnitIds)
             GROUP BY interv.id, interv.firstName, interv.lastName
+            ORDER BY LOWER(interv.lastName), LOWER(interv.firstName)
             """;
 
         return em.createQuery(jpql, InterviewerCount.class)
