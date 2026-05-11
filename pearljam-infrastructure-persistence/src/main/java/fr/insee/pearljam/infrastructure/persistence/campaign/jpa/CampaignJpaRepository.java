@@ -1,17 +1,17 @@
 package fr.insee.pearljam.infrastructure.persistence.campaign.jpa;
 
-import java.util.List;
-import java.util.Optional;
-
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
-import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
 import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * CampaignRepository is the repository using to access to Campaign table in DB
@@ -99,6 +99,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	WHERE ou.id in (:ouIds)
 	AND vi.managementStartDate <= :date
 	AND vi.endDate > :date
+	ORDER BY camp.label, camp.id
 	""")
 	List<CampaignPreferenceDto> findByOuIdWithPreference(
 			@Param("ouIds") List<String> ouIds,

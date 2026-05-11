@@ -1,59 +1,58 @@
 package fr.insee.pearljam.api.authKeycloak;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.client.RestClient;
-import tools.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
-import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
-import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.domain.message.model.*;
-import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.model.*;
-import fr.insee.pearljam.contracts.surveyunit.dto.closingcause.ClosingCauseDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
-import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitContextDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.person.PhoneNumberDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.user.UserContextDto;
-import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.api.message.dto.WsTextDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.ScriptConstants;
 import fr.insee.pearljam.config.FixedDateServiceConfiguration;
-import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.contracts.message.dto.MessageDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitContextDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserContextDto;
+import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.closingcause.ClosingCauseDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.contacthistory.PreviousContactHistoryDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.person.PhoneNumberDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
+import fr.insee.pearljam.domain.message.model.MessageStatusType;
+import fr.insee.pearljam.domain.message.port.in.MessageService;
+import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.security.model.AuthorityRole;
+import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.UserJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.UserJpaRepository;
-import fr.insee.pearljam.domain.message.port.in.MessageService;
-import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
-import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
-import fr.insee.pearljam.domain.security.model.AuthorityRole;
-import fr.insee.pearljam.domain.surveyunit.model.CommentType;
-import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -67,6 +66,8 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -2139,14 +2140,20 @@ class TestAuthKeyCloak {
 						jsonPath("$.id").value("SIMPSONS2020X00"),
 						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
 						jsonPath("$.email").value("first.email@test.com"),
-						jsonPath("$.interviewers[0].firstName").value("Margie"),
-						jsonPath("$.interviewers[0].lastName").value("Lucas"),
-						jsonPath("$.interviewers[0].count").value(2),
+						jsonPath("$.interviewers[0].firstName").value("Carlton"),
+						jsonPath("$.interviewers[0].lastName").value("Campbell"),
+						jsonPath("$.interviewers[0].count").value(1),
+						jsonPath("$.interviewers[1].firstName").value("Gerald"),
+						jsonPath("$.interviewers[1].lastName").value("Edwards"),
+						jsonPath("$.interviewers[1].count").value(1),
+						jsonPath("$.interviewers[2].firstName").value("Margie"),
+						jsonPath("$.interviewers[2].lastName").value("Lucas"),
+						jsonPath("$.interviewers[2].count").value(2),
 						jsonPath("$.abandoned").value(0),
 						jsonPath("$.unallocated").value(1),
-						jsonPath("$.total").value(6));
+						jsonPath("$.total").value(6)
+				);
 	}
-
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/portal-data"
 	 * return 404 when campaign doesn't exist
