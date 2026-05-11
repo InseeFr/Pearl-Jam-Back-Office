@@ -47,7 +47,7 @@ public interface InterviewerJpaRepository extends JpaRepository<InterviewerDB, S
 														  @Param("ouIds") List<String> ouIds);
 
 	@Query("""
-			    SELECT DISTINCT interv
+			    SELECT interv
 			    FROM InterviewerDB interv
 			    INNER JOIN SurveyUnitDB su
 			        ON su.interviewer.id = interv.id

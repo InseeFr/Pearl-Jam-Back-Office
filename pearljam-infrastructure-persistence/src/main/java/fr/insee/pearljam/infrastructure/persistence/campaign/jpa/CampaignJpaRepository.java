@@ -99,7 +99,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	WHERE ou.id in (:ouIds)
 	AND vi.managementStartDate <= :date
 	AND vi.endDate > :date
-	ORDER BY LOWER(camp.label)
+	ORDER BY camp.label, camp.id
 	""")
 	List<CampaignPreferenceDto> findByOuIdWithPreference(
 			@Param("ouIds") List<String> ouIds,
