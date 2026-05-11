@@ -130,7 +130,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     AND cds.organization_unit_id IN (:ouIds)
     AND cds.day = :day
     GROUP BY ou.id, ou.label, su.unaffected
-    ORDER by ou.label ASC;
+    ORDER by ou.label COLLATE "fr_FR" ASC;
     """.formatted(DATA_SELECTION);
 
     @Override
