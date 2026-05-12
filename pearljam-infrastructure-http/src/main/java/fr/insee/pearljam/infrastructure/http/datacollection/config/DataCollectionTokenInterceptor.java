@@ -24,7 +24,7 @@ public class DataCollectionTokenInterceptor implements ClientHttpRequestIntercep
                                         byte @NonNull [] body,
                                         ClientHttpRequestExecution execution) throws IOException {
         HttpHeaders headers = request.getHeaders();
-        String jwt = authenticationHelper.getCurrentUserId();
+        String jwt = authenticationHelper.getToken();
         headers.setBearerAuth(jwt);
         return execution.execute(request, body);
     }
