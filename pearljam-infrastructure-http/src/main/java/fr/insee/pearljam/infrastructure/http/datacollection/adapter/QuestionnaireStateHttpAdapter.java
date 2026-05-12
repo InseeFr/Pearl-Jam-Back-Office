@@ -43,7 +43,7 @@ public class QuestionnaireStateHttpAdapter implements QuestionnaireStatePort {
                     .forEach(su -> result.put(su.id(), su.stateData().getState()));
 
             body.interrogationNOK()
-                    .forEach(su -> result.put(su.id(), su.stateData().getState()));
+                    .forEach(su -> result.put(su.id(), Constants.QUESTIONNAIRE_STATE_UNAVAILABLE));
 
         } catch (Exception e) {
             log.error("Fallback UNAVAILABLE", e);
