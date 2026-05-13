@@ -85,8 +85,10 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                              WHERE ls.current_state = 'TBR'
                                AND su.campaign_id IN (:campaignIds)
                                AND su.organization_unit_id IN (:ouIds)
-                             """ + buildSearchCondition(search) + """
-                             """ + buildSortClause(pageable) + """
+                             """ +
+                            buildSearchCondition(search) +
+                            buildSortClause(pageable) +
+                            """
                              LIMIT :limit OFFSET :offset
                              """;
 

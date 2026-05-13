@@ -47,7 +47,7 @@ public class SurveyUnitToReviewApiPresenter implements
         );
     }
 
-    private String buildInterviewerLabel(String firstName, String lastName ) {;
+    private String buildInterviewerLabel(String firstName, String lastName ) {
 
         if (firstName == null && lastName == null) return null;
 

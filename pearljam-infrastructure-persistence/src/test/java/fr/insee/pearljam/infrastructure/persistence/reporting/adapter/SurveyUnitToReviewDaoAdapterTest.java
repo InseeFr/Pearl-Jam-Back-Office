@@ -172,7 +172,7 @@ class SurveyUnitToReviewDaoAdapterTest {
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(4); // SU-1, SU-2, SU-3, SU-4 (SU-5 is not TBR)
         assertThat(result.getTotalPages()).isEqualTo(2);
-        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.getNumber()).isZero();
         assertThat(result.getSize()).isEqualTo(2);
         assertThat(result.getContent()).hasSize(2);
 

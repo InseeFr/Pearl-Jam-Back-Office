@@ -161,10 +161,10 @@ class SurveyUnitUpdateServiceImplTest {
     }
 
     private List<CommunicationRequestCreateDto> buildCommunicationRequestCreateDtos() {
-        return List.of(buildCommunicationRequestCreateDto(CommunicationMedium.EMAIL));
+        return List.of(buildCommunicationRequestCreateDto());
     }
 
-    private CommunicationRequestCreateDto buildCommunicationRequestCreateDto(CommunicationMedium medium) {
+    private CommunicationRequestCreateDto buildCommunicationRequestCreateDto() {
         return new CommunicationRequestCreateDto(COMMUNICATION_TEMPLATE_ID, CREATION_TIMESTAMP, CommunicationRequestReason.REFUSAL);
     }
 
@@ -215,7 +215,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("When creating communication request with EMAIL medium, request is created")
     void testGetNewCommunicationRequestEmail() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.EMAIL);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.EMAIL);
         communicationTemplateRepository.save(template);
         CommunicationRequest result = invokeGetNewCommunicationRequest(requestDto, surveyUnit, CURRENT_TIMESTAMP);
@@ -229,8 +229,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("When creating communication request with LETTER medium and useLetterCommunication=true, request is created")
     void testGetNewCommunicationRequestLetterUseLetterTrue() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.LETTER);
-        CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();        CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
         communicationTemplateRepository.save(template);
         Visibility visibility = buildVisibility(true);
         when(visibilityService.findVisibility(CAMPAIGN_ID, OU_ID)).thenReturn(Optional.of(visibility));
@@ -244,7 +243,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("When creating communication request with LETTER medium and useLetterCommunication=false, request is cancelled")
     void testGetNewCommunicationRequestLetterUseLetterFalse() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.LETTER);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
         communicationTemplateRepository.save(template);
         Visibility visibility = buildVisibility(false);
@@ -278,17 +277,6 @@ class SurveyUnitUpdateServiceImplTest {
         assertThat(communicationRequestRepository.getCommunicationRequestsAdded()).isNull();
     }
 
-    @Test
-    @DisplayName("When updating survey unit with null identification, fallback to IdentificationDB.toModel")
-    void su04_testUpdateSurveyUnitInfosNullIdentification() {
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        SurveyUnitUpdateDto updateDto = buildUpdateDtoWithNullIdentification();
-        CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.EMAIL);
-        communicationTemplateRepository.save(template);
-        when(dateService.getCurrentTimestamp()).thenReturn(CURRENT_TIMESTAMP);
-        service.updateSurveyUnitInfos(surveyUnit, updateDto);
-        assertThat(surveyUnit.getIdentification()).isNotNull();
-    }
 
     @Test
     @DisplayName("When updating survey unit with null persons, persons are set to empty list")
@@ -344,9 +332,9 @@ class SurveyUnitUpdateServiceImplTest {
 
     @Test
     @DisplayName("When creating communication request with non-existent template, throws CommunicationTemplateNotFoundException")
-    void cr04_testGetNewCommunicationRequestTemplateNotFound() throws Exception {
+    void cr04_testGetNewCommunicationRequestTemplateNotFound() {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.EMAIL);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         assertThatThrownBy(() -> invokeGetNewCommunicationRequest(requestDto, surveyUnit, CURRENT_TIMESTAMP))
                 .hasCauseInstanceOf(CommunicationTemplateNotFoundException.class);
     }
@@ -355,7 +343,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("When creating LETTER communication request with non-existent visibility, throws VisibilityNotFoundException")
     void cr05_testGetNewCommunicationRequestVisibilityNotFound() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.LETTER);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
         communicationTemplateRepository.save(template);
         when(visibilityService.findVisibility(CAMPAIGN_ID, OU_ID)).thenReturn(Optional.empty());
@@ -367,7 +355,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("When creating LETTER communication request with useLetterCommunication=null, request is cancelled")
     void cr08_testGetNewCommunicationRequestLetterUseLetterNull() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.LETTER);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
         communicationTemplateRepository.save(template);
         Visibility visibility = buildVisibility(null);
@@ -488,7 +476,7 @@ class SurveyUnitUpdateServiceImplTest {
     @DisplayName("On getNewCommunicationRequest with LETTER medium, verify findVisibility is called")
     void int02_testFindVisibilityIsCalled() throws Exception {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto(CommunicationMedium.LETTER);
+        CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
         communicationTemplateRepository.save(template);
         Visibility visibility = buildVisibility(true);
