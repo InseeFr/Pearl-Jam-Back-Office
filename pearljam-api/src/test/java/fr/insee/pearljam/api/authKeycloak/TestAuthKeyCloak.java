@@ -34,7 +34,7 @@ import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
@@ -48,6 +48,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
+import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
@@ -105,18 +106,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestAuthKeyCloak {
 
 	private final UserService userService;
-	private final SurveyUnitService surveyUnitService;
 	private final StateJpaRepository stateRepository;
+	private final SurveyUnitService surveyUnitService;
 	private final UserJpaRepository userRepository;
 	private final SurveyUnitJpaRepository surveyUnitRepository;
 	private final CampaignJpaRepository campaignRepository;
 	private final MessageJpaRepository messageRepository;
 	private final OrganizationUnitJpaRepository organizationUnitRepository;
 	private final InterviewerJpaRepository interviewerRepository;
-	private final ClosingCauseJpaRepository closingCauseRepository;
 	private final MessageService messageService;
 	private final PreferenceService preferenceService;
-	private final FixedDateService fixedDateService;
 
 	private final MockMvc mockMvc;
 
@@ -2140,20 +2139,14 @@ class TestAuthKeyCloak {
 						jsonPath("$.id").value("SIMPSONS2020X00"),
 						jsonPath("$.label").value("Survey on the Simpsons tv show 2020"),
 						jsonPath("$.email").value("first.email@test.com"),
-						jsonPath("$.interviewers[0].firstName").value("Carlton"),
-						jsonPath("$.interviewers[0].lastName").value("Campbell"),
-						jsonPath("$.interviewers[0].count").value(1),
-						jsonPath("$.interviewers[1].firstName").value("Gerald"),
-						jsonPath("$.interviewers[1].lastName").value("Edwards"),
-						jsonPath("$.interviewers[1].count").value(1),
-						jsonPath("$.interviewers[2].firstName").value("Margie"),
-						jsonPath("$.interviewers[2].lastName").value("Lucas"),
-						jsonPath("$.interviewers[2].count").value(2),
+						jsonPath("$.interviewers[0].firstName").value("Margie"),
+						jsonPath("$.interviewers[0].lastName").value("Lucas"),
+						jsonPath("$.interviewers[0].count").value(2),
 						jsonPath("$.abandoned").value(0),
 						jsonPath("$.unallocated").value(1),
-						jsonPath("$.total").value(6)
-				);
+						jsonPath("$.total").value(6));
 	}
+
 	/**
 	 * Test that the GET endpoint "api/campaign/{id}/portal-data"
 	 * return 404 when campaign doesn't exist

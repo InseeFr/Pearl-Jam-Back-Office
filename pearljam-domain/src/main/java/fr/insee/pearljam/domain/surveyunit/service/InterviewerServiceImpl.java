@@ -6,16 +6,16 @@ import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContext
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerDto;
 import fr.insee.pearljam.domain.campaign.model.CampaignVisibilityPeriod;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,14 +40,14 @@ public class InterviewerServiceImpl implements InterviewerService {
 	private final InterviewerRepository interviewerRepository;
 	private final VisibilityRepository visibilityRepository;
 	private final UserService userService;
-	private final SurveyUnitService surveyUnitService;
+	private final SurveyUnitPort surveyUnitPort;
 	private final InterviewerCountRepository campaignInterviewerRepository;
 	private final AuthenticatedUserService authenticatedUserService;
 
 	public List<CampaignVisibilityPeriodDto> findCampaignsOfInterviewer(String interviewerId) {
 		interviewerRepository.findById(interviewerId).orElseThrow(() -> new InterviewerNotFoundException(interviewerId));
 
-		List<String> suIds = surveyUnitService.getAllIdsByInterviewerId(interviewerId);
+		List<String> suIds = surveyUnitPort.getAllIdsByInterviewerId(interviewerId);
 		if (suIds.isEmpty()) return List.of();
 
 		List<CampaignVisibilityPeriod> campaignVisibilities = visibilityRepository.findCampaignsBySurveyUnitIds(suIds);
@@ -113,9 +113,9 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Override
 	public void delete(String id) {
 		interviewerRepository.findById(id).orElseThrow(() -> new InterviewerNotFoundException(id));
-		List<String> ids = surveyUnitService.getAllIdsByInterviewerId(id);
+		List<String> ids = surveyUnitPort.getAllIdsByInterviewerId(id);
 		if (!ids.isEmpty()) {
-			surveyUnitService.removeInterviewerLink(ids);
+			surveyUnitPort.removeInterviewerLink(ids);
 		}
 		interviewerRepository.deleteById(id);
 	}

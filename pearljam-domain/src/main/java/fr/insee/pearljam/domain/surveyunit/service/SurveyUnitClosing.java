@@ -107,4 +107,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         );
     }
 
+    @Override
+    public void deleteClosingCauseBySurveyUnitId(String surveyUnitId) {
+        closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
+    }
 }

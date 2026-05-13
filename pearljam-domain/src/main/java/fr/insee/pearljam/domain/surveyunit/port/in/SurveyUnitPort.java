@@ -23,7 +23,7 @@ import java.util.Set;
  * @author scorcaud
  *
  */
-public interface SurveyUnitService {
+public interface SurveyUnitPort {
 
 	SurveyUnitInterviewerResponseDto buildSurveyUnitInterviewerResponse(SurveyUnitDB surveyUnit);
 
@@ -65,13 +65,6 @@ public interface SurveyUnitService {
 	 * @return {@link HttpStatus}
 	 */
 	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
-
-	/**
-	 * @param listSU
-	 * @param state
-	 * @return {@link HttpStatus}
-	 */
-	HttpStatus addStateToSurveyUnit(String listSU, StateType state);
 
 	/**
 	 * @param suId
