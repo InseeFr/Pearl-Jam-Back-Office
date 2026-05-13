@@ -14,7 +14,7 @@ import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.port.in.InterviewerService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,14 +40,14 @@ public class InterviewerServiceImpl implements InterviewerService {
 	private final InterviewerRepository interviewerRepository;
 	private final VisibilityRepository visibilityRepository;
 	private final UserService userService;
-	private final SurveyUnitPort surveyUnitPort;
+	private final SurveyUnitService surveyUnitService;
 	private final InterviewerCountRepository campaignInterviewerRepository;
 	private final AuthenticatedUserService authenticatedUserService;
 
 	public List<CampaignVisibilityPeriodDto> findCampaignsOfInterviewer(String interviewerId) {
 		interviewerRepository.findById(interviewerId).orElseThrow(() -> new InterviewerNotFoundException(interviewerId));
 
-		List<String> suIds = surveyUnitPort.getAllIdsByInterviewerId(interviewerId);
+		List<String> suIds = surveyUnitService.getAllIdsByInterviewerId(interviewerId);
 		if (suIds.isEmpty()) return List.of();
 
 		List<CampaignVisibilityPeriod> campaignVisibilities = visibilityRepository.findCampaignsBySurveyUnitIds(suIds);
@@ -113,9 +113,9 @@ public class InterviewerServiceImpl implements InterviewerService {
 	@Override
 	public void delete(String id) {
 		interviewerRepository.findById(id).orElseThrow(() -> new InterviewerNotFoundException(id));
-		List<String> ids = surveyUnitPort.getAllIdsByInterviewerId(id);
+		List<String> ids = surveyUnitService.getAllIdsByInterviewerId(id);
 		if (!ids.isEmpty()) {
-			surveyUnitPort.removeInterviewerLink(ids);
+			surveyUnitService.removeInterviewerLink(ids);
 		}
 		interviewerRepository.deleteById(id);
 	}

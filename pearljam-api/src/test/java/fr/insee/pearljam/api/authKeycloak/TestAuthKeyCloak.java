@@ -23,7 +23,6 @@ import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.campaign.port.in.PreferenceService;
-import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.message.model.MessageStatusType;
 import fr.insee.pearljam.domain.message.port.in.MessageService;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
@@ -36,7 +35,6 @@ import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOu
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;

@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakePort;
+import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.RawIdentificationDto;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class SurveyUnitControllerTest {
     private MockMvc mockMvc;
-    private SurveyUnitFakePort surveyUnitService;
+    private SurveyUnitFakeService surveyUnitService;
     private String surveyUnitJson;
     private String identification;
     private String surveyUnitTemplate;
@@ -69,7 +69,7 @@ class SurveyUnitControllerTest {
                 }
                 """;
         surveyUnitJson = String.format(surveyUnitTemplate, comments, identification);
-        surveyUnitService = new SurveyUnitFakePort();
+        surveyUnitService = new SurveyUnitFakeService();
         surveyUnitStatePort = mock(SurveyUnitStatePort.class);
         ExceptionControllerAdvice exceptionControllerAdvice = MockMvcTestUtils.createExceptionControllerAdvice();
         Authentication authUser = AuthenticatedUserTestHelper.AUTH_ADMIN;
