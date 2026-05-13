@@ -3,14 +3,12 @@ package fr.insee.pearljam.api.web.exception;
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
-import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
-import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.*;
 import fr.insee.pearljam.domain.message.service.exception.SendMailException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.shared.exception.EntityAlreadyExistException;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserNotAssociatedToCampaignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -189,6 +187,16 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(ClosingCauseAlreadyExistsException.class)
     public ProblemDetail closingCauseAlreadyExistsException(Exception e) {
         return generateResponseError(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ForbiddenOperation.class)
+    public ProblemDetail forbiddenOperationException(Exception e) {
+        return generateResponseError(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(StateNotFoundException.class)
+    public ProblemDetail stateNotFoundException(Exception e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

@@ -15,22 +15,29 @@ import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
+import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStateClient;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
+import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewer;
+import fr.insee.pearljam.domain.surveyunit.port.out.AddressRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitTempZoneRepository;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitUpdateService;
 import fr.insee.pearljam.domain.surveyunit.port.out.*;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
-import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewer;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,7 +62,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.QUESTIONNAIRE_STAT
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class SurveyUnitServiceImpl implements SurveyUnitService {
+public class SurveyUnitService implements SurveyUnitPort {
 
 	private static final String GUEST = "GUEST";
 
@@ -70,7 +77,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private final CampaignRepository campaignRepository;
 	private final OrganizationUnitRepository organizationUnitRepository;
 	private final VisibilityRepository visibilityRepository;
-	private final ClosingCauseRepository closingCauseRepository;
 	private final UserService userService;
 	private final QuestionnaireStateClient questionnaireStateClient;
 	private final SurveyUnitUpdateService surveyUnitUpdateService;
@@ -498,29 +504,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			lstSu.forEach(id -> mapResult.put(id, QUESTIONNAIRE_STATE_UNAVAILABLE) );
 		}
 		return mapResult;
-	}
-
-	@Transactional
-	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
-		Optional<SurveyUnitDB> su = surveyUnitRepository.findById(surveyUnitId);
-		if (su.isPresent()) {
-			StateType currentState = stateRepository.findFirstDtoBySurveyUnitOrderByDateDesc(su.get()).type();
-			if (StateBusinessRules.stateCanBeModifiedByManager(currentState, state)) {
-				if (StateType.TBR.equals(state) || StateType.FIN.equals(state)) {
-					log.info("Deleting closing causes of survey unit {}", surveyUnitId);
-					closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
-				}
-				stateRepository.save(new StateDB(new Date().getTime(), su.get(), state));
-				return HttpStatus.OK;
-			} else {
-				log.error("Cannot pass from state {} to state {}, it does not respect bussiness rules", currentState,
-						state);
-				return HttpStatus.FORBIDDEN;
-			}
-		} else {
-			log.error(SU_ID_NOT_FOUND, surveyUnitId);
-			return HttpStatus.BAD_REQUEST;
-		}
 	}
 
 	@Transactional

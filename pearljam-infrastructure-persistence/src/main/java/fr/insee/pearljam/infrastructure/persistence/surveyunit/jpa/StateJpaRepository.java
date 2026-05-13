@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -284,4 +285,12 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
                                                @Param("dateToUse") Long dateToUse);
 
 
+	@Query("""
+    SELECT s.type 
+    FROM StateDB s 
+    WHERE s.surveyUnit.id = :surveyUnitId 
+    ORDER BY s.date DESC 
+    LIMIT 1
+    """)
+	Optional<StateType> findStateBySurveyUnitId(@Param("surveyUnitId") String surveyUnitId);
 }

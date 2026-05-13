@@ -1,21 +1,25 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.JsonNode;
+import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
-import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,12 +27,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,8 @@ import java.util.Set;
 @Validated
 public class SurveyUnitController {
 
-	private final SurveyUnitService surveyUnitService;
+	private final SurveyUnitPort surveyUnitPort;
+	private final SurveyUnitStatePort surveyUnitStatePort;
 	private final AuthenticatedUserService authenticatedUserService;
 
 	@Value("${feature.deprecated.endpoints.enabled}")
@@ -63,7 +65,7 @@ public class SurveyUnitController {
 	@PostMapping(Constants.API_SURVEYUNITS)
 	public ResponseEntity<Object> postSurveyUnits(
 			@Valid @RequestBody List<SurveyUnitCreationDto> surveyUnits) {
-		Response response = surveyUnitService.createSurveyUnits(surveyUnits);
+		Response response = surveyUnitPort.createSurveyUnits(surveyUnits);
 		log.info("POST /survey-units resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 		return new ResponseEntity<>(response.getMessage(), response.getHttpStatus());
@@ -79,7 +81,7 @@ public class SurveyUnitController {
 	@Operation(summary = "Assign SurveyUnits to interviewers")
 	@PostMapping(Constants.API_SURVEYUNITS_INTERVIEWERS)
 	public ResponseEntity<Object> postSurveyUnitInterviewerLinks(@RequestBody List<SurveyUnitInterviewerLinkDto> surveyUnits) {
-		Response response = surveyUnitService.createSurveyUnitInterviewerLinks(surveyUnits);
+		Response response = surveyUnitPort.createSurveyUnitInterviewerLinks(surveyUnits);
 		log.info("POST /survey-units/interviewers resulting in {} with response [{}]", response.getHttpStatus(),
 				response.getMessage());
 
@@ -97,7 +99,7 @@ public class SurveyUnitController {
 	public ResponseEntity<List<SurveyUnitDto>> getListSurveyUnit(
 						@RequestParam(value = "extended", defaultValue = "false", required = false) Boolean extended) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<SurveyUnitDto> lstSurveyUnit = surveyUnitService.getSurveyUnitDto(userId, extended);
+		List<SurveyUnitDto> lstSurveyUnit = surveyUnitPort.getSurveyUnitDto(userId, extended);
 		if (lstSurveyUnit == null) {
 			log.info("{} GET SurveyUnits resulting in 404", userId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -117,7 +119,7 @@ public class SurveyUnitController {
 	@GetMapping(path = {Constants.API_SURVEYUNIT_ID})
 	public SurveyUnitInterviewerResponseDto getSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		return surveyUnitService.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
+		return surveyUnitPort.getSurveyUnitInterviewerDetail(userId, surveyUnitId);
 	}
 
 	/**
@@ -132,7 +134,7 @@ public class SurveyUnitController {
 	@GetMapping(Constants.API_ADMIN_SURVEYUNIT_DETAILS)
 	@Deprecated(forRemoval = true)
 	public SurveyUnitInterviewerResponseDto getAdminSurveyUnitById(@PathVariable(value = "id") String surveyUnitId) {
-		return surveyUnitService.getSurveyUnitDetail(surveyUnitId);
+		return surveyUnitPort.getSurveyUnitDetail(surveyUnitId);
 	}
 
 	/**
@@ -145,7 +147,7 @@ public class SurveyUnitController {
 	@Operation(summary = "Get detail as admin of specific survey units")
 	@PostMapping(Constants.API_ADMIN_SURVEYUNITS_DETAILS)
 	public List<SurveyUnitInterviewerResponseDto> getAdminSurveyUnitsByIds(@RequestBody List<String> surveyUnitIds) {
-		return surveyUnitService.getSurveyUnitsDetails(surveyUnitIds);
+		return surveyUnitPort.getSurveyUnitsDetails(surveyUnitIds);
 	}
 
 	/**
@@ -161,7 +163,7 @@ public class SurveyUnitController {
 			@Valid @NotNull @RequestBody SurveyUnitUpdateDto surveyUnitUpdateDto,
 			@PathVariable(value = "id") String id) throws EntityNotFoundException {
 		String userId = authenticatedUserService.getCurrentUserId();
-		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitService.updateSurveyUnit(userId,
+		SurveyUnitDetailDto updatedSurveyUnit = surveyUnitPort.updateSurveyUnit(userId,
 				id, surveyUnitUpdateDto);
 		log.info("SurveyUnit {} updated", id);
 		return updatedSurveyUnit;
@@ -176,7 +178,7 @@ public class SurveyUnitController {
 			@RequestBody JsonNode surveyUnit,
 			@PathVariable(value = "id") String id) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		surveyUnitService.saveSurveyUnitToTempZone(id, userId, surveyUnit);
+		surveyUnitPort.saveSurveyUnitToTempZone(id, userId, surveyUnit);
 		log.info("{} : POST survey-unit {} to temp-zone resulting in 201", userId, id);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
@@ -192,7 +194,7 @@ public class SurveyUnitController {
 		if(!deprecatedEndpointsEnabled) {
 			throw new EndpointDisabledException();
 		}
-		List<SurveyUnitTempZoneDB> surveyUnitTempZones = surveyUnitService.getAllSurveyUnitTempZone();
+		List<SurveyUnitTempZoneDB> surveyUnitTempZones = surveyUnitPort.getAllSurveyUnitTempZone();
 		log.info("GET survey-units in temp-zone resulting in 200");
 		return new ResponseEntity<>(surveyUnitTempZones, HttpStatus.OK);
 	}
@@ -200,19 +202,19 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to update the state of a survey unit
 	 *
+	 * @deprecated still used by CPIEs
 	 * @param surveyUnitId survey unit id
 	 * @param state state to set
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
 	@PutMapping(Constants.API_SURVEYUNIT_ID_STATE)
-	public ResponseEntity<Object> updateSurveyUnitState(
+	@Deprecated(forRemoval = true)
+	public ResponseEntity<Void> updateSurveyUnitState(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "state") StateType state) {
-		HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
-		log.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
-				returnCode.value());
-		return new ResponseEntity<>(returnCode);
+		surveyUnitStatePort.addStateToSurveyUnit(surveyUnitId, state);
+		return ResponseEntity.ok().build();
 	}
 
 	/**
@@ -230,7 +232,7 @@ public class SurveyUnitController {
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} : PUT close with cause '{}' on su {}", userId, closingCause, surveyUnitId);
-		HttpStatus returnCode = surveyUnitService.closeSurveyUnit(surveyUnitId, closingCause);
+		HttpStatus returnCode = surveyUnitPort.closeSurveyUnit(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
@@ -249,7 +251,7 @@ public class SurveyUnitController {
 	public ResponseEntity<Object> updateClosingCause(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
-		HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
+		HttpStatus returnCode = surveyUnitPort.updateClosingCause(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
@@ -259,7 +261,7 @@ public class SurveyUnitController {
 	@PutMapping(Constants.API_SURVEYUNIT_ID_VIEWED)
 	public ResponseEntity<Object> updateSurveyUnitViewed(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		HttpStatus returnCode = surveyUnitService.updateSurveyUnitViewed(userId, surveyUnitId);
+		HttpStatus returnCode = surveyUnitPort.updateSurveyUnitViewed(userId, surveyUnitId);
 		log.info("PUT viewed on su {} resulting in {}", surveyUnitId, returnCode.value());
 		return new ResponseEntity<>(returnCode);
 	}
@@ -278,7 +280,7 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String id,
 			@RequestParam(value = "state", required = false) StateType state) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitService.getSurveyUnitByCampaign(id, userId, state);
+		Set<SurveyUnitCampaignDto> surveyUnit = surveyUnitPort.getSurveyUnitByCampaign(id, userId, state);
 		if (surveyUnit == null) {
 			log.info("{} : GET SurveyUnit with id {} resulting in 404", userId, id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -319,12 +321,12 @@ public class SurveyUnitController {
 		}
 		if (role.isBlank()) {
 			// interviewer
-			boolean checkdataBase = surveyUnitService.checkHabilitationInterviewer(userId, surveyUnitId);
+			boolean checkdataBase = surveyUnitPort.checkHabilitationInterviewer(userId, surveyUnitId);
 			boolean checkToken = authenticatedUserService.hasRole(AuthorityRole.INTERVIEWER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		} else if (role.equals(Constants.REVIEWER)) {
 			// local or national user
-			boolean checkdataBase = surveyUnitService.checkHabilitationReviewer(userId, surveyUnitId);
+			boolean checkdataBase = surveyUnitPort.checkHabilitationReviewer(userId, surveyUnitId);
 			boolean checkToken = authenticatedUserService.hasAnyRole(AuthorityRole.LOCAL_USER, AuthorityRole.NATIONAL_USER);
 			resp.setHabilitated(checkdataBase && checkToken);
 		}
@@ -346,7 +348,7 @@ public class SurveyUnitController {
 			@PathVariable(value = "id") String id) {
 
 		log.info("GET states of surveyUnit {} resulting in 403", id);
-		List<StateDto> lstState = surveyUnitService.getListStatesBySurveyUnitId(id);
+		List<StateDto> lstState = surveyUnitPort.getListStatesBySurveyUnitId(id);
 		if (lstState.isEmpty()) {
 			log.info("GET states of surveyUnit {} resulting in 404", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -365,9 +367,8 @@ public class SurveyUnitController {
 	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
 	@Deprecated(forRemoval = true)
 	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
-
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits( userId);
+		List<ClosableSurveyUnitDto> lstSu = surveyUnitPort.getClosableSurveyUnits(userId);
 		log.info("Retrieved closable survey units");
 		return lstSu;
 	}
@@ -382,7 +383,7 @@ public class SurveyUnitController {
 	public void deleteSurveyUnit(@PathVariable(value = "id") String surveyUnitId) {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} try to DELETE survey-unit {}", userId, surveyUnitId);
-		surveyUnitService.delete(surveyUnitId);
+		surveyUnitPort.delete(surveyUnitId);
 		log.info("DELETE survey-unit with id {} resulting in 200", surveyUnitId);
 	}
 
@@ -400,7 +401,7 @@ public class SurveyUnitController {
 			throw new EndpointDisabledException();
 		}
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<String> suIds = surveyUnitService.getAllIds();
+		List<String> suIds = surveyUnitPort.getAllIds();
 		log.info("{} : GET admin survey units resulting in 200", userId);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);
 	}
@@ -414,7 +415,7 @@ public class SurveyUnitController {
 	@Operation(summary = "Get survey units id by campaign")
 	@GetMapping(Constants.API_ADMIN_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<List<String>> getAllSurveyUnitsIdByCampaignId(@PathVariable(value = "id") String id) {
-		List<String> suIds = surveyUnitService.getAllIdsByCampaignId(id);
+		List<String> suIds = surveyUnitPort.getAllIdsByCampaignId(id);
 		log.info("GET admin survey units for campaign {} resulting in 200", id);
 		return new ResponseEntity<>(suIds, HttpStatus.OK);
 	}

@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakeService;
+import fr.insee.pearljam.api.surveyunit.controller.dummy.SurveyUnitFakePort;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.identification.RawIdentificationDto;
@@ -8,6 +8,7 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
@@ -24,16 +25,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SurveyUnitControllerTest {
     private MockMvc mockMvc;
-    private SurveyUnitFakeService surveyUnitService;
+    private SurveyUnitFakePort surveyUnitService;
     private String surveyUnitJson;
     private String identification;
     private String surveyUnitTemplate;
     private final String updatePath = "/api/survey-unit/1";
+
+    SurveyUnitStatePort surveyUnitStatePort;
 
     @BeforeEach
     void setup() {
@@ -65,11 +69,12 @@ class SurveyUnitControllerTest {
                 }
                 """;
         surveyUnitJson = String.format(surveyUnitTemplate, comments, identification);
-        surveyUnitService = new SurveyUnitFakeService();
+        surveyUnitService = new SurveyUnitFakePort();
+        surveyUnitStatePort = mock(SurveyUnitStatePort.class);
         ExceptionControllerAdvice exceptionControllerAdvice = MockMvcTestUtils.createExceptionControllerAdvice();
         Authentication authUser = AuthenticatedUserTestHelper.AUTH_ADMIN;
         AuthenticationUserFakeService authService = new AuthenticationUserFakeService(authUser);
-        SurveyUnitController surveyUnitController = new SurveyUnitController(surveyUnitService, authService, true);
+        SurveyUnitController surveyUnitController = new SurveyUnitController(surveyUnitService, surveyUnitStatePort, authService, true);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(surveyUnitController)
                 .setControllerAdvice(exceptionControllerAdvice)

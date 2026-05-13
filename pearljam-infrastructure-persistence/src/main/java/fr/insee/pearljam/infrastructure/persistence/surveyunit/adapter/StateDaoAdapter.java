@@ -1,21 +1,26 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class StateDaoAdapter implements StateRepository {
     private final StateJpaRepository stateJpaRepository;
+    private final EntityManager em;
 
     @Override
     public StateDto findFirstDtoBySurveyUnitOrderByDateDesc(SurveyUnitDB surveyUnit) {
@@ -75,5 +80,22 @@ public class StateDaoAdapter implements StateRepository {
     @Override
     public StateDB save(StateDB state) {
         return stateJpaRepository.save(state);
+    }
+
+    @Override
+    public Optional<StateType> findStateBySurveyUnitId(String surveyUnitId) {
+        return stateJpaRepository.findStateBySurveyUnitId(surveyUnitId);
+    }
+
+    @Override
+    public void saveStateBySurveyUnitId(String surveyUnitId, StateType stateType, Instant date) {
+        SurveyUnitDB surveyUnit = em.getReference(SurveyUnitDB.class, surveyUnitId);
+
+        StateDB state = new StateDB();
+        state.setSurveyUnit(surveyUnit);
+        state.setType(stateType);
+        state.setDate(date.toEpochMilli());
+
+        stateJpaRepository.save(state);
     }
 }
