@@ -33,7 +33,7 @@ import fr.insee.pearljam.domain.surveyunit.model.*;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitService;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
