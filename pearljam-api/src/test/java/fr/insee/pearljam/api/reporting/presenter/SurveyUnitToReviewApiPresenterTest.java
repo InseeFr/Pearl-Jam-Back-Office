@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewDto;
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewReponse;
 import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class SurveyUnitToReviewApiPresenterTest {
     }
 
     @Test
-    @DisplayName("Should map SurveyUnitToReview page to SurveyUnitToReviewResponse")
+    @DisplayName("Should map SurveyUnitToReview page to SurveyUnitToReviewPageResponse")
     void shouldMapSurveyUnitToReviewPageToResponse() {
         // Given
         List<SurveyUnitToReview> surveyUnits = List.of(
@@ -45,7 +45,7 @@ class SurveyUnitToReviewApiPresenterTest {
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits, PageRequest.of(0, 10), 20);
 
         // When
-        SurveyUnitToReviewResponse result = presenter.present(page);
+        SurveyUnitToReviewPageResponse result = presenter.present(page);
 
         // Then
         assertThat(result).isNotNull();
@@ -85,7 +85,7 @@ class SurveyUnitToReviewApiPresenterTest {
         Page<SurveyUnitToReview> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
 
         // When
-        SurveyUnitToReviewResponse result = presenter.present(emptyPage);
+        SurveyUnitToReviewPageResponse result = presenter.present(emptyPage);
 
         // Then
         assertThat(result).isNotNull();
@@ -107,7 +107,7 @@ class SurveyUnitToReviewApiPresenterTest {
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits, PageRequest.of(0, 5), 1);
 
         // When
-        SurveyUnitToReviewResponse result = presenter.present(page);
+        SurveyUnitToReviewPageResponse result = presenter.present(page);
 
         // Then
         assertThat(result.content()).hasSize(1);
@@ -139,10 +139,10 @@ class SurveyUnitToReviewApiPresenterTest {
         Page<SurveyUnitToReview> page = new PageImpl<>(surveyUnits);
 
         // When
-        SurveyUnitToReviewResponse result = presenter.present(page);
+        SurveyUnitToReviewPageResponse result = presenter.present(page);
 
         // Then
-        SurveyUnitToReviewDto dto = result.content().getFirst();
+        SurveyUnitToReviewReponse dto = result.content().getFirst();
         assertThat(dto.readOnlyUrl()).isEqualTo(DATACOLLECTION_UI_URL + "/review/interrogations/SU-TEST-123");
     }
 

@@ -32,13 +32,6 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
             "contactOutcome", "co.type"
     );
 
-    private static final String SEARCH_CONDITION = """
-    AND (
-        LOWER(c.label) LIKE :search OR
-        LOWER(su.id) LIKE :search OR
-        LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE :search
-    )
-    """;
 
     @Override
     public Page<SurveyUnitToReview> findSurveyUnitsToReview(

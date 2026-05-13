@@ -3,10 +3,10 @@ package fr.insee.pearljam.api.reporting.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
-@Schema(name = "SurveyUnitToReviewResponse")
-public record SurveyUnitToReviewResponse(
+@Schema(name = "SurveyUnitToReviewPageResponse")
+public record SurveyUnitToReviewPageResponse(
         @Schema(description = "List of survey units to review")
-        List<SurveyUnitToReviewDto> content,
+        List<SurveyUnitToReviewReponse> content,
 
         @Schema(description = "Current page number", example = "0")
         int page,

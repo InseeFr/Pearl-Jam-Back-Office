@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.reporting.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "SurveyUnitToReviewDto")
-public record SurveyUnitToReviewDto(
+@Schema(name = "SurveyUnitToReviewReponse")
+public record SurveyUnitToReviewReponse(
         @Schema(description = "Survey unit identifier", example = "SU-12345")
         String id,
 

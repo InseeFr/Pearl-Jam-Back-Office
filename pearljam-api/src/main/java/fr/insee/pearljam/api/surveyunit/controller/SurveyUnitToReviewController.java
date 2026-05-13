@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPort;
@@ -30,7 +30,7 @@ public class SurveyUnitToReviewController {
             description = "Returns a paginated list of survey units that need to be reviewed")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(Constants.API_SURVEY_UNITS_TO_REVIEW)
-    public SurveyUnitToReviewResponse getSurveyUnitsToReview(
+    public SurveyUnitToReviewPageResponse getSurveyUnitsToReview(
             Pageable pageable,
             @RequestParam(required = false) String search,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {

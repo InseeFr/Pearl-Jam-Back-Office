@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
@@ -28,8 +28,8 @@ class SurveyUnitToReviewControllerTest {
     private MockMvc mockMvc;
     private SurveyUnitToReviewPort port;
 
-    private static final SurveyUnitToReviewResponse EMPTY_RESULT =
-            new SurveyUnitToReviewResponse(
+    private static final SurveyUnitToReviewPageResponse EMPTY_RESULT =
+            new SurveyUnitToReviewPageResponse(
                     List.of(),
                     0,
                     20,

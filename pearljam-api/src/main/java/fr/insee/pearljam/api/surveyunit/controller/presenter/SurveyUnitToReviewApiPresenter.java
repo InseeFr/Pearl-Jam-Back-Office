@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller.presenter;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewDto;
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
+import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewReponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPresenter;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,18 +15,18 @@ import java.util.stream.Stream;
 
 @Component
 public class SurveyUnitToReviewApiPresenter implements
-        SurveyUnitToReviewPresenter<SurveyUnitToReviewResponse> {
+        SurveyUnitToReviewPresenter<SurveyUnitToReviewPageResponse> {
 
     @Value("${application.external.service.datacollection-ui-url}")
     private String datacollectionUiUrl;
 
     @Override
-    public SurveyUnitToReviewResponse present(Page<SurveyUnitToReview> surveyUnits) {
-        List<SurveyUnitToReviewDto> dtos = surveyUnits.getContent().stream()
+    public SurveyUnitToReviewPageResponse present(Page<SurveyUnitToReview> surveyUnits) {
+        List<SurveyUnitToReviewReponse> dtos = surveyUnits.getContent().stream()
                 .map(this::mapToDto)
                 .toList();
 
-        return new SurveyUnitToReviewResponse(
+        return new SurveyUnitToReviewPageResponse(
                 dtos,
                 surveyUnits.getNumber(),
                 surveyUnits.getSize(),
@@ -35,8 +35,8 @@ public class SurveyUnitToReviewApiPresenter implements
         );
     }
 
-    private SurveyUnitToReviewDto mapToDto(SurveyUnitToReview surveyUnit) {
-        return new SurveyUnitToReviewDto(
+    private SurveyUnitToReviewReponse mapToDto(SurveyUnitToReview surveyUnit) {
+        return new SurveyUnitToReviewReponse(
                 surveyUnit.id(),
                 surveyUnit.campaignLabel(),
                 surveyUnit.contactOutcome(),
