@@ -9,7 +9,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.stub.CampaignVisibilityPortStub;
 import fr.insee.pearljam.domain.organizationunit.model.*;
-import fr.insee.pearljam.domain.surveyunit.service.dummy.SurveyUnitFakePort;
+import fr.insee.pearljam.domain.surveyunit.service.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
@@ -80,7 +80,7 @@ class CampaignServiceImplTest {
         organizationUnitRepository.setOrganizationUnits(List.of(existingOrganizationUnit));
         MessageFakeRepository messageRepository = new MessageFakeRepository();
         UserFakeService userService = new UserFakeService();
-        SurveyUnitFakePort surveyUnitService = new SurveyUnitFakePort();
+        SurveyUnitFakeService surveyUnitService = new SurveyUnitFakeService();
         PreferenceFakeService preferenceService = new PreferenceFakeService();
         ReferentFakeService referentService = new ReferentFakeService();
         ReferentFakeRepository referentRepository = new ReferentFakeRepository();

@@ -20,7 +20,7 @@ import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitReposi
 import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
 import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCountService;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerCountRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
@@ -60,7 +60,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final OrganizationUnitRepository organizationUnitRepository;
     private final MessageRepository messageRepository;
     private final UserService userService;
-    private final SurveyUnitPort surveyUnitPort;
+    private final SurveyUnitService surveyUnitService;
     private final PreferenceService preferenceService;
     private final ReferentService referentService;
     private final ReferentRepository referentRepository;
@@ -187,7 +187,7 @@ public class CampaignServiceImpl implements CampaignService {
             throw new CampaignOnGoingException();
         }
         surveyUnitRepository.findByCampaignId(campaign.getId())
-                .forEach(surveyunit -> surveyUnitPort.delete(surveyunit.getId()));
+                .forEach(surveyunit -> surveyUnitService.delete(surveyunit.getId()));
         userRepository.findAll()
                 .forEach(user -> {
                     List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(CampaignDB::getId)
@@ -259,7 +259,7 @@ public class CampaignServiceImpl implements CampaignService {
                         (existing, replacement) -> existing));
 
         return map.entrySet().stream()
-                .filter(entry -> surveyUnitPort.canBeSeenByInterviewer(entry.getValue()))
+                .filter(entry -> surveyUnitService.canBeSeenByInterviewer(entry.getValue()))
                 .map(entry -> campaignRepository.findDtoById(entry.getKey())).collect((Collectors.toList()));
     }
 
