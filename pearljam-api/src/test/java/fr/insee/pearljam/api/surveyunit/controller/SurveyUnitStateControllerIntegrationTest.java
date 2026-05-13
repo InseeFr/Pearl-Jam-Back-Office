@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.surveyunit.controller;
 import fr.insee.pearljam.api.surveyunit.controller.request.SurveyUnitsNewStateRequest;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,9 +31,6 @@ class SurveyUnitStateControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private SurveyUnitExistencePort surveyUnitExistencePort;
 
     @Autowired
     private StateRepository stateRepository;
