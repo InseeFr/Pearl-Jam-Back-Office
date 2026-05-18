@@ -341,7 +341,7 @@ class SurveyUnitUpdateServiceImplTest {
 
     @Test
     @DisplayName("When creating LETTER communication request with non-existent visibility, throws VisibilityNotFoundException")
-    void cr05_testGetNewCommunicationRequestVisibilityNotFound() throws Exception {
+    void cr05_testGetNewCommunicationRequestVisibilityNotFound(){
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         CommunicationRequestCreateDto requestDto = buildCommunicationRequestCreateDto();
         CommunicationTemplate template = buildCommunicationTemplate(CommunicationMedium.LETTER);
