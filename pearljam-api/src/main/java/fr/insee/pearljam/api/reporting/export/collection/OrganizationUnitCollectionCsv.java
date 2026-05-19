@@ -7,9 +7,12 @@ import java.util.List;
 
 public record OrganizationUnitCollectionCsv(List<CsvRow> rows) implements CsvExportable {
 
-    public static final List<CollectionCsvHeaders> CSV_HEADERS = CollectionCsvHeaders.buildHeaders(
-            List.of(CollectionCsvHeaders.ORGANIZATION_UNIT_LABEL)
+    static final String TOTAL_FRANCE = "Total France";
+
+    public static final List<CollectionCsvHeaders> CSV_HEADERS = CollectionCsvHeaders.buildHeadersWithSuffix(
+            List.of(CollectionCsvHeaders.ORGANIZATION_UNIT_LABEL), List.of(CollectionCsvHeaders.ALLOCATED_SITE)
     );
+
 
     @Override
     public CsvRow headers() {

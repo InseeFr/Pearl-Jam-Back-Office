@@ -73,7 +73,7 @@ class CampaignCollectionByInterviewerExportControllerTest {
                 .contains(CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName())
                 .contains(CollectionCsvHeaders.INTERVIEWER_ID.getHeaderName())
                 .contains(CollectionCsvHeaders.COLLECTION_RATE.getHeaderName())
-                .contains(CollectionCsvHeaders.ALLOCATED.getHeaderName());
+                .contains(CollectionCsvHeaders.ALLOCATED_SITE.getHeaderName());
     }
 
     @Test
