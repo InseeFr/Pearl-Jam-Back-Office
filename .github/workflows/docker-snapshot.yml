@@ -35,6 +35,7 @@ jobs:
           name: app-jar
           path: pearljam-api/target/*.jar
 
+
   docker:
     needs:
       - build-snapshot
