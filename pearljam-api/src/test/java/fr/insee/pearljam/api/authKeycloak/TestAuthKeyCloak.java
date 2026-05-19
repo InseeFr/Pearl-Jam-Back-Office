@@ -446,7 +446,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(8)
 	void testGetCampaignInterviewerStateCount() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/state-count")
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTERV1/state-count")
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
@@ -481,7 +481,7 @@ class TestAuthKeyCloak {
 	@Test
 	@Order(9)
 	void testGetCampaignInterviewerStateCountNotFoundCampaign() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/state-count")
+		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTERV1/state-count")
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
