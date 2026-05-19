@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.collection.CollectionCsvRow.TOTAL_FRANCE;
 import static fr.insee.pearljam.api.reporting.export.collection.OrganizationUnitCollectionCsv.TOTAL_FRANCE;
 
 @Component
@@ -19,25 +20,22 @@ public class OrganizationUnitCollectionCsvPresenter
     @Override
     public OrganizationUnitCollectionCsv present(List<OrganizationUnitDailyStats> organizationUnitStats,
                                                  CampaignDailyStats campaignStats) {
-        List<CsvRow> rows = organizationUnitStats.stream()
-                .map(ou -> {
+        List<CsvRow> rows = new ArrayList<>();
+
+        organizationUnitStats.forEach(ou -> {
                     List<Object> values = new ArrayList<>();
                     values.add(ou.getOuLabel());
                     values.addAll(CollectionCsvRow.commonValues(ou));
                     values.add(ou.getAllocatedCount());
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
+                    rows.add((CsvRow.from(values.toArray())));
+                });
 
-        List<String> list = new ArrayList<>(Collections.nCopies(rows.size() - 2, ""));
-
-        // crash en debug a ""
-        // Fix : on a ici 3 colonne mais il faut prendre en compte le nb de row intermediaires (utiliser common rows)
-        rows.add(CsvRow.from(
-                TOTAL_FRANCE,
-                list,
-                campaignStats.getAllocatedCount()
-        ));
+        List<String> list = new ArrayList<>(Collections.nCopies(CollectionCsvRow.commonValuesSize() - 2, ""));
+        List<Object> rowData = new ArrayList<>();
+        rowData.add(TOTAL_FRANCE);
+        rowData.addAll(list);
+        rowData.add(campaignStats.getAllocatedCount());
+        rows.add(CsvRow.from(rowData.toArray()));
 
         return new OrganizationUnitCollectionCsv(rows);
     }
