@@ -1,15 +1,12 @@
 package fr.insee.pearljam.domain.surveyunit.port.out;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface StateRepository {
     StateDto findFirstDtoBySurveyUnitOrderByDateDesc(SurveyUnitDB surveyUnit);
@@ -35,8 +32,4 @@ public interface StateRepository {
     boolean existsById(Long id);
 
     StateDB save(StateDB state);
-
-    Optional<StateType> findStateBySurveyUnitId(String surveyUnitId);
-
-    void saveStateBySurveyUnitId(String surveyUnitId, StateType stateType, Instant date);
 }

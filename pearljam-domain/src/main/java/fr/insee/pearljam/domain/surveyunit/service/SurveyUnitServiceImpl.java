@@ -168,7 +168,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	@Transactional
 	public SurveyUnitDetailDto updateSurveyUnit(String userId, String surveyUnitId,
-	                                            SurveyUnitUpdateDto surveyUnitUpdate)  {
+												SurveyUnitUpdateDto surveyUnitUpdate)  {
 		log.info("Update Survey Unit {}", surveyUnitId);
 
 		Optional<SurveyUnitDB> surveyUnitOpt;
@@ -435,11 +435,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
 				candidates.parallelStream()
-						.filter(candidate -> isClosable(candidate, questionnaireStates.get(candidate.getId())))
-						.collect(Collectors.toMap(
-								ClosableSurveyUnitCandidateView::getId,
-								Function.identity()
-						));
+				.filter(candidate -> isClosable(candidate, questionnaireStates.get(candidate.getId())))
+				.collect(Collectors.toMap(
+						ClosableSurveyUnitCandidateView::getId,
+						Function.identity()
+				));
 
 		List<ClosableSurveyUnitView> closableSurveyUnitProjections =
 				surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
@@ -500,12 +500,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return mapResult;
 	}
 
-	/**
-	 * @deprecated still used by CPIES + Sabiane Management V1, replaced by in SurveyUnitStatePort
-	 *
-	 */
 	@Transactional
-	@Deprecated(forRemoval = true)
 	public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
 		Optional<SurveyUnitDB> su = surveyUnitRepository.findById(surveyUnitId);
 		if (su.isPresent()) {
@@ -601,14 +596,14 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		List<SurveyUnitDB> listSurveyUnits = new ArrayList<>();
 		List<String> surveyUnitsDb = surveyUnitRepository.findAllIds();
 		Map<String, CampaignDB> mapCampaigns = campaignRepository.findAllById(
-						surveyUnits.stream()
-								.map(SurveyUnitCreationDto::getCampaign)
-								.toList())
+				surveyUnits.stream()
+						.map(SurveyUnitCreationDto::getCampaign)
+						.toList())
 				.stream().collect(Collectors.toMap(CampaignDB::getId, c -> c));
 		Map<String, OrganizationUnitDB> mapOrganizationUnits = organizationUnitRepository.findAllById(
-						surveyUnits.stream()
-								.map(SurveyUnitCreationDto::getOrganizationUnitId)
-								.toList())
+				surveyUnits.stream()
+						.map(SurveyUnitCreationDto::getOrganizationUnitId)
+						.toList())
 				.stream().collect(Collectors.toMap(OrganizationUnitDB::getId, gl -> gl));
 		surveyUnits.forEach(su -> {
 			if (!duplicates.containsKey(su.getId())) {
@@ -642,7 +637,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private boolean checkValidity(SurveyUnitCreationDto su, Map<String, OrganizationUnitDB> ous,
-	                              Map<String, CampaignDB> camps) {
+                                  Map<String, CampaignDB> camps) {
 		if (!su.isValid()) {
 			log.info("Su {} is not valid", su.getId());
 			return false;

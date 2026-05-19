@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -66,4 +67,5 @@ public class StateDB implements Serializable {
 		this.surveyUnit = surveyUnit;
 		this.type = s.type();
 	}
+
 }

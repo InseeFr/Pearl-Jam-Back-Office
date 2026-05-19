@@ -35,7 +35,7 @@ class SurveyUnitClosingTest {
 
     private SurveyUnitClosing surveyUnitClosing;
     private ClosingCauseRepositoryStub closingCauseRepository;
-    private SurveyUnitExistencePortStub surveyUnitService;
+    private SurveyUnitExistencePortStub surveyUnitPort;
     UserService userService;
     DateService dateService = new FixedDateService();
     SurveyUnitRepository surveyUnitRepository;
@@ -47,11 +47,11 @@ class SurveyUnitClosingTest {
     void setUp() {
         userService = mock(UserService.class);
         closingCauseRepository = new ClosingCauseRepositoryStub();
-        surveyUnitService = new SurveyUnitExistencePortStub();
+        surveyUnitPort = new SurveyUnitExistencePortStub();
         surveyUnitRepository = mock (SurveyUnitRepository.class);
         questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy);
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitPort, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy);
     }
 
     @Test
@@ -62,7 +62,7 @@ class SurveyUnitClosingTest {
         ClosingCauseType type = ClosingCauseType.NPA;
         List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
 
-        surveyUnitService.addExistingSurveyUnit(surveyUnitId);
+        surveyUnitPort.addExistingSurveyUnit(surveyUnitId);
 
         // When
         assertDoesNotThrow(() ->
@@ -81,7 +81,7 @@ class SurveyUnitClosingTest {
         List<String> surveyUnitIds = Arrays.asList("SU001", "SU002", "SU003");
         ClosingCauseType type = ClosingCauseType.NPI;
 
-        surveyUnitIds.forEach(surveyUnitService::addExistingSurveyUnit);
+        surveyUnitIds.forEach(surveyUnitPort::addExistingSurveyUnit);
 
         // When
         assertDoesNotThrow(() ->
@@ -123,7 +123,7 @@ class SurveyUnitClosingTest {
         List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
         ClosingCauseType type = ClosingCauseType.ROW;
 
-        surveyUnitService.addExistingSurveyUnit(surveyUnitId);
+        surveyUnitPort.addExistingSurveyUnit(surveyUnitId);
         closingCauseRepository.addInitialClosingCauseToSurveyUnit(surveyUnitId, ClosingCauseType.NPA);
 
         // When/Then
@@ -143,8 +143,8 @@ class SurveyUnitClosingTest {
         List<String> surveyUnitIds = Arrays.asList("SU001", "INVALID", "SU003");
         ClosingCauseType type = ClosingCauseType.NPA;
 
-        surveyUnitService.addExistingSurveyUnit("SU001");
-        surveyUnitService.addExistingSurveyUnit("SU003");
+        surveyUnitPort.addExistingSurveyUnit("SU001");
+        surveyUnitPort.addExistingSurveyUnit("SU003");
 
         // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
@@ -166,9 +166,9 @@ class SurveyUnitClosingTest {
         List<String> surveyUnitIds = Arrays.asList("SU001", "SU002", "SU003");
         ClosingCauseType type = ClosingCauseType.NPI;
 
-        surveyUnitService.addExistingSurveyUnit("SU001");
-        surveyUnitService.addExistingSurveyUnit("SU002");
-        surveyUnitService.addExistingSurveyUnit("SU003");
+        surveyUnitPort.addExistingSurveyUnit("SU001");
+        surveyUnitPort.addExistingSurveyUnit("SU002");
+        surveyUnitPort.addExistingSurveyUnit("SU003");
 
         closingCauseRepository.addInitialClosingCauseToSurveyUnit("SU002", ClosingCauseType.NPX);
 
@@ -211,7 +211,7 @@ class SurveyUnitClosingTest {
             String surveyUnitId = "SU_" + type.name();
             List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
 
-            surveyUnitService.addExistingSurveyUnit(surveyUnitId);
+            surveyUnitPort.addExistingSurveyUnit(surveyUnitId);
 
             assertDoesNotThrow(() ->
         surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)

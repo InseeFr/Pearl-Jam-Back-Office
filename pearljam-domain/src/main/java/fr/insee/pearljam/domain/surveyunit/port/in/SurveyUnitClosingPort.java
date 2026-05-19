@@ -9,5 +9,4 @@ public interface SurveyUnitClosingPort {
 
     <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter);
 
-    void deleteClosingCauseBySurveyUnitId(String surveyUnitId);
 }

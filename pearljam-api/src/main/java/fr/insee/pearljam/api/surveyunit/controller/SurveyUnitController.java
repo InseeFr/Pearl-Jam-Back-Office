@@ -1,25 +1,21 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.JsonNode;
-import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.api.surveyunit.dto.state.SurveyUnitStatesDto;
 import fr.insee.pearljam.api.surveyunit.dto.surveyunit.HabilitationDto;
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.security.model.AuthorityRole;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
 import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
+import fr.insee.pearljam.domain.shared.model.Response;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitTempZoneDB;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,9 +23,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Set;
@@ -201,15 +200,13 @@ public class SurveyUnitController {
 	/**
 	 * This method is used to update the state of a survey unit
 	 *
-	 * @deprecated still used by CPIEs + Sabiane Management V1
 	 * @param surveyUnitId survey unit id
 	 * @param state state to set
 	 * @return {@link HttpStatus}
 	 */
 	@Operation(summary = "Update the state of Survey Units listed in request body")
 	@PutMapping(Constants.API_SURVEYUNIT_ID_STATE)
-	@Deprecated(forRemoval = true)
-	public ResponseEntity<Void> updateSurveyUnitState(
+	public ResponseEntity<Object> updateSurveyUnitState(
 			@PathVariable(value = "id") String surveyUnitId,
 			@PathVariable(value = "state") StateType state) {
 		HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
@@ -359,7 +356,7 @@ public class SurveyUnitController {
 
 	/**
 	 * This method returns the list of states for a specific survey unit
-	 * @deprecated still used by CPIEs + Sabiane Management V1
+	 * 
 	 * @param request http servlet request
 	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
 	 *         or NOT_FOUND
@@ -368,8 +365,9 @@ public class SurveyUnitController {
 	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
 	@Deprecated(forRemoval = true)
 	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
+
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits(userId);
+		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits( userId);
 		log.info("Retrieved closable survey units");
 		return lstSu;
 	}

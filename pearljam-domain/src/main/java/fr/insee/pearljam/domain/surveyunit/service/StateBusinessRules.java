@@ -33,7 +33,7 @@ public class StateBusinessRules {
 	 * Checks if a survey unit is allowed to pass from a state to another
 	 * via a manager action
 	 */
-	public static boolean  stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
+	public static boolean stateCanBeModifiedByManager(StateType currentState, StateType targetState) {
         return switch (targetState) {
             case NVA -> currentState != StateType.NVA;
             case ANV -> currentState == StateType.NNS;

@@ -54,6 +54,11 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
+    public HttpStatus addStateToSurveyUnit(String listSU, StateType state) {
+        throw new IllegalArgumentException("not implemented yet");
+    }
+
+    @Override
     public List<StateDto> getListStatesBySurveyUnitId(String suId) {
         throw new IllegalArgumentException("not implemented yet");
     }
@@ -146,11 +151,6 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     @Override
     public List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds) {
         return List.of();
-    }
-
-    @Override
-    public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
-        return null;
     }
 
     @Override
