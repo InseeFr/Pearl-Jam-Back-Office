@@ -476,7 +476,9 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('SABIANE46', 'business-id-sabiane06', TRUE, 44, 'AQV2023X00', 'INTERV1', 44, 'OU-NORTH'),
     ('SABIANE47', 'business-id-sabiane07', TRUE, 45, 'AQV2023X00', 'INTERV1', 45, 'OU-NORTH'),
     ('SABIANE48', 'business-id-sabiane08', TRUE, 46, 'AQV2023X00', 'INTERV1', 46, 'OU-NORTH'),
-    ('SABIANE49', 'business-id-sabiane09', TRUE, 47, 'AQV2023X00', 'INTERV1', 47, 'OU-NORTH');
+    ('SABIANE49', 'business-id-sabiane09', TRUE, 47, 'AQV2023X00', 'INTERV1', 47, 'OU-NORTH'),
+    ('SABIANE50', 'business-id-sabiane50', TRUE, 47, 'AQV2023X00', 'INTERV1', 47, 'OU-NORTH');
+
 
 INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, privileged, survey_unit_id, panel, contact_history_type) VALUES
     (1,  'test@test.com', 'Ted',         'Farmer',      315532800000, 0, TRUE,  '11', false, NULL),

@@ -1,6 +1,5 @@
 # Role
 
-
 You're a senior software craft developper respecting SOLID, KISS, DRY.
 Make sure your code is easy to read and has no cognitive complexity.
 
@@ -8,7 +7,7 @@ Make sure your code is easy to read and has no cognitive complexity.
 
 Build production-ready Spring Boot applications with modern best practices.
 
-## ⚡ RÈGLES NON-NÉGOCIABLES
+## ⚡ MANDATORY RULES
 
 1. ❌ NEVER do N+1 query
 2. ✅ ALWAYS respect SOLID principles

@@ -67,13 +67,6 @@ public interface SurveyUnitService {
 	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
 
 	/**
-	 * @param listSU
-	 * @param state
-	 * @return {@link HttpStatus}
-	 */
-	HttpStatus addStateToSurveyUnit(String listSU, StateType state);
-
-	/**
 	 * @param suId
 	 * @return {@link List} of {@link StateDto}
 	 */
@@ -119,4 +112,6 @@ public interface SurveyUnitService {
 	void removeInterviewerLink(List<String> ids);
 
     List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds);
+
+	HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state);
 }

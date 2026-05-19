@@ -70,6 +70,9 @@ public class CampaignServiceImpl implements CampaignService {
     private final InterviewerCountRepository interviewerCountRepository;
     private final SurveyUnitCountService surveyUnitCountService;
 
+    /**
+     * @deprecated will be removed/refactored
+     */
     @Override
     @Deprecated(forRemoval = true)
     public List<CampaignDto> getPreferredCampaigns(String userId) {
@@ -190,10 +193,10 @@ public class CampaignServiceImpl implements CampaignService {
                     List<String> lstCampaignId = new ArrayList<>(user.getCampaigns().stream().map(CampaignDB::getId)
                             .toList());
                     if (lstCampaignId.contains(campaign.getId())) {
-                        lstCampaignId.remove(lstCampaignId.indexOf(campaign.getId()));
+                        lstCampaignId.remove(campaign.getId());
                         try {
                             preferenceService.setPreferences(lstCampaignId, user.getId());
-                        } catch (CampaignNotFoundException e) {
+                        } catch (CampaignNotFoundException _) {
                             // campaign already checked
                         }
                     }

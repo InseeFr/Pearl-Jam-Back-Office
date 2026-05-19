@@ -1,4 +1,4 @@
-# Queen-Back-Office Test Patterns Documentation
+# Pearl-Back-Office Test Patterns Documentation
 
 This document captures the test patterns and conventions used in the Queen-Back-Office project, specifically focusing on the patterns found in the queen-domain modules. These patterns serve as guidelines for LLM agents to generate consistent, high-quality tests.
 
