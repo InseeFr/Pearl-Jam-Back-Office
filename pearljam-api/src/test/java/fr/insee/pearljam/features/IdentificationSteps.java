@@ -136,7 +136,7 @@ public class IdentificationSteps {
 
 		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
 		surveyUnit.getStates().add(new StateDB(System.currentTimeMillis(), surveyUnit, StateType.VIN));
-		surveyUnit = surveyUnitRepository.saveAndFlush(surveyUnit);
+		surveyUnit = surveyUnitRepository.save(surveyUnit);
 
 		List<SurveyUnitInterviewerLinkDto> link = List.of(new SurveyUnitInterviewerLinkDto(surveyUnitId, "INTW1"));
 
