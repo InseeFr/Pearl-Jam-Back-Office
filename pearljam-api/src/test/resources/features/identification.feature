@@ -6,6 +6,8 @@ Feature: Identification
     Then the created campaign should have the identification configuration "<identificationConfiguration>"
 
     Examples:
+
+    
       | identificationConfiguration |
       | IASCO                       |
       | HOUSEF2F                    |

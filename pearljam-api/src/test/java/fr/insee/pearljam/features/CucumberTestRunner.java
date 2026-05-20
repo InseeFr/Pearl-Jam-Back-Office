@@ -1,7 +1,6 @@
 package fr.insee.pearljam.features;
 
 import io.cucumber.spring.CucumberContextConfiguration;
-import io.cucumber.spring.ScenarioScope;
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
 import org.junit.platform.suite.api.SelectClasspathResource;
@@ -18,7 +17,6 @@ import static io.cucumber.core.options.Constants.PLUGIN_PROPERTY_NAME;
 @ActiveProfiles(profiles = {"auth", "test"})
 @AutoConfigureMockMvc
 @Suite
-@ScenarioScope
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.insee.pearljam.features")
