@@ -114,7 +114,19 @@ public class IdentificationSteps {
 		AddressDB addressDB = new InseeAddressDB("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
 				"building", "floor", "door", "staircase", true);
 		CampaignDB campaignDB = campaignService.findById(campaignId).orElseThrow();
+		System.out.println(
+				interviewerRepository.findAll()
+						.stream()
+						.map(i -> i.getId())
+						.toList()
+		);
 		InterviewerDB interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
+		System.out.println(
+				organizationUnitRepository.findAll()
+						.stream()
+						.map(o -> o.getId())
+						.toList()
+		);
 		OrganizationUnitDB ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
 		Set<PersonDB> persons = Set.of(new PersonDB(null, Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L, true, surveyUnit, null, false,
 				 null,null));
