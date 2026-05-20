@@ -34,6 +34,7 @@ import io.cucumber.java.en.When;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +44,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,6 +60,9 @@ public class IdentificationSteps {
 
 	@Autowired
 	MockMvc mockMvc;
+
+	@Autowired
+	Environment environment;
 
 	private final SurveyUnitJpaRepository surveyUnitRepository;
 	private final OrganizationUnitJpaRepository organizationUnitRepository;
@@ -114,6 +119,8 @@ public class IdentificationSteps {
 		AddressDB addressDB = new InseeAddressDB("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
 				"building", "floor", "door", "staircase", true);
 		CampaignDB campaignDB = campaignService.findById(campaignId).orElseThrow();
+		System.out.println(Arrays.toString(environment.getActiveProfiles()));
+
 		System.out.println(
 				interviewerRepository.findAll()
 						.stream()
