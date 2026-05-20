@@ -35,6 +35,8 @@ jobs:
       - name: Debug compose
         run: |
           docker ps -a
+          find . -name compose.yml
+          cd pearljam-api
           docker compose ps
           docker volume ls
       - name: Build and analyze
