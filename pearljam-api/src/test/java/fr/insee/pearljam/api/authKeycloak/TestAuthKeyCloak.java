@@ -46,7 +46,6 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.domain.surveyunit.model.CommentType;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
@@ -93,7 +92,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for Keycloak Authentication */
-@ActiveProfiles(profiles = {"auth", "test"})
+@ActiveProfiles(profiles = {"auth","test"})
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

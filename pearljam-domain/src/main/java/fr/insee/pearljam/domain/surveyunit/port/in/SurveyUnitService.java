@@ -59,12 +59,12 @@ public interface SurveyUnitService {
 										 SurveyUnitUpdateDto surveyUnitUpdateDto) throws SurveyUnitNotFoundException, PersonNotFoundException;
 
 	/**
+	 * @param campaignId
 	 * @param userId
-	 * @param id
 	 * @param state
 	 * @return {@link HttpStatus}
 	 */
-	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String userId, String id, StateType state);
+	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, StateType state);
 
 	/**
 	 * @param suId
