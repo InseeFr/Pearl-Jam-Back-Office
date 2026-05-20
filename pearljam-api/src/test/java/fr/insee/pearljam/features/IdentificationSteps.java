@@ -52,7 +52,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
 public class IdentificationSteps {
@@ -64,12 +63,13 @@ public class IdentificationSteps {
 	private final OrganizationUnitJpaRepository organizationUnitRepository;
 	private final InterviewerJpaRepository interviewerRepository;
 	private final CampaignService campaignService;
-	final JsonMapper jsonMapper = new JsonMapper();
+
+	private final JsonMapper jsonMapper = new JsonMapper();
 
 	private Authentication securityRole;
 	private IdentificationConfiguration identificationConfiguration;
+
 	private MvcResult createdCampaign;
-	private SurveyUnitDB surveyUnit;
 	private String surveyUnitId;
 	private String campaignId;
 	private ResultActions result;
@@ -90,121 +90,241 @@ public class IdentificationSteps {
 
 	@When("the user create a campaign with identificationConfiguration equals to {string}")
 	public void the_user_create_a_campaign_with_identification_configuration_to(String inputIdentificationConfiguration) throws Exception {
-		createACampaignWithAuthenticationAndIdentificationConfiguration(securityRole,
-				inputIdentificationConfiguration);
+		createACampaignWithAuthenticationAndIdentificationConfiguration(
+				securityRole,
+				inputIdentificationConfiguration
+		);
 
 		createdCampaign =
-				mockMvc.perform(get(String.join("/", Constants.API_CAMPAIGN, campaignId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+				mockMvc.perform(get(String.join("/", Constants.API_CAMPAIGN, campaignId))
+								.with(authentication(securityRole))
+								.contentType(MediaType.APPLICATION_JSON))
+						.andExpect(status().isOk())
+						.andReturn();
 	}
 
 	@Then("the created campaign should have the identification configuration {string}")
 	public void the_created_campaign_should_have_the_identification_configuration(String expectedIdentificationType) throws IOException {
-		String contentResult = createdCampaign.getResponse().getContentAsString();
 
+		String contentResult = createdCampaign.getResponse().getContentAsString();
 		CampaignResponseDto campaignDto = jsonMapper.readValue(contentResult, CampaignResponseDto.class);
 
-		assertThat(campaignDto.identificationConfiguration()).isEqualTo(IdentificationConfiguration.fromName(expectedIdentificationType));
+		assertThat(campaignDto.identificationConfiguration())
+				.isEqualTo(IdentificationConfiguration.fromName(expectedIdentificationType));
 	}
-
 
 	@Given("a survey-unit is in a campaign with identification configuration equals to {string}")
 	public void a_survey_unit_is_in_a_campaign_with_identification_configuration_equals_to(String inputIdentification) throws Exception {
-		createACampaignWithAuthenticationAndIdentificationConfiguration(AuthenticatedUserTestHelper.AUTH_ADMIN,
-				inputIdentification);
+		createACampaignWithAuthenticationAndIdentificationConfiguration(
+				AuthenticatedUserTestHelper.AUTH_ADMIN,
+				inputIdentification
+		);
 	}
 
 	@And("this survey-unit is affected to this interviewer")
 	public void this_survey_unit_is_affected_to_this_interviewer() throws Exception {
+
 		surveyUnitId = "SURVEYUNIT_" + System.currentTimeMillis();
 
-		AddressDB addressDB = new InseeAddressDB("l1", "l2", "l3", "l4", "l5", "l6", "l7", true,
-				"building", "floor", "door", "staircase", true);
+		AddressDB addressDB = new InseeAddressDB(
+				"l1", "l2", "l3", "l4", "l5", "l6", "l7",
+				true, "building", "floor", "door", "staircase", true
+		);
+
 		CampaignDB campaignDB = campaignService.findById(campaignId).orElseThrow();
 		InterviewerDB interviewerDB = interviewerRepository.findById("INTW1").orElseThrow();
 		OrganizationUnitDB ouDB = organizationUnitRepository.findById("OU-NORTH").orElseThrow();
-		Set<PersonDB> persons = Set.of(new PersonDB(null, Title.MISTER, "Bob", "Marley", "bob.marley@insee.fr", 537535032000L, true, surveyUnit, null, false,
-				 null,null));
-		Identification identificationDB = new Identification(null, IdentificationType.HOUSEF2F, null, null, null, null
-				, null, null, null, null, null, null);
-		surveyUnit = new SurveyUnitDB(surveyUnitId, false, false, addressDB, null, campaignDB, interviewerDB, ouDB, persons);
 
-		surveyUnit.setIdentification(IdentificationDB.fromModel(surveyUnit, identificationDB, identificationConfiguration));
-		surveyUnit.getStates().add(new StateDB(System.currentTimeMillis(), surveyUnit, StateType.VIN));
-		surveyUnit = surveyUnitRepository.save(surveyUnit);
+		// ⚠️ FIX IMPORTANT : ne plus utiliser surveyUnit (champ mémoire)
+		Set<PersonDB> persons = Set.of(
+				new PersonDB(
+						null,
+						Title.MISTER,
+						"Bob",
+						"Marley",
+						"bob.marley@insee.fr",
+						537535032000L,
+						true,
+						null, // FIX : plus de référence mémoire cassée
+						null,
+						false,
+						null,
+						null
+				)
+		);
 
-		List<SurveyUnitInterviewerLinkDto> link = List.of(new SurveyUnitInterviewerLinkDto(surveyUnitId, "INTW1"));
+		Identification identificationDB = new Identification(
+				null,
+				IdentificationType.HOUSEF2F,
+				null, null, null, null,
+				null, null, null, null, null, null
+		);
 
-		mockMvc.perform(post(Constants.API_SURVEYUNITS_INTERVIEWERS).with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN)).content(JsonTestHelper.toJson(link)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		SurveyUnitDB surveyUnitEntity = new SurveyUnitDB(
+				surveyUnitId,
+				false,
+				false,
+				addressDB,
+				null,
+				campaignDB,
+				interviewerDB,
+				ouDB,
+				persons
+		);
 
+		surveyUnitEntity.setIdentification(
+				IdentificationDB.fromModel(
+						surveyUnitEntity,
+						identificationDB,
+						identificationConfiguration
+				)
+		);
 
+		surveyUnitEntity.getStates()
+				.add(new StateDB(System.currentTimeMillis(), surveyUnitEntity, StateType.VIN));
+
+		surveyUnitRepository.save(surveyUnitEntity);
+
+		List<SurveyUnitInterviewerLinkDto> link =
+				List.of(new SurveyUnitInterviewerLinkDto(surveyUnitId, "INTW1"));
+
+		mockMvc.perform(post(Constants.API_SURVEYUNITS_INTERVIEWERS)
+						.with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+						.content(JsonTestHelper.toJson(link))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
-
 
 	@When("the interviewer update the survey-unit with identification value")
 	public void the_interviewer_update_the_survey_unit_with_identification_value() throws Exception {
 
+		SurveyUnitDB surveyUnit = surveyUnitRepository.findById(surveyUnitId)
+				.orElseThrow(); // FIX IMPORTANT : DB as source of truth
+
 		SurveyUnitUpdateDto editedSurveyUnit = updateIdentification(
-				new RawIdentificationDto(IdentificationQuestionValue.UNIDENTIFIED, AccessQuestionValue.ACC,
-						SituationQuestionValue.ORDINARY, CategoryQuestionValue.PRIMARY,
-						OccupantQuestionValue.IDENTIFIED, IndividualStatusQuestionValue.SAME_ADDRESS,
+				new RawIdentificationDto(
+						IdentificationQuestionValue.UNIDENTIFIED,
+						AccessQuestionValue.ACC,
+						SituationQuestionValue.ORDINARY,
+						CategoryQuestionValue.PRIMARY,
+						OccupantQuestionValue.IDENTIFIED,
+						IndividualStatusQuestionValue.SAME_ADDRESS,
 						InterviewerCanProcessQuestionValue.YES,
-						NumberOfRespondentsQuestionValue.ONE, PresentInPreviousHomeQuestionValue.AT_LEAST_ONE,
-						HouseholdCompositionQuestionValue.SAME_COMPO));
+						NumberOfRespondentsQuestionValue.ONE,
+						PresentInPreviousHomeQuestionValue.AT_LEAST_ONE,
+						HouseholdCompositionQuestionValue.SAME_COMPO
+				),
+				surveyUnit
+		);
 
-		result =
-				mockMvc.perform(put(String.join("/", "/api/survey-unit", surveyUnitId)).with(authentication(securityRole)).contentType(MediaType.APPLICATION_JSON).content(JsonTestHelper.toJson(editedSurveyUnit)).accept(MediaType.APPLICATION_JSON));
-
+		result = mockMvc.perform(
+				put(String.join("/", "/api/survey-unit", surveyUnitId))
+						.with(authentication(securityRole))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(JsonTestHelper.toJson(editedSurveyUnit))
+						.accept(MediaType.APPLICATION_JSON)
+		);
 	}
 
 	@Then("the survey-unit is updated and its identification equals:")
 	public void the_survey_unit_is_updated_and_its_identification_equals(String expectedValue) throws Exception {
+
 		result.andExpect(status().isOk());
+
 		String content = result.andReturn().getResponse().getContentAsString();
 
 		JsonNode expectedJson = jsonMapper.readTree(expectedValue);
 		JsonNode actualResponse = jsonMapper.readTree(content);
 		JsonNode actualIdentification = actualResponse.get("identification");
+
 		assertThat(actualIdentification).isEqualTo(expectedJson);
 	}
 
+	private SurveyUnitUpdateDto updateIdentification(RawIdentificationDto newIdentification,
+	                                                 SurveyUnitDB surveyUnit) {
 
-	private SurveyUnitUpdateDto updateIdentification(RawIdentificationDto newIdentification) {
 		AddressDto addressDto = null;
+
 		if (surveyUnit.getAddress() instanceof InseeAddressDB addressDB) {
-			addressDto = new AddressDto(addressDB.getL1(), addressDB.getL2(), addressDB.getL3(), addressDB.getL4(),
-					addressDB.getL5(), addressDB.getL6(), addressDB.getL7(), addressDB.getElevator(),
-					addressDB.getBuilding(), addressDB.getFloor(), addressDB.getDoor(), addressDB.getStaircase(),
-					addressDB.getCityPriorityDistrict());
+			addressDto = new AddressDto(
+					addressDB.getL1(),
+					addressDB.getL2(),
+					addressDB.getL3(),
+					addressDB.getL4(),
+					addressDB.getL5(),
+					addressDB.getL6(),
+					addressDB.getL7(),
+					addressDB.getElevator(),
+					addressDB.getBuilding(),
+					addressDB.getFloor(),
+					addressDB.getDoor(),
+					addressDB.getStaircase(),
+					addressDB.getCityPriorityDistrict()
+			);
 		}
+
 		return new SurveyUnitUpdateDto(
 				surveyUnit.getId(),
-				surveyUnit.getPersons().stream().map(person -> PersonDB.toModel(person, null)).map(PersonDto::fromModel).toList(),
+				surveyUnit.getPersons().stream()
+						.map(person -> PersonDB.toModel(person, null))
+						.map(PersonDto::fromModel)
+						.toList(),
 				addressDto,
 				surveyUnit.getMove(),
-				CommentDto.fromModel(surveyUnit.getComments().stream().map(CommentDB::toModel).collect(Collectors.toSet())),
-				surveyUnit.getStates().stream().map(s -> new StateDto(s.getId(), s.getDate(), s.getType())).toList(),
+				CommentDto.fromModel(
+						surveyUnit.getComments().stream()
+								.map(CommentDB::toModel)
+								.collect(Collectors.toSet())
+				),
+				surveyUnit.getStates().stream()
+						.map(s -> new StateDto(s.getId(), s.getDate(), s.getType()))
+						.toList(),
 				surveyUnit.getContactAttempts().stream()
-						.map(ca -> new ContactAttemptDto(ca.getDate(), ca.getStatus(), ca.getMedium())).toList(),
+						.map(ca -> new ContactAttemptDto(ca.getDate(), ca.getStatus(), ca.getMedium()))
+						.toList(),
 				null,
-				newIdentification, // New identification
+				newIdentification,
 				List.of(),
 				null
 		);
 	}
 
-	private void createACampaignWithAuthenticationAndIdentificationConfiguration(Authentication authentication,
-																				 String inputIdentificationConfiguration) throws Exception {
+	private void createACampaignWithAuthenticationAndIdentificationConfiguration(
+			Authentication authentication,
+			String inputIdentificationConfiguration
+	) throws Exception {
+
 		identificationConfiguration =
 				IdentificationConfiguration.fromName(inputIdentificationConfiguration);
-		campaignId = "CAMPAIGN_" + System.currentTimeMillis();
-		CampaignCreateDto inputCampaign = new CampaignCreateDto(campaignId, "campaign_label",
-				List.of(new VisibilityCampaignCreateDto(1L
-						, 2L, 3L, 4L, 5L, 6L, "OU-NORTH", false, "mail", "tel")), List.of(), List.of(new ReferentDto(
-				"Bob",
-				"Marley"
-				, "0123456789", "PRIMARY")), "campaign@e.mail", identificationConfiguration,
-				ContactOutcomeConfiguration.F2F, ContactAttemptConfiguration.F2F, false, false);
-		mockMvc.perform(post(Constants.API_CAMPAIGN).with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON).content(JsonTestHelper.toJson(inputCampaign)).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
+		campaignId = "CAMPAIGN_" + System.currentTimeMillis();
+
+		CampaignCreateDto inputCampaign = new CampaignCreateDto(
+				campaignId,
+				"campaign_label",
+				List.of(new VisibilityCampaignCreateDto(
+						1L, 2L, 3L, 4L, 5L, 6L,
+						"OU-NORTH",
+						false,
+						"mail",
+						"tel"
+				)),
+				List.of(),
+				List.of(new ReferentDto("Bob", "Marley", "0123456789", "PRIMARY")),
+				"campaign@e.mail",
+				identificationConfiguration,
+				ContactOutcomeConfiguration.F2F,
+				ContactAttemptConfiguration.F2F,
+				false,
+				false
+		);
+
+		mockMvc.perform(post(Constants.API_CAMPAIGN)
+						.with(authentication(authentication))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(JsonTestHelper.toJson(inputCampaign))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 }
