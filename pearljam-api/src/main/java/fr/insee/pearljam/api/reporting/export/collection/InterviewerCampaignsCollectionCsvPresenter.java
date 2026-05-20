@@ -8,20 +8,22 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithLabel;
+
 @Component
 public class InterviewerCampaignsCollectionCsvPresenter
         implements InterviewerCampaignsStatsPresenter<InterviewerCampaignsCollectionCsv> {
 
     @Override
     public InterviewerCampaignsCollectionCsv present(List<InterviewerCampaignDailyStats> stats) {
-        List<CsvRow> rows = stats.stream()
-                .map(campaignStats -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(campaignStats.getCampaignLabel());
-                    values.addAll(CollectionCsvRow.commonValues(campaignStats));
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
+
+        //Suivre Enquêteur Collecte Enquête -> Colonne Confiée au lieu de Confiée Enquêteur
+        // Pour tous les tableaux reste à vérifier les changements de date
+
+        List<CsvRow> rows = new ArrayList<>();
+        stats.forEach(campaignStats ->
+                addRowWithLabel(rows, campaignStats.getCampaignLabel(), CollectionCsvRow.commonValues(campaignStats)));
+
         return new InterviewerCampaignsCollectionCsv(rows);
     }
 }

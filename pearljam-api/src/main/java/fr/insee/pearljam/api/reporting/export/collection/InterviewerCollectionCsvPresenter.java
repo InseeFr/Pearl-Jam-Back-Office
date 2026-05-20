@@ -7,11 +7,10 @@ import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static fr.insee.pearljam.api.reporting.export.collection.CollectionCsvRow.TOTAL_FRANCE;
-import static fr.insee.pearljam.api.reporting.export.collection.OrganizationUnitCollectionCsv.TOTAL_FRANCE;
+import static fr.insee.pearljam.api.reporting.export.collection.CollectionCsvRow.*;
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.*;
 
 @Component
 public class InterviewerCollectionCsvPresenter
@@ -22,27 +21,23 @@ public class InterviewerCollectionCsvPresenter
                                             CampaignDailyStats siteStats,
                                             CampaignDailyStats campaignStats) {
 
-
         // todo Suivre Enquête Collecte Enquêteurs ->
         //  Colonne Confiée au lieu de Confiée Enquêteur, Colonne "nom Prénom" au lieu de "Nom Prénom enquêteur" -> done,
-        //  Manque ligne UE non affectées, Total Site et Total France
+        //  Manque ligne UE non affectées, Total Site et Total France -> done
 
         List<CsvRow> rows = new ArrayList<>();
-                interviewerStats.forEach(interviewer -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName());
-                    values.add(interviewer.getInterviewerId());
-                    values.addAll(CollectionCsvRow.commonValues(interviewer));
-                    rows.add(CsvRow.from(values.toArray()));
-                });
+        interviewerStats.forEach(interv ->
+                addRowWithMultipleColumnLabel(rows,
+                        List.of(interv.getInterviewerFirstName() + " " + interv.getInterviewerLastName(), interv.getInterviewerId()),
+                        CollectionCsvRow.commonValues(interv)));
 
-
-        List<String> list = new ArrayList<>(Collections.nCopies(CollectionCsvRow.commonValuesSize() - 2, ""));
-        List<Object> rowData = new ArrayList<>();
-        rowData.add(TOTAL_FRANCE);
-        rowData.addAll(list);
-        rowData.add(campaignStats.getAllocatedCount());
-        rows.add(CsvRow.from(rowData.toArray()));
+        addRowWithLabel(rows, TOTAL_UNAFFECTED,
+                // 1 Column for TOTAL_UNAFFECTED
+                // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
+                emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(),
+                        CollectionCsvRow.commonValuesSize(), CollectionCsvRow.commonValuesSize() + 1));
+        addRowWithLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
+        addRowWithLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValues((siteStats)));
 
         return new InterviewerCollectionCsv(rows);
     }

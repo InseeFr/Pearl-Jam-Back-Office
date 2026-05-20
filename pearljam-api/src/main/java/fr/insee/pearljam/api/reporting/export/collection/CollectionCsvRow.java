@@ -11,8 +11,7 @@ class CollectionCsvRow {
 
     static final String TOTAL_FRANCE = "Total France";
     static final String TOTAL_SITE = "Total Site";
-    static final String TOTAL_UNAFFECTED = "TUE non affectées";
-
+    static final String TOTAL_UNAFFECTED = "UE non affectées";
 
     private static final int COMMON_VALUES_SIZE = 12;
 
@@ -22,26 +21,10 @@ class CollectionCsvRow {
                 stats.getInaContactOutcomeCount(), stats.getRefContactOutcomeCount(), stats.getImpContactOutcomeCount(),
                 stats.getOutOfScopeContactOutcomes(), stats.getTotalContactOutcomes(),
                 stats.getNpaClosingCauseCount(), stats.getOtherReasonClosingCauses(), stats.getTotalClosingCauses(),
-                stats.getAllocatedCount()
-        );
+                stats.getAllocatedCount());
     }
 
-    static int commonValuesSize() {
+    public static int commonValuesSize() {
         return COMMON_VALUES_SIZE;
-    }
-
-    static long getTotalFrance(AbstractDailyStats stats)
-    {
-        return stats.getAllocatedCount();
-    }
-
-    static long getTotalSite(AbstractDailyStats stats)
-    {
-        return stats.getAllocatedCount();
-    }
-
-    static long getTotalUnaffacted(AbstractDailyStats stats)
-    {
-        return stats.getAllocatedCount();
     }
 }

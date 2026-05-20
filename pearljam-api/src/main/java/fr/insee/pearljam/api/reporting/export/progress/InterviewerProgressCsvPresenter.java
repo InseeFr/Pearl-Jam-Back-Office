@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.*;
+
 @Component
 public class InterviewerProgressCsvPresenter
         implements CampaignStatsByInterviewersPresenter<InterviewerProgressCsv> {
@@ -17,15 +19,20 @@ public class InterviewerProgressCsvPresenter
     public InterviewerProgressCsv present(List<InterviewerDailyStats> interviewerStats,
                                           CampaignDailyStats siteStats,
                                           CampaignDailyStats campaignStats) {
-        List<CsvRow> rows = interviewerStats.stream()
-                .map(interviewer -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName());
-                    values.add(interviewer.getInterviewerId());
-                    values.addAll(ProgressCsvRow.commonValues(interviewer));
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
+        List<CsvRow> rows = new ArrayList<>();
+        interviewerStats.forEach(interv ->
+                addRowWithMultipleColumnLabel(
+                        rows,
+                        List.of(interv.getInterviewerFirstName() + " " + interv.getInterviewerLastName(), interv.getInterviewerId()),
+                        ProgressCsvRow.commonValues(interv)));
+
+        addRowWithLabel(rows, ProgressCsvRow.TOTAL_UNAFFECTED,
+                // 1 Column for Total France
+                // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
+                emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(), 2, ProgressCsvRow.commonValuesSize() + 1));
+        addRowWithLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValues((campaignStats)));
+        addRowWithLabel(rows, ProgressCsvRow.TOTAL_SITE, ProgressCsvRow.commonValues((siteStats)));
+
         return new InterviewerProgressCsv(rows);
     }
 }
