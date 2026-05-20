@@ -1,36 +1,33 @@
 package fr.insee.pearljam.features;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.json.JsonMapper;
+import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
+import fr.insee.pearljam.api.utils.JsonTestHelper;
+import fr.insee.pearljam.contracts.campaign.dto.ReferentDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.VisibilityCampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.campaign.model.*;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.AddressDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactAttemptDto;
-import fr.insee.pearljam.contracts.campaign.dto.ReferentDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.identification.RawIdentificationDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitInterviewerLinkDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
+import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
+import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
+import fr.insee.pearljam.domain.surveyunit.model.Identification;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.Title;
+import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
-import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.CommentDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.person.PersonDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.identification.RawIdentificationDto;
-import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
-import fr.insee.pearljam.api.utils.JsonTestHelper;
-import fr.insee.pearljam.domain.surveyunit.model.Identification;
-import fr.insee.pearljam.domain.surveyunit.model.IdentificationType;
-import fr.insee.pearljam.domain.surveyunit.model.question.*;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.identification.IdentificationDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -43,6 +40,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,6 +73,11 @@ public class IdentificationSteps {
 	private String surveyUnitId;
 	private String campaignId;
 	private ResultActions result;
+
+	@Before
+	public void logDbState() {
+		System.out.println("SURVEY_UNITS = " + surveyUnitRepository.count());
+	}
 
 	@Given("a user with {string} role")
 	public void a_user_with_following_role(String role) {
