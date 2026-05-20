@@ -92,7 +92,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /* Test class for Keycloak Authentication */
-@ActiveProfiles(profiles = {"auth"})
+@ActiveProfiles(profiles = {"auth","test"})
 @AutoConfigureMockMvc
 @ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
