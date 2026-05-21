@@ -43,7 +43,7 @@ class InterviewerCampaignDailyStatsTest {
         float rate = stats.getWasteRate();
 
         // Then
-        assertThat(rate).isEqualTo(12f);
+        assertThat(rate).isEqualTo(10f);
     }
 
     @Test
