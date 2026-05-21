@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Service implementation for retrieving survey units to review.
@@ -33,7 +34,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
     private final DateService dateService;
 
     @Override
-    public <T> T getSurveyUnitsToReview(String userId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToReview(String userId, String campaignId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
         log.info("Retrieving survey units to review for user: {}", userId);
 
         long currentTimestamp = dateService.getCurrentTimestamp();
@@ -46,9 +47,13 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
                 .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         // Extract campaign IDs for the repository query
-        List<String> campaignIds = campaigns.stream()
-                .map(CampaignVisibility::id)
-                .toList();
+        List<String> campaignIds = Stream.ofNullable(campaignId)
+                .filter(id -> !id.isBlank())
+                .map(List::of)
+                .findFirst()
+                .orElseGet(() -> campaigns.stream()
+                        .map(CampaignVisibility::id)
+                        .toList());
 
         // Use native pagination via repository
         Page<SurveyUnitToReview> page = surveyUnitToReviewRepository.findSurveyUnitsToReview(

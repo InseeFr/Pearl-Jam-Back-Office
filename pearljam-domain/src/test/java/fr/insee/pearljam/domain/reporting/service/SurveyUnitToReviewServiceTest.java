@@ -54,6 +54,7 @@ class SurveyUnitToReviewServiceTest {
         // GIVEN
         Pageable pageable = PageRequest.of(0, 10);
         String search = "abc";
+        String campaignId="";
         long now = dateService.getCurrentTimestamp();
 
         List<String> expectedOuIds = List.of("OU1");
@@ -76,7 +77,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, search, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, campaignId, search, pageable, presenter);
 
         // THEN
         ArgumentCaptor<List<String>> campaignIdsCaptor = ArgumentCaptor.forClass(List.class);
@@ -116,7 +117,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null,null, pageable, presenter);
 
         // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
@@ -146,7 +147,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, null, pageable, presenter);
 
         // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
@@ -177,7 +178,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, search, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, search, pageable, presenter);
 
         // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
@@ -207,7 +208,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, null, pageable, presenter);
 
         // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
@@ -246,7 +247,7 @@ class SurveyUnitToReviewServiceTest {
         when(presenter.present(page)).thenReturn("RESULT");
 
         // WHEN
-        Object result = service.getSurveyUnitsToReview(USER_ID, search, pageable, presenter);
+        Object result = service.getSurveyUnitsToReview(USER_ID, null, search, pageable, presenter);
 
         // THEN
         assertEquals("RESULT", result);

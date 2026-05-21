@@ -40,7 +40,7 @@ class SurveyUnitToReviewControllerTest {
     @BeforeEach
     void setup() {
         port = mock(SurveyUnitToReviewPort.class);
-        when(port.getSurveyUnitsToReview(anyString(), anyString(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class)))
+        when(port.getSurveyUnitsToReview(anyString(), anyString(), anyString(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class)))
                 .thenReturn(EMPTY_RESULT);
 
         SurveyUnitToReviewController controller =
@@ -64,7 +64,7 @@ class SurveyUnitToReviewControllerTest {
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class), eq(searchTerm), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), eq(searchTerm), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
@@ -76,7 +76,7 @@ class SurveyUnitToReviewControllerTest {
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
@@ -90,6 +90,7 @@ class SurveyUnitToReviewControllerTest {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         verify(port).getSurveyUnitsToReview(
+                nullable(String.class),
                 nullable(String.class),
                 any(),
                 pageableCaptor.capture(),
