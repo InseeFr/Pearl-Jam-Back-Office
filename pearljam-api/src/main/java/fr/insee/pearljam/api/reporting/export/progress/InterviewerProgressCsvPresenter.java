@@ -30,8 +30,8 @@ public class InterviewerProgressCsvPresenter
                 // 1 Column for Total France
                 // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
                 emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(), 2, ProgressCsvRow.commonValuesSize() + 1));
-        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValues((campaignStats)));
         addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_SITE, ProgressCsvRow.commonValues((siteStats)));
+        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValues((campaignStats)));
 
         return new InterviewerProgressCsv(rows);
     }

@@ -16,10 +16,6 @@ public class InterviewerCampaignsCollectionCsvPresenter
 
     @Override
     public InterviewerCampaignsCollectionCsv present(List<InterviewerCampaignDailyStats> stats) {
-
-        //Suivre Enquêteur Collecte Enquête -> Colonne Confiée au lieu de Confiée Enquêteur
-        // Pour tous les tableaux reste à vérifier les changements de date
-
         List<CsvRow> rows = new ArrayList<>();
         stats.forEach(campaignStats ->
                 addRowWithTitleLabel(rows, campaignStats.getCampaignLabel(), CollectionCsvRow.commonValues(campaignStats)));

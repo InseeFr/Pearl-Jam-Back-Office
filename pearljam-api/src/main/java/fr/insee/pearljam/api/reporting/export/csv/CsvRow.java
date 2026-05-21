@@ -24,7 +24,6 @@ public record CsvRow(List<String> values) {
         return new CsvRow(csvValues);
     }
 
-
     public static List<Object> emptyRowWithValueAtSpecificPosition(Object value, int positon, int columnCount) {
         List<Object> row = new ArrayList<>(Collections.nCopies(columnCount, null).stream().toList());
         row.set(positon, value);

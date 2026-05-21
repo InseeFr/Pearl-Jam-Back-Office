@@ -21,10 +21,6 @@ public class InterviewerCollectionCsvPresenter
                                             CampaignDailyStats siteStats,
                                             CampaignDailyStats campaignStats) {
 
-        // todo Suivre Enquête Collecte Enquêteurs ->
-        //  Colonne Confiée au lieu de Confiée Enquêteur, Colonne "nom Prénom" au lieu de "Nom Prénom enquêteur" -> done,
-        //  Manque ligne UE non affectées, Total Site et Total France -> done
-
         List<CsvRow> rows = new ArrayList<>();
         interviewerStats.forEach(interv ->
                 addRowWithMultipleTitleLabel(rows,
@@ -36,8 +32,8 @@ public class InterviewerCollectionCsvPresenter
                 // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
                 emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(),
                         CollectionCsvRow.commonValuesSize(), CollectionCsvRow.commonValuesSize() + 1));
-        addRowWithTitleLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
         addRowWithTitleLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValues((siteStats)));
+        addRowWithTitleLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
 
         return new InterviewerCollectionCsv(rows);
     }
