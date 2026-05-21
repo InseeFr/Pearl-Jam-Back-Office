@@ -9,7 +9,7 @@ public record InterviewerCollectionCsv(List<CsvRow> rows) implements CsvExportab
 
     public static final List<CollectionCsvHeaders> CSV_HEADERS = CollectionCsvHeaders.buildHeaders(
             List.of(CollectionCsvHeaders.INTERVIEWER_LABEL, CollectionCsvHeaders.INTERVIEWER_ID),
-            List.of(CollectionCsvHeaders.ALLOCATED_INTERVIEWERS)
+            CollectionCsvHeaders.ALLOCATED_INTERVIEWERS
     );
 
     @Override
