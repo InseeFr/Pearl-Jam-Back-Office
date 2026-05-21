@@ -38,5 +38,6 @@ public interface StateRepository {
 
     Optional<StateType> findStateBySurveyUnitId(String surveyUnitId);
 
-    void saveStateBySurveyUnitId(String surveyUnitId, StateType stateType, Instant date);
+    void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date);
+
 }
