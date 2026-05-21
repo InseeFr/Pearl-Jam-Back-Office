@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsv;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvPresenter;
+import fr.insee.pearljam.api.reporting.export.collection.CollectionCsvHeaders;
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
@@ -68,7 +69,7 @@ class CampaignCollectionExportControllerTest {
         assertThat(csv).startsWith("\uFEFF")
                 .contains("Enquête")
                 .contains("Taux de collecte")
-                .contains("Confiées");
+                .contains(CollectionCsvHeaders.ALLOCATED_SITE.getHeaderName());
     }
 
     @Test
