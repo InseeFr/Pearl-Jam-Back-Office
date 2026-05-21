@@ -46,7 +46,7 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
     }
 
     @Override
-    public List<OrganizationUnitDailyStats> getOrganizationUnitsStats(String campaignId, List<String> ouIds, LocalDate day) {
+    public List<OrganizationUnitDailyStats> getOrganizationUnitsStats(String campaignId, LocalDate day) {
         return List.of();
     }
 

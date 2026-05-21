@@ -114,7 +114,6 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             COUNT(*) AS unaffected
         FROM survey_unit su
         WHERE su.campaign_id = :campaignId
-          AND su.organization_unit_id IN (:ouIds)
           AND su.interviewer_id IS NULL
         GROUP BY su.organization_unit_id
     )
@@ -127,7 +126,6 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
     LEFT JOIN su_counts su ON su.organization_unit_id = ou.id
     WHERE cds.campaign_id = :campaignId
-    AND cds.organization_unit_id IN (:ouIds)
     AND cds.day = :day
     GROUP BY ou.id, ou.label, su.unaffected
     ORDER BY translate(
@@ -140,11 +138,9 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     @Override
     public List<OrganizationUnitDailyStats> getOrganizationUnitsStats(
             String campaignId,
-            List<String> ouIds,
             LocalDate day) {
         return jdbc.sql(OUS_LIST_SQL)
                 .param(CAMPAIGN_ID_PARAM, campaignId)
-                .param(OU_IDS_PARAM, ouIds)
                 .param(DAY_PARAM, day)
                 .query(OrganizationUnitDailyStats.class)
                 .list();
