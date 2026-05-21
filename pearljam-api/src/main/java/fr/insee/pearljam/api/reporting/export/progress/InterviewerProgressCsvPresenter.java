@@ -21,17 +21,17 @@ public class InterviewerProgressCsvPresenter
                                           CampaignDailyStats campaignStats) {
         List<CsvRow> rows = new ArrayList<>();
         interviewerStats.forEach(interv ->
-                addRowWithMultipleColumnLabel(
+                addRowWithMultipleTitleLabel(
                         rows,
                         List.of(interv.getInterviewerFirstName() + " " + interv.getInterviewerLastName(), interv.getInterviewerId()),
                         ProgressCsvRow.commonValues(interv)));
 
-        addRowWithLabel(rows, ProgressCsvRow.TOTAL_UNAFFECTED,
+        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_UNAFFECTED,
                 // 1 Column for Total France
                 // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
                 emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(), 2, ProgressCsvRow.commonValuesSize() + 1));
-        addRowWithLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValues((campaignStats)));
-        addRowWithLabel(rows, ProgressCsvRow.TOTAL_SITE, ProgressCsvRow.commonValues((siteStats)));
+        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValues((campaignStats)));
+        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_SITE, ProgressCsvRow.commonValues((siteStats)));
 
         return new InterviewerProgressCsv(rows);
     }

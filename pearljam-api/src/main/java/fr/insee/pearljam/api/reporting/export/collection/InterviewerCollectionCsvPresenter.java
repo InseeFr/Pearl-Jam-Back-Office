@@ -27,17 +27,17 @@ public class InterviewerCollectionCsvPresenter
 
         List<CsvRow> rows = new ArrayList<>();
         interviewerStats.forEach(interv ->
-                addRowWithMultipleColumnLabel(rows,
+                addRowWithMultipleTitleLabel(rows,
                         List.of(interv.getInterviewerFirstName() + " " + interv.getInterviewerLastName(), interv.getInterviewerId()),
                         CollectionCsvRow.commonValues(interv)));
 
-        addRowWithLabel(rows, TOTAL_UNAFFECTED,
+        addRowWithTitleLabel(rows, TOTAL_UNAFFECTED,
                 // 1 Column for TOTAL_UNAFFECTED
                 // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
                 emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(),
                         CollectionCsvRow.commonValuesSize(), CollectionCsvRow.commonValuesSize() + 1));
-        addRowWithLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
-        addRowWithLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValues((siteStats)));
+        addRowWithTitleLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
+        addRowWithTitleLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValues((siteStats)));
 
         return new InterviewerCollectionCsv(rows);
     }

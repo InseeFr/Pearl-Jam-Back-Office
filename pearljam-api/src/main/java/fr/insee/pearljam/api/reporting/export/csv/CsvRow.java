@@ -35,14 +35,14 @@ public record CsvRow(List<String> values) {
         return String.join(SEPARATOR, this.values) + LINE_END;
     }
 
-    public static void addRowWithLabel(List<CsvRow> rows, Object rowLabel, List<Object> values) {
+    public static void addRowWithTitleLabel(List<CsvRow> rows, Object rowLabel, List<Object> values) {
         List<Object> rowData = new ArrayList<>();
         rowData.add(rowLabel);
         rowData.addAll(values);
         rows.add(CsvRow.from(rowData.toArray()));
     }
 
-    public static void addRowWithMultipleColumnLabel(List<CsvRow> rows, List<Object> rowLabel, List<Object> values) {
+    public static void addRowWithMultipleTitleLabel(List<CsvRow> rows, List<Object> rowLabel, List<Object> values) {
         List<Object> rowData = new ArrayList<>();
         rowData.addAll(rowLabel);
         rowData.addAll(values);
