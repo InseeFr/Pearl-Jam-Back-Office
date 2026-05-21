@@ -27,6 +27,18 @@ class ProgressCsvRow {
             );
         }
 
+    static List<Object> commonValuesWithEmptyIdep(AbstractDailyStats stats) {
+        return List.of(
+                "0",
+                stats.getProgressStateRate(),
+                stats.getAllocatedCount(), stats.getVicStateCount(), stats.getInProgressStateCount(),
+                stats.getWftStateCount(), stats.getTbrStateCount(), stats.getCompletedStateCount(),
+                stats.getPrcStateCount(), stats.getAocStateCount(), stats.getApsStateCount(),
+                stats.getInsStateCount(),
+                stats.getNoticeCommunicationCount(), stats.getReminderCommunicationCount()
+        );
+    }
+
         public static int commonValuesSize() {
             return COMMON_VALUES_SIZE;
         }

@@ -32,8 +32,8 @@ public class InterviewerCollectionCsvPresenter
                 // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
                 emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(),
                         CollectionCsvRow.commonValuesSize(), CollectionCsvRow.commonValuesSize() + 1));
-        addRowWithTitleLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValues((siteStats)));
-        addRowWithTitleLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValues((campaignStats)));
+        addRowWithTitleLabel(rows, TOTAL_SITE, CollectionCsvRow.commonValuesWithEmptyIdep((siteStats)));
+        addRowWithTitleLabel(rows, TOTAL_FRANCE, CollectionCsvRow.commonValuesWithEmptyIdep((campaignStats)));
 
         return new InterviewerCollectionCsv(rows);
     }

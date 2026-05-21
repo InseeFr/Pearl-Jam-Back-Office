@@ -24,6 +24,15 @@ class CollectionCsvRow {
                 stats.getAllocatedCount());
     }
 
+    static List<Object> commonValuesWithEmptyIdep(AbstractDailyStats stats) {
+        return List.of("0",
+                stats.getCollectionRate(), stats.getWasteRate(), stats.getOutOfScopeRate(),
+                stats.getInaContactOutcomeCount(), stats.getRefContactOutcomeCount(), stats.getImpContactOutcomeCount(),
+                stats.getOutOfScopeContactOutcomes(), stats.getTotalContactOutcomes(),
+                stats.getNpaClosingCauseCount(), stats.getOtherReasonClosingCauses(), stats.getTotalClosingCauses(),
+                stats.getAllocatedCount());
+    }
+
     public static int commonValuesSize() {
         return COMMON_VALUES_SIZE;
     }
