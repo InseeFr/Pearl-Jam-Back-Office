@@ -42,7 +42,7 @@ class InterviewerCollectionCsvTest {
                 CollectionCsvHeaders.ABSENCE_INTERVIEWER.getHeaderName(),
                 CollectionCsvHeaders.OTHER_REASONS.getHeaderName(),
                 CollectionCsvHeaders.TOTAL_CLOSED.getHeaderName(),
-                CollectionCsvHeaders.ALLOCATED.getHeaderName()
+                CollectionCsvHeaders.ALLOCATED_INTERVIEWERS.getHeaderName()
         );
     }
 }

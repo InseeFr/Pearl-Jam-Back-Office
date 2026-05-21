@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+
 @Component
 public class CampaignOrganizationCsvPresenter implements CampaignOrganizationStatsPresenter<CampaignOrganizationCsv> {
 
@@ -22,30 +24,14 @@ public class CampaignOrganizationCsvPresenter implements CampaignOrganizationSta
                                             long currentDate) {
         List<CsvRow> rows = new ArrayList<>();
 
-        // Add rows for each interviewer
         interviewerDailyStats.forEach(interviewer -> {
-            String fullName = interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName();
-            rows.add(CsvRow.from(
-                    fullName,
-                    interviewer.getInterviewerId(),
-                    interviewer.getAllocatedCount()
-            ));
+            String fullNameRowTitle = interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName();
+            addRowWithTitleLabel(rows, fullNameRowTitle, List.of(interviewer.getInterviewerId(), interviewer.getAllocatedCount()));
         });
 
-        // Add NOT_AFFECTED row
-        rows.add(CsvRow.from(
-                CampaignOrganizationCsv.NOT_AFFECTED,
-                "",
-                campaignDailyStats.getUnaffectedCount()
-        ));
+        addRowWithTitleLabel(rows, CampaignOrganizationCsv.NOT_AFFECTED, List.of("", campaignDailyStats.getUnaffectedCount()));
+        addRowWithTitleLabel(rows, CampaignOrganizationCsv.TOTAL_SITE, List.of("", campaignDailyStats.getAllocatedCount()));
 
-        // Add TOTAL_SITE row
-        rows.add(CsvRow.from(
-                CampaignOrganizationCsv.TOTAL_SITE,
-                "",
-                campaignDailyStats.getAllocatedCount()
-        ));
-
-        return new CampaignOrganizationCsv(campaignVisibility.label(), rows);
+        return new CampaignOrganizationCsv(campaignVisibility.id(), rows);
     }
 }

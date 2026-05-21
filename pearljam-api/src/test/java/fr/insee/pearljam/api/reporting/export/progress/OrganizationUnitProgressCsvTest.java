@@ -30,7 +30,7 @@ class OrganizationUnitProgressCsvTest {
         assertThat(csv.headers().values()).containsExactly(
                 ProgressCsvHeaders.ORGANIZATION_UNIT_LABEL.getHeaderName(),
                 ProgressCsvHeaders.PROGRESS_RATE.getHeaderName(),
-                ProgressCsvHeaders.ALLOCATED.getHeaderName(),
+                ProgressCsvHeaders.ALLOCATED_INTERVIEWER.getHeaderName(),
                 ProgressCsvHeaders.NOT_STARTED.getHeaderName(),
                 ProgressCsvHeaders.IN_PROGRESS.getHeaderName(),
                 ProgressCsvHeaders.PENDING_TRANSMISSION.getHeaderName(),

@@ -8,7 +8,7 @@ import java.util.List;
 public record InterviewerCampaignsCollectionCsv(List<CsvRow> rows) implements CsvExportable {
 
     public static final List<CollectionCsvHeaders> CSV_HEADERS = CollectionCsvHeaders.buildHeaders(
-            List.of(CollectionCsvHeaders.CAMPAIGN_LABEL)
+            List.of(CollectionCsvHeaders.CAMPAIGN_LABEL), CollectionCsvHeaders.ALLOCATED_INTERVIEWERS
     );
 
     @Override

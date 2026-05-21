@@ -10,8 +10,11 @@ public enum CollectionCsvHeaders {
     // specific headers
     CAMPAIGN_LABEL("Enquête"),
     INTERVIEWER_ID("Idep"),
-    INTERVIEWER_LABEL("Nom prénom"),
+    INTERVIEWER_LABEL("Nom Prénom enquêteur"),
     ORGANIZATION_UNIT_LABEL("Site"),
+    ALLOCATED_SITE("Confiées Site"),
+    ALLOCATED_INTERVIEWERS("Confiées Enquêteur"),
+
 
     // common headers
     COLLECTION_RATE("Taux de collecte"),
@@ -24,8 +27,7 @@ public enum CollectionCsvHeaders {
     TOTAL_OUTCOMES("Total traitées"),
     ABSENCE_INTERVIEWER("Absence enquêteur"),
     OTHER_REASONS("Autres motifs"),
-    TOTAL_CLOSED("Total closes"),
-    ALLOCATED("Confiées");
+    TOTAL_CLOSED("Total closes");
 
     @Getter
     private final String headerName;
@@ -34,18 +36,18 @@ public enum CollectionCsvHeaders {
         this.headerName = headerName;
     }
 
-    public static List<CollectionCsvHeaders> commonHeaders() {
+    public static List<CollectionCsvHeaders> commonHeaders(CollectionCsvHeaders allocatedType) {
         return List.of(
                 COLLECTION_RATE, WASTE_RATE, OUT_OF_SCOPE_RATE,
                 ACCEPTED, REFUSED, UNREACHABLE, OUT_OF_SCOPE, TOTAL_OUTCOMES,
-                ABSENCE_INTERVIEWER, OTHER_REASONS, TOTAL_CLOSED,
-                ALLOCATED
+                ABSENCE_INTERVIEWER, OTHER_REASONS, TOTAL_CLOSED, allocatedType
         );
     }
 
-    public static List<CollectionCsvHeaders> buildHeaders(List<CollectionCsvHeaders> prefixHeaders) {
+
+    public static List<CollectionCsvHeaders> buildHeaders(List<CollectionCsvHeaders> prefixHeaders, CollectionCsvHeaders allocatedType) {
         List<CollectionCsvHeaders> headers = new ArrayList<>(prefixHeaders);
-        headers.addAll(commonHeaders());
+        headers.addAll(commonHeaders(allocatedType));
         return Collections.unmodifiableList(headers);
     }
 }

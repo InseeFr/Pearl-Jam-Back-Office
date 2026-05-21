@@ -197,7 +197,7 @@ class CampaignOrganizationCsvTest {
 
         // Then
         assertThat(csv.rows()).isEqualTo(manualRows);
-        assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
+        assertThat(csv.campaignId()).isEqualTo("Test Campaign");
     }
 
 
@@ -212,7 +212,7 @@ class CampaignOrganizationCsvTest {
 
         // Then
         assertThat(csv.rows()).isEmpty();
-        assertThat(csv.campaignLabel()).isEqualTo("Empty Campaign");
+        assertThat(csv.campaignId()).isEqualTo("Empty Campaign");
     }
 
 

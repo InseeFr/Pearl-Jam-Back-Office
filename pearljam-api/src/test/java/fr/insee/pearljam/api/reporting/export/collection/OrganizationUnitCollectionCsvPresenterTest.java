@@ -14,13 +14,15 @@ class OrganizationUnitCollectionCsvPresenterTest {
     private final OrganizationUnitCollectionCsvPresenter presenter = new OrganizationUnitCollectionCsvPresenter();
 
     @Test
-    @DisplayName("Returns empty rows when no organization unit stats are provided")
+    @DisplayName("Returns Country rows when no organization unit stats are provided")
     void shouldReturnEmptyRows_whenNoStats() {
         // Given / When
         OrganizationUnitCollectionCsv csv = presenter.present(List.of(), new CampaignDailyStats());
 
         // Then
-        assertThat(csv.rows()).isEmpty();
+        List<String> valuesTotalCountry = csv.rows().getFirst().values();
+        assertThat(valuesTotalCountry.getFirst()).isEqualTo(CollectionCsvRow.TOTAL_FRANCE);
+        assertThat(valuesTotalCountry.getLast()).isEqualTo("0");
     }
 
     @Test
@@ -34,7 +36,7 @@ class OrganizationUnitCollectionCsvPresenterTest {
         OrganizationUnitCollectionCsv csv = presenter.present(List.of(paris, lyon), new CampaignDailyStats());
 
         // Then
-        assertThat(csv.rows()).hasSize(2);
+        assertThat(csv.rows()).hasSize(3);
         assertThat(csv.rows().get(0).values().getFirst()).isEqualTo("Site Paris");
         assertThat(csv.rows().get(1).values().getFirst()).isEqualTo("Site Lyon");
     }

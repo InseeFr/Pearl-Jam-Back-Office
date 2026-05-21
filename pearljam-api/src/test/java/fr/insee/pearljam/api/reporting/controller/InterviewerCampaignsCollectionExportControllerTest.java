@@ -71,7 +71,7 @@ class InterviewerCampaignsCollectionExportControllerTest {
         assertThat(csv).startsWith("\uFEFF")
                 .contains("Enquête")
                 .contains("Taux de collecte")
-                .contains("Confiées");
+                .contains("Confiées Enquêteur");
     }
 
     @Test

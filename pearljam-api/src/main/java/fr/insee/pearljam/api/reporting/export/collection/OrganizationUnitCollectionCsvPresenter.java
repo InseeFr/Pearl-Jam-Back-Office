@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+
 @Component
 public class OrganizationUnitCollectionCsvPresenter
         implements CampaignStatsByOrganizationUnitsPresenter<OrganizationUnitCollectionCsv> {
@@ -16,14 +18,13 @@ public class OrganizationUnitCollectionCsvPresenter
     @Override
     public OrganizationUnitCollectionCsv present(List<OrganizationUnitDailyStats> organizationUnitStats,
                                                  CampaignDailyStats campaignStats) {
-        List<CsvRow> rows = organizationUnitStats.stream()
-                .map(ou -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(ou.getOuLabel());
-                    values.addAll(CollectionCsvRow.commonValues(ou));
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
+
+        List<CsvRow> rows = new ArrayList<>();
+        organizationUnitStats.forEach(ou ->
+                addRowWithTitleLabel(rows, ou.getOuLabel(), CollectionCsvRow.commonValues(ou)));
+
+        addRowWithTitleLabel(rows, CollectionCsvRow.TOTAL_FRANCE, CollectionCsvRow.commonValues(campaignStats));
+
         return new OrganizationUnitCollectionCsv(rows);
     }
 }

@@ -18,7 +18,7 @@ public class CampaignOrganizationCsvExporter extends AbstractCsvExporter {
     public ResponseEntity<byte[]> export(String userId, String campaignId, LocalDate date) {
         CampaignOrganizationCsv csv = campaignOrganizationPort.getCampaignOrganization(
                 userId, campaignId, presenter);
-        String label = csv.campaignLabel() + "_Repartition_enqueteurs";
+        String label = csv.campaignId() + "_Repartition_enqueteurs";
         return buildResponse(csv, label, date);
     }
 }

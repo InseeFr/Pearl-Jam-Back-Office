@@ -14,13 +14,24 @@ class InterviewerProgressCsvPresenterTest {
     private final InterviewerProgressCsvPresenter presenter = new InterviewerProgressCsvPresenter();
 
     @Test
-    @DisplayName("Returns empty rows when no interviewer stats are provided")
+    @DisplayName("Returns Unaffected, Country and Site rows when no interviewer stats are provided")
     void shouldReturnEmptyRows_whenNoStats() {
         // Given / When
         InterviewerProgressCsv csv = presenter.present(List.of(), new CampaignDailyStats(), new CampaignDailyStats());
 
         // Then
-        assertThat(csv.rows()).isEmpty();
+        assertThat(csv.rows()).hasSize(3);
+        List<String> valuesUnaffected = csv.rows().getFirst().values();
+        assertThat(valuesUnaffected.getFirst()).isEqualTo(ProgressCsvRow.TOTAL_UNAFFECTED);
+        assertThat(valuesUnaffected.getLast()).isEmpty();
+
+        List<String> valuesSite = csv.rows().get(1).values();
+        assertThat(valuesSite.getFirst()).isEqualTo(ProgressCsvRow.TOTAL_SITE);
+        assertThat(valuesSite.getLast()).isEqualTo("0");
+
+        List<String> valuesTotalCountry = csv.rows().get(2).values();
+        assertThat(valuesTotalCountry.getFirst()).isEqualTo(ProgressCsvRow.TOTAL_FRANCE);
+        assertThat(valuesTotalCountry.getLast()).isEqualTo("0");
     }
 
     @Test
@@ -33,7 +44,7 @@ class InterviewerProgressCsvPresenterTest {
         InterviewerProgressCsv csv = presenter.present(List.of(stats), new CampaignDailyStats(), new CampaignDailyStats());
 
         // Then
-        assertThat(csv.rows()).hasSize(1);
+        assertThat(csv.rows()).hasSize(4);
         List<String> values = csv.rows().getFirst().values();
         assertThat(values.get(0)).isEqualTo("Jean Dupont");
         assertThat(values.get(1)).isEqualTo("JDUP");
@@ -50,9 +61,9 @@ class InterviewerProgressCsvPresenterTest {
         InterviewerProgressCsv csv = presenter.present(List.of(jdup, mmar), new CampaignDailyStats(), new CampaignDailyStats());
 
         // Then
-        assertThat(csv.rows()).hasSize(2);
-        assertThat(csv.rows().get(0).values().get(0)).isEqualTo("Jean Dupont");
-        assertThat(csv.rows().get(1).values().get(0)).isEqualTo("Marie Martin");
+        assertThat(csv.rows()).hasSize(5);
+        assertThat(csv.rows().get(0).values().getFirst()).isEqualTo("Jean Dupont");
+        assertThat(csv.rows().get(1).values().getFirst()).isEqualTo("Marie Martin");
     }
 
     @Test

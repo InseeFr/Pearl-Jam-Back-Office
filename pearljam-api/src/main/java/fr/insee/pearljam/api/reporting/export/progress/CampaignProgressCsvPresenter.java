@@ -8,19 +8,17 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+
 @Component
 public class CampaignProgressCsvPresenter implements CampaignStatsPresenter<CampaignProgressCsv> {
 
     @Override
     public CampaignProgressCsv present(List<CampaignDailyStats> stats) {
-        List<CsvRow> rows = stats.stream()
-                .map(campaignStats -> {
-                    List<Object> values = new ArrayList<>();
-                    values.add(campaignStats.getCampaignLabel());
-                    values.addAll(ProgressCsvRow.commonValues(campaignStats));
-                    return CsvRow.from(values.toArray());
-                })
-                .toList();
+        List<CsvRow> rows = new ArrayList<>();
+        stats.forEach(campaignStats ->
+                addRowWithTitleLabel(rows, campaignStats.getCampaignLabel(), ProgressCsvRow.commonValues(campaignStats)));
+
         return new CampaignProgressCsv(rows);
     }
 }

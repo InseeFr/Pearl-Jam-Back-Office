@@ -8,7 +8,7 @@ import java.util.List;
 public record OrganizationUnitProgressCsv(List<CsvRow> rows) implements CsvExportable {
 
     public static final List<ProgressCsvHeaders> CSV_HEADERS = ProgressCsvHeaders.buildHeaders(
-            List.of(ProgressCsvHeaders.ORGANIZATION_UNIT_LABEL)
+            List.of(ProgressCsvHeaders.ORGANIZATION_UNIT_LABEL), ProgressCsvHeaders.ALLOCATED_INTERVIEWER
     );
 
     @Override
