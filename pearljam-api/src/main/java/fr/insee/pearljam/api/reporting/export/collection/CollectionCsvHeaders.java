@@ -13,7 +13,7 @@ public enum CollectionCsvHeaders {
     INTERVIEWER_LABEL("Nom Prénom enquêteur"),
     ORGANIZATION_UNIT_LABEL("Site"),
     ALLOCATED_SITE("Confiées Site"),
-    ALLOCATED_INTERVIEWERS("Confiées Enquêteurs"),
+    ALLOCATED_INTERVIEWERS("Confiées Enquêteur"),
 
 
     // common headers

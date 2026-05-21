@@ -12,7 +12,7 @@ public enum ProgressCsvHeaders {
     INTERVIEWER_ID("Idep"),
     INTERVIEWER_LABEL("Nom prénom enquêteur"),
     ORGANIZATION_UNIT_LABEL("Site"),
-    ALLOCATED_INTERVIEWER("Confiées Enquêteurs"),
+    ALLOCATED_INTERVIEWER("Confiées Enquêteur"),
     ALLOCATED_SITE("Confiées Site"),
 
     // common headers
