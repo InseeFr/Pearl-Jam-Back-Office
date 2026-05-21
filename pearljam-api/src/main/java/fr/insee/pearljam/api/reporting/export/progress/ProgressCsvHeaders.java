@@ -10,7 +10,7 @@ public enum ProgressCsvHeaders {
     // specific headers
     CAMPAIGN_LABEL("Enquête"),
     INTERVIEWER_ID("Idep"),
-    INTERVIEWER_LABEL("Nom prénom"),
+    INTERVIEWER_LABEL("Nom prénom Enquêteur"),
     ORGANIZATION_UNIT_LABEL("Site"),
 
     // common headers
