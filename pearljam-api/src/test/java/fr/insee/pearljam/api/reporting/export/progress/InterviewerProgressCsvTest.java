@@ -31,7 +31,7 @@ class InterviewerProgressCsvTest {
                 ProgressCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
                 ProgressCsvHeaders.INTERVIEWER_ID.getHeaderName(),
                 ProgressCsvHeaders.PROGRESS_RATE.getHeaderName(),
-                ProgressCsvHeaders.ALLOCATED.getHeaderName(),
+                ProgressCsvHeaders.ALLOCATED_INTERVIEWER.getHeaderName(),
                 ProgressCsvHeaders.NOT_STARTED.getHeaderName(),
                 ProgressCsvHeaders.IN_PROGRESS.getHeaderName(),
                 ProgressCsvHeaders.PENDING_TRANSMISSION.getHeaderName(),

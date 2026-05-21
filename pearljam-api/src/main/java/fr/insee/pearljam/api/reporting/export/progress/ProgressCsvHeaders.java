@@ -12,10 +12,11 @@ public enum ProgressCsvHeaders {
     INTERVIEWER_ID("Idep"),
     INTERVIEWER_LABEL("Nom prénom enquêteur"),
     ORGANIZATION_UNIT_LABEL("Site"),
+    ALLOCATED_INTERVIEWER("Confiées Enquêteurs"),
+    ALLOCATED_SITE("Confiées Site"),
 
     // common headers
     PROGRESS_RATE("Taux d'avancement"),
-    ALLOCATED("Confiées"),
     NOT_STARTED("Non commencées"),
     IN_PROGRESS("En cours enquêteur"),
     PENDING_TRANSMISSION("En attente de transmission enquêteur"),
@@ -35,18 +36,18 @@ public enum ProgressCsvHeaders {
         this.headerName = headerName;
     }
 
-    public static List<ProgressCsvHeaders> commonHeaders() {
+    public static List<ProgressCsvHeaders> commonHeaders(ProgressCsvHeaders allocatedType) {
         return List.of(
-                PROGRESS_RATE, ALLOCATED, NOT_STARTED, IN_PROGRESS,
+                PROGRESS_RATE, allocatedType, NOT_STARTED, IN_PROGRESS,
                 PENDING_TRANSMISSION, TO_REVIEW, VALIDATED,
                 PREPARING_CONTACT, WITH_CONTACT, WITH_APPOINTMENT,
                 STARTED, NOTICE_LETTER, REMINDER_LETTER
         );
     }
 
-    public static List<ProgressCsvHeaders> buildHeaders(List<ProgressCsvHeaders> prefixHeaders) {
+    public static List<ProgressCsvHeaders> buildHeaders(List<ProgressCsvHeaders> prefixHeaders, ProgressCsvHeaders allocated) {
         List<ProgressCsvHeaders> headers = new ArrayList<>(prefixHeaders);
-        headers.addAll(commonHeaders());
+        headers.addAll(commonHeaders(allocated));
         return Collections.unmodifiableList(headers);
     }
 }

@@ -37,7 +37,7 @@ class CampaignProgressCsvTest {
         assertThat(headers.values()).containsExactly(
                 ProgressCsvHeaders.CAMPAIGN_LABEL.getHeaderName(),
                 ProgressCsvHeaders.PROGRESS_RATE.getHeaderName(),
-                ProgressCsvHeaders.ALLOCATED.getHeaderName(),
+                ProgressCsvHeaders.ALLOCATED_SITE.getHeaderName(),
                 ProgressCsvHeaders.NOT_STARTED.getHeaderName(),
                 ProgressCsvHeaders.IN_PROGRESS.getHeaderName(),
                 ProgressCsvHeaders.PENDING_TRANSMISSION.getHeaderName(),
