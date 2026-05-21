@@ -61,6 +61,6 @@ public class SurveyUnitStateService implements SurveyUnitStatePort {
                     surveyUnitClosingPort.deleteClosingCauseBySurveyUnitId(surveyUnitId);
                 }
 
-        stateRepository.saveStateBySurveyUnitId(surveyUnitId, state, new Date().toInstant());
+        stateRepository.saveStateForSurveyUnits(List.of(surveyUnitId), state, new Date().toInstant());
     }
 }

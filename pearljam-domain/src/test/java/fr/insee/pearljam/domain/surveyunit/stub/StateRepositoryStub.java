@@ -3,9 +3,9 @@ package fr.insee.pearljam.domain.surveyunit.stub;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 
 import java.time.Instant;
 import java.util.*;
@@ -81,9 +81,9 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
-    public void saveStateBySurveyUnitId(String surveyUnitId, StateType stateType, Instant date) {
-        surveyUnitStates.put(surveyUnitId, stateType);
-        saveHistory.computeIfAbsent(surveyUnitId, k -> new ArrayList<>()).add(stateType);
+    public void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date) {
+        surveyUnitIds.forEach( id -> surveyUnitStates.put(id, stateType));
+        surveyUnitIds.forEach(id -> saveHistory.computeIfAbsent(id, k -> new ArrayList<>()).add(stateType));
     }
 
     // Helper methods for tests

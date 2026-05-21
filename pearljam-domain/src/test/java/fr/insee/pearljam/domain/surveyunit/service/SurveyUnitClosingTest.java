@@ -9,6 +9,7 @@ import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStatePort;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +43,7 @@ class SurveyUnitClosingTest {
     SurveyUnitRepository surveyUnitRepository;
     QuestionnaireStatePort questionnaireStatePort;
     SurveyUnitClosablePolicy surveyUnitClosablePolicy;
+    StateRepository stateRepository;
 
 
     @BeforeEach
@@ -48,10 +51,11 @@ class SurveyUnitClosingTest {
         userService = mock(UserService.class);
         closingCauseRepository = new ClosingCauseRepositoryStub();
         surveyUnitService = new SurveyUnitExistencePortStub();
-        surveyUnitRepository = mock (SurveyUnitRepository.class);
+        surveyUnitRepository = mock(SurveyUnitRepository.class);
         questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy);
+        stateRepository = mock(StateRepository.class);
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy, stateRepository);
     }
 
     @Test
@@ -72,6 +76,12 @@ class SurveyUnitClosingTest {
         // Then
         assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
         assertEquals(1, closingCauseRepository.getAddedClosingCausesCount());
+
+        verify(stateRepository).saveStateForSurveyUnits(
+                eq(surveyUnitIds),
+                eq(StateType.CLO),
+                any(Instant.class));
+
     }
 
     @Test
@@ -94,6 +104,12 @@ class SurveyUnitClosingTest {
             assertEquals(type, closingCauseRepository.getClosingCauseType(id));
         });
         assertEquals(3, closingCauseRepository.getAddedClosingCausesCount());
+
+        verify(stateRepository).saveStateForSurveyUnits(
+                eq(surveyUnitIds),
+                eq(StateType.CLO),
+                any(Instant.class)
+        );
     }
 
     @Test
@@ -157,6 +173,7 @@ class SurveyUnitClosingTest {
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU001"));
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU003"));
         assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
+        verifyNoInteractions(stateRepository);
     }
 
     @Test
@@ -184,6 +201,8 @@ class SurveyUnitClosingTest {
         assertEquals(ClosingCauseType.NPX, closingCauseRepository.getClosingCauseType("SU002"));
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU003"));
         assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
+        verifyNoInteractions(stateRepository);
+
     }
 
     @Test

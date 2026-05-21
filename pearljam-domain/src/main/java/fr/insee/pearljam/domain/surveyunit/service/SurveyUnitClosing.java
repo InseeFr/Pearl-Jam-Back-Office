@@ -3,12 +3,14 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.QuestionnaireStatePort;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -36,11 +39,15 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     private final SurveyUnitRepository surveyUnitRepository;
     private final QuestionnaireStatePort questionnaireStatePort;
     private final SurveyUnitClosablePolicy surveyUnitClosablePolicy;
+    private final StateRepository stateRepository;
 
     @Override
     @Transactional
     public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type) {
 
+        if (surveyUnitIds == null || surveyUnitIds.isEmpty()) {
+            return;
+        }
         List<String> existingSurveyUnits = surveyUnitExistencePort.findExistingIds(surveyUnitIds);
         List<String> missingSurveyUnits = surveyUnitIds.stream()
                 .filter(id -> !existingSurveyUnits.contains(id))
@@ -60,6 +67,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         }
 
         closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
+        stateRepository.saveStateForSurveyUnits(surveyUnitIds, StateType.CLO, new Date().toInstant());
+
     }
 
     @Override

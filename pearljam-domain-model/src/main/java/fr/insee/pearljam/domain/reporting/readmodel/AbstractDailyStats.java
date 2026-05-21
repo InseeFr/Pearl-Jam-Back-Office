@@ -89,7 +89,7 @@ public abstract class AbstractDailyStats {
         if (allocated == 0) {
             return 0f;
         }
-        return (float) (refContactOutcomeCount + impContactOutcomeCount + npaClosingCauseCount) * 100 / allocated;
+        return (float) (refContactOutcomeCount + impContactOutcomeCount + npiClosingCauseCount) * 100 / allocated;
     }
 
     public float getOutOfScopeRate() {

@@ -3,8 +3,8 @@ package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
 import jakarta.persistence.EntityManager;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -88,14 +89,22 @@ public class StateDaoAdapter implements StateRepository {
     }
 
     @Override
-    public void saveStateBySurveyUnitId(String surveyUnitId, StateType stateType, Instant date) {
-        SurveyUnitDB surveyUnit = em.getReference(SurveyUnitDB.class, surveyUnitId);
+    public void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date) {
+        List<StateDB> states = new ArrayList<>();
 
-        StateDB state = new StateDB();
-        state.setSurveyUnit(surveyUnit);
-        state.setType(stateType);
-        state.setDate(date.toEpochMilli());
+        for (String id : surveyUnitIds) {
+            SurveyUnitDB surveyUnit = em.getReference(SurveyUnitDB.class, id);
 
-        stateJpaRepository.save(state);
+            StateDB state = new StateDB();
+            state.setSurveyUnit(surveyUnit);
+            state.setType(stateType);
+            state.setDate(date.toEpochMilli());
+
+            states.add(state);
+        }
+
+        stateJpaRepository.saveAll(states);
     }
+
+
 }

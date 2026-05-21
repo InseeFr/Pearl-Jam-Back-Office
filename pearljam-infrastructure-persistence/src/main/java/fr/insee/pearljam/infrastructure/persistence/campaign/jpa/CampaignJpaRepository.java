@@ -36,12 +36,15 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignDB, String>
 	List<CampaignSummary> findAllManagedAndNotClosedCampaignByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 	@Query(value = """
-		SELECT DISTINCT(campaign_id) FROM visibility
-		WHERE organization_unit_id IN (:ouIds)
-		AND management_start_date <= :date
-		AND end_date > :date .
-		ORDER BY campaign.label
-		""", nativeQuery = true)
+    SELECT v.campaign_id
+    FROM visibility v
+    JOIN campaign c ON c.id = v.campaign_id
+    WHERE v.organization_unit_id IN (:ouIds)
+      AND v.management_start_date <= :date
+      AND v.end_date > :date
+    GROUP BY v.campaign_id, c.label
+    ORDER BY c.label
+    """, nativeQuery = true)
 	List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(@Param("ouIds") List<String> ouIds, @Param("date") Long date);
 
 
