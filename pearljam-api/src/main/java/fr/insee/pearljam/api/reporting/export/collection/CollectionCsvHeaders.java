@@ -44,13 +44,8 @@ public enum CollectionCsvHeaders {
         );
     }
 
-    public static List<CollectionCsvHeaders> buildHeaders(List<CollectionCsvHeaders> prefixHeaders) {
-        List<CollectionCsvHeaders> headers = new ArrayList<>(prefixHeaders);
-        headers.addAll(commonHeaders());
-        return Collections.unmodifiableList(headers);
-    }
 
-    public static List<CollectionCsvHeaders> buildHeadersWithSuffix(List<CollectionCsvHeaders> prefixHeaders, List<CollectionCsvHeaders> suffixHeaders) {
+    public static List<CollectionCsvHeaders> buildHeaders(List<CollectionCsvHeaders> prefixHeaders, List<CollectionCsvHeaders> suffixHeaders) {
         List<CollectionCsvHeaders> headers = new ArrayList<>(prefixHeaders);
         headers.addAll(commonHeaders());
         headers.addAll(new ArrayList<>(suffixHeaders));
