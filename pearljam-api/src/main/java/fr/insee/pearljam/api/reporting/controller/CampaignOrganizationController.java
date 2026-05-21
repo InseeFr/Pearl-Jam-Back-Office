@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.campaign.presenter.CampaignOrganizationPresenter;
 import fr.insee.pearljam.api.campaign.response.CampaignOrganizationResponse;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,8 +29,7 @@ public class CampaignOrganizationController {
     @GetMapping(path = API_CAMPAIGN_ORGANIZATION)
     public CampaignOrganizationResponse getCampaignOrganization(
             @PathVariable @NotBlank String id,
-            @CurrentSecurityContext(expression = "authentication.name") String userId)
-            throws CampaignNotFoundException {
+            @CurrentSecurityContext(expression = "authentication.name") String userId) {
         return campaignOrganizationPort.getCampaignOrganization(userId, id, presenter);
     }
 }

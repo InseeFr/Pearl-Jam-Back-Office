@@ -74,7 +74,7 @@ class CampaignOrganizationExportControllerTest {
         // Given/When
         CampaignOrganizationExportController testController = new CampaignOrganizationExportController(csvExporter);
 
-        // Then - Lombok @RequiredArgsConstructor generates constructor that assigns the field
+        // Then
         assertThat(testController).isNotNull();
     }
 }

@@ -83,9 +83,9 @@ class CampaignOrganizationCsvExporterTest {
     @ParameterizedTest
     @MethodSource("provideCampaignLabelScenarios")
     @DisplayName("Generates correct filename with campaign label and date")
-    void shouldGenerateCorrectFilename(String campaignLabel, String expectedFilenamePart, LocalDate date) {
+    void shouldGenerateCorrectFilename(String campaignId, String expectedFilenamePart, LocalDate date) {
         // Given
-        CampaignOrganizationCsv csv = createCsv(campaignLabel, List.of());
+        CampaignOrganizationCsv csv = createCsv(campaignId, List.of());
         when(port.getCampaignOrganization(eq("user1"), eq("camp-1"), any(CampaignOrganizationStatsPresenter.class)))
                 .thenReturn(csv);
 
@@ -190,10 +190,10 @@ class CampaignOrganizationCsvExporterTest {
         assertThat(lines[2]).contains("Bob Jones;ID002;8");
     }
 
-    private CampaignOrganizationCsv createCsv(String campaignLabel, List<CsvRow> additionalRows) {
+    private CampaignOrganizationCsv createCsv(String campaignId, List<CsvRow> additionalRows) {
         List<CsvRow> rows = new ArrayList<>(additionalRows);
         rows.add(CsvRow.from(CampaignOrganizationCsv.NOT_AFFECTED, "", 5L));
         rows.add(CsvRow.from(CampaignOrganizationCsv.TOTAL_SITE, "", 15L));
-        return new CampaignOrganizationCsv(campaignLabel, rows);
+        return new CampaignOrganizationCsv(campaignId, rows);
     }
 }

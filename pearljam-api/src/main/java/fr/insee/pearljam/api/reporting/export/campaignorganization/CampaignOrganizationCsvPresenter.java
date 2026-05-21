@@ -32,6 +32,6 @@ public class CampaignOrganizationCsvPresenter implements CampaignOrganizationSta
         addRowWithTitleLabel(rows, CampaignOrganizationCsv.NOT_AFFECTED, List.of("", campaignDailyStats.getUnaffectedCount()));
         addRowWithTitleLabel(rows, CampaignOrganizationCsv.TOTAL_SITE, List.of("", campaignDailyStats.getAllocatedCount()));
 
-        return new CampaignOrganizationCsv(campaignVisibility.label(), rows);
+        return new CampaignOrganizationCsv(campaignVisibility.id(), rows);
     }
 }

@@ -25,7 +25,7 @@ class CampaignOrganizationCsvPresenterTest {
                 stats, campaign, List.of(), List.of(), System.currentTimeMillis()
         );
 
-        assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
+        assertThat(csv.campaignId()).isEqualTo("camp-1");
         assertThat(csv.rows()).hasSize(2);
         assertThat(csv.rows().get(0).values()).containsExactly(
                 CampaignOrganizationCsv.NOT_AFFECTED, "", "5"
@@ -46,7 +46,7 @@ class CampaignOrganizationCsvPresenterTest {
                 stats, campaign, List.of(), List.of(interviewer), System.currentTimeMillis()
         );
 
-        assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
+        assertThat(csv.campaignId()).isEqualTo("camp-1");
         assertThat(csv.rows()).hasSize(3);
         assertThat(csv.rows().get(0).values()).containsExactly("John Doe", "ID001", "10");
         assertThat(csv.rows().get(1).values()).containsExactly(
@@ -69,7 +69,7 @@ class CampaignOrganizationCsvPresenterTest {
                 stats, campaign, List.of(), List.of(interviewer1, interviewer2), System.currentTimeMillis()
         );
 
-        assertThat(csv.campaignLabel()).isEqualTo("Test Campaign");
+        assertThat(csv.campaignId()).isEqualTo("camp-1");
         assertThat(csv.rows()).hasSize(4);
         assertThat(csv.rows().get(0).values()).containsExactly("Alice Smith", "ID001", "5");
         assertThat(csv.rows().get(1).values()).containsExactly("Bob Jones", "ID002", "8");
