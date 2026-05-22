@@ -18,11 +18,11 @@ class CampaignOrganizationCsvPresenterTest {
     @Test
     @DisplayName("Returns NOT_AFFECTED and TOTAL_SITE rows when no interviewers")
     void shouldReturnDefaultRows_whenNoInterviewers() {
-        CampaignDailyStats stats = buildCampaignDailyStats(10L, 5L);
+        CampaignDailyStats stats = new CampaignDailyStats();
         CampaignVisibility campaign = buildCampaignVisibility();
 
         CampaignOrganizationCsv csv = presenter.present(
-                stats, campaign, List.of(), List.of(), System.currentTimeMillis()
+                stats, campaign, List.of(), List.of(), 15, 5, System.currentTimeMillis()
         );
 
         assertThat(csv.campaignId()).isEqualTo("camp-1");
@@ -38,12 +38,12 @@ class CampaignOrganizationCsvPresenterTest {
     @Test
     @DisplayName("Maps interviewer to row with full name, id and allocated count")
     void shouldMapInterviewerToRow() {
-        CampaignDailyStats stats = buildCampaignDailyStats(10L, 5L);
+        CampaignDailyStats stats = new CampaignDailyStats();
         CampaignVisibility campaign = buildCampaignVisibility();
         InterviewerDailyStats interviewer = buildInterviewerDailyStats("ID001", "John", "Doe", 10L);
 
         CampaignOrganizationCsv csv = presenter.present(
-                stats, campaign, List.of(), List.of(interviewer), System.currentTimeMillis()
+                stats, campaign, List.of(), List.of(interviewer),15, 5,  System.currentTimeMillis()
         );
 
         assertThat(csv.campaignId()).isEqualTo("camp-1");
@@ -60,13 +60,13 @@ class CampaignOrganizationCsvPresenterTest {
     @Test
     @DisplayName("Maps multiple interviewers to rows")
     void shouldMapMultipleInterviewers() {
-        CampaignDailyStats stats = buildCampaignDailyStats(20L, 3L);
+        CampaignDailyStats stats = new CampaignDailyStats();
         CampaignVisibility campaign = buildCampaignVisibility();
         InterviewerDailyStats interviewer1 = buildInterviewerDailyStats("ID001", "Alice", "Smith", 5L);
         InterviewerDailyStats interviewer2 = buildInterviewerDailyStats("ID002", "Bob", "Jones", 8L);
 
         CampaignOrganizationCsv csv = presenter.present(
-                stats, campaign, List.of(), List.of(interviewer1, interviewer2), System.currentTimeMillis()
+                stats, campaign, List.of(), List.of(interviewer1, interviewer2), 23, 3, System.currentTimeMillis()
         );
 
         assertThat(csv.campaignId()).isEqualTo("camp-1");
@@ -84,29 +84,18 @@ class CampaignOrganizationCsvPresenterTest {
     @Test
     @DisplayName("Produces rows whose size matches the header size")
     void shouldHaveRowSizeMatchingHeaderSize() {
-        CampaignDailyStats stats = buildCampaignDailyStats(10L, 5L);
+        CampaignDailyStats stats = new CampaignDailyStats();
         CampaignVisibility campaign = buildCampaignVisibility();
         InterviewerDailyStats interviewer = buildInterviewerDailyStats("ID001", "John", "Doe", 10L);
 
         CampaignOrganizationCsv csv = presenter.present(
-                stats, campaign, List.of(), List.of(interviewer), System.currentTimeMillis()
+                stats, campaign, List.of(), List.of(interviewer), 1, 0, System.currentTimeMillis()
         );
 
         assertThat(csv.headers().values()).hasSize(3);
         for (CsvRow row : csv.rows()) {
             assertThat(row.values()).hasSameSizeAs(csv.headers().values());
         }
-    }
-
-    private static CampaignDailyStats buildCampaignDailyStats(Long allocatedFromStates, Long unaffectedCount) {
-        CampaignDailyStats stats = new CampaignDailyStats();
-        if (allocatedFromStates != null && allocatedFromStates > 0) {
-            stats.setNnsStateCount(allocatedFromStates);
-        }
-        if (unaffectedCount != null) {
-            stats.setUnaffectedCount(unaffectedCount);
-        }
-        return stats;
     }
 
     private static CampaignVisibility buildCampaignVisibility() {

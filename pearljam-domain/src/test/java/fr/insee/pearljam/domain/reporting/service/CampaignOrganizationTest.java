@@ -254,7 +254,7 @@ class CampaignOrganizationServiceTest {
 
         @SuppressWarnings("unchecked")
         CampaignOrganizationStatsPresenter<String> presenter = mock(CampaignOrganizationStatsPresenter.class);
-        when(presenter.present(any(), any(), anyList(), anyList(), anyLong())).thenReturn("presented");
+        when(presenter.present(any(), any(), anyList(), anyList(), anyLong(), anyLong(),anyLong())).thenReturn("presented");
 
         String result = service.getCampaignOrganization(USER_ID, CAMPAIGN_ID, presenter);
 
@@ -263,6 +263,8 @@ class CampaignOrganizationServiceTest {
                 any(CampaignVisibility.class),
                 anyList(),
                 anyList(),
+                anyLong(),
+                anyLong(),
                 eq(NOW_MS));
         assertThat(result).isEqualTo("presented");
     }
@@ -272,6 +274,8 @@ class CampaignOrganizationServiceTest {
             CampaignVisibility campaign,
             List<Referent> referents,
             List<InterviewerDailyStats> interviewerStats,
+            long totalUserSite,
+            long totalUserUnaffectedSite,
             long currentTimestamp
     ) {
     }

@@ -34,7 +34,7 @@ public record CampaignOrganizationCsv(String campaignId, List<CsvRow> rows) impl
         rows.add(CsvRow.from(
                 TOTAL_SITE,
                 "",
-                response.surveyUnits().total()
+                response.surveyUnits().totalSite()
         ));
 
         return new CampaignOrganizationCsv(response.campaignId(), rows);

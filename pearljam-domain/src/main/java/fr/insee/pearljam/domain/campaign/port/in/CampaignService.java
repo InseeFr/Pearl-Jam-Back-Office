@@ -4,7 +4,9 @@ import fr.insee.pearljam.contracts.campaign.dto.*;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 
 import java.util.List;
@@ -33,6 +35,15 @@ public interface CampaignService {
      * @return {@link List} of {@link CampaignPreferenceDto}
      */
     List<CampaignPreferenceDto> getCampaignPreferences(String userId);
+
+    /**
+     * Return a list of related campaigns for the user
+     *
+     * @param userId
+     * @param campaignPhase
+     * @return {@link List} of {@link CampaignPreferenceModel}
+     */
+    List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase);
 
     /**
      * @return {@link List} of {@link CampaignDto}

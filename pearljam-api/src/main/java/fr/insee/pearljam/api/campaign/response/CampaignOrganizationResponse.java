@@ -20,7 +20,7 @@ public record CampaignOrganizationResponse(
         CampaignPhase phase,
         List<Referent> referents,
         List<Interviewer> interviewers,
-        CampaignOrganizationSurveyUnitCount surveyUnits
+        UserOrganizationUnitsSurveyUnitCount surveyUnits
 ) {
     @Schema(name = "CampaignOrganizationReferent")
     public record Referent(
@@ -30,16 +30,16 @@ public record CampaignOrganizationResponse(
             String role
     ) {}
 
-    @Schema(name = "CampaignOrganizationInterviewer")
+    @Schema(name = "UserOrganizationUnitsInterviewer")
     public record Interviewer(
             String id,
             String label,
             Long surveyUnits
     ) {}
 
-    @Schema(name = "CampaignOrganizationSurveyUnitCount")
-    public record CampaignOrganizationSurveyUnitCount(
-            Long total,
+    @Schema(name = "UserOrganizationUnitsSurveyUnitCount")
+    public record UserOrganizationUnitsSurveyUnitCount(
+            Long totalSite,
             Long notAffected
     ) {}
 }

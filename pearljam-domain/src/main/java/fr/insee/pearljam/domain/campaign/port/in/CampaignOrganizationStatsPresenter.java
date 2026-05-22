@@ -12,5 +12,7 @@ public interface CampaignOrganizationStatsPresenter<T> {
                   CampaignVisibility campaignVisibility,
                   List<Referent> referents,
                   List<InterviewerDailyStats> interviewerDailyStats,
+                  long totalUserSite,
+                  long totalUserUnaffectedSite,
                   long currentDate);
 }

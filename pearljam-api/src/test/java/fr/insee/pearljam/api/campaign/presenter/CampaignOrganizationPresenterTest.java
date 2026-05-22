@@ -37,7 +37,7 @@ class CampaignOrganizationPresenterTest {
         CampaignVisibility campaign = createCampaignVisibility();
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.campaignId()).isEqualTo("camp-1");
         assertThat(result.campaignLabel()).isEqualTo("Test Campaign");
@@ -53,7 +53,7 @@ class CampaignOrganizationPresenterTest {
         CampaignVisibility campaign = createCampaignVisibility();
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.phase()).isEqualTo(CampaignPhase.COLLECTION_IN_PROGRESS);
     }
@@ -68,7 +68,7 @@ class CampaignOrganizationPresenterTest {
                 COLL_END, END_DATE);
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.phase()).isEqualTo(CampaignPhase.INITIAL_ASSIGNMENT);
     }
@@ -84,7 +84,7 @@ class CampaignOrganizationPresenterTest {
                 END_DATE);
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.phase()).isEqualTo(CampaignPhase.COLLECTION_COMPLETED);
     }
@@ -99,7 +99,7 @@ class CampaignOrganizationPresenterTest {
                 new Referent("Jane", "Smith", "0202020202", "SECONDARY")
         );
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, referents, List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, referents, List.of(),0, 0, NOW_MS);
 
         assertThat(result.referents()).hasSize(2);
         assertThat(result.referents().getFirst().firstName()).isEqualTo("John");
@@ -123,7 +123,7 @@ class CampaignOrganizationPresenterTest {
                 createInterviewerStats("INT2", "Bob", "Brown", 10L)
         );
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), interviewers, NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), interviewers, 0, 0, NOW_MS);
 
         assertThat(result.interviewers()).hasSize(2);
         assertThat(result.interviewers().getFirst().id()).isEqualTo("INT1");
@@ -144,9 +144,9 @@ class CampaignOrganizationPresenterTest {
         stats.setAnvStateCount(30L);
         stats.setUnaffectedCount(20L);
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 100L, 20L, NOW_MS);
 
-        assertThat(result.surveyUnits().total()).isEqualTo(100L);
+        assertThat(result.surveyUnits().totalSite()).isEqualTo(100L);
         assertThat(result.surveyUnits().notAffected()).isEqualTo(20L);
     }
 
@@ -156,7 +156,7 @@ class CampaignOrganizationPresenterTest {
         CampaignVisibility campaign = createCampaignVisibility();
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.referents()).isEmpty();
     }
@@ -167,7 +167,7 @@ class CampaignOrganizationPresenterTest {
         CampaignVisibility campaign = createCampaignVisibility();
         CampaignDailyStats stats = createCampaignStats();
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, List.of(), List.of(), 0, 0, NOW_MS);
 
         assertThat(result.interviewers()).isEmpty();
     }
@@ -185,7 +185,7 @@ class CampaignOrganizationPresenterTest {
                 createInterviewerStats("INT1", "Alice", "Anderson", 15L)
         );
 
-        CampaignOrganizationResponse result = presenter.present(stats, campaign, referents, interviewers, NOW_MS);
+        CampaignOrganizationResponse result = presenter.present(stats, campaign, referents, interviewers, 65L, 10L, NOW_MS);
 
         assertThat(result).satisfies(response -> {
             assertThat(response.campaignId()).isEqualTo("camp-1");
@@ -194,7 +194,7 @@ class CampaignOrganizationPresenterTest {
             assertThat(response.phase()).isEqualTo(CampaignPhase.COLLECTION_IN_PROGRESS);
             assertThat(response.referents()).hasSize(1);
             assertThat(response.interviewers()).hasSize(1);
-            assertThat(response.surveyUnits().total()).isEqualTo(65L);
+            assertThat(response.surveyUnits().totalSite()).isEqualTo(65L);
             assertThat(response.surveyUnits().notAffected()).isEqualTo(10L);
         });
     }

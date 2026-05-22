@@ -19,6 +19,8 @@ public class CampaignOrganizationPresenter implements CampaignOrganizationStatsP
                                                 CampaignVisibility campaignVisibility,
                                                 List<Referent> referents,
                                                 List<InterviewerDailyStats> interviewerDailyStats,
+                                                long totalSiteUserOUs,
+                                                long totalUnaffectedUserOUs,
                                                 long currentDate) {
                 return new CampaignOrganizationResponse(
                         campaignVisibility.id(),
@@ -48,8 +50,8 @@ public class CampaignOrganizationPresenter implements CampaignOrganizationStatsP
                                         i.getInterviewerFirstName() + " " + i.getInterviewerLastName(),
                                          i.getAllocatedCount()))
                                 .toList(),
-                        new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(
-                                campaignDailyStats.getAllocatedCount(),
-                                campaignDailyStats.getUnaffectedCount()));
+                        new CampaignOrganizationResponse.UserOrganizationUnitsSurveyUnitCount(
+                                totalSiteUserOUs,
+                                totalUnaffectedUserOUs));
     }
 }
