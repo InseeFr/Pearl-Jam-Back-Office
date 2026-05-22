@@ -1,9 +1,9 @@
 package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
@@ -21,9 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CampaignReportingByOrganizationUnitsServiceTest {
 
@@ -47,7 +45,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
         passthroughPresenter = OrganizationUnitStatsResult::new;
 
         when(userService.getUserOUsModel(USER_ID, false)).thenReturn(List.of(OU));
-        when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of());
+        when(statsRepository.getOrganizationUnitsStats(anyString(), any())).thenReturn(List.of());
         when(statsRepository.findCampaignStats(anyString(), any())).thenReturn(Optional.empty());
     }
 
@@ -56,14 +54,14 @@ class CampaignReportingByOrganizationUnitsServiceTest {
         LocalDate pastDate = FIXED_TODAY.minusDays(5);
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, pastDate, passthroughPresenter);
 
-        verify(statsRepository).getOrganizationUnitsStats(anyString(), anyList(), eq(pastDate));
+        verify(statsRepository).getOrganizationUnitsStats(anyString(), eq(pastDate));
     }
 
     @Test
     void shouldDefaultToToday_whenDayIsNull() throws CampaignNotFoundException {
         service.getProgressForDay(USER_ID, CAMPAIGN_ID, null, passthroughPresenter);
 
-        verify(statsRepository).getOrganizationUnitsStats(anyString(), anyList(), eq(FIXED_TODAY));
+        verify(statsRepository).getOrganizationUnitsStats(anyString(), eq(FIXED_TODAY));
     }
 
     @Test
@@ -86,7 +84,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
     @Test
     void shouldMapOrganizationUnitLabelCorrectly() throws CampaignNotFoundException {
         OrganizationUnitDailyStats stats = ouStats("ou-1", "Org Unit 1");
-        when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
+        when(statsRepository.getOrganizationUnitsStats(anyString(), any())).thenReturn(List.of(stats));
 
         OrganizationUnitStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
@@ -114,7 +112,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
         stats.setNvaStateCount(8L);
         stats.setNoticeCommunicationCount(15L);
         stats.setReminderCommunicationCount(25L);
-        when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any())).thenReturn(List.of(stats));
+        when(statsRepository.getOrganizationUnitsStats(anyString(), any())).thenReturn(List.of(stats));
 
         OrganizationUnitStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);
 
@@ -162,7 +160,7 @@ class CampaignReportingByOrganizationUnitsServiceTest {
     void shouldReturnMultipleOrganizationUnits() throws CampaignNotFoundException {
         OrganizationUnitDailyStats stats1 = ouStats("ou-1", "Org Unit 1");
         OrganizationUnitDailyStats stats2 = ouStats("ou-2", "Org Unit 2");
-        when(statsRepository.getOrganizationUnitsStats(anyString(), anyList(), any()))
+        when(statsRepository.getOrganizationUnitsStats(anyString(), any()))
                 .thenReturn(List.of(stats1, stats2));
 
         OrganizationUnitStatsResult result = service.getProgressForDay(USER_ID, CAMPAIGN_ID, FIXED_TODAY, passthroughPresenter);

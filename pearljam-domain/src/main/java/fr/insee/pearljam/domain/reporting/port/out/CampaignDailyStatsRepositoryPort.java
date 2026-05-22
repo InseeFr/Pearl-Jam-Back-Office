@@ -21,7 +21,7 @@ public interface CampaignDailyStatsRepositoryPort {
      * Returns one {@link OrganizationUnitDailyStats} per organization unit (with id and label)
      * for the given campaign and day snapshot.
      */
-    List<OrganizationUnitDailyStats> getOrganizationUnitsStats(String campaignId, List<String> ouIds, LocalDate day);
+    List<OrganizationUnitDailyStats> getOrganizationUnitsStats(String campaignId, LocalDate day);
 
     /**
      * Returns the aggregated stats {@link CampaignDailyStats} for a campaign

@@ -364,20 +364,29 @@ class CampaignProgressBatchIT {
         batch.run(DAY);
         entityManager.clear();
 
-        // OU1 should have 2 FIN
-        var ou1Stats = statsAdapter.getOrganizationUnitsStats("CAMP-BATCH", List.of("OU-BATCH-1"), DAY);
-        assertThat(ou1Stats).hasSize(1);
-        assertThat(ou1Stats.getFirst().getFinStateCount()).isEqualTo(2);
-        assertThat(ou1Stats.getFirst().getVicStateCount()).isZero();
 
-        // OU2 should have 1 VIC
-        var ou2Stats = statsAdapter.getOrganizationUnitsStats("CAMP-BATCH", List.of("OU-BATCH-2"), DAY);
-        assertThat(ou2Stats).hasSize(1);
-        assertThat(ou2Stats.getFirst().getVicStateCount()).isEqualTo(1);
-        assertThat(ou2Stats.getFirst().getFinStateCount()).isZero();
+        var stats = statsAdapter.getOrganizationUnitsStats("CAMP-BATCH", DAY);
 
-        // Both OUs together
+        assertThat(stats).hasSize(2);
+
+        var ou1Stats = stats.stream()
+                .filter(s -> s.getOuId().equals("OU-BATCH-1"))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(ou1Stats.getFinStateCount()).isEqualTo(2);
+        assertThat(ou1Stats.getVicStateCount()).isZero();
+
+        var ou2Stats = stats.stream()
+                .filter(s -> s.getOuId().equals("OU-BATCH-2"))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(ou2Stats.getVicStateCount()).isEqualTo(1);
+        assertThat(ou2Stats.getFinStateCount()).isZero();
+
         var allStats = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
+
         assertThat(allStats).isPresent();
         assertThat(allStats.get().getFinStateCount()).isEqualTo(2);
         assertThat(allStats.get().getVicStateCount()).isEqualTo(1);

@@ -17,10 +17,10 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.Interviewe
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -240,7 +240,7 @@ class CampaignDailyStatsDaoAdapterTest {
     @DisplayName("Should return per-OU breakdown")
     void getOrganizationUnitsStats_shouldReturnPerOU() {
         List<OrganizationUnitDailyStats> result =
-                adapter.getOrganizationUnitsStats(CAMPAIGN_ID, List.of(OU1_ID, OU2_ID), DAY);
+                adapter.getOrganizationUnitsStats(CAMPAIGN_ID, DAY);
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting(OrganizationUnitDailyStats::getOuId)
@@ -262,13 +262,6 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(ou2Stats.getUnaffectedCount()).isZero();
     }
 
-    @Test
-    @DisplayName("Should return empty list when no stats for OUs")
-    void getOrganizationUnitsStats_shouldReturnEmpty_whenNoData() {
-        List<OrganizationUnitDailyStats> result =
-                adapter.getOrganizationUnitsStats(CAMPAIGN_ID, List.of("UNKNOWN-OU"), DAY);
-        assertThat(result).isEmpty();
-    }
 
     // ---- getCampaignsStats ----
 
