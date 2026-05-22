@@ -2,7 +2,6 @@ package fr.insee.pearljam.domain.reporting.service;
 
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
@@ -31,10 +30,6 @@ public class CampaignReportingByOrganizationUnitsService implements CampaignRepo
                                    CampaignStatsByOrganizationUnitsPresenter<T> presenter) throws CampaignNotFoundException {
         day = resolveReportingDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
-
-        List<String> userOUIds = userService.getUserOUsModel(userId, false).stream()
-                .map(OrganizationUnitSummary::getId)
-                .toList();
 
         List<OrganizationUnitDailyStats> organizationUnitsStats =
                 campaignDailyStatsRepository.getOrganizationUnitsStats(campaignId, day);
