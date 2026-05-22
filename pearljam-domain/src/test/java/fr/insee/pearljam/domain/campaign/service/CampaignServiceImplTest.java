@@ -1,6 +1,9 @@
 package fr.insee.pearljam.domain.campaign.service;
 
+import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.*;
+import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
+import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
 import fr.insee.pearljam.domain.campaign.model.*;
 import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
@@ -9,6 +12,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.stub.CampaignVisibilityPortStub;
 import fr.insee.pearljam.domain.organizationunit.model.*;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.surveyunit.service.dummy.SurveyUnitFakeService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CommunicationTemplateDB;
@@ -335,5 +339,51 @@ class CampaignServiceImplTest {
         String campaignId = "notfound-campaign";
         assertThatThrownBy(() -> campaignService.isCampaignOngoing(campaignId))
                 .isInstanceOf(CampaignNotFoundException.class);
+    }
+
+    // TODO mocks with MockMVS dont user fake service mocks directly getPreferredCampaigns
+    @Test
+    @DisplayName("Should return campaign preferences for specific phase when campaigns match")
+    void shouldReturnCampaignPreferencesForSpecificPhase() {
+        // Given
+        String userId = "test-user";
+        CampaignPhase targetPhase = CampaignPhase.COLLECTION_IN_PROGRESS;
+
+        // Set up the date service to return a timestamp that falls within collection phase
+        // Assuming the existing visibility dates are set up such that current time falls in collection phase
+        long currentTime = 1721683253500L; // Between collectionStartDate (1721683253000L) and collectionEndDate (1721683254000L)
+
+        // Mock dependencies to return appropriate data
+        // Note: You'll need to ensure getPreferredCampaigns returns campaigns with proper dates
+
+        // When
+        List<CampaignPreferenceModel> result = campaignService.getCampaignPreferencesForSpecificPhase(userId, targetPhase);
+
+        // Then
+        assertThat(result)
+                .isNotEmpty()
+                .allSatisfy(pref -> {
+                    assertThat(pref.getId()).isNotNull();
+                    assertThat(pref.getLabel()).isNotNull();
+                    assertThat(pref.isPreference()).isTrue();
+                });
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no campaigns match the specified phase")
+    void shouldReturnEmptyListWhenNoCampaignsMatchPhase() {
+        // Given
+        String userId = "test-user";
+        CampaignPhase targetPhase = CampaignPhase.COLLECTION_COMPLETED;
+
+        // Set up the date service to return a timestamp that doesn't match any campaign's collection phase
+        // For example, a time before all campaigns start or after they all end
+        long currentTime = 1621683250000L; // Well before any campaign dates
+
+        // When
+        List<CampaignPreferenceModel> result = campaignService.getCampaignPreferencesForSpecificPhase(userId, targetPhase);
+
+        // Then
+        assertThat(result).isEmpty();
     }
 }
