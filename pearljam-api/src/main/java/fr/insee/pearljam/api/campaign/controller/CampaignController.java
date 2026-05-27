@@ -95,9 +95,7 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of Campaigns for current user and specific phase
 	 *
-	 * @return List of {@link CampaignDto} if exists, {@link HttpStatus} NOT_FOUND,
-	 *         or
-	 *         {@link HttpStatus} FORBIDDEN
+	 * @return List of {@link CampaignPreferenceModel} if exists for specific phase
 	 */
 	@Operation(summary = "Get user related Campaigns for specific phase")
 	@GetMapping(path = Constants.API_CAMPAIGNS_PREFERENCES_PHASE)
