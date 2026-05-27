@@ -2,9 +2,9 @@ package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.*;
-import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
 import fr.insee.pearljam.domain.campaign.model.*;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.*;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
@@ -24,11 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService.FIXED_TIMESTAMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,9 +38,9 @@ class CampaignServiceImplTest {
     private CampaignFakeRepository campaignRepository;
     private VisibilityFakeService visibilityService;
     private CampaignServiceImpl campaignService;
-    private final CurrentDateService dateService = new CurrentDateService();
+    private final DateService dateService = new FixedDateService();
     private final OrganizationUnitDB existingOrganizationUnit = new OrganizationUnitDB("OU-NORTH", "label-ou", OrganizationUnitType.LOCAL);
-    private final CampaignDB existingCampaign =  new CampaignDB(
+    private final CampaignDB existingCampaign = new CampaignDB(
             "CAMPAIGN-ID",
             "label-campaign",
             IdentificationConfiguration.HOUSEF2F,
@@ -64,7 +65,6 @@ class CampaignServiceImplTest {
     void setup() {
         campaignRepository = new CampaignFakeRepository();
         campaignRepository.addCampaign(existingCampaign);
-        // add referents
         existingCampaign.setReferents(new ArrayList<>());
 
         visibilityService = new VisibilityFakeService();
@@ -72,10 +72,8 @@ class CampaignServiceImplTest {
         visibilityService.save(existingVisibility2);
 
         List<VisibilityDB> existingCampaignVisibilities = new ArrayList<>();
-        existingCampaignVisibilities
-                .add(VisibilityDB.fromModel(existingVisibility1, existingCampaign, existingOrganizationUnit));
-        existingCampaignVisibilities
-                .add(VisibilityDB.fromModel(existingVisibility2, existingCampaign, existingOrganizationUnit));
+        existingCampaignVisibilities.add(VisibilityDB.fromModel(existingVisibility1, existingCampaign, existingOrganizationUnit));
+        existingCampaignVisibilities.add(VisibilityDB.fromModel(existingVisibility2, existingCampaign, existingOrganizationUnit));
         existingCampaign.setVisibilities(existingCampaignVisibilities);
 
         UserFakeRepository userRepository = new UserFakeRepository();
@@ -92,9 +90,9 @@ class CampaignServiceImplTest {
         SurveyUnitCountFakeService surveyUnitCountService = new SurveyUnitCountFakeService();
         CampaignVisibilityPortStub campaignVisibilityPortStub = new CampaignVisibilityPortStub(null);
 
-        campaignService = new CampaignServiceImpl(
+        campaignService = Mockito.spy(new CampaignServiceImpl(
                 campaignRepository, userRepository, surveyUnitRepository, organizationUnitRepository, messageRepository,
-                userService, surveyUnitService, preferenceService, referentService, referentRepository, visibilityService, campaignVisibilityPortStub, dateService, interviewerCountRepository, surveyUnitCountService);
+                userService, surveyUnitService, preferenceService, referentService, referentRepository, visibilityService, campaignVisibilityPortStub, dateService, interviewerCountRepository, surveyUnitCountService));
     }
 
     // TODO : handle referent
@@ -103,7 +101,7 @@ class CampaignServiceImplTest {
     void shouldCreateNewCampaign() throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = "SIMPSONS2020X00";
 
-        CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto( "meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
+        CommunicationTemplateCreateDto communicationTemplateDto = new CommunicationTemplateCreateDto("meshuggahId", CommunicationMedium.EMAIL, CommunicationType.NOTICE);
         VisibilityCampaignCreateDto visibilityDto = new VisibilityCampaignCreateDto(1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
                 true, "mail", "tel");
@@ -173,11 +171,9 @@ class CampaignServiceImplTest {
     void shouldUpdateExistingCampaign() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
         String campaignId = existingCampaign.getId();
 
-        // Given
         VisibilityCampaignUpdateDto visibilityDto = new VisibilityCampaignUpdateDto(1721683250000L, 1721683251000L, 1721683252000L,
                 1721683253000L, 1721683254000L, 1721683255000L, existingOrganizationUnit.getId(),
                 true, "mail1", "tel1");
-
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 List.of(visibilityDto),
                 List.of(),
@@ -186,10 +182,8 @@ class CampaignServiceImplTest {
                 ContactAttemptConfiguration.TEL,
                 false);
 
-        // When
         campaignService.updateCampaign(campaignId, updateDto);
 
-        // Then
         CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
         assertThat(updatedCampaign.getId()).isEqualTo(campaignId);
         assertThat(updatedCampaign.getLabel()).isEqualTo(updateDto.campaignLabel());
@@ -210,10 +204,6 @@ class CampaignServiceImplTest {
     @NullSource
     @DisplayName("Should not update email if empty")
     void shouldNotUpdateEmailIfNull(String emailToUpdate) throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
-        String campaignId = existingCampaign.getId();
-
-        // Given
-
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
                 null,
@@ -222,21 +212,14 @@ class CampaignServiceImplTest {
                 ContactAttemptConfiguration.TEL,
                 false);
 
-        // When
-        campaignService.updateCampaign(campaignId, updateDto);
+        campaignService.updateCampaign(existingCampaign.getId(), updateDto);
 
-        // Then
-        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
-        assertThat(updatedCampaign.getEmail()).isEqualTo(existingCampaign.getEmail());
+        assertThat(campaignRepository.getSavedCampaign().getEmail()).isEqualTo(existingCampaign.getEmail());
     }
 
     @Test
     @DisplayName("Should not update visibilities if null")
     void shouldNotUpdateVisibilitiesIfNull() throws CampaignNotFoundException, VisibilityNotFoundException, VisibilityHasInvalidDatesException {
-        String campaignId = existingCampaign.getId();
-
-        // Given
-
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
                 null,
@@ -245,20 +228,14 @@ class CampaignServiceImplTest {
                 ContactAttemptConfiguration.TEL,
                 false);
 
-        // When
-        campaignService.updateCampaign(campaignId, updateDto);
+        campaignService.updateCampaign(existingCampaign.getId(), updateDto);
 
-        // Then
-        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
-        assertThat(updatedCampaign.getVisibilities()).hasSize(2);
+        assertThat(campaignRepository.getSavedCampaign().getVisibilities()).hasSize(2);
     }
 
     @Test
     @DisplayName("Should not update referents if null")
     void shouldNotUpdateReferentsIfNull() throws VisibilityHasInvalidDatesException, CampaignNotFoundException, VisibilityNotFoundException {
-        String campaignId = existingCampaign.getId();
-
-        // Given
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
                 null,
@@ -267,19 +244,14 @@ class CampaignServiceImplTest {
                 ContactAttemptConfiguration.TEL,
                 false);
 
-        // When
-        campaignService.updateCampaign(campaignId, updateDto);
+        campaignService.updateCampaign(existingCampaign.getId(), updateDto);
 
-        // Then
-        CampaignDB updatedCampaign = campaignRepository.getSavedCampaign();
-        assertThat(updatedCampaign.getReferents()).containsAll(existingCampaign.getReferents());
+        assertThat(campaignRepository.getSavedCampaign().getReferents()).containsAll(existingCampaign.getReferents());
     }
 
     @Test
     @DisplayName("Should throw CampaignNotFoundException when updating a non-existent campaign")
     void shouldThrowCampaignNotFoundExceptionWhenUpdatingNonExistentCampaign() {
-        String campaignId = "invalid-campaign";
-
         CampaignUpdateDto updateDto = new CampaignUpdateDto("campaign to update",
                 null,
                 null,
@@ -288,7 +260,7 @@ class CampaignServiceImplTest {
                 ContactAttemptConfiguration.TEL,
                 false);
 
-        assertThatThrownBy(() -> campaignService.updateCampaign(campaignId, updateDto))
+        assertThatThrownBy(() -> campaignService.updateCampaign("invalid-campaign", updateDto))
                 .isInstanceOf(CampaignNotFoundException.class);
     }
 
@@ -298,19 +270,18 @@ class CampaignServiceImplTest {
         Visibility ongoingVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().plusSeconds(10000).toEpochMilli(),
+                1628191200000L, FIXED_TIMESTAMP + 10000,
                 true, "mail", "tel");
         Visibility closedVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli(),
+                1628191200000L, FIXED_TIMESTAMP - 1,
                 true, "mail", "tel");
 
         visibilityService.save(ongoingVisibility);
         visibilityService.save(closedVisibility);
-        boolean isOngoing = campaignService.isCampaignOngoing(existingCampaign.getId());
 
-        assertThat(isOngoing).isTrue();
+        assertThat(campaignService.isCampaignOngoing(existingCampaign.getId())).isTrue();
     }
 
     @Test
@@ -319,71 +290,67 @@ class CampaignServiceImplTest {
         Visibility closedVisibility1 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().minusSeconds(3600).toEpochMilli(),
+                1628191200000L, FIXED_TIMESTAMP - 3600000,
                 true, "mail", "tel");
         Visibility closedVisibility2 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
-                1628191200000L, Instant.now().toEpochMilli(),
+                1628191200000L, FIXED_TIMESTAMP - 1,
                 true, "mail", "tel");
 
         visibilityService.save(closedVisibility1);
         visibilityService.save(closedVisibility2);
-        boolean isOngoing = campaignService.isCampaignOngoing(existingCampaign.getId());
-        assertThat(isOngoing).isFalse();
+
+        assertThat(campaignService.isCampaignOngoing(existingCampaign.getId())).isFalse();
     }
 
     @Test
     @DisplayName("Should throw CampaignNotFoundException when checking if a non-existent campaign is ongoing")
     void shouldThrowCampaignNotFoundExceptionWhenCheckingIfNonExistentCampaignIsOngoing() {
-        String campaignId = "notfound-campaign";
-        assertThatThrownBy(() -> campaignService.isCampaignOngoing(campaignId))
+        assertThatThrownBy(() -> campaignService.isCampaignOngoing("notfound-campaign"))
                 .isInstanceOf(CampaignNotFoundException.class);
     }
 
-    // TODO mocks with MockMVS dont user fake service mocks directly getPreferredCampaigns
     @Test
-    @DisplayName("Should return campaign preferences for specific phase when campaigns match")
+    @DisplayName("Should return campaigns in the requested phase")
     void shouldReturnCampaignPreferencesForSpecificPhase() {
-        // Given
-        String userId = "test-user";
-        CampaignPhase targetPhase = CampaignPhase.COLLECTION_IN_PROGRESS;
+        CampaignDto campaign = new CampaignDto();
+        campaign.setId(existingCampaign.getId());
+        campaign.setLabel(existingCampaign.getLabel());
+        campaign.setManagementStartDate(FIXED_TIMESTAMP - 700000000L);
+        campaign.setInterviewerStartDate(FIXED_TIMESTAMP - 600000000L);
+        campaign.setCollectionStartDate(FIXED_TIMESTAMP - 200000000L);
+        campaign.setCollectionEndDate(FIXED_TIMESTAMP + 100000000L);  // after FIXED_TIMESTAMP → COLLECTION_IN_PROGRESS
+        campaign.setEndDate(FIXED_TIMESTAMP + 200000000L);
 
-        // Set up the date service to return a timestamp that falls within collection phase
-        // Assuming the existing visibility dates are set up such that current time falls in collection phase
-        long currentTime = 1721683253500L; // Between collectionStartDate (1721683253000L) and collectionEndDate (1721683254000L)
+        Mockito.doReturn(List.of(campaign)).when(campaignService).getPreferredCampaigns("test-user");
 
-        // Mock dependencies to return appropriate data
-        // Note: You'll need to ensure getPreferredCampaigns returns campaigns with proper dates
+        List<CampaignPreferenceModel> result =
+                campaignService.getCampaignPreferencesForSpecificPhase("test-user", CampaignPhase.COLLECTION_IN_PROGRESS);
 
-        // When
-        List<CampaignPreferenceModel> result = campaignService.getCampaignPreferencesForSpecificPhase(userId, targetPhase);
-
-        // Then
-        assertThat(result)
-                .isNotEmpty()
-                .allSatisfy(pref -> {
-                    assertThat(pref.getId()).isNotNull();
-                    assertThat(pref.getLabel()).isNotNull();
-                    assertThat(pref.isPreference()).isTrue();
-                });
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getId()).isEqualTo(existingCampaign.getId());
+        assertThat(result.getFirst().getLabel()).isEqualTo(existingCampaign.getLabel());
+        assertThat(result.getFirst().isPreference()).isTrue();
     }
 
     @Test
     @DisplayName("Should return empty list when no campaigns match the specified phase")
     void shouldReturnEmptyListWhenNoCampaignsMatchPhase() {
-        // Given
-        String userId = "test-user";
-        CampaignPhase targetPhase = CampaignPhase.COLLECTION_COMPLETED;
+        CampaignDto campaign = new CampaignDto();
+        campaign.setId(existingCampaign.getId());
+        campaign.setLabel(existingCampaign.getLabel());
+        campaign.setManagementStartDate(FIXED_TIMESTAMP - 700000000L);
+        campaign.setInterviewerStartDate(FIXED_TIMESTAMP - 600000000L);
+        campaign.setCollectionStartDate(FIXED_TIMESTAMP - 200000000L);
+        campaign.setCollectionEndDate(FIXED_TIMESTAMP - 100000000L);  // before FIXED_TIMESTAMP → COLLECTION_COMPLETED
+        campaign.setEndDate(FIXED_TIMESTAMP + 200000000L);
 
-        // Set up the date service to return a timestamp that doesn't match any campaign's collection phase
-        // For example, a time before all campaigns start or after they all end
-        long currentTime = 1621683250000L; // Well before any campaign dates
+        Mockito.doReturn(List.of(campaign)).when(campaignService).getPreferredCampaigns("test-user");
 
-        // When
-        List<CampaignPreferenceModel> result = campaignService.getCampaignPreferencesForSpecificPhase(userId, targetPhase);
+        List<CampaignPreferenceModel> result =
+                campaignService.getCampaignPreferencesForSpecificPhase("test-user", CampaignPhase.COLLECTION_IN_PROGRESS);
 
-        // Then
         assertThat(result).isEmpty();
     }
 }

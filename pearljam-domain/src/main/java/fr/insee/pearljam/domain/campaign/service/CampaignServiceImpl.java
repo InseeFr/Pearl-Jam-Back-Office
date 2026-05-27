@@ -133,7 +133,6 @@ public class CampaignServiceImpl implements CampaignService {
 
     }
 
-
     @Override
     public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
         int nbSUAbandoned = 0;
