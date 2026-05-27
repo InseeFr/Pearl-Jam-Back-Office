@@ -46,7 +46,7 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .getInterviewerStats(campaignId, userOUIds, now);
 
         List<OrganizationUnitDailyStats> organizationUnitDailyStats = campaignDailyStatsRepositoryPort
-                .getOrganizationUnitsStats(campaignId, now).stream().filter(ou -> userOUIds.contains(ou.getOuId())).toList();
+                .getOrganizationUnitsStats(campaignId, now);
 
         long totalAllocatedUserOUs = organizationUnitDailyStats.stream()
                 .mapToLong(OrganizationUnitDailyStats::getAllocatedCount)
