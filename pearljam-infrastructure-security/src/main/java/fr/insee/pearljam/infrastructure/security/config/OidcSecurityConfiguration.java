@@ -206,7 +206,7 @@ public class OidcSecurityConfiguration {
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_COMMONS_ONGOING)
 						.hasAnyRole(adminRole, webclientRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ID_INTERVIEWERS_STATECOUNT)
-						.hasAnyRole(adminRole, webclientRole)
+						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGNS_PREFERENCES_PHASE)
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_INTERVIEWERS)
