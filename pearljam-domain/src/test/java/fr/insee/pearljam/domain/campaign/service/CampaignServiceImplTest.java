@@ -329,9 +329,9 @@ class CampaignServiceImplTest {
                 campaignService.getCampaignPreferencesForSpecificPhase("test-user", CampaignPhase.COLLECTION_IN_PROGRESS);
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getId()).isEqualTo(existingCampaign.getId());
-        assertThat(result.getFirst().getLabel()).isEqualTo(existingCampaign.getLabel());
-        assertThat(result.getFirst().isPreference()).isTrue();
+        assertThat(result.getFirst().id()).isEqualTo(existingCampaign.getId());
+        assertThat(result.getFirst().label()).isEqualTo(existingCampaign.getLabel());
+        assertThat(result.getFirst().preference()).isTrue();
     }
 
     @Test
