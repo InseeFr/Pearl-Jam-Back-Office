@@ -4,8 +4,10 @@ import fr.insee.pearljam.contracts.campaign.dto.*;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
+import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +63,11 @@ public class CampaignFakeService implements CampaignService {
 
     @Override
     public List<CampaignPreferenceDto> getCampaignPreferences(String userId) {
+        return List.of();
+    }
+
+    @Override
+    public List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase) {
         return List.of();
     }
 

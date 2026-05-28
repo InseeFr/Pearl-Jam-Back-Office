@@ -21,6 +21,8 @@ public class CampaignOrganizationCsvPresenter implements CampaignOrganizationSta
                                             CampaignVisibility campaignVisibility,
                                             List<Referent> referents,
                                             List<InterviewerDailyStats> interviewerDailyStats,
+                                            long totalUserSite,
+                                            long totalUserUnaffectedSite,
                                             long currentDate) {
         List<CsvRow> rows = new ArrayList<>();
 
@@ -29,8 +31,8 @@ public class CampaignOrganizationCsvPresenter implements CampaignOrganizationSta
             addRowWithTitleLabel(rows, fullNameRowTitle, List.of(interviewer.getInterviewerId(), interviewer.getAllocatedCount()));
         });
 
-        addRowWithTitleLabel(rows, CampaignOrganizationCsv.NOT_AFFECTED, List.of("", campaignDailyStats.getUnaffectedCount()));
-        addRowWithTitleLabel(rows, CampaignOrganizationCsv.TOTAL_SITE, List.of("", campaignDailyStats.getAllocatedCount()));
+        addRowWithTitleLabel(rows, CampaignOrganizationCsv.NOT_AFFECTED, List.of("", totalUserUnaffectedSite));
+        addRowWithTitleLabel(rows, CampaignOrganizationCsv.TOTAL_SITE, List.of("", totalUserSite));
 
         return new CampaignOrganizationCsv(campaignVisibility.id(), rows);
     }

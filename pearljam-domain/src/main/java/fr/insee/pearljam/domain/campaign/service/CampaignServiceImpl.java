@@ -5,6 +5,7 @@ import fr.insee.pearljam.contracts.campaign.dto.input.*;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
+import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
@@ -18,6 +19,7 @@ import fr.insee.pearljam.domain.message.port.out.MessageRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.organizationunit.port.out.UserRepository;
+import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.surveyunit.model.count.InterviewerCount;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCountService;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
@@ -115,6 +117,21 @@ public class CampaignServiceImpl implements CampaignService {
         return campaignRepository.findByOuIdWithPreference(organizationUnitIds, userId, dateService.getCurrentTimestamp());
     }
 
+    @Override
+    public List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase) {
+        List<CampaignDto> campaigns = getPreferredCampaigns(userId);
+
+        List<CampaignDto> campaignsFilteredForPhase = campaigns.stream().filter(c -> CampaignPhase.fromDates(
+                dateService.getCurrentTimestamp(),
+                c.getManagementStartDate(),
+                c.getInterviewerStartDate(),
+                c.getCollectionEndDate(),
+                c.getEndDate()).equals(campaignPhase)).toList();
+
+        return campaignsFilteredForPhase.stream()
+                .map(c -> new CampaignPreferenceModel(c.getId(), c.getLabel(), true)).toList();
+
+    }
 
     @Override
     public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {

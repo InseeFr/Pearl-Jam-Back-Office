@@ -12,6 +12,7 @@ import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSumma
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
+import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.Referent;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,18 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
         List<InterviewerDailyStats> interviewerDailyStats = campaignDailyStatsRepositoryPort
                 .getInterviewerStats(campaignId, userOUIds, now);
 
-        return presenter.present(campaignDailyStats, campaign, referents, interviewerDailyStats, dateService.getCurrentTimestamp());
+        List<OrganizationUnitDailyStats> organizationUnitDailyStats = campaignDailyStatsRepositoryPort
+                .getOrganizationUnitsStats(campaignId, now);
+
+        long totalAllocatedUserOUs = organizationUnitDailyStats.stream()
+                .mapToLong(OrganizationUnitDailyStats::getAllocatedCount)
+                .sum();
+
+        long totalNotAffectedUserOUs = organizationUnitDailyStats.stream()
+                .mapToLong(OrganizationUnitDailyStats::getUnaffectedCount)
+                .sum();
+
+        return presenter.present(campaignDailyStats,campaign, referents, interviewerDailyStats, totalAllocatedUserOUs, totalNotAffectedUserOUs, dateService.getCurrentTimestamp());
     }
 
     private List<String> getUserOUIds(String userId) {

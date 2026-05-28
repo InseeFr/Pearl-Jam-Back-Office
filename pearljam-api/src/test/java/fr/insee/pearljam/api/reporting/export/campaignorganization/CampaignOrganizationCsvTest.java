@@ -118,7 +118,7 @@ class CampaignOrganizationCsvTest {
                 null,
                 List.of(),
                 List.of(),
-                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(null, null)
+                new CampaignOrganizationResponse.UserOrganizationUnitsSurveyUnitCount(null, null)
         );
 
         // When
@@ -226,7 +226,7 @@ class CampaignOrganizationCsvTest {
                 null,
                 List.of(),
                 List.of(),
-                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(0L, 0L)
+                new CampaignOrganizationResponse.UserOrganizationUnitsSurveyUnitCount(0L, 0L)
         );
     }
 
@@ -247,7 +247,7 @@ class CampaignOrganizationCsvTest {
                 null,
                 List.of(),
                 interviewers,
-                new CampaignOrganizationResponse.CampaignOrganizationSurveyUnitCount(15L, notAffected)
+                new CampaignOrganizationResponse.UserOrganizationUnitsSurveyUnitCount(15L, notAffected)
         );
     }
 

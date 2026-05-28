@@ -70,6 +70,7 @@ public class Constants {
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
   public static final String API_CAMPAIGNS_ID = "/api/campaigns/{id}";
   public static final String API_CAMPAIGNS_PREFERENCES = "/api/campaigns/preferences";
+  public static final String API_CAMPAIGNS_PREFERENCES_PHASE = "/api/campaigns/phase/preferences";
   public static final String API_CAMPAIGNS_COMMONS_ID = "/api/campaigns/commons/{id}";
   public static final String API_CAMPAIGNS_COMMONS_ONGOING = "/api/campaigns/commons/ongoing";
   public static final String API_CAMPAIGN_COLLECTION_DATES = "/api/campaign/{id}/collection-dates";
