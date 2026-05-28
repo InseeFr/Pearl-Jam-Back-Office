@@ -49,10 +49,12 @@ public class CampaignOrganizationService implements CampaignOrganizationPort {
                 .getOrganizationUnitsStats(campaignId, now);
 
         long totalAllocatedUserOUs = organizationUnitDailyStats.stream()
+                .filter(ou -> userOUIds.contains(ou.getOuId()))
                 .mapToLong(OrganizationUnitDailyStats::getAllocatedCount)
                 .sum();
 
         long totalNotAffectedUserOUs = organizationUnitDailyStats.stream()
+                .filter(ou -> userOUIds.contains(ou.getOuId()))
                 .mapToLong(OrganizationUnitDailyStats::getUnaffectedCount)
                 .sum();
 
