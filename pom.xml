@@ -26,6 +26,7 @@
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<cucumber.version>7.21.1</cucumber.version>
+		<tomcat.version>10.1.55</tomcat.version>
 	</properties>
 
 	<dependencies>
