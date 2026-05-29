@@ -7,14 +7,14 @@
 
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-back-office</artifactId>
-	<version>5.12.7</version>
+	<version>5.12.8</version>
 	<name>Pearl-Jam-Back-Office</name>
 	<description>Back-office services for PearlJam</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.11</version>
+		<version>3.5.14</version>
 		<relativePath /><!-- lookup parent from repository -->
 	</parent>
 
@@ -22,10 +22,11 @@
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<postgresql.version>42.7.7</postgresql.version>
+		<postgresql.version>42.7.11</postgresql.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<cucumber.version>7.21.1</cucumber.version>
+		<tomcat.version>10.1.55</tomcat.version>
 	</properties>
 
 	<dependencies>
