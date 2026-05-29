@@ -3,7 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStateUpdatePort;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ForbiddenOperation;
 import fr.insee.pearljam.domain.surveyunit.service.exception.StateNotFoundException;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SurveyUnitStateService implements SurveyUnitStatePort {
+public class SurveyUnitUpdateStateService implements SurveyUnitStateUpdatePort {
     private final SurveyUnitExistencePort surveyUnitExistencePort;
     private final SurveyUnitClosingPort surveyUnitClosingPort;
     private final StateRepository stateRepository;

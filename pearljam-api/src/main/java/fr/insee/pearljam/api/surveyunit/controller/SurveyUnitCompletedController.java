@@ -1,0 +1,34 @@
+package fr.insee.pearljam.api.surveyunit.controller;
+
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
+import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static fr.insee.pearljam.contracts.constants.Constants.API_CAMPAIGN_SU_COMPLETED;
+
+@RequiredArgsConstructor
+@Slf4j
+@Validated
+@RestController
+@Tag(name = "02. Survey-units", description = "Endpoints for survey-units")
+public class SurveyUnitCompletedController {
+
+    private final SurveyUnitCompletedPort surveyUnitCompletedPort;
+    private final SurveyUnitCompletedApiPresenter surveyUnitCompletedApiPresenter;
+
+    /**
+     * Get survey units with CLO/FIN state for a specific campaign
+     */
+    @GetMapping(API_CAMPAIGN_SU_COMPLETED)
+    public List<SurveyUnitCompletedResponse> getCompletedSurveyUnitsForCampaign(@PathVariable @NotBlank String id) {
+        return surveyUnitCompletedPort.getCompletedSurveyUnits(id, surveyUnitCompletedApiPresenter);
+    }
+}

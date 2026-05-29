@@ -1,8 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 
@@ -134,5 +136,10 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
         return surveyUnitIds.stream()
                 .filter(surveyUnitDBs::containsKey)
                 .toList();
+    }
+
+    @Override
+    public List<SurveyUnitCompletedView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes, String campaignId) {
+        return List.of();
     }
 }

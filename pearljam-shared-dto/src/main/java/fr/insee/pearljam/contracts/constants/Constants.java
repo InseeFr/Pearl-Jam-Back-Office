@@ -64,9 +64,6 @@ public class Constants {
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
   public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
   public static final String API_REPORTING_OUS_COLLECTION_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/collection/export";
-  //TODO: daily demander à changer le changement de l'endpoint
-  // dans survey unit plutot que reporting car action gestionnaire (ex API_SURVEYUNITS_TO_CLOSE)
-  public static final String API_REPORTING_COMPLETED_SURVEY_UNITS = "api/reporting/campaigns/{campaignId}/completed-units";
 
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
@@ -99,6 +96,9 @@ public class Constants {
   public static final String API_CAMPAIGN_ID_PORTAL_DATA = "/api/campaign/{id}/portal-data";
   public static final String API_CAMPAIGN_ORGANIZATION = "/api/campaign/{id}/organization";
   public static final String API_CAMPAIGN_ORGANIZATION_EXPORT = "/api/campaign/{id}/organization/export";
+  //TODO: daily demander à changer le changement de l'endpoint
+  // dans survey unit plutot que reporting car action gestionnaire (ex API_SURVEYUNITS_TO_CLOSE)
+  public static final String API_CAMPAIGN_SU_COMPLETED = "/api/campaign/{id}/survey-units/completed";
 
   public static final String API_INTERVIEWERS = "/api/interviewers";
   public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";

@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
@@ -275,6 +274,7 @@ public class SurveyUnitController {
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get Survey Units in target campaign")
 	@GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(
