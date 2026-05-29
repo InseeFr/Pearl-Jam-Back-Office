@@ -1,0 +1,25 @@
+package fr.insee.pearljam.api.reporting.export.progress;
+
+import fr.insee.pearljam.api.reporting.export.csv.AbstractCsvExporter;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+
+@Component
+@RequiredArgsConstructor
+public class InterviewerProgressCsvExporter extends AbstractCsvExporter {
+
+    private final InterviewerProgressCsvPresenter presenter;
+    private final CampaignReportingByInterviewersPort campaignReportingByInterviewersPort;
+
+    public ResponseEntity<byte[]> export(String userId, String campaignId, LocalDate date)
+            throws CampaignNotFoundException {
+        InterviewerProgressCsv csv =
+                campaignReportingByInterviewersPort.getProgressForDay(userId, campaignId, date, presenter);
+        return buildResponse(csv, campaignId + "_Avancement_enqueteurs", date);
+    }
+}

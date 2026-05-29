@@ -1,0 +1,74 @@
+application:
+  corsOrigins: '*'
+  roles:
+    interviewer: interviewer_access
+    local_user: local_manager_access
+    national_user: national_manager_access
+    admin: admin_access
+    webclient: webclient_access
+
+spring:
+  application:
+    name: persistence-test
+  liquibase:
+    enabled: true
+    contexts: test
+    defaultSchema: public
+    change-log: classpath:db/integration-test.xml
+  docker:
+    compose:
+      enabled: true
+      file: ../pearljam-api/compose.yml
+      project-directory: ../pearljam-api
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+        arguments: -v
+      skip:
+        in-tests: false
+      profiles:
+        active:
+          - db
+  datasource:
+    url: jdbc:postgresql://localhost:5434/pearl
+    username: mypostgresuser
+    password: mypostgrespassword
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    root: INFO
+    liquibase: INFO
+
+feature:
+  oidc:
+    enabled: true
+    auth-server-host: https://auth.host
+    application-host: ${application.host}
+    auth-server-url: ${feature.oidc.auth-server-host}/auth
+    client-id:
+    realm:
+    principal-attribute: username
+
+fr:
+  insee:
+    pearljam:
+      datacollection:
+        service:
+          url:
+            scheme: http
+            host: localhost
+            port: 8081
+      mail:
+        service:
+          url:
+            scheme: http
+            host: localhost
+            port: 8082
+            login: pearljam
+            password: pearljam
+        recipients:
+          list: pearl@pearljam.fr,jam@pearljam.fr
