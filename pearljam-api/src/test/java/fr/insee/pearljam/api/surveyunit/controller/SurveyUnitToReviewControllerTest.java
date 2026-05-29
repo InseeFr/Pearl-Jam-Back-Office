@@ -40,7 +40,7 @@ class SurveyUnitToReviewControllerTest {
     @BeforeEach
     void setup() {
         port = mock(SurveyUnitToReviewPort.class);
-        when(port.getSurveyUnitsToReview(anyString(), anyString(), anyString(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class)))
+        when(port.getSurveyUnitsToReview(anyString(), anyString(), anyString(), anyBoolean(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class)))
                 .thenReturn(EMPTY_RESULT);
 
         SurveyUnitToReviewController controller =
@@ -64,7 +64,7 @@ class SurveyUnitToReviewControllerTest {
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), eq(searchTerm), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), eq(searchTerm), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
@@ -76,7 +76,7 @@ class SurveyUnitToReviewControllerTest {
                         .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
                 .andExpect(status().isOk());
 
-        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
+        verify(port).getSurveyUnitsToReview(nullable(String.class),nullable(String.class), isNull(), isNull(), any(Pageable.class), any(SurveyUnitToReviewApiPresenter.class));
     }
 
     @Test
@@ -93,6 +93,7 @@ class SurveyUnitToReviewControllerTest {
                 nullable(String.class),
                 nullable(String.class),
                 any(),
+                isNull(),
                 pageableCaptor.capture(),
                 any(SurveyUnitToReviewApiPresenter.class)
         );
@@ -100,5 +101,23 @@ class SurveyUnitToReviewControllerTest {
         Pageable pageable = pageableCaptor.getValue();
         assertEquals(2, pageable.getPageNumber());
         assertEquals(50, pageable.getPageSize());
+    }
+
+    @Test
+    void shouldCallPortWithNullViewed_whenNotProvided() throws Exception {
+
+        mockMvc.perform(get(Constants.API_SURVEY_UNITS_TO_REVIEW)
+                        .param("search", "test-search")
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER)))
+                .andExpect(status().isOk());
+
+        verify(port).getSurveyUnitsToReview(
+                any(),
+                any(),
+                eq("test-search"),
+                isNull(),
+                any(Pageable.class),
+                any()
+        );
     }
 }

@@ -13,7 +13,6 @@ import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,6 +44,8 @@ class SurveyUnitToReviewServiceTest {
         userService = mock(UserService.class);
         dateService = new FixedDateService();
         surveyUnitToReviewRepositoryPort = mock(SurveyUnitToReviewRepositoryPort.class);
+        presenter = mock(SurveyUnitToReviewPresenter.class);
+
         service = new SurveyUnitToReviewService(surveyUnitToReviewRepositoryPort, userService, campaignVisibilityPort, dateService);
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(new OrganizationUnitSummary("OU1", "Organization-Unit-1")));
     }
@@ -54,7 +55,7 @@ class SurveyUnitToReviewServiceTest {
         // GIVEN
         Pageable pageable = PageRequest.of(0, 10);
         String search = "abc";
-        String campaignId="";
+        String campaignId = "";
         long now = dateService.getCurrentTimestamp();
 
         List<String> expectedOuIds = List.of("OU1");
@@ -70,34 +71,38 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(campaigns);
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), any(), any()))
-                .thenReturn(Page.empty());
+                anyList(),
+                anyList(),
+                any(),
+                any(),
+                any(Pageable.class)
+        )).thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
         // WHEN
-        service.getSurveyUnitsToReview(USER_ID, campaignId, search, pageable, presenter);
-
-        // THEN
-        ArgumentCaptor<List<String>> campaignIdsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<List<String>> ouIdsCaptor = ArgumentCaptor.forClass(List.class);
-
-        verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
-                campaignIdsCaptor.capture(),
-                ouIdsCaptor.capture(),
-                eq(search),
-                eq(pageable)
+        service.getSurveyUnitsToReview(
+                USER_ID,
+                campaignId,
+                search,
+                null,
+                pageable,
+                presenter
         );
 
-        assertEquals(List.of("C1", "C2"), campaignIdsCaptor.getValue());
-        assertEquals(expectedOuIds, ouIdsCaptor.getValue());
+        // THEN
+        verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
+                eq(List.of("C1", "C2")),
+                eq(expectedOuIds),
+                eq(search),
+                isNull(),
+                eq(pageable)
+        );
     }
 
 
     @Test
     void shouldHandleUserWithNoOrganizationUnits() {
-        // GIVEN
         Pageable pageable = PageRequest.of(0, 10);
         long now = dateService.getCurrentTimestamp();
 
@@ -110,27 +115,24 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(List.of());
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), any(), any()))
-                .thenReturn(Page.empty());
+                anyList(), anyList(), any(), any(), any(Pageable.class)
+        )).thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
-        // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null,null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, null, null, pageable, presenter);
 
-        // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
-                List.of(),
-                List.of(),
-                null,
-                pageable
+                eq(List.of()),
+                eq(List.of()),
+                isNull(),
+                isNull(),
+                eq(pageable)
         );
     }
 
     @Test
     void shouldHandleNullSearch() {
-        // GIVEN
         Pageable pageable = PageRequest.of(0, 10);
         long now = dateService.getCurrentTimestamp();
 
@@ -140,29 +142,25 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), isNull(), any()))
-                .thenReturn(Page.empty());
+                anyList(), anyList(), any(), any(), any(Pageable.class)
+        )).thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
-        // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, null, true, pageable, presenter);
 
-        // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
-                List.of("C1"),
-                List.of("OU1"),
-                null,
-                pageable
+                eq(List.of("C1")),
+                eq(List.of("OU1")),
+                isNull(),
+                eq(true),
+                eq(pageable)
         );
     }
 
     @Test
     void shouldHandleEmptySearch() {
-        // GIVEN
         Pageable pageable = PageRequest.of(0, 10);
-        String search = "";
         long now = dateService.getCurrentTimestamp();
 
         when(campaignVisibilityPort
@@ -171,27 +169,24 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), eq(""), any()))
-                .thenReturn(Page.empty());
+                anyList(), anyList(), any(), any(), any(Pageable.class)
+        )).thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
-        // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, search, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, "", false, pageable, presenter);
 
-        // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
-                List.of("C1"),
-                List.of("OU1"),
-                "",
-                pageable
+                eq(List.of("C1")),
+                eq(List.of("OU1")),
+                eq(""),
+                eq(false),
+                eq(pageable)
         );
     }
 
     @Test
     void shouldPassCorrectPagination() {
-        // GIVEN
         Pageable pageable = PageRequest.of(2, 20);
         long now = dateService.getCurrentTimestamp();
 
@@ -201,28 +196,25 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), any(), eq(pageable)))
-                .thenReturn(Page.empty());
+                anyList(), anyList(), any(), any(), eq(pageable)
+        )).thenReturn(Page.empty());
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(any())).thenReturn(new Object());
 
-        // WHEN
-        service.getSurveyUnitsToReview(USER_ID, null, null, pageable, presenter);
+        service.getSurveyUnitsToReview(USER_ID, null, null, null, pageable, presenter);
 
-        // THEN
         verify(surveyUnitToReviewRepositoryPort).findSurveyUnitsToReview(
-                List.of("C1"),
-                List.of("OU1"),
-                null,
-                pageable
+                eq(List.of("C1")),
+                eq(List.of("OU1")),
+                isNull(),
+                isNull(),
+                eq(pageable)
         );
     }
 
     @Test
     void shouldHandlePaginationWithTotalElements() {
-        // GIVEN
-        Pageable pageable = PageRequest.of(1, 2); // page 1 (2e page)
+        Pageable pageable = PageRequest.of(1, 2);
         String search = "abc";
         long now = dateService.getCurrentTimestamp();
 
@@ -236,20 +228,18 @@ class SurveyUnitToReviewServiceTest {
                 mock(SurveyUnitToReview.class)
         );
 
-        Page<SurveyUnitToReview> page =
-                new PageImpl<>(content, pageable, 5);
+        Page<SurveyUnitToReview> page = new PageImpl<>(content, pageable, 5);
 
         when(surveyUnitToReviewRepositoryPort.findSurveyUnitsToReview(
-                anyList(), anyList(), eq(search), eq(pageable)))
-                .thenReturn(page);
+                anyList(), anyList(), eq(search), any(), eq(pageable)
+        )).thenReturn(page);
 
-        presenter = mock(SurveyUnitToReviewPresenter.class);
         when(presenter.present(page)).thenReturn("RESULT");
 
-        // WHEN
-        Object result = service.getSurveyUnitsToReview(USER_ID, null, search, pageable, presenter);
+        Object result = service.getSurveyUnitsToReview(
+                USER_ID, null, search, null, pageable, presenter
+        );
 
-        // THEN
         assertEquals("RESULT", result);
 
         verify(presenter).present(argThat(p ->

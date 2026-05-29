@@ -25,5 +25,6 @@ public interface SurveyUnitToReviewRepositoryPort {
             List<String> campaignIds,
             List<String> ouIds,
             String search,
+            Boolean viewed,
             Pageable pageable);
 }
