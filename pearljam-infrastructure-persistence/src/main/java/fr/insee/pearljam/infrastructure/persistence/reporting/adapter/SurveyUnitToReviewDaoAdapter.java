@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -35,20 +36,21 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
 
     @Override
     public Page<SurveyUnitToReview> findSurveyUnitsToReview(
-            List<String> campaignIds, List<String> ouIds, String search, Pageable pageable) {
+            List<String> campaignIds, List<String> ouIds, String search, Boolean viewed, Pageable pageable) {
 
         // Build and execute main query with pagination
-        List<SurveyUnitToReview> content = executeMainQuery(campaignIds, ouIds, search, pageable);
+        List<SurveyUnitToReview> content = executeMainQuery(campaignIds, ouIds, search, viewed, pageable);
 
         // Get total count for pagination metadata
-        long total = executeCountQuery(campaignIds, ouIds, search);
+        long total = executeCountQuery(campaignIds, ouIds, search, viewed);
+
 
         // Return paginated results
         return new PageImpl<>(content, pageable, total);
     }
 
     private List<SurveyUnitToReview> executeMainQuery(
-            List<String> campaignIds, List<String> ouIds, String search, Pageable pageable) {
+            List<String> campaignIds, List<String> ouIds, String search, Boolean viewed, Pageable pageable) {
 
         String sql = """
                              SELECT
@@ -85,6 +87,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                              WHERE ls.current_state = 'TBR'
                                AND su.campaign_id IN (:campaignIds)
                                AND su.organization_unit_id IN (:ouIds)
+                               AND (:viewed IS NULL OR su.viewed =:viewed)
                              """ +
                             buildSearchCondition(search) +
                             buildSortClause(pageable) +
@@ -96,13 +99,16 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                 .param("campaignIds", campaignIds)
                 .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
+                .param("viewed", viewed, Types.BOOLEAN)
                 .param("limit", pageable.getPageSize())
                 .param("offset", pageable.getOffset())
                 .query(this::mapToSurveyUnitToReview)
                 .list();
+
+
     }
 
-    private long executeCountQuery(List<String> campaignIds, List<String> ouIds, String search) {
+    private long executeCountQuery(List<String> campaignIds, List<String> ouIds, String search, Boolean viewed) {
         String sql = """
                              SELECT COUNT(DISTINCT su.id)
                              FROM survey_unit su
@@ -120,12 +126,14 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                              WHERE ls.current_state = 'TBR'
                                 AND su.campaign_id IN (:campaignIds)
                                 AND su.organization_unit_id IN (:ouIds)
+                                AND (:viewed IS NULL OR su.viewed =:viewed)
                              """ + buildSearchCondition(search);
 
         return jdbc.sql(sql)
                 .param("campaignIds", campaignIds)
                 .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
+                .param("viewed", viewed, Types.BOOLEAN)
                 .query(Long.class)
                 .single();
     }

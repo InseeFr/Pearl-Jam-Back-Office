@@ -34,10 +34,11 @@ public class SurveyUnitToReviewController {
             Pageable pageable,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String campaignId,
+            @RequestParam(required = false) Boolean viewed,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
 
         log.info("Fetching survey units to review for user {} with search: {}", userId, search);
 
-        return surveyUnitToReviewPort.getSurveyUnitsToReview(userId, campaignId, search, pageable, presenter);
+        return surveyUnitToReviewPort.getSurveyUnitsToReview(userId, campaignId, search, viewed, pageable, presenter);
     }
 }

@@ -34,7 +34,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
     private final DateService dateService;
 
     @Override
-    public <T> T getSurveyUnitsToReview(String userId, String campaignId, String search, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToReview(String userId, String campaignId, String search, Boolean viewed, Pageable pageable, SurveyUnitToReviewPresenter<T> presenter) {
         log.info("Retrieving survey units to review for user: {}", userId);
 
         long currentTimestamp = dateService.getCurrentTimestamp();
@@ -57,7 +57,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
 
         // Use native pagination via repository
         Page<SurveyUnitToReview> page = surveyUnitToReviewRepository.findSurveyUnitsToReview(
-                campaignIds, ouIds, search, pageable);
+                campaignIds, ouIds, search, viewed,  pageable);
 
         if (page.isEmpty()) {
             log.warn("No survey units to review found for user: {} with search parameter: {}", userId, search);
