@@ -24,7 +24,7 @@ class SurveyUnitCompletedApiPresenterTest {
     }
 
     @Test
-    @DisplayName("Returns empty list when no survey units provided")
+@DisplayName("Returns empty list when no survey units provided")
     void shouldReturnEmptyList_whenNoSurveyUnits() {
         List<SurveyUnitCompletedResponse> result = presenter.present(List.of());
 

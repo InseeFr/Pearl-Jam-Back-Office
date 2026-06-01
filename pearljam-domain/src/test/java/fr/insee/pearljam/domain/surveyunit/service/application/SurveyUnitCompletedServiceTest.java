@@ -3,7 +3,6 @@ package fr.insee.pearljam.domain.surveyunit.service.application;
 
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.campaign.service.dummy.SurveyUnitRepositoryStub;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
@@ -36,15 +35,16 @@ class SurveyUnitFetchServiceTest {
     @Test
     @DisplayName("Throws CampaignNotFoundException when campaign does not exist")
     void shouldThrowCampaignNotFoundException_whenCampaignDoesNotExist() {
-        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), "unknown-campaign"))
+        List<StateType> states = List.of(StateType.CLO);
+        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(states, "unknown-campaign"))
                 .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 
     @Test
     @DisplayName("Does not call survey unit repository when campaign does not exist")
     void shouldNotCallSurveyUnitRepository_whenCampaignDoesNotExist() {
-
-        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), "unknown-campaign"))
+        List<StateType> states = List.of(StateType.CLO);
+        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(states, "unknown-campaign"))
                 .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
 
         assertThat(surveyUnitRepositoryStub.getCapturedCampaignId()).isNull();
@@ -97,9 +97,9 @@ class SurveyUnitFetchServiceTest {
 
     private HashMap<String, CampaignSummary> generateCampaign()
     {
-        HashMap<String, CampaignSummary> campaings = new HashMap<String, CampaignSummary>();
-        campaings.put(campaignIdToTest, null);
-        return campaings;
+        HashMap<String, CampaignSummary> campaigns = new HashMap<>();
+        campaigns.put(campaignIdToTest, null);
+        return campaigns;
     }
 
     private SurveyUnitCompletedView surveyUnitCompletedView() {

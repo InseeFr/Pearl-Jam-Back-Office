@@ -1,9 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitFetchPort;

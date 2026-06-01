@@ -271,6 +271,7 @@ public class SurveyUnitController {
 	 *
 	 * @param id campaign id
 	 * @param state search survey unit with this state
+	 * @deprecated not used anymore for sabiane v2 with states as query optional parameter, still used by CPIEs
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */

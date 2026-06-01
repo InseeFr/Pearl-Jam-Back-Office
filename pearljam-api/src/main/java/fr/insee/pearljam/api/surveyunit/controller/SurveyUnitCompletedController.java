@@ -5,7 +5,6 @@ import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
