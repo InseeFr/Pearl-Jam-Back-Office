@@ -112,7 +112,6 @@ class SurveyUnitFetchServiceTest {
             @Override public String getContactOutcome() { return "INA"; }
             @Override public String getClosingCauseType() { return "NPI"; }
             @Override public Boolean getViewed() { return false; }
-            @Override public String getReadOnlyUrl() { return "https://example.com/" + "su-1"; }
             @Override public String getComment() { return "A comment"; }
         };
     }

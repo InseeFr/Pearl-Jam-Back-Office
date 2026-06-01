@@ -154,7 +154,6 @@ class SurveyUnitCompletedApiPresenterTest {
             @Override public String getContactOutcome() { return contactOutcome; }
             @Override public String getClosingCauseType() { return closingCauseType; }
             @Override public Boolean getViewed() { return viewed; }
-            @Override public String getReadOnlyUrl() { return null; } // computed by presenter, not used as input
             @Override public String getComment() { return comment; }
         };
     }
