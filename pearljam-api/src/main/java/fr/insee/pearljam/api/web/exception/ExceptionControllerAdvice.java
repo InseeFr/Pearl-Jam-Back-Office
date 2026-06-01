@@ -194,6 +194,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(CampaignNotFoundExceptionRuntime.class)
+    public ProblemDetail noCampaignFoundExceptionRuntime(CampaignNotFoundExceptionRuntime e) {
+        return generateResponseError(e, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(StateNotFoundException.class)
     public ProblemDetail stateNotFoundException(Exception e) {
         return generateResponseError(e, HttpStatus.NOT_FOUND);

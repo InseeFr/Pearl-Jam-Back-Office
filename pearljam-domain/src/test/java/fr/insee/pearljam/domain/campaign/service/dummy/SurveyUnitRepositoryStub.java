@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
+import lombok.Getter;
 
 import java.util.*;
 
@@ -138,8 +139,19 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
                 .toList();
     }
 
+    private List<SurveyUnitCompletedView> stubbedResults = new ArrayList<>();
+    @Getter
+    private List<StateType> capturedStateTypes;
+    @Getter
+    private String capturedCampaignId;
+
+    public void willReturn(List<SurveyUnitCompletedView> results) {
+        this.stubbedResults = results;
+    }
     @Override
     public List<SurveyUnitCompletedView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes, String campaignId) {
-        return List.of();
+        this.capturedStateTypes = stateTypes;
+        this.capturedCampaignId = campaignId;
+        return stubbedResults;
     }
 }

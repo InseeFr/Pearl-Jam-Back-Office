@@ -9,25 +9,26 @@ import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 public class CampaignRepositoryStub implements CampaignRepository {
 
-    private final List<CampaignSummary> campaigns;
+    private HashMap<String, CampaignSummary> campaigns;
 
-    public CampaignRepositoryStub(List<CampaignSummary> campaigns) {
+    public CampaignRepositoryStub(HashMap<String, CampaignSummary> campaigns) {
         this.campaigns = campaigns;
     }
 
     @Override
     public List<CampaignSummary> findAllManagedAndNotClosedCampaignsByOuIds(List<String> ouIds, Instant date) {
-        return campaigns;
+        return campaigns.values().stream().toList();
     }
 
     @Override public Optional<CampaignDB> findById(String id) { return Optional.empty(); }
     @Override public Optional<CampaignDB> findByIdIgnoreCase(String id) { return Optional.empty(); }
-    @Override public boolean existsById(String id) { return false; }
+    @Override public boolean existsById(String id) { return campaigns.containsKey(id); }
     @Override public List<String> findAllCampaignIdsByOuIds(List<String> ouIds) { return List.of(); }
     @Override public List<CampaignDto> findByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) { return List.of(); }
     @Override public List<String> findAllManagedAndNotClosedCampaignIdsByOuIds(List<String> ouIds, Long date) { return List.of(); }
