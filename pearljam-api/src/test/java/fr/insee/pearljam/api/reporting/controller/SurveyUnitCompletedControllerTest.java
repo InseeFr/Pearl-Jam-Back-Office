@@ -111,13 +111,13 @@ class SurveyUnitCompletedControllerTest {
                 .andExpect(jsonPath("$[0].endDate").value("2024-01-15"))
                 .andExpect(jsonPath("$[0].contactOutcome").value("INA"))
                 .andExpect(jsonPath("$[0].closingCauseType").value("NPI"))
-                .andExpect(jsonPath("$[0].read").value(false))
+                .andExpect(jsonPath("$[0].viewed").value(false))
                 .andExpect(jsonPath("$[0].readOnlyUrl").value("https://example.com/review/interrogations/su-1"))
                 .andExpect(jsonPath("$[0].comment").value("A comment"))
                 .andExpect(jsonPath("$[1].surveyUnitId").value("su-2"))
                 .andExpect(jsonPath("$[1].contactOutcome").doesNotExist())
                 .andExpect(jsonPath("$[1].closingCauseType").doesNotExist())
-                .andExpect(jsonPath("$[1].read").value(true))
+                .andExpect(jsonPath("$[1].viewed").value(true))
                 .andExpect(jsonPath("$[1].comment").doesNotExist());
     }
 
