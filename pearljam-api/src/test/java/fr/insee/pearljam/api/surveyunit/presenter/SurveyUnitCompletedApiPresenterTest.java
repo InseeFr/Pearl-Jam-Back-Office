@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.surveyunit.presenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Maps survey unit id and display name")
     void shouldMapSurveyUnitIdAndDisplayName() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -46,7 +46,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Concatenates interviewer first and last name with a space")
     void shouldConcatenateInterviewerFirstAndLastName() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -57,7 +57,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Converts contactOutcome string to enum")
     void shouldConvertContactOutcome_toEnum() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -68,7 +68,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Sets contactOutcome to null when source value is null")
     void shouldSetContactOutcomeToNull_whenSourceIsNull() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", null, "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -79,7 +79,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Converts closingCauseType string to enum")
     void shouldConvertClosingCauseType_toEnum() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -90,7 +90,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Sets closingCauseType to null when source value is null")
     void shouldSetClosingCauseTypeToNull_whenSourceIsNull() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", null, false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -101,7 +101,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Builds readOnlyUrl from datacollectionUiUrl and survey unit id")
     void shouldBuildReadOnlyUrl_fromBaseUrlAndSurveyUnitId() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -113,7 +113,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Maps all remaining fields correctly")
     void shouldMapRemainingFields() {
-        SurveyUnitCompletedView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", true, "My comment");
 
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
@@ -126,9 +126,9 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
     @DisplayName("Presents multiple survey units preserving order")
     void shouldPresentMultipleSurveyUnits_preservingOrder() {
-        SurveyUnitCompletedView su1 = surveyUnitView("su-1", "Survey 1", "John", "Doe",
+        SurveyUnitFetchedByStatesAndCampaignIdView su1 = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, null);
-        SurveyUnitCompletedView su2 = surveyUnitView("su-2", "Survey 2", "Jane", "Smith",
+        SurveyUnitFetchedByStatesAndCampaignIdView su2 = surveyUnitView("su-2", "Survey 2", "Jane", "Smith",
                 "2024-01-16", null, null, true, "comment");
 
         List<SurveyUnitCompletedResponse> results = presenter.present(List.of(su1, su2));
@@ -140,12 +140,12 @@ class SurveyUnitCompletedApiPresenterTest {
 
     // --- helpers ---
 
-    private SurveyUnitCompletedView surveyUnitView(
+    private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitView(
             String id, String displayName,
             String firstName, String lastName,
             String endDate, String contactOutcome,
             String closingCauseType, Boolean read, String comment) {
-        return new SurveyUnitCompletedView() {
+        return new SurveyUnitFetchedByStatesAndCampaignIdView() {
             @Override public String getSurveyUnitId() { return id; }
             @Override public String getSurveyUnitDisplayName() { return displayName; }
             @Override public String getInterviewerFirstName() { return firstName; }

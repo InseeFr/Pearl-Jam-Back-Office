@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.readmodel;
 
-public interface SurveyUnitCompletedView {
+public interface SurveyUnitFetchedByStatesAndCampaignIdView {
         String getSurveyUnitId();
         String getSurveyUnitDisplayName();
         String getInterviewerFirstName();

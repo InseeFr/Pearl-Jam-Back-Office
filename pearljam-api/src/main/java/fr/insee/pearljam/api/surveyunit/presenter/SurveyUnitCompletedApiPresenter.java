@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.surveyunit.presenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class SurveyUnitCompletedApiPresenter implements SurveyUnitCompletedPrese
     private String datacollectionUiUrl;
 
     @Override
-    public List<SurveyUnitCompletedResponse> present(List<SurveyUnitCompletedView> surveyUnits) {
+    public List<SurveyUnitCompletedResponse> present(List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits) {
         return  surveyUnits.stream().map(su ->
                 new SurveyUnitCompletedResponse(
                         su.getSurveyUnitId(),

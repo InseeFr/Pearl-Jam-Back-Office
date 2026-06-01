@@ -5,7 +5,7 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitFetchPort;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class SurveyUnitFetchService implements SurveyUnitFetchPort {
     private final CampaignRepository campaignRepository;
 
     @Override
-    public List<SurveyUnitCompletedView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes, String campaignId) {
+    public List<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes, String campaignId) {
 
         if(!campaignRepository.existsById(campaignId))
         {

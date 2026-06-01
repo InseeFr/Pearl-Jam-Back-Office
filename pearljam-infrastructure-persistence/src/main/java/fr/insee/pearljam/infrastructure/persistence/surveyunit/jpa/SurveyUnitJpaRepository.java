@@ -1,6 +1,6 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa;
 
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
@@ -522,7 +522,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
            AND vi.organization_unit_id = su.organization_unit_id
         WHERE su.campaign_id = :campaignId
         """, nativeQuery = true)
-	List<SurveyUnitCompletedView> getSurveyUnitsByStatesAndCampaignId(
+	List<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
 			@Param("stateTypes") List<String> stateTypes,
 			@Param("campaignId") String campaignId);
 }

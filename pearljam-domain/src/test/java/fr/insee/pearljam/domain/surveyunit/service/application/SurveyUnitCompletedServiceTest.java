@@ -6,7 +6,7 @@ import fr.insee.pearljam.domain.campaign.service.dummy.SurveyUnitRepositoryStub;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCompletedView;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitFetchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,10 +53,10 @@ class SurveyUnitFetchServiceTest {
     @Test
     @DisplayName("Returns survey units when campaign exists")
     void shouldReturnSurveyUnits_whenCampaignExists() {
-        SurveyUnitCompletedView su = surveyUnitCompletedView();
+        SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitCompletedView();
         surveyUnitRepositoryStub.willReturn(List.of(su));
 
-        List<SurveyUnitCompletedView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO, StateType.FIN), campaignIdToTest);
+        List<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO, StateType.FIN), campaignIdToTest);
 
         assertThat(result).containsExactly(su);
     }
@@ -88,7 +88,7 @@ class SurveyUnitFetchServiceTest {
     void shouldReturnEmptyList_whenNoSurveyUnitsFound() {
         surveyUnitRepositoryStub.willReturn(List.of());
 
-        List<SurveyUnitCompletedView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), campaignIdToTest);
+        List<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), campaignIdToTest);
 
         assertThat(result).isEmpty();
     }
@@ -102,8 +102,8 @@ class SurveyUnitFetchServiceTest {
         return campaigns;
     }
 
-    private SurveyUnitCompletedView surveyUnitCompletedView() {
-        return new SurveyUnitCompletedView() {
+    private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitCompletedView() {
+        return new SurveyUnitFetchedByStatesAndCampaignIdView() {
             @Override public String getSurveyUnitId() { return "su-1"; }
             @Override public String getSurveyUnitDisplayName() { return "Display " + "su-1"; }
             @Override public String getInterviewerFirstName() { return "John"; }
