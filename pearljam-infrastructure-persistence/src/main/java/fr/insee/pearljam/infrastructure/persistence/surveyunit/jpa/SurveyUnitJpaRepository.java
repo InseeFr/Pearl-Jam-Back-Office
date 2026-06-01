@@ -493,7 +493,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
             CAST(vi.collection_end_date AS TEXT)           AS endDate,
             co.type                                        AS contactOutcome,
             cc.type                                        AS closingCauseType,
-            su.viewed                                      AS read,
+            su.viewed                                      AS viewed,
             NULL                                           AS readOnlyUrl,
             com.value                                      AS comment
         FROM survey_unit su

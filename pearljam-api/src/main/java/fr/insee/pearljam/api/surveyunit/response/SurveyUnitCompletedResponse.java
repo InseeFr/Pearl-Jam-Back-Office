@@ -12,7 +12,7 @@ public record  SurveyUnitCompletedResponse (
       String endDate,
       ContactOutcomeType contactOutcome,
       ClosingCauseType closingCauseType,
-      Boolean read,
+      Boolean viewed,
       String readOnlyUrl,
       String comment
 ) {}

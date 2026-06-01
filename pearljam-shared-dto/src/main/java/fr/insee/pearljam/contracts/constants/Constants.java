@@ -96,8 +96,6 @@ public class Constants {
   public static final String API_CAMPAIGN_ID_PORTAL_DATA = "/api/campaign/{id}/portal-data";
   public static final String API_CAMPAIGN_ORGANIZATION = "/api/campaign/{id}/organization";
   public static final String API_CAMPAIGN_ORGANIZATION_EXPORT = "/api/campaign/{id}/organization/export";
-  //TODO: daily demander à changer le changement de l'endpoint
-  // dans survey unit plutot que reporting car action gestionnaire (ex API_SURVEYUNITS_TO_CLOSE)
   public static final String API_CAMPAIGN_SU_COMPLETED = "/api/campaign/{id}/survey-units/completed";
 
   public static final String API_INTERVIEWERS = "/api/interviewers";

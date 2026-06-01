@@ -30,7 +30,7 @@ public class SurveyUnitCompletedApiPresenter implements SurveyUnitCompletedPrese
                         su.getClosingCauseType() != null
                                 ? ClosingCauseType.valueOf(su.getClosingCauseType())
                                 : null,
-                        su.getRead(),
+                        su.getViewed(),
                         datacollectionUiUrl + "/review/interrogations/" + su.getSurveyUnitId(),
                         su.getComment()
                 )

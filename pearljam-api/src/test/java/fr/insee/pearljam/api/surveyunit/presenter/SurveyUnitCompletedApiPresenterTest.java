@@ -119,7 +119,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
 
         assertThat(result.endDate()).isEqualTo("2024-01-15");
-        assertThat(result.read()).isTrue();
+        assertThat(result.viewed()).isTrue();
         assertThat(result.comment()).isEqualTo("My comment");
     }
 
@@ -144,7 +144,7 @@ class SurveyUnitCompletedApiPresenterTest {
             String id, String displayName,
             String firstName, String lastName,
             String endDate, String contactOutcome,
-            String closingCauseType, Boolean read, String comment) {
+            String closingCauseType, Boolean viewed, String comment) {
         return new SurveyUnitFetchedByStatesAndCampaignIdView() {
             @Override public String getSurveyUnitId() { return id; }
             @Override public String getSurveyUnitDisplayName() { return displayName; }
@@ -153,7 +153,7 @@ class SurveyUnitCompletedApiPresenterTest {
             @Override public String getEndDate() { return endDate; }
             @Override public String getContactOutcome() { return contactOutcome; }
             @Override public String getClosingCauseType() { return closingCauseType; }
-            @Override public Boolean getRead() { return read; }
+            @Override public Boolean getViewed() { return viewed; }
             @Override public String getReadOnlyUrl() { return null; } // computed by presenter, not used as input
             @Override public String getComment() { return comment; }
         };
