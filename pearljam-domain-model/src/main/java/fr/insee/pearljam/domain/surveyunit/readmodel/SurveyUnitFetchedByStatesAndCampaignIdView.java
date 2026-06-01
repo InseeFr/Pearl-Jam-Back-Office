@@ -9,7 +9,6 @@ public interface SurveyUnitFetchedByStatesAndCampaignIdView {
         String getContactOutcome();
         String getClosingCauseType();
         Boolean getViewed();
-        String getReadOnlyUrl();
         String getComment();
 }
 

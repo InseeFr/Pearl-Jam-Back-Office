@@ -494,7 +494,6 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
             co.type                                        AS contactOutcome,
             cc.type                                        AS closingCauseType,
             su.viewed                                      AS viewed,
-            NULL                                           AS readOnlyUrl,
             com.value                                      AS comment
         FROM survey_unit su
         JOIN LATERAL (
