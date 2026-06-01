@@ -246,10 +246,6 @@ class SurveyUnitToReviewDaoAdapterTest {
         assertThat(result.getContent()).isEmpty();
     }
 
-    // =========================================================
-    // VIEWED (CLEAN PARAM TESTS)
-    // =========================================================
-
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldFilterByViewed(boolean viewed) {
@@ -262,7 +258,7 @@ class SurveyUnitToReviewDaoAdapterTest {
                         viewed,
                         PageRequest.of(0, 10)
                 );
-
+        assertThat(result.getContent()).isNotEmpty();
         assertThat(result.getContent())
                 .allMatch(su -> su.viewed() == viewed);
     }
