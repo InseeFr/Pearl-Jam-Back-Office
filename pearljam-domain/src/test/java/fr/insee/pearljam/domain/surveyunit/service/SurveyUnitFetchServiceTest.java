@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.surveyunit.service.application;
+package fr.insee.pearljam.domain.surveyunit.service;
 
 
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
@@ -7,7 +7,6 @@ import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExcep
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
-import fr.insee.pearljam.domain.surveyunit.service.SurveyUnitFetchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
