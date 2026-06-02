@@ -39,6 +39,7 @@ public class ClosingCauseController {
    */
   @Operation(summary = "Get interviewerStateCount")
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES)
+  @Deprecated(forRemoval = true)
   public ClosingCauseCountDto getClosingCauseCount(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {
