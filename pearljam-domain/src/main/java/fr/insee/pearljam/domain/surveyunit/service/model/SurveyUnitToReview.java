@@ -6,6 +6,7 @@ package fr.insee.pearljam.domain.surveyunit.service.model;
  * that are in a "To Be Reviewed" (TBR) state.
  *
  * @param id the unique identifier of the survey unit
+ * @param surveyUnitDisplayName display name of the survey unit
  * @param campaignLabel the label of the campaign
  * @param contactOutcome the contact outcome of the survey unit
  * @param interviewerId the identifier of the interviewer
@@ -16,6 +17,7 @@ package fr.insee.pearljam.domain.surveyunit.service.model;
  */
 public record SurveyUnitToReview(
         String id,
+        String surveyUnitDisplayName,
         String campaignLabel,
         String contactOutcome,
         String interviewerId,

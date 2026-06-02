@@ -38,6 +38,7 @@ public class SurveyUnitToReviewApiPresenter implements
     private SurveyUnitToReviewReponse mapToDto(SurveyUnitToReview surveyUnit) {
         return new SurveyUnitToReviewReponse(
                 surveyUnit.id(),
+                surveyUnit.surveyUnitDisplayName(),
                 surveyUnit.campaignLabel(),
                 surveyUnit.contactOutcome(),
                 buildInterviewerLabel(surveyUnit.interviewerFirstName(), surveyUnit.interviewerLastName()),

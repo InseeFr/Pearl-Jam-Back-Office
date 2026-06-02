@@ -7,6 +7,9 @@ public record SurveyUnitToReviewReponse(
         @Schema(description = "Survey unit identifier", example = "SU-12345")
         String id,
 
+        @Schema(description = "Survey unit display name", example = "SU12345")
+        String surveyUnitDisplayName,
+
         @Schema(description = "Campaign label", example = "Campaign 2024")
         String campaignLabel,
 
