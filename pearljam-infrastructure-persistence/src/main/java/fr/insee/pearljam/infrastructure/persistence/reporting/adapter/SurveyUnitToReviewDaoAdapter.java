@@ -55,6 +55,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
         String sql = """
                              SELECT
                                  su.id AS surveyUnitId,
+                                 su.display_name AS surveyUnitDisplayName,
                                  c.label AS campaignLabel,
                                  co.type AS contact_outcome,
                                  i.id AS interviewerId,
@@ -175,6 +176,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
     private SurveyUnitToReview mapToSurveyUnitToReview(ResultSet rs, int rowNum) throws SQLException {
         return new SurveyUnitToReview(
                 rs.getString("surveyUnitId"),
+                rs.getString("surveyUnitDisplayName"),
                 rs.getString("campaignLabel"),
                 rs.getString("contact_outcome"),
                 rs.getString("interviewerId"),
