@@ -6,6 +6,8 @@ import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitFetchPortStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
@@ -25,9 +27,12 @@ class SurveyUnitCompletedServiceTest {
     @Test
     @DisplayName("Queries fetch port with CLO and FIN states")
     void shouldQueryWithCloAndFinStates() {
-        surveyUnitFetchPortStub.willReturn(List.of());
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
-        service.getCompletedSurveyUnits("campaign-01", surveyUnits -> surveyUnits);
+        service.getCompletedSurveyUnits("campaign-01",
+                null,
+                null,
+                surveyUnits -> surveyUnits);
 
         assertThat(surveyUnitFetchPortStub.getCapturedStateTypes())
                 .containsExactlyInAnyOrder(StateType.CLO, StateType.FIN);
@@ -36,9 +41,12 @@ class SurveyUnitCompletedServiceTest {
     @Test
     @DisplayName("Forwards campaign id to the fetch port")
     void shouldForwardCampaignId_toFetchPort() {
-        surveyUnitFetchPortStub.willReturn(List.of());
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
-        service.getCompletedSurveyUnits("campaign-01", surveyUnits -> surveyUnits);
+        service.getCompletedSurveyUnits("campaign-01",
+                null,
+                null,
+                surveyUnits -> surveyUnits);
 
         assertThat(surveyUnitFetchPortStub.getCapturedCampaignId()).isEqualTo("campaign-01");
     }
@@ -46,12 +54,15 @@ class SurveyUnitCompletedServiceTest {
     @Test
     @DisplayName("Returns result transformed by presenter")
     void shouldReturnPresentedResult() {
-        SurveyUnitFetchedByStatesAndCampaignIdView su1 = surveyUnitView("su-1");
-        SurveyUnitFetchedByStatesAndCampaignIdView su2 = surveyUnitView("su-2");
-        surveyUnitFetchPortStub.willReturn(List.of(su1, su2));
+        SurveyUnitFetchedByStatesAndCampaignIdView su1 = surveyUnitView();
+        SurveyUnitFetchedByStatesAndCampaignIdView su2 = surveyUnitView();
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of(su1, su2)));
 
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> result =
-                service.getCompletedSurveyUnits("campaign-01", surveyUnits -> surveyUnits);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result =
+                service.getCompletedSurveyUnits("campaign-01",
+                null,
+                null,
+                surveyUnits -> surveyUnits);
 
         assertThat(result).containsExactly(su1, su2);
     }
@@ -59,10 +70,13 @@ class SurveyUnitCompletedServiceTest {
     @Test
     @DisplayName("Returns empty list when no completed survey units found")
     void shouldReturnEmptyList_whenNoSurveyUnitsFound() {
-        surveyUnitFetchPortStub.willReturn(List.of());
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> result =
-                service.getCompletedSurveyUnits("campaign-empty", surveyUnits -> surveyUnits);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result =
+                service.getCompletedSurveyUnits("campaign-empty",
+                null,
+                null,
+                surveyUnits -> surveyUnits);
 
         assertThat(result).isEmpty();
     }
@@ -70,26 +84,25 @@ class SurveyUnitCompletedServiceTest {
     @Test
     @DisplayName("Delegates result to presenter and returns its output")
     void shouldDelegateToPresenter() {
-        surveyUnitFetchPortStub.willReturn(List.of(surveyUnitView("su-1"), surveyUnitView("su-2")));
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of(surveyUnitView(), surveyUnitView())));
 
-        int result = service.getCompletedSurveyUnits("campaign-01", List::size);
+        Long result = service.getCompletedSurveyUnits("campaign-01", null, null, Page::getTotalElements);
 
         assertThat(result).isEqualTo(2);
     }
 
     // --- helpers ---
 
-    private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitView(String id) {
-        return new SurveyUnitFetchedByStatesAndCampaignIdView() {
-            @Override public String getSurveyUnitId() { return id; }
-            @Override public String getSurveyUnitDisplayName() { return "Display " + id; }
-            @Override public String getInterviewerFirstName() { return "John"; }
-            @Override public String getInterviewerLastName() { return "Doe"; }
-            @Override public String getEndDate() { return "2024-01-01"; }
-            @Override public String getContactOutcome() { return "INA"; }
-            @Override public String getClosingCauseType() { return "NPI"; }
-            @Override public Boolean getViewed() { return false; }
-            @Override public String getComment() { return "A comment"; }
-        };
+    private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitView() {
+        return new SurveyUnitFetchedByStatesAndCampaignIdView(
+                "su-1",
+                "Display " + "su-1",
+                "John",
+                "Doe",
+                "2024-01-01",
+                "INA",
+                "NPI",
+                false,
+                "A comment");
     }
 }

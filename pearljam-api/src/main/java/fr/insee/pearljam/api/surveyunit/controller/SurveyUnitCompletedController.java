@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,14 @@ public class SurveyUnitCompletedController {
      * Get survey units with CLO/FIN state for a specific campaign
      */
     @GetMapping(API_CAMPAIGN_SU_COMPLETED)
-    public List<SurveyUnitCompletedResponse> getCompletedSurveyUnitsForCampaign(@PathVariable @NotBlank String id) {
-        return surveyUnitCompletedPort.getCompletedSurveyUnits(id, surveyUnitCompletedApiPresenter);
+    public List<SurveyUnitCompletedResponse> getCompletedSurveyUnitsForCampaign(
+            @PathVariable @NotBlank String id,
+            Pageable pageable,
+            @RequestParam(required = false) String search)
+    {
+
+        log.info("Fetching survey units completed with search: {}", search);
+
+        return surveyUnitCompletedPort.getCompletedSurveyUnits(id, search, pageable, surveyUnitCompletedApiPresenter);
     }
 }

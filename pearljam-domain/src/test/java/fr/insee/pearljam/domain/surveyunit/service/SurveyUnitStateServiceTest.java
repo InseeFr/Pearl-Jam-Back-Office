@@ -79,10 +79,8 @@ class SurveyUnitStateServiceTest {
         // When/Then
         assertThatThrownBy(() -> service.addStateToMultipleSurveyUnits(allIds, StateType.ANV))
                 .isInstanceOf(SurveyUnitNotFoundException.class)
-                .satisfies(ex -> {
-                    missingIds.forEach(id ->
-                            assertThat(ex.getMessage()).contains(id));
-                });
+                .satisfies(ex -> missingIds.forEach(id ->
+                        assertThat(ex.getMessage()).contains(id)));
     }
 
     private static Stream<Arguments> provideMissingSurveyUnitScenarios() {

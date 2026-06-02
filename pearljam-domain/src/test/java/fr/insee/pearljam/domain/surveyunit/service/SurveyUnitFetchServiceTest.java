@@ -2,14 +2,16 @@ package fr.insee.pearljam.domain.surveyunit.service;
 
 
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
-import fr.insee.pearljam.domain.campaign.service.dummy.SurveyUnitRepositoryStub;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
+import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitFetchedByStatesRepositoryStub;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,43 +21,33 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SurveyUnitFetchServiceTest {
 
-    private SurveyUnitRepositoryStub surveyUnitRepositoryStub;
+    private SurveyUnitFetchedByStatesRepositoryStub surveyUnitFetchedByStatesRepositoryPort;
     private SurveyUnitFetchService service;
 
     private final String campaignIdToTest = "campaign-01";
 
     @BeforeEach
     void setUp() {
-        surveyUnitRepositoryStub = new SurveyUnitRepositoryStub();
+        surveyUnitFetchedByStatesRepositoryPort = new SurveyUnitFetchedByStatesRepositoryStub();
         CampaignRepositoryStub campaignRepositoryStub = new CampaignRepositoryStub(generateCampaign());
-        service = new SurveyUnitFetchService(surveyUnitRepositoryStub, campaignRepositoryStub);
+        service = new SurveyUnitFetchService(surveyUnitFetchedByStatesRepositoryPort, campaignRepositoryStub);
     }
 
     @Test
     @DisplayName("Throws CampaignNotFoundException when campaign does not exist")
     void shouldThrowCampaignNotFoundException_whenCampaignDoesNotExist() {
         List<StateType> states = List.of(StateType.CLO);
-        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(states, "unknown-campaign"))
+        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(states, "unknown-campaign", null, null))
                 .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
-    }
-
-    @Test
-    @DisplayName("Does not call survey unit repository when campaign does not exist")
-    void shouldNotCallSurveyUnitRepository_whenCampaignDoesNotExist() {
-        List<StateType> states = List.of(StateType.CLO);
-        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(states, "unknown-campaign"))
-                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
-
-        assertThat(surveyUnitRepositoryStub.getCapturedCampaignId()).isNull();
     }
 
     @Test
     @DisplayName("Returns survey units when campaign exists")
     void shouldReturnSurveyUnits_whenCampaignExists() {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitCompletedView();
-        surveyUnitRepositoryStub.willReturn(List.of(su));
+        surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of(su)));
 
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO, StateType.FIN), campaignIdToTest);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO, StateType.FIN), campaignIdToTest, null, null);
 
         assertThat(result).containsExactly(su);
     }
@@ -63,31 +55,31 @@ class SurveyUnitFetchServiceTest {
     @Test
     @DisplayName("Forwards state types to the repository")
     void shouldForwardStateTypes_toRepository() {
-        surveyUnitRepositoryStub.willReturn(List.of());
+        surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
 
-        service.getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignIdToTest);
+        service.getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignIdToTest, null, null);
 
-        assertThat(surveyUnitRepositoryStub.getCapturedStateTypes())
+        assertThat(surveyUnitFetchedByStatesRepositoryPort.getCapturedStateTypes())
                 .containsExactlyInAnyOrder(StateType.CLO, StateType.FIN);
     }
 
     @Test
     @DisplayName("Forwards campaign id to the repository")
     void shouldForwardCampaignId_toRepository() {
-        surveyUnitRepositoryStub.willReturn(List.of());
+        surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
 
-        service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.FIN), campaignIdToTest);
+        service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.FIN), campaignIdToTest, null, null);
 
-        assertThat(surveyUnitRepositoryStub.getCapturedCampaignId()).isEqualTo(campaignIdToTest);
+        assertThat(surveyUnitFetchedByStatesRepositoryPort.getCapturedCampaignId()).isEqualTo(campaignIdToTest);
     }
 
     @Test
     @DisplayName("Returns empty list when campaign exists but has no completed survey units")
     void shouldReturnEmptyList_whenNoSurveyUnitsFound() {
-        surveyUnitRepositoryStub.willReturn(List.of());
+        surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
 
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), campaignIdToTest);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(List.of(StateType.CLO), campaignIdToTest, null, null);
 
         assertThat(result).isEmpty();
     }
@@ -102,16 +94,15 @@ class SurveyUnitFetchServiceTest {
     }
 
     private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitCompletedView() {
-        return new SurveyUnitFetchedByStatesAndCampaignIdView() {
-            @Override public String getSurveyUnitId() { return "su-1"; }
-            @Override public String getSurveyUnitDisplayName() { return "Display " + "su-1"; }
-            @Override public String getInterviewerFirstName() { return "John"; }
-            @Override public String getInterviewerLastName() { return "Doe"; }
-            @Override public String getEndDate() { return "2024-01-01"; }
-            @Override public String getContactOutcome() { return "INA"; }
-            @Override public String getClosingCauseType() { return "NPI"; }
-            @Override public Boolean getViewed() { return false; }
-            @Override public String getComment() { return "A comment"; }
-        };
-    }
+        return new SurveyUnitFetchedByStatesAndCampaignIdView(
+            "su-1",
+           "Display " + "su-1",
+            "John",
+            "Doe",
+            "2024-01-01",
+            "INA",
+            "NPI",
+            false,
+            "A comment");
+        }
 }

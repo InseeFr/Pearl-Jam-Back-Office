@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAn
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
@@ -26,7 +27,7 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
 @DisplayName("Returns empty list when no survey units provided")
     void shouldReturnEmptyList_whenNoSurveyUnits() {
-        List<SurveyUnitCompletedResponse> result = presenter.present(List.of());
+        List<SurveyUnitCompletedResponse> result = presenter.present(new PageImpl<>(List.of()));
 
         assertThat(result).isEmpty();
     }
@@ -37,7 +38,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.surveyUnitId()).isEqualTo("su-1");
         assertThat(result.surveyUnitDisplayName()).isEqualTo("Survey 1");
@@ -49,7 +50,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.interviewerLabel()).isEqualTo("John Doe");
     }
@@ -60,7 +61,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.contactOutcome()).isEqualTo(ContactOutcomeType.INA);
     }
@@ -71,7 +72,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", null, "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.contactOutcome()).isNull();
     }
@@ -82,7 +83,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.closingCauseType()).isEqualTo(ClosingCauseType.NPI);
     }
@@ -93,7 +94,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", null, false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.closingCauseType()).isNull();
     }
@@ -104,7 +105,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.readOnlyUrl())
                 .isEqualTo("https://datacollection.example.com/review/interrogations/su-1");
@@ -116,7 +117,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", true, "My comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(List.of(su)).getFirst();
+        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
 
         assertThat(result.endDate()).isEqualTo("2024-01-15");
         assertThat(result.viewed()).isTrue();
@@ -131,7 +132,7 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su2 = surveyUnitView("su-2", "Survey 2", "Jane", "Smith",
                 "2024-01-16", null, null, true, "comment");
 
-        List<SurveyUnitCompletedResponse> results = presenter.present(List.of(su1, su2));
+        List<SurveyUnitCompletedResponse> results = presenter.present(new PageImpl<>(List.of(su1, su2)));
 
         assertThat(results).hasSize(2);
         assertThat(results.get(0).surveyUnitId()).isEqualTo("su-1");
@@ -145,16 +146,16 @@ class SurveyUnitCompletedApiPresenterTest {
             String firstName, String lastName,
             String endDate, String contactOutcome,
             String closingCauseType, Boolean viewed, String comment) {
-        return new SurveyUnitFetchedByStatesAndCampaignIdView() {
-            @Override public String getSurveyUnitId() { return id; }
-            @Override public String getSurveyUnitDisplayName() { return displayName; }
-            @Override public String getInterviewerFirstName() { return firstName; }
-            @Override public String getInterviewerLastName() { return lastName; }
-            @Override public String getEndDate() { return endDate; }
-            @Override public String getContactOutcome() { return contactOutcome; }
-            @Override public String getClosingCauseType() { return closingCauseType; }
-            @Override public Boolean getViewed() { return viewed; }
-            @Override public String getComment() { return comment; }
-        };
+        return new SurveyUnitFetchedByStatesAndCampaignIdView(
+            id,
+            displayName,
+            firstName,
+            lastName,
+            endDate,
+            contactOutcome,
+            closingCauseType,
+            viewed,
+            comment
+        );
     }
 }

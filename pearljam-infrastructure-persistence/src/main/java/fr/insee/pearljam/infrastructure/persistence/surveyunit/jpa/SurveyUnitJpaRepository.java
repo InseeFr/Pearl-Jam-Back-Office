@@ -5,6 +5,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -484,44 +485,9 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 			nativeQuery = true)
 	List<String> findExistingIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
 
-	@Query(value = """
-        SELECT
-            su.id                                          AS surveyUnitId,
-            su.display_name                                AS surveyUnitDisplayName,
-            int.first_name                                 AS interviewerFirstName,
-            int.last_name                                  AS interviewerLastName,
-            CAST(vi.collection_end_date AS TEXT)           AS endDate,
-            co.type                                        AS contactOutcome,
-            cc.type                                        AS closingCauseType,
-            su.viewed                                      AS viewed,
-            com.value                                      AS comment
-        FROM survey_unit su
-        JOIN LATERAL (
-            SELECT s.type AS current_state
-            FROM state s
-            WHERE s.survey_unit_id = su.id
-            ORDER BY s.date DESC
-            LIMIT 1
-        ) ls ON ls.current_state IN (:stateTypes)
-        LEFT JOIN interviewer int
-            ON int.id = su.interviewer_id
-        LEFT JOIN contact_outcome co
-            ON co.survey_unit_id = su.id
-        LEFT JOIN closing_cause cc
-            ON cc.survey_unit_id = su.id
-        LEFT JOIN LATERAL (
-            SELECT c.value
-            FROM comment c
-            WHERE c.survey_unit_id = su.id
-              AND c.type = 'MANAGEMENT'
-            LIMIT 1
-        ) com ON TRUE
-        LEFT JOIN visibility vi
-            ON vi.campaign_id = su.campaign_id
-           AND vi.organization_unit_id = su.organization_unit_id
-        WHERE su.campaign_id = :campaignId
-        """, nativeQuery = true)
 	List<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
 			@Param("stateTypes") List<String> stateTypes,
-			@Param("campaignId") String campaignId);
+			@Param("campaignId") String campaignId,
+			String search,
+			Pageable pageable);
 }

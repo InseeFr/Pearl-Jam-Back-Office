@@ -1,14 +1,13 @@
 package fr.insee.pearljam.domain.surveyunit.readmodel;
 
-public interface SurveyUnitFetchedByStatesAndCampaignIdView {
-        String getSurveyUnitId();
-        String getSurveyUnitDisplayName();
-        String getInterviewerFirstName();
-        String getInterviewerLastName();
-        String getEndDate();
-        String getContactOutcome();
-        String getClosingCauseType();
-        Boolean getViewed();
-        String getComment();
-}
-
+public record SurveyUnitFetchedByStatesAndCampaignIdView(
+        String surveyUnitId,
+        String surveyUnitDisplayName,
+        String interviewerFirstName,
+        String interviewerLastName,
+        String endDate,
+        String contactOutcome,
+        String closingCauseType,
+        Boolean viewed,
+        String comment
+) {}

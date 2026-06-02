@@ -1,13 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
-import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
-import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
-import lombok.Getter;
 
 import java.util.*;
 
@@ -137,21 +134,5 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
         return surveyUnitIds.stream()
                 .filter(surveyUnitDBs::containsKey)
                 .toList();
-    }
-
-    private List<SurveyUnitFetchedByStatesAndCampaignIdView> stubbedResults = new ArrayList<>();
-    @Getter
-    private List<StateType> capturedStateTypes;
-    @Getter
-    private String capturedCampaignId;
-
-    public void willReturn(List<SurveyUnitFetchedByStatesAndCampaignIdView> results) {
-        this.stubbedResults = results;
-    }
-    @Override
-    public List<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes, String campaignId) {
-        this.capturedStateTypes = stateTypes;
-        this.capturedCampaignId = campaignId;
-        return stubbedResults;
     }
 }

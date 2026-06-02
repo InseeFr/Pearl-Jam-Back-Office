@@ -1,8 +1,8 @@
 package fr.insee.pearljam.domain.surveyunit.port.in.application;
 
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface SurveyUnitCompletedPresenter<T> {
-    T present(List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits);
+    T present(Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits);
 }

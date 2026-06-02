@@ -1,6 +1,5 @@
-package fr.insee.pearljam.api.reporting.controller;
+package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.SurveyUnitCompletedController;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
@@ -47,7 +46,7 @@ class SurveyUnitCompletedControllerTest {
     @Test
     @DisplayName("Returns 200 OK when campaign exists")
     void shouldReturnOk_whenCampaignExists() throws Exception {
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01"))
@@ -57,7 +56,7 @@ class SurveyUnitCompletedControllerTest {
     @Test
     @DisplayName("Returns 200 OK with empty list when no completed survey units found")
     void shouldReturnEmptyList_whenNoCompletedSurveyUnits() throws Exception {
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
@@ -96,7 +95,7 @@ class SurveyUnitCompletedControllerTest {
                 )
         );
 
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
                 .thenReturn(responses);
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
@@ -125,7 +124,7 @@ class SurveyUnitCompletedControllerTest {
     @DisplayName("Returns 404 Bad Request when campaign does not exists")
     void shouldReturnBadRequest_whenCampaignIdIsBlank() throws Exception {
 
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
                 .thenThrow(CampaignNotFoundExceptionRuntime.class);
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01"))

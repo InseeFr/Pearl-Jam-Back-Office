@@ -6,6 +6,8 @@ import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAn
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +19,9 @@ public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
     private final SurveyUnitFetchPort surveyUnitFetchPort;
 
     @Override
-    public <T> T getCompletedSurveyUnits(String campaignId, SurveyUnitCompletedPresenter<T> presenter) {
-
+    public <T> T getCompletedSurveyUnits(String campaignId, String search, Pageable pageable, SurveyUnitCompletedPresenter<T> presenter) {
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignId);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignId, search, pageable);
         return presenter.present(surveyUnits);
     }
 }

@@ -6,6 +6,7 @@ import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeTy
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,22 +18,22 @@ public class SurveyUnitCompletedApiPresenter implements SurveyUnitCompletedPrese
     private String datacollectionUiUrl;
 
     @Override
-    public List<SurveyUnitCompletedResponse> present(List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits) {
+    public List<SurveyUnitCompletedResponse> present(Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits) {
         return  surveyUnits.stream().map(su ->
                 new SurveyUnitCompletedResponse(
-                        su.getSurveyUnitId(),
-                        su.getSurveyUnitDisplayName(),
-                        su.getInterviewerFirstName() + " " + su.getInterviewerLastName(),
-                        su.getEndDate(),
-                        su.getContactOutcome() != null
-                                ? ContactOutcomeType.valueOf(su.getContactOutcome())
+                        su.surveyUnitId(),
+                        su.surveyUnitDisplayName(),
+                        su.interviewerFirstName() + " " + su.interviewerLastName(),
+                        su.endDate(),
+                        su.contactOutcome() != null
+                                ? ContactOutcomeType.valueOf(su.contactOutcome())
                                 : null,
-                        su.getClosingCauseType() != null
-                                ? ClosingCauseType.valueOf(su.getClosingCauseType())
+                        su.closingCauseType() != null
+                                ? ClosingCauseType.valueOf(su.closingCauseType())
                                 : null,
-                        su.getViewed(),
-                        datacollectionUiUrl + "/review/interrogations/" + su.getSurveyUnitId(),
-                        su.getComment()
+                        su.viewed(),
+                        datacollectionUiUrl + "/review/interrogations/" + su.surveyUnitId(),
+                        su.comment()
                 )
         ).toList();
     }
