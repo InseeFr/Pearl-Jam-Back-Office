@@ -40,7 +40,7 @@ public class SurveyUnitHistoryDaoAdapter implements SurveyUnitHistoryRepositoryP
                         .stream()
                         .map(comm -> new SurveyUnitCommunication(
                                 comm.date(),
-                                CommunicationType.valueOf(comm.type())
+                                CommunicationType.fromCode(comm.type())
                         ))
                         .toList();
 
