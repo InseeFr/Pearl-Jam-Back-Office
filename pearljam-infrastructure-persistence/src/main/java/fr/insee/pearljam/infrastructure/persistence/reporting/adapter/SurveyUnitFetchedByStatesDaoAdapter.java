@@ -4,6 +4,7 @@ package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitFetchedByStatesRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
+import fr.insee.pearljam.infrastructure.persistence.shared.PaginationHelpers;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -93,7 +94,7 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 """
                 + BASE_FROM
                 + buildSearchCondition(search)
-                + buildSortClause(pageable)
+                + PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS)
                 + " LIMIT :limit OFFSET :offset";
 
         return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, pageable)
@@ -146,18 +147,6 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                     LOWER(cc.type)                            LIKE :search
                 )
                 """;
-    }
-
-    private String buildSortClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) {
-            return " ORDER BY su.id ASC ";
-        }
-        Sort.Order order = pageable.getSort().iterator().next();
-        String column = ALLOWED_SORTS.get(order.getProperty());
-        if (column == null) {
-            throw new IllegalArgumentException("Invalid sort column: " + order.getProperty());
-        }
-        return " ORDER BY " + column + (order.isDescending() ? " DESC " : " ASC ");
     }
 
     private SurveyUnitFetchedByStatesAndCampaignIdView mapRow(ResultSet rs, int rowNum) throws SQLException {
