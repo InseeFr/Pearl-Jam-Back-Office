@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.surveyunit.service.model;
+package fr.insee.pearljam.domain.surveyunit.readmodel;
 
 /**
  * Read model representing a survey unit that needs to be reviewed.

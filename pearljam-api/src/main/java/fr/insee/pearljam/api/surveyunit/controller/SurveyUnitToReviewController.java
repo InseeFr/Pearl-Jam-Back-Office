@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPort;
 import io.swagger.v3.oas.annotations.Operation;

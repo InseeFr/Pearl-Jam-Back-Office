@@ -1,6 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
-import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import org.springframework.data.domain.Page;
 
 /**

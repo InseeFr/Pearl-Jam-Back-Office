@@ -1,9 +1,9 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewReponse;
 import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
-import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewReponse;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.response;
+package fr.insee.pearljam.api.surveyunit.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

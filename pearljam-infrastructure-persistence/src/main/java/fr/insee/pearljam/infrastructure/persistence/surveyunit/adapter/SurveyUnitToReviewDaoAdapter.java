@@ -1,7 +1,8 @@
-package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
+package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 
-import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
-import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
+
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitToReviewRepositoryPort;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import fr.insee.pearljam.infrastructure.persistence.shared.PaginationHelpers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
