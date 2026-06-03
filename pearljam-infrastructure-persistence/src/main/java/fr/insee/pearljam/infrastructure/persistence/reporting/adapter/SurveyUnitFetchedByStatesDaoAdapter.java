@@ -97,18 +97,14 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
         return new PageImpl<>(content, pageable, total);
     }
 
-    // --- private helpers ---
-
     private List<SurveyUnitFetchedByStatesAndCampaignIdView> executeMainQuery(
             List<String> stateTypes, String campaignId, String search, Pageable pageable) {
 
         String sortClause = PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
-        // sortClause comes from a whitelist map — values are hardcoded column refs
-
         String sql = MAIN_SELECT
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "")
-                + sortClause           // whitelist-validated, never user input
+                + sortClause
                 + " LIMIT :limit OFFSET :offset";
 
         return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, pageable)
