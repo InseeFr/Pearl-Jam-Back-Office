@@ -5,7 +5,6 @@ import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitFetchedByStatesRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.infrastructure.persistence.shared.PaginationHelpers;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -61,6 +60,30 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             WHERE su.campaign_id = :campaignId
             """;
 
+    private static final String SEARCH_CONDITION = """
+        AND (
+            LOWER(su.id)                                   LIKE :search OR
+            LOWER(int.first_name)                          LIKE :search OR
+            LOWER(int.last_name)                           LIKE :search OR
+            LOWER(CONCAT(int.first_name,' ',int.last_name)) LIKE :search OR
+            LOWER(co.type)                                 LIKE :search OR
+            LOWER(cc.type)                                 LIKE :search
+        )
+        """;
+
+    private static final String MAIN_SELECT = """
+        SELECT
+            su.id                              AS surveyUnitId,
+            su.display_name                    AS surveyUnitDisplayName,
+            int.first_name                     AS interviewerFirstName,
+            int.last_name                      AS interviewerLastName,
+            CAST(vi.collection_end_date AS TEXT) AS endDate,
+            co.type                            AS contactOutcome,
+            cc.type                            AS closingCauseType,
+            su.viewed                          AS viewed,
+            com.value                          AS comment
+        """;
+
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
             List<StateType> stateTypes, String campaignId, String search, Pageable pageable) {
@@ -79,21 +102,13 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
     private List<SurveyUnitFetchedByStatesAndCampaignIdView> executeMainQuery(
             List<String> stateTypes, String campaignId, String search, Pageable pageable) {
 
-        String sql = """
-                SELECT
-                    su.id                             AS surveyUnitId,
-                    su.display_name                   AS surveyUnitDisplayName,
-                    int.first_name                    AS interviewerFirstName,
-                    int.last_name                     AS interviewerLastName,
-                    CAST(vi.collection_end_date AS TEXT) AS endDate,
-                    co.type                           AS contactOutcome,
-                    cc.type                           AS closingCauseType,
-                    su.viewed                         AS viewed,
-                    com.value                         AS comment
-                """
+        String sortClause = PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
+        // sortClause comes from a whitelist map — values are hardcoded column refs
+
+        String sql = MAIN_SELECT
                 + BASE_FROM
-                + buildSearchCondition(search)
-                + PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS)
+                + (hasSearch(search) ? SEARCH_CONDITION : "")
+                + sortClause           // whitelist-validated, never user input
                 + " LIMIT :limit OFFSET :offset";
 
         return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, pageable)
@@ -101,14 +116,18 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 .list();
     }
 
-    private long executeCountQuery(List<String> stateTypes, String campaignId, @Nullable String search) {
+    private long executeCountQuery(List<String> stateTypes, String campaignId, String search) {
         String sql = "SELECT COUNT(DISTINCT su.id) "
                 + BASE_FROM
-                + buildSearchCondition(search);
+                + (hasSearch(search) ? SEARCH_CONDITION : "");
 
         return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, null)
                 .query((rs, _) -> rs.getLong(1))
                 .single();
+    }
+
+    private static boolean hasSearch(String search) {
+        return search != null && !search.isBlank();
     }
 
     private JdbcClient.StatementSpec bindCommonParams(
@@ -130,22 +149,6 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
         }
 
         return spec;
-    }
-
-    private String buildSearchCondition(String search) {
-        if (search == null || search.isBlank()) {
-            return "";
-        }
-        return """
-                AND (
-                    LOWER(su.id)                              LIKE :search OR
-                    LOWER(int.first_name)                     LIKE :search OR
-                    LOWER(int.last_name)                      LIKE :search OR
-                    LOWER(CONCAT(int.first_name,' ',int.last_name)) LIKE :search OR
-                    LOWER(co.type)                            LIKE :search OR
-                    LOWER(cc.type)                            LIKE :search
-                )
-                """;
     }
 
     private SurveyUnitFetchedByStatesAndCampaignIdView mapRow(ResultSet rs, int rowNum) throws SQLException {
