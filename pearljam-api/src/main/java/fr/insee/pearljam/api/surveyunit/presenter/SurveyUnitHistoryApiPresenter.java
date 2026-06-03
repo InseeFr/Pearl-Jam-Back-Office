@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.surveyunit.controller.presenter;
+package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitHistoryResponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitHistoryPresenter;

@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
+import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
