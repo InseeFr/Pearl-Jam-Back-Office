@@ -3,7 +3,7 @@ package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.campaign.service.exception.CommunicationTemplateNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistory;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistoryDto;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
@@ -77,7 +77,7 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   }
 
   @Override
-  public List<CommunicationHistory> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId) {
+  public List<CommunicationHistoryDto> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId) {
     return communicationRequestRepository.getCommunicationsBySurveyUnitIdOrderByDateAsc(surveyUnitId);
   }
 

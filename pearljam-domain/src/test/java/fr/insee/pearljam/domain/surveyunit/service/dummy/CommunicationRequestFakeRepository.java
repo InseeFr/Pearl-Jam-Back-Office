@@ -2,7 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistory;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistoryDto;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
@@ -49,7 +49,7 @@ public class CommunicationRequestFakeRepository implements CommunicationRequestR
   }
 
   @Override
-  public List<CommunicationHistory> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId) {
+  public List<CommunicationHistoryDto> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId) {
     return List.of();
   }
 

@@ -2,7 +2,7 @@ package fr.insee.pearljam.domain.surveyunit.port.out;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistory;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistoryDto;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequest;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
@@ -34,5 +34,5 @@ public interface CommunicationRequestRepository {
                                                                       List<String> ouIds,
                                                                       Long dateToUse);
 
-  List<CommunicationHistory> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId);
+  List<CommunicationHistoryDto> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId);
 }
