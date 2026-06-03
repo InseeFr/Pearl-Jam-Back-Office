@@ -2,6 +2,7 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.jpa;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationHistory;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.CommunicationRequestDB;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -129,5 +130,24 @@ public interface CommunicationRequestJpaRepository extends
                                                                       @Param("ouIds") List<String> ouIds,
                                                                       @Param("dateToUse") Long dateToUse);
 
-
+  @Query(value = """
+          select
+          	crs.date as date,
+          	ct."type" as type
+          from
+          	communication_request cr
+          left join communication_request_status crs\s
+          on
+          	crs.communication_request_id = cr.id
+          left join communication_template ct\s
+          on
+          	ct.meshuggah_id = cr.meshuggah_id
+          	and ct.campaign_id = cr.campaign_id
+          where
+          	cr.survey_unit_id = :surveyUnitId
+          	and crs.status = 'READY'
+          order by
+          	crs.date desc
+          """, nativeQuery = true)
+  List<CommunicationHistory> getCommunicationsBySurveyUnitIdOrderByDateAsc(@Param("surveyUnitId") String surveyUnitId);
 }
