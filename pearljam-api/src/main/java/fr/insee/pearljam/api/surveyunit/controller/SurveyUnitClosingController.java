@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.api.surveyunit.controller.request.CloseSurveyUnitsRequest;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
