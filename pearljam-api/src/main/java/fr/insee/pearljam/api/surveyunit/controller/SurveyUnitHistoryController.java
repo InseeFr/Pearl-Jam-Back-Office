@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitHistoryApiPresenter;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitHistoryApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitHistoryResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitHistoryPort;

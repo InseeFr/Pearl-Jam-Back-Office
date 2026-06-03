@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
-import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewReponse;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
