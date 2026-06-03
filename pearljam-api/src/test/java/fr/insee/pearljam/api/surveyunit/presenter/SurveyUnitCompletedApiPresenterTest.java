@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedPageResponse;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
@@ -27,9 +27,9 @@ class SurveyUnitCompletedApiPresenterTest {
     @Test
 @DisplayName("Returns empty list when no survey units provided")
     void shouldReturnEmptyList_whenNoSurveyUnits() {
-        List<SurveyUnitCompletedResponse> result = presenter.present(new PageImpl<>(List.of()));
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of()));
 
-        assertThat(result).isEmpty();
+        assertThat(result.content()).isEmpty();
     }
 
     @Test
@@ -38,10 +38,10 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.surveyUnitId()).isEqualTo("su-1");
-        assertThat(result.surveyUnitDisplayName()).isEqualTo("Survey 1");
+        assertThat(result.content().getFirst().surveyUnitId()).isEqualTo("su-1");
+        assertThat(result.content().getFirst().surveyUnitDisplayName()).isEqualTo("Survey 1");
     }
 
     @Test
@@ -50,9 +50,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.interviewerLabel()).isEqualTo("John Doe");
+        assertThat(result.content().getFirst().interviewerLabel()).isEqualTo("John Doe");
     }
 
     @Test
@@ -61,9 +61,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.contactOutcome()).isEqualTo(ContactOutcomeType.INA);
+        assertThat(result.content().getFirst().contactOutcome()).isEqualTo(ContactOutcomeType.INA);
     }
 
     @Test
@@ -72,9 +72,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", null, "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.contactOutcome()).isNull();
+        assertThat(result.content().getFirst().contactOutcome()).isNull();
     }
 
     @Test
@@ -83,9 +83,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.closingCauseType()).isEqualTo(ClosingCauseType.NPI);
+        assertThat(result.content().getFirst().closingCauseType()).isEqualTo(ClosingCauseType.NPI);
     }
 
     @Test
@@ -94,9 +94,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", null, false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.closingCauseType()).isNull();
+        assertThat(result.content().getFirst().closingCauseType()).isNull();
     }
 
     @Test
@@ -105,9 +105,9 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", false, "A comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.readOnlyUrl())
+        assertThat(result.content().getFirst().readOnlyUrl())
                 .isEqualTo("https://datacollection.example.com/review/interrogations/su-1");
     }
 
@@ -117,11 +117,11 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitView("su-1", "Survey 1", "John", "Doe",
                 "2024-01-15", "INA", "NPI", true, "My comment");
 
-        SurveyUnitCompletedResponse result = presenter.present(new PageImpl<>(List.of(su))).getFirst();
+        SurveyUnitCompletedPageResponse result = presenter.present(new PageImpl<>(List.of(su)));
 
-        assertThat(result.endDate()).isEqualTo("2024-01-15");
-        assertThat(result.viewed()).isTrue();
-        assertThat(result.comment()).isEqualTo("My comment");
+        assertThat(result.content().getFirst().endDate()).isEqualTo("2024-01-15");
+        assertThat(result.content().getFirst().viewed()).isTrue();
+        assertThat(result.content().getFirst().comment()).isEqualTo("My comment");
     }
 
     @Test
@@ -132,11 +132,11 @@ class SurveyUnitCompletedApiPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su2 = surveyUnitView("su-2", "Survey 2", "Jane", "Smith",
                 "2024-01-16", null, null, true, "comment");
 
-        List<SurveyUnitCompletedResponse> results = presenter.present(new PageImpl<>(List.of(su1, su2)));
+        SurveyUnitCompletedPageResponse results = presenter.present(new PageImpl<>(List.of(su1, su2)));
 
-        assertThat(results).hasSize(2);
-        assertThat(results.get(0).surveyUnitId()).isEqualTo("su-1");
-        assertThat(results.get(1).surveyUnitId()).isEqualTo("su-2");
+        assertThat(results.totalElements()).isEqualTo(2);
+        assertThat(results.content().getFirst().surveyUnitId()).isEqualTo("su-1");
+        assertThat(results.content().get(1).surveyUnitId()).isEqualTo("su-2");
     }
 
     // --- helpers ---

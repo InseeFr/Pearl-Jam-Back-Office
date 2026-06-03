@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedPageResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +50,7 @@ class SurveyUnitCompletedControllerTest {
     @DisplayName("Returns 200 OK when campaign exists")
     void shouldReturnOk_whenCampaignExists() throws Exception {
         when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
-                .thenReturn(List.of());
+                .thenReturn(new SurveyUnitCompletedPageResponse(Collections.emptyList(), 0, 20, 0L, 0));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01"))
                 .andExpect(status().isOk());
@@ -59,21 +60,21 @@ class SurveyUnitCompletedControllerTest {
     @DisplayName("Returns 200 OK with empty list when no completed survey units found")
     void shouldReturnEmptyList_whenNoCompletedSurveyUnits() throws Exception {
         when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
-                .thenReturn(List.of());
+                .thenReturn(new SurveyUnitCompletedPageResponse(Collections.emptyList(), 0, 20, 0L, 0));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty());
     }
 
     @Test
     @DisplayName("Returns 200 OK with survey units in response body")
     void shouldReturnSurveyUnits_whenCompletedSurveyUnitsExist() throws Exception {
-        List<SurveyUnitCompletedResponse> responses = List.of(
-                new SurveyUnitCompletedResponse(
+        List<SurveyUnitCompletedPageResponse.SurveyUnitCompletedResponse> responses = List.of(
+                new SurveyUnitCompletedPageResponse.SurveyUnitCompletedResponse(
                         "su-1",
                         "Household Survey 1",
                         "John Doe",
@@ -84,7 +85,7 @@ class SurveyUnitCompletedControllerTest {
                         "https://example.com/review/interrogations/su-1",
                         "A comment"
                 ),
-                new SurveyUnitCompletedResponse(
+                new SurveyUnitCompletedPageResponse.SurveyUnitCompletedResponse(
                         "su-2",
                         "Household Survey 2",
                         "Jane Smith",
@@ -98,34 +99,33 @@ class SurveyUnitCompletedControllerTest {
         );
 
         when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
-                .thenReturn(responses);
+                .thenReturn(new SurveyUnitCompletedPageResponse(responses, 0, 20, 2L, 1));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].surveyUnitId").value("su-1"))
-                .andExpect(jsonPath("$[0].surveyUnitDisplayName").value("Household Survey 1"))
-                .andExpect(jsonPath("$[0].interviewerLabel").value("John Doe"))
-                .andExpect(jsonPath("$[0].endDate").value("2024-01-15"))
-                .andExpect(jsonPath("$[0].contactOutcome").value("INA"))
-                .andExpect(jsonPath("$[0].closingCauseType").value("NPI"))
-                .andExpect(jsonPath("$[0].viewed").value(false))
-                .andExpect(jsonPath("$[0].readOnlyUrl").value("https://example.com/review/interrogations/su-1"))
-                .andExpect(jsonPath("$[0].comment").value("A comment"))
-                .andExpect(jsonPath("$[1].surveyUnitId").value("su-2"))
-                .andExpect(jsonPath("$[1].contactOutcome").doesNotExist())
-                .andExpect(jsonPath("$[1].closingCauseType").doesNotExist())
-                .andExpect(jsonPath("$[1].viewed").value(true))
-                .andExpect(jsonPath("$[1].comment").doesNotExist());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].surveyUnitId").value("su-1"))
+                .andExpect(jsonPath("$.content[0].surveyUnitDisplayName").value("Household Survey 1"))
+                .andExpect(jsonPath("$.content[0].interviewerLabel").value("John Doe"))
+                .andExpect(jsonPath("$.content[0].endDate").value("2024-01-15"))
+                .andExpect(jsonPath("$.content[0].contactOutcome").value("INA"))
+                .andExpect(jsonPath("$.content[0].closingCauseType").value("NPI"))
+                .andExpect(jsonPath("$.content[0].viewed").value(false))
+                .andExpect(jsonPath("$.content[0].readOnlyUrl").value("https://example.com/review/interrogations/su-1"))
+                .andExpect(jsonPath("$.content[0].comment").value("A comment"))
+                .andExpect(jsonPath("$.content[1].surveyUnitId").value("su-2"))
+                .andExpect(jsonPath("$.content[1].contactOutcome").doesNotExist())
+                .andExpect(jsonPath("$.content[1].closingCauseType").doesNotExist())
+                .andExpect(jsonPath("$.content[1].viewed").value(true))
+                .andExpect(jsonPath("$.content[1].comment").doesNotExist());
     }
 
     @Test
-    @DisplayName("Returns 404 Bad Request when campaign does not exists")
-    void shouldReturnBadRequest_whenCampaignIdIsBlank() throws Exception {
-
+    @DisplayName("Returns 404 Not Found when campaign does not exist")
+    void shouldReturnNotFound_whenCampaignNotFound() throws Exception {
         when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
                 .thenThrow(CampaignNotFoundExceptionRuntime.class);
 

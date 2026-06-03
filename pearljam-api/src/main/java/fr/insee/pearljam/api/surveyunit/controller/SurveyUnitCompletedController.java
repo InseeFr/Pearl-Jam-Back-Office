@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedResponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedPageResponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static fr.insee.pearljam.contracts.constants.Constants.API_CAMPAIGN_SU_COMPLETED;
 
@@ -29,7 +27,7 @@ public class SurveyUnitCompletedController {
      * Get survey units with CLO/FIN state for a specific campaign
      */
     @GetMapping(API_CAMPAIGN_SU_COMPLETED)
-    public List<SurveyUnitCompletedResponse> getCompletedSurveyUnitsForCampaign(
+    public SurveyUnitCompletedPageResponse getCompletedSurveyUnitsForCampaign(
             @PathVariable @NotBlank String id,
             Pageable pageable,
             @RequestParam(required = false) String search)
