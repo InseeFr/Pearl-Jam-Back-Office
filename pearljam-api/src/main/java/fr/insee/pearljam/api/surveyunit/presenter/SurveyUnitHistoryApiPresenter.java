@@ -7,13 +7,11 @@ import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitHistoryPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCommunication;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitHistory;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitState;
-import lombok.Builder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-@Builder
 public class SurveyUnitHistoryApiPresenter implements SurveyUnitHistoryPresenter<SurveyUnitHistoryResponse> {
 
 
@@ -33,7 +31,7 @@ public class SurveyUnitHistoryApiPresenter implements SurveyUnitHistoryPresenter
 
         return states.stream()
                 .map(s -> new SurveyUnitStateResponse(
-                        s.type().getLabel(),
+                        s.type().name(),
                         s.date()
                 ))
                 .toList();
@@ -45,7 +43,8 @@ public class SurveyUnitHistoryApiPresenter implements SurveyUnitHistoryPresenter
         return communications.stream()
                 .map(c -> new SurveyUnitCommunicationResponse(
                         c.type().name(),
-                        c.date()
+                        c.date(),
+                        c.reason().name()
                 ))
                 .toList();
     }

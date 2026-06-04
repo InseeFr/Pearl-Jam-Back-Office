@@ -131,23 +131,20 @@ public interface CommunicationRequestJpaRepository extends
                                                                       @Param("dateToUse") Long dateToUse);
 
   @Query(value = """
-          select
-          	crs.date as date,
-          	ct."type" as type
-          from
-          	communication_request cr
-          left join communication_request_status crs\s
-          on
-          	crs.communication_request_id = cr.id
-          left join communication_template ct\s
-          on
-          	ct.meshuggah_id = cr.meshuggah_id
-          	and ct.campaign_id = cr.campaign_id
-          where
-          	cr.survey_unit_id = :surveyUnitId
-          	and crs.status = 'READY'
-          order by
-          	crs.date desc
-          """, nativeQuery = true)
-  List<CommunicationHistoryDto> getCommunicationsBySurveyUnitIdOrderByDateAsc(@Param("surveyUnitId") String surveyUnitId);
+            select
+                crs.date as date,
+                ct."type" as type,
+                cr.reason as reason
+            from communication_request cr
+            left join communication_request_status crs
+                on crs.communication_request_id = cr.id
+            left join communication_template ct
+                on ct.meshuggah_id = cr.meshuggah_id
+                and ct.campaign_id = cr.campaign_id
+            where cr.survey_unit_id = :surveyUnitId
+                and crs.status = 'READY'
+            order by crs.date desc
+    """, nativeQuery = true)
+  List<CommunicationHistoryDto> getCommunicationsBySurveyUnitIdOrderByDateAsc(
+          @Param("surveyUnitId") String surveyUnitId);
 }

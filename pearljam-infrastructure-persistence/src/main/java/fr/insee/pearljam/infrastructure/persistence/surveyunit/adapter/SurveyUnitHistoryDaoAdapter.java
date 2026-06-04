@@ -1,6 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitHistoryRepositoryPort;
@@ -8,6 +9,7 @@ import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCommunication;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitHistory;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitState;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,7 +27,7 @@ public class SurveyUnitHistoryDaoAdapter implements SurveyUnitHistoryRepositoryP
     @Override
     public SurveyUnitHistory findSurveyUnitHistory(String surveyUnitId) {
         SurveyUnitDB surveyUnitDB = surveyUnitRepository.findById(surveyUnitId)
-                .orElseThrow();
+                .orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
 
         List<SurveyUnitState> states =
                 stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnitId)
@@ -40,7 +42,8 @@ public class SurveyUnitHistoryDaoAdapter implements SurveyUnitHistoryRepositoryP
                         .stream()
                         .map(comm -> new SurveyUnitCommunication(
                                 comm.date(),
-                                CommunicationType.fromCode(comm.type())
+                                CommunicationType.fromCode(comm.type()),
+                                CommunicationRequestReason.fromCode(comm.reason())
                         ))
                         .toList();
 

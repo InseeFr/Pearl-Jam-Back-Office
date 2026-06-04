@@ -54,7 +54,7 @@ class SurveyUnitHistoryDaoAdapterTest {
 
         when(communicationRepository.findAllDtoBySurveyUnitIdOrderByDateAsc("su1"))
                 .thenReturn(List.of(
-                        new CommunicationHistoryDto(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), "REMINDER")
+                        new CommunicationHistoryDto(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), "REMINDER","UNREACHABLE")
                 ));
 
         SurveyUnitHistory result = adapter.findSurveyUnitHistory("su1");
@@ -124,7 +124,7 @@ class SurveyUnitHistoryDaoAdapterTest {
 
         when(communicationRepository.findAllDtoBySurveyUnitIdOrderByDateAsc("su1"))
                 .thenReturn(List.of(
-                        new CommunicationHistoryDto(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), "REMINDER")
+                        new CommunicationHistoryDto(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), "REMINDER", "REFUSAL")
                 ));
 
         SurveyUnitHistory result = adapter.findSurveyUnitHistory("su1");

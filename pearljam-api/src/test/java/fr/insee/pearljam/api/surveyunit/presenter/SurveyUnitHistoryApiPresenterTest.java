@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.surveyunit.presenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitHistoryResponse;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestReason;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitCommunication;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitHistory;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitState;
@@ -22,7 +23,7 @@ class SurveyUnitHistoryApiPresenterTest {
                 "su1",
                 "survey unit",
                 List.of(new SurveyUnitState(10000000L, StateType.INS)),
-                List.of(new SurveyUnitCommunication(10000000L, CommunicationType.REMINDER))
+                List.of(new SurveyUnitCommunication(10000000L, CommunicationType.REMINDER, CommunicationRequestReason.REFUSAL))
         );
 
         SurveyUnitHistoryApiPresenter presenter = new SurveyUnitHistoryApiPresenter();
@@ -37,10 +38,7 @@ class SurveyUnitHistoryApiPresenterTest {
                 .hasSize(1);
 
         assertThat(result.states().getFirst().type())
-                .isEqualTo("INS");
-
-        assertThat(result.states().getFirst().type())
-                .isEqualTo(StateType.INS.getLabel());
+                .isEqualTo(StateType.INS.name());
 
         assertThat(result.communications())
                 .hasSize(1);
