@@ -81,8 +81,10 @@ class InterviewerProgressCsvExporterTest {
         // Given
         when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
+        LocalDate localDate = LocalDate.of(2025, 6, 10);
+
         // When / Then
-        assertThatThrownBy(() -> exporter.export("user1", "unknown", LocalDate.of(2025, 6, 10)))
-                .isInstanceOf(CampaignNotFoundException.class);
+        assertThatThrownBy(() -> exporter.export("user1", "unknown", localDate))
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 }
