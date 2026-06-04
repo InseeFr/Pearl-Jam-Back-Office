@@ -66,7 +66,7 @@ class InterviewerCollectionCsvExporterTest {
     @DisplayName("Propagates CampaignNotFoundException raised by the port")
     void shouldThrowCampaignNotFoundException_whenCampaignNotFound() {
         // Given
-        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
         LocalDate localDate = LocalDate.of(2025, 6, 10);
