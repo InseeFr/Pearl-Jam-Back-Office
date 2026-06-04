@@ -4,7 +4,7 @@ import fr.insee.pearljam.domain.surveyunit.model.StateType;
 
 import java.util.List;
 
-public interface SurveyUnitStatePort {
+public interface SurveyUnitStateUpdatePort {
     void addStateToMultipleSurveyUnits(List<String> surveyUnitIds, StateType state);
 
     void addStateToSurveyUnit(String surveyUnitId, StateType state);

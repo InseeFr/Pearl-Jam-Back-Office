@@ -1,9 +1,11 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa;
 
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -482,4 +484,10 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	@Query(value = "SELECT id FROM survey_unit WHERE id IN (:surveyUnitIds)",
 			nativeQuery = true)
 	List<String> findExistingIds(@Param("surveyUnitIds") List<String> surveyUnitIds);
+
+	List<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
+			@Param("stateTypes") List<String> stateTypes,
+			@Param("campaignId") String campaignId,
+			String search,
+			Pageable pageable);
 }

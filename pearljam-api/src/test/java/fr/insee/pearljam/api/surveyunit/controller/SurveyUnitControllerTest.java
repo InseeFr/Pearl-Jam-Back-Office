@@ -8,7 +8,7 @@ import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.utils.dummy.AuthenticationUserFakeService;
 import fr.insee.pearljam.api.web.exception.ExceptionControllerAdvice;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStateUpdatePort;
 import fr.insee.pearljam.domain.surveyunit.service.exception.PersonNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.model.CommentType;
@@ -37,7 +37,7 @@ class SurveyUnitControllerTest {
     private String surveyUnitTemplate;
     private final String updatePath = "/api/survey-unit/1";
 
-    SurveyUnitStatePort surveyUnitStatePort;
+    SurveyUnitStateUpdatePort surveyUnitStateUpdatePort;
 
     @BeforeEach
     void setup() {
@@ -70,7 +70,7 @@ class SurveyUnitControllerTest {
                 """;
         surveyUnitJson = String.format(surveyUnitTemplate, comments, identification);
         surveyUnitService = new SurveyUnitFakeService();
-        surveyUnitStatePort = mock(SurveyUnitStatePort.class);
+        surveyUnitStateUpdatePort = mock(SurveyUnitStateUpdatePort.class);
         ExceptionControllerAdvice exceptionControllerAdvice = MockMvcTestUtils.createExceptionControllerAdvice();
         Authentication authUser = AuthenticatedUserTestHelper.AUTH_ADMIN;
         AuthenticationUserFakeService authService = new AuthenticationUserFakeService(authUser);

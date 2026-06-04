@@ -2,11 +2,11 @@ package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
 import fr.insee.pearljam.domain.reporting.port.out.SurveyUnitToReviewRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
+import fr.insee.pearljam.infrastructure.persistence.shared.PaginationHelpers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
@@ -91,7 +91,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                                AND (:viewed IS NULL OR su.viewed =:viewed)
                              """ +
                             buildSearchCondition(search) +
-                            buildSortClause(pageable) +
+                            PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS) +
                             """
                              LIMIT :limit OFFSET :offset
                              """;
@@ -150,27 +150,6 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
                     LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE :search
                 )
                 """;
-    }
-
-
-
-    private String buildSortClause(Pageable pageable) {
-
-        if (pageable.getSort().isEmpty()) {
-            return " ORDER BY su.id ASC ";
-        }
-
-        Sort.Order order = pageable.getSort().iterator().next();
-
-        String column = ALLOWED_SORTS.get(order.getProperty());
-
-        if (column == null) {
-            throw new IllegalArgumentException("Invalid sort column");
-        }
-
-        String direction = order.isDescending() ? "DESC" : "ASC";
-
-        return " ORDER BY " + column + " " + direction + " ";
     }
 
     private SurveyUnitToReview mapToSurveyUnitToReview(ResultSet rs, int rowNum) throws SQLException {

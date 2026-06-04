@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
-import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitStatePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
@@ -272,9 +271,11 @@ public class SurveyUnitController {
 	 *
 	 * @param id campaign id
 	 * @param state search survey unit with this state
+	 * @deprecated not used anymore for sabiane v2 with states as query optional parameter, still used by CPIEs
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
+	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get Survey Units in target campaign")
 	@GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(

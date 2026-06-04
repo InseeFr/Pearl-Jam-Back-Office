@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 class SurveyUnitStateServiceTest {
 
-    private SurveyUnitStateService service;
+    private SurveyUnitUpdateStateService service;
     private SurveyUnitExistencePortStub surveyUnitExistencePort;
     private SurveyUnitClosingPortStub surveyUnitClosingPort;
     private StateRepositoryStub stateRepository;
@@ -32,7 +32,7 @@ class SurveyUnitStateServiceTest {
         surveyUnitExistencePort = new SurveyUnitExistencePortStub();
         surveyUnitClosingPort = new SurveyUnitClosingPortStub();
         stateRepository = new StateRepositoryStub();
-        service = new SurveyUnitStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository);
+        service = new SurveyUnitUpdateStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository);
     }
 
     // ==================== Multiple Survey Units Tests ====================
@@ -79,10 +79,8 @@ class SurveyUnitStateServiceTest {
         // When/Then
         assertThatThrownBy(() -> service.addStateToMultipleSurveyUnits(allIds, StateType.ANV))
                 .isInstanceOf(SurveyUnitNotFoundException.class)
-                .satisfies(ex -> {
-                    missingIds.forEach(id ->
-                            assertThat(ex.getMessage()).contains(id));
-                });
+                .satisfies(ex -> missingIds.forEach(id ->
+                        assertThat(ex.getMessage()).contains(id)));
     }
 
     private static Stream<Arguments> provideMissingSurveyUnitScenarios() {
