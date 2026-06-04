@@ -13,7 +13,6 @@ import fr.insee.pearljam.contracts.organizationunit.dto.user.UserDto;
 import fr.insee.pearljam.domain.organizationunit.service.exception.NoOrganizationUnitException;
 import fr.insee.pearljam.domain.organizationunit.service.exception.UserAlreadyExistsException;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.OrganizationalUnitNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.organizationunit.port.in.OrganizationUnitService;
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public void checkUserAssociationToCampaign(String campaignId, String userId)
-			throws UserNotAssociatedToCampaignException, CampaignNotFoundException {
+			throws UserNotAssociatedToCampaignException {
 
 		UserDB user = userRepository.findByIdIgnoreCase(userId)
 				.orElseThrow(() -> new UserNotAssociatedToCampaignException(campaignId, userId));
