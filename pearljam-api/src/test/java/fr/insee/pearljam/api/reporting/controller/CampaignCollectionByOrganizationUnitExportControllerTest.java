@@ -6,6 +6,7 @@ import fr.insee.pearljam.api.reporting.export.collection.OrganizationUnitCollect
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,7 +96,7 @@ class CampaignCollectionByOrganizationUnitExportControllerTest {
     @Test
     void shouldReturn404_whenCampaignNotFound() throws Exception {
         when(port.getProgressForDay(any(), any(), any(), any()))
-                .thenThrow(new CampaignNotFoundException());
+                .thenThrow(new CampaignNotFoundExceptionRuntime());
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/organization-units/collection/export")
                         .param("date", "2025-06-10"))

@@ -30,7 +30,7 @@ class InterviewerProgressExportControllerTest {
     private CampaignReportingByInterviewersPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByInterviewersPort.class);
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(new InterviewerProgressCsv(List.of()));
 
