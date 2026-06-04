@@ -31,6 +31,7 @@ public class Constants {
   public static final String API_ADMIN_SURVEYUNITS_DETAILS = "/api/admin/survey-units/details";
   public static final String API_SURVEYUNIT_CLOSE_SURVEYUNITS = "/api/survey-units/closures";
   public static final String API_SURVEYUNITS_ADD_STATE = "/api/survey-units/states";
+  public static final String API_SURVEYUNIT_HISTORY = "/api/survey-units/{surveyUnitId}/history";
 
   public static final String API_SURVEY_UNITS_TO_REVIEW = "/api/survey-units/to-review";
 

@@ -1,9 +1,9 @@
-package fr.insee.pearljam.api.surveyunit.controller.presenter;
+package fr.insee.pearljam.api.surveyunit.presenter;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewReponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewReponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPresenter;
-import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitToReview;
+import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

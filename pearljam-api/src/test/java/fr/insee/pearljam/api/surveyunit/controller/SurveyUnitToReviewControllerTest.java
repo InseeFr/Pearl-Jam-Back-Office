@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.reporting.response.SurveyUnitToReviewPageResponse;
-import fr.insee.pearljam.api.surveyunit.controller.presenter.SurveyUnitToReviewApiPresenter;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToReviewApiPresenter;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
 import fr.insee.pearljam.api.utils.AuthenticatedUserTestHelper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.contracts.constants.Constants;
