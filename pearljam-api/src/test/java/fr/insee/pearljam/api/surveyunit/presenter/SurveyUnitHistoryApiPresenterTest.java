@@ -31,7 +31,7 @@ class SurveyUnitHistoryApiPresenterTest {
         assertThat(result.surveyUnitId()).isEqualTo("su1");
 
         assertThat(result.surveyUnitDisplayName())
-                .isEqualTo("SURVEY UNIT");
+                .isEqualTo("survey unit");
 
         assertThat(result.states())
                 .hasSize(1);
