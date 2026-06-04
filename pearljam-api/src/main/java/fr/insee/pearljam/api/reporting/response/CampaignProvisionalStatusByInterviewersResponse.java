@@ -35,7 +35,6 @@ public record CampaignProvisionalStatusByInterviewersResponse(
     }
     @Schema(name = "OrganizationUnitSite")
     public record OrganizationUnitSite(
-//            String label,
             SurveyUnitsSiteResponse surveyUnits
     ) {
         @Schema(name = "SurveyUnitsStateCountsForSite")
@@ -45,10 +44,10 @@ public record CampaignProvisionalStatusByInterviewersResponse(
         ) {
             @Schema(name = "ClosingCauseForSiteSurveyUnits")
             public record ClosingCauseSiteResponse(
-//                    Long interviewerAbsence,
-//                    Long notProcessedByInterviewer,
-//                    Long exceptionalReason,
-//                    Long rightOfWithdrawal,
+                    Long interviewerAbsence,
+                    Long notProcessedByInterviewer,
+                    Long exceptionalReason,
+                    Long rightOfWithdrawal,
                     Long total
             ) {
             }

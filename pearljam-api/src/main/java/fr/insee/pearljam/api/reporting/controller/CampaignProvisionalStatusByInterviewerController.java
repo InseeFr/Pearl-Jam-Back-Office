@@ -6,11 +6,13 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewer
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +35,7 @@ public class CampaignProvisionalStatusByInterviewerController {
     @GetMapping(API_REPORTING_PROVISIONAL_STATUS_BY_INTERVIEWERS)
     @Parameter(name = "userId", hidden = true)
     public CampaignProvisionalStatusByInterviewersResponse getCampaignProvisionalStatusByInterviewer(
-            @RequestParam String campaignId,
+            @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
 
