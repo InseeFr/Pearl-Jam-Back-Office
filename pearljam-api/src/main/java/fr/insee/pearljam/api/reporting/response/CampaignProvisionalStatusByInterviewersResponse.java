@@ -11,9 +11,9 @@ public record CampaignProvisionalStatusByInterviewersResponse(
 ) {
     @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(
-            String InterviewerId,
+            String interviewerId,
             String interviewerLabel,
-            SurveyUnitsResponse[] surveyUnits
+            SurveyUnitsResponse surveyUnits
     ) {
 
         @Schema(name = "SurveyUnitsStateCountsForInterviewer")
@@ -35,7 +35,7 @@ public record CampaignProvisionalStatusByInterviewersResponse(
     }
     @Schema(name = "OrganizationUnitSite")
     public record OrganizationUnitSite(
-            String label,
+//            String label,
             SurveyUnitsSiteResponse surveyUnits
     ) {
         @Schema(name = "SurveyUnitsStateCountsForSite")
@@ -45,10 +45,10 @@ public record CampaignProvisionalStatusByInterviewersResponse(
         ) {
             @Schema(name = "ClosingCauseForSiteSurveyUnits")
             public record ClosingCauseSiteResponse(
-                    Long interviewerAbsence,
-                    Long notProcessedByInterviewer,
-                    Long exceptionalReason,
-                    Long rightOfWithdrawal,
+//                    Long interviewerAbsence,
+//                    Long notProcessedByInterviewer,
+//                    Long exceptionalReason,
+//                    Long rightOfWithdrawal,
                     Long total
             ) {
             }

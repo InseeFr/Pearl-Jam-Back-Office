@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
+
+import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_PROVISIONAL_STATUS_BY_INTERVIEWERS;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,9 +30,9 @@ public class CampaignProvisionalStatusByInterviewerController {
 
 
     @Operation(summary = "")
-    @GetMapping("/api/reporting/campaigns/{campaign}/interviewers/closing-causes")
+    @GetMapping(API_REPORTING_PROVISIONAL_STATUS_BY_INTERVIEWERS)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProvisionalStatusByInterviewersResponse> getCampaignProvisionalStatusByInterviewer(
+    public CampaignProvisionalStatusByInterviewersResponse getCampaignProvisionalStatusByInterviewer(
             @RequestParam String campaignId,
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {

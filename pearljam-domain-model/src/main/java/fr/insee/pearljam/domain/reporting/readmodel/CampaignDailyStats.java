@@ -11,6 +11,7 @@ public class CampaignDailyStats extends AbstractDailyStats {
 
     private String campaignId;
     private String campaignLabel;
+    private String userOrganizationUnitSiteLabel;
     private long unaffectedCount;
 
     public static CampaignDailyStats empty(String id, String label) {

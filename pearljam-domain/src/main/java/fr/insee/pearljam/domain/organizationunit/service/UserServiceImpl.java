@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.organizationunit.service;
 
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.shared.model.Response;
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
 		List<String> lstIdOUCampaign = campaignRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
 		if (lstIdOUCampaign.isEmpty()) {
-			throw new CampaignNotFoundException();
+			throw new CampaignNotFoundExceptionRuntime();
 		}
 
 		List<String> lstIdOUUser = organizationUnitService
