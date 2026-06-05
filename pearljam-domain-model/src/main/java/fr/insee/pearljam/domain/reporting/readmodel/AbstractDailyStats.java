@@ -108,7 +108,7 @@ public abstract class AbstractDailyStats {
         return npiClosingCauseCount + npxClosingCauseCount + rowClosingCauseCount;
     }
 
-    public long getProvisionalStatusTotal() {
+    public long getClosingCountTotal() {
         return  npaClosingCauseCount + npiClosingCauseCount + npxClosingCauseCount + rowClosingCauseCount;
     }
 
