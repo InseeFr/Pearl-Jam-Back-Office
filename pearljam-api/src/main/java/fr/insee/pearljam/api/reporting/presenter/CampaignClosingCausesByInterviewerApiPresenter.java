@@ -1,10 +1,10 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse.Interviewer;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse.Interviewer.SurveyUnitsResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse.OrganizationUnitSite;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer.SurveyUnitsResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CampaignProvisionalStatusByInterviewerApiPresenter implements CampaignStatsByInterviewersPresenter<CampaignProvisionalStatusByInterviewersResponse> {
+public class CampaignClosingCausesByInterviewerApiPresenter implements CampaignStatsByInterviewersPresenter<CampaignClosingCausesByInterviewersResponse> {
     @Override
-    public CampaignProvisionalStatusByInterviewersResponse present(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
+    public CampaignClosingCausesByInterviewersResponse present(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
 
         List<Interviewer> interviewers;
         interviewers = interviewerStats.stream().map(interviewerDailyStats ->
@@ -30,7 +30,7 @@ public class CampaignProvisionalStatusByInterviewerApiPresenter implements Campa
                                 interviewerDailyStats.getNpiClosingCauseCount(),
                                 interviewerDailyStats.getNpxClosingCauseCount(),
                                 interviewerDailyStats.getRowClosingCauseCount(),
-                                interviewerDailyStats.getTotalClosingCauses()
+                                interviewerDailyStats.getProvisionalStatusTotal()
                         ))
                 )).toList();
 
@@ -43,10 +43,10 @@ public class CampaignProvisionalStatusByInterviewerApiPresenter implements Campa
                                 campaignStats.getNpiClosingCauseCount(),
                                 campaignStats.getNpxClosingCauseCount(),
                                 campaignStats.getRowClosingCauseCount(),
-                                siteStats.getTotalClosingCauses()
+                                siteStats.getProvisionalStatusTotal()
                         ))
         );
 
-        return new CampaignProvisionalStatusByInterviewersResponse(interviewers, organizationUnitSite);
+        return new CampaignClosingCausesByInterviewersResponse(interviewers, organizationUnitSite);
     }
 }

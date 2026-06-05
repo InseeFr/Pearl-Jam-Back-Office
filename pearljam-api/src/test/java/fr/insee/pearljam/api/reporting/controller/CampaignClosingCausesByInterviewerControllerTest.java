@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignProvisionalStatusByInterviewerApiPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse;
+import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerApiPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
@@ -25,19 +25,19 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CampaignProvisionalStatusByInterviewerControllerTest {
+class CampaignClosingCausesByInterviewerControllerTest {
 
     private MockMvc mockMvc;
     private CampaignReportingByInterviewersPort reportingService;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, Month.JUNE, 5);
 
-    private static final CampaignProvisionalStatusByInterviewersResponse EMPTY_RESULT =
-            new CampaignProvisionalStatusByInterviewersResponse(
+    private static final CampaignClosingCausesByInterviewersResponse EMPTY_RESULT =
+            new CampaignClosingCausesByInterviewersResponse(
                     List.of(),
-                    new CampaignProvisionalStatusByInterviewersResponse.OrganizationUnitSite(
-                            new CampaignProvisionalStatusByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse(
+                    new CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite(
+                            new CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse(
                                     0L,
-                                    new CampaignProvisionalStatusByInterviewersResponse
+                                    new CampaignClosingCausesByInterviewersResponse
                                             .OrganizationUnitSite.SurveyUnitsSiteResponse
                                             .ClosingCauseSiteResponse(
                                             0L,
@@ -56,10 +56,10 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
         when(reportingService.getProgressForDay(any(), any(), any(), any()))
                 .thenReturn(EMPTY_RESULT);
 
-        CampaignProvisionalStatusByInterviewerController controller =
-                new CampaignProvisionalStatusByInterviewerController(
+        CampaignClosingCausesByInterviewer controller =
+                new CampaignClosingCausesByInterviewer(
                         reportingService,
-                        new CampaignProvisionalStatusByInterviewerApiPresenter());
+                        new CampaignClosingCausesByInterviewerApiPresenter());
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -70,7 +70,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
     @Test
     @DisplayName("Returns 200 OK when day is provided")
     void shouldReturnOk_whenDayProvided() throws Exception {
-        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/provisional-status", "campaign-1")
+        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/closing-causes", "campaign-1")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk());
     }
@@ -78,7 +78,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
     @Test
     @DisplayName("Returns 200 OK when day is not provided")
     void shouldReturnOk_whenDayIsNotProvided() throws Exception {
-        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/provisional-status", "campaign-1"))
+        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/closing-causes", "campaign-1"))
                 .andExpect(status().isOk());
     }
 
@@ -93,7 +93,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
         when(reportingService.getProgressForDay(any(), eq("campaign-1"), eq(futureDay), any()))
                 .thenThrow(new FutureReportingDateException());
 
-        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/provisional-status", "campaign-1")
+        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/closing-causes", "campaign-1")
                         .param("day", futureDay.toString()))
                 .andExpect(status().isBadRequest());
     }
@@ -104,7 +104,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
         when(reportingService.getProgressForDay(any(), eq("unknown-campaign"), any(), any()))
                 .thenThrow(new CampaignNotFoundExceptionRuntime());
 
-        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/provisional-status", "unknown-campaign"))
+        mockMvc.perform(get("/api/reporting/campaigns/{campaignId}/interviewers/closing-causes", "unknown-campaign"))
                 .andExpect(status().isNotFound());
     }
 }
