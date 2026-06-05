@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitToReviewApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewReponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewResponse;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -146,7 +146,7 @@ class SurveyUnitToReviewApiPresenterTest {
         SurveyUnitToReviewPageResponse result = presenter.present(page);
 
         // Then
-        SurveyUnitToReviewReponse dto = result.content().getFirst();
+        SurveyUnitToReviewResponse dto = result.content().getFirst();
         assertThat(dto.readOnlyUrl()).isEqualTo(DATACOLLECTION_UI_URL + "/review/interrogations/SU-TEST-123");
     }
 
