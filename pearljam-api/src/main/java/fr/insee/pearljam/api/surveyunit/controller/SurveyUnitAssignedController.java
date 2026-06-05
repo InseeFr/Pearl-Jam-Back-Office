@@ -27,18 +27,17 @@ public class SurveyUnitAssignedController {
     private final SurveyUnitAssignedApiPresenter presenter;
 
     @Operation(summary = "Get survey units assigned with pagination",
-            description = "Returns a paginated list of survey units assigned to the organization-unit of the user")
+        description = "Returns a paginated list of survey units assigned to the organization-unit of the user")
     @Parameter(name = "userId", hidden = true)
     @GetMapping(Constants.API_SURVEY_UNITS_ASSIGNED)
     public SurveyUnitAssignedPageResponse getSurveyUnitsAssigned(
-            Pageable pageable,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String campaignId,
-            @RequestParam(required = false) Boolean viewed,
-            @CurrentSecurityContext(expression = "authentication.name") String userId) {
+        @RequestParam(required = false) String search,
+        @RequestParam(required = false) String campaignId,
+        Pageable pageable,
+        @CurrentSecurityContext(expression = "authentication.name") String userId) {
 
         log.info("Fetching survey units to review for user {} with search: {}", userId, search);
 
-        return surveyUnitAssignedPort.getSurveyUnitsAssigned(userId, campaignId, search, viewed, pageable, presenter);
+        return surveyUnitAssignedPort.getSurveyUnitsAssigned(userId, campaignId, search, pageable, presenter);
     }
 }
