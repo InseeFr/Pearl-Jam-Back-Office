@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -28,7 +29,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
 
     private MockMvc mockMvc;
     private CampaignReportingByInterviewersPort reportingService;
-    private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 5);
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2025, Month.JUNE, 5);
 
     private static final CampaignProvisionalStatusByInterviewersResponse EMPTY_RESULT =
             new CampaignProvisionalStatusByInterviewersResponse(
