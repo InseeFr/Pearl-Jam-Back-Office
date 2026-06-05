@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignProvisionalStatusByInterviewerApiPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignProvisionalStatusByInterviewersResponse;
+import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerApiPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,23 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_PROVISIONAL_STATUS_BY_INTERVIEWERS;
+import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
 @Validated
-public class CampaignProvisionalStatusByInterviewerController {
+public class CampaignClosingCausesByInterviewer {
 
     private final CampaignReportingByInterviewersPort reportingByInterviewersPort;
-    private final CampaignProvisionalStatusByInterviewerApiPresenter presenter;
+    private final CampaignClosingCausesByInterviewerApiPresenter presenter;
 
 
     @Operation(summary = "")
-    @GetMapping(API_REPORTING_PROVISIONAL_STATUS_BY_INTERVIEWERS)
+    @GetMapping(API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS)
     @Parameter(name = "userId", hidden = true)
-    public CampaignProvisionalStatusByInterviewersResponse getCampaignProvisionalStatusByInterviewer(
+    public CampaignClosingCausesByInterviewersResponse getCampaignClosingCausesStatusByInterviewer(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
