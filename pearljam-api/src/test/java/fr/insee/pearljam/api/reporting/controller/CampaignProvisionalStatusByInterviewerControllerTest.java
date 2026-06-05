@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +28,7 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
 
     private MockMvc mockMvc;
     private CampaignReportingByInterviewersPort reportingService;
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 5);
 
     private static final CampaignProvisionalStatusByInterviewersResponse EMPTY_RESULT =
             new CampaignProvisionalStatusByInterviewersResponse(
@@ -81,7 +84,10 @@ class CampaignProvisionalStatusByInterviewerControllerTest {
     @Test
     @DisplayName("Returns 400 Bad Request when day is in the future")
     void shouldReturnBadRequest_whenDayIsInTheFuture() throws Exception {
-        LocalDate futureDay = LocalDate.now().plusDays(1);
+        Clock fixedClock = Clock.fixed(
+                FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(),
+                ZoneOffset.UTC);
+        LocalDate futureDay = LocalDate.now(fixedClock).plusDays(1);
 
         when(reportingService.getProgressForDay(any(), eq("campaign-1"), eq(futureDay), any()))
                 .thenThrow(new FutureReportingDateException());

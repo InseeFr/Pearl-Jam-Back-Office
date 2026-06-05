@@ -34,6 +34,7 @@ public class ClosingCauseController {
    * @param id
    * @param idep
    * @param date
+   * @deprecated endpoint has been replaced in reporting
    * @return {@link ClosingCauseCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
