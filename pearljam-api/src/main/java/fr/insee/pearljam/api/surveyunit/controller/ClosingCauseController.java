@@ -34,11 +34,13 @@ public class ClosingCauseController {
    * @param id
    * @param idep
    * @param date
+   * @deprecated endpoint has been replaced in reporting
    * @return {@link ClosingCauseCountDto} if exist, {@link HttpStatus} NOT_FOUND, or
    * {@link HttpStatus} FORBIDDEN
    */
   @Operation(summary = "Get interviewerStateCount")
   @GetMapping(Constants.API_CAMPAIGN_ID_SU_INTERVIEWER_CLOSINGCAUSES)
+  @Deprecated(forRemoval = true)
   public ClosingCauseCountDto getClosingCauseCount(
       @PathVariable(value = "id") String id, @PathVariable(value = "idep") String idep,
       @RequestParam(required = false, name = "date") Long date) throws CampaignNotFoundException {

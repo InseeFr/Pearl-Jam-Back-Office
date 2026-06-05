@@ -6,7 +6,7 @@ import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCs
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvPresenter;
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class CampaignCollectionByInterviewerExportControllerTest {
     private CampaignReportingByInterviewersPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByInterviewersPort.class);
         when(port.getProgressForDay(any(), any(), any(), any()))
                 .thenReturn(new InterviewerCollectionCsv(List.of()));
@@ -97,7 +97,7 @@ class CampaignCollectionByInterviewerExportControllerTest {
     @Test
     void shouldReturn404_whenCampaignNotFound() throws Exception {
         when(port.getProgressForDay(any(), any(), any(), any()))
-                .thenThrow(new CampaignNotFoundException());
+                .thenThrow(new CampaignNotFoundExceptionRuntime());
 
         mockMvc.perform(get("/api/reporting/campaigns/unknown/interviewers/collection/export")
                         .param("date", "2025-06-10"))

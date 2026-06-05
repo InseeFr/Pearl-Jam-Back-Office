@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +25,7 @@ class InterviewerCollectionCsvExporterTest {
     private CampaignReportingByInterviewersPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup()  {
         port = mock(CampaignReportingByInterviewersPort.class);
         when(port.getProgressForDay(any(), any(), any(), any()))
                 .thenReturn(new InterviewerCollectionCsv(List.of()));
@@ -40,7 +42,7 @@ class InterviewerCollectionCsvExporterTest {
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(csv);
 
         // When
-        ResponseEntity<byte[]> response = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
+        ResponseEntity<byte[]> response = exporter.export("user1", "camp-1", LocalDate.of(2025, Month.JUNE, 10));
 
         // Then
         assert response.getBody() != null;
@@ -54,7 +56,7 @@ class InterviewerCollectionCsvExporterTest {
     @DisplayName("Generates filename with campaign id and date in the Content-Disposition header")
     void shouldGenerateFilenameWithCampaignIdAndDate() throws CampaignNotFoundException {
         // Given / When
-        ResponseEntity<byte[]> response = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
+        ResponseEntity<byte[]> response = exporter.export("user1", "camp-1", LocalDate.of(2025, Month.JUNE, 10));
 
         // Then
         String contentDisposition = response.getHeaders().getFirst("Content-Disposition");
@@ -63,12 +65,13 @@ class InterviewerCollectionCsvExporterTest {
 
     @Test
     @DisplayName("Propagates CampaignNotFoundException raised by the port")
-    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() throws CampaignNotFoundException {
+    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() {
         // Given
-        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
-        assertThatThrownBy(() -> exporter.export("user1", "unknown", LocalDate.of(2025, 6, 10)))
-                .isInstanceOf(CampaignNotFoundException.class);
+        LocalDate localDate = LocalDate.of(2025, Month.JUNE, 10);
+        assertThatThrownBy(() -> exporter.export("user1", "unknown", localDate))
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 }

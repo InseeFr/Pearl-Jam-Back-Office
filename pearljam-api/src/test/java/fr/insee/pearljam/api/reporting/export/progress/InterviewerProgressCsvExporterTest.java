@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.reporting.export.progress;
 
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,7 @@ class InterviewerProgressCsvExporterTest {
     private CampaignReportingByInterviewersPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByInterviewersPort.class);
         when(port.getProgressForDay(any(), any(), any(), any())).thenReturn(new InterviewerProgressCsv(List.of()));
         exporter = new InterviewerProgressCsvExporter(new InterviewerProgressCsvPresenter(), port);
@@ -76,12 +77,14 @@ class InterviewerProgressCsvExporterTest {
 
     @Test
     @DisplayName("Throws CampaignNotFoundException when campaign does not exist")
-    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() throws CampaignNotFoundException {
+    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() {
         // Given
-        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
+
+        LocalDate localDate = LocalDate.of(2025, 6, 10);
 
         // When / Then
-        assertThatThrownBy(() -> exporter.export("user1", "unknown", LocalDate.of(2025, 6, 10)))
-                .isInstanceOf(CampaignNotFoundException.class);
+        assertThatThrownBy(() -> exporter.export("user1", "unknown", localDate))
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 }
