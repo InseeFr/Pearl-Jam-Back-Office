@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitAssignedPageResponse;
-
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitAssignedResponse;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,34 +50,31 @@ public class SurveyUnitAssignedApiPresenter implements
         );
     }
 
-    private String buildCity(String s) {
-        return Optional.ofNullable(s)
-            .map(v -> v.split(" ", 2))
-            .filter(parts -> parts.length > 1)
-            .map(parts -> parts[1])
-            .orElse(null);
+    String buildLocation(String s) {
+        if (s == null || s.isBlank()) return null;
+        return s.split(" ", 2)[0];
     }
 
-    private String buildLocation(String s) {
-        return Optional.ofNullable(s)
-            .map(v -> v.split(" ", 2)[0])
-            .orElse(null);
+    String buildCity(String s) {
+        if (s == null || s.isBlank()) return null;
+        String[] parts = s.split(" ", 2);
+        return parts.length > 1 ? parts[1] : null;
     }
 
-    private StateType toStateType(String value) {
+    StateType toStateType(String value) {
         return value == null ? null : StateType.valueOf(value);
     }
 
-    private ClosingCauseType toClosingCauseType(String value) {
+    ClosingCauseType toClosingCauseType(String value) {
         return value == null ? null : ClosingCauseType.valueOf(value);
     }
 
-    private String buildInterviewerLabel(String firstName, String lastName) {
+    String buildInterviewerLabel(String firstName, String lastName) {
 
-        if (firstName == null && lastName == null) return null;
-
-        return Stream.of(firstName, lastName)
+        String result = Stream.of(firstName, lastName)
             .filter(Objects::nonNull)
             .collect(Collectors.joining(" "));
+
+        return result.isBlank() ? "" : result;
     }
 }
