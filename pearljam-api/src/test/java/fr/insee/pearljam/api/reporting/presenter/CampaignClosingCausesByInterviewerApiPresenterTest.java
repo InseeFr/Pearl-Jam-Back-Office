@@ -40,7 +40,7 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         when(stats.getNpiClosingCauseCount()).thenReturn(npi);
         when(stats.getNpxClosingCauseCount()).thenReturn(npx);
         when(stats.getRowClosingCauseCount()).thenReturn(row);
-        when(stats.getClosingCountTotal()).thenReturn(total);
+        when(stats.getTotalClosingCauses()).thenReturn(total);
         return stats;
     }
 

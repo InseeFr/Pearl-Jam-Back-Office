@@ -30,7 +30,7 @@ public class CampaignClosingCausesByInterviewerApiPresenter implements CampaignS
                                 interviewerDailyStats.getNpiClosingCauseCount(),
                                 interviewerDailyStats.getNpxClosingCauseCount(),
                                 interviewerDailyStats.getRowClosingCauseCount(),
-                                interviewerDailyStats.getClosingCountTotal()
+                                interviewerDailyStats.getTotalClosingCauses()
                         ))
                 )).toList();
 
@@ -43,7 +43,7 @@ public class CampaignClosingCausesByInterviewerApiPresenter implements CampaignS
                                 campaignStats.getNpiClosingCauseCount(),
                                 campaignStats.getNpxClosingCauseCount(),
                                 campaignStats.getRowClosingCauseCount(),
-                                siteStats.getClosingCountTotal()
+                                siteStats.getTotalClosingCauses()
                         ))
         );
 
