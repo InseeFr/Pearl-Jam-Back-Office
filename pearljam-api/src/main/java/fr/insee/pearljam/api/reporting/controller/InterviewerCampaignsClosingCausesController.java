@@ -22,7 +22,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_INTE
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "13. Reporting", description = "Endpoints for reporting")
-public class InterviewerCampaignsClosingCauses {
+public class InterviewerCampaignsClosingCausesController {
     private final InterviewerCampaignsReportingPort interviewerCampaignsReportingPort;
     private final InterviewerCampaignsClosingCausesPresenter presenter;
 
