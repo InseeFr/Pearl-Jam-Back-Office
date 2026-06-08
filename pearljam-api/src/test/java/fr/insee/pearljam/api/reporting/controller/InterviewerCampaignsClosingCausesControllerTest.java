@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ class InterviewerCampaignsClosingCausesControllerTest {
     void getInterviewerClosingCausesByCampaign_shouldDelegateToPortAndReturnResult() {
         String interviewerId = "interviewer-1";
         String userId = "user-1";
-        LocalDate day = LocalDate.of(2024, 1, 15);
+        LocalDate day = LocalDate.of(2024, Month.JANUARY, 15);
 
         List<InterviewerCampaignsClosingCausesResponse> expected = List.of(
                 new InterviewerCampaignsClosingCausesResponse("CAMPAIGN-1", 10L,
