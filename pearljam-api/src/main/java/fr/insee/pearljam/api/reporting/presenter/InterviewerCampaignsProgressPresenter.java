@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class InterviewerCampaignsProgressPresenter
-        implements InterviewerCampaignsStatsPresenter<List<InterviewerCampaignsProgressResponse>> {
+public class InterviewerCampaignsProgressPresenter implements InterviewerCampaignsStatsPresenter<List<InterviewerCampaignsProgressResponse>> {
 
     @Override
     public List<InterviewerCampaignsProgressResponse> present(List<InterviewerCampaignDailyStats> stats) {

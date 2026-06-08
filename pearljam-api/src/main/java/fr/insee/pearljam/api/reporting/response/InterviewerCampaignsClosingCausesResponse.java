@@ -4,10 +4,9 @@ package fr.insee.pearljam.api.reporting.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
-public record InterviewerClosingCausesByCampaignResponse(
-        String interviewerId,
-        String interviewerLabel,
+public record InterviewerCampaignsClosingCausesResponse(
         String campaignLabel,
+        Long totalAllocated,
         ClosingCauseResponse closingCauses
 ) {
     @Schema(name = "InterviewerClosingCauseForSurveyUnit")

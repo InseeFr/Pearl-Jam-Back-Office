@@ -21,7 +21,7 @@ public record CampaignClosingCausesByInterviewersResponse(
                 Long allocated,
                 ClosingCauseResponse closingCauses
         ) {
-            @Schema(name = "ClosingCauseForSurveyUnit")
+            @Schema(name = "ClosingCauseForInterviewerSurveyUnit")
             public record ClosingCauseResponse (
                     Long interviewerAbsence,
                     Long notProcessedByInterviewer,

@@ -321,6 +321,8 @@ public class OidcSecurityConfiguration {
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS)
 						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
+						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_INTERVIEWER_CLOSING_CAUSES_BY_CAMPAIGNS)
+						.hasAnyRole(adminRole, localUserRole, nationalUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_REPORTING_CAMPAIGNS_SUMMARY)
 						.hasAnyRole(adminRole, nationalUserRole, localUserRole)
                         .requestMatchers(HttpMethod.GET, Constants.API_CAMPAIGN_ORGANIZATION_EXPORT)

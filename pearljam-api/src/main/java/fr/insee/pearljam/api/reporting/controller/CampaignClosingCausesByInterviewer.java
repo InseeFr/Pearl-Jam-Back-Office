@@ -31,7 +31,7 @@ public class CampaignClosingCausesByInterviewer {
     private final CampaignClosingCausesByInterviewerPresenter presenter;
 
 
-    @Operation(summary = "")
+    @Operation(summary = "Endpoint for retrieving closing causes of interviewers for a campaign")
     @GetMapping(API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS)
     @Parameter(name = "userId", hidden = true)
     public CampaignClosingCausesByInterviewersResponse getCampaignClosingCausesStatusByInterviewer(

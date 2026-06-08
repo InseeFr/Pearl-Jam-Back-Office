@@ -3,8 +3,6 @@ package fr.insee.pearljam.api.reporting.presenter;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer.SurveyUnitsResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +27,7 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
     private InterviewerDailyStats mockInterviewer(
             String id, String firstName, String lastName,
             long allocated,
-            long npa, long npi, long npx, long row, long total
+            long npa, long npi, long npx, long row
     ) {
         InterviewerDailyStats stats = mock(InterviewerDailyStats.class);
         when(stats.getInterviewerId()).thenReturn(id);
@@ -40,14 +38,7 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         when(stats.getNpiClosingCauseCount()).thenReturn(npi);
         when(stats.getNpxClosingCauseCount()).thenReturn(npx);
         when(stats.getRowClosingCauseCount()).thenReturn(row);
-        when(stats.getTotalClosingCauses()).thenReturn(total);
-        return stats;
-    }
-
-    private CampaignDailyStats mockCampaignStats(long allocated, long totalClosing) {
-        CampaignDailyStats stats = mock(CampaignDailyStats.class);
-        when(stats.getAllocatedCount()).thenReturn(allocated);
-        when(stats.getTotalClosingCauses()).thenReturn(totalClosing);
+        when(stats.getTotalClosingCauses()).thenReturn(npa + npi + npx + row);
         return stats;
     }
 
@@ -58,13 +49,11 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         InterviewerDailyStats interviewerStats = mockInterviewer(
                 "int-01", "Alice", "Martin",
                 100L,
-                5L, 3L, 2L, 1L, 11L
-        );
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 20L);
-        CampaignDailyStats campaignStats = mockCampaignStats(200L, 40L);
+                5L, 3L, 2L, 1L);
+
 
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(interviewerStats), siteStats, campaignStats);
+                presenter.present(List.of(interviewerStats), null, null);
 
         assertThat(result.interviewers()).hasSize(1);
 
@@ -84,68 +73,48 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
     }
 
     @Test
-    void present_shouldReturnMultipleInterviewers() {
-        InterviewerDailyStats int1 = mockInterviewer("int-01", "Alice", "Martin", 100L, 1L, 2L, 3L, 4L, 10L);
-        InterviewerDailyStats int2 = mockInterviewer("int-02", "Bob", "Dupont", 50L, 0L, 1L, 0L, 2L, 3L);
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 13L);
-        CampaignDailyStats campaignStats = mockCampaignStats(150L, 13L);
+    void present_shouldReturnMultipleInterviewersAndComputeCorrectlySite() {
+        InterviewerDailyStats int1 = mockInterviewer("int-01", "Alice", "Martin", 100L, 1L, 2L, 3L, 4L);
+        InterviewerDailyStats int2 = mockInterviewer("int-02", "Bob", "Dupont", 50L, 0L, 1L, 0L, 2L);
 
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(int1, int2), siteStats, campaignStats);
+                presenter.present(List.of(int1, int2), null, null);
 
         assertThat(result.interviewers()).hasSize(2);
-        assertThat(result.interviewers().get(0).interviewerId()).isEqualTo("int-01");
+        assertThat(result.interviewers().getFirst().interviewerId()).isEqualTo("int-01");
         assertThat(result.interviewers().get(1).interviewerId()).isEqualTo("int-02");
         assertThat(result.interviewers().get(1).interviewerLabel()).isEqualTo("Bob Dupont");
+
+        assertThat(result.site().surveyUnits().closingCauses().rightOfWithdrawal()).isEqualTo(6L);
+        assertThat(result.site().surveyUnits().allocated()).isEqualTo(150L);
+
     }
 
     @Test
     void present_shouldReturnEmptyInterviewerListWhenNoneProvided() {
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 0L);
-        CampaignDailyStats campaignStats = mockCampaignStats(0L, 0L);
-
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(), siteStats, campaignStats);
+                presenter.present(List.of(), null, null);
 
         assertThat(result.interviewers()).isEmpty();
     }
 
     @Test
-    void present_shouldPopulateSiteWithCampaignAllocatedAndSiteClosingCauses() {
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 42L);
-        CampaignDailyStats campaignStats = mockCampaignStats(300L, 0L);
-
-        CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(), siteStats, campaignStats);
-
-        OrganizationUnitSite site = result.site();
-        assertThat(site).isNotNull();
-        assertThat(site.surveyUnits().allocated()).isEqualTo(300L);
-        assertThat(site.surveyUnits().closingCauses().total()).isEqualTo(42L);
-    }
-
-    @Test
     void present_shouldBuildInterviewerLabelFromFirstAndLastName() {
-        InterviewerDailyStats stats = mockInterviewer("id-99", "Jean", "Dupuis", 10L, 0L, 0L, 0L, 0L, 0L);
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 0L);
-        CampaignDailyStats campaignStats = mockCampaignStats(10L, 0L);
-
+        InterviewerDailyStats stats = mockInterviewer("id-99", "Jean", "Dupuis", 10L, 0L, 0L, 0L, 0L);
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(stats), siteStats, campaignStats);
+                presenter.present(List.of(stats), null, null);
 
-        assertThat(result.interviewers().get(0).interviewerLabel()).isEqualTo("Jean Dupuis");
+        assertThat(result.interviewers().getFirst().interviewerLabel()).isEqualTo("Jean Dupuis");
     }
 
     @Test
-    void present_shouldHandleZeroCountsGracefully() {
-        InterviewerDailyStats stats = mockInterviewer("int-zero", "Zero", "Values", 0L, 0L, 0L, 0L, 0L, 0L);
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 0L);
-        CampaignDailyStats campaignStats = mockCampaignStats(0L, 0L);
+    void present_shouldHandleZeroCounts() {
+        InterviewerDailyStats stats = mockInterviewer("int-zero", "Zero", "Values", 0L, 0L, 0L, 0L, 0L);
 
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(stats), siteStats, campaignStats);
+                presenter.present(List.of(stats), null, null);
 
-        Interviewer interviewer = result.interviewers().get(0);
+        Interviewer interviewer = result.interviewers().getFirst();
         assertThat(interviewer.surveyUnits().allocated()).isZero();
         assertThat(interviewer.surveyUnits().closingCauses().total()).isZero();
         assertThat(result.site().surveyUnits().allocated()).isZero();
@@ -153,18 +122,11 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
     }
 
     @Test
-    void present_shouldUseSiteStatsForSiteClosingCausesNotCampaignStats() {
-        // siteStats.totalClosingCauses and campaignStats.totalClosingCauses differ
-        // to confirm the correct source is used for each field
-        CampaignDailyStats siteStats = mockCampaignStats(0L, 77L);
-        CampaignDailyStats campaignStats = mockCampaignStats(500L, 99L);
-
+    void present_shouldComputeSiteWithZeroValuesWhenNoInterviewers() {
         CampaignClosingCausesByInterviewersResponse result =
-                presenter.present(List.of(), siteStats, campaignStats);
+                presenter.present(List.of(), null, null);
 
-        // allocated comes from campaignStats
-        assertThat(result.site().surveyUnits().allocated()).isEqualTo(500L);
-        // closing cause total comes from siteStats
-        assertThat(result.site().surveyUnits().closingCauses().total()).isEqualTo(77L);
+        assertThat(result.site().surveyUnits().allocated()).isZero();
+        assertThat(result.site().surveyUnits().closingCauses().total()).isZero();
     }
 }
