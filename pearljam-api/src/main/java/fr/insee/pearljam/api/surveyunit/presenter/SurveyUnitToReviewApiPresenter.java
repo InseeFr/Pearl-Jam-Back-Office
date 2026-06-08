@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewPageResponse;
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewReponse;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToReviewResponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitToReviewPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ public class SurveyUnitToReviewApiPresenter implements
 
     @Override
     public SurveyUnitToReviewPageResponse present(Page<SurveyUnitToReview> surveyUnits) {
-        List<SurveyUnitToReviewReponse> dtos = surveyUnits.getContent().stream()
+        List<SurveyUnitToReviewResponse> dtos = surveyUnits.getContent().stream()
                 .map(this::mapToDto)
                 .toList();
 
@@ -35,8 +35,8 @@ public class SurveyUnitToReviewApiPresenter implements
         );
     }
 
-    private SurveyUnitToReviewReponse mapToDto(SurveyUnitToReview surveyUnit) {
-        return new SurveyUnitToReviewReponse(
+    private SurveyUnitToReviewResponse mapToDto(SurveyUnitToReview surveyUnit) {
+        return new SurveyUnitToReviewResponse(
                 surveyUnit.id(),
                 surveyUnit.surveyUnitDisplayName(),
                 surveyUnit.campaignLabel(),

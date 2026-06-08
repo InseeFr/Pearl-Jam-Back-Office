@@ -339,6 +339,8 @@ public class OidcSecurityConfiguration {
                         .hasAnyRole(adminRole, nationalUserRole, localUserRole)
 						.requestMatchers(HttpMethod.GET, Constants.API_SURVEYUNIT_HISTORY)
 						.hasAnyRole(adminRole, nationalUserRole, localUserRole)
+                        .requestMatchers(HttpMethod.GET, Constants.API_SURVEY_UNITS_ASSIGNED)
+                        .hasAnyRole(adminRole, nationalUserRole, localUserRole)
 						.anyRequest()
 						.denyAll());
 	}
