@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerApiPresenter;
+import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CLOS
 public class CampaignClosingCausesByInterviewer {
 
     private final CampaignReportingByInterviewersPort reportingByInterviewersPort;
-    private final CampaignClosingCausesByInterviewerApiPresenter presenter;
+    private final CampaignClosingCausesByInterviewerPresenter presenter;
 
 
     @Operation(summary = "")

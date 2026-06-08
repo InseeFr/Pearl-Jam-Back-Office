@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 
 class CampaignClosingCausesByInterviewerApiPresenterTest {
 
-    private CampaignClosingCausesByInterviewerApiPresenter presenter;
+    private CampaignClosingCausesByInterviewerPresenter presenter;
 
     @BeforeEach
     void setUp() {
-        presenter = new CampaignClosingCausesByInterviewerApiPresenter();
+        presenter = new CampaignClosingCausesByInterviewerPresenter();
     }
 
     // --- Helpers ---
