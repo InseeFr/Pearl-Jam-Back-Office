@@ -76,7 +76,7 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
-    public Optional<StateType> findStateBySurveyUnitId(String surveyUnitId) {
+    public Optional<StateType> findLastStateBySurveyUnitId(String surveyUnitId) {
         return Optional.ofNullable(surveyUnitStates.get(surveyUnitId));
     }
 

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -43,32 +43,24 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
     @Override
     @Transactional
-    public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type) {
-
+    public void addClosingCauseToMultipleSurveyUnits(
+        List<String> surveyUnitIds,
+        ClosingCauseType type,
+        boolean toClose
+    ) {
         if (surveyUnitIds == null || surveyUnitIds.isEmpty()) {
             return;
         }
-        List<String> existingSurveyUnits = surveyUnitExistencePort.findExistingIds(surveyUnitIds);
-        List<String> missingSurveyUnits = surveyUnitIds.stream()
-                .filter(id -> !existingSurveyUnits.contains(id))
-                .toList();
 
-        if (!missingSurveyUnits.isEmpty()) {
-            log.info("Missing survey units to close {}", missingSurveyUnits);
-            throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
+        validateSurveyUnitsExist(surveyUnitIds);
+        validateNoExistingClosingCause(surveyUnitIds);
+        validateClosableStates(surveyUnitIds);
+
+        applyClosingCause(surveyUnitIds, type);
+
+        if (toClose) {
+            closeSurveyUnits(surveyUnitIds);
         }
-
-        List<String> surveyUnitsWithClosingCause =
-                closingCauseRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
-
-        if (!surveyUnitsWithClosingCause.isEmpty()) {
-            log.info("Closing cause already exist on survey units {}", surveyUnitsWithClosingCause);
-            throw new ClosingCauseAlreadyExistsException(String.join(", ", surveyUnitsWithClosingCause));
-        }
-
-        closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
-        stateRepository.saveStateForSurveyUnits(surveyUnitIds, StateType.CLO, new Date().toInstant());
-
     }
 
     @Override
@@ -120,4 +112,59 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     public void deleteClosingCauseBySurveyUnitId(String surveyUnitId) {
         closingCauseRepository.deleteBySurveyUnitId(surveyUnitId);
     }
+
+    void validateSurveyUnitsExist(List<String> surveyUnitIds) {
+        List<String> existingSurveyUnits = surveyUnitExistencePort.findExistingIds(surveyUnitIds);
+
+        List<String> missingSurveyUnits = surveyUnitIds.stream()
+            .filter(id -> !existingSurveyUnits.contains(id))
+            .toList();
+
+        if (!missingSurveyUnits.isEmpty()) {
+            log.info("Missing survey units to close {}", missingSurveyUnits);
+            throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
+        }
+    }
+
+    void validateNoExistingClosingCause(List<String> surveyUnitIds) {
+        List<String> alreadyWithClosingCause =
+            closingCauseRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
+
+        if (!alreadyWithClosingCause.isEmpty()) {
+            log.info("Closing cause already exist on survey units {}", alreadyWithClosingCause);
+            throw new ClosingCauseAlreadyExistsException(String.join(", ", alreadyWithClosingCause));
+        }
+    }
+
+    private void validateClosableStates(List<String> surveyUnitIds) {
+
+        List<StateType> forbiddenStates = List.of(
+            StateType.CLO,
+            StateType.TBR,
+            StateType.FIN
+        );
+
+        List<String> invalidStateUnits =
+            stateRepository.findSurveyUnitsInStates(surveyUnitIds, forbiddenStates);
+
+        if (!invalidStateUnits.isEmpty()) {
+            log.info("Survey units not closable (invalid state CLO/TBR/FIN) {}", invalidStateUnits);
+            throw new SurveyUnitNotClosableException(String.join(", ", invalidStateUnits));
+        }
+
+    }
+
+    private void applyClosingCause(List<String> surveyUnitIds, ClosingCauseType type) {
+        closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
+    }
+
+    private void closeSurveyUnits(List<String> surveyUnitIds) {
+        stateRepository.saveStateForSurveyUnits(
+            surveyUnitIds,
+            StateType.CLO,
+            Instant.now()
+        );
+    }
+
+
 }

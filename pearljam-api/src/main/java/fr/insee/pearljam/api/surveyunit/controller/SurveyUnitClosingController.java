@@ -33,9 +33,10 @@ public class SurveyUnitClosingController {
      */
     @PostMapping(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
     public ResponseEntity<Void> addClosingCauseToMultipleSurveyUnits(
-            @RequestBody @Valid CloseSurveyUnitsRequest request) {
+            @RequestBody @Valid CloseSurveyUnitsRequest request,
+            @RequestParam(required = false, defaultValue  ="true") boolean toClose) {
 
-        surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(request.getSurveyUnitIds(), request.getClosingCauseType());
+        surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(request.getSurveyUnitIds(), request.getClosingCauseType(), toClose);
         return ResponseEntity.noContent().build();
     }
 

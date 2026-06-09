@@ -43,7 +43,7 @@ public class SurveyUnitUpdateStateService implements SurveyUnitStateUpdatePort {
     @Override
     @Transactional
     public void addStateToSurveyUnit(String surveyUnitId, StateType state) {
-        Optional<StateType> surveyUnitCurrentState = stateRepository.findStateBySurveyUnitId(surveyUnitId);
+        Optional<StateType> surveyUnitCurrentState = stateRepository.findLastStateBySurveyUnitId(surveyUnitId);
 
         if(surveyUnitCurrentState.isEmpty())
         {

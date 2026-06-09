@@ -36,7 +36,7 @@ public interface StateRepository {
 
     StateDB save(StateDB state);
 
-    Optional<StateType> findStateBySurveyUnitId(String surveyUnitId);
+    Optional<StateType> findLastStateBySurveyUnitId(String surveyUnitId);
 
     void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date);
 

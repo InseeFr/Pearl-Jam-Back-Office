@@ -84,8 +84,8 @@ public class StateDaoAdapter implements StateRepository {
     }
 
     @Override
-    public Optional<StateType> findStateBySurveyUnitId(String surveyUnitId) {
-        return stateJpaRepository.findStateBySurveyUnitId(surveyUnitId);
+    public Optional<StateType> findLastStateBySurveyUnitId(String surveyUnitId) {
+        return stateJpaRepository.findLastStateBySurveyUnitId(surveyUnitId);
     }
 
     @Override

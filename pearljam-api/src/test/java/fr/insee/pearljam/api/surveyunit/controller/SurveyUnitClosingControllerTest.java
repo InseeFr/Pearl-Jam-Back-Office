@@ -54,7 +54,7 @@ class SurveyUnitClosingControllerTest {
     void shouldReturn204WhenClosingSurveyUnit() throws Exception {
         // given
         doNothing().when(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), any());
 
         CloseSurveyUnitsRequest request = new CloseSurveyUnitsRequest();
         request.setSurveyUnitIds(List.of("12"));
@@ -67,14 +67,14 @@ class SurveyUnitClosingControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), any());
     }
 
     @Test
     void shouldReturn409WhenConflict() throws Exception {
         doThrow(new ClosingCauseAlreadyExistsException("11"))
                 .when(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), any());
 
 
         CloseSurveyUnitsRequest request = new CloseSurveyUnitsRequest();

@@ -1,18 +1,17 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * StateRepository is the repository using to access to State table in DB
@@ -292,5 +291,5 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
     ORDER BY s.date DESC 
     LIMIT 1
     """)
-	Optional<StateType> findStateBySurveyUnitId(@Param("surveyUnitId") String surveyUnitId);
+	Optional<StateType> findLastStateBySurveyUnitId(@Param("surveyUnitId") String surveyUnitId);
 }
