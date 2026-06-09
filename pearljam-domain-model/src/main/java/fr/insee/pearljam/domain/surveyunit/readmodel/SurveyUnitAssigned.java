@@ -7,7 +7,8 @@ public record SurveyUnitAssigned(
         String ssech,
         String interviewerFirstName,
         String interviewerLastName,
-        String addressL6,
+        String location,
+        String city,
         String questionnaireState,
         String closingCause
 ) {

@@ -31,7 +31,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         "surveyUnitDisplayName", "su.display_name",
         "interviewerLabel", "int.last_name",
         "ssech", "si.ssech",
-        "location", "a.l6",
+        "location", "postalCode",
+        "city", "city",
         "questionnaireState", "ls.current_state",
         "closingCause", "cc.type"
     );
@@ -59,7 +60,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                            su.id                              AS surveyUnitId,
                            su.display_name                    AS surveyUnitDisplayName,
                            si.ssech                           AS ssech,
-                           a.l6                               AS addressL6,
+                           NULLIF(split_part(trim(a.l6), ' ', 1), '') AS postalCode,
+                           NULLIF(substring(trim(a.l6) from '^\\d+\\s+(.*)$'), '') AS city,
                            ls.current_state                   AS currentStateType,
                            cc.type                            AS closingCauseType,
                           int.first_name                      AS interviewerFirstName,
@@ -138,7 +140,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         }
         return """
             AND (
-                LOWER(a.l6) LIKE :search OR
+                LOWER(NULLIF(substring(trim(a.l6) from '^\\d+\\s+(.*)$'), '')) LIKE :search OR
                 LOWER(su.id) LIKE :search OR
                 LOWER(CONCAT(int.first_name, ' ', int.last_name)) LIKE :search
             )
@@ -152,7 +154,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
             rs.getString("ssech"),
             rs.getString("interviewerFirstName"),
             rs.getString("interviewerLastName"),
-            rs.getString("addressL6"),
+            rs.getString("postalCode"),
+            rs.getString("city"),
             rs.getString("currentStateType"),
             rs.getString("closingCauseType")
         );

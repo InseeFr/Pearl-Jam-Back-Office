@@ -121,7 +121,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             "SU-1",
             campaign1,
             jean,
-            "Paris",
+            "75000 Paris",
             StateType.TBR
         );
 
@@ -129,7 +129,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             "SU-2",
             campaign1,
             marie,
-            "Lyon",
+            "69000 Lyon",
             StateType.NVM
         );
 
@@ -137,7 +137,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             "SU-3",
             campaign1,
             bernard,
-            "Bordeaux",
+            "33000 Bordeaux",
             StateType.INS
         );
 
@@ -145,7 +145,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             "SU-4",
             campaign2,
             marie,
-            "Lille",
+            "59000 Lille",
             StateType.TBR
         );
 
@@ -221,17 +221,17 @@ class SurveyUnitAssignedDaoAdapterTest {
             .containsExactly("SU-2");
     }
     @Test
-    void should_search_by_location() {
+    void should_search_by_city() {
 
         Page<SurveyUnitAssigned> result =
             adapter.findSurveyUnitsAssigned(
                 List.of(CAMPAIGN_1_ID),
-                "lyon",
+                "Lyon",
                 PageRequest.of(0, 20)
             );
 
         assertThat(result.getContent())
-            .extracting(SurveyUnitAssigned::addressL6)
+            .extracting(SurveyUnitAssigned::city)
             .containsExactly("Lyon");
     }
 
@@ -298,7 +298,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             adapter.findSurveyUnitsAssigned(List.of(CAMPAIGN_1_ID), "paris", pageable);
 
         assertThat(result.getContent())
-            .extracting(SurveyUnitAssigned::addressL6)
+            .extracting(SurveyUnitAssigned::city)
             .contains("Paris");
     }
 
@@ -308,7 +308,8 @@ class SurveyUnitAssignedDaoAdapterTest {
             Arguments.of("surveyUnitDisplayName", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::surveyUnitDisplayName),
             Arguments.of("interviewerLabel", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::interviewerLastName),
             Arguments.of("ssech",(Function<SurveyUnitAssigned, String>)  SurveyUnitAssigned::ssech),
-            Arguments.of("location", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::addressL6),
+            Arguments.of("location", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::location),
+            Arguments.of("city", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::city),
             Arguments.of("questionnaireState", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::questionnaireState),
             Arguments.of("closingCause", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::closingCause)
         );
