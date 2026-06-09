@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CAMPAIGNS_INTERVIEWERS_CLOSING_CAUSES;
+import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class CampaignClosingCausesByInterviewer {
 
 
     @Operation(summary = "")
-    @GetMapping(API_REPORTING_CAMPAIGNS_INTERVIEWERS_CLOSING_CAUSES)
+    @GetMapping(API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS)
     @Parameter(name = "userId", hidden = true)
     public CampaignClosingCausesByInterviewersResponse getCampaignClosingCausesStatusByInterviewer(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
