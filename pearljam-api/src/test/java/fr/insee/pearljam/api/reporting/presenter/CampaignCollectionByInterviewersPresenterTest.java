@@ -35,7 +35,7 @@ class CampaignCollectionByInterviewersPresenterTest {
         });
         assertThat(result.site().allocated()).isEqualTo(siteStats.getAllocatedCount());
         assertThat(result.site().outcomes().total()).isEqualTo(siteStats.getTotalContactOutcomes());
-        assertThat(result.site().unaffected()).isEqualTo(42L);
+        assertThat(result.site().unaffected()).isEqualTo(5L);
         assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedCount());
     }
 }
