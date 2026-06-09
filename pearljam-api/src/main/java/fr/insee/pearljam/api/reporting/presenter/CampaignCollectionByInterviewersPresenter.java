@@ -31,13 +31,13 @@ public class CampaignCollectionByInterviewersPresenter implements
                         .toList(),
                 new CampaignCollectionByInterviewersResponse.OrganizationUnit(
                         siteStats.getAllocatedCount(),
+                        siteStats.getUnaffectedCount(),
                         CollectionRatesResponse.from(siteStats),
                         ContactOutcomesProgressResponse.from(siteStats),
                         ClosingCausesProgressResponse.from(siteStats)
                 ),
                 new CampaignCollectionByInterviewersResponse.Campaign(
                         campaignStats.getAllocatedCount(),
-                        campaignStats.getUnaffectedCount(),
                         CollectionRatesResponse.from(campaignStats),
                         ContactOutcomesProgressResponse.from(campaignStats),
                         ClosingCausesProgressResponse.from(campaignStats)
