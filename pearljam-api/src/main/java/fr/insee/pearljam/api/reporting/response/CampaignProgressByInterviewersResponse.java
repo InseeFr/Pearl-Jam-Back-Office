@@ -22,6 +22,7 @@ public record CampaignProgressByInterviewersResponse(
     @Schema(name = "CampaignProgressByInterviewersOU")
     public record OrganizationUnit(
             float progressRate,
+            long unaffected,
             StatesProgressResponse states,
             CommunicationsProgressResponse communications
     ) {
@@ -29,7 +30,6 @@ public record CampaignProgressByInterviewersResponse(
 
     @Schema(name = "CampaignProgressByInterviewersCampaign")
     public record Campaign(
-            long unaffected,
             float progressRate,
             StatesProgressResponse states,
             CommunicationsProgressResponse communications

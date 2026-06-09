@@ -29,6 +29,7 @@ public record CampaignCollectionByInterviewersResponse(
 
         OrganizationUnit site = new OrganizationUnit(
                 campaignOusDailyStats.getAllocatedCount(),
+                campaignOusDailyStats.getUnaffectedCount(),
                 CollectionRatesResponse.from(campaignOusDailyStats),
                 ContactOutcomesProgressResponse.from(campaignOusDailyStats),
                 ClosingCausesProgressResponse.from(campaignOusDailyStats)
@@ -36,7 +37,6 @@ public record CampaignCollectionByInterviewersResponse(
 
         Campaign campaign = new Campaign(
                 campaignDailyStats.getAllocatedCount(),
-                campaignDailyStats.getUnaffectedCount(),
                 CollectionRatesResponse.from(campaignDailyStats),
                 ContactOutcomesProgressResponse.from(campaignDailyStats),
                 ClosingCausesProgressResponse.from(campaignDailyStats));
@@ -55,6 +55,7 @@ public record CampaignCollectionByInterviewersResponse(
     @Schema(name = "CampaignCollectionByInterviewersOU")
     public record OrganizationUnit(
             long allocated,
+            long unaffected,
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
             ClosingCausesProgressResponse closingCauses
@@ -63,7 +64,6 @@ public record CampaignCollectionByInterviewersResponse(
     @Schema(name = "CampaignCollectionByInterviewersCampaign")
     public record Campaign(
             long allocated,
-            long unaffected,
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
             ClosingCausesProgressResponse closingCauses

@@ -28,10 +28,10 @@ public class CampaignProgressByInterviewersPresenter implements
                         .toList(),
                 new CampaignProgressByInterviewersResponse.OrganizationUnit(
                         siteStats.getProgressStateRate(),
+                        siteStats.getUnaffectedCount(),
                         StatesProgressResponse.from(siteStats),
                         CommunicationsProgressResponse.from(siteStats)),
                 new CampaignProgressByInterviewersResponse.Campaign(
-                        campaignStats.getUnaffectedCount(),
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
                         CommunicationsProgressResponse.from(campaignStats))

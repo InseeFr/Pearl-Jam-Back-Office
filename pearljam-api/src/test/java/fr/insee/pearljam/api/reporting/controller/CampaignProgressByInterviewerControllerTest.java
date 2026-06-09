@@ -29,11 +29,13 @@ class CampaignProgressByInterviewerControllerTest {
 
     private static final CampaignProgressByInterviewersResponse EMPTY_RESULT = new CampaignProgressByInterviewersResponse(
             List.of(),
-            new CampaignProgressByInterviewersResponse.OrganizationUnit(0f,
+            new CampaignProgressByInterviewersResponse.OrganizationUnit(
+                    0f,
+                    0L,
                     new StatesProgressResponse(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgressResponse(0L, 0L)),
-            new CampaignProgressByInterviewersResponse.Campaign(0L, 0f,
+            new CampaignProgressByInterviewersResponse.Campaign(0f,
                     new StatesProgressResponse(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgressResponse(0L, 0L))
