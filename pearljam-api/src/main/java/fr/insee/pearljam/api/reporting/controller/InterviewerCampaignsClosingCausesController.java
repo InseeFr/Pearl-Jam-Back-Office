@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 
-import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_INTERVIEWER_CLOSING_CAUSES_BY_CAMPAIGNS;
+import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_INTERVIEWERS_CAMPAIGN_CLOSING_CAUSES;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class InterviewerCampaignsClosingCausesController {
     private final InterviewerCampaignsClosingCausesPresenter presenter;
 
     @Operation(summary = "Endpoint for retrieving closing causes for interviewer campaigns")
-    @GetMapping(API_REPORTING_INTERVIEWER_CLOSING_CAUSES_BY_CAMPAIGNS)
+    @GetMapping(API_REPORTING_INTERVIEWERS_CAMPAIGN_CLOSING_CAUSES)
     @Parameter(name = "userId", hidden = true)
     public List<InterviewerCampaignsClosingCausesResponse> getInterviewerClosingCausesByCampaign(
             @PathVariable(value = "interviewerId") @NotBlank String interviewerId,
