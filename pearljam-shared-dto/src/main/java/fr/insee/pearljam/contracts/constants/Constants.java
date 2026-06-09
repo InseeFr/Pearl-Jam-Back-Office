@@ -66,7 +66,7 @@ public class Constants {
   public static final String API_ADMIN_REPORTING_SNAPSHOT = "/api/admin/reporting/snapshots";
   public static final String API_REPORTING_OUS_COLLECTION = "/api/reporting/campaigns/{campaignId}/organization-units/collection";
   public static final String API_REPORTING_OUS_COLLECTION_EXPORT = "/api/reporting/campaigns/{campaignId}/organization-units/collection/export";
-  public static final String API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS = "/api/reporting/campaigns/{campaignId}/interviewers/closing-causes";
+  public static final String API_REPORTING_CAMPAIGNS_INTERVIEWERS_CLOSING_CAUSES = "/api/reporting/campaigns/{campaignId}/interviewers/closing-causes";
 
   public static final String API_CAMPAIGN = "/api/campaign";
   public static final String API_CAMPAIGN_ID = "/api/campaign/{id}";
