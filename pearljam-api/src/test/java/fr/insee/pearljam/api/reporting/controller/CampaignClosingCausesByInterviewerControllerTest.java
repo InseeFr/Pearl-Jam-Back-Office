@@ -34,19 +34,16 @@ class CampaignClosingCausesByInterviewerControllerTest {
     private static final CampaignClosingCausesByInterviewersResponse EMPTY_RESULT =
             new CampaignClosingCausesByInterviewersResponse(
                     List.of(),
-                    new CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite(
-                            new CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse(
+                    new CampaignClosingCausesByInterviewersResponse.TotalInterviewers(
                                     0L,
                                     new CampaignClosingCausesByInterviewersResponse
-                                            .OrganizationUnitSite.SurveyUnitsSiteResponse
-                                            .ClosingCauseSiteResponse(
+                                            .TotalInterviewers.TotalInterviewerClosingCauses(
                                             0L,
                                             0L,
                                             0L,
                                             0L,
                                             0L)
                             )
-                    )
             );
 
     @BeforeEach

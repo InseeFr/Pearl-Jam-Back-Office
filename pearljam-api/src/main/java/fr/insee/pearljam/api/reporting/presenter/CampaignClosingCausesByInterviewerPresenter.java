@@ -2,8 +2,8 @@ package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.Interviewer.SurveyUnitsResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite;
-import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.OrganizationUnitSite.SurveyUnitsSiteResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.TotalInterviewers;
+import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse.TotalInterviewers.TotalInterviewerClosingCauses;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
@@ -41,19 +41,17 @@ public class CampaignClosingCausesByInterviewerPresenter implements CampaignStat
         long totalRowInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getRowClosingCauseCount).sum();
         long totalClosingCauseInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getTotalClosingCauses).sum();
 
-        OrganizationUnitSite organizationUnitSite;
-        organizationUnitSite = new OrganizationUnitSite(
-                new SurveyUnitsSiteResponse(
+        TotalInterviewers totalInterviewers = new TotalInterviewers(
                         totalSUInterviewers,
-                        new SurveyUnitsSiteResponse.ClosingCauseSiteResponse(
+                        new TotalInterviewerClosingCauses(
                                 totalNpaInterviewers,
                                 totalNpiInterviewers,
                                 totalNpxInterviewers,
                                 totalRowInterviewers,
                                 totalClosingCauseInterviewers
-                        ))
+                        )
         );
 
-        return new CampaignClosingCausesByInterviewersResponse(interviewers, organizationUnitSite);
+        return new CampaignClosingCausesByInterviewersResponse(interviewers, totalInterviewers);
     }
 }
