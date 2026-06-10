@@ -60,8 +60,18 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                            su.id                              AS surveyUnitId,
                            su.display_name                    AS surveyUnitDisplayName,
                            si.ssech                           AS ssech,
-                           NULLIF(split_part(trim(a.l6), ' ', 1), '') AS postalCode,
-                           NULLIF(substring(trim(a.l6) from '^\\d+\\s+(.*)$'), '') AS city,
+                           CASE
+                               WHEN a.l6 ~ '^\\d{5}\\s+'
+                                   THEN substring(a.l6 from '^(\\d{5})')
+                               ELSE NULL
+                           END AS postalCode,
+                           CASE
+                               WHEN a.l6 ~ '^\\d{5}\\s+'
+                                   THEN substring(a.l6 from '^\\d{5}\\s+(.*)$')
+                               WHEN trim(coalesce(a.l6, '')) <> ''
+                                   THEN a.l6
+                               ELSE NULL
+                           END AS city,
                            ls.current_state                   AS currentStateType,
                            cc.type                            AS closingCauseType,
                           int.first_name                      AS interviewerFirstName,
@@ -140,7 +150,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         }
         return """
             AND (
-                LOWER(NULLIF(substring(trim(a.l6) from '^\\d+\\s+(.*)$'), '')) LIKE :search OR
+                LOWER(COALESCE(a.l6, '')) LIKE :search OR
                 LOWER(su.id) LIKE :search OR
                 LOWER(CONCAT(int.first_name, ' ', int.last_name)) LIKE :search
             )

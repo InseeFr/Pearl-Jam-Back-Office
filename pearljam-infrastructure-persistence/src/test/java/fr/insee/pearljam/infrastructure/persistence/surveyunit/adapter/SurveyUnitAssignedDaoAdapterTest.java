@@ -149,6 +149,22 @@ class SurveyUnitAssignedDaoAdapterTest {
             StateType.TBR
         );
 
+        createSurveyUnit(
+            "SU-5",
+            campaign2,
+            marie,
+            "",
+            StateType.TBR
+        );
+
+        createSurveyUnit(
+            "SU-6",
+            campaign2,
+            marie,
+            "Lille",
+            StateType.TBR
+        );
+
 
         SurveyUnitDB su1 = surveyUnitRepository.findById("SU-1").orElseThrow();
 
@@ -220,19 +236,20 @@ class SurveyUnitAssignedDaoAdapterTest {
             .extracting(SurveyUnitAssigned::surveyUnitId)
             .containsExactly("SU-2");
     }
+
     @Test
     void should_search_by_city() {
 
         Page<SurveyUnitAssigned> result =
             adapter.findSurveyUnitsAssigned(
-                List.of(CAMPAIGN_1_ID),
-                "Lyon",
+                List.of(CAMPAIGN_2_ID),
+                "Lille",
                 PageRequest.of(0, 20)
             );
 
-        assertThat(result.getContent())
+        assertThat(result.getContent()).hasSize(2)
             .extracting(SurveyUnitAssigned::city)
-            .containsExactly("Lyon");
+            .containsExactly("Lille", "Lille");
     }
 
     @Test
