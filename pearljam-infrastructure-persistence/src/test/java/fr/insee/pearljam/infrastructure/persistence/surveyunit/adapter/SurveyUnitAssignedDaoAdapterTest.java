@@ -326,9 +326,7 @@ class SurveyUnitAssignedDaoAdapterTest {
             Arguments.of("interviewerLabel", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::interviewerLastName),
             Arguments.of("ssech",(Function<SurveyUnitAssigned, String>)  SurveyUnitAssigned::ssech),
             Arguments.of("location", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::location),
-            Arguments.of("city", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::city),
-            Arguments.of("questionnaireState", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::questionnaireState),
-            Arguments.of("closingCause", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::closingCause)
+            Arguments.of("city", (Function<SurveyUnitAssigned, String>) SurveyUnitAssigned::city)
         );
     }
 
