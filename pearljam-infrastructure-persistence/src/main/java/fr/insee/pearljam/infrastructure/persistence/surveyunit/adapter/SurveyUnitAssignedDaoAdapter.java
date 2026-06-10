@@ -31,7 +31,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         "surveyUnitDisplayName", "su.display_name",
         "interviewerLabel", "int.last_name",
         "ssech", "si.ssech",
-        "location", "a.l6",
+        "location", "postalCode",
+        "city", "city",
         "questionnaireState", "ls.current_state",
         "closingCause", "cc.type"
     );
@@ -59,7 +60,18 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                            su.id                              AS surveyUnitId,
                            su.display_name                    AS surveyUnitDisplayName,
                            si.ssech                           AS ssech,
-                           a.l6                               AS addressL6,
+                           CASE
+                               WHEN a.l6 ~ '^\\d{5}\\s+'
+                                   THEN substring(a.l6 from '^(\\d{5})')
+                               ELSE NULL
+                           END AS postalCode,
+                           CASE
+                               WHEN a.l6 ~ '^\\d{5}\\s+'
+                                   THEN substring(a.l6 from '^\\d{5}\\s+(.*)$')
+                               WHEN trim(coalesce(a.l6, '')) <> ''
+                                   THEN a.l6
+                               ELSE NULL
+                           END AS city,
                            ls.current_state                   AS currentStateType,
                            cc.type                            AS closingCauseType,
                           int.first_name                      AS interviewerFirstName,
@@ -138,7 +150,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         }
         return """
             AND (
-                LOWER(a.l6) LIKE :search OR
+                LOWER(COALESCE(a.l6, '')) LIKE :search OR
                 LOWER(su.id) LIKE :search OR
                 LOWER(CONCAT(int.first_name, ' ', int.last_name)) LIKE :search
             )
@@ -152,7 +164,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
             rs.getString("ssech"),
             rs.getString("interviewerFirstName"),
             rs.getString("interviewerLastName"),
-            rs.getString("addressL6"),
+            rs.getString("postalCode"),
+            rs.getString("city"),
             rs.getString("currentStateType"),
             rs.getString("closingCauseType")
         );

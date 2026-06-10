@@ -5,7 +5,6 @@ import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitAssigned;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,8 @@ class SurveyUnitAssignedApiPresenterTest {
             "22",
             "Jean",
             "Dupont",
-            "12345 Paris",
+            "12345",
+            "Paris",
             "NNS",
             "NPX"
         );
@@ -61,56 +61,6 @@ class SurveyUnitAssignedApiPresenterTest {
         assertThat(result.totalPages()).isEqualTo(3);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "75001 Paris,75001",
-        "69001 Lyon,69001",
-        "13100 Aix-en-Provence,13100",
-        "85100 Les Sables d'Olonne,85100",
-        "42000 Saint-Étienne,42000"
-    })
-    void buildLocation_shouldExtractPostalCode(String addressL6, String expectedPostalCode) {
-        assertThat(presenter.buildLocation(addressL6))
-            .isEqualTo(expectedPostalCode);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void buildLocation_shouldReturnNullWhenAddressIsNullOrEmpty(String addressL6) {
-        assertThat(presenter.buildLocation(addressL6))
-            .isNull();
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "75001 Paris,Paris",
-        "69001 Lyon,Lyon",
-        "13100 Aix-en-Provence,Aix-en-Provence",
-        "'85100 Les Sables d''Olonne','Les Sables d''Olonne'",
-        "42000 Saint-Étienne,Saint-Étienne"
-    })
-    void buildCity_shouldExtractCity(String addressL6, String expectedCity) {
-        assertThat(presenter.buildCity(addressL6))
-            .isEqualTo(expectedCity);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void buildCity_shouldReturnNullWhenAddressIsNullOrEmpty(String addressL6) {
-        assertThat(presenter.buildCity(addressL6))
-            .isNull();
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "75001",
-        "69001",
-        "13100"
-    })
-    void buildCity_shouldReturnNullWhenCityPartIsMissing(String addressL6) {
-        assertThat(presenter.buildCity(addressL6))
-            .isNull();
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {

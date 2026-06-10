@@ -43,22 +43,11 @@ public class SurveyUnitAssignedApiPresenter implements
                 surveyUnit.interviewerLastName()
             ),
             surveyUnit.ssech(),
-            buildLocation(surveyUnit.addressL6()),
-            buildCity(surveyUnit.addressL6()),
+            surveyUnit.location(),
+            surveyUnit.city(),
             toStateType(surveyUnit.questionnaireState()),
             toClosingCauseType(surveyUnit.closingCause())
         );
-    }
-
-    String buildLocation(String s) {
-        if (s == null || s.isBlank()) return null;
-        return s.split(" ", 2)[0];
-    }
-
-    String buildCity(String s) {
-        if (s == null || s.isBlank()) return null;
-        String[] parts = s.split(" ", 2);
-        return parts.length > 1 ? parts[1] : null;
     }
 
     StateType toStateType(String value) {

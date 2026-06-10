@@ -158,7 +158,8 @@ class SurveyUnitAssignedServiceTest {
             "SSECH1",
             "John",
             "Doe",
-            "10 rue de Paris",
+            "10000",
+            "LILLE",
             "IN_PROGRESS",
             "NONE"
         )));
