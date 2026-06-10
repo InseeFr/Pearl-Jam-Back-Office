@@ -40,4 +40,5 @@ public interface StateRepository {
 
     void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date);
 
+    List<String> findSurveyUnitsInStates(List<String> surveyUnitIds, List<StateType> forbiddenStates);
 }

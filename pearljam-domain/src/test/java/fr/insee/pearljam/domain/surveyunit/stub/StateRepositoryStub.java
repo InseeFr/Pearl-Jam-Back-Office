@@ -86,6 +86,11 @@ public class StateRepositoryStub implements StateRepository {
         surveyUnitIds.forEach(id -> saveHistory.computeIfAbsent(id, k -> new ArrayList<>()).add(stateType));
     }
 
+    @Override
+    public List<String> findSurveyUnitsInStates(List<String> surveyUnitIds, List<StateType> forbiddenStates) {
+        return List.of();
+    }
+
     // Helper methods for tests
     public void setStateForSurveyUnit(String surveyUnitId, StateType stateType) {
         surveyUnitStates.put(surveyUnitId, stateType);

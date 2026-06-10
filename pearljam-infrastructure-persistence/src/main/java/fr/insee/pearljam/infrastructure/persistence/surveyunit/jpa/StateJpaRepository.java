@@ -292,4 +292,12 @@ public interface StateJpaRepository extends JpaRepository<StateDB, Long> {
     LIMIT 1
     """)
 	Optional<StateType> findLastStateBySurveyUnitId(@Param("surveyUnitId") String surveyUnitId);
+
+    @Query("""
+    SELECT s.surveyUnit.id
+    FROM StateDB s 
+    WHERE s.surveyUnit.id IN :surveyUnitIds 
+        AND s.type IN :stateTypes
+    """)
+    List<String> findSurveyUnitIdsInStates(List<String> surveyUnitIds, List<StateType> stateTypes);
 }
