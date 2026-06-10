@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerApiPresenter;
+import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
@@ -59,7 +59,7 @@ class CampaignClosingCausesByInterviewerControllerTest {
         CampaignClosingCausesByInterviewer controller =
                 new CampaignClosingCausesByInterviewer(
                         reportingService,
-                        new CampaignClosingCausesByInterviewerApiPresenter());
+                        new CampaignClosingCausesByInterviewerPresenter());
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)

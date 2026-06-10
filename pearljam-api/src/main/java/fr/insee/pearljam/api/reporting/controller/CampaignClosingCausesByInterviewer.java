@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerApiPresenter;
+import fr.insee.pearljam.api.reporting.presenter.CampaignClosingCausesByInterviewerPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignClosingCausesByInterviewersResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS;
+import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CAMPAIGN_INTERVIEWERS_CLOSING_CAUSES;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,11 +28,11 @@ import static fr.insee.pearljam.contracts.constants.Constants.API_REPORTING_CLOS
 public class CampaignClosingCausesByInterviewer {
 
     private final CampaignReportingByInterviewersPort reportingByInterviewersPort;
-    private final CampaignClosingCausesByInterviewerApiPresenter presenter;
+    private final CampaignClosingCausesByInterviewerPresenter presenter;
 
 
-    @Operation(summary = "")
-    @GetMapping(API_REPORTING_CLOSING_CAUSES_BY_INTERVIEWERS)
+    @Operation(summary = "Endpoint for retrieving closing causes of interviewers for a campaign")
+    @GetMapping(API_REPORTING_CAMPAIGN_INTERVIEWERS_CLOSING_CAUSES)
     @Parameter(name = "userId", hidden = true)
     public CampaignClosingCausesByInterviewersResponse getCampaignClosingCausesStatusByInterviewer(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,

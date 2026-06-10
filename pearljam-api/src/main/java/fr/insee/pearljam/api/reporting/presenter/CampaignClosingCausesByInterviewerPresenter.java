@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CampaignClosingCausesByInterviewerApiPresenter implements CampaignStatsByInterviewersPresenter<CampaignClosingCausesByInterviewersResponse> {
+public class CampaignClosingCausesByInterviewerPresenter implements CampaignStatsByInterviewersPresenter<CampaignClosingCausesByInterviewersResponse> {
     @Override
     public CampaignClosingCausesByInterviewersResponse present(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
 
@@ -34,16 +34,23 @@ public class CampaignClosingCausesByInterviewerApiPresenter implements CampaignS
                         ))
                 )).toList();
 
+        long totalSUInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getAllocatedCount).sum();
+        long totalNpaInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpaClosingCauseCount).sum();
+        long totalNpiInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpiClosingCauseCount).sum();
+        long totalNpxInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpxClosingCauseCount).sum();
+        long totalRowInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getRowClosingCauseCount).sum();
+        long totalClosingCauseInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getTotalClosingCauses).sum();
+
         OrganizationUnitSite organizationUnitSite;
         organizationUnitSite = new OrganizationUnitSite(
                 new SurveyUnitsSiteResponse(
-                        campaignStats.getAllocatedCount(),
+                        totalSUInterviewers,
                         new SurveyUnitsSiteResponse.ClosingCauseSiteResponse(
-                                campaignStats.getNpaClosingCauseCount(),
-                                campaignStats.getNpiClosingCauseCount(),
-                                campaignStats.getNpxClosingCauseCount(),
-                                campaignStats.getRowClosingCauseCount(),
-                                siteStats.getTotalClosingCauses()
+                                totalNpaInterviewers,
+                                totalNpiInterviewers,
+                                totalNpxInterviewers,
+                                totalRowInterviewers,
+                                totalClosingCauseInterviewers
                         ))
         );
 
