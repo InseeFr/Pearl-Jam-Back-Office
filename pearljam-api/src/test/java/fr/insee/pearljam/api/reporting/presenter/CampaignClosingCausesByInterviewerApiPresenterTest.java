@@ -85,8 +85,8 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         assertThat(result.interviewers().get(1).interviewerId()).isEqualTo("int-02");
         assertThat(result.interviewers().get(1).interviewerLabel()).isEqualTo("Bob Dupont");
 
-        assertThat(result.site().surveyUnits().closingCauses().rightOfWithdrawal()).isEqualTo(6L);
-        assertThat(result.site().surveyUnits().allocated()).isEqualTo(150L);
+        assertThat(result.total().closingCauses().rightOfWithdrawal()).isEqualTo(6L);
+        assertThat(result.total().allocated()).isEqualTo(150L);
 
     }
 
@@ -117,8 +117,8 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         Interviewer interviewer = result.interviewers().getFirst();
         assertThat(interviewer.surveyUnits().allocated()).isZero();
         assertThat(interviewer.surveyUnits().closingCauses().total()).isZero();
-        assertThat(result.site().surveyUnits().allocated()).isZero();
-        assertThat(result.site().surveyUnits().closingCauses().total()).isZero();
+        assertThat(result.total().allocated()).isZero();
+        assertThat(result.total().closingCauses().total()).isZero();
     }
 
     @Test
@@ -126,7 +126,7 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         CampaignClosingCausesByInterviewersResponse result =
                 presenter.present(List.of(), null, null);
 
-        assertThat(result.site().surveyUnits().allocated()).isZero();
-        assertThat(result.site().surveyUnits().closingCauses().total()).isZero();
+        assertThat(result.total().allocated()).isZero();
+        assertThat(result.total().closingCauses().total()).isZero();
     }
 }

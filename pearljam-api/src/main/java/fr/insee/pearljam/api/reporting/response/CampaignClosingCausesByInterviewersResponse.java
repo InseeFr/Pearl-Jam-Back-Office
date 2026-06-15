@@ -7,7 +7,7 @@ import java.util.List;
 @Schema(name = "CampaignProgressByInterviewers")
 public record CampaignClosingCausesByInterviewersResponse(
         List<Interviewer> interviewers,
-        OrganizationUnitSite site
+        TotalInterviewers total
 ) {
     @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(
@@ -33,24 +33,18 @@ public record CampaignClosingCausesByInterviewersResponse(
         }
 
     }
-    @Schema(name = "OrganizationUnitSite")
-    public record OrganizationUnitSite(
-            SurveyUnitsSiteResponse surveyUnits
-    ) {
-        @Schema(name = "SurveyUnitsStateCountsForSite")
-        public record SurveyUnitsSiteResponse(
-                Long allocated,
-                ClosingCauseSiteResponse closingCauses
-        ) {
-            @Schema(name = "ClosingCauseForSiteSurveyUnits")
-            public record ClosingCauseSiteResponse(
+    @Schema(name = "TotalInterviewers")
+    public record TotalInterviewers(
+            Long allocated,
+            TotalInterviewerClosingCauses closingCauses) {
+            @Schema(name = "TotalInterviewerClosingCauses")
+            public record TotalInterviewerClosingCauses(
                     Long interviewerAbsence,
                     Long notProcessedByInterviewer,
                     Long exceptionalReason,
                     Long rightOfWithdrawal,
                     Long total
             ) {
-            }
         }
     }
 }

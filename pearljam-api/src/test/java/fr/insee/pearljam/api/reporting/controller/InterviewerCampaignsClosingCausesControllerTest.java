@@ -2,6 +2,8 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsClosingCausesPresenter;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse.InterviewerCampaignSurveyUnits;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse.InterviewerCampaignsTotalSurveyUnit;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,14 +37,22 @@ class InterviewerCampaignsClosingCausesControllerTest {
         String userId = "user-1";
         LocalDate day = LocalDate.of(2024, Month.JANUARY, 15);
 
-        List<InterviewerCampaignsClosingCausesResponse> expected = List.of(
-                new InterviewerCampaignsClosingCausesResponse("CAMPAIGN-1", 10L,
-                        new InterviewerCampaignsClosingCausesResponse.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L))
+        InterviewerCampaignSurveyUnits campaignSurveyUnits = new InterviewerCampaignSurveyUnits(
+                "CAMPAIGN-1",
+                10L,
+                new InterviewerCampaignSurveyUnits.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L)
         );
+        InterviewerCampaignsTotalSurveyUnit total = new InterviewerCampaignsTotalSurveyUnit(
+                10L,
+                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L)
+        );
+        InterviewerCampaignsClosingCausesResponse expected =
+                new InterviewerCampaignsClosingCausesResponse(List.of(campaignSurveyUnits), total);
+
         when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, day, interviewerId, presenter))
                 .thenReturn(expected);
 
-        List<InterviewerCampaignsClosingCausesResponse> result =
+        InterviewerCampaignsClosingCausesResponse result =
                 controller.getInterviewerClosingCausesByCampaign(interviewerId, day, userId);
 
         assertThat(result).isEqualTo(expected);
@@ -54,13 +64,22 @@ class InterviewerCampaignsClosingCausesControllerTest {
         String interviewerId = "interviewer-1";
         String userId = "user-1";
 
-        when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter))
-                .thenReturn(List.of());
+        InterviewerCampaignsClosingCausesResponse expected =
+                new InterviewerCampaignsClosingCausesResponse(
+                        List.of(),
+                        new InterviewerCampaignsTotalSurveyUnit(
+                                0L,
+                                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(0L, 0L, 0L, 0L, 0L)
+                        )
+                );
 
-        List<InterviewerCampaignsClosingCausesResponse> result =
+        when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter))
+                .thenReturn(expected);
+
+        InterviewerCampaignsClosingCausesResponse result =
                 controller.getInterviewerClosingCausesByCampaign(interviewerId, null, userId);
 
-        assertThat(result).isEmpty();
+        assertThat(result).isEqualTo(expected);
         verify(interviewerCampaignsReportingPort).getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter);
     }
 }
