@@ -54,9 +54,11 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         }
 
         validateSurveyUnitsExist(surveyUnitIds);
-        validateNoExistingClosingCause(surveyUnitIds);
+        // closing cause can be udpate in temporary clo
+        if (toClose) {
+            validateNoExistingClosingCause(surveyUnitIds);
+        }
         validateClosableStates(surveyUnitIds);
-
         applyClosingCause(surveyUnitIds, type);
 
         if (toClose) {
@@ -69,43 +71,43 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
 
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
-                .map(OrganizationUnitSummary::getId)
-                .toList();
+            .map(OrganizationUnitSummary::getId)
+            .toList();
 
         long now = dateService.getCurrentTimestamp();
 
         List<ClosableSurveyUnitCandidateView> candidates =
-                surveyUnitRepository.findClosableCandidates(now, lstOuIds);
+            surveyUnitRepository.findClosableCandidates(now, lstOuIds);
 
         if (candidates.isEmpty()) {
             return presenter.empty();
         }
 
         Map<String, ClosableSurveyUnitCandidateView> candidatesById =
-                candidates.parallelStream()
-                        .collect(Collectors.toMap(
-                                ClosableSurveyUnitCandidateView::getId,
-                                Function.identity()
-                        ));
+            candidates.parallelStream()
+                .collect(Collectors.toMap(
+                    ClosableSurveyUnitCandidateView::getId,
+                    Function.identity()
+                ));
 
         Map<String, String> states =
-                questionnaireStatePort.getStates(candidatesById.keySet());
+            questionnaireStatePort.getStates(candidatesById.keySet());
 
         Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
-                candidates.parallelStream()
-                        .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, states.get(candidate.getId())))
-                        .collect(Collectors.toMap(
-                                ClosableSurveyUnitCandidateView::getId,
-                                Function.identity()
-                        ));
+            candidates.parallelStream()
+                .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, states.get(candidate.getId())))
+                .collect(Collectors.toMap(
+                    ClosableSurveyUnitCandidateView::getId,
+                    Function.identity()
+                ));
 
         List<ClosableSurveyUnitView> closableSurveyUnitProjections =
-                surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
+            surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
 
         return presenter.present(
-                closableSurveyUnitProjections,
-                candidatesById,
-                states
+            closableSurveyUnitProjections,
+            candidatesById,
+            states
         );
     }
 

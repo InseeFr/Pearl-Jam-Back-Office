@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class PaginationHelpers {
 
+    public static final String ORDER_BY = " ORDER BY ";
+
     private PaginationHelpers() {
         /* This utility class should not be instantiated */
     }
@@ -32,11 +34,12 @@ public class PaginationHelpers {
         String property = order.getProperty();
         if ("questionnaireState".equals(property)) {
             return buildQuestionnaireStateSortClause(column, direction);
-        } else if ("closingCause".equals(property)) {
+        }
+        if ("closingCause".equals(property)) {
             return buildClosingCauseSortClause(column, direction);
         }
 
-        return " ORDER BY " + column + " " + direction + " ";
+        return ORDER_BY + column + " " + direction + " ";
     }
 
     private static String buildQuestionnaireStateSortClause(String column, String direction) {
@@ -60,7 +63,7 @@ public class PaginationHelpers {
                                "WHEN " + column + " = 'VIC' THEN 14 " +
                                "WHEN " + column + " = 'VIN' THEN 15 " +
                                "ELSE 16 END";
-        return " ORDER BY " + caseExpression + " " + direction + " ";
+        return ORDER_BY + caseExpression + " " + direction + " ";
     }
 
     private static String buildClosingCauseSortClause(String column, String direction) {
@@ -73,6 +76,6 @@ public class PaginationHelpers {
                                "WHEN " + column + " = 'NPI' THEN 3 " +
                                "WHEN " + column + " = 'NPX' THEN 4 " +
                                "ELSE 5 END";
-        return " ORDER BY " + caseExpression + " " + direction + " ";
+        return ORDER_BY + caseExpression + " " + direction + " ";
     }
 }
