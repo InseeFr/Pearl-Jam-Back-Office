@@ -12,13 +12,13 @@ public record InterviewerCampaignsClosingCausesResponse(
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit
 ) {
 
-    @Schema(name = "InterviewerCampaignSurveyUnits")
+    @Schema(name = "InterviewerCampaignsClosingCauses")
     public record InterviewerCampaignSurveyUnits  (
             String campaignLabel,
             Long allocated,
             ClosingCauseResponse closingCauses
     ) {
-        @Schema(name = "ClosingCauseForSurveyUnit")
+        @Schema(name = "InterviewerCampaignsClosingCausesForSurveyUnit")
         public record ClosingCauseResponse (
                 Long interviewerAbsence,
                 Long notProcessedByInterviewer,
@@ -28,12 +28,12 @@ public record InterviewerCampaignsClosingCausesResponse(
         ) {}
     }
 
-    @Schema(name = "InterviewerCampaignsTotalSurveyUnit")
+    @Schema(name = "InterviewerCampaignsClosingCausesTotalSurveyUnit")
     public record InterviewerCampaignsTotalSurveyUnit(
             Long allocated,
             ClosingCauseResponse closingCauses
     ) {
-        @Schema(name = "ClosingCauseInterviewerCampaignsTotal")
+        @Schema(name = "InterviewerCampaignsClosingCausesTotal")
         public record ClosingCauseResponse(
                 Long interviewerAbsence,
                 Long notProcessedByInterviewer,
