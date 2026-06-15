@@ -70,7 +70,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         );
 
         // Then
@@ -95,7 +95,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         );
 
         // Then
@@ -122,7 +122,7 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining(surveyUnitId);
@@ -132,8 +132,8 @@ class SurveyUnitClosingTest {
     }
 
     @Test
-    @DisplayName("Should throw ClosingCauseAlreadyExistsException when closing cause already exists")
-    void shouldThrowExceptionWhenClosingCauseAlreadyExists() {
+    @DisplayName("Should throw ClosingCauseAlreadyExistsException when closing cause already exists and toClose is true")
+    void shouldThrowExceptionWhenClosingCauseAlreadyExistsToCloseTrue() {
         // Given
         String surveyUnitId = "SU001";
         List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
@@ -144,12 +144,31 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining(surveyUnitId);
 
         assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
+    }
+
+    @Test
+    @DisplayName("Should not throw ClosingCauseAlreadyExistsException when closing cause already exists and toClose is false")
+    void shouldNotThrowExceptionWhenClosingCauseAlreadyExistsToCloseFalse() {
+        // Given
+        String surveyUnitId = "SU001";
+        List<String> surveyUnitIds = Collections.singletonList(surveyUnitId);
+        ClosingCauseType type = ClosingCauseType.ROW;
+
+        surveyUnitService.addExistingSurveyUnit(surveyUnitId);
+        closingCauseRepository.addInitialClosingCauseToSurveyUnit(surveyUnitId, ClosingCauseType.NPA);
+
+        // When/Then
+        assertDoesNotThrow(() ->
+            surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, false)
+        );
+
+        assertEquals(1, closingCauseRepository.getAddedClosingCausesCount());
     }
 
     @Test
@@ -164,7 +183,7 @@ class SurveyUnitClosingTest {
 
         // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining("INVALID");
@@ -191,7 +210,7 @@ class SurveyUnitClosingTest {
 
         // When/Then - With batch validation, ALL are validated BEFORE processing
         assertThatThrownBy(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         )
                 .isInstanceOf(ClosingCauseAlreadyExistsException.class)
                 .hasMessageContaining("SU002");
@@ -214,7 +233,7 @@ class SurveyUnitClosingTest {
 
         // When
         assertDoesNotThrow(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         );
 
         // Then
@@ -233,7 +252,7 @@ class SurveyUnitClosingTest {
             surveyUnitService.addExistingSurveyUnit(surveyUnitId);
 
             assertDoesNotThrow(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
             );
 
             assertTrue(closingCauseRepository.existsClosingCauseFromSurveyUnitId(surveyUnitId));
@@ -253,7 +272,7 @@ class SurveyUnitClosingTest {
 
         // When/Then
         assertThatThrownBy(() ->
-        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type)
+        surveyUnitClosing.addClosingCauseToMultipleSurveyUnits(surveyUnitIds, type, true)
         )
                 .isInstanceOf(SurveyUnitNotFoundException.class)
                 .hasMessageContaining("INVALID1")

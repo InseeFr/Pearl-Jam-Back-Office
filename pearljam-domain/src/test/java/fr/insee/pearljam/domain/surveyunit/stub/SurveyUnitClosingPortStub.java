@@ -13,7 +13,7 @@ public class SurveyUnitClosingPortStub implements SurveyUnitClosingPort {
     private final Set<String> deletedClosingCauses = new HashSet<>();
 
     @Override
-    public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitId, ClosingCauseType type) {
+    public void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitId, ClosingCauseType type, boolean toClose) {
         // Not used by SurveyUnitStateService
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }

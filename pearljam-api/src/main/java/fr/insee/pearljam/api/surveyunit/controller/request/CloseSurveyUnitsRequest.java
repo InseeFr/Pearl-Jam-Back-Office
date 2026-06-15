@@ -17,4 +17,6 @@ public class CloseSurveyUnitsRequest {
 
     @NotNull(message = "Closing Cause cannot be null")
     private ClosingCauseType closingCauseType;
+
+    private Boolean toClose = true;
 }

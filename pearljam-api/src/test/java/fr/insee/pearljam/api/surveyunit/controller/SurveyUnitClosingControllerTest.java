@@ -8,6 +8,7 @@ import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
+import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class SurveyUnitClosingControllerTest {
     void shouldReturn204WhenClosingSurveyUnit() throws Exception {
         // given
         doNothing().when(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), anyBoolean());
 
         CloseSurveyUnitsRequest request = new CloseSurveyUnitsRequest();
         request.setSurveyUnitIds(List.of("12"));
@@ -67,14 +68,14 @@ class SurveyUnitClosingControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), anyBoolean());
     }
 
     @Test
-    void shouldReturn409WhenConflict() throws Exception {
+    void shouldReturn409WhenConflictAleadyExists() throws Exception {
         doThrow(new ClosingCauseAlreadyExistsException("11"))
                 .when(surveyUnitClosingPort)
-                .addClosingCauseToMultipleSurveyUnits(anyList(), any());
+                .addClosingCauseToMultipleSurveyUnits(anyList(), any(), anyBoolean());
 
 
         CloseSurveyUnitsRequest request = new CloseSurveyUnitsRequest();
@@ -85,6 +86,24 @@ class SurveyUnitClosingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonMapper.shared().writeValueAsBytes(request)))
                 .andExpect(status().isConflict());
+    }
+
+
+    @Test
+    void shouldReturn409WhenConflictNotClosable() throws Exception {
+        doThrow(new SurveyUnitNotClosableException("11"))
+            .when(surveyUnitClosingPort)
+            .addClosingCauseToMultipleSurveyUnits(anyList(), any(), anyBoolean());
+
+
+        CloseSurveyUnitsRequest request = new CloseSurveyUnitsRequest();
+        request.setSurveyUnitIds(List.of("11"));
+        request.setClosingCauseType(ClosingCauseType.NPA);
+
+        mockMvc.perform(post(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonMapper.shared().writeValueAsBytes(request)))
+            .andExpect(status().isConflict());
     }
 
     @Test

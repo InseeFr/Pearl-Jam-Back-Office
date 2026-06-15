@@ -76,7 +76,7 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
-    public Optional<StateType> findStateBySurveyUnitId(String surveyUnitId) {
+    public Optional<StateType> findLastStateBySurveyUnitId(String surveyUnitId) {
         return Optional.ofNullable(surveyUnitStates.get(surveyUnitId));
     }
 
@@ -84,6 +84,11 @@ public class StateRepositoryStub implements StateRepository {
     public void saveStateForSurveyUnits(List<String> surveyUnitIds, StateType stateType, Instant date) {
         surveyUnitIds.forEach( id -> surveyUnitStates.put(id, stateType));
         surveyUnitIds.forEach(id -> saveHistory.computeIfAbsent(id, k -> new ArrayList<>()).add(stateType));
+    }
+
+    @Override
+    public List<String> findSurveyUnitsInStates(List<String> surveyUnitIds, List<StateType> forbiddenStates) {
+        return List.of();
     }
 
     // Helper methods for tests

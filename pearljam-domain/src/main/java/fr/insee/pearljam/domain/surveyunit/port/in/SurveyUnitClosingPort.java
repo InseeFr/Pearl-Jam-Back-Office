@@ -5,7 +5,7 @@ import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import java.util.List;
 
 public interface SurveyUnitClosingPort {
-    void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitId, ClosingCauseType type);
+    void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitId, ClosingCauseType type, boolean toClose);
 
     <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter);
 
