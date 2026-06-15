@@ -4,24 +4,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(name = "CampaignProgressByInterviewers")
+@Schema(name = "CampaignClosingCausesByInterviewers")
 public record CampaignClosingCausesByInterviewersResponse(
         List<Interviewer> interviewers,
         TotalInterviewers total
 ) {
-    @Schema(name = "CampaignProgressByInterviewersInterviewer")
+    @Schema(name = "CampaignClosingCausesByInterviewer")
     public record Interviewer(
             String interviewerId,
             String interviewerLabel,
             SurveyUnitsResponse surveyUnits
     ) {
 
-        @Schema(name = "SurveyUnitsStateCountsForInterviewer")
+        @Schema(name = "CampaignClosingCausesByInterviewersSurveyUnits")
         public record SurveyUnitsResponse (
                 Long allocated,
                 ClosingCauseResponse closingCauses
         ) {
-            @Schema(name = "ClosingCauseForInterviewerSurveyUnit")
+            @Schema(name = "CampaignClosingCausesByInterviewerClosingCause")
             public record ClosingCauseResponse (
                     Long interviewerAbsence,
                     Long notProcessedByInterviewer,
@@ -33,11 +33,11 @@ public record CampaignClosingCausesByInterviewersResponse(
         }
 
     }
-    @Schema(name = "TotalInterviewers")
+    @Schema(name = "CampaignClosingCausesByInterviewersTotalInterviewers")
     public record TotalInterviewers(
             Long allocated,
             TotalInterviewerClosingCauses closingCauses) {
-            @Schema(name = "TotalInterviewerClosingCauses")
+            @Schema(name = "CampaignClosingCausesByInterviewersTotalInterviewer")
             public record TotalInterviewerClosingCauses(
                     Long interviewerAbsence,
                     Long notProcessedByInterviewer,
