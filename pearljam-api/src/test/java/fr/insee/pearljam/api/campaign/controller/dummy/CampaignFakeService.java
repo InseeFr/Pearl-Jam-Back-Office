@@ -67,7 +67,7 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase) {
+    public List<CampaignPreferenceModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase) {
         return List.of();
     }
 
