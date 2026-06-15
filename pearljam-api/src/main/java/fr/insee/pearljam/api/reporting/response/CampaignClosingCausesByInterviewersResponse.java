@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(name = "CampaignProgressByInterviewers")
+@Schema(name = "CampaignProgressByInterviewersClosingCauses")
 public record CampaignClosingCausesByInterviewersResponse(
         List<Interviewer> interviewers,
         TotalInterviewers total
