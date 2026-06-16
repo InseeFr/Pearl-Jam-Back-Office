@@ -43,7 +43,7 @@ public interface CampaignService {
      * @param campaignPhase
      * @return {@link List} of {@link CampaignPreferenceModel}
      */
-    List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase);
+    List<CampaignPreferenceModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase);
 
     /**
      * @return {@link List} of {@link CampaignDto}

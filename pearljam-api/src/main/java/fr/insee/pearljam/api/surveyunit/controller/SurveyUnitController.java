@@ -275,7 +275,6 @@ public class SurveyUnitController {
 	 * @return list of {@link SurveyUnitCampaignDto} if exists, else
 	 *         {@link HttpStatus} FORBIDDEN or NOT_FOUND
 	 */
-	@Deprecated(forRemoval = true)
 	@Operation(summary = "Get Survey Units in target campaign")
 	@GetMapping(Constants.API_CAMPAIGN_ID_SURVEYUNITS)
 	public ResponseEntity<Set<SurveyUnitCampaignDto>> getSurveyUnitByCampaignId(

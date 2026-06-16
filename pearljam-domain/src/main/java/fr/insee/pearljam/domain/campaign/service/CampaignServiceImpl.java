@@ -6,13 +6,13 @@ import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.in.*;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.out.ReferentRepository;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.message.port.out.MessageRepository;
@@ -118,18 +118,27 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<CampaignPreferenceModel> getCampaignPreferencesForSpecificPhase(String userId, CampaignPhase campaignPhase) {
-        List<CampaignDto> campaigns = getPreferredCampaigns(userId);
+    public List<CampaignPreferenceModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase) {
+        List<String> organizationUnitIds = userService
+            .getUserOUs(userId, true)
+            .stream()
+            .map(OrganizationUnitDto::getId)
+            .toList();
 
-        List<CampaignDto> campaignsFilteredForPhase = campaigns.stream().filter(c -> CampaignPhase.fromDates(
+        Long currentTimestamp = dateService.getCurrentTimestamp();
+
+        List<CampaignVisibility> userCampaigns = campaignVisibilityPort
+            .findCampaignsWithVisibilityByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
+
+        List<CampaignVisibility> campaignsFilteredForPhase = userCampaigns.stream().filter(c -> CampaignPhase.fromDates(
                 dateService.getCurrentTimestamp(),
-                c.getManagementStartDate(),
-                c.getInterviewerStartDate(),
-                c.getCollectionEndDate(),
-                c.getEndDate()).equals(campaignPhase)).toList();
+                c.managementStartDate(),
+                c.interviewerStartDate(),
+                c.collectionEndDate(),
+                c.endDate()).equals(campaignPhase)).toList();
 
         return campaignsFilteredForPhase.stream()
-                .map(c -> new CampaignPreferenceModel(c.getId(), c.getLabel(), true)).toList();
+                .map(c -> new CampaignPreferenceModel(c.id(), c.label(), true)).toList();
 
     }
 

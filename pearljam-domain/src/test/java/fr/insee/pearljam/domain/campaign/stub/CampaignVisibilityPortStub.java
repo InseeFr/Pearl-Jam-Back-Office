@@ -1,10 +1,12 @@
 package fr.insee.pearljam.domain.campaign.stub;
 
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
+import lombok.Setter;
 
 import java.util.List;
 
+@Setter
 public class CampaignVisibilityPortStub implements CampaignVisibilityPort {
 
     
@@ -16,7 +18,7 @@ public class CampaignVisibilityPortStub implements CampaignVisibilityPort {
 
     @Override
     public List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
-        return List.of();
+        return campaignsWithVisibility;
     }
 
     @Override
