@@ -18,7 +18,7 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         List<InterviewerCampaignSurveyUnits> interviewerCampaignSurveyUnits =
                 stats.stream().map(interv ->
                 new InterviewerCampaignSurveyUnits(
-                        interv.getCampaignId(),
+                        interv.getCampaignLabel(),
                         interv.getAllocatedCount(),
                         new InterviewerCampaignSurveyUnits.ClosingCauseResponse(
                             interv.getNpaClosingCauseCount(),
