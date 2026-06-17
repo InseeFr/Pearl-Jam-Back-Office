@@ -28,6 +28,11 @@ public abstract class AbstractDailyStats {
     private long noticeCommunicationCount;
     private long reminderCommunicationCount;
 
+    private long npaProvisionalClosingCauseCount;
+    private long npiProvisionalClosingCauseCount;
+    private long npxProvisionalClosingCauseCount;
+    private long rowProvisionalClosingCauseCount;
+
     private long npaClosingCauseCount;
     private long npiClosingCauseCount;
     private long npxClosingCauseCount;
@@ -111,4 +116,11 @@ public abstract class AbstractDailyStats {
     public long getTotalClosingCauses() {
         return npaClosingCauseCount + getOtherReasonClosingCauses();
     }
+
+    public long getTotalProvisionalClosingCauses() {
+        return npaProvisionalClosingCauseCount + npiProvisionalClosingCauseCount
+                + npxProvisionalClosingCauseCount + rowProvisionalClosingCauseCount;
+
+    }
+
 }

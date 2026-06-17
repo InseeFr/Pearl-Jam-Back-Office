@@ -80,10 +80,14 @@ public class CampaignProgressSnapshot {
                 su.campaign_id,
                 su.organization_unit_id,
                 su.interviewer_id,
-                SUM(CASE WHEN cc.type = 'NPA' THEN 1 ELSE 0 END) AS npa_count,
-                SUM(CASE WHEN cc.type = 'NPI' THEN 1 ELSE 0 END) AS npi_count,
-                SUM(CASE WHEN cc.type = 'NPX' THEN 1 ELSE 0 END) AS npx_count,
-                SUM(CASE WHEN cc.type = 'ROW' THEN 1 ELSE 0 END) AS row_count
+                SUM(CASE WHEN cc.type = 'NPA' THEN 1 ELSE 0 END) AS npa_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPI' THEN 1 ELSE 0 END) AS npi_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPX' THEN 1 ELSE 0 END) AS npx_provisional_count,
+                SUM(CASE WHEN cc.type = 'ROW' THEN 1 ELSE 0 END) AS row_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPA' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npa_count,
+                SUM(CASE WHEN cc.type = 'NPI' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npi_count,
+                SUM(CASE WHEN cc.type = 'NPX' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npx_count,
+                SUM(CASE WHEN cc.type = 'ROW' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS row_count
             FROM survey_unit su
             JOIN LATERAL (
                 SELECT c.type
@@ -93,14 +97,14 @@ public class CampaignProgressSnapshot {
                 ORDER BY c.date DESC
                 LIMIT 1
             ) cc ON true
-            JOIN LATERAL (
+            LEFT JOIN LATERAL (
                 SELECT s.type
                 FROM state s
                 WHERE s.survey_unit_id = su.id
                   AND s.date < :startOfNextDayEpoch
                 ORDER BY s.date DESC
                 LIMIT 1
-            ) latest_state ON latest_state.type = 'CLO'
+            ) latest_state ON true
             WHERE su.campaign_id IS NOT NULL
               AND su.interviewer_id IS NOT NULL
               AND su.organization_unit_id IS NOT NULL
