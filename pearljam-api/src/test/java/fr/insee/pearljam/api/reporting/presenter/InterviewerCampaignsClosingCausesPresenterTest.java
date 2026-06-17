@@ -28,11 +28,11 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         InterviewerCampaignDailyStats stats = mock(InterviewerCampaignDailyStats.class);
         when(stats.getCampaignLabel()).thenReturn(campaignLabel);
         when(stats.getAllocatedCount()).thenReturn(allocatedCount);
-        when(stats.getNpaClosingCauseCount()).thenReturn(npa);
-        when(stats.getNpiClosingCauseCount()).thenReturn(npi);
-        when(stats.getNpxClosingCauseCount()).thenReturn(npx);
-        when(stats.getRowClosingCauseCount()).thenReturn(row);
-        when(stats.getTotalClosingCauses()).thenReturn(total);
+        when(stats.getNpaProvisionalClosingCauseCount()).thenReturn(npa);
+        when(stats.getNpiProvisionalClosingCauseCount()).thenReturn(npi);
+        when(stats.getNpxProvisionalClosingCauseCount()).thenReturn(npx);
+        when(stats.getRowProvisionalClosingCauseCount()).thenReturn(row);
+        when(stats.getTotalProvisionalClosingCauses()).thenReturn(total);
         return stats;
     }
 
