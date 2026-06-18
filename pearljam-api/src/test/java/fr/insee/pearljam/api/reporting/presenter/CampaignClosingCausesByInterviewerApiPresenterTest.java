@@ -34,11 +34,11 @@ class CampaignClosingCausesByInterviewerApiPresenterTest {
         when(stats.getInterviewerFirstName()).thenReturn(firstName);
         when(stats.getInterviewerLastName()).thenReturn(lastName);
         when(stats.getAllocatedCount()).thenReturn(allocated);
-        when(stats.getNpaClosingCauseCount()).thenReturn(npa);
-        when(stats.getNpiClosingCauseCount()).thenReturn(npi);
-        when(stats.getNpxClosingCauseCount()).thenReturn(npx);
-        when(stats.getRowClosingCauseCount()).thenReturn(row);
-        when(stats.getTotalClosingCauses()).thenReturn(npa + npi + npx + row);
+        when(stats.getNpaProvisionalClosingCauseCount()).thenReturn(npa);
+        when(stats.getNpiProvisionalClosingCauseCount()).thenReturn(npi);
+        when(stats.getNpxProvisionalClosingCauseCount()).thenReturn(npx);
+        when(stats.getRowProvisionalClosingCauseCount()).thenReturn(row);
+        when(stats.getTotalProvisionalClosingCauses()).thenReturn(npa + npi + npx + row);
         return stats;
     }
 

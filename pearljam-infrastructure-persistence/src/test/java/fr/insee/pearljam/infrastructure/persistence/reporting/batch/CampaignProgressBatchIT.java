@@ -138,7 +138,12 @@ class CampaignProgressBatchIT {
         su3.getStates().add(new StateDB(BEFORE_DAY, su3, StateType.FIN));
         su3.setClosingCause(new ClosingCauseDB(null, BEFORE_DAY, ClosingCauseType.NPI, su3));
 
-        surveyUnitRepository.saveAll(List.of(su1, su2, su3));
+        // SU in NVA state with closing cause (provisional)
+        SurveyUnitDB su4 = createSurveyUnit("SU-CC4", campaign, ou1, interviewer1);
+        su4.getStates().add(new StateDB(BEFORE_DAY, su4, StateType.NVA));
+        su4.setClosingCause(new ClosingCauseDB(null, BEFORE_DAY, ClosingCauseType.NPA, su4));
+
+        surveyUnitRepository.saveAll(List.of(su1, su2, su3, su4));
         entityManager.flush();
 
         batch.run(DAY);
@@ -150,6 +155,7 @@ class CampaignProgressBatchIT {
         assertThat(stats.getNpaClosingCauseCount()).isEqualTo(1);
         assertThat(stats.getRowClosingCauseCount()).isEqualTo(1);
         assertThat(stats.getNpiClosingCauseCount()).isZero(); // FIN state, not CLO
+        assertThat(stats.getNpaProvisionalClosingCauseCount()).isEqualTo(1);
     }
 
     @Test

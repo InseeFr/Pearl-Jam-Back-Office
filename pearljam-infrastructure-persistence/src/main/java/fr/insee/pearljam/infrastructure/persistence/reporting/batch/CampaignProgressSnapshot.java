@@ -80,10 +80,14 @@ public class CampaignProgressSnapshot {
                 su.campaign_id,
                 su.organization_unit_id,
                 su.interviewer_id,
-                SUM(CASE WHEN cc.type = 'NPA' THEN 1 ELSE 0 END) AS npa_count,
-                SUM(CASE WHEN cc.type = 'NPI' THEN 1 ELSE 0 END) AS npi_count,
-                SUM(CASE WHEN cc.type = 'NPX' THEN 1 ELSE 0 END) AS npx_count,
-                SUM(CASE WHEN cc.type = 'ROW' THEN 1 ELSE 0 END) AS row_count
+                SUM(CASE WHEN cc.type = 'NPA' AND latest_state.type != 'CLO' THEN 1 ELSE 0 END) AS npa_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPI' AND latest_state.type != 'CLO' THEN 1 ELSE 0 END) AS npi_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPX' AND latest_state.type != 'CLO' THEN 1 ELSE 0 END) AS npx_provisional_count,
+                SUM(CASE WHEN cc.type = 'ROW' AND latest_state.type != 'CLO' THEN 1 ELSE 0 END) AS row_provisional_count,
+                SUM(CASE WHEN cc.type = 'NPA' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npa_count,
+                SUM(CASE WHEN cc.type = 'NPI' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npi_count,
+                SUM(CASE WHEN cc.type = 'NPX' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS npx_count,
+                SUM(CASE WHEN cc.type = 'ROW' AND latest_state.type = 'CLO' THEN 1 ELSE 0 END) AS row_count
             FROM survey_unit su
             JOIN LATERAL (
                 SELECT c.type
@@ -93,14 +97,14 @@ public class CampaignProgressSnapshot {
                 ORDER BY c.date DESC
                 LIMIT 1
             ) cc ON true
-            JOIN LATERAL (
+            LEFT JOIN LATERAL (
                 SELECT s.type
                 FROM state s
                 WHERE s.survey_unit_id = su.id
                   AND s.date < :startOfNextDayEpoch
                 ORDER BY s.date DESC
                 LIMIT 1
-            ) latest_state ON latest_state.type = 'CLO'
+            ) latest_state ON true
             WHERE su.campaign_id IS NOT NULL
               AND su.interviewer_id IS NOT NULL
               AND su.organization_unit_id IS NOT NULL
@@ -151,6 +155,10 @@ public class CampaignProgressSnapshot {
                 sc.tbr_count, sc.fin_count, sc.clo_count, sc.nva_count,
                 COALESCE(cc.notice_count, 0) AS notice_count,
                 COALESCE(cc.reminder_count, 0) AS reminder_count,
+                COALESCE(cl.npa_provisional_count, 0) AS npa_provisional_count,
+                COALESCE(cl.npi_provisional_count, 0) AS npi_provisional_count,
+                COALESCE(cl.npx_provisional_count, 0) AS npx_provisional_count,
+                COALESCE(cl.row_provisional_count, 0) AS row_provisional_count,
                 COALESCE(cl.npa_count, 0) AS npa_count,
                 COALESCE(cl.npi_count, 0) AS npi_count,
                 COALESCE(cl.npx_count, 0) AS npx_count,
@@ -176,6 +184,7 @@ public class CampaignProgressSnapshot {
                 aoc_count, aps_count, ins_count, wft_count, wfs_count,
                 tbr_count, fin_count, clo_count, nva_count,
                 notice_count, reminder_count,
+                npa_provisional_count, npi_provisional_count, npx_provisional_count, row_provisional_count,
                 npa_count, npi_count, npx_count, row_count,
                 ina_count, ref_count, imp_count, ucd_count, utr_count,
                 ala_count, duk_count, nuh_count, noa_count
@@ -200,6 +209,10 @@ public class CampaignProgressSnapshot {
                 nva_count = EXCLUDED.nva_count,
                 notice_count = EXCLUDED.notice_count,
                 reminder_count = EXCLUDED.reminder_count,
+                npa_provisional_count = EXCLUDED.npa_provisional_count,
+                npi_provisional_count = EXCLUDED.npi_provisional_count,
+                npx_provisional_count = EXCLUDED.npx_provisional_count,
+                row_provisional_count = EXCLUDED.row_provisional_count,
                 npa_count = EXCLUDED.npa_count,
                 npi_count = EXCLUDED.npi_count,
                 npx_count = EXCLUDED.npx_count,

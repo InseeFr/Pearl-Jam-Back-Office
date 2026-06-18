@@ -26,20 +26,20 @@ public class CampaignClosingCausesByInterviewerPresenter implements CampaignStat
                         new SurveyUnitsResponse(
                                 interviewerDailyStats.getAllocatedCount(),
                         new SurveyUnitsResponse.ClosingCauseResponse(
-                                interviewerDailyStats.getNpaClosingCauseCount(),
-                                interviewerDailyStats.getNpiClosingCauseCount(),
-                                interviewerDailyStats.getNpxClosingCauseCount(),
-                                interviewerDailyStats.getRowClosingCauseCount(),
-                                interviewerDailyStats.getTotalClosingCauses()
+                                interviewerDailyStats.getNpaProvisionalClosingCauseCount(),
+                                interviewerDailyStats.getNpiProvisionalClosingCauseCount(),
+                                interviewerDailyStats.getNpxProvisionalClosingCauseCount(),
+                                interviewerDailyStats.getRowProvisionalClosingCauseCount(),
+                                interviewerDailyStats.getTotalProvisionalClosingCauses()
                         ))
                 )).toList();
 
         long totalSUInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getAllocatedCount).sum();
-        long totalNpaInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpaClosingCauseCount).sum();
-        long totalNpiInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpiClosingCauseCount).sum();
-        long totalNpxInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpxClosingCauseCount).sum();
-        long totalRowInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getRowClosingCauseCount).sum();
-        long totalClosingCauseInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getTotalClosingCauses).sum();
+        long totalNpaInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpaProvisionalClosingCauseCount).sum();
+        long totalNpiInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpiProvisionalClosingCauseCount).sum();
+        long totalNpxInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getNpxProvisionalClosingCauseCount).sum();
+        long totalRowInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getRowProvisionalClosingCauseCount).sum();
+        long totalClosingCauseInterviewers = interviewerStats.stream().mapToLong(InterviewerDailyStats::getTotalProvisionalClosingCauses).sum();
 
         TotalInterviewers totalInterviewers = new TotalInterviewers(
                         totalSUInterviewers,

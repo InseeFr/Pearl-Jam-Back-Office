@@ -112,4 +112,7 @@
 	<!-- daily stats table for campaign progression reporting -->
 	<include file="changelog/624_create_campaign_daily_stats.xml" relativeToChangelogFile="true"/>
 
+	<!-- add provisional status counters in daily stats table -->
+	<include file="changelog/625_add_provisional_counters.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
