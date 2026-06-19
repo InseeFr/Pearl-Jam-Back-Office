@@ -1,15 +1,15 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignPhase;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.CampaignSummaryProgress;
 import fr.insee.pearljam.domain.reporting.readmodel.progress.StatesSummaryProgress;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CampaignSummaryProgressServiceTest {
 
@@ -69,7 +67,7 @@ class CampaignSummaryProgressServiceTest {
                 "CAMP1", "Campaign One", "camp1@insee.fr",
                 900_000L, 950_000L, 1_000_000L,
                 1_050_000L, 1_100_000L, 1_150_000L);
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
@@ -96,7 +94,7 @@ class CampaignSummaryProgressServiceTest {
                 "CAMP1", "Campaign One", "camp1@insee.fr",
                 900_000L, 950_000L, 1_000_000L,
                 1_050_000L, 1_100_000L, 1_150_000L);
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
@@ -118,7 +116,7 @@ class CampaignSummaryProgressServiceTest {
     @Test
     void shouldReturnEmptyList_whenNoCampaignsForOrgUnits() {
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of());
 
         List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
@@ -134,7 +132,7 @@ class CampaignSummaryProgressServiceTest {
                 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One")));
@@ -160,7 +158,7 @@ class CampaignSummaryProgressServiceTest {
                 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
 
         List<CampaignSummaryProgress> result = service.getCampaignSummaryProgress(USER_ID, FIXED_TODAY);
@@ -180,7 +178,7 @@ class CampaignSummaryProgressServiceTest {
                 1_050_000L, 1_100_000L, 1_150_000L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(c1, c2));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(CampaignDailyStats.empty("CAMP1", "Campaign One"),
@@ -222,7 +220,7 @@ class CampaignSummaryProgressServiceTest {
         stats.setReminderCommunicationCount(2L);
 
         when(userService.getUserOUsModel(USER_ID, true)).thenReturn(List.of(OU));
-        when(campaignVisibilityPort.findCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
+        when(campaignVisibilityPort.findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(camp));
         when(campaignDailyStatsRepositoryPort.getCampaignsStats(anyList(), anyList(), any()))
                 .thenReturn(List.of(stats));

@@ -5,7 +5,10 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import java.util.List;
 
 public interface CampaignVisibilityPort {
-    List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
+    List<CampaignVisibility> findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date);
+
+    List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(
+            List<String> ouIds, String userId, Long date);
 
     /**
      * Return a global visibility for a campaign, taking into account all visibilities for the campaign

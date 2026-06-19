@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 
-import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignVisibilityPort;
+import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
 
     private final EntityManager em;
 
-    private static final String JPQL_CAMPAIGNS_WITH_VISIBILITY = """
+    private static final String JPQL_PREFERRED_CAMPAIGNS_WITH_VISIBILITY = """
         SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
             camp.id,
             camp.label,
@@ -42,6 +42,27 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
         GROUP BY camp.id, camp.label, camp.email
         """;
 
+    private static final String JPQL_CAMPAIGNS_WITH_VISIBILITY = """
+    SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
+        camp.id,
+        camp.label,
+        camp.email,
+        MIN(vi.managementStartDate),
+        MIN(vi.interviewerStartDate),
+        MIN(vi.identificationPhaseStartDate),
+        MIN(vi.collectionStartDate),
+        MAX(vi.collectionEndDate),
+        MAX(vi.endDate)
+    )
+    FROM CampaignDB camp
+    JOIN camp.visibilities vi
+    JOIN vi.organizationUnit ou
+    WHERE vi.managementStartDate <= :date
+    AND vi.endDate > :date
+    AND ou.id in (:ouIds)
+    GROUP BY camp.id, camp.label, camp.email
+    """;
+
     private static final String JPQL_CAMPAIGN_VISIBILITY = """
         SELECT new fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility(
             vi.campaign.id,
@@ -61,11 +82,20 @@ public class CampaignVisibilityDaoAdapter implements CampaignVisibilityPort {
         """;
 
     @Override
+    public List<CampaignVisibility> findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
+            List<String> ouIds, String userId, Long date) {
+        return em.createQuery(JPQL_PREFERRED_CAMPAIGNS_WITH_VISIBILITY, CampaignVisibility.class)
+                .setParameter("ouIds", ouIds)
+                .setParameter("userId", userId)
+                .setParameter("date", date)
+                .getResultList();
+    }
+
+    @Override
     public List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(
             List<String> ouIds, String userId, Long date) {
         return em.createQuery(JPQL_CAMPAIGNS_WITH_VISIBILITY, CampaignVisibility.class)
                 .setParameter("ouIds", ouIds)
-                .setParameter("userId", userId)
                 .setParameter("date", date)
                 .getResultList();
     }

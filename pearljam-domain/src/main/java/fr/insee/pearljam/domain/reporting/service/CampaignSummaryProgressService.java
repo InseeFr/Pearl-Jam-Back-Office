@@ -45,7 +45,7 @@ public class CampaignSummaryProgressService implements CampaignSummaryProgressPo
                 .toList();
 
         List<CampaignVisibility> campaigns = campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         if (campaigns.isEmpty()) {
             log.info("No campaign visible for {}", userId);

@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.contracts.campaign.dto.input.*;
-import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
+import fr.insee.pearljam.domain.campaign.CampaignModel;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
@@ -331,7 +331,7 @@ class CampaignServiceImplTest {
         );
 
         campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(campaignVisibility));
-        List<CampaignPreferenceModel> result =
+        List<CampaignModel> result =
             campaignService.getUserCampaignsForSpecificPhase(
                 "test-user",
                 CampaignPhase.COLLECTION_IN_PROGRESS);
@@ -339,7 +339,6 @@ class CampaignServiceImplTest {
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().id()).isEqualTo(existingCampaign.getId());
         assertThat(result.getFirst().label()).isEqualTo(existingCampaign.getLabel());
-        assertThat(result.getFirst().preference()).isTrue();
     }
 
     @Test
@@ -360,7 +359,7 @@ class CampaignServiceImplTest {
 
         campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(campaignVisibility));
 
-        List<CampaignPreferenceModel> result =
+        List<CampaignModel> result =
             campaignService.getUserCampaignsForSpecificPhase(
                 "test-user",
                 CampaignPhase.COLLECTION_IN_PROGRESS);

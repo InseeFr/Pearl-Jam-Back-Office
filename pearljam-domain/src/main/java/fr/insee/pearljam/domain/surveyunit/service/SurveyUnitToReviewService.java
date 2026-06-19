@@ -44,7 +44,7 @@ public class SurveyUnitToReviewService implements SurveyUnitToReviewPort {
                 .toList();
 
         List<CampaignVisibility> campaigns = campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(ouIds, userId, currentTimestamp);
 
         // Extract campaign IDs for the repository query
         List<String> campaignIds = Stream.ofNullable(campaignId)
