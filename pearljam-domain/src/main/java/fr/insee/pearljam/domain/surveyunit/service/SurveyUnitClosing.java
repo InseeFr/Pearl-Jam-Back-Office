@@ -21,15 +21,10 @@ import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundE
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,7 +75,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter, Pageable pageable) {
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
                 .map(OrganizationUnitSummary::getId)
@@ -88,7 +83,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         long now = dateService.getCurrentTimestamp();
 
-        // 1. Retrieve all eligible survey unit IDs (lightweight: only IDs)
+        // 1. Retrieve all eligible survey unit IDs
         List<String> allEligibleIds = surveyUnitRepository.findEligibleSurveyUnitIds(now, lstOuIds);
 
         if (allEligibleIds.isEmpty()) {

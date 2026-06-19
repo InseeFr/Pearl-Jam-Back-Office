@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -59,11 +57,9 @@ public class SurveyUnitClosingController {
     @Operation(summary = "Get survey units to close for management UI with pagination")
     @GetMapping(value = Constants.API_SURVEYUNITS_TO_CLOSE, params = {"page", "size"})
     @Parameter(name = "userId", hidden = true)
-    @Parameter(name = "page", description = "Page number (0-indexed)")
-    @Parameter(name = "size", description = "Page size")
     public ResponseEntity<Page<SurveyUnitToCloseResponse>> getSurveyUnitsToClosePaginated(
             @CurrentSecurityContext(expression = "authentication.name") String userId,
-            @ParameterObject Pageable pageable) {
+            Pageable pageable) {
         Page<SurveyUnitToCloseResponse> result = surveyUnitClosingPort
                 .getSurveyUnitsToClose(userId, pagePresenter, pageable);
         return ResponseEntity.ok(result);

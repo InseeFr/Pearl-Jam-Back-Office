@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.controller.request.CloseSurveyUnitsRequest;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPagePresenter;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
@@ -42,7 +43,8 @@ class SurveyUnitClosingControllerTest {
         SurveyUnitClosingController controller =
                 new SurveyUnitClosingController(
                         surveyUnitClosingPort,
-                        new SurveyUnitClosingApiPresenter()
+                        new SurveyUnitClosingApiPresenter(),
+                        new SurveyUnitClosingApiPagePresenter()
                 );
 
         mockMvc = MockMvcBuilders

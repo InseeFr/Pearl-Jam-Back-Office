@@ -1,10 +1,10 @@
 package fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter;
 
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -137,5 +137,20 @@ public class SurveyUnitDaoAdapter implements SurveyUnitRepository {
     @Override
     public List<String> findExistingIds(List<String> surveyUnitIds) {
         return surveyUnitJpaRepository.findExistingIds(surveyUnitIds);
+    }
+
+    @Override
+    public List<String> findEligibleSurveyUnitIds(long date, List<String> lstOuIds) {
+        return surveyUnitJpaRepository.findEligibleSurveyUnitIds(date, lstOuIds);
+    }
+
+    @Override
+    public long countEligibleSurveyUnits(long date, List<String> lstOuIds) {
+        return surveyUnitJpaRepository.countEligibleSurveyUnits(date, lstOuIds);
+    }
+
+    @Override
+    public List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(List<String> ids, long date) {
+        return surveyUnitJpaRepository.findClosableCandidatesByIds(ids, date);
     }
 }

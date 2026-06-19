@@ -1,10 +1,10 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
+import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
-import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 
 import java.util.*;
 
@@ -134,5 +134,20 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
         return surveyUnitIds.stream()
                 .filter(surveyUnitDBs::containsKey)
                 .toList();
+    }
+
+    @Override
+    public List<String> findEligibleSurveyUnitIds(long date, List<String> lstOuIds) {
+        return List.of();
+    }
+
+    @Override
+    public long countEligibleSurveyUnits(long date, List<String> lstOuIds) {
+        return 0;
+    }
+
+    @Override
+    public List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(List<String> ids, long date) {
+        return List.of();
     }
 }
