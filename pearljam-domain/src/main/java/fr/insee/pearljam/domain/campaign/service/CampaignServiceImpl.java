@@ -133,7 +133,7 @@ public class CampaignServiceImpl implements CampaignService {
         List<CampaignVisibility> campaignsFilteredForPhase = userCampaigns.stream().filter(c -> CampaignPhase.fromDates(
                 dateService.getCurrentTimestamp(),
                 c.managementStartDate(),
-                c.interviewerStartDate(),
+                c.collectionStartDate(),
                 c.collectionEndDate(),
                 c.endDate()).equals(campaignPhase)).toList();
 

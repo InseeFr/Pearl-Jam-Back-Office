@@ -367,9 +367,7 @@ class CampaignServiceImplTest {
         assertThat(result).isEmpty();
     }
 
-    @Nested
-    @DisplayName("getUserCampaignsForSpecificPhase")
-    class GetUserCampaignsForSpecificPhase {
+
 
         @Test
         @DisplayName("Should filter campaigns by phase and return only matching ones")
@@ -377,32 +375,32 @@ class CampaignServiceImplTest {
             // Given
             CampaignVisibility managementPhaseCampaign = new CampaignVisibility(
                     "CAMP-MGMT", "Management Campaign", "mgmt@test.com",
-                    FIXED_TIMESTAMP - 800000000L, // managementStartDate
+                    FIXED_TIMESTAMP - 800000000L, // managementStartDate (past)
                     FIXED_TIMESTAMP - 700000000L, // interviewerStartDate
                     FIXED_TIMESTAMP - 600000000L, // identificationPhaseStartDate
-                    FIXED_TIMESTAMP - 500000000L, // collectionStartDate
-                    FIXED_TIMESTAMP - 400000000L, // collectionEndDate
-                    FIXED_TIMESTAMP + 200000000L  // endDate
+                    FIXED_TIMESTAMP + 100000000L, // collectionStartDate (FUTUR -> INITIAL_ASSIGNMENT)
+                    FIXED_TIMESTAMP + 200000000L, // collectionEndDate
+                    FIXED_TIMESTAMP + 300000000L  // endDate
             );
 
             CampaignVisibility collectionPhaseCampaign = new CampaignVisibility(
                     "CAMP-COLL", "Collection Campaign", "coll@test.com",
-                    FIXED_TIMESTAMP - 700000000L, // managementStartDate
+                    FIXED_TIMESTAMP - 700000000L, // managementStartDate (past)
                     FIXED_TIMESTAMP - 600000000L, // interviewerStartDate
                     FIXED_TIMESTAMP - 500000000L, // identificationPhaseStartDate
-                    FIXED_TIMESTAMP - 200000000L, // collectionStartDate
-                    FIXED_TIMESTAMP + 100000000L, // collectionEndDate
+                    FIXED_TIMESTAMP - 200000000L, // collectionStartDate (past)
+                    FIXED_TIMESTAMP + 100000000L, // collectionEndDate (future -> COLLECTION_IN_PROGRESS)
                     FIXED_TIMESTAMP + 200000000L  // endDate
             );
 
             CampaignVisibility closedPhaseCampaign = new CampaignVisibility(
                     "CAMP-CLOSED", "Closed Campaign", "closed@test.com",
-                    FIXED_TIMESTAMP - 900000000L, // managementStartDate
+                    FIXED_TIMESTAMP - 900000000L, // managementStartDate (past)
                     FIXED_TIMESTAMP - 800000000L, // interviewerStartDate
                     FIXED_TIMESTAMP - 700000000L, // identificationPhaseStartDate
-                    FIXED_TIMESTAMP - 600000000L, // collectionStartDate
-                    FIXED_TIMESTAMP - 500000000L, // collectionEndDate
-                    FIXED_TIMESTAMP - 400000000L  // endDate (before current timestamp)
+                    FIXED_TIMESTAMP - 600000000L, // collectionStartDate (past)
+                    FIXED_TIMESTAMP - 500000000L, // collectionEndDate (past)
+                    FIXED_TIMESTAMP + 100000000L  // endDate (future -> COLLECTION_COMPLETED)
             );
 
             campaignVisibilityPortStub.setCampaignsWithVisibility(
@@ -414,17 +412,15 @@ class CampaignServiceImplTest {
 
             // Then
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).id()).isEqualTo("CAMP-COLL");
-            assertThat(result.get(0).label()).isEqualTo("Collection Campaign");
+            assertThat(result.getFirst().id()).isEqualTo("CAMP-COLL");
+            assertThat(result.getFirst().label()).isEqualTo("Collection Campaign");
         }
 
         @ParameterizedTest
         @ValueSource(strings = {
-                "MANAGEMENT",
-                "IDENTIFICATION", 
                 "COLLECTION_IN_PROGRESS",
-                "COLLECTION_FINISHED",
-                "CLOSED"
+                "COLLECTION_COMPLETED",
+                "INITIAL_ASSIGNMENT"
         })
         @DisplayName("Should handle all campaign phases correctly")
         void shouldHandleAllCampaignPhasesCorrectly(String phaseName) {
@@ -440,7 +436,7 @@ class CampaignServiceImplTest {
 
             // Then
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).id()).isEqualTo(campaignInPhase.id());
+            assertThat(result.getFirst().id()).isEqualTo(campaignInPhase.id());
         }
 
         @Test
@@ -497,59 +493,41 @@ class CampaignServiceImplTest {
 
             // Then
             assertThat(result).hasSize(1);
-            CampaignModel model = result.get(0);
+            CampaignModel model = result.getFirst();
             assertThat(model.id()).isEqualTo("TEST-ID");
             assertThat(model.label()).isEqualTo("Test Label");
         }
 
         private CampaignVisibility createCampaignVisibilityForPhase(CampaignPhase phase) {
             return switch (phase) {
-                case MANAGEMENT -> new CampaignVisibility(
+                case INITIAL_ASSIGNMENT -> new CampaignVisibility(
                         "CAMP-" + phase, "Campaign " + phase, "test@email.com",
-                        FIXED_TIMESTAMP - 1000000L, // managementStartDate (recent)
-                        FIXED_TIMESTAMP + 100000000L, // interviewerStartDate (future)
-                        FIXED_TIMESTAMP + 200000000L, // identificationPhaseStartDate (future)
-                        FIXED_TIMESTAMP + 300000000L, // collectionStartDate (future)
-                        FIXED_TIMESTAMP + 400000000L, // collectionEndDate (future)
-                        FIXED_TIMESTAMP + 500000000L  // endDate (future)
-                );
-                case IDENTIFICATION -> new CampaignVisibility(
-                        "CAMP-" + phase, "Campaign " + phase, "test@email.com",
-                        FIXED_TIMESTAMP - 200000000L, // managementStartDate (past)
-                        FIXED_TIMESTAMP - 100000000L, // interviewerStartDate (past)
-                        FIXED_TIMESTAMP - 1000000L, // identificationPhaseStartDate (recent)
-                        FIXED_TIMESTAMP + 100000000L, // collectionStartDate (future)
-                        FIXED_TIMESTAMP + 200000000L, // collectionEndDate (future)
-                        FIXED_TIMESTAMP + 300000000L  // endDate (future)
+                        FIXED_TIMESTAMP - 200000000L,
+                        FIXED_TIMESTAMP - 100000000L,
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP + 100000000L,
+                        FIXED_TIMESTAMP + 200000000L,
+                        FIXED_TIMESTAMP + 300000000L
                 );
                 case COLLECTION_IN_PROGRESS -> new CampaignVisibility(
                         "CAMP-" + phase, "Campaign " + phase, "test@email.com",
                         FIXED_TIMESTAMP - 300000000L,
                         FIXED_TIMESTAMP - 200000000L,
                         FIXED_TIMESTAMP - 100000000L,
-                        FIXED_TIMESTAMP - 1000000L, // collectionStartDate (recent)
-                        FIXED_TIMESTAMP + 100000000L, // collectionEndDate (future)
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP + 100000000L,
                         FIXED_TIMESTAMP + 200000000L
                 );
-                case COLLECTION_FINISHED -> new CampaignVisibility(
+                case COLLECTION_COMPLETED -> new CampaignVisibility(
                         "CAMP-" + phase, "Campaign " + phase, "test@email.com",
                         FIXED_TIMESTAMP - 400000000L,
                         FIXED_TIMESTAMP - 300000000L,
                         FIXED_TIMESTAMP - 200000000L,
-                        FIXED_TIMESTAMP - 100000000L,
-                        FIXED_TIMESTAMP - 1000000L, // collectionEndDate (recent past)
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP - 500000L,
                         FIXED_TIMESTAMP + 100000000L
                 );
-                case CLOSED -> new CampaignVisibility(
-                        "CAMP-" + phase, "Campaign " + phase, "test@email.com",
-                        FIXED_TIMESTAMP - 500000000L,
-                        FIXED_TIMESTAMP - 400000000L,
-                        FIXED_TIMESTAMP - 300000000L,
-                        FIXED_TIMESTAMP - 200000000L,
-                        FIXED_TIMESTAMP - 100000000L,
-                        FIXED_TIMESTAMP - 1000000L  // endDate (past)
-                );
             };
-        }
+
     }
 }
