@@ -31,7 +31,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         "surveyUnitDisplayName", "su.display_name",
         "interviewerLabel", "int.last_name",
         "ssech", "si.ssech",
-        "location", "postalCode",
+        "location", "department",
         "city", "city",
         "questionnaireState", "ls.current_state",
         "closingCause", "cc.type"
@@ -62,12 +62,12 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                            si.ssech                           AS ssech,
                            CASE
                                WHEN a.l6 ~ '^\\d{5}\\s+'
-                                   THEN substring(a.l6 from '^(\\d{5})')
+                                   THEN substring(a.l6 from '^(\\d{2})')
                                ELSE NULL
-                           END AS postalCode,
+                           END AS department,
                            CASE
                                WHEN a.l6 ~ '^\\d{5}\\s+'
-                                   THEN substring(a.l6 from '^\\d{5}\\s+(.*)$')
+                                   THEN substring(a.l6 from '^\\d{2}\\s+(.*)$')
                                WHEN trim(coalesce(a.l6, '')) <> ''
                                    THEN a.l6
                                ELSE NULL
@@ -168,7 +168,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
             rs.getString("ssech"),
             rs.getString("interviewerFirstName"),
             rs.getString("interviewerLastName"),
-            rs.getString("postalCode"),
+            rs.getString("department"),
             rs.getString("city"),
             rs.getString("currentStateType"),
             rs.getString("closingCauseType")

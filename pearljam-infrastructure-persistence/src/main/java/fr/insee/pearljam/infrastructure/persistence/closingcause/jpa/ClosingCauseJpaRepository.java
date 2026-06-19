@@ -222,13 +222,17 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
 
 	@Modifying
 	@Query(value = """
-    UPDATE closing_cause
-    SET type = :type,
-        date = EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
-    WHERE survey_unit_id IN (:surveyUnitIds)
-    """, nativeQuery = true)
-	void updateClosingCauseForSurveyUnits(@Param("surveyUnitIds") List<String> surveyUnitIds,
-	                                      @Param("type") String type);
+		UPDATE closing_cause cc
+		SET type = :type,
+			date = EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
+		FROM survey_unit su
+		WHERE su.id = cc.survey_unit_id
+		  AND su.id IN (:surveyUnitIds)
+	""", nativeQuery = true)
+	void updateExistingClosingCauseToSurveyUnits(
+			@Param("surveyUnitIds") List<String> surveyUnitIds,
+			@Param("type") String type
+	);
 
 	@Query(value = """
     SELECT DISTINCT survey_unit_id FROM closing_cause
