@@ -37,8 +37,12 @@ public class SurveyUnitClosingController {
     @PostMapping(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
     public ResponseEntity<Void> addClosingCauseToMultipleSurveyUnits(
             @RequestBody @Valid CloseSurveyUnitsRequest request) {
-
+        log.info("Attempting to close {} survey unit(s) in batch - Cause: {}, To close: {}",
+                request.getSurveyUnitIds().size(),
+                request.getClosingCauseType(),
+                request.getToClose());
         surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(request.getSurveyUnitIds(), request.getClosingCauseType(), request.getToClose());
+        log.info("Successfully processed closing for {} survey unit(s)", request.getSurveyUnitIds().size());
         return ResponseEntity.noContent().build();
     }
 
@@ -47,6 +51,12 @@ public class SurveyUnitClosingController {
     @Parameter(name = "userId", hidden = true)
     public List<SurveyUnitToCloseResponse> getSurveyUnitsToClose(
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
-        return surveyUnitClosingPort.getSurveyUnitsToClose(userId, presenter);
+        log.info("Retrieving survey units to close for user {}", userId);
+        
+        List<SurveyUnitToCloseResponse> result = surveyUnitClosingPort.getSurveyUnitsToClose(userId, presenter);
+        
+        log.info("Found {} survey unit(s) to close for user {}", result.size(), userId);
+        
+        return result;
     }
 }
