@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.stub;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
+import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,12 @@ public class SurveyUnitClosingPortStub implements SurveyUnitClosingPort {
 
     @Override
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
+        // Not used by SurveyUnitStateService
+        throw new UnsupportedOperationException("Not implemented for unit tests");
+    }
+
+    @Override
+    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter, Pageable pageable) {
         // Not used by SurveyUnitStateService
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }

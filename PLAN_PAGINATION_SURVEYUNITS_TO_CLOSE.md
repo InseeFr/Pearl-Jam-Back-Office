@@ -28,9 +28,9 @@
 
 ### Prochaines Étapes ⏭️
 - [x] Phase 3 : Implémentation JPA (3 nouvelles requêtes SQL)
-- [ ] Phase 4 : Mise à jour du Service
-- [ ] Phase 5 : Mise à jour du Presenter
-- [ ] Phase 6 : Mise à jour du Controller
+- [x] Phase 4 : Mise à jour du Service
+- [x] Phase 5 : Mise à jour du Presenter
+- [x] Phase 6 : Mise à jour du Controller
 - [ ] Phase 7 : Mise à jour des Tests
 
 **Branche actuelle :** `feat/pagination-survey-units-to-close`
@@ -44,14 +44,21 @@
    - Ajout de 3 nouvelles méthodes avec JavaDoc (en anglais)
 2. ✅ `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/jpa/SurveyUnitJpaRepository.java`
    - Implémentation des 3 requêtes SQL natives avec @Query + @Param
-   - Respect des bonnes pratiques sécurité (pas de string concatenation)
+3. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPort.java`
+   - Ajout de la méthode avec pagination
+4. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
+   - Implémentation de la méthode avec pagination et @Transactional(readOnly = true)
+5. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/PaginatedSurveyUnitClosingPresenter.java`
+   - Nouvelle interface pour le presenter paginé
+6. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPagePresenter.java`
+   - Nouveau presenter qui retourne Page<SurveyUnitToCloseResponse>
+7. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitClosingController.java`
+   - Ajout du nouvel endpoint avec pagination
+8. ✅ `pearljam-domain/src/test/java/fr/insee/pearljam/domain/surveyunit/stub/SurveyUnitClosingPortStub.java`
+   - Implémentation de la nouvelle méthode pour les tests
 
 ### Fichiers à modifier :
-2. `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
-3. `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPresenter.java`
-4. `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPresenter.java`
-5. `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitController.java` (ou SurveyUnitClosingController.java)
-6. `pearljam-domain/src/test/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosingTest.java`
+1. `pearljam-domain/src/test/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosingTest.java`
 
 ---
 
@@ -277,9 +284,9 @@ List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(
 
 ---
 
-### Phase 4 : Mise à jour du Service (1/2 jour)
+### Phase 4 : Mise à jour du Service (1/2 jour) ✅ **TERMINÉE**
 
-#### 4.1 Modifier `SurveyUnitClosing`
+#### 4.1 Modifier `SurveyUnitClosing` ✅
 **Fichier :** `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
 
 **Ajouter une nouvelle méthode (laisser l'ancienne pour compatibilité) :**
@@ -350,39 +357,17 @@ public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> 
 
 ---
 
-### Phase 5 : Mise à jour du Presenter (1/2 jour)
+### Phase 5 : Mise à jour du Presenter (1/2 jour) ✅ **TERMINÉE**
 
-#### 5.1 Modifier `SurveyUnitClosingPresenter` (Interface)
-**Fichier :** `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPresenter.java`
+#### 5.1 Créer `PaginatedSurveyUnitClosingPresenter` (Nouvelle Interface) ✅
+**Fichier :** `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/PaginatedSurveyUnitClosingPresenter.java`
+- Nouvelle interface qui étend SurveyUnitClosingPresenter
+- Ajout de la méthode present() avec paramètres de pagination
 
-**Ajouter une méthode pour gérer la pagination :**
-```java
-public interface SurveyUnitClosingPresenter<T> {
-    
-    T present(List<ClosableSurveyUnitView> projections,
-              Map<String, ClosableSurveyUnitCandidateView> candidatesById,
-              Map<String, String> questionnaireStates);
-
-    T empty();
-    
-    // Nouvelle méthode pour la pagination
-    default T present(List<ClosableSurveyUnitView> projections,
-                      Map<String, ClosableSurveyUnitCandidateView> candidatesById,
-                      Map<String, String> questionnaireStates,
-                      long totalElements,
-                      int pageNumber,
-                      int pageSize) {
-        // Implémentation par défaut pour compatibilité descendante
-        return present(projections, candidatesById, questionnaireStates);
-    }
-}
-```
-
-#### 5.2 Mettre à jour `SurveyUnitClosingApiPresenter`
-**Fichier :** `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPresenter.java`
-
-**Créer une nouvelle classe pour la pagination :**
-```java
+#### 5.2 Créer `SurveyUnitClosingApiPagePresenter` ✅
+**Fichier :** `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPagePresenter.java`
+- Implémente PaginatedSurveyUnitClosingPresenter<Page<SurveyUnitToCloseResponse>>
+- Retourne un objet Page de Spring Data avec métadonnées de pagination
 @Component
 public class SurveyUnitClosingApiPagePresenter implements SurveyUnitClosingPresenter<Page<SurveyUnitToCloseResponse>> {
 
@@ -454,37 +439,27 @@ public class SurveyUnitClosingApiPagePresenter implements SurveyUnitClosingPrese
 
 ---
 
-### Phase 6 : Mise à jour du Controller (1/2 jour)
+### Phase 6 : Mise à jour du Controller (1/2 jour) ✅ **TERMINÉE**
 
-#### 6.1 Modifier `SurveyUnitController`
-**Fichier :** `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitController.java`
+#### 6.1 Modifier `SurveyUnitClosingController` ✅
+**Fichier :** `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitClosingController.java`
 
-**Ajouter un nouveau endpoint :**
+**Modifications :**
+- Ajout des imports pour Page, Pageable, @ParameterObject
+- Injection de SurveyUnitClosingApiPagePresenter
+- Ajout du nouvel endpoint `/survey-units/to-close` avec paramètres `page` et `size`
+- L'ancien endpoint reste pour compatibilité descendante
+
+**Nouvel endpoint :**
 ```java
-@GetMapping("/survey-units/to-close")
-@Operation(summary = "Get survey units eligible for closing with pagination")
-@ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Paginated list of survey units to close"),
-    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(responseCode = "403", description = "Forbidden")
-})
+@GetMapping(value = Constants.API_SURVEYUNITS_TO_CLOSE, params = {"page", "size"})
 public ResponseEntity<Page<SurveyUnitToCloseResponse>> getSurveyUnitsToClosePaginated(
-    @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
-    @Parameter(description = "Page size") @RequestParam(defaultValue = "100") int size,
-    Principal principal
-) {
-    String userId = principal.getName();
-    Pageable pageable = PageRequest.of(page, size, Sort.by("displayName"));
-    
-    Page<SurveyUnitToCloseResponse> result = surveyUnitClosingService
-        .getSurveyUnitsToClose(userId, surveyUnitClosingPagePresenter, pageable);
-    
+        @CurrentSecurityContext(expression = "authentication.name") String userId,
+        @ParameterObject Pageable pageable) {
+    Page<SurveyUnitToCloseResponse> result = surveyUnitClosingPort
+            .getSurveyUnitsToClose(userId, pagePresenter, pageable);
     return ResponseEntity.ok(result);
 }
-
-// Injection du nouveau presenter
-@Autowired
-private SurveyUnitClosingApiPagePresenter surveyUnitClosingPagePresenter;
 ```
 
 ---

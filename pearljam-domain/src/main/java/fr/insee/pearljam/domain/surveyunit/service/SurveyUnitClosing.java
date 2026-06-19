@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.port.in.PaginatedSurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
@@ -22,9 +23,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -68,46 +76,83 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
     @Override
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
+        return getSurveyUnitsToClose(userId, presenter, Pageable.unpaged());
+    }
 
-
+    @Override
+    @Transactional(readOnly = true)
+    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter, Pageable pageable) {
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
-            .map(OrganizationUnitSummary::getId)
-            .toList();
+                .map(OrganizationUnitSummary::getId)
+                .toList();
 
         long now = dateService.getCurrentTimestamp();
 
+        // 1. Retrieve all eligible survey unit IDs (lightweight: only IDs)
+        List<String> allEligibleIds = surveyUnitRepository.findEligibleSurveyUnitIds(now, lstOuIds);
+
+        if (allEligibleIds.isEmpty()) {
+            return presenter.empty();
+        }
+
+        // 2. Apply pagination
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), allEligibleIds.size());
+
+        if (start >= allEligibleIds.size()) {
+            return presenter.empty();
+        }
+
+        List<String> pagedIds = allEligibleIds.subList(start, end);
+
+        // 3. Retrieve candidates for this page
         List<ClosableSurveyUnitCandidateView> candidates =
-            surveyUnitRepository.findClosableCandidates(now, lstOuIds);
+                surveyUnitRepository.findClosableCandidatesByIds(pagedIds, now);
 
         if (candidates.isEmpty()) {
             return presenter.empty();
         }
 
-        Map<String, ClosableSurveyUnitCandidateView> candidatesById =
-            candidates.parallelStream()
+        Map<String, ClosableSurveyUnitCandidateView> candidatesById = candidates.stream()
                 .collect(Collectors.toMap(
-                    ClosableSurveyUnitCandidateView::getId,
-                    Function.identity()
+                        ClosableSurveyUnitCandidateView::getId,
+                        Function.identity()
                 ));
 
-        Map<String, String> states =
-            questionnaireStatePort.getStates(candidatesById.keySet());
+        // 4. Retrieve questionnaire states for this page
+        Map<String, String> states = questionnaireStatePort.getStates(candidatesById.keySet());
 
-        Map<String, ClosableSurveyUnitCandidateView> eligibleSurveyUnitsById =
-            candidates.parallelStream()
+        // 5. Filter eligible survey units based on policy
+        Set<String> eligibleIds = candidates.stream()
                 .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, states.get(candidate.getId())))
-                .collect(Collectors.toMap(
-                    ClosableSurveyUnitCandidateView::getId,
-                    Function.identity()
-                ));
+                .map(ClosableSurveyUnitCandidateView::getId)
+                .collect(Collectors.toSet());
 
+        if (eligibleIds.isEmpty()) {
+            return presenter.empty();
+        }
+
+        // 6. Retrieve full projections for eligible survey units
         List<ClosableSurveyUnitView> closableSurveyUnitProjections =
-            surveyUnitRepository.findClosableSurveyUnits(eligibleSurveyUnitsById.keySet());
+                surveyUnitRepository.findClosableSurveyUnits(eligibleIds);
+
+        // 7. Present results - handle both paginated and non-paginated presenters
+        if (presenter instanceof PaginatedSurveyUnitClosingPresenter<?>) {
+            PaginatedSurveyUnitClosingPresenter<T> paginatedPresenter = (PaginatedSurveyUnitClosingPresenter<T>) presenter;
+            return paginatedPresenter.present(
+                    closableSurveyUnitProjections,
+                    candidatesById,
+                    states,
+                    allEligibleIds.size(),
+                    pageable.getPageNumber(),
+                    pageable.getPageSize()
+            );
+        }
 
         return presenter.present(
-            closableSurveyUnitProjections,
-            candidatesById,
-            states
+                closableSurveyUnitProjections,
+                candidatesById,
+                states
         );
     }
 
