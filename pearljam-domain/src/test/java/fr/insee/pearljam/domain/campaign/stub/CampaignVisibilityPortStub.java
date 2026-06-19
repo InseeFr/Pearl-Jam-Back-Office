@@ -17,6 +17,11 @@ public class CampaignVisibilityPortStub implements CampaignVisibilityPort {
     }
 
     @Override
+    public List<CampaignVisibility> findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
+        return campaignsWithVisibility;
+    }
+
+    @Override
     public List<CampaignVisibility> findCampaignsWithVisibilityByUserAndManagementVisibility(List<String> ouIds, String userId, Long date) {
         return campaignsWithVisibility;
     }

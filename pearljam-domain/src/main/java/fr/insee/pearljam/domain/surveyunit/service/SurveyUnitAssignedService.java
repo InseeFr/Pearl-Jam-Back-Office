@@ -66,7 +66,7 @@ public class SurveyUnitAssignedService implements SurveyUnitAssignedPort {
 
         List<String> visibleCampaignIds =
             campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                     ouIds, userId, currentTimestamp
                 )
                 .stream()

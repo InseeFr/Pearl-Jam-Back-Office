@@ -6,7 +6,7 @@ import fr.insee.pearljam.contracts.campaign.dto.input.CampaignCreateDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.CampaignUpdateDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
+import fr.insee.pearljam.domain.campaign.CampaignModel;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignService;
 import fr.insee.pearljam.domain.campaign.port.in.ReferentService;
 import fr.insee.pearljam.domain.campaign.service.exception.*;
@@ -94,13 +94,13 @@ public class CampaignController {
 	/**
 	 * This method is used to get the list of Campaigns for current user and specific phase
 	 *
-	 * @return List of {@link CampaignPreferenceModel} if exists for specific phase
+	 * @return List of {@link CampaignModel} if exists for specific phase
 	 */
 	@Operation(summary = "Get user related Campaigns for specific phase")
 	@GetMapping(path = Constants.API_CAMPAIGNS_PHASE)
-	public List<CampaignPreferenceModel> getUserCampaignsForSpecificPhase(@RequestParam CampaignPhase campaignPhase) {
+	public List<CampaignModel> getUserCampaignsForSpecificPhase(@RequestParam CampaignPhase campaignPhase) {
 		String userId = authenticatedUserService.getCurrentUserId();
-		List<CampaignPreferenceModel> lstCampaigns = campaignService.getUserCampaignsForSpecificPhase(userId, campaignPhase);
+		List<CampaignModel> lstCampaigns = campaignService.getUserCampaignsForSpecificPhase(userId, campaignPhase);
 		log.info("User {} -> {} related campaigns found for specific phase", userId, lstCampaigns.size());
 		return lstCampaigns;
 	}

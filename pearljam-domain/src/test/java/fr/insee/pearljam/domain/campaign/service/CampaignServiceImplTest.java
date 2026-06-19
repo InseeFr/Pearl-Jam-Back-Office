@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service;
 
 import fr.insee.pearljam.contracts.campaign.dto.input.*;
-import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
+import fr.insee.pearljam.domain.campaign.CampaignModel;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
@@ -331,7 +331,7 @@ class CampaignServiceImplTest {
         );
 
         campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(campaignVisibility));
-        List<CampaignPreferenceModel> result =
+        List<CampaignModel> result =
             campaignService.getUserCampaignsForSpecificPhase(
                 "test-user",
                 CampaignPhase.COLLECTION_IN_PROGRESS);
@@ -339,7 +339,6 @@ class CampaignServiceImplTest {
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().id()).isEqualTo(existingCampaign.getId());
         assertThat(result.getFirst().label()).isEqualTo(existingCampaign.getLabel());
-        assertThat(result.getFirst().preference()).isTrue();
     }
 
     @Test
@@ -360,11 +359,175 @@ class CampaignServiceImplTest {
 
         campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(campaignVisibility));
 
-        List<CampaignPreferenceModel> result =
+        List<CampaignModel> result =
             campaignService.getUserCampaignsForSpecificPhase(
                 "test-user",
                 CampaignPhase.COLLECTION_IN_PROGRESS);
 
         assertThat(result).isEmpty();
+    }
+
+
+
+        @Test
+        @DisplayName("Should filter campaigns by phase and return only matching ones")
+        void shouldFilterCampaignsByPhase() {
+            // Given
+            CampaignVisibility managementPhaseCampaign = new CampaignVisibility(
+                    "CAMP-MGMT", "Management Campaign", "mgmt@test.com",
+                    FIXED_TIMESTAMP - 800000000L, // managementStartDate (past)
+                    FIXED_TIMESTAMP - 700000000L, // interviewerStartDate
+                    FIXED_TIMESTAMP - 600000000L, // identificationPhaseStartDate
+                    FIXED_TIMESTAMP + 100000000L, // collectionStartDate (FUTUR -> INITIAL_ASSIGNMENT)
+                    FIXED_TIMESTAMP + 200000000L, // collectionEndDate
+                    FIXED_TIMESTAMP + 300000000L  // endDate
+            );
+
+            CampaignVisibility collectionPhaseCampaign = new CampaignVisibility(
+                    "CAMP-COLL", "Collection Campaign", "coll@test.com",
+                    FIXED_TIMESTAMP - 700000000L, // managementStartDate (past)
+                    FIXED_TIMESTAMP - 600000000L, // interviewerStartDate
+                    FIXED_TIMESTAMP - 500000000L, // identificationPhaseStartDate
+                    FIXED_TIMESTAMP - 200000000L, // collectionStartDate (past)
+                    FIXED_TIMESTAMP + 100000000L, // collectionEndDate (future -> COLLECTION_IN_PROGRESS)
+                    FIXED_TIMESTAMP + 200000000L  // endDate
+            );
+
+            CampaignVisibility closedPhaseCampaign = new CampaignVisibility(
+                    "CAMP-CLOSED", "Closed Campaign", "closed@test.com",
+                    FIXED_TIMESTAMP - 900000000L, // managementStartDate (past)
+                    FIXED_TIMESTAMP - 800000000L, // interviewerStartDate
+                    FIXED_TIMESTAMP - 700000000L, // identificationPhaseStartDate
+                    FIXED_TIMESTAMP - 600000000L, // collectionStartDate (past)
+                    FIXED_TIMESTAMP - 500000000L, // collectionEndDate (past)
+                    FIXED_TIMESTAMP + 100000000L  // endDate (future -> COLLECTION_COMPLETED)
+            );
+
+            campaignVisibilityPortStub.setCampaignsWithVisibility(
+                    List.of(managementPhaseCampaign, collectionPhaseCampaign, closedPhaseCampaign));
+
+            // When
+            List<CampaignModel> result = campaignService.getUserCampaignsForSpecificPhase(
+                    "test-user", CampaignPhase.COLLECTION_IN_PROGRESS);
+
+            // Then
+            assertThat(result).hasSize(1);
+            assertThat(result.getFirst().id()).isEqualTo("CAMP-COLL");
+            assertThat(result.getFirst().label()).isEqualTo("Collection Campaign");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "COLLECTION_IN_PROGRESS",
+                "COLLECTION_COMPLETED",
+                "INITIAL_ASSIGNMENT"
+        })
+        @DisplayName("Should handle all campaign phases correctly")
+        void shouldHandleAllCampaignPhasesCorrectly(String phaseName) {
+            // Given
+            CampaignPhase phase = CampaignPhase.valueOf(phaseName);
+            CampaignVisibility campaignInPhase = createCampaignVisibilityForPhase(phase);
+
+            campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(campaignInPhase));
+
+            // When
+            List<CampaignModel> result = campaignService.getUserCampaignsForSpecificPhase(
+                    "test-user", phase);
+
+            // Then
+            assertThat(result).hasSize(1);
+            assertThat(result.getFirst().id()).isEqualTo(campaignInPhase.id());
+        }
+
+        @Test
+        @DisplayName("Should return empty list when user has no organization units")
+        void shouldReturnEmptyListWhenUserHasNoOrganizationUnits() {
+            // Given
+            UserFakeService userServiceWithNoOUs = Mockito.spy(new UserFakeService());
+            CampaignServiceImpl serviceWithNoOUs = new CampaignServiceImpl(
+                    campaignRepository, 
+                    new UserFakeRepository(), 
+                    new SurveyUnitRepositoryStub(),
+                    new OrganizationUnitFakeRepository(),
+                    new MessageFakeRepository(),
+                    userServiceWithNoOUs,
+                    new SurveyUnitFakeService(),
+                    new PreferenceFakeService(),
+                    new ReferentFakeService(),
+                    new ReferentFakeRepository(),
+                    visibilityService,
+                    campaignVisibilityPortStub,
+                    dateService,
+                    new InterviewerCountFakeRepository(),
+                    new SurveyUnitCountFakeService());
+
+            Mockito.when(userServiceWithNoOUs.getUserOUs("userNoOU", true)).thenReturn(List.of());
+
+            // When
+            List<CampaignModel> result = serviceWithNoOUs.getUserCampaignsForSpecificPhase(
+                    "userNoOU", CampaignPhase.COLLECTION_IN_PROGRESS);
+
+            // Then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should map CampaignVisibility to CampaignModel with id and label")
+        void shouldMapCampaignVisibilityToCampaignModel() {
+            // Given
+            CampaignVisibility visibility = new CampaignVisibility(
+                    "TEST-ID", "Test Label", "test@email.com",
+                    FIXED_TIMESTAMP - 200000000L,
+                    FIXED_TIMESTAMP - 100000000L,
+                    FIXED_TIMESTAMP - 50000000L,
+                    FIXED_TIMESTAMP - 10000000L,
+                    FIXED_TIMESTAMP + 100000000L,
+                    FIXED_TIMESTAMP + 200000000L
+            );
+
+            campaignVisibilityPortStub.setCampaignsWithVisibility(List.of(visibility));
+
+            // When
+            List<CampaignModel> result = campaignService.getUserCampaignsForSpecificPhase(
+                    "test-user", CampaignPhase.COLLECTION_IN_PROGRESS);
+
+            // Then
+            assertThat(result).hasSize(1);
+            CampaignModel model = result.getFirst();
+            assertThat(model.id()).isEqualTo("TEST-ID");
+            assertThat(model.label()).isEqualTo("Test Label");
+        }
+
+        private CampaignVisibility createCampaignVisibilityForPhase(CampaignPhase phase) {
+            return switch (phase) {
+                case INITIAL_ASSIGNMENT -> new CampaignVisibility(
+                        "CAMP-" + phase, "Campaign " + phase, "test@email.com",
+                        FIXED_TIMESTAMP - 200000000L,
+                        FIXED_TIMESTAMP - 100000000L,
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP + 100000000L,
+                        FIXED_TIMESTAMP + 200000000L,
+                        FIXED_TIMESTAMP + 300000000L
+                );
+                case COLLECTION_IN_PROGRESS -> new CampaignVisibility(
+                        "CAMP-" + phase, "Campaign " + phase, "test@email.com",
+                        FIXED_TIMESTAMP - 300000000L,
+                        FIXED_TIMESTAMP - 200000000L,
+                        FIXED_TIMESTAMP - 100000000L,
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP + 100000000L,
+                        FIXED_TIMESTAMP + 200000000L
+                );
+                case COLLECTION_COMPLETED -> new CampaignVisibility(
+                        "CAMP-" + phase, "Campaign " + phase, "test@email.com",
+                        FIXED_TIMESTAMP - 400000000L,
+                        FIXED_TIMESTAMP - 300000000L,
+                        FIXED_TIMESTAMP - 200000000L,
+                        FIXED_TIMESTAMP - 1000000L,
+                        FIXED_TIMESTAMP - 500000L,
+                        FIXED_TIMESTAMP + 100000000L
+                );
+            };
+
     }
 }

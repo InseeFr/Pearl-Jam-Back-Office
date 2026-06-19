@@ -5,7 +5,7 @@ import fr.insee.pearljam.contracts.campaign.dto.input.*;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignResponseDto;
 import fr.insee.pearljam.contracts.campaign.dto.output.VisibilityCampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.campaign.CampaignPreferenceModel;
+import fr.insee.pearljam.domain.campaign.CampaignModel;
 import fr.insee.pearljam.domain.campaign.model.SurveyUnitCounts;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationTemplate;
 import fr.insee.pearljam.domain.campaign.port.in.*;
@@ -118,7 +118,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<CampaignPreferenceModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase) {
+    public List<CampaignModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase) {
         List<String> organizationUnitIds = userService
             .getUserOUs(userId, true)
             .stream()
@@ -133,12 +133,12 @@ public class CampaignServiceImpl implements CampaignService {
         List<CampaignVisibility> campaignsFilteredForPhase = userCampaigns.stream().filter(c -> CampaignPhase.fromDates(
                 dateService.getCurrentTimestamp(),
                 c.managementStartDate(),
-                c.interviewerStartDate(),
+                c.collectionStartDate(),
                 c.collectionEndDate(),
                 c.endDate()).equals(campaignPhase)).toList();
 
         return campaignsFilteredForPhase.stream()
-                .map(c -> new CampaignPreferenceModel(c.id(), c.label(), true)).toList();
+                .map(c -> new CampaignModel(c.id(), c.label())).toList();
 
     }
 

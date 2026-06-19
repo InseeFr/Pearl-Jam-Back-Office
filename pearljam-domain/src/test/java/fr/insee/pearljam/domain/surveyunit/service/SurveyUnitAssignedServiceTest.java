@@ -50,7 +50,7 @@ class SurveyUnitAssignedServiceTest {
 
     private void mockVisibleCampaigns(String... campaignIds) {
         when(campaignVisibilityPort
-            .findCampaignsWithVisibilityByUserAndManagementVisibility(
+            .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                 anyList(), anyString(), anyLong()
             ))
             .thenReturn(

@@ -66,7 +66,7 @@ class SurveyUnitToReviewServiceTest {
         );
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         expectedOuIds, USER_ID, now))
                 .thenReturn(campaigns);
 
@@ -110,7 +110,7 @@ class SurveyUnitToReviewServiceTest {
                 .thenReturn(List.of());
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         List.of(), USER_ID, now))
                 .thenReturn(List.of());
 
@@ -137,7 +137,7 @@ class SurveyUnitToReviewServiceTest {
         long now = dateService.getCurrentTimestamp();
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         anyList(), eq(USER_ID), eq(now)))
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
@@ -164,7 +164,7 @@ class SurveyUnitToReviewServiceTest {
         long now = dateService.getCurrentTimestamp();
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         anyList(), eq(USER_ID), eq(now)))
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
@@ -191,7 +191,7 @@ class SurveyUnitToReviewServiceTest {
         long now = dateService.getCurrentTimestamp();
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         anyList(), eq(USER_ID), eq(now)))
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
@@ -219,7 +219,7 @@ class SurveyUnitToReviewServiceTest {
         long now = dateService.getCurrentTimestamp();
 
         when(campaignVisibilityPort
-                .findCampaignsWithVisibilityByUserAndManagementVisibility(
+                .findPreferredCampaignsWithVisibilityByUserAndManagementVisibility(
                         List.of("OU1"), USER_ID, now))
                 .thenReturn(List.of(toCampaignVisibility("C1")));
 
