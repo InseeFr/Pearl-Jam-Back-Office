@@ -27,7 +27,7 @@
   - Ajout de `findClosableCandidatesByIds(List<String> ids, long date)`
 
 ### Prochaines Étapes ⏭️
-- [ ] Phase 3 : Implémentation JPA (3 nouvelles requêtes SQL)
+- [x] Phase 3 : Implémentation JPA (3 nouvelles requêtes SQL)
 - [ ] Phase 4 : Mise à jour du Service
 - [ ] Phase 5 : Mise à jour du Presenter
 - [ ] Phase 6 : Mise à jour du Controller
@@ -41,10 +41,12 @@
 
 ### Fichiers déjà modifiés :
 1. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/out/SurveyUnitRepository.java`
-   - Ajout de 3 nouvelles méthodes avec JavaDoc
+   - Ajout de 3 nouvelles méthodes avec JavaDoc (en anglais)
+2. ✅ `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/jpa/SurveyUnitJpaRepository.java`
+   - Implémentation des 3 requêtes SQL natives avec @Query + @Param
+   - Respect des bonnes pratiques sécurité (pas de string concatenation)
 
 ### Fichiers à modifier :
-1. `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/jpa/SurveyUnitJpaRepository.java`
 2. `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
 3. `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPresenter.java`
 4. `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPresenter.java`
@@ -186,9 +188,9 @@ List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(List<String> i
 
 ---
 
-### Phase 3 : Implémentation JPA (1 jour)
+### Phase 3 : Implémentation JPA (1 jour) ✅ **TERMINÉE**
 
-#### 3.1 Mettre à jour `SurveyUnitJpaRepository`
+#### 3.1 Mettre à jour `SurveyUnitJpaRepository` ✅
 **Fichier :** `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/jpa/SurveyUnitJpaRepository.java`
 
 **Ajouter les 3 implémentations :**

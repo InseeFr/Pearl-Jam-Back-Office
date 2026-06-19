@@ -60,33 +60,32 @@ public interface SurveyUnitRepository {
     List<String> findExistingIds(List<String> surveyUnitIds);
 
     /**
-     * Récupère les IDs de toutes les survey units éligibles à la fermeture
-     * (après application des règles de visibilité et de campagne).
-     * Utilisé pour la pagination.
+     * Retrieves IDs of all survey units eligible for closing.
+     * Used for pagination in getSurveyUnitsToClose.
      *
-     * @param date timestamp actuel
-     * @param lstOuIds liste des Organization Unit IDs de l'utilisateur
-     * @return liste des IDs des survey units éligibles
+     * @param date current timestamp
+     * @param lstOuIds list of Organization Unit IDs for the user
+     * @return list of eligible survey unit IDs
      */
     List<String> findEligibleSurveyUnitIds(long date, List<String> lstOuIds);
 
     /**
-     * Compte le nombre total de survey units éligibles à la fermeture.
-     * Utilisé pour la pagination.
+     * Counts the total number of survey units eligible for closing.
+     * Used for pagination in getSurveyUnitsToClose.
      *
-     * @param date timestamp actuel
-     * @param lstOuIds liste des Organization Unit IDs de l'utilisateur
-     * @return nombre total d'éléments éligibles
+     * @param date current timestamp
+     * @param lstOuIds list of Organization Unit IDs for the user
+     * @return total count of eligible survey units
      */
     long countEligibleSurveyUnits(long date, List<String> lstOuIds);
 
     /**
-     * Récupère les ClosableSurveyUnitCandidateView pour une liste spécifique d'IDs.
-     * Utilisé pour la pagination.
+     * Retrieves ClosableSurveyUnitCandidateView for a specific list of IDs.
+     * Used for pagination in getSurveyUnitsToClose.
      *
-     * @param ids liste des IDs des survey units
-     * @param date timestamp actuel
-     * @return liste des candidats correspondants
+     * @param ids list of survey unit IDs
+     * @param date current timestamp (kept for interface consistency)
+     * @return list of matching candidates
      */
     List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(List<String> ids, long date);
 }

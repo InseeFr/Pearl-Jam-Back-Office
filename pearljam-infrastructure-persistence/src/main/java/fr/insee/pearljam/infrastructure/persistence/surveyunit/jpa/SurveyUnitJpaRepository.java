@@ -490,4 +490,103 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 			@Param("campaignId") String campaignId,
 			String search,
 			Pageable pageable);
+
+	/**
+	 * Retrieves IDs of all survey units eligible for closing.
+	 * Used for pagination in getSurveyUnitsToClose.
+	 *
+	 * @param date current timestamp
+	 * @param lstOuIds list of Organization Unit IDs for the user
+	 * @return list of eligible survey unit IDs
+	 */
+	@Query(value = """
+	    SELECT su.id
+	    FROM survey_unit su
+	    JOIN visibility vi 
+	        ON vi.campaign_id = su.campaign_id 
+	        AND vi.organization_unit_id = su.organization_unit_id
+	    JOIN LATERAL (
+	        SELECT s.type AS current_state
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) ls ON TRUE
+	    LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
+	    WHERE su.organization_unit_id IN (:lstOuIds)
+	    AND vi.collection_end_date < :date
+	    AND vi.end_date > :date
+	    AND (
+	        ls.current_state NOT IN ('TBR','FIN','CLO')
+	        OR co.type = 'INA'
+	    )
+	    """, nativeQuery = true)
+	List<String> findEligibleSurveyUnitIds(
+		@Param("date") long date,
+		@Param("lstOuIds") List<String> lstOuIds
+	);
+
+	/**
+	 * Counts the total number of survey units eligible for closing.
+	 * Used for pagination in getSurveyUnitsToClose.
+	 *
+	 * @param date current timestamp
+	 * @param lstOuIds list of Organization Unit IDs for the user
+	 * @return total count of eligible survey units
+	 */
+	@Query(value = """
+	    SELECT COUNT(DISTINCT su.id)
+	    FROM survey_unit su
+	    JOIN visibility vi 
+	        ON vi.campaign_id = su.campaign_id 
+	        AND vi.organization_unit_id = su.organization_unit_id
+	    JOIN LATERAL (
+	        SELECT s.type AS current_state
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) ls ON TRUE
+	    LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
+	    WHERE su.organization_unit_id IN (:lstOuIds)
+	    AND vi.collection_end_date < :date
+	    AND vi.end_date > :date
+	    AND (
+	        ls.current_state NOT IN ('TBR','FIN','CLO')
+	        OR co.type = 'INA'
+	    )
+	    """, nativeQuery = true)
+	long countEligibleSurveyUnits(
+		@Param("date") long date,
+		@Param("lstOuIds") List<String> lstOuIds
+	);
+
+	/**
+	 * Retrieves ClosableSurveyUnitCandidateView for a specific list of IDs.
+	 * Used for pagination in getSurveyUnitsToClose.
+	 *
+	 * @param ids list of survey unit IDs
+	 * @param date current timestamp (kept for interface consistency, not used in query)
+	 * @return list of matching candidates
+	 */
+	@Query(value = """
+	    SELECT
+	        su.id AS id,
+	        ls.current_state AS currentStateType,
+	        co.type AS contactOutcomeType
+	    FROM survey_unit su
+	    JOIN LATERAL (
+	        SELECT s.type AS current_state
+	        FROM state s
+	        WHERE s.survey_unit_id = su.id
+	        ORDER BY s.date DESC
+	        LIMIT 1
+	    ) ls ON TRUE
+	    LEFT JOIN contact_outcome co ON co.survey_unit_id = su.id
+	    WHERE su.id IN (:ids)
+	    """, nativeQuery = true)
+	List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(
+		@Param("ids") List<String> ids,
+		@Param("date") long date
+	);
 }
