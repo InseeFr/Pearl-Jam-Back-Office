@@ -321,9 +321,9 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     """;
 
     @Override
-    public void updateClosingCauseDailyStatsForSurveyUnit(List<String> surveyUnitIds,
-                                                          @Nullable StateType newState,
-                                                          ClosingCauseType closingCause) {
+    public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds,
+                                               @Nullable StateType newState,
+                                               ClosingCauseType closingCause) {
         if (surveyUnitIds.isEmpty()) {
             return;
         }

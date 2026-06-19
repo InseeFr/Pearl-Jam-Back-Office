@@ -34,7 +34,7 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
     }
 
     @Override
-    public void updateClosingCauseDailyStatsForSurveyUnit(List<String> surveyUnitIds, StateType newState, ClosingCauseType closingCause) {
+    public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds, StateType newState, ClosingCauseType closingCause) {
         //not used
     }
 

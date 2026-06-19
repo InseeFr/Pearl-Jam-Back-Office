@@ -51,7 +51,7 @@ public interface CampaignDailyStatsRepositoryPort {
                                                                         List<String> campaignIds,
                                                                         List<String> userOUIds, LocalDate day);
 
-    void updateClosingCauseDailyStatsForSurveyUnit(List<String> surveyUnitIds,
-                                                   StateType newState,
-                                                   ClosingCauseType closingCause);
+    void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds,
+                                        StateType newState,
+                                        ClosingCauseType closingCause);
 }

@@ -64,7 +64,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
             handleUpdateFlow(surveyUnitIds, type);
         }
 
-        campaignDailyStatsRepositoryPort.updateClosingCauseDailyStatsForSurveyUnit(surveyUnitIds, toClose ? StateType.CLO : null, type);
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(surveyUnitIds, toClose ? StateType.CLO : null, type);
     }
 
     private void handleCloseFlow(List<String> ids, ClosingCauseType type) {
