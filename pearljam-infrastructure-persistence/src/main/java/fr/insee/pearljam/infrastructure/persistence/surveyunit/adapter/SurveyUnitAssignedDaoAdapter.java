@@ -40,20 +40,20 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
 
     @Override
     public Page<SurveyUnitAssigned> findSurveyUnitsAssigned(
-        List<String> campaignIds, String search, Pageable pageable) {
+        List<String> campaignIds,List<String> lstOuIds, String search, Pageable pageable) {
 
         // Build and execute main query with pagination
-        List<SurveyUnitAssigned> content = executeMainQuery(campaignIds, search, pageable);
+        List<SurveyUnitAssigned> content = executeMainQuery(campaignIds, lstOuIds, search, pageable);
 
         // Get total count for pagination metadata
-        long total = executeCountQuery(campaignIds, search);
+        long total = executeCountQuery(campaignIds, lstOuIds, search);
 
         // Return paginated results
         return new PageImpl<>(content, pageable, total);
     }
 
     private List<SurveyUnitAssigned> executeMainQuery(
-        List<String> campaignIds, String search, Pageable pageable) {
+        List<String> campaignIds, List<String> lstOuIds, String search, Pageable pageable) {
 
         String sql = """
                          SELECT
@@ -95,6 +95,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                          LEFT JOIN interviewer int
                              ON int.id = su.interviewer_id
                          WHERE su.campaign_id IN (:campaignIds)
+                            AND su.organization_unit_id in (:ouIds)
                          """ +
                      buildSearchCondition(search) +
                      PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS) +
@@ -104,6 +105,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
 
         return jdbc.sql(sql)
             .param("campaignIds", campaignIds)
+            .param("ouIds", lstOuIds)
             .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
             .param("limit", pageable.getPageSize())
             .param("offset", pageable.getOffset())
@@ -113,7 +115,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
 
     }
 
-    private long executeCountQuery(List<String> campaignIds, String search) {
+    private long executeCountQuery(List<String> campaignIds, List<String> lstOuIds, String search) {
         String sql = """
                          SELECT COUNT(DISTINCT su.id)
                             FROM survey_unit su
@@ -135,10 +137,12 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                             LEFT JOIN interviewer int
                                 ON int.id = su.interviewer_id
                             WHERE su.campaign_id IN (:campaignIds)
+                            AND su.organization_unit_id in (:ouIds)
                          """ + buildSearchCondition(search);
 
         return jdbc.sql(sql)
             .param("campaignIds", campaignIds)
+            .param("ouIds", lstOuIds)
             .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
             .query(Long.class)
             .single();
