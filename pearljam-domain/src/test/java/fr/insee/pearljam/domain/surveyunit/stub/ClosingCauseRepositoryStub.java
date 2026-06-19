@@ -66,7 +66,7 @@ public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
 
     @Override
     public void updateExistingClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
-
+        // Stub method used only in tests - intentionally left blank
     }
 
     @Override
