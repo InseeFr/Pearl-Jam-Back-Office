@@ -58,4 +58,35 @@ public interface SurveyUnitRepository {
     void deleteById(String surveyUnitId);
 
     List<String> findExistingIds(List<String> surveyUnitIds);
+
+    /**
+     * Récupère les IDs de toutes les survey units éligibles à la fermeture
+     * (après application des règles de visibilité et de campagne).
+     * Utilisé pour la pagination.
+     *
+     * @param date timestamp actuel
+     * @param lstOuIds liste des Organization Unit IDs de l'utilisateur
+     * @return liste des IDs des survey units éligibles
+     */
+    List<String> findEligibleSurveyUnitIds(long date, List<String> lstOuIds);
+
+    /**
+     * Compte le nombre total de survey units éligibles à la fermeture.
+     * Utilisé pour la pagination.
+     *
+     * @param date timestamp actuel
+     * @param lstOuIds liste des Organization Unit IDs de l'utilisateur
+     * @return nombre total d'éléments éligibles
+     */
+    long countEligibleSurveyUnits(long date, List<String> lstOuIds);
+
+    /**
+     * Récupère les ClosableSurveyUnitCandidateView pour une liste spécifique d'IDs.
+     * Utilisé pour la pagination.
+     *
+     * @param ids liste des IDs des survey units
+     * @param date timestamp actuel
+     * @return liste des candidats correspondants
+     */
+    List<ClosableSurveyUnitCandidateView> findClosableCandidatesByIds(List<String> ids, long date);
 }
