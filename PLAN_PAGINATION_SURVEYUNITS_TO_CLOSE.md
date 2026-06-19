@@ -44,17 +44,19 @@
    - Ajout de 3 nouvelles méthodes avec JavaDoc (en anglais)
 2. ✅ `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/jpa/SurveyUnitJpaRepository.java`
    - Implémentation des 3 requêtes SQL natives avec @Query + @Param
-3. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPort.java`
+3. ✅ `pearljam-infrastructure-persistence/src/main/java/fr/insee/pearljam/infrastructure/persistence/surveyunit/adapter/SurveyUnitDaoAdapter.java`
+   - Implémentation des 3 nouvelles méthodes délégant au JPA repository
+4. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/SurveyUnitClosingPort.java`
    - Ajout de la méthode avec pagination
-4. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
+5. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/service/SurveyUnitClosing.java`
    - Implémentation de la méthode avec pagination et @Transactional(readOnly = true)
-5. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/PaginatedSurveyUnitClosingPresenter.java`
+6. ✅ `pearljam-domain/src/main/java/fr/insee/pearljam/domain/surveyunit/port/in/PaginatedSurveyUnitClosingPresenter.java`
    - Nouvelle interface pour le presenter paginé
-6. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPagePresenter.java`
+7. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/presenter/SurveyUnitClosingApiPagePresenter.java`
    - Nouveau presenter qui retourne Page<SurveyUnitToCloseResponse>
-7. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitClosingController.java`
+8. ✅ `pearljam-api/src/main/java/fr/insee/pearljam/api/surveyunit/controller/SurveyUnitClosingController.java`
    - Ajout du nouvel endpoint avec pagination
-8. ✅ `pearljam-domain/src/test/java/fr/insee/pearljam/domain/surveyunit/stub/SurveyUnitClosingPortStub.java`
+9. ✅ `pearljam-domain/src/test/java/fr/insee/pearljam/domain/surveyunit/stub/SurveyUnitClosingPortStub.java`
    - Implémentation de la nouvelle méthode pour les tests
 
 ### Fichiers à modifier :

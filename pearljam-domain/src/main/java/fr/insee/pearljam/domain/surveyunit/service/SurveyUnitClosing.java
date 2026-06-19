@@ -25,8 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -75,7 +77,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter, Pageable pageable) {
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
                 .map(OrganizationUnitSummary::getId)
@@ -83,62 +85,77 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         long now = dateService.getCurrentTimestamp();
 
-        // 1. Retrieve all eligible survey unit IDs
+        // 1. Retrieve all eligible survey unit IDs based on SQL criteria (state + contactOutcome)
         List<String> allEligibleIds = surveyUnitRepository.findEligibleSurveyUnitIds(now, lstOuIds);
 
         if (allEligibleIds.isEmpty()) {
             return presenter.empty();
         }
 
-        // 2. Apply pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), allEligibleIds.size());
+        // 2. Load ALL candidates for filtering (not just the page)
+        List<ClosableSurveyUnitCandidateView> allCandidates =
+                surveyUnitRepository.findClosableCandidatesByIds(allEligibleIds, now);
 
-        if (start >= allEligibleIds.size()) {
+        if (allCandidates.isEmpty()) {
             return presenter.empty();
         }
 
-        List<String> pagedIds = allEligibleIds.subList(start, end);
-
-        // 3. Retrieve candidates for this page
-        List<ClosableSurveyUnitCandidateView> candidates =
-                surveyUnitRepository.findClosableCandidatesByIds(pagedIds, now);
-
-        if (candidates.isEmpty()) {
-            return presenter.empty();
-        }
-
-        Map<String, ClosableSurveyUnitCandidateView> candidatesById = candidates.stream()
+        // 3. Load ALL questionnaire states for filtering
+        Map<String, ClosableSurveyUnitCandidateView> allCandidatesById = allCandidates.stream()
                 .collect(Collectors.toMap(
                         ClosableSurveyUnitCandidateView::getId,
                         Function.identity()
                 ));
+        Map<String, String> allStates = questionnaireStatePort.getStates(allCandidatesById.keySet());
 
-        // 4. Retrieve questionnaire states for this page
-        Map<String, String> states = questionnaireStatePort.getStates(candidatesById.keySet());
-
-        // 5. Filter eligible survey units based on policy
-        Set<String> eligibleIds = candidates.stream()
-                .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, states.get(candidate.getId())))
+        // 4. Filter ALL candidates based on full policy (including questionnaireState)
+        List<String> trulyEligibleIds = allCandidates.stream()
+                .filter(candidate -> surveyUnitClosablePolicy.isClosable(candidate, allStates.get(candidate.getId())))
                 .map(ClosableSurveyUnitCandidateView::getId)
-                .collect(Collectors.toSet());
+                .toList();
 
-        if (eligibleIds.isEmpty()) {
+        long totalEligible = trulyEligibleIds.size();
+
+        if (trulyEligibleIds.isEmpty()) {
             return presenter.empty();
         }
 
-        // 6. Retrieve full projections for eligible survey units
-        List<ClosableSurveyUnitView> closableSurveyUnitProjections =
-                surveyUnitRepository.findClosableSurveyUnits(eligibleIds);
+        // 5. Apply pagination on the truly eligible list
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), (int) totalEligible);
 
-        // 7. Present results - handle both paginated and non-paginated presenters
+        if (start >= totalEligible) {
+            return presenter.empty();
+        }
+
+        List<String> pagedEligibleIds = trulyEligibleIds.subList(start, end);
+
+        // 6. Load projections for the paginated eligible survey units
+        List<ClosableSurveyUnitView> closableSurveyUnitProjections =
+                surveyUnitRepository.findClosableSurveyUnits(new HashSet<>(pagedEligibleIds));
+
+        // 7. Get candidates and states for the paginated results
+        Map<String, ClosableSurveyUnitCandidateView> pagedCandidatesById = pagedEligibleIds.stream()
+                .map(allCandidatesById::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(
+                        ClosableSurveyUnitCandidateView::getId,
+                        Function.identity()
+                ));
+        Map<String, String> pagedStates = pagedEligibleIds.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        allStates::get
+                ));
+
+        // 8. Present results
         if (presenter instanceof PaginatedSurveyUnitClosingPresenter<?>) {
             PaginatedSurveyUnitClosingPresenter<T> paginatedPresenter = (PaginatedSurveyUnitClosingPresenter<T>) presenter;
             return paginatedPresenter.present(
                     closableSurveyUnitProjections,
-                    candidatesById,
-                    states,
-                    allEligibleIds.size(),
+                    pagedCandidatesById,
+                    pagedStates,
+                    totalEligible,
                     pageable.getPageNumber(),
                     pageable.getPageSize()
             );
@@ -146,8 +163,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         return presenter.present(
                 closableSurveyUnitProjections,
-                candidatesById,
-                states
+                pagedCandidatesById,
+                pagedStates
         );
     }
 

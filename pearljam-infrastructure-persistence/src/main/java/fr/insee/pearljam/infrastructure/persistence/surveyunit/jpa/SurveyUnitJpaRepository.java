@@ -518,7 +518,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	    AND vi.end_date > :date
 	    AND (
 	        ls.current_state NOT IN ('TBR','FIN','CLO')
-	        OR co.type = 'INA'
+	        OR (co.type = 'INA' AND ls.current_state != 'CLO')
 	    )
 	    """, nativeQuery = true)
 	List<String> findEligibleSurveyUnitIds(
@@ -553,7 +553,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	    AND vi.end_date > :date
 	    AND (
 	        ls.current_state NOT IN ('TBR','FIN','CLO')
-	        OR co.type = 'INA'
+	        OR (co.type = 'INA' AND ls.current_state != 'CLO')
 	    )
 	    """, nativeQuery = true)
 	long countEligibleSurveyUnits(
