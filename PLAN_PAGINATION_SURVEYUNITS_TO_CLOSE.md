@@ -31,9 +31,61 @@
 - [x] Phase 4 : Mise à jour du Service
 - [x] Phase 5 : Mise à jour du Presenter
 - [x] Phase 6 : Mise à jour du Controller
+- [x] **CORRECTION** : Fix des requêtes SQL et logique de pagination
 - [ ] Phase 7 : Mise à jour des Tests
 
 **Branche actuelle :** `feat/pagination-survey-units-to-close`
+
+---
+
+## 🚨 Correction Appliquée (après test utilisateur)
+
+### Problème identifié
+Lors des tests, l'utilisateur constatait que :
+- En demandant 50 éléments, le endpoint n'en retournait que 42
+- Le total (`totalElements`) était également incorrect
+
+### Cause racine
+**Décalage entre la requête SQL et la politique de filtrage Java** :
+
+1. **Requête SQL trop large** :
+   ```sql
+   AND (ls.current_state NOT IN ('TBR','FIN','CLO') OR co.type = 'INA')
+   ```
+   → Incluait tous les `INA`, même ceux avec `state = 'CLO'`
+
+2. **Politique plus restrictive** :
+   ```java
+   // isInaWithoutQuestionnaire nécessite :
+   contactOutcomeType == INA
+   AND questionnaireState == UNAVAILABLE
+   AND currentStateType != CLO
+   ```
+
+3. **Conséquence** : Certains IDs passaient la requête SQL mais étaient filtrés par la politique.
+
+### Solution implémentée
+
+#### 1. Correction des requêtes SQL
+```sql
+-- Avant
+AND (ls.current_state NOT IN ('TBR','FIN','CLO') OR co.type = 'INA')
+
+-- Après  
+AND (
+    ls.current_state NOT IN ('TBR','FIN','CLO')
+    OR (co.type = 'INA' AND ls.current_state != 'CLO')
+)
+```
+
+#### 2. Changement de la logique de pagination
+**Ancienne approche (problématique)** :
+- Paginator les IDs SQL → Charger les candidats de la page → Filtrer → Perte d'éléments
+
+**Nouvelle approche (corrigée)** :
+- Charger tous les candidats → Filtrer avec la politique → **Liste finale exacte** → Paginator
+
+**Trade-off** : On charge plus de données, mais le total et les pages sont corrects.
 
 ---
 
