@@ -7,6 +7,9 @@ public class LogbackAvoidLogForgeryContentEncoder extends MessageConverter {
     @Override
     public String convert(ILoggingEvent event) {
         String content = super.convert(event);
+        if (content == null) {
+            return "";
+        }
         return content
                 .replace('\n', '_')
                 .replace('\r', '_');

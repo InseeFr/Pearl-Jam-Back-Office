@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
@@ -29,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -77,7 +77,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter, Pageable pageable) {
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
                 .map(OrganizationUnitSummary::getId)
@@ -145,7 +145,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         Map<String, String> pagedStates = pagedEligibleIds.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
-                        allStates::get
+                        id -> allStates.getOrDefault(id, Constants.QUESTIONNAIRE_STATE_UNAVAILABLE)
                 ));
 
         // 8. Present results
