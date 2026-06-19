@@ -14,12 +14,13 @@ public interface SurveyUnitClosingPort {
      *
      * <p><b>Behavior:</b>
      * <ul>
-     *   <li>If {@code isTemporary} is {@code true}:
+     *   <li>If {@code toClose} is {@code false}: provisional closing
      *       <ul>
      *         <li>Allows updating an existing temporary closing cause (no uniqueness validation).
+     *         <li>Validates that all survey units are in closable states (not CLO/TBR/FIN).
      *         <li>Does NOT close the survey units (state remains unchanged).
      *       </ul>
-     *   <li>If {@code isTemporary} is {@code false}:
+     *   <li>If {@code toClose} is {@code true}: definitive closing
      *       <ul>
      *         <li>Validates that no existing closing cause exists for any survey unit
      *             (throws {@link ClosingCauseAlreadyExistsException} if found).
