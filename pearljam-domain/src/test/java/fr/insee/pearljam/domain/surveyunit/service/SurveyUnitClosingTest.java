@@ -220,7 +220,6 @@ class SurveyUnitClosingTest {
         assertEquals(ClosingCauseType.NPX, closingCauseRepository.getClosingCauseType("SU002"));
         assertFalse(closingCauseRepository.existsClosingCauseFromSurveyUnitId("SU003"));
         assertEquals(0, closingCauseRepository.getAddedClosingCausesCount());
-        verifyNoInteractions(stateRepository);
 
     }
 

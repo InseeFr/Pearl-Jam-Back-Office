@@ -22,6 +22,7 @@ public interface SurveyUnitAssignedRepositoryPort {
      */
     Page<SurveyUnitAssigned> findSurveyUnitsAssigned(
             List<String> campaignIds,
+            List<String> lstOuIds,
             String search,
             Pageable pageable);
 }

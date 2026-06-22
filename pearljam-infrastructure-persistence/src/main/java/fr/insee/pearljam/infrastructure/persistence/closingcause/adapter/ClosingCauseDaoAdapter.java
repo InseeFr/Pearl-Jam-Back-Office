@@ -1,8 +1,8 @@
 package fr.insee.pearljam.infrastructure.persistence.closingcause.adapter;
 
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
+import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.infrastructure.persistence.closingcause.jpa.ClosingCauseJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -58,6 +58,10 @@ public class ClosingCauseDaoAdapter implements ClosingCauseRepository {
     @Override
     public void addClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
         closingCauseJpaRepository.addClosingCauseToSurveyUnits(surveyUnitIds, closingCause.toString());
+    }
+    @Override
+    public void updateExistingClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
+        closingCauseJpaRepository.updateExistingClosingCauseToSurveyUnits(surveyUnitIds, closingCause.toString());
     }
 
     @Override

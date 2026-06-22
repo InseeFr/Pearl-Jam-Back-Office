@@ -81,6 +81,7 @@ class SurveyUnitAssignedServiceTest {
 
         when(repository.findSurveyUnitsAssigned(
             anyList(),
+            anyList(),
             any(),
             any()
         )).thenReturn(page);
@@ -91,6 +92,7 @@ class SurveyUnitAssignedServiceTest {
         // Then
         verify(repository).findSurveyUnitsAssigned(
             eq(List.of("C1", "C2")),
+            anyList(),
             any(),
             any()
         );
@@ -108,6 +110,7 @@ class SurveyUnitAssignedServiceTest {
 
         when(repository.findSurveyUnitsAssigned(
             anyList(),
+            anyList(),
             any(),
             any()
         )).thenReturn(page);
@@ -118,6 +121,7 @@ class SurveyUnitAssignedServiceTest {
         // Then
         verify(repository).findSurveyUnitsAssigned(
             eq(List.of("C1")),
+            anyList(),
             any(),
             any()
         );
@@ -163,7 +167,7 @@ class SurveyUnitAssignedServiceTest {
             "IN_PROGRESS",
             "NONE"
         )));
-        when(repository.findSurveyUnitsAssigned(anyList(), eq("search"), any()))
+        when(repository.findSurveyUnitsAssigned(anyList(),anyList(), eq("search"), any()))
             .thenReturn(page);
 
         // When
@@ -172,6 +176,7 @@ class SurveyUnitAssignedServiceTest {
         // Then
         verify(repository).findSurveyUnitsAssigned(
             eq(List.of("C1")),
+            anyList(),
             eq("search"),
             any()
         );

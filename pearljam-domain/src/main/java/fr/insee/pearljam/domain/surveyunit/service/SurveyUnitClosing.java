@@ -54,16 +54,28 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         }
 
         validateSurveyUnitsExist(surveyUnitIds);
-        // closing cause can be udpate in temporary clo
-        if (toClose) {
-            validateNoExistingClosingCause(surveyUnitIds);
-        }
         validateClosableStates(surveyUnitIds);
-        applyClosingCause(surveyUnitIds, type);
 
         if (toClose) {
-            closeSurveyUnits(surveyUnitIds);
+            handleCloseFlow(surveyUnitIds, type);
+        } else {
+            handleUpdateFlow(surveyUnitIds, type);
         }
+    }
+
+    private void handleCloseFlow(List<String> ids, ClosingCauseType type) {
+        validateNoExistingClosingCause(ids);
+
+        closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
+
+        closeSurveyUnits(ids);
+    }
+
+    private void handleUpdateFlow(List<String> ids, ClosingCauseType type) {
+        closingCauseRepository.updateExistingClosingCauseToSurveyUnits(ids, type);
+        //insert missing
+        closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
+
     }
 
     @Override
@@ -157,9 +169,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
     }
 
-    private void applyClosingCause(List<String> surveyUnitIds, ClosingCauseType type) {
-        closingCauseRepository.addClosingCauseToSurveyUnits(surveyUnitIds, type);
-    }
 
     private void closeSurveyUnits(List<String> surveyUnitIds) {
         stateRepository.saveStateForSurveyUnits(

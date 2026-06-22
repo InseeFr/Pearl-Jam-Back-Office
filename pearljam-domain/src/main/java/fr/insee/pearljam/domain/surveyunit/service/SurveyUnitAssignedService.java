@@ -44,8 +44,13 @@ public class SurveyUnitAssignedService implements SurveyUnitAssignedPort {
 
         List<String> campaignIds = getCampaignIdsForUser(userId, campaignId);
 
+        List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
+                .map(OrganizationUnitSummary::getId)
+                .toList();
+
+
         Page<SurveyUnitAssigned> page = surveyUnitAssignedRepository.findSurveyUnitsAssigned(
-            campaignIds, search, pageable);
+            campaignIds,lstOuIds, search, pageable);
 
         if (page.isEmpty()) {
             log.warn("No survey units assigned found for user: {} with search parameter: {}", userId, search);

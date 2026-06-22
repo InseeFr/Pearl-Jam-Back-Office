@@ -1,7 +1,7 @@
 package fr.insee.pearljam.infrastructure.persistence.closingcause.jpa;
 
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -219,6 +219,20 @@ public interface ClosingCauseJpaRepository extends JpaRepository<ClosingCauseDB,
     """, nativeQuery = true)
 	void addClosingCauseToSurveyUnits(@Param("surveyUnitIds") List<String> surveyUnitIds,
 									  @Param("type") String type);
+
+	@Modifying
+	@Query(value = """
+    UPDATE closing_cause cc
+    SET type = :type,
+        date = EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
+    FROM survey_unit su
+    WHERE su.id = cc.survey_unit_id
+      AND su.id IN (:surveyUnitIds)
+""", nativeQuery = true)
+	void updateExistingClosingCauseToSurveyUnits(
+			@Param("surveyUnitIds") List<String> surveyUnitIds,
+			@Param("type") String type
+	);
 
 	@Query(value = """
     SELECT DISTINCT survey_unit_id FROM closing_cause
