@@ -34,10 +34,9 @@ public interface SurveyUnitClosingPort {
      * @param toClose   if {@code false }, the closing cause is temporary and can be modified later;
      *                      if {@code true}, the closing cause is definitive and the survey units will be closed.
      * @throws SurveyUnitNotFoundException      if any survey unit ID does not exist.
-     * @throws ClosingCauseAlreadyExistsException if {@code isTemporary} is {@code false} and a closing cause already exists
+     * @throws ClosingCauseAlreadyExistsException if {@code toClose} is {@code true} and a closing cause already exists
      *                                            for any survey unit.
-     * @throws SurveyUnitNotClosableException    if {@code isTemporary} is {@code false} and any survey unit is in
-     *                                            a non-closable state (CLO, TBR, or FIN).
+     * @throws SurveyUnitNotClosableException    if any survey unit is in a non-closable state (CLO, TBR, or FIN).
      */
     void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type, boolean toClose);
 
