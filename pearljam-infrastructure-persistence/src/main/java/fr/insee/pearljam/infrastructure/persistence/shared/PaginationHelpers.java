@@ -1,9 +1,9 @@
 package fr.insee.pearljam.infrastructure.persistence.shared;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class PaginationHelpers {
@@ -20,26 +20,31 @@ public class PaginationHelpers {
             return " ORDER BY su.id ASC ";
         }
 
-        Sort.Order order = pageable.getSort().iterator().next();
+        String orderBy = pageable.getSort().stream()
+                .map(order -> {
 
-        String column = allowedSort.get(order.getProperty());
+                    String property = order.getProperty();
+                    String direction = order.isDescending() ? "DESC" : "ASC";
 
-        if (column == null) {
-            throw new IllegalArgumentException("Invalid sort column");
-        }
+                    String column = allowedSort.get(property);
 
-        String direction = order.isDescending() ? "DESC" : "ASC";
+                    if (column == null) {
+                        throw new IllegalArgumentException("Invalid sort column: " + property);
+                    }
 
-        // Handle custom sorting for specific fields
-        String property = order.getProperty();
-        if ("questionnaireState".equals(property)) {
-            return buildQuestionnaireStateSortClause(column, direction);
-        }
-        if ("closingCause".equals(property)) {
-            return buildClosingCauseSortClause(column, direction);
-        }
+                    if ("questionnaireState".equals(property)) {
+                        return buildQuestionnaireStateSortClause(column, direction);
+                    }
 
-        return ORDER_BY + column + " " + direction + " ";
+                    if ("closingCause".equals(property)) {
+                        return buildClosingCauseSortClause(column, direction);
+                    }
+
+                    return column + " " + direction;
+                })
+                .collect(Collectors.joining(" "));
+
+        return " ORDER BY " + orderBy +" ";
     }
 
     private static String buildQuestionnaireStateSortClause(String column, String direction) {
@@ -63,7 +68,7 @@ public class PaginationHelpers {
                                "WHEN " + column + " = 'VIC' THEN 14 " +
                                "WHEN " + column + " = 'VIN' THEN 15 " +
                                "ELSE 16 END";
-        return ORDER_BY + caseExpression + " " + direction + " ";
+        return caseExpression + " " + direction + " ";
     }
 
     private static String buildClosingCauseSortClause(String column, String direction) {
@@ -76,6 +81,6 @@ public class PaginationHelpers {
                                "WHEN " + column + " = 'NPI' THEN 3 " +
                                "WHEN " + column + " = 'NPX' THEN 4 " +
                                "ELSE 5 END";
-        return ORDER_BY + caseExpression + " " + direction + " ";
+        return caseExpression + " " + direction + " ";
     }
 }
