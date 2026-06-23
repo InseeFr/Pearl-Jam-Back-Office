@@ -44,7 +44,7 @@ public class PaginationHelpers {
                 })
                 .collect(Collectors.joining(" "));
 
-        return " ORDER BY " + orderBy +" ";
+        return ORDER_BY + orderBy +" ";
     }
 
     private static String buildQuestionnaireStateSortClause(String column, String direction) {
