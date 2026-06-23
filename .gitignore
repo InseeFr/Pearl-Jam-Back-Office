@@ -37,6 +37,10 @@ build/
 **/src/main/resources/application-*.properties
 !**/src/main/resources/application-docker.yml
 
+## AI
+plan.md
+
 
 *.DS_Store
 /.apt_generated_tests/
+/node_modules/

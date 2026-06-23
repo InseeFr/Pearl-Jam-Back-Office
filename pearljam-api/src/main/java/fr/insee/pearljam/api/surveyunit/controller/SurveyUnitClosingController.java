@@ -1,0 +1,62 @@
+package fr.insee.pearljam.api.surveyunit.controller;
+
+import fr.insee.pearljam.api.surveyunit.controller.request.CloseSurveyUnitsRequest;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingApiPresenter;
+import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
+import fr.insee.pearljam.contracts.constants.Constants;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+@Validated
+@Tag(name = "02. Survey-units", description = "Endpoints for survey-units")
+public class SurveyUnitClosingController {
+
+    private final SurveyUnitClosingPort surveyUnitClosingPort;
+    private final SurveyUnitClosingApiPresenter presenter;
+
+    /**
+     * Add closing cause to multiple survey units
+     */
+    @PostMapping(Constants.API_SURVEYUNIT_CLOSE_SURVEYUNITS)
+    public ResponseEntity<Void> addClosingCauseToMultipleSurveyUnits(
+            @RequestBody @Valid CloseSurveyUnitsRequest request) {
+        log.info("Attempting to close {} survey unit(s) in batch - Cause: {}, To close: {}",
+                request.getSurveyUnitIds().size(),
+                request.getClosingCauseType(),
+                request.getToClose());
+        surveyUnitClosingPort.addClosingCauseToMultipleSurveyUnits(request.getSurveyUnitIds(), request.getClosingCauseType(), request.getToClose());
+        log.info("Successfully processed closing for {} survey unit(s)", request.getSurveyUnitIds().size());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get survey units to close for management UI")
+    @GetMapping(Constants.API_SURVEYUNITS_TO_CLOSE)
+    @Parameter(name = "userId", hidden = true)
+    public List<SurveyUnitToCloseResponse> getSurveyUnitsToClose(
+            @CurrentSecurityContext(expression = "authentication.name") String userId) {
+        log.info("Retrieving survey units to close for user {}", userId);
+        
+        List<SurveyUnitToCloseResponse> result = surveyUnitClosingPort.getSurveyUnitsToClose(userId, presenter);
+        
+        log.info("Found {} survey unit(s) to close for user {}", result.size(), userId);
+        
+        return result;
+    }
+}

@@ -6,29 +6,89 @@ REST API for communication between Pearl Jam DB and Pearl Jam UI.
 ## Requirements
 For building and running the application you need:
 - [JDK 21](https://jdk.java.net/archive/)
-- Maven 3  
+- Maven 3
 
-## Install and excute unit tests
-Use the maven clean and maven install 
+## Project structure (multi-modules)
+- `pearljam-domain`: domain types and business services
+- `pearljam-shared-dto`: temporary cross-module DTO/contracts
+- `pearljam-shared-persistence-model`: temporary shared JPA persistence model
+- `pearljam-infrastructure-persistence`: persistence adapters and repositories
+- `pearljam-infrastructure-http`: HTTP/mail adapters
+- `pearljam-infrastructure-security`: security configuration and adapters
+- `pearljam-api`: Spring Boot application and REST API
+- `pearljam-coverage`: JaCoCo aggregate reporting module
+
+## Build commands
+From repository root:
 ```shell
-mvn clean install
-```  
+./mvnw clean install
+```
+
+Compile only (without running tests):
+```shell
+./mvnw -DskipTests test-compile
+```
+
+Build a single module and its dependencies:
+```shell
+./mvnw -pl pearljam-api -am -DskipTests test-compile
+```
 
 ## Running the application locally
+From repository root:
 ```shell
-mvn spring-boot:run
-```  
+./mvnw -pl pearljam-api -am spring-boot:run
+```
+
+Or from `pearljam-api/`:
+```shell
+../mvnw spring-boot:run
+```
+
+## Running tests
+Run unit tests and integration tests:
+```shell
+./mvnw verify
+```
+
+Run unit tests and integration tests with JaCoCo aggregate report:
+```shell
+./mvnw -Pcoverage verify
+```
+
+Run only unit tests:
+```shell
+./mvnw test
+```
+
+Run a specific unit test:
+```shell
+./mvnw -pl pearljam-api -am -Dtest=MyTest test
+```
+
+Run integration tests only:
+```shell
+./mvnw failsafe:integration-test failsafe:verify
+```
+
+Run a specific integration test:
+```shell
+./mvnw -pl pearljam-api -am -Dit.test=SurveyUnitIT verify
+```
+
+JaCoCo aggregate reports are generated in `pearljam-coverage/target/site/jacoco-aggregate/`.
+The aggregate includes `pearljam-api`, `pearljam-domain`, `pearljam-dto`, `pearljam-shared-persistence-model`, `pearljam-infrastructure-persistence`, `pearljam-infrastructure-http`, and `pearljam-infrastructure-security`.
 
 ## Deployment
 ### 1. Package the application
 ```shell
-mvn clean package
-```  
-The jar will be generated in `/target` repository
+./mvnw -pl pearljam-api -am clean package
+```
+The jar will be generated in `pearljam-api/target/`
 
 ### 2. Launch app with embedded tomcat
 ```shell
-java -jar app.jar
+java -jar pearljam-api/target/pearljam-api-*.jar
 ```
 
 ### 3. Application Access
