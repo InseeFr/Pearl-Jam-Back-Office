@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedPageResponse;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class SurveyUnitCompletedController {
      * Get survey units with CLO/FIN state for a specific campaign
      */
     @GetMapping(API_CAMPAIGN_SU_COMPLETED)
+    @Parameter(name = "userId", hidden = true)
     public SurveyUnitCompletedPageResponse getCompletedSurveyUnitsForCampaign(
             @PathVariable @NotBlank String id,
             @ParameterObject Pageable pageable,
