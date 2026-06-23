@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service.application;
 
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitFetchPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
@@ -17,11 +18,14 @@ import java.util.List;
 public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
 
     private final SurveyUnitFetchPort surveyUnitFetchPort;
+    private final UserService userService;
 
     @Override
-    public <T> T getCompletedSurveyUnits(String campaignId, String search, Pageable pageable, SurveyUnitCompletedPresenter<T> presenter) {
+    public <T> T getCompletedSurveyUnits(String userId, String campaignId, String search, Pageable pageable, SurveyUnitCompletedPresenter<T> presenter) {
+
+
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignId, search, pageable);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(userId, stateTypes, campaignId, search, pageable);
         return presenter.present(surveyUnits);
     }
 }

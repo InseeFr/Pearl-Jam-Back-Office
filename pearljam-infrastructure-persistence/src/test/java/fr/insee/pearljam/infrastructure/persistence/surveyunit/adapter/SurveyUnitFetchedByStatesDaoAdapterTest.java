@@ -108,7 +108,7 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
     }
 
     private Page<SurveyUnitFetchedByStatesAndCampaignIdView> fetch(List<StateType> states, String search, PageRequest page) {
-        return adapter.getSurveyUnitsByStatesAndCampaignId(states, CAMPAIGN_ID, search, page);
+        return adapter.getSurveyUnitsByStatesAndCampaignId(states, CAMPAIGN_ID, search, null, page);
     }
 
     // =========================================================
@@ -139,7 +139,7 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
     @Test
     void shouldReturnEmptyWhenNoMatch() {
         var result = adapter.getSurveyUnitsByStatesAndCampaignId(
-                List.of(StateType.TBR), "UNKNOWN-CAMPAIGN", null, PageRequest.of(0, 10));
+                List.of(StateType.TBR), "UNKNOWN-CAMPAIGN", null, null, PageRequest.of(0, 10));
         assertThat(result.getContent()).isEmpty();
     }
 

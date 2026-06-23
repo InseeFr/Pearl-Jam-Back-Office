@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,11 +35,10 @@ public class SurveyUnitCompletedController {
     public SurveyUnitCompletedPageResponse getCompletedSurveyUnitsForCampaign(
             @PathVariable @NotBlank String id,
             @ParameterObject Pageable pageable,
+            @CurrentSecurityContext(expression = "authentication.name") String userId,
             @RequestParam(required = false) String search)
     {
-
         log.info("Fetching survey units completed with search: {}", search);
-
-        return surveyUnitCompletedPort.getCompletedSurveyUnits(id, search, pageable, surveyUnitCompletedApiPresenter);
+        return surveyUnitCompletedPort.getCompletedSurveyUnits(userId, id, search, pageable, surveyUnitCompletedApiPresenter);
     }
 }

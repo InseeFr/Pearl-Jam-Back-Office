@@ -22,7 +22,9 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
     }
 
     @Override
-    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes,
+    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
+                                                                                                String userId,
+                                                                                                List<StateType> stateTypes,
                                                                                                 String campaignId,
                                                                                                 String search,
                                                                                                 Pageable pageable) {

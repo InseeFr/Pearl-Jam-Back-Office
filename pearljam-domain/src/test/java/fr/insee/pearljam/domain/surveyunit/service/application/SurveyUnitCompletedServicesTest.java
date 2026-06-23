@@ -1,8 +1,10 @@
 package fr.insee.pearljam.domain.surveyunit.service.application;
 
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitFetchPortStub;
+import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,10 +20,12 @@ class SurveyUnitCompletedServiceTest {
     private SurveyUnitFetchPortStub surveyUnitFetchPortStub;
     private SurveyUnitCompletedService service;
 
+
     @BeforeEach
     void setUp() {
         surveyUnitFetchPortStub = new SurveyUnitFetchPortStub();
-        service = new SurveyUnitCompletedService(surveyUnitFetchPortStub);
+        UserService userService = new UserServiceStub(List.of());
+        service = new SurveyUnitCompletedService(surveyUnitFetchPortStub, userService);
     }
 
     @Test
@@ -30,6 +34,7 @@ class SurveyUnitCompletedServiceTest {
         surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
         service.getCompletedSurveyUnits("campaign-01",
+                null,
                 null,
                 null,
                 surveyUnits -> surveyUnits);
@@ -44,6 +49,7 @@ class SurveyUnitCompletedServiceTest {
         surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
         service.getCompletedSurveyUnits("campaign-01",
+                null,
                 null,
                 null,
                 surveyUnits -> surveyUnits);
@@ -62,6 +68,7 @@ class SurveyUnitCompletedServiceTest {
                 service.getCompletedSurveyUnits("campaign-01",
                 null,
                 null,
+                        null,
                 surveyUnits -> surveyUnits);
 
         assertThat(result).containsExactly(su1, su2);
@@ -76,6 +83,7 @@ class SurveyUnitCompletedServiceTest {
                 service.getCompletedSurveyUnits("campaign-empty",
                 null,
                 null,
+                        null,
                 surveyUnits -> surveyUnits);
 
         assertThat(result).isEmpty();
@@ -86,7 +94,7 @@ class SurveyUnitCompletedServiceTest {
     void shouldDelegateToPresenter() {
         surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of(surveyUnitView(), surveyUnitView())));
 
-        Long result = service.getCompletedSurveyUnits("campaign-01", null, null, Page::getTotalElements);
+        Long result = service.getCompletedSurveyUnits(null,"campaign-01", null, null, Page::getTotalElements);
 
         assertThat(result).isEqualTo(2);
     }

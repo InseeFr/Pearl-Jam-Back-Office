@@ -22,9 +22,11 @@ public class SurveyUnitFetchedByStatesRepositoryStub implements SurveyUnitFetche
         this.stubbedResults = results;
     }
     @Override
-    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes,
+    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
+                                                                                                List<StateType> stateTypes,
                                                                                                 String campaignId,
                                                                                                 String search,
+                                                                                                List<String> ouIds,
                                                                                                 Pageable pageable) {
         this.capturedStateTypes = stateTypes;
         this.capturedCampaignId = campaignId;

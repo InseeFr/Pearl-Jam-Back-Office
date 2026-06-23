@@ -14,6 +14,7 @@ public interface SurveyUnitFetchedByStatesRepositoryPort {
             List<StateType> stateTypes,
             String campaignId,
             String search,
+            List<String> ouIds,
             Pageable pageable
     );
 }
