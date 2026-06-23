@@ -456,7 +456,7 @@ FROM (
         interviewer_id
     ) input
 
-    WHERE cds.day = :day
+    WHERE cds.day = CURRENT_DATE
       AND cds.campaign_id = input.campaign_id
       AND cds.organization_unit_id = input.organization_unit_id
       AND cds.interviewer_id = input.interviewer_id;
@@ -464,13 +464,13 @@ FROM (
     @Override
     public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds,
                                                @Nullable StateType newState,
-                                               @Nullable ClosingCauseType closingCause) {
+                                               @Nullable ClosingCauseType closingCause
+    ) {
         if (surveyUnitIds.isEmpty()) {
             return;
         }
         jdbc.sql(UPDATE_STATES_SQL)
                 .param("surveyUnitIds", surveyUnitIds)
-                .param("day", LocalDate.now())
                 .param("newState", newState != null ? newState.name() : null)
                 .param("isProvisional", newState == null)
                 .param("stateOffset", newState != null ? 1 : 0)
