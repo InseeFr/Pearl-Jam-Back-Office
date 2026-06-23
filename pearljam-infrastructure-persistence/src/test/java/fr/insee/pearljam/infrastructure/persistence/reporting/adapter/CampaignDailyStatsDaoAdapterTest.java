@@ -1,8 +1,11 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
+import fr.insee.pearljam.contracts.surveyunit.dto.closingcause.ClosingCauseDto;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
 import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.service.CurrentDateService;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
@@ -15,6 +18,7 @@ import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepo
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.reporting.batch.PartitionManager;
+import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.ClosingCauseDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.StateDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
@@ -69,6 +73,8 @@ class CampaignDailyStatsDaoAdapterTest {
     @Autowired
     private StateJpaRepository stateRepository;
 
+    DateService dateService;
+
     static final LocalDate DAY = LocalDate.of(2025, 6, 15);
     static final String CAMPAIGN_ID = "CAMP-TEST";
     static final String OU1_ID = "OU-TEST-1";
@@ -84,7 +90,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
     @BeforeEach
     void setup() {
-        // reference data
+        dateService = new CurrentDateService();
         campaign = new CampaignDB(CAMPAIGN_ID, "Test Campaign",
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "test@test.com", false, false);
@@ -115,7 +121,6 @@ class CampaignDailyStatsDaoAdapterTest {
         surveyUnitRepository.save(suUnaffected);
         entityManager.flush();
 
-        // create partition and insert stats
         partitionManager.ensureMonthlyPartitionExists(DAY);
         insertStats(DAY, CAMPAIGN_ID, OU1_ID, INTW1_ID,
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
@@ -178,7 +183,6 @@ class CampaignDailyStatsDaoAdapterTest {
         CampaignDailyStats stats = result.get();
         assertThat(stats.getCampaignId()).isEqualTo(CAMPAIGN_ID);
         assertThat(stats.getCampaignLabel()).isEqualTo("Test Campaign");
-        // SUM of OU1 + OU2
         assertThat(stats.getNvmStateCount()).isEqualTo(11);   // 1+10
         assertThat(stats.getNnsStateCount()).isEqualTo(22);   // 2+20
         assertThat(stats.getTbrStateCount()).isEqualTo(132);  // 12+120
@@ -187,7 +191,7 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(stats.getNoticeCommunicationCount()).isEqualTo(176); // 16+160
         assertThat(stats.getNpaClosingCauseCount()).isEqualTo(11);     // 1+10
         assertThat(stats.getInaContactOutcomeCount()).isEqualTo(55);   // 5+50
-        assertThat(stats.getUnaffectedCount()).isEqualTo(1);           // 1 survey unit without interviewer
+        assertThat(stats.getUnaffectedCount()).isEqualTo(1);
     }
 
     @Test
@@ -216,7 +220,6 @@ class CampaignDailyStatsDaoAdapterTest {
 
         assertThat(result).isPresent();
         CampaignDailyStats stats = result.get();
-        // only OU1 values
         assertThat(stats.getNvmStateCount()).isEqualTo(1);
         assertThat(stats.getTbrStateCount()).isEqualTo(12);
         assertThat(stats.getFinStateCount()).isEqualTo(13);
@@ -242,7 +245,6 @@ class CampaignDailyStatsDaoAdapterTest {
     void findCampaignStatsForOUs_shouldReturnZeros_whenOUNotFound() {
         Optional<CampaignDailyStats> result =
                 adapter.findCampaignStatsForOrganizationUnits(CAMPAIGN_ID, List.of("UNKNOWN-OU"), DAY);
-        // SUM over zero rows with COALESCE returns a single row of zeros
         assertThat(result).isPresent();
         assertThat(result.get().getAllocatedCount()).isZero();
     }
@@ -275,13 +277,11 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(ou2Stats.getUnaffectedCount()).isZero();
     }
 
-
     // ---- getCampaignsStats ----
 
     @Test
     @DisplayName("Should return stats for multiple campaigns filtered by OUs")
     void getCampaignsStats_shouldReturnForMultipleCampaigns() {
-        // add a second campaign
         CampaignDB campaign2 = new CampaignDB("CAMP-TEST-2", "Test Campaign 2",
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "t@t.com", false, false);
@@ -309,14 +309,13 @@ class CampaignDailyStatsDaoAdapterTest {
         CampaignDailyStats stats = result.getFirst();
         assertThat(stats.getCampaignId()).isEqualTo(CAMPAIGN_ID);
         assertThat(stats.getCampaignLabel()).isEqualTo("Test Campaign");
-        assertThat(stats.getNvmStateCount()).isEqualTo(1);  // only OU1
-        assertThat(stats.getUnaffectedCount()).isEqualTo(1); // 1 unaffected SU in OU1
+        assertThat(stats.getNvmStateCount()).isEqualTo(1);
+        assertThat(stats.getUnaffectedCount()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("Should count unaffected SUs only within requested OUs")
     void getCampaignsStats_shouldFilterUnaffectedByOU() {
-        // Add an unaffected SU in OU2
         SurveyUnitDB suUnaffected2 = new SurveyUnitDB();
         suUnaffected2.setId("SU-UNAFF-2");
         CampaignDB camp = campaignRepository.findById(CAMPAIGN_ID).orElseThrow();
@@ -327,19 +326,16 @@ class CampaignDailyStatsDaoAdapterTest {
         surveyUnitRepository.save(suUnaffected2);
         entityManager.flush();
 
-        // Filter on OU1 only → should see only 1 unaffected (the one from setup in OU1)
         List<CampaignDailyStats> resultOU1 = adapter.getCampaignsStats(
                 List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(resultOU1).hasSize(1);
         assertThat(resultOU1.getFirst().getUnaffectedCount()).isEqualTo(1);
 
-        // Filter on OU2 only → should see only 1 unaffected (the one we just added in OU2)
         List<CampaignDailyStats> resultOU2 = adapter.getCampaignsStats(
                 List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
         assertThat(resultOU2).hasSize(1);
         assertThat(resultOU2.getFirst().getUnaffectedCount()).isEqualTo(1);
 
-        // Both OUs → should see 2 unaffected
         List<CampaignDailyStats> resultBoth = adapter.getCampaignsStats(
                 List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
         assertThat(resultBoth).hasSize(1);
@@ -366,20 +362,20 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(result).extracting(InterviewerDailyStats::getInterviewerId)
                 .containsExactlyInAnyOrder(INTW1_ID, INTW2_ID);
 
-        InterviewerDailyStats intw1 = result.stream()
+        InterviewerDailyStats intw1Stats = result.stream()
                 .filter(s -> s.getInterviewerId().equals(INTW1_ID)).findFirst().orElseThrow();
-        assertThat(intw1.getInterviewerFirstName()).isEqualTo("Jean");
-        assertThat(intw1.getInterviewerLastName()).isEqualTo("Dupont");
-        assertThat(intw1.getNvmStateCount()).isEqualTo(1);
-        assertThat(intw1.getTbrStateCount()).isEqualTo(12);
-        assertThat(intw1.getNpaClosingCauseCount()).isEqualTo(1);
-        assertThat(intw1.getInaContactOutcomeCount()).isEqualTo(5);
+        assertThat(intw1Stats.getInterviewerFirstName()).isEqualTo("Jean");
+        assertThat(intw1Stats.getInterviewerLastName()).isEqualTo("Dupont");
+        assertThat(intw1Stats.getNvmStateCount()).isEqualTo(1);
+        assertThat(intw1Stats.getTbrStateCount()).isEqualTo(12);
+        assertThat(intw1Stats.getNpaClosingCauseCount()).isEqualTo(1);
+        assertThat(intw1Stats.getInaContactOutcomeCount()).isEqualTo(5);
 
-        InterviewerDailyStats intw2 = result.stream()
+        InterviewerDailyStats intw2Stats = result.stream()
                 .filter(s -> s.getInterviewerId().equals(INTW2_ID)).findFirst().orElseThrow();
-        assertThat(intw2.getInterviewerFirstName()).isEqualTo("Marie");
-        assertThat(intw2.getInterviewerLastName()).isEqualTo("Martin");
-        assertThat(intw2.getNvmStateCount()).isEqualTo(10);
+        assertThat(intw2Stats.getInterviewerFirstName()).isEqualTo("Marie");
+        assertThat(intw2Stats.getInterviewerLastName()).isEqualTo("Martin");
+        assertThat(intw2Stats.getNvmStateCount()).isEqualTo(10);
     }
 
     @Test
@@ -395,7 +391,6 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should aggregate interviewer stats across multiple OUs")
     void getInterviewerStats_shouldAggregateAcrossOUs() {
-        // Add stats for INTW1 in OU2 (INTW1 already has stats in OU1 from setup)
         insertStats(DAY, CAMPAIGN_ID, OU2_ID, INTW1_ID,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
@@ -403,14 +398,12 @@ class CampaignDailyStatsDaoAdapterTest {
         List<InterviewerDailyStats> result =
                 adapter.getInterviewerStats(CAMPAIGN_ID, List.of(OU1_ID, OU2_ID), DAY);
 
-        // INTW1 should appear once with aggregated values (OU1 + OU2)
-        // INTW2 stays with OU2 values only
-        InterviewerDailyStats intw1 = result.stream()
+        InterviewerDailyStats intw1Stats = result.stream()
                 .filter(s -> s.getInterviewerId().equals(INTW1_ID)).findFirst().orElseThrow();
-        assertThat(intw1.getNvmStateCount()).isEqualTo(4);  // 1 (OU1) + 3 (OU2)
-        assertThat(intw1.getTbrStateCount()).isEqualTo(15);  // 12 (OU1) + 3 (OU2)
-        assertThat(intw1.getNpaClosingCauseCount()).isEqualTo(4);  // 1 + 3
-        assertThat(intw1.getInaContactOutcomeCount()).isEqualTo(8); // 5 + 3
+        assertThat(intw1Stats.getNvmStateCount()).isEqualTo(4);   // 1 (OU1) + 3 (OU2)
+        assertThat(intw1Stats.getTbrStateCount()).isEqualTo(15);  // 12 (OU1) + 3 (OU2)
+        assertThat(intw1Stats.getNpaClosingCauseCount()).isEqualTo(4);  // 1 + 3
+        assertThat(intw1Stats.getInaContactOutcomeCount()).isEqualTo(8); // 5 + 3
     }
 
     @Test
@@ -431,7 +424,6 @@ class CampaignDailyStatsDaoAdapterTest {
         InterviewerCampaignDailyStats stats = result.getFirst();
         assertThat(stats.getCampaignId()).isEqualTo(CAMPAIGN_ID);
         assertThat(stats.getCampaignLabel()).isEqualTo("Test Campaign");
-        // Only INTW1's stats (from OU1)
         assertThat(stats.getNvmStateCount()).isEqualTo(1);
         assertThat(stats.getTbrStateCount()).isEqualTo(12);
         assertThat(stats.getNpaClosingCauseCount()).isEqualTo(1);
@@ -449,7 +441,6 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should filter by campaign IDs when getting interviewer stats")
     void getCampaignsStatsForInterviewer_shouldFilterByCampaignIds() {
-        // Add a second campaign
         CampaignDB campaign2 = new CampaignDB("CAMP-TEST-2", "Test Campaign 2",
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "t@t.com", false, false);
@@ -459,7 +450,6 @@ class CampaignDailyStatsDaoAdapterTest {
                 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
                 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
 
-        // Get stats for both campaigns
         List<InterviewerCampaignDailyStats> result = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID, "CAMP-TEST-2"), List.of(OU1_ID), DAY);
 
@@ -467,7 +457,6 @@ class CampaignDailyStatsDaoAdapterTest {
         assertThat(result).extracting(InterviewerCampaignDailyStats::getCampaignId)
                 .containsExactlyInAnyOrder(CAMPAIGN_ID, "CAMP-TEST-2");
 
-        // Verify INTW1's stats for each campaign
         InterviewerCampaignDailyStats camp1Stats = result.stream()
                 .filter(s -> s.getCampaignId().equals(CAMPAIGN_ID))
                 .findFirst().orElseThrow();
@@ -482,24 +471,20 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should filter by OUs when getting interviewer stats")
     void getCampaignsStatsForInterviewer_shouldFilterByOUs() {
-        // INTW1 has stats in OU1, let's add stats in OU2 as well
         insertStats(DAY, CAMPAIGN_ID, OU2_ID, INTW1_ID,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 
-        // Get stats for OU1 only
         List<InterviewerCampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(resultOU1).hasSize(1);
         assertThat(resultOU1.getFirst().getNvmStateCount()).isEqualTo(1);
 
-        // Get stats for OU2 only
         List<InterviewerCampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
         assertThat(resultOU2).hasSize(1);
         assertThat(resultOU2.getFirst().getNvmStateCount()).isEqualTo(3);
 
-        // Get stats for both OUs (should aggregate)
         List<InterviewerCampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
         assertThat(resultBoth).hasSize(1);
@@ -509,12 +494,10 @@ class CampaignDailyStatsDaoAdapterTest {
     @Test
     @DisplayName("Should count correct affected SUs within requested OUs for interviewer when unaffected SUs exist")
     void getCampaignsStatsForInterviewer_shouldFilterUnaffectedByOU() {
-        // Add stats for INTW1 in OU2 first
         insertStats(DAY, CAMPAIGN_ID, OU2_ID, INTW1_ID,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
-        
-        // Add an unaffected SU in OU2
+
         SurveyUnitDB suUnaffected2 = new SurveyUnitDB();
         suUnaffected2.setId("SU-UNAFF-2");
         CampaignDB camp = campaignRepository.findById(CAMPAIGN_ID).orElseThrow();
@@ -525,17 +508,14 @@ class CampaignDailyStatsDaoAdapterTest {
         surveyUnitRepository.save(suUnaffected2);
         entityManager.flush();
 
-        // Filter on OU1 only → should see only 1 unaffected (the one from setup in OU1)
         List<InterviewerCampaignDailyStats> resultOU1 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID), DAY);
         assertThat(resultOU1).hasSize(1);
 
-        // Filter on OU2 only → should see only 1 unaffected (the one we just added in OU2)
         List<InterviewerCampaignDailyStats> resultOU2 = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU2_ID), DAY);
         assertThat(resultOU2).hasSize(1);
 
-        // Both OUs → should see 2 unaffected
         List<InterviewerCampaignDailyStats> resultBoth = adapter.getCampaignsStatsForInterviewer(
                 INTW1_ID, List.of(CAMPAIGN_ID), List.of(OU1_ID, OU2_ID), DAY);
         assertThat(resultBoth).hasSize(1);
@@ -560,8 +540,20 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     // ====================================================================================
-    // Tests for updateClosingCauseDailyStatsForSurveyUnits
+    // Tests for updateDailyStatsForSurveyUnits
     // ====================================================================================
+
+    /**
+     * Helper: assign an interviewer to SU-UNAFF-1 and return it, so it is eligible
+     * for stats updates (the SQL filters out SUs without interviewer).
+     */
+    private SurveyUnitDB assignInterviewerToDefaultSU() {
+        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
+        su.setInterviewer(intw1);
+        surveyUnitRepository.save(su);
+        entityManager.flush();
+        return su;
+    }
 
     @Test
     @DisplayName("Should do nothing when surveyUnitIds is empty")
@@ -580,69 +572,81 @@ class CampaignDailyStatsDaoAdapterTest {
 
     @Test
     @DisplayName("Should update state counts when transitioning between non-CLO states")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateStateCounts_whenNonCloTransition() {
+    void updateDailyStatsForSurveyUnits_shouldUpdateStateCounts_whenNonCloTransition() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.NVM));
+        // Previous state, then the new state that was just persisted before this call
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getNvmStateCount()).isZero();
-        assertThat(stats.getVinStateCount()).isEqualTo(5);
+        assertThat(stats.getVinStateCount()).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("Should handle null new state")
+    @DisplayName("Should handle null new state — only provisional closing cause, no state transition")
     void updateDailyStatsForSurveyUnits_shouldHandleNullNewState() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
-
-        insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
-
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.NVM));
-        entityManager.flush();
-
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), null, ClosingCauseType.NPA);
-
-        CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
-        assertThat(stats.getNvmStateCount()).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("Should update closing cause counts when closing with NPA")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpa() {
-        LocalDate today = LocalDate.now();
-        partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
                 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.NVM));
+
+        su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.NPI), su));
+        surveyUnitRepository.save(su);
+        entityManager.flush();
+
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), null, ClosingCauseType.NPI);
+
+        CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
+
+        CampaignDailyStats cds = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
+        // Debug: print all relevant counts
+        System.out.println("nvm=" + cds.getNvmStateCount());
+        System.out.println("npa_prov=" + cds.getNpaProvisionalClosingCauseCount());
+        System.out.println("npi_prov=" + cds.getNpiProvisionalClosingCauseCount());
+        System.out.println("npx_prov=" + cds.getNpxProvisionalClosingCauseCount());
+        System.out.println("row_prov=" + cds.getRowProvisionalClosingCauseCount());
+        assertThat(stats.getNvmStateCount()).isEqualTo(1);
+
+
+        assertThat(stats.getNpiProvisionalClosingCauseCount()).isEqualTo(1);
+        assertThat(stats.getNpaProvisionalClosingCauseCount()).isZero();
+    }
+
+    @Test
+    @DisplayName("Should update CLO count and finalise NPA closing cause")
+    void updateDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpa() {
+        LocalDate today = LocalDate.now();
+        partitionManager.ensureMonthlyPartitionExists(today);
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
+
+        insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
                 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.TBR));
+        long now = dateService.getCurrentTimestamp();
+        stateRepository.save(new StateDB(now - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(now, su, StateType.CLO));
+
+        // closing cause must be persisted so the SQL can read it via prev_cc
+        su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(now, ClosingCauseType.NPA), su));
+        surveyUnitRepository.save(su);
+
         entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPA);
@@ -655,23 +659,23 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should update closing cause counts when closing with NPI")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpi() {
+    @DisplayName("Should update CLO count and finalise NPI closing cause")
+    void updateDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpi() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
                 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.CLO));
+
         entityManager.flush();
 
+        su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.NPI), su));
+        surveyUnitRepository.save(su);
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPI);
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
@@ -682,23 +686,22 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should update closing cause counts when closing with NPX")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpx() {
+    @DisplayName("Should update CLO count and finalise NPX closing cause")
+    void updateDailyStatsForSurveyUnits_shouldUpdateCounts_whenNpx() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.CLO));
         entityManager.flush();
 
+        su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.NPX), su));
+        surveyUnitRepository.save(su);
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPX);
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
@@ -709,23 +712,22 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should update closing cause counts when closing with ROW")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateCounts_whenRow() {
+    @DisplayName("Should update CLO count and finalise ROW closing cause")
+    void updateDailyStatsForSurveyUnits_shouldUpdateCounts_whenRow() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.TBR));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.CLO));
         entityManager.flush();
 
+        su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.ROW), su));
+        surveyUnitRepository.save(su);
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.ROW);
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
@@ -736,51 +738,59 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should update multiple survey units")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateMultipleSurveyUnits() {
+    @DisplayName("Should update multiple survey units in a single call")
+    void updateDailyStatsForSurveyUnits_shouldUpdateMultipleSurveyUnits() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
 
-        SurveyUnitDB su1 = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su1.setInterviewer(intw1);
+        SurveyUnitDB su1 = assignInterviewerToDefaultSU();
         SurveyUnitDB su2 = new SurveyUnitDB();
         su2.setId("SU-TEST-MULTI");
         su2.setCampaign(campaign);
         su2.setOrganizationUnit(ou1);
         su2.setInterviewer(intw1);
-        surveyUnitRepository.save(su1);
         surveyUnitRepository.save(su2);
         entityManager.flush();
+
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
                 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 2000, su1, StateType.NVM));
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su2, StateType.NVM));
+
+        // Both SUs transition NVM → VIN: save old state then new state for each
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 2000, su1, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su1, StateType.VIN));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 2000, su2, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su2, StateType.VIN));
+
+        su1.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp() - 2000, ClosingCauseType.NPA), su1));
+        su2.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp() - 1000, ClosingCauseType.NPA), su2));
+        surveyUnitRepository.save(su1);
+        surveyUnitRepository.save(su2);
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId(), su2.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId(), su2.getId()), null, ClosingCauseType.NPA);
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
-        assertThat(stats.getNvmStateCount()).isZero();
-        assertThat(stats.getVinStateCount()).isEqualTo(2);
+        assertThat(stats.getNvmStateCount()).isEqualTo(2);
+        assertThat(stats.getNpaProvisionalClosingCauseCount()).isEqualTo(2);
     }
 
     @Test
-    @DisplayName("Should handle survey units with no previous state")
+    @DisplayName("Should only increment new state when SU has no previous state")
     void updateDailyStatsForSurveyUnits_shouldHandleNoPreviousState() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        // Only the new state row — no previous state exists
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
+        entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
 
@@ -789,20 +799,17 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should update stats for correct OU and interviewer")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldUpdateCorrectOUAndInterviewer() {
+    @DisplayName("Should update stats for the correct OU and interviewer only")
+    void updateDailyStatsForSurveyUnits_shouldUpdateCorrectOUAndInterviewer() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
 
-        SurveyUnitDB su1 = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su1.setInterviewer(intw1);
-        su1.setOrganizationUnit(ou1);
+        SurveyUnitDB su1 = assignInterviewerToDefaultSU(); // intw1, ou1
         SurveyUnitDB su2 = new SurveyUnitDB();
         su2.setId("SU-TEST-OU2");
         su2.setCampaign(campaign);
         su2.setOrganizationUnit(ou2);
         su2.setInterviewer(intw2);
-        surveyUnitRepository.save(su1);
         surveyUnitRepository.save(su2);
         entityManager.flush();
 
@@ -813,14 +820,20 @@ class CampaignDailyStatsDaoAdapterTest {
                 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su1, StateType.NVM));
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su2, StateType.NVM));
+        // su1 transitions NVM → VIN
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su1, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su1, StateType.VIN));
+        // su2 stays at NVM (no new state row)
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su2, StateType.NVM));
         entityManager.flush();
 
+        // Only update su1
         adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId()), StateType.VIN, ClosingCauseType.NPA);
 
-        CampaignDailyStats statsOU1 = adapter.findCampaignStatsForOrganizationUnits(CAMPAIGN_ID, List.of(OU1_ID), today).orElseThrow();
-        CampaignDailyStats statsOU2 = adapter.findCampaignStatsForOrganizationUnits(CAMPAIGN_ID, List.of(OU2_ID), today).orElseThrow();
+        CampaignDailyStats statsOU1 = adapter.findCampaignStatsForOrganizationUnits(
+                CAMPAIGN_ID, List.of(OU1_ID), today).orElseThrow();
+        CampaignDailyStats statsOU2 = adapter.findCampaignStatsForOrganizationUnits(
+                CAMPAIGN_ID, List.of(OU2_ID), today).orElseThrow();
 
         assertThat(statsOU1.getNvmStateCount()).isZero();
         assertThat(statsOU1.getVinStateCount()).isEqualTo(1);
@@ -829,17 +842,14 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should use current date for update")
+    @DisplayName("Should update today's partition only, not yesterday's")
     void updateDailyStatsForSurveyUnits_shouldUseCurrentDate() {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
         partitionManager.ensureMonthlyPartitionExists(today);
         partitionManager.ensureMonthlyPartitionExists(yesterday);
 
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(yesterday, CAMPAIGN_ID, OU1_ID, INTW1_ID,
                 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -848,7 +858,8 @@ class CampaignDailyStatsDaoAdapterTest {
                 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
@@ -863,21 +874,18 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should handle all state types in transitions")
+    @DisplayName("Should handle all non-CLO state types in a transition")
     void updateDailyStatsForSurveyUnits_shouldHandleAllStateTypes() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
-
-        SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(intw1);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        SurveyUnitDB su = assignInterviewerToDefaultSU();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.NNS));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.NNS));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.APS));
         entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.APS, ClosingCauseType.NPA);
@@ -888,21 +896,21 @@ class CampaignDailyStatsDaoAdapterTest {
     }
 
     @Test
-    @DisplayName("Should not update survey units without interviewer or OU")
-    void updateClosingCauseDailyStatsForSurveyUnits_shouldNotUpdate_whenMissingInterviewerOrOU() {
+    @DisplayName("Should not update stats for SUs without interviewer")
+    void updateDailyStatsForSurveyUnits_shouldNotUpdate_whenMissingInterviewer() {
         LocalDate today = LocalDate.now();
         partitionManager.ensureMonthlyPartitionExists(today);
 
+        // SU-UNAFF-1 deliberately left without an interviewer
         SurveyUnitDB su = surveyUnitRepository.findById("SU-UNAFF-1").orElseThrow();
-        su.setInterviewer(null);
-        surveyUnitRepository.save(su);
-        entityManager.flush();
+        assertThat(su.getInterviewer()).isNull();
 
         insertStats(today, CAMPAIGN_ID, OU1_ID, INTW1_ID,
                 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        stateRepository.save(new StateDB(System.currentTimeMillis() - 1000, su, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp() - 1000, su, StateType.NVM));
+        stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
         adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);

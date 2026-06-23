@@ -254,76 +254,217 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
     }
 
     private static final String UPDATE_STATES_SQL = """
-    UPDATE campaign_daily_stats cds
-    SET
-        nvm_count = nvm_count + CASE WHEN :newState = 'NVM' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'NVM' THEN 1 ELSE 0 END,
-        nns_count = nns_count + CASE WHEN :newState = 'NNS' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'NNS' THEN 1 ELSE 0 END,
-        anv_count = anv_count + CASE WHEN :newState = 'ANV' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'ANV' THEN 1 ELSE 0 END,
-        vin_count = vin_count + CASE WHEN :newState = 'VIN' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'VIN' THEN 1 ELSE 0 END,
-        vic_count = vic_count + CASE WHEN :newState = 'VIC' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'VIC' THEN 1 ELSE 0 END,
-        prc_count = prc_count + CASE WHEN :newState = 'PRC' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'PRC' THEN 1 ELSE 0 END,
-        aoc_count = aoc_count + CASE WHEN :newState = 'AOC' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'AOC' THEN 1 ELSE 0 END,
-        aps_count = aps_count + CASE WHEN :newState = 'APS' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'APS' THEN 1 ELSE 0 END,
-        ins_count = ins_count + CASE WHEN :newState = 'INS' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'INS' THEN 1 ELSE 0 END,
-        wft_count = wft_count + CASE WHEN :newState = 'WFT' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'WFT' THEN 1 ELSE 0 END,
-        wfs_count = wfs_count + CASE WHEN :newState = 'WFS' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'WFS' THEN 1 ELSE 0 END,
-        tbr_count = tbr_count + CASE WHEN :newState = 'TBR' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'TBR' THEN 1 ELSE 0 END,
-        fin_count = fin_count + CASE WHEN :newState = 'FIN' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'FIN' THEN 1 ELSE 0 END,
-        clo_count = clo_count + CASE WHEN :newState = 'CLO' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'CLO' THEN 1 ELSE 0 END,
-        nva_count = nva_count + CASE WHEN :newState = 'NVA' THEN 1 ELSE 0 END
-                                - CASE WHEN input.prev_type = 'NVA' THEN 1 ELSE 0 END,
-        npa_provisional_count = npa_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPA' THEN 1 ELSE 0 END,
-        npi_provisional_count = npi_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPI' THEN 1 ELSE 0 END,
-        npx_provisional_count = npx_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPX' THEN 1 ELSE 0 END,
-        row_provisional_count = row_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'ROW' THEN 1 ELSE 0 END,
-        npa_count = npa_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPA' THEN 1 ELSE 0 END,
-        npi_count = npi_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPI' THEN 1 ELSE 0 END,
-        npx_count = npx_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPX' THEN 1 ELSE 0 END,
-        row_count = row_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'ROW' THEN 1 ELSE 0 END
+   UPDATE campaign_daily_stats cds
+   SET
+   nvm_count = nvm_count
+       + CASE WHEN :newState = 'NVM' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_nvm_count ELSE 0 END,
+
+   nns_count = nns_count
+       + CASE WHEN :newState = 'NNS' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_nns_count ELSE 0 END,
+
+   anv_count = anv_count
+       + CASE WHEN :newState = 'ANV' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_anv_count ELSE 0 END,
+
+   vin_count = vin_count
+       + CASE WHEN :newState = 'VIN' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_vin_count ELSE 0 END,
+
+   vic_count = vic_count
+       + CASE WHEN :newState = 'VIC' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_vic_count ELSE 0 END,
+
+   prc_count = prc_count
+       + CASE WHEN :newState = 'PRC' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_prc_count ELSE 0 END,
+
+   aoc_count = aoc_count
+       + CASE WHEN :newState = 'AOC' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_aoc_count ELSE 0 END,
+
+   aps_count = aps_count
+       + CASE WHEN :newState = 'APS' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_aps_count ELSE 0 END,
+
+   ins_count = ins_count
+       + CASE WHEN :newState = 'INS' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_ins_count ELSE 0 END,
+
+   wft_count = wft_count
+       + CASE WHEN :newState = 'WFT' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_wft_count ELSE 0 END,
+
+   wfs_count = wfs_count
+       + CASE WHEN :newState = 'WFS' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_wfs_count ELSE 0 END,
+
+   tbr_count = tbr_count
+       + CASE WHEN :newState = 'TBR' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_tbr_count ELSE 0 END,
+
+   fin_count = fin_count
+       + CASE WHEN :newState = 'FIN' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_fin_count ELSE 0 END,
+
+   clo_count = clo_count
+       + CASE WHEN :newState = 'CLO' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_clo_count ELSE 0 END,
+
+   nva_count = nva_count
+       + CASE WHEN :newState = 'NVA' THEN input.su_count ELSE 0 END
+       - CASE WHEN NOT :isProvisional THEN input.prev_nva_count ELSE 0 END,
+
+    npa_provisional_count =
+        npa_provisional_count
+        + CASE WHEN :isProvisional THEN input.cc_npa_count ELSE 0 END
+        - CASE WHEN :newState = 'CLO' THEN input.was_npa_provisional_count ELSE 0 END,
+
+    npi_provisional_count =
+        npi_provisional_count
+        + CASE WHEN :isProvisional THEN input.cc_npi_count ELSE 0 END
+        - CASE WHEN :newState = 'CLO' THEN input.was_npi_provisional_count ELSE 0 END,
+
+    npx_provisional_count =
+        npx_provisional_count
+        + CASE WHEN :isProvisional THEN input.cc_npx_count ELSE 0 END
+        - CASE WHEN :newState = 'CLO' THEN input.was_npx_provisional_count ELSE 0 END,
+
+    row_provisional_count =
+        row_provisional_count
+        + CASE WHEN :isProvisional THEN input.cc_row_count ELSE 0 END
+        - CASE WHEN :newState = 'CLO' THEN input.was_row_provisional_count ELSE 0 END,
+
+    npa_count = npa_count
+        + CASE WHEN :newState = 'CLO' THEN input.cc_npa_count ELSE 0 END,
+
+    npi_count = npi_count
+        + CASE WHEN :newState = 'CLO' THEN input.cc_npi_count ELSE 0 END,
+
+    npx_count = npx_count
+        + CASE WHEN :newState = 'CLO' THEN input.cc_npx_count ELSE 0 END,
+
+    row_count = row_count
+        + CASE WHEN :newState = 'CLO' THEN input.cc_row_count ELSE 0 END
+
+FROM (
+    SELECT
+        campaign_id,
+        organization_unit_id,
+        interviewer_id,
+
+        COUNT(*) AS su_count,
+
+        SUM(CASE WHEN prev_type = 'NVM' THEN 1 ELSE 0 END) AS prev_nvm_count,
+        SUM(CASE WHEN prev_type = 'NNS' THEN 1 ELSE 0 END) AS prev_nns_count,
+        SUM(CASE WHEN prev_type = 'ANV' THEN 1 ELSE 0 END) AS prev_anv_count,
+        SUM(CASE WHEN prev_type = 'VIN' THEN 1 ELSE 0 END) AS prev_vin_count,
+        SUM(CASE WHEN prev_type = 'VIC' THEN 1 ELSE 0 END) AS prev_vic_count,
+        SUM(CASE WHEN prev_type = 'PRC' THEN 1 ELSE 0 END) AS prev_prc_count,
+        SUM(CASE WHEN prev_type = 'AOC' THEN 1 ELSE 0 END) AS prev_aoc_count,
+        SUM(CASE WHEN prev_type = 'APS' THEN 1 ELSE 0 END) AS prev_aps_count,
+        SUM(CASE WHEN prev_type = 'INS' THEN 1 ELSE 0 END) AS prev_ins_count,
+        SUM(CASE WHEN prev_type = 'WFT' THEN 1 ELSE 0 END) AS prev_wft_count,
+        SUM(CASE WHEN prev_type = 'WFS' THEN 1 ELSE 0 END) AS prev_wfs_count,
+        SUM(CASE WHEN prev_type = 'TBR' THEN 1 ELSE 0 END) AS prev_tbr_count,
+        SUM(CASE WHEN prev_type = 'FIN' THEN 1 ELSE 0 END) AS prev_fin_count,
+        SUM(CASE WHEN prev_type = 'CLO' THEN 1 ELSE 0 END) AS prev_clo_count,
+        SUM(CASE WHEN prev_type = 'NVA' THEN 1 ELSE 0 END) AS prev_nva_count,
+
+        SUM(was_npa_provisional) AS was_npa_provisional_count,
+        SUM(was_npi_provisional) AS was_npi_provisional_count,
+        SUM(was_npx_provisional) AS was_npx_provisional_count,
+        SUM(was_row_provisional) AS was_row_provisional_count,
+
+        SUM(CASE WHEN curr_cc_type = 'NPA' THEN 1 ELSE 0 END) AS cc_npa_count,
+        SUM(CASE WHEN curr_cc_type = 'NPI' THEN 1 ELSE 0 END) AS cc_npi_count,
+        SUM(CASE WHEN curr_cc_type = 'NPX' THEN 1 ELSE 0 END) AS cc_npx_count,
+        SUM(CASE WHEN curr_cc_type = 'ROW' THEN 1 ELSE 0 END) AS cc_row_count
+
     FROM (
         SELECT
             su.campaign_id,
             su.organization_unit_id,
             su.interviewer_id,
-            prev.type AS prev_type
+
+            prev.type     AS prev_type,
+            prev_cc.type  AS prev_cc_type,
+            curr_cc.type  AS curr_cc_type,
+
+            CASE
+                WHEN prev.type IS DISTINCT FROM 'CLO'
+                 AND prev_cc.type = 'NPA'
+                THEN 1 ELSE 0
+            END AS was_npa_provisional,
+
+            CASE
+                WHEN prev.type IS DISTINCT FROM 'CLO'
+                 AND prev_cc.type = 'NPI'
+                THEN 1 ELSE 0
+            END AS was_npi_provisional,
+
+            CASE
+                WHEN prev.type IS DISTINCT FROM 'CLO'
+                 AND prev_cc.type = 'NPX'
+                THEN 1 ELSE 0
+            END AS was_npx_provisional,
+
+            CASE
+                WHEN prev.type IS DISTINCT FROM 'CLO'
+                 AND prev_cc.type = 'ROW'
+                THEN 1 ELSE 0
+            END AS was_row_provisional
+
         FROM survey_unit su
+
         LEFT JOIN LATERAL (
             SELECT s.type
             FROM state s
             WHERE s.survey_unit_id = su.id
             ORDER BY s.date DESC
-            -- offset 1 to skip the new state just inserted, get the one before
-            LIMIT 1 OFFSET 1
-        ) prev ON true
+            LIMIT 1 OFFSET :stateOffset
+        ) prev ON TRUE
+
+        -- Used for was_nXX_provisional: skips cause just written on fresh CLO
+        LEFT JOIN LATERAL (
+            SELECT c.type
+            FROM closing_cause c
+            WHERE c.survey_unit_id = su.id
+            ORDER BY c.date DESC
+            LIMIT 1 OFFSET :causeOffset
+        ) prev_cc ON TRUE
+
+        -- Used for cc count and cc provisional count: always reads current cause
+        LEFT JOIN LATERAL (
+            SELECT c.type
+            FROM closing_cause c
+            WHERE c.survey_unit_id = su.id
+            ORDER BY c.date DESC
+            LIMIT 1
+        ) curr_cc ON TRUE
+
         WHERE su.id IN (:surveyUnitIds)
           AND su.interviewer_id IS NOT NULL
           AND su.organization_unit_id IS NOT NULL
           AND su.campaign_id IS NOT NULL
-    ) AS input
+    ) raw_input
+
+    GROUP BY
+        campaign_id,
+        organization_unit_id,
+        interviewer_id
+    ) input
+
     WHERE cds.day = :day
       AND cds.campaign_id = input.campaign_id
       AND cds.organization_unit_id = input.organization_unit_id
-      AND cds.interviewer_id = input.interviewer_id
-    """;
-
+      AND cds.interviewer_id = input.interviewer_id;
+  """;
     @Override
     public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds,
                                                @Nullable StateType newState,
-                                               ClosingCauseType closingCause) {
+                                               @Nullable ClosingCauseType closingCause) {
         if (surveyUnitIds.isEmpty()) {
             return;
         }
@@ -331,7 +472,9 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
                 .param("surveyUnitIds", surveyUnitIds)
                 .param("day", LocalDate.now())
                 .param("newState", newState != null ? newState.name() : null)
-                .param("closingCause", closingCause.name())
+                .param("isProvisional", newState == null)
+                .param("stateOffset", newState != null ? 1 : 0)
+                .param("causeOffset", StateType.CLO.equals(newState) && closingCause != null ? 1 : 0)
                 .update();
     }
 }

@@ -39,7 +39,8 @@ public class SurveyUnitUpdateStateService implements SurveyUnitStateUpdatePort {
             throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
         }
 
-        surveyUnitIds.forEach(suId -> addStateToSurveyUnit(suId, state));
+        surveyUnitIds.forEach(suId ->
+                addStateToSurveyUnit(suId, state));
         campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(surveyUnitIds, state, null);
     }
 

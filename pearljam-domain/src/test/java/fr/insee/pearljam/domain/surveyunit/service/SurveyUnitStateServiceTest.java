@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ForbiddenOperation;
 import fr.insee.pearljam.domain.surveyunit.service.exception.StateNotFoundException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class SurveyUnitStateServiceTest {
 
@@ -32,7 +34,8 @@ class SurveyUnitStateServiceTest {
         surveyUnitExistencePort = new SurveyUnitExistencePortStub();
         surveyUnitClosingPort = new SurveyUnitClosingPortStub();
         stateRepository = new StateRepositoryStub();
-        service = new SurveyUnitUpdateStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository);
+        CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort = mock(CampaignDailyStatsRepositoryPort.class);
+        service = new SurveyUnitUpdateStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository, campaignDailyStatsRepositoryPort);
     }
 
     // ==================== Multiple Survey Units Tests ====================
