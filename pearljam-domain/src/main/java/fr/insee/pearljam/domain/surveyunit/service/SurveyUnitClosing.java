@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
@@ -41,6 +42,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     private final QuestionnaireStatePort questionnaireStatePort;
     private final SurveyUnitClosablePolicy surveyUnitClosablePolicy;
     private final StateRepository stateRepository;
+    private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
 
     @Override
     @Transactional
@@ -61,6 +63,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         } else {
             handleUpdateFlow(surveyUnitIds, type);
         }
+
+        campaignDailyStatsRepositoryPort.updateClosingCauseDailyStatsForSurveyUnit(surveyUnitIds, toClose ? StateType.CLO : null, type);
     }
 
     private void handleCloseFlow(List<String> ids, ClosingCauseType type) {

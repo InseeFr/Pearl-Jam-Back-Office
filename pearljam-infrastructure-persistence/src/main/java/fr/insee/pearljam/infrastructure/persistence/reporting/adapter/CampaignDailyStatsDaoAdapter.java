@@ -5,6 +5,9 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -248,5 +251,87 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
                 .param(DAY_PARAM, day)
                 .query(InterviewerDailyStats.class)
                 .list();
+    }
+
+    private static final String UPDATE_STATES_SQL = """
+    UPDATE campaign_daily_stats cds
+    SET
+        nvm_count = nvm_count + CASE WHEN :newState = 'NVM' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'NVM' THEN 1 ELSE 0 END,
+        nns_count = nns_count + CASE WHEN :newState = 'NNS' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'NNS' THEN 1 ELSE 0 END,
+        anv_count = anv_count + CASE WHEN :newState = 'ANV' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'ANV' THEN 1 ELSE 0 END,
+        vin_count = vin_count + CASE WHEN :newState = 'VIN' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'VIN' THEN 1 ELSE 0 END,
+        vic_count = vic_count + CASE WHEN :newState = 'VIC' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'VIC' THEN 1 ELSE 0 END,
+        prc_count = prc_count + CASE WHEN :newState = 'PRC' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'PRC' THEN 1 ELSE 0 END,
+        aoc_count = aoc_count + CASE WHEN :newState = 'AOC' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'AOC' THEN 1 ELSE 0 END,
+        aps_count = aps_count + CASE WHEN :newState = 'APS' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'APS' THEN 1 ELSE 0 END,
+        ins_count = ins_count + CASE WHEN :newState = 'INS' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'INS' THEN 1 ELSE 0 END,
+        wft_count = wft_count + CASE WHEN :newState = 'WFT' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'WFT' THEN 1 ELSE 0 END,
+        wfs_count = wfs_count + CASE WHEN :newState = 'WFS' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'WFS' THEN 1 ELSE 0 END,
+        tbr_count = tbr_count + CASE WHEN :newState = 'TBR' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'TBR' THEN 1 ELSE 0 END,
+        fin_count = fin_count + CASE WHEN :newState = 'FIN' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'FIN' THEN 1 ELSE 0 END,
+        clo_count = clo_count + CASE WHEN :newState = 'CLO' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'CLO' THEN 1 ELSE 0 END,
+        nva_count = nva_count + CASE WHEN :newState = 'NVA' THEN 1 ELSE 0 END
+                                - CASE WHEN input.prev_type = 'NVA' THEN 1 ELSE 0 END,
+        npa_provisional_count = npa_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPA' THEN 1 ELSE 0 END,
+        npi_provisional_count = npi_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPI' THEN 1 ELSE 0 END,
+        npx_provisional_count = npx_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'NPX' THEN 1 ELSE 0 END,
+        row_provisional_count = row_provisional_count - CASE WHEN :newState = 'CLO' AND :closingCause = 'ROW' THEN 1 ELSE 0 END,
+        npa_count = npa_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPA' THEN 1 ELSE 0 END,
+        npi_count = npi_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPI' THEN 1 ELSE 0 END,
+        npx_count = npx_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'NPX' THEN 1 ELSE 0 END,
+        row_count = row_count + CASE WHEN :newState = 'CLO' AND :closingCause = 'ROW' THEN 1 ELSE 0 END
+    FROM (
+        SELECT
+            su.campaign_id,
+            su.organization_unit_id,
+            su.interviewer_id,
+            prev.type AS prev_type
+        FROM survey_unit su
+        LEFT JOIN LATERAL (
+            SELECT s.type
+            FROM state s
+            WHERE s.survey_unit_id = su.id
+            ORDER BY s.date DESC
+            -- offset 1 to skip the new state just inserted, get the one before
+            LIMIT 1 OFFSET 1
+        ) prev ON true
+        WHERE su.id IN (:surveyUnitIds)
+          AND su.interviewer_id IS NOT NULL
+          AND su.organization_unit_id IS NOT NULL
+          AND su.campaign_id IS NOT NULL
+    ) AS input
+    WHERE cds.day = :day
+      AND cds.campaign_id = input.campaign_id
+      AND cds.organization_unit_id = input.organization_unit_id
+      AND cds.interviewer_id = input.interviewer_id
+    """;
+
+    @Override
+    public void updateClosingCauseDailyStatsForSurveyUnit(List<String> surveyUnitIds,
+                                                          @Nullable StateType newState,
+                                                          ClosingCauseType closingCause) {
+        if (surveyUnitIds.isEmpty()) {
+            return;
+        }
+        jdbc.sql(UPDATE_STATES_SQL)
+                .param("surveyUnitIds", surveyUnitIds)
+                .param("day", LocalDate.now())
+                .param("newState", newState != null ? newState.name() : null)
+                .param("closingCause", closingCause.name())
+                .update();
     }
 }
