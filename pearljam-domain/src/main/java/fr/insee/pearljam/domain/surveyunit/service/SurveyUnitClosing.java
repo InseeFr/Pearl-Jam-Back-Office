@@ -63,8 +63,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         } else {
             handleUpdateFlow(surveyUnitIds, type);
         }
-
-        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(surveyUnitIds, toClose ? StateType.CLO : null, type);
     }
 
     private void handleCloseFlow(List<String> ids, ClosingCauseType type) {
@@ -73,6 +71,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
         closeSurveyUnits(ids);
+
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type);
     }
 
     private void handleUpdateFlow(List<String> ids, ClosingCauseType type) {
@@ -80,6 +80,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         //insert missing
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type);
     }
 
     @Override
