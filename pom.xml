@@ -18,7 +18,7 @@
     <name>Pearl-Jam-Back-Office Parent</name>
 
     <properties>
-        <revision>5.34.8</revision>
+        <revision>5.34.9</revision>
         <changelist></changelist>
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
