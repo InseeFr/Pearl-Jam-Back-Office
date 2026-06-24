@@ -11,11 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
 
@@ -31,8 +33,10 @@ public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
 
         List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnitsCompleted =
                 surveyUnits.stream()
-                        .filter(s -> Instant.ofEpochMilli(Long.parseLong(s.endDate()))
-                                .isBefore(now))
+                        .filter(s -> {
+                            Instant endDate = Instant.ofEpochMilli(Long.parseLong(s.endDate()));
+                            return endDate.isBefore(now);
+                        })
                         .toList();
 
         Page<SurveyUnitFetchedByStatesAndCampaignIdView> filteredPage =
