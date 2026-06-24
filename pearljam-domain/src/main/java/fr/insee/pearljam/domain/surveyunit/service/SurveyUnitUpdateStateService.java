@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitExistencePort;
@@ -24,6 +25,7 @@ public class SurveyUnitUpdateStateService implements SurveyUnitStateUpdatePort {
     private final SurveyUnitExistencePort surveyUnitExistencePort;
     private final SurveyUnitClosingPort surveyUnitClosingPort;
     private final StateRepository stateRepository;
+    private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
 
     @Override
     @Transactional
@@ -37,7 +39,9 @@ public class SurveyUnitUpdateStateService implements SurveyUnitStateUpdatePort {
             throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
         }
 
-        surveyUnitIds.forEach(suId -> addStateToSurveyUnit(suId, state));
+        surveyUnitIds.forEach(suId ->
+                addStateToSurveyUnit(suId, state));
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(surveyUnitIds, state, null);
     }
 
     @Override

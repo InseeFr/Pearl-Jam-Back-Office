@@ -5,6 +5,8 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
+import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,11 @@ public class CampaignDailyStatsRepositoryPortStub implements CampaignDailyStatsR
     @Override
     public List<InterviewerCampaignDailyStats> getCampaignsStatsForInterviewer(String interviewerId, List<String> campaignIds, List<String> userOUIds, LocalDate day) {
         return List.of();
+    }
+
+    @Override
+    public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds, StateType newState, ClosingCauseType closingCause) {
+        //not used
     }
 
     @Override

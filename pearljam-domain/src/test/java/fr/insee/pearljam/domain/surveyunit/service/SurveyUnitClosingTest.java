@@ -4,6 +4,7 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
@@ -44,7 +45,7 @@ class SurveyUnitClosingTest {
     QuestionnaireStatePort questionnaireStatePort;
     SurveyUnitClosablePolicy surveyUnitClosablePolicy;
     StateRepository stateRepository;
-
+    CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +56,9 @@ class SurveyUnitClosingTest {
         questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
         stateRepository = mock(StateRepository.class);
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy, stateRepository);
+        campaignDailyStatsRepositoryPort = mock(CampaignDailyStatsRepositoryPort.class);
+
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy, stateRepository, campaignDailyStatsRepositoryPort);
     }
 
     @Test
