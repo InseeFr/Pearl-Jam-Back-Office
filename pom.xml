@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -31,10 +31,10 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <cucumber.version>7.21.1</cucumber.version>
+        <cucumber.version>7.34.3</cucumber.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <archunit.version>1.4.1</archunit.version>
-        <jacoco.version>0.8.14</jacoco.version>
+        <archunit.version>1.4.2</archunit.version>
+        <jacoco.version>0.8.15</jacoco.version>
         <commons-validator.version>1.10.1</commons-validator.version>
         <tomcat.version>11.0.22</tomcat.version>
     </properties>
@@ -130,7 +130,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.6</version>
                 <configuration>
                     <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                     <includes>
@@ -144,7 +144,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.6</version>
                 <configuration>
                     <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                     <includes>
