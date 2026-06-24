@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +32,7 @@ public class SurveyUnitToReviewController {
     @Parameter(name = "userId", hidden = true)
     @GetMapping(Constants.API_SURVEY_UNITS_TO_REVIEW)
     public SurveyUnitToReviewPageResponse getSurveyUnitsToReview(
-            Pageable pageable,
+            @ParameterObject Pageable pageable,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String campaignId,
             @RequestParam(required = false) Boolean viewed,

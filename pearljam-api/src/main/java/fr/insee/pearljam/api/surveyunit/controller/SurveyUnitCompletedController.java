@@ -7,9 +7,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import static fr.insee.pearljam.contracts.constants.Constants.API_CAMPAIGN_SU_COMPLETED;
 
@@ -29,7 +33,7 @@ public class SurveyUnitCompletedController {
     @GetMapping(API_CAMPAIGN_SU_COMPLETED)
     public SurveyUnitCompletedPageResponse getCompletedSurveyUnitsForCampaign(
             @PathVariable @NotBlank String id,
-            Pageable pageable,
+            @ParameterObject Pageable pageable,
             @RequestParam(required = false) String search)
     {
 

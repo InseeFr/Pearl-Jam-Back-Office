@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
@@ -33,9 +34,8 @@ public class SurveyUnitAssignedController {
     public SurveyUnitAssignedPageResponse getSurveyUnitsAssigned(
         @RequestParam(required = false) String search,
         @RequestParam(required = false) String campaignId,
-        Pageable pageable,
+        @ParameterObject Pageable pageable,
         @CurrentSecurityContext(expression = "authentication.name") String userId) {
-
         log.info("Fetching survey units to review for user {} with search: {}", userId, search);
 
         return surveyUnitAssignedPort.getSurveyUnitsAssigned(userId, campaignId, search, pageable, presenter);

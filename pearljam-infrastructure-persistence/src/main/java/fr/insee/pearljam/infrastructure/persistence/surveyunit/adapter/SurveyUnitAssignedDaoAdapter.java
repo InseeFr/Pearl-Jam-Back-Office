@@ -66,7 +66,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                              END AS department,
                              CASE
                                  WHEN a.l6 ~ '^\\d{5}\\s+' THEN substring(a.l6 from '^\\d{5}\\s+(.*)$')
-                                 WHEN trim(coalesce(a.l6, '')) <> '' THEN a.l6
+                                 WHEN trim(coalesce(a.l6, '')) <> '' THEN trim(a.l6)
                                  ELSE NULL
                              END AS city,
                            ls.current_state                   AS currentStateType,
