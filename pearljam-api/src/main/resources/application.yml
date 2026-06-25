@@ -40,6 +40,7 @@ feature:
     enabled: false
     today-cron: "0 */5 * * * *"
     daily-cron: "0 0 1 * * *"
+    daily-cron-days: 30
   deprecated:
     endpoints:
       enabled: false

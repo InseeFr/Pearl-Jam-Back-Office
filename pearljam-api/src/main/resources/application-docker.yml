@@ -11,6 +11,7 @@ feature:
     enabled: true
     today-cron: "0 */5 * * * *"
     daily-cron: "0 0 1 * * *"
+    daily-cron-days: 30
   oidc:
     enabled: true
     auth-server-host: http://localhost:7080

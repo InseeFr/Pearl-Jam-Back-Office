@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.reporting.scheduler;
 import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class CampaignProgressScheduler {
 
     private final Clock clock;
     private final CampaignProgressBatch campaignProgressBatch;
+    @Value("${feature.stats-scheduling.daily-cron-days}")
+    private final int dailyCronDays;
 
     /**
      * Computes the daily snapshot for yesterday at 01:00 UTC.
@@ -34,14 +37,14 @@ public class CampaignProgressScheduler {
     }
 
     /**
-     * Computes the daily snapshot for the last 30 days.
+     * Computes the daily snapshot for the last days defined in property feature.stats-scheduling.daily-cron-days.
      * Cron configurable via {@code application.scheduling.daily-cron}.
      */
     @Scheduled(cron = "${feature.stats-scheduling.daily-cron:0 0 1 * * *}")
     public void computeDailySnapshot() {
         LocalDate yesterday = LocalDate.now(clock).minusDays(1);
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < dailyCronDays; i++) {
             LocalDate date = yesterday.minusDays(i);
             log.info("Scheduled daily snapshot computation for {}", date);
             campaignProgressBatch.run(date);
