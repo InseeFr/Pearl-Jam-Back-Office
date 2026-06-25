@@ -24,20 +24,27 @@ public class CampaignProgressScheduler {
      * Cron configurable via {@code application.scheduling.survey-unit-stats-cron}.
      */
     @Scheduled(cron = "${feature.stats-scheduling.today-cron:0 */30 * * * *}")
-    public void computeTodaySnapshot() {
+    public void computeTodayAndYesterdaySnapshot() {
         LocalDate now = LocalDate.now(clock);
-        log.info("Scheduled snapshot computation for {}", now);
+        LocalDate yesterday = LocalDate.now(clock).minusDays(1);
+        log.info("Scheduled snapshot computation for today {}", now);
         campaignProgressBatch.run(now);
+        log.info("Scheduled snapshot computation for yesterday {}", yesterday);
+        campaignProgressBatch.run(yesterday);
     }
 
     /**
-     * Computes the daily snapshot for yesterday
+     * Computes the daily snapshot for the last 30 days.
      * Cron configurable via {@code application.scheduling.daily-cron}.
      */
     @Scheduled(cron = "${feature.stats-scheduling.daily-cron:0 0 1 * * *}")
     public void computeDailySnapshot() {
         LocalDate yesterday = LocalDate.now(clock).minusDays(1);
-        log.info("Scheduled daily snapshot computation for {}", yesterday);
-        campaignProgressBatch.run(yesterday);
+
+        for (int i = 0; i < 30; i++) {
+            LocalDate date = yesterday.minusDays(i);
+            log.info("Scheduled daily snapshot computation for {}", date);
+            campaignProgressBatch.run(date);
+        }
     }
 }
