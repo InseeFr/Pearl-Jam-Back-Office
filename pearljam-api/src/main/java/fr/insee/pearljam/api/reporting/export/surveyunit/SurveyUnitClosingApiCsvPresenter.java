@@ -1,13 +1,7 @@
 package fr.insee.pearljam.api.reporting.export.surveyunit;
 
 import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
-import fr.insee.pearljam.api.reporting.export.progress.InterviewerProgressCsv;
-import fr.insee.pearljam.api.reporting.export.progress.ProgressCsvRow;
-import fr.insee.pearljam.api.surveyunit.response.SurveyUnitToCloseResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
-import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
-import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import fr.insee.pearljam.domain.surveyunit.model.Identification;
 import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
@@ -21,11 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.*;
 import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
 
 @Component
@@ -38,13 +30,17 @@ public class SurveyUnitClosingApiCsvPresenter implements SurveyUnitClosingPresen
             Map<String, String> questionnaireStates
     ) {
 
-        return projections.stream()
-                .map(toResponse(candidatesById, questionnaireStates))
-                .toList();
+        List<CsvRow> rows = new ArrayList<>();
+        projections.forEach(projection ->
+            addRowWithTitleLabel(
+                    rows,
+                    projection.getCampaignLabel(),
+                    toResponse(projection, candidatesById, questionnaireStates)));
+
+        return new SurveyUnitClosingCsv(rows);
     }
 
-    private @NonNull Function<ClosableSurveyUnitView, SurveyUnitToCloseResponse> toResponse(Map<String, ClosableSurveyUnitCandidateView> candidatesById, Map<String, String> questionnaireStates) {
-        return projection -> {
+    private @NonNull List<Object> toResponse(ClosableSurveyUnitView projection, Map<String, ClosableSurveyUnitCandidateView> candidatesById, Map<String, String> questionnaireStates) {
             String id = projection.getId();
 
             var candidate = candidatesById.get(id);
@@ -52,25 +48,21 @@ public class SurveyUnitClosingApiCsvPresenter implements SurveyUnitClosingPresen
             ContactOutcomeType contactOutcome =
                     candidate != null ? candidate.getContactOutcomeType() : null;
 
-            String interviewerLabel = buildInterviewerLabel(projection);
-
             String questionnaireState = questionnaireStates.getOrDefault(
                     id,
                     Constants.QUESTIONNAIRE_STATE_UNAVAILABLE
             );
 
-            return new SurveyUnitToCloseResponse(
-                    projection.getCampaignLabel(),
+            return List.of(
                     projection.getId(),
-                    projection.getDisplayName(),
-                    interviewerLabel,
+                    projection.getId(),
+                    buildInterviewerLabel(projection),
+                    projection.getInterviewerId(),
                     projection.getSsech(),
                     computeIdentificationState(projection).name(),
                     contactOutcome,
                     questionnaireState,
-                    projection.getClosingCauseType()
-            );
-        };
+                    projection.getClosingCauseType());
     }
 
     private String buildInterviewerLabel(ClosableSurveyUnitView projection) {
@@ -90,6 +82,7 @@ public class SurveyUnitClosingApiCsvPresenter implements SurveyUnitClosingPresen
                 p.getCampaignIdentificationConfiguration()
         );
     }
+
     private static Identification toModelIdentification(ClosableSurveyUnitView p) {
         boolean allNull =
                 p.getIdentification() == null
@@ -123,34 +116,6 @@ public class SurveyUnitClosingApiCsvPresenter implements SurveyUnitClosingPresen
 
     @Override
     public SurveyUnitClosingCsv empty() {
-        return null;
+        return new SurveyUnitClosingCsv(List.of());
     }
 }
-
-
-//@Component
-//public class InterviewerProgressCsvPresenter
-//        implements CampaignStatsByInterviewersPresenter<InterviewerProgressCsv> {
-//
-//    @Override
-//    public InterviewerProgressCsv present(List<InterviewerDailyStats> interviewerStats,
-//                                          CampaignDailyStats siteStats,
-//                                          CampaignDailyStats campaignStats) {
-//        List<CsvRow> rows = new ArrayList<>();
-//        interviewerStats.forEach(interv ->
-//                addRowWithMultipleTitleLabel(
-//                        rows,
-//                        List.of(interv.getInterviewerFirstName() + " " + interv.getInterviewerLastName(), interv.getInterviewerId()),
-//                        ProgressCsvRow.commonValues(interv)));
-//
-//        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_UNAFFECTED,
-//                // 1 Column for Total France
-//                // followed by 1 Column for Idep + Common values columns with emptyRowWithValueAtSpecificPosition
-//                emptyRowWithValueAtSpecificPosition(campaignStats.getUnaffectedCount(), 2, ProgressCsvRow.commonValuesSize() + 1));
-//        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_SITE, ProgressCsvRow.commonValuesWithEmptyIdep((siteStats)));
-//        addRowWithTitleLabel(rows, ProgressCsvRow.TOTAL_FRANCE, ProgressCsvRow.commonValuesWithEmptyIdep((campaignStats)));
-//
-//        return new InterviewerProgressCsv(rows);
-//    }
-//}
-

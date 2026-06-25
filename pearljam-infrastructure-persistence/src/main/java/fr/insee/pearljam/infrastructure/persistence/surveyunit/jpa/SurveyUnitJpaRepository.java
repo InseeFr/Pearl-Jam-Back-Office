@@ -466,6 +466,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     idf.number_of_respondents      AS numberOfRespondents,
     idf.present_in_previous_home   AS presentInPreviousHome,
     idf.household_composition      AS householdComposition,
+    int.id						   AS interviewerId,
     int.first_name                 AS interviewerFirstName,
     int.last_name                  AS interviewerLastName,
     f.finalizationDate              AS finalizationDate
