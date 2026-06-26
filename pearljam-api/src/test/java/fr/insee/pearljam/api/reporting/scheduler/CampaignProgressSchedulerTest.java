@@ -35,6 +35,7 @@ class CampaignProgressSchedulerTest {
         scheduler = new CampaignProgressScheduler(
                 clock,
                 campaignProgressBatch,
+                2,
                 3
         );
     }
@@ -42,7 +43,7 @@ class CampaignProgressSchedulerTest {
     @Test
     void shouldComputeTodayAndYesterdaySnapshot() {
         // When
-        scheduler.computeTodayAndYesterdaySnapshot();
+        scheduler.computePeriodicSnapshot();
 
         // Then
         verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 10));
@@ -53,7 +54,7 @@ class CampaignProgressSchedulerTest {
     @Test
     void shouldComputeDailySnapshotForConfiguredNumberOfDays() {
         // When
-        scheduler.computeDailySnapshot();
+        scheduler.computeHistoricalSnapshot();
 
         // Then
         verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
@@ -69,11 +70,11 @@ class CampaignProgressSchedulerTest {
         scheduler = new CampaignProgressScheduler(
                 clock,
                 campaignProgressBatch,
-                1
+                2,1
         );
 
         // When
-        scheduler.computeDailySnapshot();
+        scheduler.computeHistoricalSnapshot();
 
         // Then
         verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
@@ -83,7 +84,7 @@ class CampaignProgressSchedulerTest {
     @Test
     void shouldCallBatchInChronologicalOrderForDailySnapshot() {
         // When
-        scheduler.computeDailySnapshot();
+        scheduler.computeHistoricalSnapshot();
 
         // Then
         InOrder inOrder = inOrder(campaignProgressBatch);

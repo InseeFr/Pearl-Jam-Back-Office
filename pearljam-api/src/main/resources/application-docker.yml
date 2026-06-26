@@ -9,9 +9,10 @@ application:
 feature:
   stats-scheduling:
     enabled: true
-    today-cron: "0 */5 * * * *"
-    daily-cron: "0 0 1 * * *"
-    daily-cron-days: 30
+    periodic-cron-refresh: "0 */5 * * * *"
+    periodic-cron-days: 2
+    historical-cron-refresh: "0 0 1 * * *"
+    historical-cron-days: 30
   oidc:
     enabled: true
     auth-server-host: http://localhost:7080

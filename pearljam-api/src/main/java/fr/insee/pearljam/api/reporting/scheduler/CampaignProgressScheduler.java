@@ -19,34 +19,34 @@ public class CampaignProgressScheduler {
 
     private final Clock clock;
     private final CampaignProgressBatch campaignProgressBatch;
-    @Value("${feature.stats-scheduling.daily-cron-days}")
-    private final int dailyCronDays;
+    @Value("${feature.stats-scheduling.periodic-cron-days}")
+    private final int periodicCronDays;
+    @Value("${feature.stats-scheduling.historical-cron-days}")
+    private final int historicalCronDays;
+
 
     /**
-     * Computes the daily snapshot for yesterday at 01:00 UTC.
+     * Computes the historical snapshot for yesterday at 01:00 UTC.
      * Cron configurable via {@code application.scheduling.survey-unit-stats-cron}.
      */
-    @Scheduled(cron = "${feature.stats-scheduling.today-cron:0 */30 * * * *}")
-    public void computeTodayAndYesterdaySnapshot() {
-        LocalDate now = LocalDate.now(clock);
-        LocalDate yesterday = LocalDate.now(clock).minusDays(1);
-        log.info("Scheduled snapshot computation for today {}", now);
-        campaignProgressBatch.run(now);
-        log.info("Scheduled snapshot computation for yesterday {}", yesterday);
-        campaignProgressBatch.run(yesterday);
+    @Scheduled(cron = "${feature.stats-scheduling.periodic-cron-refresh:0 */30 * * * *}")
+    public void computePeriodicSnapshot() {
+        computeSnapshots(LocalDate.now(clock), periodicCronDays);
     }
 
     /**
-     * Computes the daily snapshot for the last days defined in property feature.stats-scheduling.daily-cron-days.
-     * Cron configurable via {@code application.scheduling.daily-cron}.
+     * Computes the historical snapshot for the last days defined in property feature.stats-scheduling.historical-cron-days.
+     * Cron configurable via {@code application.scheduling.historical-cron}.
      */
-    @Scheduled(cron = "${feature.stats-scheduling.daily-cron:0 0 1 * * *}")
-    public void computeDailySnapshot() {
-        LocalDate yesterday = LocalDate.now(clock).minusDays(1);
+    @Scheduled(cron = "${feature.stats-scheduling.historical-cron-refresh:0 0 1 * * *}")
+    public void computeHistoricalSnapshot() {
+        computeSnapshots(LocalDate.now(clock).minusDays(1), historicalCronDays);
+    }
 
-        for (int i = 0; i < dailyCronDays; i++) {
-            LocalDate date = yesterday.minusDays(i);
-            log.info("Scheduled daily snapshot computation for {}", date);
+    private void computeSnapshots(LocalDate startDate, int numberOfDays) {
+        for (int i = 0; i < numberOfDays; i++) {
+            LocalDate date = startDate.minusDays(i);
+            log.info("Scheduled snapshot computation for {}", date);
             campaignProgressBatch.run(date);
         }
     }
