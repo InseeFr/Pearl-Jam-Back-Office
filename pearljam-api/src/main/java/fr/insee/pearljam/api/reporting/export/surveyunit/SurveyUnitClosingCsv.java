@@ -18,9 +18,4 @@ public record SurveyUnitClosingCsv(List<CsvRow> rows) implements CsvExportable {
                         .toArray()
         );
     }
-
-    @Override
-    public List<CsvRow> rows() {
-        return List.of();
-    }
 }

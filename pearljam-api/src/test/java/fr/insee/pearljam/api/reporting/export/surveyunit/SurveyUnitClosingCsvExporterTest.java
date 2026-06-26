@@ -3,102 +3,64 @@ package fr.insee.pearljam.api.reporting.export.surveyunit;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class SurveyUnitClosingCsvExporterTest {
 
-    @Mock
+    // SurveyUnitClosingApiCsvPresenter cannot be mocked on JDK 25 — ByteBuddy fails
+    // to instrument SurveyUnitClosingPresenter<SurveyUnitClosingCsv> during retransformation.
+    // It has no constructor args so we instantiate it directly.
+
     private SurveyUnitClosingApiCsvPresenter presenter;
-
-    @Mock
-    private SurveyUnitClosingPort surveyUnitClosingPort;
-
+    private SurveyUnitClosingPort port;
     private SurveyUnitClosingCsvExporter exporter;
 
     @BeforeEach
-    void setUp() {
-        exporter = new SurveyUnitClosingCsvExporter(presenter, surveyUnitClosingPort);
+    void setup() {
+        presenter = new SurveyUnitClosingApiCsvPresenter();
+        port = mock(SurveyUnitClosingPort.class);
+        when(port.getSurveyUnitsToClose(any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
+        exporter = new SurveyUnitClosingCsvExporter(presenter, port);
     }
 
-    // ------------------------------------------------------------------
-    // Delegation to port
-    // ------------------------------------------------------------------
-    @Nested
-    @DisplayName("Delegation")
-    class Delegation {
+    @Test
+    @DisplayName("Calls getSurveyUnitsToClose with the given userId and the presenter")
+    void shouldDelegateToPortWithCorrectUserId() {
+        exporter.export("user-123");
 
-        @Test
-        @DisplayName("calls getSurveyUnitsToClose with the given userId and the presenter")
-        void shouldDelegateToPortWithCorrectArguments() {
-            SurveyUnitClosingCsv emptyCsv = new SurveyUnitClosingCsv(List.of());
-            when(surveyUnitClosingPort.getSurveyUnitsToClose(eq("user-123"), eq(presenter)))
-                    .thenReturn(emptyCsv);
-
-            exporter.export("user-123");
-
-            verify(surveyUnitClosingPort, times(1))
-                    .getSurveyUnitsToClose("user-123", presenter);
-        }
-
-        @Test
-        @DisplayName("passes the presenter instance unchanged to the port")
-        void shouldPassPresenterUnchanged() {
-            SurveyUnitClosingCsv emptyCsv = new SurveyUnitClosingCsv(List.of());
-            ArgumentCaptor<SurveyUnitClosingApiCsvPresenter> captor =
-                    ArgumentCaptor.forClass(SurveyUnitClosingApiCsvPresenter.class);
-
-            when(surveyUnitClosingPort.getSurveyUnitsToClose(any(), captor.capture()))
-                    .thenReturn(emptyCsv);
-
-            exporter.export("user-abc");
-
-            assertThat(captor.getValue()).isSameAs(presenter);
-        }
-
-        @Test
-        @DisplayName("never calls the presenter directly")
-        void shouldNeverCallPresenterDirectly() {
-            SurveyUnitClosingCsv emptyCsv = new SurveyUnitClosingCsv(List.of());
-            when(surveyUnitClosingPort.getSurveyUnitsToClose(any(), any()))
-                    .thenReturn(emptyCsv);
-
-            exporter.export("user-123");
-
-            verifyNoInteractions(presenter);
-        }
+        verify(port, times(1)).getSurveyUnitsToClose("user-123", presenter);
     }
 
-    // ------------------------------------------------------------------
-    // User ID propagation
-    // ------------------------------------------------------------------
-    @Nested
-    @DisplayName("userId propagation")
-    class UserIdPropagation {
+    @Test
+    @DisplayName("Passes the exact presenter instance to the port")
+    void shouldPassPresenterUnchanged() {
+        exporter.export("user-abc");
 
-        @Test
-        @DisplayName("different userIds are forwarded correctly to the port")
-        void shouldForwardDifferentUserIds() {
-            SurveyUnitClosingCsv csv = new SurveyUnitClosingCsv(List.of());
-            when(surveyUnitClosingPort.getSurveyUnitsToClose(any(), any())).thenReturn(csv);
+        verify(port).getSurveyUnitsToClose(eq("user-abc"), same(presenter));
+    }
 
-            exporter.export("alice");
-            exporter.export("bob");
+    @Test
+    @DisplayName("Port is called exactly once per export call")
+    void shouldCallPortExactlyOnce() {
+        exporter.export("user-123");
 
-            verify(surveyUnitClosingPort).getSurveyUnitsToClose(eq("alice"), any());
-            verify(surveyUnitClosingPort).getSurveyUnitsToClose(eq("bob"), any());
-        }
+        verify(port, times(1)).getSurveyUnitsToClose(any(), any());
+    }
+
+    @Test
+    @DisplayName("Different userIds are forwarded correctly to the port")
+    void shouldForwardDifferentUserIds() {
+        exporter.export("alice");
+        exporter.export("bob");
+
+        verify(port).getSurveyUnitsToClose(eq("alice"), any());
+        verify(port).getSurveyUnitsToClose(eq("bob"), any());
     }
 }
