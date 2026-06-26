@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.surveyunit;
 
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
@@ -33,7 +34,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
 
     @BeforeEach
     void setup() {
-        presenter = new SurveyUnitClosingApiCsvPresenter();
+        presenter = new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper());
     }
 
     private ClosableSurveyUnitView buildProjection(String id, String campaignLabel,
@@ -253,9 +254,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
                         "ID-3", buildCandidate(ContactOutcomeType.INA)),
                 Map.of());
 
-        assertThat(cells(result, 0).get(1)).isEqualTo("ID-1");
-        assertThat(cells(result, 1).get(1)).isEqualTo("ID-2");
-        assertThat(cells(result, 2).get(1)).isEqualTo("ID-3");
+        assertThat(cells(result, 0).getFirst()).isEqualTo("ID-1");
+        assertThat(cells(result, 1).getFirst()).isEqualTo("ID-2");
+        assertThat(cells(result, 2).getFirst()).isEqualTo("ID-3");
     }
 
     @Test
