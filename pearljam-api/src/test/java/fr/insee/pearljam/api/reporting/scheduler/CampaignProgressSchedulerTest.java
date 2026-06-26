@@ -8,10 +8,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import static org.mockito.Mockito.*;
 
@@ -46,8 +43,8 @@ class CampaignProgressSchedulerTest {
         scheduler.computePeriodicSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 10));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 10));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
         verifyNoMoreInteractions(campaignProgressBatch);
     }
 
@@ -57,9 +54,9 @@ class CampaignProgressSchedulerTest {
         scheduler.computeHistoricalSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 8));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 7));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 8));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 7));
 
         verifyNoMoreInteractions(campaignProgressBatch);
     }
@@ -77,7 +74,7 @@ class CampaignProgressSchedulerTest {
         scheduler.computeHistoricalSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
+        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
         verifyNoMoreInteractions(campaignProgressBatch);
     }
 
@@ -89,9 +86,9 @@ class CampaignProgressSchedulerTest {
         // Then
         InOrder inOrder = inOrder(campaignProgressBatch);
 
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 9));
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 8));
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, 6, 7));
+        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
+        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 8));
+        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 7));
 
         inOrder.verifyNoMoreInteractions();
     }
