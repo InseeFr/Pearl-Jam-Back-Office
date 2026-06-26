@@ -4,6 +4,7 @@ import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingApiCsv
 import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsv;
 import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsvExporter;
 import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsvHeaders;
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
@@ -33,7 +34,7 @@ class SurveyUnitClosingExportControllerTest {
         when(port.getSurveyUnitsToClose(any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
 
         SurveyUnitClosingCsvExporter exporter =
-                new SurveyUnitClosingCsvExporter(new SurveyUnitClosingApiCsvPresenter(), port);
+                new SurveyUnitClosingCsvExporter(new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper()), port);
         SurveyUnitClosingExportController controller = new SurveyUnitClosingExportController(exporter);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)

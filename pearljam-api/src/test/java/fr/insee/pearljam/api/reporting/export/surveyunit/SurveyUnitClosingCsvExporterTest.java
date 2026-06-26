@@ -1,5 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.surveyunit;
 
+import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,7 @@ class SurveyUnitClosingCsvExporterTest {
 
     @BeforeEach
     void setup() {
-        presenter = new SurveyUnitClosingApiCsvPresenter();
+        presenter = new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper());
         port = mock(SurveyUnitClosingPort.class);
         when(port.getSurveyUnitsToClose(any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
         exporter = new SurveyUnitClosingCsvExporter(presenter, port);
