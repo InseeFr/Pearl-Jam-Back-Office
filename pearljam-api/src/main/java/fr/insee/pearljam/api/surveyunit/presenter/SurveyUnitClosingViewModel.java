@@ -6,8 +6,8 @@ import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 
 public record SurveyUnitClosingViewModel(
         String campaignLabel,
-        String id,
         String displayName,
+        String id,
         String interviewerLabel,
         String interviewerId,
         Integer ssech,

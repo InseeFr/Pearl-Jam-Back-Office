@@ -24,7 +24,7 @@ public class SurveyUnitClosingViewModelMapper {
 
         String id = projection.getId();
 
-        var candidate = candidatesById.get(id);
+        ClosableSurveyUnitCandidateView candidate = candidatesById.get(id);
 
         ContactOutcomeType contactOutcome =
                 candidate != null ? candidate.getContactOutcomeType() : null;
@@ -36,8 +36,8 @@ public class SurveyUnitClosingViewModelMapper {
 
         return new SurveyUnitClosingViewModel(
                 projection.getCampaignLabel(),
-                projection.getId(),
                 projection.getDisplayName(),
+                projection.getId(),
                 buildInterviewerLabel(projection),
                 projection.getInterviewerId(),
                 projection.getSsech(),

@@ -37,12 +37,13 @@ class SurveyUnitClosingApiCsvPresenterTest {
         presenter = new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper());
     }
 
-    private ClosableSurveyUnitView buildProjection(String id, String campaignLabel,
+    private ClosableSurveyUnitView buildProjection(String campaignLabel, String surveyUnitId,
                                                    String firstName, String lastName,
                                                    String interviewerId, Integer ssech,
                                                    ClosingCauseType closingCauseType) {
         ClosableSurveyUnitView p = mock(ClosableSurveyUnitView.class);
-        when(p.getId()).thenReturn(id);
+        when(p.getId()).thenReturn(surveyUnitId);
+        when(p.getDisplayName()).thenReturn(surveyUnitId + "_DISPLAY_NAME");
         when(p.getCampaignLabel()).thenReturn(campaignLabel);
         when(p.getInterviewerFirstName()).thenReturn(firstName);
         when(p.getInterviewerLastName()).thenReturn(lastName);
@@ -66,10 +67,10 @@ class SurveyUnitClosingApiCsvPresenterTest {
         return p;
     }
 
-    private ClosableSurveyUnitView buildProjection(String id, String campaignLabel,
+    private ClosableSurveyUnitView buildProjection(String campaignLabel, String surveyUnitId,
                                                    String firstName, String lastName,
                                                    String interviewerId, Integer ssech) {
-        return buildProjection(id, campaignLabel, firstName, lastName,
+        return buildProjection(campaignLabel, surveyUnitId, firstName, lastName,
                 interviewerId, ssech, ClosingCauseType.values()[0]);
     }
 
@@ -103,13 +104,13 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Produces one row per projection")
     void shouldProduceOneRowPerProjection() {
-        ClosableSurveyUnitView p1 = buildProjection("ID-1", "Campaign A", "Alice", "Smith", "INT-1", 1);
-        ClosableSurveyUnitView p2 = buildProjection("ID-2", "Campaign B", "Bob", "Jones", "INT-2", 2);
+        ClosableSurveyUnitView p1 = buildProjection("Campaign A", "SU-A", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p2 = buildProjection( "Campaign B", "SU-B","Bob", "Jones", "INT-2", 2);
 
         SurveyUnitClosingCsv result = presenter.present(
                 List.of(p1, p2),
-                Map.of("ID-1", buildCandidate(ContactOutcomeType.INA),
-                        "ID-2", buildCandidate(ContactOutcomeType.INA)),
+                Map.of("SU-A", buildCandidate(ContactOutcomeType.INA),
+                        "SU-B", buildCandidate(ContactOutcomeType.INA)),
                 Map.of());
 
         assertThat(result.rows()).hasSize(2);
@@ -118,9 +119,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Each row has 10 columns (campaignLabel + 9 data columns)")
     void shouldHaveTenColumns() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign","SU-A", "Alice", "Smith", "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0)).hasSize(10);
     }
@@ -128,9 +129,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Uses QUESTIONNAIRE_STATE_UNAVAILABLE when id is absent from state map")
     void shouldUseUnavailableStateWhenMissing() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign","SU-A", "Alice", "Smith", "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0).get(8)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);
     }
@@ -138,9 +139,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Uses questionnaire state from map when present")
     void shouldUseProvidedQuestionnaireState() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-A","Alice", "Smith", "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of("ID-1", "COMPLETED"));
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of("SU-A", "COMPLETED"));
 
         assertThat(cells(result, 0).get(8)).isEqualTo("COMPLETED");
     }
@@ -148,7 +149,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("NPE when no candidate provided — contactOutcome null not accepted by List.of()")
     void shouldNpeWhenNoCandidate() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "Alice","SU-A", "Smith", "INT-1", 1);
 
         assertThatNullPointerException()
                 .isThrownBy(() -> presenter.present(List.of(p), Map.of(), Map.of()));
@@ -157,10 +158,10 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Sets contactOutcome from candidate when present")
     void shouldSetContactOutcomeFromCandidate() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-A","Alice", "Smith", "INT-1", 1);
 
         SurveyUnitClosingCsv result = presenter.present(
-                List.of(p), Map.of("ID-1", buildCandidate(ContactOutcomeType.INA)), Map.of());
+                List.of(p), Map.of("SU-A", buildCandidate(ContactOutcomeType.INA)), Map.of());
 
         assertThat(cells(result, 0).get(7)).isEqualTo("INA");
     }
@@ -168,9 +169,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Concatenates first and last name with a space")
     void shouldConcatenateFirstAndLastName() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-A", "Alice","Smith", "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0).get(3)).isEqualTo("Alice Smith");
     }
@@ -178,7 +179,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("NPE when both names are null — interviewerLabel null not accepted by List.of()")
     void shouldNpeWhenBothNamesNull() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", null, null, "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-ID",null, null, "INT-1", 1);
 
         assertThatNullPointerException()
                 .isThrownBy(() -> presenter.present(List.of(p), candidates("ID-1"), Map.of()));
@@ -187,9 +188,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Uses only first name when last name is null")
     void shouldUseFirstNameOnlyWhenLastNameNull() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", "Alice", null, "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-A","Alice", null, "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0).get(3)).isEqualTo("Alice");
     }
@@ -197,9 +198,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Uses only last name when first name is null")
     void shouldUseLastNameOnlyWhenFirstNameNull() {
-        ClosableSurveyUnitView p = buildProjection("ID-1", "Campaign", null, "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-1",null, "Smith", "INT-1", 1);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("ID-1"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-1"), Map.of());
 
         assertThat(cells(result, 0).get(3)).isEqualTo("Smith");
     }
@@ -207,14 +208,14 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("campaignLabel is at column 0, id at 1 and 2, interviewerId at 4, ssech at 5")
     void shouldRespectColumnOrder() {
-        ClosableSurveyUnitView p = buildProjection("SU-42", "My Campaign", "Jean", "Dupont", "INT-99", 3);
+        ClosableSurveyUnitView p = buildProjection("My Campaign","SU-A", "Jean", "Dupont", "INT-99", 3);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-42"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
         List<String> row = cells(result, 0);
 
         assertThat(row.get(0)).isEqualTo("My Campaign");
-        assertThat(row.get(1)).isEqualTo("SU-42");
-        assertThat(row.get(2)).isEqualTo("SU-42");
+        assertThat(row.get(1)).isEqualTo("SU-A_DISPLAY_NAME");
+        assertThat(row.get(2)).isEqualTo("SU-A");
         assertThat(row.get(4)).isEqualTo("INT-99");
         assertThat(row.get(5)).isEqualTo("3");
     }
@@ -222,9 +223,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("identificationState is MISSING when all identification fields are null")
     void shouldHaveMissingIdentificationState() {
-        ClosableSurveyUnitView p = buildProjection("SU-42", "Campaign", "Jean", "Dupont", "INT-99", 3);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-1", "Jean", "Dupont", "INT-99", 3);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-42"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-1"), Map.of());
 
         assertThat(cells(result, 0).get(6)).isEqualTo("MISSING");
     }
@@ -233,9 +234,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @DisplayName("closingCauseType is serialised to its enum name at column 9")
     void shouldHaveClosingCauseAtColumn9() {
         ClosingCauseType cause = ClosingCauseType.values()[0];
-        ClosableSurveyUnitView p = buildProjection("SU-42", "Campaign", "Jean", "Dupont", "INT-99", 3, cause);
+        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-1", "Jean", "Dupont", "INT-99", 3, cause);
 
-        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-42"), Map.of());
+        SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-1"), Map.of());
 
         assertThat(cells(result, 0).get(9)).isEqualTo(cause.name());
     }
@@ -243,33 +244,33 @@ class SurveyUnitClosingApiCsvPresenterTest {
     @Test
     @DisplayName("Rows appear in the same order as the input projections")
     void shouldPreserveProjectionOrder() {
-        ClosableSurveyUnitView p1 = buildProjection("ID-1", "Campaign A", "Alice", "Smith", "INT-1", 1);
-        ClosableSurveyUnitView p2 = buildProjection("ID-2", "Campaign B", "Bob", "Jones", "INT-2", 2);
-        ClosableSurveyUnitView p3 = buildProjection("ID-3", "Campaign C", "Carol", "Brown", "INT-3", 3);
+        ClosableSurveyUnitView p1 = buildProjection("Campaign A", "SU-A", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p2 = buildProjection( "Campaign B", "SU-B","Bob", "Jones", "INT-2", 2);
+        ClosableSurveyUnitView p3 = buildProjection("Campaign C", "SU-C","Carol", "Brown", "INT-3", 3);
 
         SurveyUnitClosingCsv result = presenter.present(
                 List.of(p1, p2, p3),
-                Map.of("ID-1", buildCandidate(ContactOutcomeType.INA),
-                        "ID-2", buildCandidate(ContactOutcomeType.INA),
-                        "ID-3", buildCandidate(ContactOutcomeType.INA)),
+                Map.of("SU-A", buildCandidate(ContactOutcomeType.INA),
+                        "SU-B", buildCandidate(ContactOutcomeType.INA),
+                        "SU-C", buildCandidate(ContactOutcomeType.INA)),
                 Map.of());
 
-        assertThat(cells(result, 0).getFirst()).isEqualTo("ID-1");
-        assertThat(cells(result, 1).getFirst()).isEqualTo("ID-2");
-        assertThat(cells(result, 2).getFirst()).isEqualTo("ID-3");
+        assertThat(cells(result, 0).getFirst()).isEqualTo("Campaign A");
+        assertThat(cells(result, 1).getFirst()).isEqualTo("Campaign B");
+        assertThat(cells(result, 2).getFirst()).isEqualTo("Campaign C");
     }
 
     @Test
     @DisplayName("Each row resolves its own questionnaire state independently")
     void shouldResolveQuestionnaireStatePerRow() {
-        ClosableSurveyUnitView p1 = buildProjection("ID-1", "Campaign", "Alice", "Smith", "INT-1", 1);
-        ClosableSurveyUnitView p2 = buildProjection("ID-2", "Campaign", "Bob", "Jones", "INT-2", 2);
+        ClosableSurveyUnitView p1 = buildProjection("Campaign", "SU-A", "Alice", "Smith", "INT-1", 1);
+        ClosableSurveyUnitView p2 = buildProjection( "Campaign", "SU-B", "Bob", "Jones", "INT-2", 2);
 
         SurveyUnitClosingCsv result = presenter.present(
                 List.of(p1, p2),
-                Map.of("ID-1", buildCandidate(ContactOutcomeType.INA),
-                        "ID-2", buildCandidate(ContactOutcomeType.INA)),
-                Map.of("ID-1", "COMPLETED"));
+                Map.of("SU-A", buildCandidate(ContactOutcomeType.INA),
+                        "SU-B", buildCandidate(ContactOutcomeType.INA)),
+                Map.of("SU-A", "COMPLETED"));
 
         assertThat(cells(result, 0).get(8)).isEqualTo("COMPLETED");
         assertThat(cells(result, 1).get(8)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);

@@ -39,7 +39,7 @@ public class SurveyUnitClosingApiCsvPresenter
                                 rows,
                                 vm.campaignLabel(),
                                 List.of(
-                                        vm.campaignLabel(),
+                                        vm.displayName(),
                                         vm.id(),
                                         vm.interviewerLabel(),
                                         vm.interviewerId(),
