@@ -87,6 +87,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                              ON si.id = su.sample_identifier_id
                          LEFT JOIN closing_cause cc
                              ON cc.survey_unit_id = su.id
+                             AND ls.current_state NOT IN ('CLO', 'FIN')
                          LEFT JOIN contact_outcome co
                              ON co.survey_unit_id = su.id
                          LEFT JOIN interviewer int
