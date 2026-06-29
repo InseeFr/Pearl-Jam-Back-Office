@@ -10,14 +10,13 @@ broker:
     webServiceUrl: http://localhost:8080
     brokerServiceUrl: pulsar://localhost:6650
 
-
 # JMS destination (maps to a Pulsar topic)
 app:
   queue: persistent://public/default/demo-queue
 
 spring:
   application:
-    name: queen-listener-jms
+    name: pearl-listener-jms
   docker:
     compose:
       enabled: true

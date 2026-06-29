@@ -16,11 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @ComponentScan(
-        basePackages = "fr.insee.pearljam",
-        excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class),
-                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class)
-        }
+    basePackages = "fr.insee.pearljam",
+    excludeFilters = {
+        @ComponentScan.Filter(
+            type = FilterType.ANNOTATION,
+            classes = RestController.class
+        ),
+        @ComponentScan.Filter(
+            type = FilterType.ANNOTATION,
+            classes = Controller.class
+        ),
+    }
 )
 @EnableTransactionManagement
 @ConfigurationPropertiesScan
@@ -29,17 +35,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class JMSApplication {
 
-        public static void main(String[] args) {
-                configureApplicationBuilder(new SpringApplicationBuilder()).build().run(args);
-        }
+    public static void main(String[] args) {
+        configureApplicationBuilder(new SpringApplicationBuilder())
+            .build()
+            .run(args);
+    }
 
-        public static SpringApplicationBuilder configureApplicationBuilder(SpringApplicationBuilder springApplicationBuilder){
-                return springApplicationBuilder.sources(JMSApplication.class)
-                        .listeners();
-        }
+    public static SpringApplicationBuilder configureApplicationBuilder(
+        SpringApplicationBuilder springApplicationBuilder
+    ) {
+        return springApplicationBuilder
+            .sources(JMSApplication.class)
+            .listeners();
+    }
 
-        @EventListener
-        public void handleApplicationReady(ApplicationReadyEvent event) {
-                log.info("=============== Queen listener JMS has successfully started. ===============");
-        }
+    @EventListener
+    public void handleApplicationReady(ApplicationReadyEvent event) {
+        log.info(
+            "=============== Pearl listener JMS has successfully started. ==============="
+        );
+    }
 }

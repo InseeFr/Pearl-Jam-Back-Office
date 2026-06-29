@@ -5,10 +5,10 @@
 #
 # Commandes :
 # PODMAN INSEE
-# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name queen-listener-jms --profile all up -d
-# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name queen-listener-jms --profile activemq up -d
-# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name queen-listener-jms --profile all down
-# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name queen-listener-jms --profile activemq down
+# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name pearl-listener-jms --profile all up -d
+# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name pearl-listener-jms --profile activemq up -d
+# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name pearl-listener-jms --profile all down
+# - podman --log-level=debug compose -f compose.yml --env-file .env --project-name pearl-listener-jms --profile activemq down
 
 # mvn clean verify -Pcoverage --no-transfer-progress -Dspring.docker.compose.enabled=false
 
@@ -22,7 +22,6 @@ x-activemq-volumes: &activemq-volumes
   - ./containers/activemq/broker.xml:/var/lib/artemis-instance/etc-override/broker.xml
 
 services:
-
   activemq:
     container_name: activemq
     image: ${IMAGES_REGISTRY_DOCKER_IO}/${IMAGE_ACTIVEMQ}
@@ -48,7 +47,11 @@ services:
       - POSTGRES_DB=${PEARL_DB}
     command: ["postgres"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PEARL_DB_USER} -d ${PEARL_DB} -h localhost"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${PEARL_DB_USER} -d ${PEARL_DB} -h localhost",
+        ]
       interval: 5s
       timeout: 10s
       retries: 10
