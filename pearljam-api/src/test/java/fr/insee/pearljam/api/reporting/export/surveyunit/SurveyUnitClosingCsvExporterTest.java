@@ -17,10 +17,6 @@ import static org.mockito.Mockito.*;
 
 class SurveyUnitClosingCsvExporterTest {
 
-    // SurveyUnitClosingApiCsvPresenter cannot be mocked on JDK 25 — ByteBuddy fails
-    // to instrument SurveyUnitClosingPresenter<SurveyUnitClosingCsv> during retransformation.
-    // It has no constructor args so we instantiate it directly.
-
     private SurveyUnitClosingApiCsvPresenter presenter;
     private SurveyUnitClosingPort port;
     private SurveyUnitClosingCsvExporter exporter;

@@ -13,7 +13,7 @@
 
     <groupId>fr.insee.pearljam</groupId>
     <artifactId>pearljam-back-office-parent</artifactId>
-<version>${revision}${changelist}</version>
+    <version>${revision}${changelist}</version>
     <packaging>pom</packaging>
     <name>Pearl-Jam-Back-Office Parent</name>
 

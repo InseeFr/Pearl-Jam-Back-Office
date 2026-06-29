@@ -35,7 +35,7 @@ public class CampaignCollectionByInterviewerController {
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @CurrentSecurityContext(expression = "authentication.name") String userId,
             @RequestParam(required = false) LocalDate day) {
-
+        log.info("Get Campaign Collection progress for interviewers {} {} {}", userId, campaignId, day);
         return reportingByInterviewersPort.getProgressForDay(userId, campaignId, day, presenter);
     }
 }
