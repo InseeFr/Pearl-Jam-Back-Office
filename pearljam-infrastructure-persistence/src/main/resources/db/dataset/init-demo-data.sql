@@ -1207,3 +1207,132 @@ SELECT setval(
 
 INSERT INTO public.referent (campaign_id, first_name, last_name, role, phone_number) VALUES
     ('SIMPSONS2020X00', 'John', 'Doe', 'PRIMARY', '0101010101');
+
+
+---- CLOSABLE SurveyUnits Campaign
+
+-- Campaign
+INSERT INTO public.campaign (
+    id,
+    label,
+    email,
+    identification_configuration,
+    contact_attempt_configuration,
+    contact_outcome_configuration,
+    sensitivity,
+    collect_next_contacts
+) VALUES (
+             'CLOSABLE2025X00',
+             'Closable test campaign 2025',
+             'closable@test.com',
+             'HOUSEF2F',
+             'F2F',
+             'F2F',
+             false,
+             false
+         );
+
+-- Visibility: collection_end is in the past, end_date is in the future
+-- This is the key condition your query checks:
+--   vi.collection_end_date < :date  AND  vi.end_date > :date
+INSERT INTO visibility (
+    organization_unit_id, campaign_id,
+    collection_end_date, collection_start_date, end_date,
+    identification_phase_start_date, interviewer_start_date, management_start_date,
+    use_letter_communication, mail, tel
+) VALUES
+    ('OU-NORTH', 'CLOSABLE2025X00',
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days')  * 1000,  -- collection ended
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '10 days') * 1000,
+     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,  -- but overall end not yet passed
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '12 days') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '11 days') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '12 days') * 1000,
+     false, 'closable@nooneknows.fr', '');
+
+-- Addresses
+INSERT INTO public.address (id, dtype, l1, l2, l3, l4, l5, l6, l7, elevator, building, floor, door, staircase, city_priority_district) VALUES
+                                                                                                                                           (200, 'InseeAddress', 'Jean Closable',  '', '', '1 rue de la Fermeture', '', '75001 Paris',  'France', false, null, NULL, NULL, NULL, false),
+                                                                                                                                           (201, 'InseeAddress', 'Marie Closable', '', '', '2 rue de la Fermeture', '', '75001 Paris',  'France', false, null, NULL, NULL, NULL, false),
+                                                                                                                                           (202, 'InseeAddress', 'Paul Closable',  '', '', '3 rue de la Fermeture', '', '75001 Paris',  'France', false, null, NULL, NULL, NULL, false),
+                                                                                                                                           (203, 'InseeAddress', 'Anna Closable',  '', '', '4 rue de la Fermeture', '', '75001 Paris',  'France', false, null, NULL, NULL, NULL, false);
+
+-- Sample identifiers
+INSERT INTO public.sample_identifier (id, dtype, autre, bs, ec, le, nograp, noi, nole, nolog, numfa, rges, ssech) VALUES
+                                                                                                                      (200, 'InseeSampleIdentifier', '200', 200, '1', 200, '200', 200, 200, 200, 200, 200, 1),
+                                                                                                                      (201, 'InseeSampleIdentifier', '201', 201, '1', 201, '201', 201, 201, 201, 201, 201, 1),
+                                                                                                                      (202, 'InseeSampleIdentifier', '202', 202, '1', 202, '202', 202, 202, 202, 202, 202, 1),
+                                                                                                                      (203, 'InseeSampleIdentifier', '203', 203, '1', 203, '203', 203, 203, 203, 203, 203, 1);
+
+-- Survey units
+INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign_id, interviewer_id, sample_identifier_id, organization_unit_id) VALUES
+                                                                                                                                                     ('CLOSABLE01', 'business-id-closable01', TRUE,  200, 'CLOSABLE2025X00', 'INTERV1', 200, 'OU-NORTH'),
+                                                                                                                                                     ('CLOSABLE02', 'business-id-closable02', TRUE,  201, 'CLOSABLE2025X00', 'INTERV1', 201, 'OU-NORTH'),
+                                                                                                                                                     ('CLOSABLE03', 'business-id-closable03', FALSE, 202, 'CLOSABLE2025X00', 'INTERV1', 202, 'OU-NORTH'),
+                                                                                                                                                     ('CLOSABLE04', 'business-id-closable04', FALSE, 203, 'CLOSABLE2025X00', 'INTERV1', 203, 'OU-NORTH');
+
+-- Persons
+INSERT INTO public.person (id, email, first_name, last_name, birthdate, title, privileged, survey_unit_id, panel, contact_history_type) VALUES
+                                                                                                                                            (200, 'closable@test.com', 'Jean',  'Closable', 500000000000, 0, TRUE,  'CLOSABLE01', false, NULL),
+                                                                                                                                            (201, 'closable@test.com', 'Marie', 'Closable', 510000000000, 1, TRUE,  'CLOSABLE02', false, NULL),
+                                                                                                                                            (202, 'closable@test.com', 'Paul',  'Closable', 520000000000, 0, TRUE,  'CLOSABLE03', false, NULL),
+                                                                                                                                            (203, 'closable@test.com', 'Anna',  'Closable', 530000000000, 1, TRUE,  'CLOSABLE04', false, NULL);
+
+-- Phone numbers
+INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
+                                                                              (200, TRUE, '+33600000200', 0, 200),
+                                                                              (201, TRUE, '+33600000201', 0, 201),
+                                                                              (202, TRUE, '+33600000202', 0, 202),
+                                                                              (203, TRUE, '+33600000203', 0, 203);
+
+-- Identification
+INSERT INTO public.identification (
+    id,
+    survey_unit_id,
+    identification_type,
+    identification,
+    access,
+    situation,
+    category,
+    occupant,
+    identification_state
+) VALUES
+      (200, 'CLOSABLE01', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED'),
+      (201, 'CLOSABLE02', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED'),
+      (202, 'CLOSABLE03', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED'),
+      (203, 'CLOSABLE04', 'HOUSEF2F', 'IDENTIFIED', 'ACC', 'ORDINARY', 'PRIMARY', 'IDENTIFIED', 'FINISHED');
+
+-- States: latest state is VIC or PRC — NOT in (TBR, FIN, CLO) → matched by query
+-- Each unit has a progression ending at a non-terminal state
+INSERT INTO public.state (id, date, type, survey_unit_id) VALUES
+                                                              (500, 1741520000000, 'NVM', 'CLOSABLE01'),
+                                                              (501, 1741520100000, 'ANV', 'CLOSABLE01'),
+                                                              (502, 1741520200000, 'VIN', 'CLOSABLE01'),
+                                                              (503, 1741520300000, 'VIC', 'CLOSABLE01'),  -- latest: VIC → matches query
+
+                                                              (510, 1741520000000, 'NVM', 'CLOSABLE02'),
+                                                              (511, 1741520100000, 'ANV', 'CLOSABLE02'),
+                                                              (512, 1741520200000, 'VIN', 'CLOSABLE02'),
+                                                              (513, 1741520300000, 'VIC', 'CLOSABLE02'),
+                                                              (514, 1741520400000, 'PRC', 'CLOSABLE02'),  -- latest: PRC → matches query
+
+                                                              (520, 1741520000000, 'NVM', 'CLOSABLE03'),
+                                                              (521, 1741520100000, 'ANV', 'CLOSABLE03'),
+                                                              (522, 1741520200000, 'VIC', 'CLOSABLE03'),  -- latest: VIC → matches query
+
+                                                              (530, 1741520000000, 'NVM', 'CLOSABLE04'),
+                                                              (531, 1741520100000, 'ANV', 'CLOSABLE04'),
+                                                              (532, 1741520200000, 'VIN', 'CLOSABLE04'),
+                                                              (533, 1741520300000, 'VIC', 'CLOSABLE04'),
+                                                              (534, 1741520400000, 'INS', 'CLOSABLE04');  -- latest: INS → matches query
+
+-- No contact_outcome rows for these units → the OR co.type = 'INA' branch doesn't apply
+-- but the state condition already matches them all
+
+-- Sequence resets
+SELECT setval(pg_get_serial_sequence('public.address',          'id'), COALESCE((SELECT MAX(id) FROM public.address),          0) + 1, false);
+SELECT setval(pg_get_serial_sequence('public.sample_identifier','id'), COALESCE((SELECT MAX(id) FROM public.sample_identifier),0) + 1, false);
+SELECT setval(pg_get_serial_sequence('public.person',           'id'), COALESCE((SELECT MAX(id) FROM public.person),           0) + 1, false);
+SELECT setval(pg_get_serial_sequence('public.phone_number',     'id'), COALESCE((SELECT MAX(id) FROM public.phone_number),     0) + 1, false);
+SELECT setval(pg_get_serial_sequence('public.identification',   'id'), COALESCE((SELECT MAX(id) FROM public.identification),   0) + 1, false);
+SELECT setval(pg_get_serial_sequence('public.state',            'id'), COALESCE((SELECT MAX(id) FROM public.state),            0) + 1, false);

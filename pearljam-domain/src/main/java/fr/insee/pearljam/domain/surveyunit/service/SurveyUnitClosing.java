@@ -18,6 +18,7 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +85,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     @Override
-    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToClose(String userId, @Nullable String campaignId, SurveyUnitClosingPresenter<T> presenter) {
 
 
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
@@ -94,7 +95,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         long now = dateService.getCurrentTimestamp();
 
         List<ClosableSurveyUnitCandidateView> candidates =
-            surveyUnitRepository.findClosableCandidates(now, lstOuIds);
+            surveyUnitRepository.findClosableCandidates(now, campaignId, lstOuIds);
 
         if (candidates.isEmpty()) {
             return presenter.empty();
@@ -173,7 +174,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         }
 
     }
-
 
     private void closeSurveyUnits(List<String> surveyUnitIds) {
         stateRepository.saveStateForSurveyUnits(

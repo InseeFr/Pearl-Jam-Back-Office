@@ -8,6 +8,7 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class SurveyUnitClosingApiCsvPresenter
                         addRowWithTitleLabel(
                                 rows,
                                 vm.campaignLabel(),
-                                List.of(
+                                Arrays.asList(
                                         vm.displayName(),
                                         vm.id(),
                                         vm.interviewerLabel(),

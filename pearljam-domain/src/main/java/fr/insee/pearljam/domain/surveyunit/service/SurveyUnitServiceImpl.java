@@ -418,7 +418,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		long now = dateService.getCurrentTimestamp();
 
 		List<ClosableSurveyUnitCandidateView> candidates =
-				surveyUnitRepository.findClosableCandidates(now, lstOuIds);
+				surveyUnitRepository.findClosableCandidates(now, null, lstOuIds);
 
 		if (candidates.isEmpty()) {
 			return List.of();

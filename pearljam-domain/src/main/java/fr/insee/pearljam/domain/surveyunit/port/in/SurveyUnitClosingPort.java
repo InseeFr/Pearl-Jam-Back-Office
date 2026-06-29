@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
+import jakarta.annotation.Nullable;
 
 import java.util.List;
 
@@ -40,7 +41,11 @@ public interface SurveyUnitClosingPort {
      */
     void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type, boolean toClose);
 
-    <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter);
+    <T> T getSurveyUnitsToClose(String userId, @Nullable String campaignId, SurveyUnitClosingPresenter<T> presenter );
+
+    default <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
+        return getSurveyUnitsToClose(userId, null, presenter);
+    }
 
     void deleteClosingCauseBySurveyUnitId(String surveyUnitId);
 }
