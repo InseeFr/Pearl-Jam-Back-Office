@@ -1,6 +1,9 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
+import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
+import fr.insee.pearljam.domain.surveyunit.model.IdentificationState;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
+import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import org.junit.jupiter.api.Test;
@@ -65,6 +68,18 @@ class SurveyUnitClosingViewModelMapperTest {
         when(surveyUnit.getId()).thenReturn("id1");
 
         assertEquals("COMPLETED", mapper.map(surveyUnit, Map.of(), Map.of("id1", "COMPLETED")).questionnaireState());
+    }
+
+    @Test
+    void should_map_identification_when_at_least_one_field_is_non_null() {
+        when(surveyUnit.getId()).thenReturn("id1");
+        when(surveyUnit.getIdentification()).thenReturn(IdentificationQuestionValue.IDENTIFIED);
+        when(surveyUnit.getCampaignIdentificationConfiguration()).thenReturn(IdentificationConfiguration.HOUSEF2F);
+
+        var result = mapper.map(surveyUnit, Map.of(), Map.of());
+
+        assertNotNull(result.identificationState());
+        assertEquals(IdentificationState.ONGOING, result.identificationState());
     }
 
 }
