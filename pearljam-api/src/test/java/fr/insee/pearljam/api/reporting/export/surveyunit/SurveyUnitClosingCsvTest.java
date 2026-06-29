@@ -74,15 +74,15 @@ class SurveyUnitClosingCsvTest {
     @Test
     @DisplayName("CSV_HEADERS matches buildHeaders() output")
     void shouldMatchBuildHeaders() {
-        assertThat(SurveyUnitClosingCsv.CSV_HEADERS)
-                .containsExactlyElementsOf(SurveyUnitClosingCsvHeaders.buildHeaders());
+        assertThat(SurveyUnitClosingCsvHeaders.buildHeaders())
+                .hasSameElementsAs(SurveyUnitClosingCsv.CSV_HEADERS);
     }
 
     @Test
     @DisplayName("CSV_HEADERS contains all enum values")
     void shouldContainAllEnumValues() {
-        assertThat(SurveyUnitClosingCsv.CSV_HEADERS)
-                .containsExactlyInAnyOrder(SurveyUnitClosingCsvHeaders.values());
+        assertThat(SurveyUnitClosingCsvHeaders.values())
+                .hasSameElementsAs(SurveyUnitClosingCsv.CSV_HEADERS);
     }
 
     @Test

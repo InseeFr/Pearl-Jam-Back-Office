@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +36,7 @@ class SurveyUnitClosingCsvExporterTest {
     @Test
     @DisplayName("Calls getSurveyUnitsToClose with the given userId and the presenter")
     void shouldDelegateToPortWithCorrectUserId() {
-        exporter.export("user-123");
+        exporter.export("user-123", LocalDate.now(ZoneId.of("UTC")));
 
         verify(port, times(1)).getSurveyUnitsToClose("user-123", presenter);
     }
@@ -42,7 +44,7 @@ class SurveyUnitClosingCsvExporterTest {
     @Test
     @DisplayName("Passes the exact presenter instance to the port")
     void shouldPassPresenterUnchanged() {
-        exporter.export("user-abc");
+        exporter.export("user-abc", LocalDate.now(ZoneId.of("UTC")));
 
         verify(port).getSurveyUnitsToClose(eq("user-abc"), same(presenter));
     }
@@ -50,7 +52,7 @@ class SurveyUnitClosingCsvExporterTest {
     @Test
     @DisplayName("Port is called exactly once per export call")
     void shouldCallPortExactlyOnce() {
-        exporter.export("user-123");
+        exporter.export("user-123", LocalDate.now(ZoneId.of("UTC")));
 
         verify(port, times(1)).getSurveyUnitsToClose(any(), any());
     }
@@ -58,8 +60,8 @@ class SurveyUnitClosingCsvExporterTest {
     @Test
     @DisplayName("Different userIds are forwarded correctly to the port")
     void shouldForwardDifferentUserIds() {
-        exporter.export("alice");
-        exporter.export("bob");
+        exporter.export("alice", LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("bob", LocalDate.now(ZoneId.of("UTC")));
 
         verify(port).getSurveyUnitsToClose(eq("alice"), any());
         verify(port).getSurveyUnitsToClose(eq("bob"), any());
