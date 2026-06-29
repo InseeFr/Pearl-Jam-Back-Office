@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitAssignedPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitAssigned;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -106,7 +107,7 @@ class SurveyUnitAssignedApiPresenterTest {
         ",, ''"
     })
     void buildInterviewerLabel_shouldHandleFrenchNames(String firstName, String lastName, String expected) {
-        assertThat(presenter.buildInterviewerLabel(firstName, lastName))
+        assertThat(SurveyUnitAssignedPresenter.buildInterviewerLabel(firstName, lastName))
             .isEqualTo(expected);
     }
 
