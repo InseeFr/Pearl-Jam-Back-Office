@@ -9,6 +9,8 @@ public interface ClosableSurveyUnitView {
 
     String getId();
 
+    String getInterviewerId();
+
     String getDisplayName();
 
     Integer getSsech();
