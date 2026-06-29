@@ -2,7 +2,6 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvExporter;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +34,7 @@ public class CampaignCollectionByInterviewerExportController {
     public ResponseEntity<byte[]> exportInterviewerCollectionAsCsv(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @CurrentSecurityContext(expression = "authentication.name") String userId)
-            throws CampaignNotFoundException {
-
+            @CurrentSecurityContext(expression = "authentication.name") String userId) {
         return csvExporter.export(userId, campaignId, date);
     }
 }

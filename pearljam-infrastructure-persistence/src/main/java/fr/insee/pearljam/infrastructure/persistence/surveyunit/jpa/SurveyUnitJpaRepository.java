@@ -466,6 +466,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     idf.number_of_respondents      AS numberOfRespondents,
     idf.present_in_previous_home   AS presentInPreviousHome,
     idf.household_composition      AS householdComposition,
+    int.id                         AS interviewerId,
     int.first_name                 AS interviewerFirstName,
     int.last_name                  AS interviewerLastName,
     f.finalizationDate              AS finalizationDate
@@ -477,8 +478,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     LEFT JOIN identification idf ON idf.survey_unit_id = su.id
     LEFT JOIN interviewer int ON int.id = su.interviewer_id
     LEFT JOIN finalization f ON f.survey_unit_id = su.id
-    WHERE su.id IN (:ids)
-    """, nativeQuery = true)
+    WHERE su.id IN (:ids) """, nativeQuery = true)
 	List<ClosableSurveyUnitView> findClosableSurveyUnits(@Param("ids") Set<String> ids);
 
 	@Query(value = "SELECT id FROM survey_unit WHERE id IN (:surveyUnitIds)",

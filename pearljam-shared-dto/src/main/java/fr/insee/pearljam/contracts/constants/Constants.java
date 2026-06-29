@@ -40,6 +40,8 @@ public class Constants {
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
   public static final String API_SURVEYUNITS_TO_CLOSE = "/api/survey-units/to-close";
+  public static final String API_SURVEYUNITS_TO_CLOSE_EXPORT = "/api/survey-units/to-close/export";
+
 
 
   public static final String API_CAMPAIGNS = "/api/campaigns";
