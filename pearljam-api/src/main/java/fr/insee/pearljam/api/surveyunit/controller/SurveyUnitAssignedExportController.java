@@ -31,10 +31,9 @@ public class SurveyUnitAssignedExportController {
     public ResponseEntity<byte[]> exportSurveyUnitAssignedAsCsv(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String campaignId,
-            @ParameterObject Pageable pageable,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
         log.info("Exporting survey units to review for user {} with search: {}", userId, search);
-        return surveyUnitAssignedCsvExporter.export(userId, campaignId, search, pageable);
+        return surveyUnitAssignedCsvExporter.export(userId, campaignId, search);
     }
 
 }
