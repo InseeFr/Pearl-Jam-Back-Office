@@ -33,6 +33,7 @@ public class Constants {
   public static final String API_SURVEYUNITS_ADD_STATE = "/api/survey-units/states";
   public static final String API_SURVEYUNIT_HISTORY = "/api/survey-units/{surveyUnitId}/history";
   public static final String API_SURVEY_UNITS_ASSIGNED = "/api/survey-units/assigned";
+  public static final String API_SURVEY_UNITS_ASSIGNED_EXPORT = "/api/survey-units/assigned/export";
 
   public static final String API_SURVEY_UNITS_TO_REVIEW = "/api/survey-units/to-review";
 
