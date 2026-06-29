@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,46 +113,20 @@ class SurveyUnitCompletedServiceTest {
     }
 
     @Test
-    @DisplayName("Filters out survey units whose end date is after the current date")
-    void shouldFilterFutureSurveyUnits() {
+    @DisplayName("Passes current date as endDateBefore to the fetch port")
+    void shouldPassCurrentDateAsEndDateBefore() {
+        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
 
-        SurveyUnitFetchedByStatesAndCampaignIdView pastSurveyUnit =
-                new SurveyUnitFetchedByStatesAndCampaignIdView(
-                        "su-1",
-                        "Display su-1",
-                        "John",
-                        "Doe",
-                        "1704067200000", // 2024-01-01
-                        "INA",
-                        "NPI",
-                        false,
-                        "A comment");
+        service.getCompletedSurveyUnits(
+                null,
+                "campaign-01",
+                null,
+                PageRequest.of(0, 10),
+                surveyUnits -> surveyUnits);
 
-        SurveyUnitFetchedByStatesAndCampaignIdView futureSurveyUnit =
-                new SurveyUnitFetchedByStatesAndCampaignIdView(
-                        "su-2",
-                        "Display su-2",
-                        "John",
-                        "Doe",
-                        "1767225600000", // 2026-01-01
-                        "INA",
-                        "NPI",
-                        false,
-                        "A comment");
-
-        surveyUnitFetchPortStub.willReturn(
-                new PageImpl<>(List.of(pastSurveyUnit, futureSurveyUnit))
-        );
-
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result =
-                service.getCompletedSurveyUnits(
-                        null,
-                        "campaign-01",
-                        null,
-                        PageRequest.of(0, 10),
-                        surveyUnits -> surveyUnits);
-
-        assertThat(result.getContent()).containsExactly(pastSurveyUnit);
+        Instant fixedNow = Instant.ofEpochMilli(new FixedDateService().getCurrentTimestamp());
+        assertThat(surveyUnitFetchPortStub.getCapturedEndDateBefore())
+                .isEqualTo(fixedNow);
     }
 
     private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitView() {

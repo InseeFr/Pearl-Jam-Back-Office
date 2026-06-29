@@ -18,10 +18,14 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
     private List<StateType> capturedStateTypes;
     @Getter
     private String capturedCampaignId;
+    @Getter
+    private Instant capturedEndDateBefore;
 
     public void willReturn(Page<SurveyUnitFetchedByStatesAndCampaignIdView> results) {
         this.stubbedResults = results;
     }
+
+
 
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
@@ -31,6 +35,7 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
                                                                                                 String search,
                                                                                                 Instant endDateBefore,
                                                                                                 Pageable pageable) {
+        this.capturedEndDateBefore = endDateBefore;
         this.capturedStateTypes = stateTypes;
         this.capturedCampaignId = campaignId;
         return stubbedResults;
