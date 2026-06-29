@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class SurveyUnitFetchService implements SurveyUnitFetchPort {
                                                                                                 List<StateType> stateTypes,
                                                                                                 String campaignId,
                                                                                                 String search,
+                                                                                                Instant endDateBefore,
                                                                                                 Pageable pageable) {
         if(!campaignRepository.existsById(campaignId))
         {
@@ -40,6 +42,6 @@ public class SurveyUnitFetchService implements SurveyUnitFetchPort {
                 .toList();
 
         return surveyUnitFetchedByStatesRepositoryPort
-                .getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignId, search, ouIds, pageable);
+                .getSurveyUnitsByStatesAndCampaignId(stateTypes, campaignId, search, ouIds, endDateBefore, pageable);
     }
 }

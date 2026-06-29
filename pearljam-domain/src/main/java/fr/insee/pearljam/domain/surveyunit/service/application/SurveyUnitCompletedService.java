@@ -8,7 +8,6 @@ import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitComplet
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -27,25 +26,8 @@ public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
     @Override
     public <T> T getCompletedSurveyUnits(String userId, String campaignId, String search, Pageable pageable, SurveyUnitCompletedPresenter<T> presenter) {
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(userId, stateTypes, campaignId, search, pageable);
-
         Instant now = Instant.ofEpochMilli(dateService.getCurrentTimestamp());
-
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnitsCompleted =
-                surveyUnits.stream()
-                        .filter(s -> {
-                            Instant endDate = Instant.ofEpochMilli(Long.parseLong(s.endDate()));
-                            return endDate.isBefore(now);
-                        })
-                        .toList();
-
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> filteredPage =
-                new PageImpl<>(
-                        surveyUnitsCompleted,
-                        pageable,
-                        surveyUnitsCompleted.size()
-                );
-
-        return presenter.present(filteredPage);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(userId, stateTypes, campaignId, search, now, pageable);
+        return presenter.present(surveyUnits);
     }
 }

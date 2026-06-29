@@ -40,7 +40,7 @@ class SurveyUnitFetchServiceTest {
     @DisplayName("Throws CampaignNotFoundException when campaign does not exist")
     void shouldThrowCampaignNotFoundException_whenCampaignDoesNotExist() {
         List<StateType> states = List.of(StateType.CLO);
-        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(null, states, "unknown-campaign", null, null))
+        assertThatThrownBy(() -> service.getSurveyUnitsByStatesAndCampaignId(null, states, "unknown-campaign", null, null, null))
                 .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 
@@ -50,7 +50,7 @@ class SurveyUnitFetchServiceTest {
         SurveyUnitFetchedByStatesAndCampaignIdView su = surveyUnitCompletedView();
         surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of(su)));
 
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.CLO, StateType.FIN), campaignIdToTest, null, null);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.CLO, StateType.FIN), campaignIdToTest, null, null, null);
 
         assertThat(result).containsExactly(su);
     }
@@ -61,7 +61,7 @@ class SurveyUnitFetchServiceTest {
         surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
 
-        service.getSurveyUnitsByStatesAndCampaignId(null, stateTypes, campaignIdToTest, null, null);
+        service.getSurveyUnitsByStatesAndCampaignId(null, stateTypes, campaignIdToTest, null, null, null);
 
         assertThat(surveyUnitFetchedByStatesRepositoryPort.getCapturedStateTypes())
                 .containsExactlyInAnyOrder(StateType.CLO, StateType.FIN);
@@ -72,7 +72,7 @@ class SurveyUnitFetchServiceTest {
     void shouldForwardCampaignId_toRepository() {
         surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
 
-        service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.FIN), campaignIdToTest, null, null);
+        service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.FIN), campaignIdToTest, null, null, null);
 
         assertThat(surveyUnitFetchedByStatesRepositoryPort.getCapturedCampaignId()).isEqualTo(campaignIdToTest);
     }
@@ -82,7 +82,7 @@ class SurveyUnitFetchServiceTest {
     void shouldReturnEmptyList_whenNoSurveyUnitsFound() {
         surveyUnitFetchedByStatesRepositoryPort.willReturn(new PageImpl<>(List.of()));
 
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.CLO), campaignIdToTest, null, null);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> result = service.getSurveyUnitsByStatesAndCampaignId(null, List.of(StateType.CLO), campaignIdToTest, null, null, null);
 
         assertThat(result).isEmpty();
     }
