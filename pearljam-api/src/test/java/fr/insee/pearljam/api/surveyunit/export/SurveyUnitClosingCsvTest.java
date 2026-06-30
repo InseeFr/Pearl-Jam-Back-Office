@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.surveyunit.export;
 
 import fr.insee.pearljam.api.export.csv.CsvRow;
-import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingCsv;
-import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingCsvHeaders;
+import fr.insee.pearljam.api.surveyunit.export.closing.SurveyUnitClosingCsv;
+import fr.insee.pearljam.api.surveyunit.export.closing.SurveyUnitClosingCsvHeaders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

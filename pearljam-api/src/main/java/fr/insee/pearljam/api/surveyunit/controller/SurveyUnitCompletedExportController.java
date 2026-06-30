@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
-import fr.insee.pearljam.api.surveyunit.controller.export.completed.SurveyUnitCompletedCsvExporter;
+import fr.insee.pearljam.api.surveyunit.export.completed.SurveyUnitCompletedCsvExporter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;

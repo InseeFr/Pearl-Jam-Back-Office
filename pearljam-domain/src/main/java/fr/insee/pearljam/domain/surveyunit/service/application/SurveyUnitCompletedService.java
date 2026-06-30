@@ -2,15 +2,15 @@ package fr.insee.pearljam.domain.surveyunit.service.application;
 
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitFetchPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
-import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
-import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 

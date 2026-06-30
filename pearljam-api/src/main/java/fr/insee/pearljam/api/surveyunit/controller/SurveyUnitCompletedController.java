@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitCompletedApiPresenter;
 import fr.insee.pearljam.api.surveyunit.response.SurveyUnitCompletedPageResponse;
-import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPort;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;

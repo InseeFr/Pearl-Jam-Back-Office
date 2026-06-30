@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.surveyunit.export.completed;
 
 
 import fr.insee.pearljam.api.export.csv.AbstractCsvExporter;
-import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

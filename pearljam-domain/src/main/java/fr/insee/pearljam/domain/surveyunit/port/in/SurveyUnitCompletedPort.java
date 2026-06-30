@@ -1,4 +1,4 @@
-package fr.insee.pearljam.domain.surveyunit.port.in.application;
+package fr.insee.pearljam.domain.surveyunit.port.in;
 
 import org.springframework.data.domain.Pageable;
 
