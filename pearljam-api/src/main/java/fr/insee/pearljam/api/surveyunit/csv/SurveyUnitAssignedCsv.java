@@ -13,14 +13,14 @@ public record SurveyUnitAssignedCsv(List<CsvRow> rows) implements CsvExportable 
     @Override
     public CsvRow headers() {
         return new CsvRow(List.of(
-                "Identifiant technique",
-                "Identifiant de l'ue",
+                SurveyUnitAssignedCsvHeaders.TECHNICAL_SURVEY_UNIT_ID.headerName(),
+                SurveyUnitAssignedCsvHeaders.SURVEY_UNIT_ID.headerName(),
                 CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
-                "Ssech",
-                "Département",
-                "Commune",
-                "Etat de l'UE",
-                "Motif provisoire"
+                SurveyUnitAssignedCsvHeaders.SUB_SAMPLE_ID.headerName(),
+                SurveyUnitAssignedCsvHeaders.LOCATION.headerName(),
+                SurveyUnitAssignedCsvHeaders.CITY.headerName(),
+                SurveyUnitAssignedCsvHeaders.SURVEY_UNIT_STATE.headerName(),
+                SurveyUnitAssignedCsvHeaders.CLOSING_CAUSE.headerName()
         ));
     }
 
