@@ -6,6 +6,7 @@ import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeTy
 import fr.insee.pearljam.domain.surveyunit.model.question.IdentificationQuestionValue;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -21,6 +22,11 @@ class SurveyUnitClosingViewModelMapperTest {
 
     ClosableSurveyUnitView surveyUnit = mock(ClosableSurveyUnitView.class);
     ClosableSurveyUnitCandidateView candidate = mock(ClosableSurveyUnitCandidateView.class);
+
+    @BeforeEach
+    void stubAddressL6() {
+        when(surveyUnit.getAddressL6()).thenReturn("75001 PARIS");
+    }
 
     @Test
     void should_map_scalar_fields() {

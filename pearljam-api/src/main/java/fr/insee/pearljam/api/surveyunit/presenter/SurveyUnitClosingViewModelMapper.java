@@ -41,6 +41,8 @@ public class SurveyUnitClosingViewModelMapper {
                 buildInterviewerLabel(projection),
                 projection.getInterviewerId(),
                 projection.getSsech(),
+                projection.getAddressL6().substring(0, 2),
+                projection.getAddressL6().substring(6),
                 computeIdentificationState(projection),
                 contactOutcome,
                 questionnaireState,

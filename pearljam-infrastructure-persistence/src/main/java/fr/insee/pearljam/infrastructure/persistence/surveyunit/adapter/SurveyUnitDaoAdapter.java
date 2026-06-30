@@ -40,8 +40,8 @@ public class SurveyUnitDaoAdapter implements SurveyUnitRepository {
     }
 
     @Override
-    public List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, List<String> lstOuIds) {
-        return surveyUnitJpaRepository.findClosableCandidates(date, lstOuIds);
+    public List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, String campaignId, List<String> lstOuIds) {
+        return surveyUnitJpaRepository.findClosableCandidates(date, campaignId, lstOuIds);
     }
 
     @Override

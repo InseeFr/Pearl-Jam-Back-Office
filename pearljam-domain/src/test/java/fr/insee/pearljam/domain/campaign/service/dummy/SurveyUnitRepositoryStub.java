@@ -33,7 +33,7 @@ public class SurveyUnitRepositoryStub implements SurveyUnitRepository {
     }
 
     @Override
-    public List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, List<String> lstOuIds) {
+    public List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, String campaignId, List<String> lstOuIds) {
         return List.of();
     }
 

@@ -11,6 +11,8 @@ public record SurveyUnitClosingViewModel(
         String interviewerLabel,
         String interviewerId,
         Integer ssech,
+        String departement,
+        String city,
         IdentificationState identificationState,
         ContactOutcomeType contactOutcome,
         String questionnaireState,
