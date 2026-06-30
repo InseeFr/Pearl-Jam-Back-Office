@@ -45,13 +45,14 @@ public class SurveyUnitClosingApiCsvPresenter
                                         vm.interviewerLabel(),
                                         vm.interviewerId(),
                                         vm.ssech(),
+                                        vm.departement(),
+                                        vm.city(),
                                         vm.identificationState().name(),
                                         vm.contactOutcome(),
                                         vm.questionnaireState(),
                                         vm.closingCauseType()
                                 )
                         ));
-
         return new SurveyUnitClosingCsv(rows);
     }
 
