@@ -105,6 +105,8 @@ public class Constants {
   public static final String API_CAMPAIGN_ORGANIZATION = "/api/campaign/{id}/organization";
   public static final String API_CAMPAIGN_ORGANIZATION_EXPORT = "/api/campaign/{id}/organization/export";
   public static final String API_CAMPAIGN_SU_COMPLETED = "/api/campaign/{id}/survey-units/completed";
+  public static final String API_CAMPAIGN_SU_COMPLETED_EXPORT = "/api/campaign/{id}/survey-units/completed/export";
+
 
   public static final String API_INTERVIEWERS = "/api/interviewers";
   public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";
