@@ -25,41 +25,41 @@ class SurveyUnitClosingCsvExporterTest {
     void setup() {
         presenter = new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper());
         port = mock(SurveyUnitClosingPort.class);
-        when(port.getSurveyUnitsToClose(any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
+        when(port.getSurveyUnitsToClose(any(), any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
         exporter = new SurveyUnitClosingCsvExporter(presenter, port);
     }
 
     @Test
     @DisplayName("Calls getSurveyUnitsToClose with the given userId and the presenter")
     void shouldDelegateToPortWithCorrectUserId() {
-        exporter.export("user-123", LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("user-123", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port, times(1)).getSurveyUnitsToClose("user-123", presenter);
+        verify(port, times(1)).getSurveyUnitsToClose("user-123", null, presenter);
     }
 
     @Test
     @DisplayName("Passes the exact presenter instance to the port")
     void shouldPassPresenterUnchanged() {
-        exporter.export("user-abc", LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("user-abc", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port).getSurveyUnitsToClose(eq("user-abc"), same(presenter));
+        verify(port).getSurveyUnitsToClose(eq("user-abc"), any(), same(presenter));
     }
 
     @Test
     @DisplayName("Port is called exactly once per export call")
     void shouldCallPortExactlyOnce() {
-        exporter.export("user-123", LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("user-123", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port, times(1)).getSurveyUnitsToClose(any(), any());
+        verify(port, times(1)).getSurveyUnitsToClose(any(), any(), any());
     }
 
     @Test
     @DisplayName("Different userIds are forwarded correctly to the port")
     void shouldForwardDifferentUserIds() {
-        exporter.export("alice", LocalDate.now(ZoneId.of("UTC")));
-        exporter.export("bob", LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("alice",null, LocalDate.now(ZoneId.of("UTC")));
+        exporter.export("bob", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port).getSurveyUnitsToClose(eq("alice"), any());
-        verify(port).getSurveyUnitsToClose(eq("bob"), any());
+        verify(port).getSurveyUnitsToClose(eq("alice"), any(), any());
+        verify(port).getSurveyUnitsToClose(eq("bob"), any(), any());
     }
 }

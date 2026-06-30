@@ -15,20 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SurveyUnitClosingApiCsvPresenterTest {
-
-    // Column layout — addRowWithTitleLabel prepends campaignLabel at index 0:
-    // 0=campaignLabel 1=id 2=id 3=interviewerLabel 4=interviewerId
-    // 5=ssech 6=identificationState 7=contactOutcome 8=questionnaireState 9=closingCauseType
-    // All values serialised to String by CsvRow.from() via String.valueOf().
-    //
-    // PRODUCTION CONSTRAINT: List.of() rejects null elements.
-    // contactOutcome (null when no candidate) and interviewerLabel
-    // (null when both names are null) will NPE in toResponse().
 
     private SurveyUnitClosingApiCsvPresenter presenter;
 
@@ -50,6 +40,9 @@ class SurveyUnitClosingApiCsvPresenterTest {
         when(p.getInterviewerId()).thenReturn(interviewerId);
         when(p.getSsech()).thenReturn(ssech);
         when(p.getClosingCauseType()).thenReturn(closingCauseType);
+        // "75001 PARIS" -> departement = substring(0,2) = "75"
+        //               -> city        = substring(6)   = "PARIS"
+        when(p.getAddressL6()).thenReturn("75001 PARIS");
         // All identification fields null → toModelIdentification() returns null
         // → IdentificationState.getState(null, cfg) returns MISSING before the switch
         when(p.getIdentification()).thenReturn(null);
@@ -117,13 +110,13 @@ class SurveyUnitClosingApiCsvPresenterTest {
     }
 
     @Test
-    @DisplayName("Each row has 10 columns (campaignLabel + 9 data columns)")
-    void shouldHaveTenColumns() {
+    @DisplayName("Each row has 12 columns (campaignLabel + 11 data columns)")
+    void shouldHaveTwelveColumns() {
         ClosableSurveyUnitView p = buildProjection("Campaign","SU-A", "Alice", "Smith", "INT-1", 1);
 
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
-        assertThat(cells(result, 0)).hasSize(10);
+        assertThat(cells(result, 0)).hasSize(12);
     }
 
     @Test
@@ -133,7 +126,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
 
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
-        assertThat(cells(result, 0).get(8)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);
+        assertThat(cells(result, 0).get(10)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);
     }
 
     @Test
@@ -143,16 +136,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
 
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of("SU-A", "COMPLETED"));
 
-        assertThat(cells(result, 0).get(8)).isEqualTo("COMPLETED");
-    }
-
-    @Test
-    @DisplayName("NPE when no candidate provided — contactOutcome null not accepted by List.of()")
-    void shouldNpeWhenNoCandidate() {
-        ClosableSurveyUnitView p = buildProjection("Campaign", "Alice","SU-A", "Smith", "INT-1", 1);
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> presenter.present(List.of(p), Map.of(), Map.of()));
+        assertThat(cells(result, 0).get(10)).isEqualTo("COMPLETED");
     }
 
     @Test
@@ -163,7 +147,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
         SurveyUnitClosingCsv result = presenter.present(
                 List.of(p), Map.of("SU-A", buildCandidate(ContactOutcomeType.INA)), Map.of());
 
-        assertThat(cells(result, 0).get(7)).isEqualTo("INA");
+        assertThat(cells(result, 0).get(9)).isEqualTo("INA");
     }
 
     @Test
@@ -174,15 +158,6 @@ class SurveyUnitClosingApiCsvPresenterTest {
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0).get(3)).isEqualTo("Alice Smith");
-    }
-
-    @Test
-    @DisplayName("NPE when both names are null — interviewerLabel null not accepted by List.of()")
-    void shouldNpeWhenBothNamesNull() {
-        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-ID",null, null, "INT-1", 1);
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> presenter.present(List.of(p), candidates("ID-1"), Map.of()));
     }
 
     @Test
@@ -206,7 +181,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
     }
 
     @Test
-    @DisplayName("campaignLabel is at column 0, id at 1 and 2, interviewerId at 4, ssech at 5")
+    @DisplayName("campaignLabel at 0, id at 1/2, interviewerId at 4, ssech at 5, departement at 6, city at 7")
     void shouldRespectColumnOrder() {
         ClosableSurveyUnitView p = buildProjection("My Campaign","SU-A", "Jean", "Dupont", "INT-99", 3);
 
@@ -218,6 +193,8 @@ class SurveyUnitClosingApiCsvPresenterTest {
         assertThat(row.get(2)).isEqualTo("SU-A");
         assertThat(row.get(4)).isEqualTo("INT-99");
         assertThat(row.get(5)).isEqualTo("3");
+        assertThat(row.get(6)).isEqualTo("75");
+        assertThat(row.get(7)).isEqualTo("PARIS");
     }
 
     @Test
@@ -227,18 +204,18 @@ class SurveyUnitClosingApiCsvPresenterTest {
 
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-1"), Map.of());
 
-        assertThat(cells(result, 0).get(6)).isEqualTo("MISSING");
+        assertThat(cells(result, 0).get(8)).isEqualTo("MISSING");
     }
 
     @Test
-    @DisplayName("closingCauseType is serialised to its enum name at column 9")
-    void shouldHaveClosingCauseAtColumn9() {
+    @DisplayName("closingCauseType is serialised to its enum name at column 11")
+    void shouldHaveClosingCauseAtColumn11() {
         ClosingCauseType cause = ClosingCauseType.values()[0];
         ClosableSurveyUnitView p = buildProjection("Campaign", "SU-1", "Jean", "Dupont", "INT-99", 3, cause);
 
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-1"), Map.of());
 
-        assertThat(cells(result, 0).get(9)).isEqualTo(cause.name());
+        assertThat(cells(result, 0).get(11)).isEqualTo(cause.name());
     }
 
     @Test
@@ -272,7 +249,7 @@ class SurveyUnitClosingApiCsvPresenterTest {
                         "SU-B", buildCandidate(ContactOutcomeType.INA)),
                 Map.of("SU-A", "COMPLETED"));
 
-        assertThat(cells(result, 0).get(8)).isEqualTo("COMPLETED");
-        assertThat(cells(result, 1).get(8)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);
+        assertThat(cells(result, 0).get(10)).isEqualTo("COMPLETED");
+        assertThat(cells(result, 1).get(10)).isEqualTo(Constants.QUESTIONNAIRE_STATE_UNAVAILABLE);
     }
 }

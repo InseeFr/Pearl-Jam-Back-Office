@@ -10,7 +10,10 @@ import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDB;
+import fr.insee.pearljam.infrastructure.persistence.campaign.entity.VisibilityDBId;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
+import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.VisibilityJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.contactoutcome.jpa.ContactOutcomeJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
@@ -33,6 +36,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,33 +55,43 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
     @Autowired private SurveyUnitJpaRepository surveyUnitRepository;
     @Autowired private StateJpaRepository stateRepository;
     @Autowired private ContactOutcomeJpaRepository contactOutcomeRepository;
+    @Autowired private VisibilityJpaRepository visibilityJpaRepository;
     @Autowired private CommentDaoAdapter commentDaoAdapter;
 
     static final String CAMPAIGN_ID = "CAMP-FETCH-TEST";
-    static final String OU_ID = "OU-FETCH-1";
-    static final String INTW1_ID = "INTW-FETCH-1";
-    static final String INTW2_ID = "INTW-FETCH-2";
+    static final String OU_ID       = "OU-FETCH-1";
+    static final String OU_OTHER_ID = "OU-FETCH-2";
+    static final String INTW1_ID    = "INTW-FETCH-1";
+    static final String INTW2_ID    = "INTW-FETCH-2";
 
     @BeforeEach
     void setup() {
         campaignRepository.save(new CampaignDB(CAMPAIGN_ID, "Fetch Campaign",
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "test@test.com", false, false));
-        ouRepository.save(new OrganizationUnitDB(OU_ID, "Org Unit", OrganizationUnitType.LOCAL));
+
+        ouRepository.save(new OrganizationUnitDB(OU_ID,       "Org Unit",       OrganizationUnitType.LOCAL));
+        ouRepository.save(new OrganizationUnitDB(OU_OTHER_ID, "Other Org Unit", OrganizationUnitType.LOCAL));
+
+        saveVisibility(OU_ID);
+        saveVisibility(OU_OTHER_ID);
 
         saveInterviewer(INTW1_ID, "Dupont");
         saveInterviewer(INTW2_ID, "Martin");
 
-        // SU-F1: TBR, intw1, with comment and contact outcome
-        createSurveyUnit("SU-F1", INTW1_ID, StateType.TBR);
+        // SU-F1: TBR, intw1, with comment and contact outcome, in OU_ID
+        createSurveyUnit("SU-F1", INTW1_ID, OU_ID, StateType.TBR);
         commentDaoAdapter.updateComment(new Comment(CommentType.MANAGEMENT, "Comment SU-F1", "SU-F1"));
         saveContactOutcome();
 
-        // SU-F2: TBR, intw2, no extras
-        createSurveyUnit("SU-F2", INTW2_ID, StateType.TBR);
+        // SU-F2: TBR, intw2, no extras, in OU_ID
+        createSurveyUnit("SU-F2", INTW2_ID, OU_ID, StateType.TBR);
 
-        // SU-F3: NVM, should be excluded from TBR-only queries
-        createSurveyUnit("SU-F3", INTW1_ID, StateType.NVM);
+        // SU-F3: NVM, should be excluded from TBR-only queries, in OU_ID
+        createSurveyUnit("SU-F3", INTW1_ID, OU_ID, StateType.NVM);
+
+        // SU-F4: TBR, in OU_OTHER_ID — should be excluded when filtering by OU_ID only
+        createSurveyUnit("SU-F4", INTW1_ID, OU_OTHER_ID, StateType.TBR);
 
         entityManager.flush();
     }
@@ -87,11 +102,24 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
         interviewerRepository.save(i);
     }
 
-    private void createSurveyUnit(String id, String interviewerId, StateType state) {
+    private void saveVisibility(String ouId) {
+        VisibilityDB v = new VisibilityDB();
+        v.setVisibilityId(new VisibilityDBId(ouId, CAMPAIGN_ID));
+        visibilityJpaRepository.save(v);
+    }
+
+    private void saveVisibilityWithEndDate(String ouId, Instant collectionEndDate) {
+        VisibilityDB v = new VisibilityDB();
+        v.setVisibilityId(new VisibilityDBId(ouId, CAMPAIGN_ID));
+        v.setCollectionEndDate(collectionEndDate.toEpochMilli());
+        visibilityJpaRepository.save(v);
+    }
+
+    private void createSurveyUnit(String id, String interviewerId, String ouId, StateType state) {
         SurveyUnitDB su = new SurveyUnitDB();
         su.setId(id);
         su.setCampaign(campaignRepository.findById(CAMPAIGN_ID).orElseThrow());
-        su.setOrganizationUnit(ouRepository.findById(OU_ID).orElseThrow());
+        su.setOrganizationUnit(ouRepository.findById(ouId).orElseThrow());
         su.setInterviewer(interviewerRepository.findById(interviewerId).orElseThrow());
         surveyUnitRepository.save(su);
 
@@ -107,8 +135,10 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
         contactOutcomeRepository.save(co);
     }
 
-    private Page<SurveyUnitFetchedByStatesAndCampaignIdView> fetch(List<StateType> states, String search, PageRequest page) {
-        return adapter.getSurveyUnitsByStatesAndCampaignId(states, CAMPAIGN_ID, search, page);
+    private Page<SurveyUnitFetchedByStatesAndCampaignIdView> fetch(
+            List<StateType> states, String search, PageRequest page) {
+        return adapter.getSurveyUnitsByStatesAndCampaignId(
+                states, CAMPAIGN_ID, search, List.of(OU_ID), null, page);
     }
 
     // =========================================================
@@ -139,7 +169,7 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
     @Test
     void shouldReturnEmptyWhenNoMatch() {
         var result = adapter.getSurveyUnitsByStatesAndCampaignId(
-                List.of(StateType.TBR), "UNKNOWN-CAMPAIGN", null, PageRequest.of(0, 10));
+                List.of(StateType.TBR), "UNKNOWN-CAMPAIGN", null, List.of(OU_ID), null, PageRequest.of(0, 10));
         assertThat(result.getContent()).isEmpty();
     }
 
@@ -166,8 +196,8 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
 
     @Test
     void shouldSearchByInterviewerName() {
-        assertThat(fetch(List.of(StateType.TBR), "jean", PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
-        assertThat(fetch(List.of(StateType.TBR), "martin", PageRequest.of(0, 10)).getTotalElements()).isEqualTo(1);
+        assertThat(fetch(List.of(StateType.TBR), "jean",  PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
+        assertThat(fetch(List.of(StateType.TBR), "martin",PageRequest.of(0, 10)).getTotalElements()).isEqualTo(1);
         assertThat(fetch(List.of(StateType.TBR), "Marie", PageRequest.of(0, 10)).getTotalElements()).isZero();
     }
 
@@ -178,8 +208,8 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
 
     @Test
     void shouldReturnAllWhenSearchNullOrBlank() {
-        assertThat(fetch(List.of(StateType.TBR), null, PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
-        assertThat(fetch(List.of(StateType.TBR), "  ", PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
+        assertThat(fetch(List.of(StateType.TBR), null,   PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
+        assertThat(fetch(List.of(StateType.TBR), "  ",   PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
     }
 
     @Test
@@ -191,7 +221,66 @@ class SurveyUnitFetchedByStatesDaoAdapterTest {
     void shouldSortBySurveyUnitIdAscending() {
         var ids = fetch(List.of(StateType.TBR), null,
                 PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "surveyUnitId")))
-                .getContent().stream().map(SurveyUnitFetchedByStatesAndCampaignIdView::surveyUnitId).toList();
+                .getContent().stream()
+                .map(SurveyUnitFetchedByStatesAndCampaignIdView::surveyUnitId)
+                .toList();
         assertThat(ids).isSortedAccordingTo(String::compareTo);
+    }
+
+    @Test
+    void shouldFilterByOrganizationUnit() {
+        // only OU_OTHER_ID -> returns SU-F4 only
+        var result = adapter.getSurveyUnitsByStatesAndCampaignId(
+                List.of(StateType.TBR), CAMPAIGN_ID, null, List.of(OU_OTHER_ID), null, PageRequest.of(0, 10));
+        assertThat(result.getContent())
+                .extracting(SurveyUnitFetchedByStatesAndCampaignIdView::surveyUnitId)
+                .containsExactly("SU-F4");
+
+        // both OUs -> returns SU-F1, SU-F2, SU-F4
+        var resultBoth = adapter.getSurveyUnitsByStatesAndCampaignId(
+                List.of(StateType.TBR), CAMPAIGN_ID, null, List.of(OU_ID, OU_OTHER_ID), null, PageRequest.of(0, 10));
+        assertThat(resultBoth.getContent())
+                .extracting(SurveyUnitFetchedByStatesAndCampaignIdView::surveyUnitId)
+                .containsExactlyInAnyOrder("SU-F1", "SU-F2", "SU-F4");
+
+        // null ouIds -> empty page (guard)
+        var resultNull = adapter.getSurveyUnitsByStatesAndCampaignId(
+                List.of(StateType.TBR), CAMPAIGN_ID, null, null, null, PageRequest.of(0, 10));
+        assertThat(resultNull.getContent()).isEmpty();
+    }
+
+    @Test
+    void shouldFilterByEndDateBefore() {
+        Instant past   = Instant.now().minus(10, ChronoUnit.DAYS);
+        Instant future = Instant.now().plus(10, ChronoUnit.DAYS);
+        Instant now    = Instant.now();
+
+        // Override OU_ID visibility: SU-F1 and SU-F2 share this visibility row.
+        // collection_end_date in the past -> both should be included when endDateBefore = now.
+        // collection_end_date in the future -> both should be excluded when endDateBefore = now.
+
+        // Case 1: end date is in the past — units whose collection period has already closed
+        // are returned because collection_end_date < now (endDateBefore).
+        visibilityJpaRepository.deleteById(new VisibilityDBId(OU_ID, CAMPAIGN_ID));
+        saveVisibilityWithEndDate(OU_ID, past);
+        entityManager.flush();
+
+        var resultPast = adapter.getSurveyUnitsByStatesAndCampaignId(
+                List.of(StateType.TBR), CAMPAIGN_ID, null, List.of(OU_ID), now, PageRequest.of(0, 10));
+        assertThat(resultPast.getContent())
+                .extracting(SurveyUnitFetchedByStatesAndCampaignIdView::surveyUnitId)
+                .containsExactlyInAnyOrder("SU-F1", "SU-F2");
+        assertThat(resultPast.getTotalElements()).isEqualTo(2);
+
+        // Case 2: end date is in the future — collection period is still open,
+        // so units must be excluded when endDateBefore = now.
+        visibilityJpaRepository.deleteById(new VisibilityDBId(OU_ID, CAMPAIGN_ID));
+        saveVisibilityWithEndDate(OU_ID, future);
+        entityManager.flush();
+
+        var resultFuture = adapter.getSurveyUnitsByStatesAndCampaignId(
+                List.of(StateType.TBR), CAMPAIGN_ID, null, List.of(OU_ID), now, PageRequest.of(0, 10));
+        assertThat(resultFuture.getContent()).isEmpty();
+        assertThat(resultFuture.getTotalElements()).isZero();
     }
 }

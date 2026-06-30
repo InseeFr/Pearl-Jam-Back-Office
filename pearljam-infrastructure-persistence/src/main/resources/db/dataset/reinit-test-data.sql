@@ -238,3 +238,4 @@ INSERT INTO public.communication_request_status (communication_request_id, statu
 INSERT INTO public.communication_metadata (survey_unit_id, campaign_id, meshuggah_id, metadata_key, metadata_value) VALUES
     ('11', 'SIMPSONS2020X00','mesh1','recipient_full_name', 'Albert Einstein'),
     ('11', 'SIMPSONS2020X00','mesh1','recipient_address', '112 Mercer Street, Princeton, New Jersey');
+

@@ -290,12 +290,12 @@ class SurveyUnitClosingTest {
         when(userService.getUserOUs(any(), anyBoolean()))
                 .thenReturn(List.of(new OrganizationUnitDto("OU1","OU1")));
 
-        when(surveyUnitRepository.findClosableCandidates(anyLong(), any()))
+        when(surveyUnitRepository.findClosableCandidates(anyLong(), any(), any()))
                 .thenReturn(List.of());
 
         var presenter = mockPresenter();
 
-        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", null, presenter);
 
         verify(presenter).empty();
     }
@@ -331,7 +331,7 @@ class SurveyUnitClosingTest {
         // Setup candidates
         var candidate1 = mockCandidate("SU1", StateType.FIN, ContactOutcomeType.INA);
         var candidate2 = mockCandidate("SU2", StateType.WFT, ContactOutcomeType.REF);
-        when(surveyUnitRepository.findClosableCandidates(anyLong(), any()))
+        when(surveyUnitRepository.findClosableCandidates(anyLong(), any(), any()))
                 .thenReturn(List.of(candidate1, candidate2));
 
         // Setup questionnaire states
@@ -351,7 +351,7 @@ class SurveyUnitClosingTest {
 
         var presenter = mockPresenter();
 
-        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", null, presenter);
 
         verify(presenter).present(anyList(), any(), any());
     }

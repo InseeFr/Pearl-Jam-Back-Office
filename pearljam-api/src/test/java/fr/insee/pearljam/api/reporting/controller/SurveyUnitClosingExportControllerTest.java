@@ -31,7 +31,7 @@ class SurveyUnitClosingExportControllerTest {
     @BeforeEach
     void setup() {
         SurveyUnitClosingPort port = mock(SurveyUnitClosingPort.class);
-        when(port.getSurveyUnitsToClose(any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
+        when(port.getSurveyUnitsToClose(any(), any(), any())).thenReturn(new SurveyUnitClosingCsv(List.of()));
 
         SurveyUnitClosingCsvExporter exporter =
                 new SurveyUnitClosingCsvExporter(new SurveyUnitClosingApiCsvPresenter(new SurveyUnitClosingViewModelMapper()), port);

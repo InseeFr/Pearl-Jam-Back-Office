@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
-
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitFetchedByStatesRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +24,12 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
     private final JdbcClient jdbc;
 
     private static final Map<String, String> ALLOWED_SORTS = Map.of(
-            "surveyUnitId",        "su.id",
+            "surveyUnitId",          "su.id",
             "surveyUnitDisplayName", "su.display_name",
-            "interviewerLastName", "int.last_name",
-            "contactOutcome",      "co.type",
-            "closingCauseType",    "cc.type",
-            "endDate",             "vi.collection_end_date"
+            "interviewerLastName",   "int.last_name",
+            "contactOutcome",        "co.type",
+            "closingCauseType",      "cc.type",
+            "endDate",               "vi.collection_end_date"
     );
 
     private static final String BASE_FROM = """
@@ -58,17 +58,22 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 ON vi.campaign_id = su.campaign_id
                AND vi.organization_unit_id = su.organization_unit_id
             WHERE su.campaign_id = :campaignId
+              AND su.organization_unit_id IN (:ouIds)
             """;
 
     private static final String SEARCH_CONDITION = """
         AND (
-            LOWER(su.id)                                   LIKE :search OR
-            LOWER(int.first_name)                          LIKE :search OR
-            LOWER(int.last_name)                           LIKE :search OR
+            LOWER(su.id)                                    LIKE :search OR
+            LOWER(int.first_name)                           LIKE :search OR
+            LOWER(int.last_name)                            LIKE :search OR
             LOWER(CONCAT(int.first_name,' ',int.last_name)) LIKE :search OR
-            LOWER(co.type)                                 LIKE :search OR
-            LOWER(cc.type)                                 LIKE :search
+            LOWER(co.type)                                  LIKE :search OR
+            LOWER(cc.type)                                  LIKE :search
         )
+        """;
+
+    private static final String END_DATE_CONDITION = """
+        AND vi.collection_end_date < :endDateBeforeMillis
         """;
 
     private static final String MAIN_SELECT = """
@@ -86,38 +91,46 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
 
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
-            List<StateType> stateTypes, String campaignId, String search, Pageable pageable) {
+            List<StateType> stateTypes, String campaignId, String search,
+            List<String> ouIds, Instant endDateBefore, Pageable pageable) {
 
         List<String> stateTypesStringified = stateTypes.stream().map(StateType::toString).toList();
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> content =
-                executeMainQuery(stateTypesStringified, campaignId, search, pageable);
 
-        long total = executeCountQuery(stateTypesStringified, campaignId, search);
+        List<SurveyUnitFetchedByStatesAndCampaignIdView> content =
+                executeMainQuery(stateTypesStringified, campaignId, search, ouIds, endDateBefore, pageable);
+
+        long total = executeCountQuery(stateTypesStringified, campaignId, search, ouIds, endDateBefore);
 
         return new PageImpl<>(content, pageable, total);
     }
 
     private List<SurveyUnitFetchedByStatesAndCampaignIdView> executeMainQuery(
-            List<String> stateTypes, String campaignId, String search, Pageable pageable) {
+            List<String> stateTypes, String campaignId, String search,
+            List<String> ouIds, Instant endDateBefore, Pageable pageable) {
 
         String sortClause = PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
         String sql = MAIN_SELECT
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "")
+                + (endDateBefore != null ? END_DATE_CONDITION : "")
                 + sortClause
                 + " LIMIT :limit OFFSET :offset";
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, pageable)
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, endDateBefore, pageable)
                 .query(this::mapRow)
                 .list();
     }
 
-    private long executeCountQuery(List<String> stateTypes, String campaignId, String search) {
+    private long executeCountQuery(
+            List<String> stateTypes, String campaignId, String search,
+            List<String> ouIds, Instant endDateBefore) {
+
         String sql = "SELECT COUNT(DISTINCT su.id) "
                 + BASE_FROM
-                + (hasSearch(search) ? SEARCH_CONDITION : "");
+                + (hasSearch(search) ? SEARCH_CONDITION : "")
+                + (endDateBefore != null ? END_DATE_CONDITION : "");
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, null)
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, endDateBefore, null)
                 .query((rs, _) -> rs.getLong(1))
                 .single();
     }
@@ -131,12 +144,19 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             List<String> stateTypes,
             String campaignId,
             String search,
+            List<String> ouIds,
+            Instant endDateBefore,
             Pageable pageable) {
 
         spec = spec
                 .param("stateTypes", stateTypes)
                 .param("campaignId", campaignId)
+                .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
+
+        if (endDateBefore != null) {
+            spec = spec.param("endDateBeforeMillis", endDateBefore.toEpochMilli());
+        }
 
         if (pageable != null) {
             spec = spec
