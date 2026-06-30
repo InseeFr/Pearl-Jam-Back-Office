@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.controller.export.completed;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
 import org.springframework.data.domain.Page;

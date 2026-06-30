@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.progress;
 
-import fr.insee.pearljam.api.reporting.export.csv.AbstractCsvExporter;
+import fr.insee.pearljam.api.export.csv.AbstractCsvExporter;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import lombok.RequiredArgsConstructor;

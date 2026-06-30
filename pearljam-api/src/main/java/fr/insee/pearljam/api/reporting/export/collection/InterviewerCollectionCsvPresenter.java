@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.collection;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fr.insee.pearljam.api.reporting.export.collection.CollectionCsvRow.*;
-import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.*;
+import static fr.insee.pearljam.api.export.csv.CsvRow.*;
 
 @Component
 public class InterviewerCollectionCsvPresenter

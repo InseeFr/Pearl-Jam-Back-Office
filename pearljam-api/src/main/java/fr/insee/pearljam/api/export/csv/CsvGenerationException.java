@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.csv;
+package fr.insee.pearljam.api.export.csv;
 
 public class CsvGenerationException extends RuntimeException {
 

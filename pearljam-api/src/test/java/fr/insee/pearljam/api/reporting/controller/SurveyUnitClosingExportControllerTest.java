@@ -1,9 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingApiCsvPresenter;
-import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsv;
-import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsvExporter;
-import fr.insee.pearljam.api.reporting.export.surveyunit.SurveyUnitClosingCsvHeaders;
+import fr.insee.pearljam.api.surveyunit.controller.SurveyUnitClosingExportController;
+import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingApiCsvPresenter;
+import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingCsv;
+import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingCsvExporter;
+import fr.insee.pearljam.api.surveyunit.controller.export.closing.SurveyUnitClosingCsvHeaders;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.contracts.constants.Constants;

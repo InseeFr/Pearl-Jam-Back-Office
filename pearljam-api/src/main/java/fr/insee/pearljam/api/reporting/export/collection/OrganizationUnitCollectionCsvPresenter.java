@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.collection;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+import static fr.insee.pearljam.api.export.csv.CsvRow.addRowWithTitleLabel;
 
 @Component
 public class OrganizationUnitCollectionCsvPresenter
