@@ -1,28 +1,33 @@
 package fr.insee.pearljam.api.reporting.export.csv;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public record CsvRow(List<String> values) {
+public class CsvRow {
     private static final String SEPARATOR = ";";
     private static final String LINE_END = "\r\n";
 
+    private final List<String> values;
+
+    private CsvRow(List<String> values) {
+        this.values = values;
+    }
+
+    public List<String> values() {
+        return values;
+    }
+
     public static CsvRow from(Object... values) {
         List<String> csvValues = Arrays.stream(values)
-                .map(value -> value == null ? "" : String.valueOf(value))
+                .map(CsvRow::normalize)
                 .toList();
         return new CsvRow(csvValues);
     }
 
-    public CsvRow {
-        values.replaceAll(CsvRow::normalize);
-    }
-
-    private static String normalize(String value) {
-        String normalized = value == null ? "" : value;
+    private static String normalize(Object value) {
+        String normalized = value == null ? "" : String.valueOf(value);
         if (normalized.contains(SEPARATOR) || normalized.contains("\"")) {
             normalized = "\"" + normalized.replace("\"", "\"\"") + "\"";
         }

@@ -12,7 +12,7 @@ public record SurveyUnitAssignedCsv(List<CsvRow> rows) implements CsvExportable 
 
     @Override
     public CsvRow headers() {
-        return new CsvRow(List.of(
+        return CsvRow.from(
                 SurveyUnitAssignedCsvHeaders.TECHNICAL_SURVEY_UNIT_ID.headerName(),
                 SurveyUnitAssignedCsvHeaders.SURVEY_UNIT_ID.headerName(),
                 CollectionCsvHeaders.INTERVIEWER_LABEL.getHeaderName(),
@@ -21,11 +21,11 @@ public record SurveyUnitAssignedCsv(List<CsvRow> rows) implements CsvExportable 
                 SurveyUnitAssignedCsvHeaders.CITY.headerName(),
                 SurveyUnitAssignedCsvHeaders.SURVEY_UNIT_STATE.headerName(),
                 SurveyUnitAssignedCsvHeaders.CLOSING_CAUSE.headerName()
-        ));
+        );
     }
 
     public static CsvRow toCsv(SurveyUnitAssigned surveyUnitAssigned) {
-        return new CsvRow(List.of(
+        return CsvRow.from(
                 surveyUnitAssigned.surveyUnitId(),
                 surveyUnitAssigned.surveyUnitDisplayName(),
                 SurveyUnitAssignedPresenter.buildInterviewerLabel(surveyUnitAssigned),
@@ -34,7 +34,7 @@ public record SurveyUnitAssignedCsv(List<CsvRow> rows) implements CsvExportable 
                 surveyUnitAssigned.city(),
                 surveyUnitAssigned.questionnaireState(),
                 surveyUnitAssigned.closingCause()
-        ));
+        );
     }
 
 }
