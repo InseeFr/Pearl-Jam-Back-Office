@@ -19,6 +19,7 @@ public class SurveyUnitClosingCsvExporter extends AbstractCsvExporter {
 
     public ResponseEntity<byte[]> export(String userId,  @Nullable String campaignId, LocalDate date) {
         SurveyUnitClosingCsv csv = surveyUnitClosingPort.getSurveyUnitsToClose(userId, campaignId, presenter);
-        return buildResponse(csv, campaignId +  "TOTAL_UE_à_clore", date);
+        String prefix = campaignId != null ? campaignId : "";
+        return buildResponse(csv, prefix +  "TOTAL_UE_à_clore", date);
     }
 }
