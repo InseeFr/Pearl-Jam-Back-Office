@@ -14,7 +14,7 @@ public enum SurveyUnitCompletedCsvHeaders {
     CONTACT_OUTCOME("Bilan de contact"),
     CLOSING_CAUSE("Motif de cloture"),
     VIEWED("Lecture"),
-    COMMENT("Commantaire");
+    COMMENT("Commentaire");
     @Getter
     private final String headerName;
 
