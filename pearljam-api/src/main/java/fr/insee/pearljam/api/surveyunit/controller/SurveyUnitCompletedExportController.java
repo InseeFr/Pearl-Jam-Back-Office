@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,11 +24,12 @@ public class SurveyUnitCompletedExportController {
     private final SurveyUnitCompletedCsvExporter csvExporter;
 
     @GetMapping(API_CAMPAIGN_SU_COMPLETED_EXPORT)
-    public ResponseEntity<byte[]> getCompletedSurveyUnitsForCampaign(
+    public ResponseEntity<byte[]> getExportCompletedSurveyUnitsForCampaign(
+            @CurrentSecurityContext(expression = "authentication.name") String userId,
             @PathVariable @NotBlank String id)
     {
 
         log.info("Export survey units completed");
-        return csvExporter.export(id);
+        return csvExporter.export(userId, id);
     }
 }

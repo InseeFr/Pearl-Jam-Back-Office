@@ -17,9 +17,9 @@ public class SurveyUnitCompletedCsvExporter extends AbstractCsvExporter {
     private final SurveyUnitCompletedCsvPresenter presenter;
     private final SurveyUnitCompletedPort surveyUnitCompletedPort;
 
-    public ResponseEntity<byte[]> export(String campaignId) {
+    public ResponseEntity<byte[]> export(String userId, String campaignId) {
         SurveyUnitCompletedCsv csv =
-                surveyUnitCompletedPort.getCompletedSurveyUnits(campaignId, "", Pageable.unpaged(), presenter);
+                surveyUnitCompletedPort.getCompletedSurveyUnits(userId, campaignId, "", Pageable.unpaged(), presenter);
         return buildResponse(csv, campaignId + "_Unites_terminees", LocalDate.now());
     }
 }
