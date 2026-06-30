@@ -7,7 +7,7 @@ import java.util.List;
 
 public class SurveyUnitCompletedCsv implements CsvExportable {
 
-    public static final List<SurveyUnitCompletedCsvHeaders> CSV_HEADERS = SurveyUnitCompletedCsvHeaders.commonHeaders();
+    protected static final List<SurveyUnitCompletedCsvHeaders> CSV_HEADERS = SurveyUnitCompletedCsvHeaders.commonHeaders();
 
     @Override
     public CsvRow headers() {

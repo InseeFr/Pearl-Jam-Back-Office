@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +21,6 @@ public class SurveyUnitCompletedCsvExporter extends AbstractCsvExporter {
     public ResponseEntity<byte[]> export(String userId, String campaignId) {
         SurveyUnitCompletedCsv csv =
                 surveyUnitCompletedPort.getCompletedSurveyUnits(userId, campaignId, "", Pageable.unpaged(), presenter);
-        return buildResponse(csv, campaignId + "_Unites_terminees", LocalDate.now());
+        return buildResponse(csv, campaignId + "_Unites_terminees", LocalDate.now(ZoneId.of("UTC")));
     }
 }
