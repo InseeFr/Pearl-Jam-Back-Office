@@ -13,15 +13,20 @@ public record CsvRow(List<String> values) {
     public static CsvRow from(Object... values) {
         List<String> csvValues = Arrays.stream(values)
                 .map(value -> value == null ? "" : String.valueOf(value))
-                .map(value -> {
-                            if (value.contains(SEPARATOR) || value.contains("\"")) {
-                                return "\"" + value.replace("\"", "\"\"") + "\"";
-                            }
-                            return value;
-                        }
-                )
                 .toList();
         return new CsvRow(csvValues);
+    }
+
+    public CsvRow {
+        values.replaceAll(CsvRow::normalize);
+    }
+
+    private static String normalize(String value) {
+        String normalized = value == null ? "" : value;
+        if (normalized.contains(SEPARATOR) || normalized.contains("\"")) {
+            normalized = "\"" + normalized.replace("\"", "\"\"") + "\"";
+        }
+        return normalized;
     }
 
     public static List<Object> emptyRowWithValueAtSpecificPosition(Object value, int positon, int columnCount) {
