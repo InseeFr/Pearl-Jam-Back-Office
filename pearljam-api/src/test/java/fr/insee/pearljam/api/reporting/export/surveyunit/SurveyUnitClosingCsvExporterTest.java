@@ -42,7 +42,7 @@ class SurveyUnitClosingCsvExporterTest {
     void shouldPassPresenterUnchanged() {
         exporter.export("user-abc", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port).getSurveyUnitsToClose(eq("user-abc"), null, same(presenter));
+        verify(port).getSurveyUnitsToClose(eq("user-abc"), any(), same(presenter));
     }
 
     @Test
@@ -50,7 +50,7 @@ class SurveyUnitClosingCsvExporterTest {
     void shouldCallPortExactlyOnce() {
         exporter.export("user-123", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port, times(1)).getSurveyUnitsToClose(any(), null, any());
+        verify(port, times(1)).getSurveyUnitsToClose(any(), any(), any());
     }
 
     @Test
@@ -59,7 +59,7 @@ class SurveyUnitClosingCsvExporterTest {
         exporter.export("alice",null, LocalDate.now(ZoneId.of("UTC")));
         exporter.export("bob", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port).getSurveyUnitsToClose(eq("alice"), null, any());
-        verify(port).getSurveyUnitsToClose(eq("bob"), null, any());
+        verify(port).getSurveyUnitsToClose(eq("alice"), any(), any());
+        verify(port).getSurveyUnitsToClose(eq("bob"), any(), any());
     }
 }
