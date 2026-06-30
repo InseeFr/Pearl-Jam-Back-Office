@@ -15,7 +15,7 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
         List<CsvRow> rows = surveyUnits.getContent().stream()
                 .map(su -> CsvRow.from(
                         su.surveyUnitId(),
-                        su.surveyUnitId(),
+                        su.surveyUnitDisplayName(),
                         getInterviewerLabel(su),
                         "",
                         su.endDate(),
