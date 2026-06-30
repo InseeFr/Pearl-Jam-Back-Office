@@ -6,14 +6,12 @@ import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAn
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface SurveyUnitFetchedByStatesRepositoryPort {
 
     Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
-            List<StateType> stateTypes,
-            String campaignId,
-            String search,
-            Pageable pageable
-    );
+            List<StateType> stateTypes, String campaignId, String search,
+            List<String> ouIds, Instant endDateBefore, Pageable pageable);
 }
