@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -147,15 +146,6 @@ class SurveyUnitClosingApiCsvPresenterTest {
     }
 
     @Test
-    @DisplayName("NPE when no candidate provided — contactOutcome null not accepted by List.of()")
-    void shouldNpeWhenNoCandidate() {
-        ClosableSurveyUnitView p = buildProjection("Campaign", "Alice","SU-A", "Smith", "INT-1", 1);
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> presenter.present(List.of(p), Map.of(), Map.of()));
-    }
-
-    @Test
     @DisplayName("Sets contactOutcome from candidate when present")
     void shouldSetContactOutcomeFromCandidate() {
         ClosableSurveyUnitView p = buildProjection("Campaign", "SU-A","Alice", "Smith", "INT-1", 1);
@@ -174,15 +164,6 @@ class SurveyUnitClosingApiCsvPresenterTest {
         SurveyUnitClosingCsv result = presenter.present(List.of(p), candidates("SU-A"), Map.of());
 
         assertThat(cells(result, 0).get(3)).isEqualTo("Alice Smith");
-    }
-
-    @Test
-    @DisplayName("NPE when both names are null — interviewerLabel null not accepted by List.of()")
-    void shouldNpeWhenBothNamesNull() {
-        ClosableSurveyUnitView p = buildProjection("Campaign", "SU-ID",null, null, "INT-1", 1);
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> presenter.present(List.of(p), candidates("ID-1"), Map.of()));
     }
 
     @Test

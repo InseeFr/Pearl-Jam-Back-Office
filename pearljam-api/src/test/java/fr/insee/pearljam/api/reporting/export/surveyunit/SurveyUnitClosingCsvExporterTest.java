@@ -34,7 +34,7 @@ class SurveyUnitClosingCsvExporterTest {
     void shouldDelegateToPortWithCorrectUserId() {
         exporter.export("user-123", null, LocalDate.now(ZoneId.of("UTC")));
 
-        verify(port, times(1)).getSurveyUnitsToClose("user-123", presenter);
+        verify(port, times(1)).getSurveyUnitsToClose("user-123", null, presenter);
     }
 
     @Test
