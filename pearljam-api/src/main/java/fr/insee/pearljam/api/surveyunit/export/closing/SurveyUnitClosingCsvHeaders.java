@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.surveyunit.controller.export.closing;
+package fr.insee.pearljam.api.surveyunit.export.closing;
 
 import lombok.Getter;
 import java.util.List;

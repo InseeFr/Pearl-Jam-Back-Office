@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.surveyunit.controller.export.closing;
+package fr.insee.pearljam.api.surveyunit.export.closing;
 
 import fr.insee.pearljam.api.export.csv.CsvExportable;
 import fr.insee.pearljam.api.export.csv.CsvRow;

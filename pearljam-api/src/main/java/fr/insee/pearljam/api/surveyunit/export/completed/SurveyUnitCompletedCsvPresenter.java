@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.surveyunit.controller.export.completed;
+package fr.insee.pearljam.api.surveyunit.export.completed;
 
 import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPresenter;
