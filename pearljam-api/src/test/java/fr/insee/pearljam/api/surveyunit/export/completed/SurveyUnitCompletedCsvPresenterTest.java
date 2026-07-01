@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +22,7 @@ class SurveyUnitCompletedCsvPresenterTest {
                 "SU001",
                 "Survey Unit 1",
                 null, // interviewer (adapter selon ton modèle)
-                LocalDate.of(2025, 6, 10).toString(),
+                LocalDate.of(2025, Month.JUNE, 10).toString(),
                 "CONTACTED",
                 "COMPLETED",
                 "INA",
@@ -54,7 +55,7 @@ class SurveyUnitCompletedCsvPresenterTest {
                 "SU001",
                 "Survey Unit 1",
                 null,
-                LocalDate.of(2025, 6, 10).toString(),
+                LocalDate.of(2025, Month.JUNE, 10).toString(),
                 "CONTACTED",
                 "COMPLETED",
                 "INA",
