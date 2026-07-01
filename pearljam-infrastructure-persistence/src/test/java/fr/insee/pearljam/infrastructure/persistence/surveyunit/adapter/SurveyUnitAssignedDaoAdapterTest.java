@@ -41,6 +41,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest
@@ -436,4 +437,18 @@ class SurveyUnitAssignedDaoAdapterTest {
 
         assertThat(values).isSorted();
     }
+
+    @Test
+    void findSurveyUnitsAssigned_unpaged_shouldReturnAllEntries() {
+        // Given
+        List<String> campaignIds = List.of(CAMPAIGN_1_ID);
+        List<String> lstOuIds = List.of(OU_1);
+        String search = "";
+        Pageable unpaged = Pageable.unpaged();
+        // When
+        Page<SurveyUnitAssigned> result = adapter.findSurveyUnitsAssigned(campaignIds, lstOuIds, search, unpaged);
+        // Then
+        assertNotNull(result);
+    }
+
 }
