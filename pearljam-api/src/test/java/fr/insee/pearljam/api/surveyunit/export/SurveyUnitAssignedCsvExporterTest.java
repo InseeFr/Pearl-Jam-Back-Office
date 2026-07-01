@@ -80,8 +80,8 @@ class SurveyUnitAssignedCsvExporterTest {
         assertEquals(2, responseRows.length);
         String expectedHeadersRow = "﻿Identifiant technique;Identifiant de l'ue;Nom Prénom enquêteur;Ssech;Département;Commune;Etat de l'UE;Motif provisoire";
         String expectedContentRow = "foo-id;FOO_LABEL;John Doe;1;33;City;Foo state;-";
-        assertThat(responseRows[0]).isEqualToIgnoringNewLines(expectedHeadersRow);
-        assertThat(responseRows[1]).isEqualToIgnoringNewLines(expectedContentRow);
+        assertThat(expectedHeadersRow).isEqualToIgnoringNewLines(responseRows[0]);
+        assertThat(expectedContentRow).isEqualToIgnoringNewLines(responseRows[1]);
     }
 
 }
