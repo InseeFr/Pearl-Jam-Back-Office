@@ -96,21 +96,30 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                             AND su.organization_unit_id in (:ouIds)
                          """ +
                      buildSearchCondition(search) +
-                     PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS) +
-                     """
-                         LIMIT :limit OFFSET :offset
-                         """;
+                     PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
 
-        return jdbc.sql(sql)
-            .param("campaignIds", campaignIds)
-            .param("ouIds", lstOuIds)
-            .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
-            .param("limit", pageable.getPageSize())
-            .param("offset", pageable.getOffset())
+
+        boolean isPaged = pageable.isPaged();
+        if (isPaged) {
+            sql += """
+                        LIMIT :limit OFFSET :offset
+                        """;
+        }
+
+        JdbcClient.StatementSpec statementSpec = jdbc.sql(sql)
+                .param("campaignIds", campaignIds)
+                .param("ouIds", lstOuIds)
+                .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
+
+        if (isPaged) {
+            statementSpec = statementSpec
+                    .param("limit", pageable.getPageSize())
+                    .param("offset", pageable.getOffset());
+        }
+
+        return statementSpec
             .query(this::mapToSurveyUnitAssigned)
             .list();
-
-
     }
 
     private long executeCountQuery(List<String> campaignIds, List<String> lstOuIds, String search) {
