@@ -372,6 +372,8 @@ class CampaignIT {
 
         JSONObject expectedCampaign = new JSONObject();
         expectedCampaign.put("id", "SIMPSONS2020X00");
+        expectedCampaign.put("technicalId", JSONObject.NULL);
+        expectedCampaign.put("campaignId", "SIMPSONS2020X00");
         expectedCampaign.put("dataCollectionTarget", "LUNATIC_NORMAL");
         expectedCampaign.put("sensitivity", false);
         expectedCampaign.put("collectMode", "F2F");
@@ -391,14 +393,18 @@ class CampaignIT {
                 """
                 [
                     {
-                        "dataCollectionTarget":"LUNATIC_NORMAL",
                         "id":"SIMPSONS2020X00",
+                        "technicalId":null,
+                        "campaignId":"SIMPSONS2020X00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
                         "sensitivity":false,
                         "collectMode":"F2F"
                      },
                      {
-                        "dataCollectionTarget":"LUNATIC_NORMAL",
                         "id":"VQS2021X00",
+                        "technicalId":null,
+                        "campaignId":"VQS2021X00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
                         "sensitivity":false,
                         "collectMode":"TEL"
                     }
