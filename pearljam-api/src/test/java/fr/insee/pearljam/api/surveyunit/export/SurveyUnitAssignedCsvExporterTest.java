@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SurveyUnitAssignedCsvExporterTest {
@@ -79,13 +80,8 @@ class SurveyUnitAssignedCsvExporterTest {
         assertEquals(2, responseRows.length);
         String expectedHeadersRow = "﻿Identifiant technique;Identifiant de l'ue;Nom Prénom enquêteur;Ssech;Département;Commune;Etat de l'UE;Motif provisoire";
         String expectedContentRow = "foo-id;FOO_LABEL;John Doe;1;33;City;Foo state;-";
-        assertEquals(expectedHeadersRow, normalize(responseRows[0]));
-        assertEquals(expectedContentRow, normalize(responseRows[1]));
-    }
-
-    /** Get rid of line breaks. */
-    private static String normalize(String line) {
-        return line.replace("\n", "").replace("\r", "");
+        assertThat(responseRows[0]).isEqualToIgnoringNewLines(expectedHeadersRow);
+        assertThat(responseRows[1]).isEqualToIgnoringNewLines(expectedContentRow);
     }
 
 }
