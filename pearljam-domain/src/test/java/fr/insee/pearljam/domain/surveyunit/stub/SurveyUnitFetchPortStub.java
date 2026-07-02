@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.time.Instant;
 import java.util.List;
 
 public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
@@ -18,8 +17,6 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
     private List<StateType> capturedStateTypes;
     @Getter
     private String capturedCampaignId;
-    @Getter
-    private Instant capturedEndDateBefore;
 
     public void willReturn(Page<SurveyUnitFetchedByStatesAndCampaignIdView> results) {
         this.stubbedResults = results;

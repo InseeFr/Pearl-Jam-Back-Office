@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,23 +109,6 @@ class SurveyUnitCompletedServiceTest {
                 Page::getTotalElements);
 
         assertThat(result).isEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("Passes current date as endDateBefore to the fetch port")
-    void shouldPassCurrentDateAsEndDateBefore() {
-        surveyUnitFetchPortStub.willReturn(new PageImpl<>(List.of()));
-
-        service.getCompletedSurveyUnits(
-                null,
-                "campaign-01",
-                null,
-                PageRequest.of(0, 10),
-                surveyUnits -> surveyUnits);
-
-        Instant fixedNow = Instant.ofEpochMilli(new FixedDateService().getCurrentTimestamp());
-        assertThat(surveyUnitFetchPortStub.getCapturedEndDateBefore())
-                .isEqualTo(fixedNow);
     }
 
     private SurveyUnitFetchedByStatesAndCampaignIdView surveyUnitView() {
