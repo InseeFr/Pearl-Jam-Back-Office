@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,8 +25,7 @@ public class SurveyUnitCompletedService implements SurveyUnitCompletedPort {
     @Override
     public <T> T getCompletedSurveyUnits(String userId, String campaignId, String search, Pageable pageable, SurveyUnitCompletedPresenter<T> presenter) {
         List<StateType> stateTypes = List.of(StateType.CLO, StateType.FIN);
-        Instant now = Instant.ofEpochMilli(dateService.getCurrentTimestamp());
-        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(userId, stateTypes, campaignId, search, now, pageable);
+        Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits = surveyUnitFetchPort.getSurveyUnitsByStatesAndCampaignId(userId, stateTypes, campaignId, search, pageable);
         return presenter.present(surveyUnits);
     }
 }

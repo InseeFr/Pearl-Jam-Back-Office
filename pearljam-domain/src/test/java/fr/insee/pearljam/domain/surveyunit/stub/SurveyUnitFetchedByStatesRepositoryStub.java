@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.time.Instant;
 import java.util.List;
 
 public class SurveyUnitFetchedByStatesRepositoryStub implements SurveyUnitFetchedByStatesRepositoryPort {
@@ -25,7 +24,7 @@ public class SurveyUnitFetchedByStatesRepositoryStub implements SurveyUnitFetche
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
             List<StateType> stateTypes, String campaignId, String search,
-            List<String> ouIds, Instant endDateBefore, Pageable pageable)
+            List<String> ouIds, Pageable pageable)
     {
         this.capturedStateTypes = stateTypes;
         this.capturedCampaignId = campaignId;

@@ -33,9 +33,7 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
                                                                                                 List<StateType> stateTypes,
                                                                                                 String campaignId,
                                                                                                 String search,
-                                                                                                Instant endDateBefore,
                                                                                                 Pageable pageable) {
-        this.capturedEndDateBefore = endDateBefore;
         this.capturedStateTypes = stateTypes;
         this.capturedCampaignId = campaignId;
         return stubbedResults;

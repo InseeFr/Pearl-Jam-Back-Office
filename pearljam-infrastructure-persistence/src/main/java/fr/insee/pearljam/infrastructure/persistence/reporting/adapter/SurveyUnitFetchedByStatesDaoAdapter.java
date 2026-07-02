@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -29,13 +28,14 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             "interviewerLastName",   "int.last_name",
             "contactOutcome",        "co.type",
             "closingCauseType",      "cc.type",
-            "endDate",               "vi.collection_end_date"
+            "endDate",               "ls.last_state_date"
     );
 
     private static final String BASE_FROM = """
             FROM survey_unit su
             JOIN LATERAL (
-                SELECT s.type AS current_state
+                 SELECT s.type AS current_state,
+                        s.date AS last_state_date
                 FROM state s
                 WHERE s.survey_unit_id = su.id
                 ORDER BY s.date DESC
@@ -72,17 +72,13 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
         )
         """;
 
-    private static final String END_DATE_CONDITION = """
-        AND vi.collection_end_date < :endDateBeforeMillis
-        """;
-
     private static final String MAIN_SELECT = """
         SELECT
             su.id                              AS surveyUnitId,
             su.display_name                    AS surveyUnitDisplayName,
             int.first_name                     AS interviewerFirstName,
             int.last_name                      AS interviewerLastName,
-            CAST(vi.collection_end_date AS TEXT) AS endDate,
+            CAST(ls.last_state_date AS TEXT)   AS endDate,
             co.type                            AS contactOutcome,
             cc.type                            AS closingCauseType,
             su.viewed                          AS viewed,
@@ -92,45 +88,43 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
             List<StateType> stateTypes, String campaignId, String search,
-            List<String> ouIds, Instant endDateBefore, Pageable pageable) {
+            List<String> ouIds, Pageable pageable) {
 
         List<String> stateTypesStringified = stateTypes.stream().map(StateType::toString).toList();
 
         List<SurveyUnitFetchedByStatesAndCampaignIdView> content =
-                executeMainQuery(stateTypesStringified, campaignId, search, ouIds, endDateBefore, pageable);
+                executeMainQuery(stateTypesStringified, campaignId, search, ouIds, pageable);
 
-        long total = executeCountQuery(stateTypesStringified, campaignId, search, ouIds, endDateBefore);
+        long total = executeCountQuery(stateTypesStringified, campaignId, search, ouIds);
 
         return new PageImpl<>(content, pageable, total);
     }
 
     private List<SurveyUnitFetchedByStatesAndCampaignIdView> executeMainQuery(
             List<String> stateTypes, String campaignId, String search,
-            List<String> ouIds, Instant endDateBefore, Pageable pageable) {
+            List<String> ouIds, Pageable pageable) {
 
         String sortClause = PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
         String sql = MAIN_SELECT
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "")
-                + (endDateBefore != null ? END_DATE_CONDITION : "")
                 + sortClause
                 + " LIMIT :limit OFFSET :offset";
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, endDateBefore, pageable)
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, pageable)
                 .query(this::mapRow)
                 .list();
     }
 
     private long executeCountQuery(
             List<String> stateTypes, String campaignId, String search,
-            List<String> ouIds, Instant endDateBefore) {
+            List<String> ouIds) {
 
         String sql = "SELECT COUNT(DISTINCT su.id) "
                 + BASE_FROM
-                + (hasSearch(search) ? SEARCH_CONDITION : "")
-                + (endDateBefore != null ? END_DATE_CONDITION : "");
+                + (hasSearch(search) ? SEARCH_CONDITION : "");
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, endDateBefore, null)
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, null)
                 .query((rs, _) -> rs.getLong(1))
                 .single();
     }
@@ -145,7 +139,6 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             String campaignId,
             String search,
             List<String> ouIds,
-            Instant endDateBefore,
             Pageable pageable) {
 
         spec = spec
@@ -153,10 +146,6 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 .param("campaignId", campaignId)
                 .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
-
-        if (endDateBefore != null) {
-            spec = spec.param("endDateBeforeMillis", endDateBefore.toEpochMilli());
-        }
 
         if (pageable != null) {
             spec = spec
