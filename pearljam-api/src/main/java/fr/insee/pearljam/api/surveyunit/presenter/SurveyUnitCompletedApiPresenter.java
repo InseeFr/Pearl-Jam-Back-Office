@@ -45,5 +45,10 @@ public class SurveyUnitCompletedApiPresenter implements SurveyUnitCompletedPrese
                                 surveyUnits.getTotalPages()
                         );
     }
+
+    @Override
+    public SurveyUnitCompletedPageResponse empty() {
+        return null;
+    }
 }
 

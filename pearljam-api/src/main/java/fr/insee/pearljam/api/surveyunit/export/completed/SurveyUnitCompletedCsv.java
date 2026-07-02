@@ -5,9 +5,9 @@ import fr.insee.pearljam.api.export.csv.CsvRow;
 
 import java.util.List;
 
-public class SurveyUnitCompletedCsv implements CsvExportable {
+public record SurveyUnitCompletedCsv(List<CsvRow> rows) implements CsvExportable {
 
-    protected static final List<SurveyUnitCompletedCsvHeaders> CSV_HEADERS = SurveyUnitCompletedCsvHeaders.commonHeaders();
+    private static final List<SurveyUnitCompletedCsvHeaders> CSV_HEADERS = SurveyUnitCompletedCsvHeaders.commonHeaders();
 
     @Override
     public CsvRow headers() {
@@ -22,6 +22,6 @@ public class SurveyUnitCompletedCsv implements CsvExportable {
 
     @Override
     public List<CsvRow> rows() {
-        return List.of();
+        return rows;
     }
 }

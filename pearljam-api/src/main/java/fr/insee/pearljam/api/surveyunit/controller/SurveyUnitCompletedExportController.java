@@ -29,7 +29,7 @@ public class SurveyUnitCompletedExportController {
             @PathVariable @NotBlank String id)
     {
 
-        log.info("Export survey units completed");
+        log.info("Get export file survey units completed for user {} and campaign {}", userId, id);
         return csvExporter.export(userId, id);
     }
 }

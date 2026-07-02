@@ -36,7 +36,4 @@ public enum SurveyUnitCompletedCsvHeaders {
         );
     }
 
-    public static List<SurveyUnitCompletedCsvHeaders> buildHeaders() {
-        return commonHeaders();
-    }
 }

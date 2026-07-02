@@ -17,6 +17,11 @@ class SurveyUnitCompletedPresenterTest {
             public Void present(org.springframework.data.domain.Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits) {
                 return null;
             }
+
+            @Override
+            public Void empty() {
+                return null;
+            }
         };
     }
     @Test

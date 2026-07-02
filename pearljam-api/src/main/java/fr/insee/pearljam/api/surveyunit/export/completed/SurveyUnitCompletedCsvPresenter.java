@@ -26,13 +26,11 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
                 ))
                 .toList();
 
-        return new SurveyUnitCompletedCsv() {
-            @Override
-            public List<CsvRow> rows() {
-                return rows;
-            }
-        };
+        return new SurveyUnitCompletedCsv(rows);
     }
 
-
+    @Override
+    public SurveyUnitCompletedCsv empty() {
+        return new SurveyUnitCompletedCsv(List.of());
+    }
 }
