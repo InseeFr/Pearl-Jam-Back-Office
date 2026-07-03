@@ -345,7 +345,6 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(CampaignNotFoundException::new);
         return new CampaignCommonsDto(
                 campaign.getId(),
-                null,
                 campaign.getId(),
                 "LUNATIC_NORMAL",
                 campaign.getSensitivity(),
@@ -360,7 +359,6 @@ public class CampaignServiceImpl implements CampaignService {
             if (isCampaignOngoing(campaign.getId())) {
                 campaignsCommonsOngoing.add(new CampaignCommonsDto(
                         campaign.getId(),
-                        null,
                         campaign.getId(),
                         "LUNATIC_NORMAL",
                         campaign.getSensitivity(),

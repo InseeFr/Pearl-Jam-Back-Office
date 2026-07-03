@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CampaignCommonsDto(
         @NotBlank String id,
-        String technicalId,
         @NotBlank String campaignId,
         @NotBlank String dataCollectionTarget,
         @NotBlank boolean sensitivity,
