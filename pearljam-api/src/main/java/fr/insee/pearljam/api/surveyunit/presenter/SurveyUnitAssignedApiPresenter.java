@@ -38,10 +38,7 @@ public class SurveyUnitAssignedApiPresenter implements
         return new SurveyUnitAssignedResponse(
             surveyUnit.surveyUnitId(),
             surveyUnit.surveyUnitDisplayName(),
-            buildInterviewerLabel(
-                surveyUnit.interviewerFirstName(),
-                surveyUnit.interviewerLastName()
-            ),
+            SurveyUnitAssignedPresenter.buildInterviewerLabel(surveyUnit),
             surveyUnit.ssech(),
             surveyUnit.location(),
             surveyUnit.city(),
@@ -58,12 +55,4 @@ public class SurveyUnitAssignedApiPresenter implements
         return value == null ? null : ClosingCauseType.valueOf(value);
     }
 
-    String buildInterviewerLabel(String firstName, String lastName) {
-
-        String result = Stream.of(firstName, lastName)
-            .filter(Objects::nonNull)
-            .collect(Collectors.joining(" "));
-
-        return result.isBlank() ? "" : result;
-    }
 }
