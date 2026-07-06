@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.surveyunit.controller;
 
 import fr.insee.pearljam.api.surveyunit.export.completed.SurveyUnitCompletedCsvExporter;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class SurveyUnitCompletedExportController {
     private final SurveyUnitCompletedCsvExporter csvExporter;
 
     @GetMapping(API_CAMPAIGN_SU_COMPLETED_EXPORT)
+    @Parameter(name = "userId", hidden = true)
     public ResponseEntity<byte[]> getExportCompletedSurveyUnitsForCampaign(
             @CurrentSecurityContext(expression = "authentication.name") String userId,
             @PathVariable @NotBlank String id)
