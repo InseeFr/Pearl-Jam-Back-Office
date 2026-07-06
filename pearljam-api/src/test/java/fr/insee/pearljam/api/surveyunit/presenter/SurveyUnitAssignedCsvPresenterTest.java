@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.surveyunit.presenter;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.surveyunit.csv.SurveyUnitAssignedCsv;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitAssigned;
 import org.jspecify.annotations.NonNull;
@@ -11,7 +11,8 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SurveyUnitAssignedCsvPresenterTest {
 

@@ -1,8 +1,9 @@
 package fr.insee.pearljam.api.surveyunit.csv;
 
+import fr.insee.pearljam.api.export.csv.CsvExportable;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.reporting.export.collection.CollectionCsvHeaders;
-import fr.insee.pearljam.api.reporting.export.csv.CsvExportable;
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitAssignedPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitAssigned;
 
