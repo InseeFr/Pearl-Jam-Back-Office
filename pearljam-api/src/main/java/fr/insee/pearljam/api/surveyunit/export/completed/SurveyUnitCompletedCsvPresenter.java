@@ -17,7 +17,7 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
                         su.surveyUnitId(),
                         su.surveyUnitDisplayName(),
                         getInterviewerLabel(su),
-                        "",
+                        su.interviewerId(),
                         su.endDate(),
                         su.contactOutcome(),
                         su.closingCauseType(),

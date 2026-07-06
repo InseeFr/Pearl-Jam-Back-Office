@@ -21,10 +21,11 @@ class SurveyUnitCompletedCsvPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView surveyUnit = new SurveyUnitFetchedByStatesAndCampaignIdView(
                 "SU001",
                 "Survey Unit 1",
-                null, // interviewer (adapter selon ton modèle)
+                null,
+                "",
+                "INTID",
                 LocalDate.of(2025, Month.JUNE, 10).toString(),
                 "CONTACTED",
-                "COMPLETED",
                 "INA",
                 true,
                 "comment"
@@ -42,8 +43,8 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-        SU001;Survey Unit 1;2025-06-10;;CONTACTED;COMPLETED;INA;true;comment
-        """
+                SU001;Survey Unit 1;;INTID;2025-06-10;CONTACTED;INA;true;comment
+                """
         );
 
     }
@@ -54,10 +55,11 @@ class SurveyUnitCompletedCsvPresenterTest {
         SurveyUnitFetchedByStatesAndCampaignIdView surveyUnit = new SurveyUnitFetchedByStatesAndCampaignIdView(
                 "SU001",
                 "Survey Unit 1",
-                null,
+                "John",
+                "Doe",
+                "INTID",
                 LocalDate.of(2025, Month.JUNE, 10).toString(),
                 "CONTACTED",
-                "COMPLETED",
                 "INA",
                 null,
                 "comment"
@@ -73,8 +75,8 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-        SU001;Survey Unit 1;2025-06-10;;CONTACTED;COMPLETED;INA;;comment
-        """);
+                SU001;Survey Unit 1;John Doe;INTID;2025-06-10;CONTACTED;INA;;comment
+                """);
     }
 
     @Test

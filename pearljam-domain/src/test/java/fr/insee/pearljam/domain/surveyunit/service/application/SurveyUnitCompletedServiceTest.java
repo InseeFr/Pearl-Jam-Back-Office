@@ -117,6 +117,7 @@ class SurveyUnitCompletedServiceTest {
                 "Display su-1",
                 "John",
                 "Doe",
+                "INTID",
                 "1704067200000", // 2024-01-01
                 "INA",
                 "NPI",
