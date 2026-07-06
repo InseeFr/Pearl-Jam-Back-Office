@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCampaignsCollectionCsv;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCampaignsCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCampaignsCollectionCsvPresenter;
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import org.junit.jupiter.api.BeforeEach;

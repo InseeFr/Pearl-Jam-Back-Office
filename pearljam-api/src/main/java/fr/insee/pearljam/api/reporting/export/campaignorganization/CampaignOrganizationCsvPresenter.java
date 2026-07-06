@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationStatsPresenter;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignVisibility;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+import static fr.insee.pearljam.api.export.csv.CsvRow.addRowWithTitleLabel;
 
 @Component
 public class CampaignOrganizationCsvPresenter implements CampaignOrganizationStatsPresenter<CampaignOrganizationCsv> {

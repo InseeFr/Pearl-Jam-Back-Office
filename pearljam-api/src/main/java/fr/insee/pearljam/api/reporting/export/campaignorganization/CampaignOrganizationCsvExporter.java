@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
-import fr.insee.pearljam.api.reporting.export.csv.AbstractCsvExporter;
+import fr.insee.pearljam.api.export.csv.AbstractCsvExporter;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsv;
 import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsvExporter;
 import fr.insee.pearljam.api.reporting.export.progress.InterviewerCampaignsProgressCsvPresenter;

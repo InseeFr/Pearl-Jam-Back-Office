@@ -1,6 +1,6 @@
-package fr.insee.pearljam.api.reporting.export.surveyunit;
+package fr.insee.pearljam.api.surveyunit.export.closing;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPresenter;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static fr.insee.pearljam.api.reporting.export.csv.CsvRow.addRowWithTitleLabel;
+import static fr.insee.pearljam.api.export.csv.CsvRow.addRowWithTitleLabel;
 
 @Component
 public class SurveyUnitClosingApiCsvPresenter

@@ -4,7 +4,7 @@ import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsv;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.export.collection.CampaignCollectionCsvPresenter;
 import fr.insee.pearljam.api.reporting.export.collection.CollectionCsvHeaders;
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import org.junit.jupiter.api.BeforeEach;

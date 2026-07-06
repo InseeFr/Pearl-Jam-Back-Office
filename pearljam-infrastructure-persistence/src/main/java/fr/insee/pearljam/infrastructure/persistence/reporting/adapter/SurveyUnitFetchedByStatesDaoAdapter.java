@@ -108,8 +108,12 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
         String sql = MAIN_SELECT
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "")
-                + sortClause
-                + " LIMIT :limit OFFSET :offset";
+                + sortClause;
+
+
+        if (pageable.isPaged()) {
+            sql += " LIMIT :limit OFFSET :offset";
+        }
 
         return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, pageable)
                 .query(this::mapRow)
@@ -147,7 +151,8 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
 
-        if (pageable != null) {
+
+        if (pageable!= null && pageable.isPaged()) {
             spec = spec
                     .param("limit", pageable.getPageSize())
                     .param("offset", pageable.getOffset());

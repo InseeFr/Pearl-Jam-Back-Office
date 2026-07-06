@@ -1,5 +1,8 @@
-package fr.insee.pearljam.api.reporting.export.surveyunit;
+package fr.insee.pearljam.api.surveyunit.export;
 
+import fr.insee.pearljam.api.surveyunit.export.closing.SurveyUnitClosingApiCsvPresenter;
+import fr.insee.pearljam.api.surveyunit.export.closing.SurveyUnitClosingCsv;
+import fr.insee.pearljam.api.surveyunit.export.closing.SurveyUnitClosingCsvExporter;
 import fr.insee.pearljam.api.surveyunit.presenter.SurveyUnitClosingViewModelMapper;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +13,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class SurveyUnitClosingCsvExporterTest {

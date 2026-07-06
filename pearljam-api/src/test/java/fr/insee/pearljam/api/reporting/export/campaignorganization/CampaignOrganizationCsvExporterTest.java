@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.campaignorganization;
 
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationPort;
 import fr.insee.pearljam.domain.campaign.port.in.CampaignOrganizationStatsPresenter;
 import org.junit.jupiter.api.BeforeEach;

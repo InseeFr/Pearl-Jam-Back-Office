@@ -1,4 +1,4 @@
-package fr.insee.pearljam.api.reporting.export.csv;
+package fr.insee.pearljam.api.export.csv;
 
 import org.junit.jupiter.api.Test;
 
