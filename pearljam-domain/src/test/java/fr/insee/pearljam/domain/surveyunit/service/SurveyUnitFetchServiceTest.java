@@ -5,9 +5,9 @@ import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.stub.CampaignRepositoryStub;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitFetchedByStatesRepositoryStub;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
+import fr.insee.pearljam.domain.surveyunit.stub.SurveyUnitFetchedByStatesRepositoryStub;
 import fr.insee.pearljam.domain.user.stub.UserServiceStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,6 +102,7 @@ class SurveyUnitFetchServiceTest {
            "Display " + "su-1",
             "John",
             "Doe",
+            "INTID",
             "2024-01-01",
             "INA",
             "NPI",

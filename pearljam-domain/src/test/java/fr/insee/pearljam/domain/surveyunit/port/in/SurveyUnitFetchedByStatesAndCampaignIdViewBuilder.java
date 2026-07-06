@@ -8,6 +8,7 @@ public class SurveyUnitFetchedByStatesAndCampaignIdViewBuilder {
     private String surveyUnitDisplayName = "Display name";
     private String interviewerFirstName = "John";
     private String interviewerLastName = "Doe";
+    private String interviewerId = "INTID";
     private String endDate = "2024-01-01";
     private String contactOutcome = "COMPLETED";
     private String closingCauseType = "NONE";
@@ -34,6 +35,7 @@ public class SurveyUnitFetchedByStatesAndCampaignIdViewBuilder {
                 surveyUnitDisplayName,
                 interviewerFirstName,
                 interviewerLastName,
+                interviewerId,
                 endDate,
                 contactOutcome,
                 closingCauseType,

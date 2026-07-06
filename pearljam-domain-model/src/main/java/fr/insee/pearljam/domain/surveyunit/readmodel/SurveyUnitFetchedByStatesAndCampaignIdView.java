@@ -5,6 +5,7 @@ public record SurveyUnitFetchedByStatesAndCampaignIdView(
         String surveyUnitDisplayName,
         String interviewerFirstName,
         String interviewerLastName,
+        String interviewerId,
         String endDate,
         String contactOutcome,
         String closingCauseType,
