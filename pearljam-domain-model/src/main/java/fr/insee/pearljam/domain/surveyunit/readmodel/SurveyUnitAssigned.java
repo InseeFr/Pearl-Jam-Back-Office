@@ -5,6 +5,7 @@ public record SurveyUnitAssigned(
         String surveyUnitId,
         String surveyUnitDisplayName,
         String ssech,
+        String interviewerId,
         String interviewerFirstName,
         String interviewerLastName,
         String location,

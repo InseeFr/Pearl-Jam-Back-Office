@@ -34,6 +34,7 @@ class SurveyUnitAssignedCsvExporterTest {
                 "foo-id",
                 "FOO_LABEL",
                 "1",
+                "Idep",
                 "John",
                 "Doe",
                 "33",
@@ -77,8 +78,8 @@ class SurveyUnitAssignedCsvExporterTest {
         String responseBody = new String(response.getBody());
         String[] responseRows = responseBody.split(System.lineSeparator());
         assertEquals(2, responseRows.length);
-        String expectedHeadersRow = "﻿Identifiant technique;Identifiant de l'ue;Nom Prénom enquêteur;Ssech;Département;Commune;Etat de l'UE;Motif provisoire";
-        String expectedContentRow = "foo-id;FOO_LABEL;John Doe;1;33;City;Foo state;-";
+        String expectedHeadersRow = "﻿Identifiant technique;Identifiant de l'ue;Nom Prénom enquêteur;Idep;Ssech;Département;Commune;Etat de l'UE;Motif provisoire";
+        String expectedContentRow = "foo-id;FOO_LABEL;John Doe;Idep;1;33;City;Foo state;-";
         assertEquals(expectedHeadersRow, normalize(responseRows[0]));
         assertEquals(expectedContentRow, normalize(responseRows[1]));
     }

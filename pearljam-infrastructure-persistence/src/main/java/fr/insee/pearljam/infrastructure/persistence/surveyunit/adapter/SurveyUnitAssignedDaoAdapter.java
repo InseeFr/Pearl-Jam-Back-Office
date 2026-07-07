@@ -72,7 +72,8 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                            ls.current_state                   AS currentStateType,
                            cc.type                            AS closingCauseType,
                           int.first_name                      AS interviewerFirstName,
-                          int.last_name                       AS interviewerLastName
+                          int.last_name                       AS interviewerLastName,
+                          int.id                              AS interviewerId
                          FROM survey_unit su
                          JOIN LATERAL (
                            SELECT s.type AS current_state
@@ -173,6 +174,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
             rs.getString("surveyUnitId"),
             rs.getString("surveyUnitDisplayName"),
             rs.getString("ssech"),
+            rs.getString("interviewerId"),
             rs.getString("interviewerFirstName"),
             rs.getString("interviewerLastName"),
             rs.getString("department"),

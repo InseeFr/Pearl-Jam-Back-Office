@@ -160,6 +160,7 @@ class SurveyUnitAssignedServiceTest {
             "SU1",
             "Display SU1",
             "SSECH1",
+            "Idep",
             "John",
             "Doe",
             "10000",

@@ -4,8 +4,8 @@ import lombok.Getter;
 import java.util.List;
 
 public enum SurveyUnitClosingCsvHeaders {
-    CAMPAIGN("Enquête"),
-    ID("Identifiant"),
+    CAMPAIGN_LABEL("Enquête"),
+    SURVEYUNIT_DISPLAY_NAME("Identifiant"),
     SURVEYUNIT_ID("Identifiant de l'ue"),
     INTERVIEWER_LABEL("Nom Prénom Enquêteur"),
     INTERVIEWER_ID("Idep Enquêteur"),
@@ -26,8 +26,8 @@ public enum SurveyUnitClosingCsvHeaders {
 
     public static List<SurveyUnitClosingCsvHeaders> commonHeaders() {
         return List.of(
-                CAMPAIGN,
-                ID,
+                CAMPAIGN_LABEL,
+                SURVEYUNIT_DISPLAY_NAME,
                 SURVEYUNIT_ID,
                 INTERVIEWER_LABEL,
                 INTERVIEWER_ID,
