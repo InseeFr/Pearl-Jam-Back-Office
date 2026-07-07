@@ -19,7 +19,7 @@ class SurveyUnitAssignedCsvPresenterTest {
     private final SurveyUnitAssignedCsvPresenter presenter = new SurveyUnitAssignedCsvPresenter();
 
     private static void assertHeadersIsCorrect(CsvRow headersRow) {
-        assertEquals(8, headersRow.values().size());
+        assertEquals(9, headersRow.values().size());
         // maybe other assertions
     }
 
@@ -47,7 +47,7 @@ class SurveyUnitAssignedCsvPresenterTest {
         assertHeadersIsCorrect(result.headers());
         assertEquals(1, result.rows().size());
         assertEquals(
-                List.of("foo-id", "FOO_LABEL", "John Doe", "1", "33", "City", "Foo state", "-"),
+                List.of("foo-id", "FOO_LABEL", "John Doe", "Idep", "1", "33", "City", "Foo state", "-"),
                 result.rows().getFirst().values());
     }
 
@@ -56,6 +56,8 @@ class SurveyUnitAssignedCsvPresenterTest {
                 "foo-id",
                 "FOO_LABEL",
                 "1",
+                "Idep",
+
                 "John",
                 "Doe",
                 "33",

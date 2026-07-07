@@ -26,6 +26,7 @@ class SurveyUnitAssignedApiPresenterTest {
             "ID1",
             "UNIT-1",
             "22",
+            "Idep",
             "Jean",
             "Dupont",
             "12345",
