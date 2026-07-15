@@ -43,7 +43,7 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-                SU001;Survey Unit 1;;INTID;2025-06-10;CONTACTED;INA;true;comment
+                SU001;Survey Unit 1;;INTID;2025-06-10;CONTACTED;INA;Oui;comment
                 """
         );
 
@@ -62,7 +62,7 @@ class SurveyUnitCompletedCsvPresenterTest {
                 "CONTACTED",
                 "INA",
                 null,
-                "comment"
+                "comment\rtest \n return carriage"
         );
 
         Page<SurveyUnitFetchedByStatesAndCampaignIdView> page =
@@ -75,7 +75,7 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-                SU001;Survey Unit 1;John Doe;INTID;2025-06-10;CONTACTED;INA;;comment
+                SU001;Survey Unit 1;John Doe;INTID;2025-06-10;CONTACTED;INA;Non;comment test   return carriage
                 """);
     }
 

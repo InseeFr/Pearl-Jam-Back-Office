@@ -40,16 +40,9 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
         return isViewed ? "Oui" : "Non";
     }
 
-    private String removeCarriageReturnsFromComment(@Nullable  String comment)
+    private String removeCarriageReturnsFromComment(@Nullable String comment)
     {
-        if(comment == null)
-        {
-            return comment;
-        }
-
-        comment = comment.replace("\\n", "");
-        comment = comment.replace("\\r", "");
-        return  comment;
+        return comment == null ? null : comment.replaceAll("[\r\n]+", " ");
     }
 
     @Override
