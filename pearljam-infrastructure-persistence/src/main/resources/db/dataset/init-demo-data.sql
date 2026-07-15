@@ -640,7 +640,8 @@ INSERT INTO public.phone_number (id, favorite, number, source, person_id) VALUES
 
 
 INSERT INTO public.comment (id, type, value, survey_unit_id) VALUES
-    (1, 'INTERVIEWER', 'un commentaire', '13');
+    (1, 'INTERVIEWER', 'un commentaire', '13'),
+    (2, 'INTERVIEWER', 'nice comment' || chr(10) || 'with a line break' || chr(13) || 'for testing', '24');
 
 INSERT INTO closing_cause (id, date, type, survey_unit_id) VALUES
     (1, EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000, 'NPI', '11');

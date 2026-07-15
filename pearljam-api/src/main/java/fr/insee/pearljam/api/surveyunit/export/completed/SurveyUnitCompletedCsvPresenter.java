@@ -3,6 +3,7 @@ package fr.insee.pearljam.api.surveyunit.export.completed;
 import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPresenter;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
+import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +22,34 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
                         su.endDate(),
                         su.contactOutcome(),
                         su.closingCauseType(),
-                        su.viewed() != null ? su.viewed().toString() : "",
-                        su.comment()
+                        formatViewedInFrench(su.viewed()),
+                        removeCarriageReturnsFromComment(su.comment())
                 ))
                 .toList();
 
         return new SurveyUnitCompletedCsv(rows);
+    }
+
+    private String formatViewedInFrench(@Nullable Boolean isViewed)
+    {
+        if(isViewed == null)
+        {
+            return "Non";
+        }
+
+        return isViewed ? "Oui" : "Non";
+    }
+
+    private String removeCarriageReturnsFromComment(@Nullable  String comment)
+    {
+        if(comment == null)
+        {
+            return comment;
+        }
+
+        comment = comment.replace("\\n", "");
+        comment = comment.replace("\\r", "");
+        return  comment;
     }
 
     @Override
