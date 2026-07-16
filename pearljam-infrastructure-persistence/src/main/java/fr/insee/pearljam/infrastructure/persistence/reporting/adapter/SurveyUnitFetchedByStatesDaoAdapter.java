@@ -32,35 +32,44 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
     );
 
     private static final String BASE_FROM = """
-            FROM survey_unit su
-            JOIN LATERAL (
-                 SELECT s.type AS current_state,
-                        s.date AS last_state_date
-                FROM state s
-                WHERE s.survey_unit_id = su.id
-                ORDER BY s.date DESC
-                LIMIT 1
-            ) ls ON ls.current_state IN (:stateTypes)
-            LEFT JOIN interviewer int
-                ON int.id = su.interviewer_id
-            LEFT JOIN contact_outcome co
-                ON co.survey_unit_id = su.id
-            LEFT JOIN closing_cause cc
-                ON cc.survey_unit_id = su.id
-            LEFT JOIN LATERAL (
-                SELECT c.value
-                FROM comment c
-                WHERE c.survey_unit_id = su.id
-                  AND c.type = 'MANAGEMENT'
-                LIMIT 1
-            ) com ON TRUE
-            LEFT JOIN visibility vi
-                ON vi.campaign_id = su.campaign_id
-               AND vi.organization_unit_id = su.organization_unit_id
-            WHERE su.campaign_id = :campaignId
-              AND su.organization_unit_id IN (:ouIds)
-            """;
-
+        FROM survey_unit su
+        JOIN LATERAL (
+             SELECT s.type AS current_state,
+                    s.date AS last_state_date
+            FROM state s
+            WHERE s.survey_unit_id = su.id
+            ORDER BY s.date DESC, s.id DESC
+            LIMIT 1
+        ) ls ON ls.current_state IN (:stateTypes)
+        LEFT JOIN interviewer int
+            ON int.id = su.interviewer_id
+        LEFT JOIN LATERAL (
+            SELECT co.type
+            FROM contact_outcome co
+            WHERE co.survey_unit_id = su.id
+            ORDER BY co.date DESC, co.id DESC
+            LIMIT 1
+        ) co ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT cc.type
+            FROM closing_cause cc
+            WHERE cc.survey_unit_id = su.id
+            ORDER BY cc.date DESC, cc.id DESC
+            LIMIT 1
+        ) cc ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT c.value
+            FROM comment c
+            WHERE c.survey_unit_id = su.id
+              AND c.type = 'MANAGEMENT'
+            LIMIT 1
+        ) com ON TRUE
+        LEFT JOIN visibility vi
+            ON vi.campaign_id = su.campaign_id
+           AND vi.organization_unit_id = su.organization_unit_id
+        WHERE su.campaign_id = :campaignId
+          AND su.organization_unit_id IN (:ouIds)
+        """;
     private static final String SEARCH_CONDITION = """
         AND (
             LOWER(su.id)                                    LIKE :search OR
