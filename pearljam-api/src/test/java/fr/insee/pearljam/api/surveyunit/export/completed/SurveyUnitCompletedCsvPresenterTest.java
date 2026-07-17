@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +22,7 @@ class SurveyUnitCompletedCsvPresenterTest {
                 null,
                 "",
                 "INTID",
-                LocalDate.of(2025, Month.JUNE, 10).toString(),
+                "1749544200000", // 2025-06-10T10:30:00Z
                 "CONTACTED",
                 "INA",
                 true,
@@ -43,7 +41,7 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-                SU001;Survey Unit 1;;INTID;2025-06-10;CONTACTED;INA;Oui;comment
+                SU001;Survey Unit 1;;INTID;10/06/2025;CONTACTED;INA;Oui;comment
                 """
         );
 
@@ -58,7 +56,7 @@ class SurveyUnitCompletedCsvPresenterTest {
                 "John",
                 "Doe",
                 "INTID",
-                LocalDate.of(2025, Month.JUNE, 10).toString(),
+                "1749544200000", // 2025-06-10T10:30:00Z
                 "CONTACTED",
                 "INA",
                 null,
@@ -75,7 +73,7 @@ class SurveyUnitCompletedCsvPresenterTest {
         CsvRow row = result.rows().getFirst();
 
         assertThat(row.toCsvLine()).isEqualToIgnoringNewLines("""
-                SU001;Survey Unit 1;John Doe;INTID;2025-06-10;CONTACTED;INA;Non;comment test   return carriage
+                SU001;Survey Unit 1;John Doe;INTID;10/06/2025;CONTACTED;INA;Non;comment test   return carriage
                 """);
     }
 

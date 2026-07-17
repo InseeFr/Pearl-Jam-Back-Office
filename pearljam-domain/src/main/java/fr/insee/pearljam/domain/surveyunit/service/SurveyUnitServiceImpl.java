@@ -331,13 +331,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void addStateAuto(SurveyUnitDB surveyUnit) {
-		if (surveyUnit.getContactOutcome() != null && surveyUnit.getContactOutcome().getType() == ContactOutcomeType.INA) {
+		if (surveyUnit.getContactOutcome() != null && surveyUnit.getContactOutcome().getType().equals(ContactOutcomeType.INA)) {
 			stateRepository.save(new StateDB(new Date().getTime(), surveyUnit, StateType.TBR));
 			surveyUnit.setClosingCause(null);
-		} else {
-			stateRepository.save(new StateDB(new Date().getTime(), surveyUnit, StateType.FIN));
-			surveyUnit.setClosingCause(null);
+			return;
 		}
+		stateRepository.save(new StateDB(new Date().getTime(), surveyUnit, StateType.FIN));
+		surveyUnit.setClosingCause(null);
 	}
 
 	private void updateAddress(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
