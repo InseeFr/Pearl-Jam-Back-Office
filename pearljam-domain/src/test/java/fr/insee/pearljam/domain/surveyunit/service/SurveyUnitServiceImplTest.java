@@ -15,10 +15,10 @@ import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
 import tools.jackson.databind.json.JsonMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -76,40 +76,20 @@ class SurveyUnitServiceImplTest {
     @Mock
     private JsonMapper jsonMapper;
 
+    @InjectMocks
     private SurveyUnitServiceImpl service;
 
     private static final String SURVEY_UNIT_ID = "SU-001";
     private static final String CAMPAIGN_ID = "CAMPAIGN-001";
     private static final String OU_ID = "OU-001";
 
-    @BeforeEach
-    void setUp() {
-        service = new SurveyUnitServiceImpl(
-                surveyUnitRepository,
-                surveyUnitTempZoneRepository,
-                addressRepository,
-                stateRepository,
-                interviewerRepository,
-                campaignRepository,
-                organizationUnitRepository,
-                visibilityRepository,
-                closingCauseRepository,
-                userService,
-                questionnaireStateClient,
-                surveyUnitUpdateService,
-                communicationTemplateService,
-                dateService,
-                jsonMapper
-        );
-    }
-
     private SurveyUnitDB buildTestSurveyUnit() {
         CampaignDB campaign = new CampaignDB();
         campaign.setId(CAMPAIGN_ID);
-        
+
         OrganizationUnitDB ou = new OrganizationUnitDB();
         ou.setId(OU_ID);
-        
+
         SurveyUnitDB surveyUnit = new SurveyUnitDB();
         surveyUnit.setId(SURVEY_UNIT_ID);
         surveyUnit.setCampaign(campaign);
@@ -119,13 +99,13 @@ class SurveyUnitServiceImplTest {
 
     private SurveyUnitDB buildTestSurveyUnitWithContactOutcome(ContactOutcomeType type) {
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
+
         ContactOutcomeDB contactOutcome = new ContactOutcomeDB();
         contactOutcome.setType(type);
         contactOutcome.setSurveyUnit(surveyUnit);
         contactOutcome.setDate(new Date().getTime());
         contactOutcome.setTotalNumberOfContactAttempts(1);
-        
+
         surveyUnit.setContactOutcome(contactOutcome);
         return surveyUnit;
     }
@@ -138,7 +118,7 @@ class SurveyUnitServiceImplTest {
         SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.INA);
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
-        
+
         // When
         Method method = SurveyUnitServiceImpl.class
                 .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
@@ -148,12 +128,12 @@ class SurveyUnitServiceImplTest {
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
         verify(stateRepository).save(stateCaptor.capture());
-        
+
         StateDB savedState = stateCaptor.getValue();
         assertThat(savedState.getType()).isEqualTo(StateType.TBR);
         assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
         assertThat(savedState.getDate()).isNotNull();
-        
+
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 
@@ -163,7 +143,7 @@ class SurveyUnitServiceImplTest {
         SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.REF);
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
-        
+
         // When
         Method method = SurveyUnitServiceImpl.class
                 .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
@@ -173,12 +153,12 @@ class SurveyUnitServiceImplTest {
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
         verify(stateRepository).save(stateCaptor.capture());
-        
+
         StateDB savedState = stateCaptor.getValue();
         assertThat(savedState.getType()).isEqualTo(StateType.FIN);
         assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
         assertThat(savedState.getDate()).isNotNull();
-        
+
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 
@@ -189,7 +169,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setContactOutcome(null);
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
-        
+
         // When
         Method method = SurveyUnitServiceImpl.class
                 .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
@@ -199,12 +179,12 @@ class SurveyUnitServiceImplTest {
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
         verify(stateRepository).save(stateCaptor.capture());
-        
+
         StateDB savedState = stateCaptor.getValue();
         assertThat(savedState.getType()).isEqualTo(StateType.FIN);
         assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
         assertThat(savedState.getDate()).isNotNull();
-        
+
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 }
