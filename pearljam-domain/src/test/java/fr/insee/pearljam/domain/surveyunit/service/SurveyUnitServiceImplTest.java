@@ -144,6 +144,33 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
+    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_INA_but_not_among_first_five_SU() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.INA);
+        ClosingCauseDB closingCause = new ClosingCauseDB();
+        surveyUnit.setClosingCause(closingCause);
+
+        when(surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(
+                surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(), surveyUnit.getId()))
+                .thenReturn(6); // < 5 -> FIN branch
+
+        // When
+        Method method = SurveyUnitServiceImpl.class.getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
+        method.setAccessible(true);
+        method.invoke(service, surveyUnit);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository).save(stateCaptor.capture());
+
+        StateDB savedState = stateCaptor.getValue();
+        assertThat(savedState.getType()).isEqualTo(StateType.FIN);
+        assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
+        assertThat(savedState.getDate()).isNotNull();
+        assertThat(surveyUnit.getClosingCause()).isNull();
+    }
+
+    @Test
     void addStateAuto_should_add_FIN_state_when_contact_outcome_is_not_INA() throws Exception {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.REF);
