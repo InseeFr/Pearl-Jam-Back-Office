@@ -90,10 +90,14 @@ class SurveyUnitServiceImplTest {
         OrganizationUnitDB ou = new OrganizationUnitDB();
         ou.setId(OU_ID);
 
+        InterviewerDB interviewer = new InterviewerDB();
+        interviewer.setId("INTERVIEWER-001");
+
         SurveyUnitDB surveyUnit = new SurveyUnitDB();
         surveyUnit.setId(SURVEY_UNIT_ID);
         surveyUnit.setCampaign(campaign);
         surveyUnit.setOrganizationUnit(ou);
+        surveyUnit.setInterviewer(interviewer);
         return surveyUnit;
     }
 
@@ -119,9 +123,12 @@ class SurveyUnitServiceImplTest {
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
 
+        when(surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(
+                surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(), surveyUnit.getId()))
+                .thenReturn(2); // < 5 -> TBR branch
+
         // When
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
+        Method method = SurveyUnitServiceImpl.class.getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
         method.setAccessible(true);
         method.invoke(service, surveyUnit);
 
@@ -133,7 +140,6 @@ class SurveyUnitServiceImplTest {
         assertThat(savedState.getType()).isEqualTo(StateType.TBR);
         assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
         assertThat(savedState.getDate()).isNotNull();
-
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 

@@ -331,7 +331,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void addStateAuto(SurveyUnitDB surveyUnit) {
-		if (surveyUnit.getContactOutcome() != null && surveyUnit.getContactOutcome().getType().equals(ContactOutcomeType.INA)) {
+
+		boolean surveyUnitAmongFirstFive = surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
+				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5;
+
+		if (surveyUnitAmongFirstFive && surveyUnit.getContactOutcome() != null && surveyUnit.getContactOutcome().getType().equals(ContactOutcomeType.INA)) {
 			stateRepository.save(new StateDB(new Date().getTime(), surveyUnit, StateType.TBR));
 			surveyUnit.setClosingCause(null);
 			return;
