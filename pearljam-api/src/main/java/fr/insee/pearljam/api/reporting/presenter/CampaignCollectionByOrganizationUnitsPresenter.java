@@ -25,14 +25,16 @@ public class CampaignCollectionByOrganizationUnitsPresenter implements
                                 organizationUnit.getAllocatedCount(),
                                 CollectionRatesResponse.from(organizationUnit),
                                 ContactOutcomesProgressResponse.from(organizationUnit),
-                                ClosingCausesProgressResponse.from(organizationUnit)
+                                ClosingCausesProgressResponse.from(organizationUnit),
+                                organizationUnit.getUpdatedAt()
                         ))
                         .toList(),
                 new CampaignCollectionByOrganizationUnitsResponse.Campaign(
                         campaignStats.getAllocatedCount(),
                         CollectionRatesResponse.from(campaignStats),
                         ContactOutcomesProgressResponse.from(campaignStats),
-                        ClosingCausesProgressResponse.from(campaignStats)
+                        ClosingCausesProgressResponse.from(campaignStats),
+                        campaignStats.getUpdatedAt()
                 )
         );
     }

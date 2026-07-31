@@ -4,6 +4,7 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.Instant;
 import java.util.List;
 
 @Schema(name = "CampaignCollectionByOrganizationUnits")
@@ -21,7 +22,8 @@ public record CampaignCollectionByOrganizationUnitsResponse(
                         ouStats.getAllocatedCount(),
                         CollectionRatesResponse.from(ouStats),
                         ContactOutcomesProgressResponse.from(ouStats),
-                        ClosingCausesProgressResponse.from(ouStats)
+                        ClosingCausesProgressResponse.from(ouStats),
+                        ouStats.getUpdatedAt()
                 ))
                 .toList();
 
@@ -29,7 +31,8 @@ public record CampaignCollectionByOrganizationUnitsResponse(
                 campaignDailyStats.getAllocatedCount(),
                 CollectionRatesResponse.from(campaignDailyStats),
                 ContactOutcomesProgressResponse.from(campaignDailyStats),
-                ClosingCausesProgressResponse.from(campaignDailyStats));
+                ClosingCausesProgressResponse.from(campaignDailyStats),
+                campaignDailyStats.getUpdatedAt());
         return new CampaignCollectionByOrganizationUnitsResponse(ous, campaign);
     }
 
@@ -39,7 +42,8 @@ public record CampaignCollectionByOrganizationUnitsResponse(
             long allocated,
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
-            ClosingCausesProgressResponse closingCauses
+            ClosingCausesProgressResponse closingCauses,
+            Instant updatedAt
     ) {}
 
     @Schema(name = "CampaignCollectionByOrganizationUnitsCampaign")
@@ -47,6 +51,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
             long allocated,
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
-            ClosingCausesProgressResponse closingCauses
+            ClosingCausesProgressResponse closingCauses,
+            Instant updatedAt
     ) {}
 }

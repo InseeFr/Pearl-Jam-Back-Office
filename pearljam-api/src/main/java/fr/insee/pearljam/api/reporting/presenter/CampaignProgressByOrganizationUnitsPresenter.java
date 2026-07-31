@@ -23,12 +23,14 @@ public class CampaignProgressByOrganizationUnitsPresenter implements
                                 organizationUnit.getOuLabel(),
                                 organizationUnit.getProgressStateRate(),
                                 StatesProgressResponse.from(organizationUnit),
-                                CommunicationsProgressResponse.from(organizationUnit)))
+                                CommunicationsProgressResponse.from(organizationUnit),
+                                organizationUnit.getUpdatedAt()))
                         .toList(),
                 new CampaignProgressByOrganizationUnitsResponse.Campaign(
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
-                        CommunicationsProgressResponse.from(campaignStats))
+                        CommunicationsProgressResponse.from(campaignStats),
+                        campaignStats.getUpdatedAt())
         );
     }
 }

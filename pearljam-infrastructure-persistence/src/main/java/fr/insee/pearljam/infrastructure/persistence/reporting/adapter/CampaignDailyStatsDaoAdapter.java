@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -70,6 +71,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             WHERE campaign_id = :campaignId
             AND interviewer_id is NULL
         ) AS unaffectedCount,
+        MAX(cds.updated_at) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN campaign c ON c.id = cds.campaign_id
@@ -97,6 +99,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
               AND su.organization_unit_id IN (:ouIds)
               AND su.interviewer_id IS NULL
         ) AS unaffectedCount,
+        MAX(cds.updated_at) AS updatedAt,
         %s
         FROM campaign_daily_stats cds
         WHERE campaign_id = :campaignId
@@ -128,6 +131,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         ou.id AS ouId,
         ou.label AS ouLabel,
         COALESCE(su.unaffected, 0) AS unaffectedCount,
+        MAX(cds.updated_at) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
@@ -174,6 +178,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             c.id AS campaignId,
             c.label AS campaignLabel,
             COALESCE(su.unaffected, 0) AS unaffectedCount,
+            MAX(cds.updated_at) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
@@ -199,6 +204,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         SELECT
             c.id AS campaignId,
             c.label AS campaignLabel,
+            MAX(cds.updated_at) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
@@ -229,6 +235,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             interv.id AS interviewerId,
             interv.first_name AS interviewerFirstName,
             interv.last_name AS interviewerLastName,
+            MAX(cds.updated_at) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN interviewer interv ON interv.id = cds.interviewer_id

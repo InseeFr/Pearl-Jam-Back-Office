@@ -24,17 +24,20 @@ public class CampaignProgressByInterviewersPresenter implements
                                 interviewer.getInterviewerFirstName() + " " + interviewer.getInterviewerLastName(),
                                 interviewer.getProgressStateRate(),
                                 StatesProgressResponse.from(interviewer),
-                                CommunicationsProgressResponse.from(interviewer)))
+                                CommunicationsProgressResponse.from(interviewer),
+                                interviewer.getUpdatedAt()))
                         .toList(),
                 new CampaignProgressByInterviewersResponse.OrganizationUnit(
                         siteStats.getProgressStateRate(),
                         siteStats.getUnaffectedCount(),
                         StatesProgressResponse.from(siteStats),
-                        CommunicationsProgressResponse.from(siteStats)),
+                        CommunicationsProgressResponse.from(siteStats),
+                        siteStats.getUpdatedAt()),
                 new CampaignProgressByInterviewersResponse.Campaign(
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
-                        CommunicationsProgressResponse.from(campaignStats))
+                        CommunicationsProgressResponse.from(campaignStats),
+                        campaignStats.getUpdatedAt())
         );
     }
 }

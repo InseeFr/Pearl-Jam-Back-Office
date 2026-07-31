@@ -2,6 +2,7 @@ package fr.insee.pearljam.api.reporting.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.Instant;
 import java.util.List;
 
 @Schema(name = "CampaignProgressByOrganizationUnits")
@@ -14,7 +15,8 @@ public record CampaignProgressByOrganizationUnitsResponse(
             String organizationUnitLabel,
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications
+            CommunicationsProgressResponse communications,
+            Instant updatedAt
     ) {
     }
 
@@ -22,7 +24,8 @@ public record CampaignProgressByOrganizationUnitsResponse(
     public record Campaign(
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications
+            CommunicationsProgressResponse communications,
+            Instant updatedAt
     ) {
     }
 }

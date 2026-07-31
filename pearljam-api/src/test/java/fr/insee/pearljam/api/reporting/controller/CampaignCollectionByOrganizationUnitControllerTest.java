@@ -6,6 +6,8 @@ import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
+import fr.insee.pearljam.domain.campaign.port.in.DateService;
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
@@ -40,7 +42,8 @@ class CampaignCollectionByOrganizationUnitControllerTest {
                             0L,
                             new CollectionRatesResponse(0f, 0f, 0f),
                             new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
-                            new ClosingCausesProgressResponse(0L, 0L, 0L)
+                            new ClosingCausesProgressResponse(0L, 0L, 0L),
+                            null
                     )
             );
 

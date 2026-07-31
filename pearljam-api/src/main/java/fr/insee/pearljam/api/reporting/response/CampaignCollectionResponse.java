@@ -2,6 +2,8 @@ package fr.insee.pearljam.api.reporting.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.Instant;
+
 @Schema(name = "CampaignCollection")
 public record CampaignCollectionResponse(
         String campaignId,
@@ -9,6 +11,7 @@ public record CampaignCollectionResponse(
         long allocated,
         CollectionRatesResponse rates,
         ContactOutcomesProgressResponse outcomes,
-        ClosingCausesProgressResponse closingCauses
+        ClosingCausesProgressResponse closingCauses,
+        Instant updatedAt
 ) {
 }

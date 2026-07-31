@@ -35,6 +35,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +91,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
     @BeforeEach
     void setup() {
-        dateService = new CurrentDateService();
+        dateService = new CurrentDateService(Clock.systemUTC());
         campaign = new CampaignDB(CAMPAIGN_ID, "Test Campaign",
                 IdentificationConfiguration.HOUSEF2F, ContactOutcomeConfiguration.F2F,
                 ContactAttemptConfiguration.F2F, "test@test.com", false, false);
