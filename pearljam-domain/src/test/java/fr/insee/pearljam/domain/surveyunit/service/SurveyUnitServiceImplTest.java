@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactOutcomeDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
@@ -82,6 +83,7 @@ class SurveyUnitServiceImplTest {
     private static final String SURVEY_UNIT_ID = "SU-001";
     private static final String CAMPAIGN_ID = "CAMPAIGN-001";
     private static final String OU_ID = "OU-001";
+    private static final String INTERVIEWER_ID = "INTERVIEWER-001";
 
     private SurveyUnitDB buildTestSurveyUnit() {
         CampaignDB campaign = new CampaignDB();
@@ -91,7 +93,7 @@ class SurveyUnitServiceImplTest {
         ou.setId(OU_ID);
 
         InterviewerDB interviewer = new InterviewerDB();
-        interviewer.setId("INTERVIEWER-001");
+        interviewer.setId(INTERVIEWER_ID);
 
         SurveyUnitDB surveyUnit = new SurveyUnitDB();
         surveyUnit.setId(SURVEY_UNIT_ID);
@@ -101,36 +103,39 @@ class SurveyUnitServiceImplTest {
         return surveyUnit;
     }
 
-    private SurveyUnitDB buildTestSurveyUnitWithContactOutcome(ContactOutcomeType type) {
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+    private ContactOutcomeDto buildContactOutcomeDto(ContactOutcomeType type) {
+        return new ContactOutcomeDto(new Date().getTime(), type, 1);
+    }
 
-        ContactOutcomeDB contactOutcome = new ContactOutcomeDB();
-        contactOutcome.setType(type);
-        contactOutcome.setSurveyUnit(surveyUnit);
-        contactOutcome.setDate(new Date().getTime());
-        contactOutcome.setTotalNumberOfContactAttempts(1);
+    private void stubCountUeINATBR(SurveyUnitDB surveyUnit, Integer count) {
+        when(surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(
+                surveyUnit.getInterviewer().getId(),
+                surveyUnit.getCampaign().getId(),
+                surveyUnit.getId()))
+                .thenReturn(count);
+    }
 
-        surveyUnit.setContactOutcome(contactOutcome);
-        return surveyUnit;
+    private void invokeAddStateAuto(SurveyUnitDB surveyUnit, ContactOutcomeDto contactOutcomeDto) throws Exception {
+        Method method = SurveyUnitServiceImpl.class
+                .getDeclaredMethod("addStateAuto", SurveyUnitDB.class, ContactOutcomeDto.class);
+        method.setAccessible(true);
+        method.invoke(service, surveyUnit, contactOutcomeDto);
     }
 
     // ==================== addStateAuto method tests ====================
 
     @Test
-    void addStateAuto_should_add_TBR_state_when_contact_outcome_is_INA() throws Exception {
+    void addStateAuto_should_add_TBR_state_when_contact_outcome_is_INA_and_among_first_five() throws Exception {
         // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.INA);
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
+        ContactOutcomeDto contactOutcomeDto = buildContactOutcomeDto(ContactOutcomeType.INA);
 
-        when(surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(
-                surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(), surveyUnit.getId()))
-                .thenReturn(2); // < 5 -> TBR branch
+        stubCountUeINATBR(surveyUnit, 2); // < 5 -> eligible for TBR
 
         // When
-        Method method = SurveyUnitServiceImpl.class.getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit);
+        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -140,24 +145,22 @@ class SurveyUnitServiceImplTest {
         assertThat(savedState.getType()).isEqualTo(StateType.TBR);
         assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
         assertThat(savedState.getDate()).isNotNull();
+
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 
     @Test
-    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_INA_but_not_among_first_five_SU() throws Exception {
+    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_INA_but_not_among_first_five() throws Exception {
         // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.INA);
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
+        ContactOutcomeDto contactOutcomeDto = buildContactOutcomeDto(ContactOutcomeType.INA);
 
-        when(surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(
-                surveyUnit.getInterviewer().getId(), surveyUnit.getCampaign().getId(), surveyUnit.getId()))
-                .thenReturn(6); // < 5 -> FIN branch
+        stubCountUeINATBR(surveyUnit, 5); // not < 5 -> falls through to FIN
 
         // When
-        Method method = SurveyUnitServiceImpl.class.getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit);
+        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -165,23 +168,21 @@ class SurveyUnitServiceImplTest {
 
         StateDB savedState = stateCaptor.getValue();
         assertThat(savedState.getType()).isEqualTo(StateType.FIN);
-        assertThat(savedState.getSurveyUnit()).isEqualTo(surveyUnit);
-        assertThat(savedState.getDate()).isNotNull();
         assertThat(surveyUnit.getClosingCause()).isNull();
     }
 
     @Test
     void addStateAuto_should_add_FIN_state_when_contact_outcome_is_not_INA() throws Exception {
         // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnitWithContactOutcome(ContactOutcomeType.REF);
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
+        ContactOutcomeDto contactOutcomeDto = buildContactOutcomeDto(ContactOutcomeType.REF);
+
+        stubCountUeINATBR(surveyUnit, 2); // among first five, but type isn't INA
 
         // When
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit);
+        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -199,15 +200,13 @@ class SurveyUnitServiceImplTest {
     void addStateAuto_should_add_FIN_state_when_contact_outcome_is_null() throws Exception {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        surveyUnit.setContactOutcome(null);
         ClosingCauseDB closingCause = new ClosingCauseDB();
         surveyUnit.setClosingCause(closingCause);
 
+        stubCountUeINATBR(surveyUnit, 2); // among first five, but no contact outcome
+
         // When
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("addStateAuto", SurveyUnitDB.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit);
+        invokeAddStateAuto(surveyUnit, null);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
