@@ -7,10 +7,17 @@ import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
 public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPresenter<SurveyUnitCompletedCsv> {
+
+    private static final DateTimeFormatter FRENCH_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneOffset.UTC);
+
     @Override
     public SurveyUnitCompletedCsv present(Page<SurveyUnitFetchedByStatesAndCampaignIdView> surveyUnits) {
         List<CsvRow> rows = surveyUnits.getContent().stream()
@@ -19,7 +26,7 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
                         su.surveyUnitDisplayName(),
                         getInterviewerLabel(su),
                         su.interviewerId(),
-                        su.endDate(),
+                        formatDateInFrench(su.endDate()),
                         su.contactOutcome(),
                         su.closingCauseType(),
                         formatViewedInFrench(su.viewed()),
@@ -28,6 +35,19 @@ public class SurveyUnitCompletedCsvPresenter implements SurveyUnitCompletedPrese
                 .toList();
 
         return new SurveyUnitCompletedCsv(rows);
+    }
+
+    private String formatDateInFrench(@Nullable String endDate)
+    {
+        if (endDate == null) {
+            return null;
+        }
+        try {
+            long epochMilli = Long.parseLong(endDate);
+            return FRENCH_DATE_FORMATTER.format(Instant.ofEpochMilli(epochMilli));
+        } catch (NumberFormatException _) {
+            return endDate;
+        }
     }
 
     private String formatViewedInFrench(@Nullable Boolean isViewed)
