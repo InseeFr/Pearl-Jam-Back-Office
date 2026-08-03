@@ -31,6 +31,7 @@ import fr.insee.pearljam.domain.surveyunit.service.model.SurveyUnitForInterviewe
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.*;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -317,7 +318,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
 				.type();
 		if (currentState == StateType.WFS) {
-			addStateAuto(surveyUnit);
+			addStateAuto(surveyUnit, surveyUnitUpdateDto.contactOutcome());
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
 		if (StateBusinessRules.shouldFallBackToTbrOrFin(dbStates)) {
@@ -330,12 +331,12 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	private void addStateAuto(SurveyUnitDB surveyUnit) {
+	private void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
 
 		boolean surveyUnitAmongFirstFive = surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5;
 
-		if (surveyUnitAmongFirstFive && surveyUnit.getContactOutcome() != null && surveyUnit.getContactOutcome().getType().equals(ContactOutcomeType.INA)) {
+		if (surveyUnitAmongFirstFive && contactOutcomeDto != null && contactOutcomeDto.type().equals(ContactOutcomeType.INA)) {
 			stateRepository.save(new StateDB(new Date().getTime(), surveyUnit, StateType.TBR));
 			surveyUnit.setClosingCause(null);
 			return;
