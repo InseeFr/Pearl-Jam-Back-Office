@@ -36,6 +36,7 @@
         <archunit.version>1.4.2</archunit.version>
         <jacoco.version>0.8.15</jacoco.version>
         <commons-validator.version>1.10.1</commons-validator.version>
+        <postgresql.version>42.7.13</postgresql.version>
     </properties>
 
     <dependencyManagement>
