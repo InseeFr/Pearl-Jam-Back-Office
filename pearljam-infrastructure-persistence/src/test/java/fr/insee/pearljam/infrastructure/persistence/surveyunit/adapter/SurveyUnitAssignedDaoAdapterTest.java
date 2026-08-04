@@ -5,6 +5,8 @@ import fr.insee.pearljam.domain.campaign.model.ContactOutcomeConfiguration;
 import fr.insee.pearljam.domain.campaign.model.IdentificationConfiguration;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
+import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
+import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
@@ -39,6 +41,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest
@@ -66,6 +69,9 @@ class SurveyUnitAssignedDaoAdapterTest {
 
     @Autowired
     private StateRepository stateRepository;
+
+    @Autowired
+    private ClosingCauseRepository closingCauseRepository;
 
     private static final String CAMPAIGN_1_ID = "CAMP-1";
     private static final String CAMPAIGN_2_ID = "CAMP-2";
@@ -138,7 +144,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 jean,
                 "75000 Paris",
-                StateType.TBR
+                StateType.TBR,
+                "Alpha-Display-1"
         );
 
         createSurveyUnit(
@@ -147,7 +154,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "69000 Lyon",
-                StateType.NVM
+                StateType.CLO,
+                "Bravo-Display-2"
         );
 
         createSurveyUnit(
@@ -156,7 +164,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 bernard,
                 "33000 Bordeaux",
-                StateType.INS
+                StateType.INS,
+                "Charlie-Display-3"
         );
 
         createSurveyUnit(
@@ -165,7 +174,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "59000 Lille",
-                StateType.TBR
+                StateType.TBR,
+                "Delta-Display-4"
         );
 
         createSurveyUnit(
@@ -174,7 +184,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "",
-                StateType.TBR
+                StateType.TBR,
+                "Echo-Display-5"
         );
 
         createSurveyUnit(
@@ -183,24 +194,31 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB2,
                 marie,
                 "Lille",
-                StateType.TBR
+                StateType.TBR,
+                "Foxtrot-Display-6"
         );
 
 
         SurveyUnitDB su1 = surveyUnitRepository.findById("SU-1").orElseThrow();
 
-        StateDB oldState = new StateDB();
-        oldState.setSurveyUnit(su1);
-        oldState.setType(StateType.NVM);
-        oldState.setDate(LocalDateTime.now().minusDays(2).toEpochSecond(ZoneOffset.UTC));
+        StateDB oldStateSu1 = new StateDB();
+        oldStateSu1.setSurveyUnit(su1);
+        oldStateSu1.setType(StateType.NVM);
+        oldStateSu1.setDate(LocalDateTime.now().minusDays(2).toEpochSecond(ZoneOffset.UTC));
 
-        StateDB latestState = new StateDB();
-        latestState.setSurveyUnit(su1);
-        latestState.setType(StateType.TBR);
-        latestState.setDate(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+        StateDB latestStateSu1 = new StateDB();
+        latestStateSu1.setSurveyUnit(su1);
+        latestStateSu1.setType(StateType.TBR);
+        latestStateSu1.setDate(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
 
-        stateRepository.save(oldState);
-        stateRepository.save(latestState);
+
+        stateRepository.save(oldStateSu1);
+        stateRepository.save(latestStateSu1);
+
+
+
+        closingCauseRepository.addClosingCauseToSurveyUnits(List.of("SU-1", "SU-2"), ClosingCauseType.NPI);
+
 
         entityManager.flush();
         entityManager.clear();
@@ -212,13 +230,15 @@ class SurveyUnitAssignedDaoAdapterTest {
             OrganizationUnitDB ouDB,
             InterviewerDB interviewer,
             String address,
-            StateType state
+            StateType state,
+            String displayName
     ) {
         SurveyUnitDB su = new SurveyUnitDB();
         su.setId(id);
         su.setCampaign(campaign);
         su.setOrganizationUnit(ouDB);
         su.setInterviewer(interviewer);
+        su.setDisplayName(displayName);
 
         InseeAddressDB addr = new InseeAddressDB();
         addr.setL6(address);
@@ -246,13 +266,13 @@ class SurveyUnitAssignedDaoAdapterTest {
     }
 
     @Test
-    void should_search_by_survey_unit_id() {
+    void should_search_by_survey_unit_display_name() {
 
         Page<SurveyUnitAssigned> result =
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "su-2",
+                        "bravo-display-2",
                         PageRequest.of(0, 20)
                 );
 
@@ -320,7 +340,7 @@ class SurveyUnitAssignedDaoAdapterTest {
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "SU-1",
+                        "alpha-display-1",
                         PageRequest.of(0, 20)
                 );
 
@@ -328,6 +348,38 @@ class SurveyUnitAssignedDaoAdapterTest {
 
         assertThat(su.questionnaireState())
                 .isEqualTo(StateType.TBR.name());
+    }
+
+    @Test
+    void should_return_closing_cause_when_su_not_clo() {
+
+        Page<SurveyUnitAssigned> result =
+                adapter.findSurveyUnitsAssigned(
+                        List.of(CAMPAIGN_1_ID),
+                        List.of(OU_1),
+                        "alpha-display-1",
+                        PageRequest.of(0, 20)
+                );
+
+        SurveyUnitAssigned su = result.getContent().getFirst();
+
+        assertThat(su.closingCause())
+                .isEqualTo(ClosingCauseType.NPI.name());
+    }
+    @Test
+    void should_not_return_closing_cause_when_su_clo() {
+
+        Page<SurveyUnitAssigned> result =
+                adapter.findSurveyUnitsAssigned(
+                        List.of(CAMPAIGN_1_ID),
+                        List.of(OU_1),
+                        "bravo-display-2",
+                        PageRequest.of(0, 20)
+                );
+
+        SurveyUnitAssigned su = result.getContent().getFirst();
+
+        assertThat(su.closingCause()).isNull();
     }
 
     @Test
@@ -392,5 +444,18 @@ class SurveyUnitAssignedDaoAdapterTest {
                 .toList();
 
         assertThat(values).isSorted();
+    }
+
+    @Test
+    void findSurveyUnitsAssigned_unpaged_shouldReturnAllEntries() {
+        // Given
+        List<String> campaignIds = List.of(CAMPAIGN_1_ID);
+        List<String> lstOuIds = List.of(OU_1);
+        String search = "";
+        Pageable unpaged = Pageable.unpaged();
+        // When
+        Page<SurveyUnitAssigned> result = adapter.findSurveyUnitsAssigned(campaignIds, lstOuIds, search, unpaged);
+        // Then
+        assertNotNull(result);
     }
 }

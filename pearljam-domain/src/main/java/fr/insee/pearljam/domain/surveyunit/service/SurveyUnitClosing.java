@@ -3,6 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.service;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.organizationunit.readmodel.OrganizationUnitSummary;
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitClosingPort;
@@ -17,6 +18,7 @@ import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     private final QuestionnaireStatePort questionnaireStatePort;
     private final SurveyUnitClosablePolicy surveyUnitClosablePolicy;
     private final StateRepository stateRepository;
+    private final CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
 
     @Override
     @Transactional
@@ -69,6 +72,8 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
         closeSurveyUnits(ids);
+
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type);
     }
 
     private void handleUpdateFlow(List<String> ids, ClosingCauseType type) {
@@ -76,10 +81,11 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         //insert missing
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type);
     }
 
     @Override
-    public <T> T getSurveyUnitsToClose(String userId, SurveyUnitClosingPresenter<T> presenter) {
+    public <T> T getSurveyUnitsToClose(String userId, @Nullable String campaignId, SurveyUnitClosingPresenter<T> presenter) {
 
 
         List<String> lstOuIds = userService.getUserOUsModel(userId, true).stream()
@@ -89,7 +95,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         long now = dateService.getCurrentTimestamp();
 
         List<ClosableSurveyUnitCandidateView> candidates =
-            surveyUnitRepository.findClosableCandidates(now, lstOuIds);
+            surveyUnitRepository.findClosableCandidates(now, campaignId, lstOuIds);
 
         if (candidates.isEmpty()) {
             return presenter.empty();
@@ -168,7 +174,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         }
 
     }
-
 
     private void closeSurveyUnits(List<String> surveyUnitIds) {
         stateRepository.saveStateForSurveyUnits(

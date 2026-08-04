@@ -109,6 +109,11 @@ public class ExceptionControllerAdvice {
         return generateResponseError(e, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(CampaignNotVisibleForUserException.class)
+    public ProblemDetail exceptions(CampaignNotVisibleForUserException e) {
+        return generateResponseError(e, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(NoOrganizationUnitException.class)
     public ProblemDetail exceptions(NoOrganizationUnitException e) {
         return generateResponseError(e, HttpStatus.BAD_REQUEST);

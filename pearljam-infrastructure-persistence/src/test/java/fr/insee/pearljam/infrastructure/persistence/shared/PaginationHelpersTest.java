@@ -7,7 +7,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PaginationHelpersTest {
 
@@ -72,7 +73,7 @@ class PaginationHelpersTest {
                 )
         );
 
-        assertEquals("Invalid sort column", exception.getMessage());
+        assertEquals("Invalid sort column: unknown", exception.getMessage());
     }
 
     @Test
@@ -101,7 +102,7 @@ class PaginationHelpersTest {
                           "WHEN ls.current_state = 'NVM' THEN 13 " +
                           "WHEN ls.current_state = 'VIC' THEN 14 " +
                           "WHEN ls.current_state = 'VIN' THEN 15 " +
-                          "ELSE 16 END ASC ";
+                          "ELSE 16 END ASC  ";
 
         assertEquals(expected, result);
     }
@@ -132,7 +133,7 @@ class PaginationHelpersTest {
                           "WHEN ls.current_state = 'NVM' THEN 13 " +
                           "WHEN ls.current_state = 'VIC' THEN 14 " +
                           "WHEN ls.current_state = 'VIN' THEN 15 " +
-                          "ELSE 16 END DESC ";
+                          "ELSE 16 END DESC  ";
 
         assertEquals(expected, result);
     }
@@ -152,7 +153,7 @@ class PaginationHelpersTest {
                           "WHEN cc.type = 'NPA' THEN 2 " +
                           "WHEN cc.type = 'NPI' THEN 3 " +
                           "WHEN cc.type = 'NPX' THEN 4 " +
-                          "ELSE 5 END ASC ";
+                          "ELSE 5 END ASC  ";
 
         assertEquals(expected, result);
     }
@@ -172,7 +173,7 @@ class PaginationHelpersTest {
                           "WHEN cc.type = 'NPA' THEN 2 " +
                           "WHEN cc.type = 'NPI' THEN 3 " +
                           "WHEN cc.type = 'NPX' THEN 4 " +
-                          "ELSE 5 END DESC ";
+                          "ELSE 5 END DESC  ";
 
         assertEquals(expected, result);
     }

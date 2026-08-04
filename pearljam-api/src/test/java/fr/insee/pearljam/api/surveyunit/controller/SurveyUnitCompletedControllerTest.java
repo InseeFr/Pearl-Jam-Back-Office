@@ -6,7 +6,7 @@ import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
-import fr.insee.pearljam.domain.surveyunit.port.in.application.SurveyUnitCompletedPort;
+import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitCompletedPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class SurveyUnitCompletedControllerTest {
     @Test
     @DisplayName("Returns 200 OK when campaign exists")
     void shouldReturnOk_whenCampaignExists() throws Exception {
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(any(), eq("campaign-01"), any(), any(), any()))
                 .thenReturn(new SurveyUnitCompletedPageResponse(Collections.emptyList(), 0, 20, 0L, 0));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01"))
@@ -59,7 +59,7 @@ class SurveyUnitCompletedControllerTest {
     @Test
     @DisplayName("Returns 200 OK with empty list when no completed survey units found")
     void shouldReturnEmptyList_whenNoCompletedSurveyUnits() throws Exception {
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(any(), eq("campaign-01"), any(), any(), any()))
                 .thenReturn(new SurveyUnitCompletedPageResponse(Collections.emptyList(), 0, 20, 0L, 0));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
@@ -98,7 +98,7 @@ class SurveyUnitCompletedControllerTest {
                 )
         );
 
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(any(), eq("campaign-01"), any(), any(), any()))
                 .thenReturn(new SurveyUnitCompletedPageResponse(responses, 0, 20, 2L, 1));
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01")
@@ -126,7 +126,7 @@ class SurveyUnitCompletedControllerTest {
     @Test
     @DisplayName("Returns 404 Not Found when campaign does not exist")
     void shouldReturnNotFound_whenCampaignNotFound() throws Exception {
-        when(surveyUnitCompletedPort.getCompletedSurveyUnits(eq("campaign-01"), any(), any(), any()))
+        when(surveyUnitCompletedPort.getCompletedSurveyUnits(any(), eq("campaign-01"), any(), any(), any()))
                 .thenThrow(CampaignNotFoundExceptionRuntime.class);
 
         mockMvc.perform(get("/api/campaign/{id}/survey-units/completed", "campaign-01"))

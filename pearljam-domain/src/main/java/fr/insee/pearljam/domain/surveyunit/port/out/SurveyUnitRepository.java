@@ -19,7 +19,7 @@ public interface SurveyUnitRepository {
 
     List<String> findAllIds();
 
-    List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, List<String> lstOuIds);
+    List<ClosableSurveyUnitCandidateView> findClosableCandidates(long date, String campaignId, List<String> lstOuIds);
 
     Set<SurveyUnitCampaignView> findByCampaignIdAndOrganizationUnitIdIn(String campaignId, List<String> lstOuId);
 

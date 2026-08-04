@@ -4,7 +4,6 @@ import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitAssigned;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.Page;
@@ -27,6 +26,7 @@ class SurveyUnitAssignedApiPresenterTest {
             "ID1",
             "UNIT-1",
             "22",
+            "Idep",
             "Jean",
             "Dupont",
             "12345",
@@ -90,24 +90,6 @@ class SurveyUnitAssignedApiPresenterTest {
     void toStateType_shouldThrowException_whenValueIsInvalid(String value) {
         assertThatThrownBy(() -> presenter.toStateType(value))
             .isInstanceOf(IllegalArgumentException.class);
-    }
-
-
-    @ParameterizedTest
-    @CsvSource(value = {
-        "Jean,Dupont,Jean Dupont",
-        "Marie,Martin,Marie Martin",
-        "Élodie,Dubois,Élodie Dubois",
-        "Jean-Pierre,Durand,Jean-Pierre Durand",
-        "Jean Claude,Martin,Jean Claude Martin",
-        "Louis de,Fontaine,Louis de Fontaine",
-        ",Durand,Durand",
-        "Marie,,Marie",
-        ",, ''"
-    })
-    void buildInterviewerLabel_shouldHandleFrenchNames(String firstName, String lastName, String expected) {
-        assertThat(presenter.buildInterviewerLabel(firstName, lastName))
-            .isEqualTo(expected);
     }
 
 }

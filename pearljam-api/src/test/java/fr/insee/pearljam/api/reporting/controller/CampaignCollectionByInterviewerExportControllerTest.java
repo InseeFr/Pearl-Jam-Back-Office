@@ -4,7 +4,7 @@ import fr.insee.pearljam.api.reporting.export.collection.CollectionCsvHeaders;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsv;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvExporter;
 import fr.insee.pearljam.api.reporting.export.collection.InterviewerCollectionCsvPresenter;
-import fr.insee.pearljam.api.reporting.export.csv.CsvRow;
+import fr.insee.pearljam.api.export.csv.CsvRow;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByInterviewersPort;

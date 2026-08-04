@@ -11,9 +11,6 @@ import java.util.List;
 public interface SurveyUnitFetchedByStatesRepositoryPort {
 
     Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
-            List<StateType> stateTypes,
-            String campaignId,
-            String search,
-            Pageable pageable
-    );
+            List<StateType> stateTypes, String campaignId, String search,
+            List<String> ouIds, Pageable pageable);
 }

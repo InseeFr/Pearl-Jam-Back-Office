@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
@@ -21,8 +22,12 @@ public class SurveyUnitFetchPortStub implements SurveyUnitFetchPort {
         this.stubbedResults = results;
     }
 
+
+
     @Override
-    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes,
+    public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
+                                                                                                String userId,
+                                                                                                List<StateType> stateTypes,
                                                                                                 String campaignId,
                                                                                                 String search,
                                                                                                 Pageable pageable) {

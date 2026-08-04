@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface SurveyUnitFetchPort {
 
-    Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(List<StateType> stateTypes,
+    Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
+                                                                                        String userId,
+                                                                                        List<StateType> stateTypes,
                                                                                          String campaignId,
                                                                                          String search,
                                                                                          Pageable pageable);

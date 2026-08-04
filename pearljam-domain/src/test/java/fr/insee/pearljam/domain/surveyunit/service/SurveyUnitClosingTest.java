@@ -4,6 +4,7 @@ import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
+import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
@@ -44,7 +45,7 @@ class SurveyUnitClosingTest {
     QuestionnaireStatePort questionnaireStatePort;
     SurveyUnitClosablePolicy surveyUnitClosablePolicy;
     StateRepository stateRepository;
-
+    CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +56,9 @@ class SurveyUnitClosingTest {
         questionnaireStatePort = mock(QuestionnaireStatePort.class);
         surveyUnitClosablePolicy = new SurveyUnitClosablePolicy();
         stateRepository = mock(StateRepository.class);
-        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy, stateRepository);
+        campaignDailyStatsRepositoryPort = mock(CampaignDailyStatsRepositoryPort.class);
+
+        surveyUnitClosing = new SurveyUnitClosing(closingCauseRepository, surveyUnitService, userService, dateService, surveyUnitRepository, questionnaireStatePort, surveyUnitClosablePolicy, stateRepository, campaignDailyStatsRepositoryPort);
     }
 
     @Test
@@ -287,12 +290,12 @@ class SurveyUnitClosingTest {
         when(userService.getUserOUs(any(), anyBoolean()))
                 .thenReturn(List.of(new OrganizationUnitDto("OU1","OU1")));
 
-        when(surveyUnitRepository.findClosableCandidates(anyLong(), any()))
+        when(surveyUnitRepository.findClosableCandidates(anyLong(), any(), any()))
                 .thenReturn(List.of());
 
         var presenter = mockPresenter();
 
-        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", null, presenter);
 
         verify(presenter).empty();
     }
@@ -328,7 +331,7 @@ class SurveyUnitClosingTest {
         // Setup candidates
         var candidate1 = mockCandidate("SU1", StateType.FIN, ContactOutcomeType.INA);
         var candidate2 = mockCandidate("SU2", StateType.WFT, ContactOutcomeType.REF);
-        when(surveyUnitRepository.findClosableCandidates(anyLong(), any()))
+        when(surveyUnitRepository.findClosableCandidates(anyLong(), any(), any()))
                 .thenReturn(List.of(candidate1, candidate2));
 
         // Setup questionnaire states
@@ -348,7 +351,7 @@ class SurveyUnitClosingTest {
 
         var presenter = mockPresenter();
 
-        surveyUnitClosing.getSurveyUnitsToClose("user", presenter);
+        surveyUnitClosing.getSurveyUnitsToClose("user", null, presenter);
 
         verify(presenter).present(anyList(), any(), any());
     }

@@ -1,6 +1,5 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.adapter;
 
-
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitFetchedByStatesRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitFetchedByStatesAndCampaignIdView;
@@ -24,18 +23,19 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
     private final JdbcClient jdbc;
 
     private static final Map<String, String> ALLOWED_SORTS = Map.of(
-            "surveyUnitId",        "su.id",
+            "surveyUnitId",          "su.id",
             "surveyUnitDisplayName", "su.display_name",
-            "interviewerLastName", "int.last_name",
-            "contactOutcome",      "co.type",
-            "closingCauseType",    "cc.type",
-            "endDate",             "vi.collection_end_date"
+            "interviewerLastName",   "int.last_name",
+            "contactOutcome",        "co.type",
+            "closingCauseType",      "cc.type",
+            "endDate",               "ls.last_state_date"
     );
 
     private static final String BASE_FROM = """
             FROM survey_unit su
             JOIN LATERAL (
-                SELECT s.type AS current_state
+                 SELECT s.type AS current_state,
+                        s.date AS last_state_date
                 FROM state s
                 WHERE s.survey_unit_id = su.id
                 ORDER BY s.date DESC
@@ -58,16 +58,17 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 ON vi.campaign_id = su.campaign_id
                AND vi.organization_unit_id = su.organization_unit_id
             WHERE su.campaign_id = :campaignId
+              AND su.organization_unit_id IN (:ouIds)
             """;
 
     private static final String SEARCH_CONDITION = """
         AND (
-            LOWER(su.id)                                   LIKE :search OR
-            LOWER(int.first_name)                          LIKE :search OR
-            LOWER(int.last_name)                           LIKE :search OR
+            LOWER(su.id)                                    LIKE :search OR
+            LOWER(int.first_name)                           LIKE :search OR
+            LOWER(int.last_name)                            LIKE :search OR
             LOWER(CONCAT(int.first_name,' ',int.last_name)) LIKE :search OR
-            LOWER(co.type)                                 LIKE :search OR
-            LOWER(cc.type)                                 LIKE :search
+            LOWER(co.type)                                  LIKE :search OR
+            LOWER(cc.type)                                  LIKE :search
         )
         """;
 
@@ -77,7 +78,8 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             su.display_name                    AS surveyUnitDisplayName,
             int.first_name                     AS interviewerFirstName,
             int.last_name                      AS interviewerLastName,
-            CAST(vi.collection_end_date AS TEXT) AS endDate,
+            int.id                             AS interviewerId,
+            CAST(ls.last_state_date AS TEXT)   AS endDate,
             co.type                            AS contactOutcome,
             cc.type                            AS closingCauseType,
             su.viewed                          AS viewed,
@@ -86,38 +88,48 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
 
     @Override
     public Page<SurveyUnitFetchedByStatesAndCampaignIdView> getSurveyUnitsByStatesAndCampaignId(
-            List<StateType> stateTypes, String campaignId, String search, Pageable pageable) {
+            List<StateType> stateTypes, String campaignId, String search,
+            List<String> ouIds, Pageable pageable) {
 
         List<String> stateTypesStringified = stateTypes.stream().map(StateType::toString).toList();
-        List<SurveyUnitFetchedByStatesAndCampaignIdView> content =
-                executeMainQuery(stateTypesStringified, campaignId, search, pageable);
 
-        long total = executeCountQuery(stateTypesStringified, campaignId, search);
+        List<SurveyUnitFetchedByStatesAndCampaignIdView> content =
+                executeMainQuery(stateTypesStringified, campaignId, search, ouIds, pageable);
+
+        long total = executeCountQuery(stateTypesStringified, campaignId, search, ouIds);
 
         return new PageImpl<>(content, pageable, total);
     }
 
     private List<SurveyUnitFetchedByStatesAndCampaignIdView> executeMainQuery(
-            List<String> stateTypes, String campaignId, String search, Pageable pageable) {
+            List<String> stateTypes, String campaignId, String search,
+            List<String> ouIds, Pageable pageable) {
 
         String sortClause = PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
         String sql = MAIN_SELECT
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "")
-                + sortClause
-                + " LIMIT :limit OFFSET :offset";
+                + sortClause;
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, pageable)
+
+        if (pageable.isPaged()) {
+            sql += " LIMIT :limit OFFSET :offset";
+        }
+
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, pageable)
                 .query(this::mapRow)
                 .list();
     }
 
-    private long executeCountQuery(List<String> stateTypes, String campaignId, String search) {
+    private long executeCountQuery(
+            List<String> stateTypes, String campaignId, String search,
+            List<String> ouIds) {
+
         String sql = "SELECT COUNT(DISTINCT su.id) "
                 + BASE_FROM
                 + (hasSearch(search) ? SEARCH_CONDITION : "");
 
-        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, null)
+        return bindCommonParams(jdbc.sql(sql), stateTypes, campaignId, search, ouIds, null)
                 .query((rs, _) -> rs.getLong(1))
                 .single();
     }
@@ -131,14 +143,17 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
             List<String> stateTypes,
             String campaignId,
             String search,
+            List<String> ouIds,
             Pageable pageable) {
 
         spec = spec
                 .param("stateTypes", stateTypes)
                 .param("campaignId", campaignId)
+                .param("ouIds", ouIds)
                 .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
 
-        if (pageable != null) {
+
+        if (pageable!= null && pageable.isPaged()) {
             spec = spec
                     .param("limit", pageable.getPageSize())
                     .param("offset", pageable.getOffset());
@@ -153,6 +168,7 @@ public class SurveyUnitFetchedByStatesDaoAdapter implements SurveyUnitFetchedByS
                 rs.getString("surveyUnitDisplayName"),
                 rs.getString("interviewerFirstName"),
                 rs.getString("interviewerLastName"),
+                rs.getString("interviewerId"),
                 rs.getString("endDate"),
                 rs.getString("contactOutcome"),
                 rs.getString("closingCauseType"),

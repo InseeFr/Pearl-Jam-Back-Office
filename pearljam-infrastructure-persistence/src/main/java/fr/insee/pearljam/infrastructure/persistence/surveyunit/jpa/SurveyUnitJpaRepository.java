@@ -5,6 +5,7 @@ import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnit
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.SurveyUnitCampaignView;
+import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -90,33 +91,35 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
 	List<String> findAllIds();
 
 	@Query(value = """
-        SELECT
-          su.id                              AS id,
-          ls.current_state                   AS currentStateType,
-          co.type                            AS contactOutcomeType
-        FROM survey_unit su
-        JOIN visibility vi
-          ON vi.campaign_id = su.campaign_id
-         AND vi.organization_unit_id = su.organization_unit_id
-        JOIN LATERAL (
-          SELECT s.type AS current_state
-          FROM state s
-          WHERE s.survey_unit_id = su.id
-          ORDER BY s.date DESC
-          LIMIT 1
-        ) ls ON TRUE
-        LEFT JOIN contact_outcome co
-          ON co.survey_unit_id = su.id
-        WHERE su.organization_unit_id IN (:lstOuIds)
-        AND vi.collection_end_date < :date
-        AND vi.end_date > :date
-        AND (
-          ls.current_state NOT IN ('TBR','FIN','CLO')
-          OR co.type = 'INA'
-        )
-        """, nativeQuery = true)
+       SELECT
+         su.id                              AS id,
+         ls.current_state                   AS currentStateType,
+         co.type                            AS contactOutcomeType
+       FROM survey_unit su
+       JOIN visibility vi
+         ON vi.campaign_id = su.campaign_id
+        AND vi.organization_unit_id = su.organization_unit_id
+       JOIN LATERAL (
+         SELECT s.type AS current_state
+         FROM state s
+         WHERE s.survey_unit_id = su.id
+         ORDER BY s.date DESC
+         LIMIT 1
+       ) ls ON TRUE
+       LEFT JOIN contact_outcome co
+         ON co.survey_unit_id = su.id
+       WHERE su.organization_unit_id IN (:lstOuIds)
+       AND vi.collection_end_date < :date
+       AND vi.end_date > :date
+       AND (
+         ls.current_state NOT IN ('TBR','FIN','CLO')
+         OR co.type = 'INA'
+       )
+       AND (:campaignId IS NULL OR su.campaign_id = :campaignId)
+       """, nativeQuery = true)
 	List<ClosableSurveyUnitCandidateView> findClosableCandidates(
 			@Param("date") long date,
+			@Param("campaignId") @Nullable String campaignId,
 			@Param("lstOuIds") List<String> lstOuIds
 	);
 
@@ -466,6 +469,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     idf.number_of_respondents      AS numberOfRespondents,
     idf.present_in_previous_home   AS presentInPreviousHome,
     idf.household_composition      AS householdComposition,
+    int.id                         AS interviewerId,
     int.first_name                 AS interviewerFirstName,
     int.last_name                  AS interviewerLastName,
     f.finalizationDate              AS finalizationDate
@@ -477,8 +481,7 @@ public interface SurveyUnitJpaRepository extends JpaRepository<SurveyUnitDB, Str
     LEFT JOIN identification idf ON idf.survey_unit_id = su.id
     LEFT JOIN interviewer int ON int.id = su.interviewer_id
     LEFT JOIN finalization f ON f.survey_unit_id = su.id
-    WHERE su.id IN (:ids)
-    """, nativeQuery = true)
+    WHERE su.id IN (:ids) """, nativeQuery = true)
 	List<ClosableSurveyUnitView> findClosableSurveyUnits(@Param("ids") Set<String> ids);
 
 	@Query(value = "SELECT id FROM survey_unit WHERE id IN (:surveyUnitIds)",

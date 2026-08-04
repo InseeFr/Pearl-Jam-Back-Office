@@ -28,6 +28,7 @@ class SurveyUnitClosingApiPresenterTest {
         when(projection.getSsech()).thenReturn(10);
         when(projection.getInterviewerFirstName()).thenReturn("John");
         when(projection.getInterviewerLastName()).thenReturn("Doe");
+        when(projection.getAddressL6()).thenReturn("75001 PARIS");
 
         ClosableSurveyUnitCandidateView candidate = mock(ClosableSurveyUnitCandidateView.class);
         when(candidate.getCurrentStateType()).thenReturn(StateType.WFT);
@@ -36,7 +37,7 @@ class SurveyUnitClosingApiPresenterTest {
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of("id1", candidate);
         Map<String, String> questionnaireStates = Map.of("id1", "COMPLETED");
 
-        var presenter = new SurveyUnitClosingApiPresenter();
+        var presenter = new SurveyUnitClosingApiPresenter(new SurveyUnitClosingViewModelMapper());
 
         // WHEN
         var result = presenter.present(List.of(projection), candidates, questionnaireStates);
@@ -59,11 +60,12 @@ class SurveyUnitClosingApiPresenterTest {
         // GIVEN
         ClosableSurveyUnitView projection = mock(ClosableSurveyUnitView.class);
         when(projection.getId()).thenReturn("id1");
+        when(projection.getAddressL6()).thenReturn("75001 PARIS");
 
         Map<String, ClosableSurveyUnitCandidateView> candidates = Map.of(); // empty
         Map<String, String> questionnaireStates = Map.of();
 
-        var presenter = new SurveyUnitClosingApiPresenter();
+        var presenter = new SurveyUnitClosingApiPresenter(new SurveyUnitClosingViewModelMapper());
 
         // WHEN
         var result = presenter.present(List.of(projection), candidates, questionnaireStates);
@@ -80,8 +82,9 @@ class SurveyUnitClosingApiPresenterTest {
         // GIVEN
         ClosableSurveyUnitView projection = mock(ClosableSurveyUnitView.class);
         when(projection.getId()).thenReturn("id1");
+        when(projection.getAddressL6()).thenReturn("75001 PARIS");
 
-        var presenter = new SurveyUnitClosingApiPresenter();
+        var presenter = new SurveyUnitClosingApiPresenter(new SurveyUnitClosingViewModelMapper());
 
         // WHEN
         var result = presenter.present(List.of(projection), Map.of(), Map.of());
@@ -96,8 +99,9 @@ class SurveyUnitClosingApiPresenterTest {
         when(projection.getId()).thenReturn("id1");
         when(projection.getInterviewerFirstName()).thenReturn("John");
         when(projection.getInterviewerLastName()).thenReturn(null);
+        when(projection.getAddressL6()).thenReturn("75001 PARIS");
 
-        var presenter = new SurveyUnitClosingApiPresenter();
+        var presenter = new SurveyUnitClosingApiPresenter(new SurveyUnitClosingViewModelMapper());
 
         var result = presenter.present(List.of(projection), Map.of(), Map.of());
 

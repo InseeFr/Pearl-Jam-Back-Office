@@ -5,7 +5,7 @@ REST API for communication between Pearl Jam DB and Pearl Jam UI.
 
 ## Requirements
 For building and running the application you need:
-- [JDK 21](https://jdk.java.net/archive/)
+- JDK 25
 - Maven 3
 
 ## Project structure (multi-modules)

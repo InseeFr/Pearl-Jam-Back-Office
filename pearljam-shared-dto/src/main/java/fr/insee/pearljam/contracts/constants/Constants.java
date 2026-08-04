@@ -33,12 +33,15 @@ public class Constants {
   public static final String API_SURVEYUNITS_ADD_STATE = "/api/survey-units/states";
   public static final String API_SURVEYUNIT_HISTORY = "/api/survey-units/{surveyUnitId}/history";
   public static final String API_SURVEY_UNITS_ASSIGNED = "/api/survey-units/assigned";
+  public static final String API_SURVEY_UNITS_ASSIGNED_EXPORT = "/api/survey-units/assigned/export";
 
   public static final String API_SURVEY_UNITS_TO_REVIEW = "/api/survey-units/to-review";
 
   public static final String API_SURVEYUNIT_ID_TEMP_ZONE = "/api/survey-unit/{id}/temp-zone";
   public static final String API_SURVEYUNITS_TEMP_ZONE = "/api/survey-units/temp-zone";
   public static final String API_SURVEYUNITS_TO_CLOSE = "/api/survey-units/to-close";
+  public static final String API_SURVEYUNITS_TO_CLOSE_EXPORT = "/api/survey-units/to-close/export";
+
 
 
   public static final String API_CAMPAIGNS = "/api/campaigns";
@@ -102,6 +105,8 @@ public class Constants {
   public static final String API_CAMPAIGN_ORGANIZATION = "/api/campaign/{id}/organization";
   public static final String API_CAMPAIGN_ORGANIZATION_EXPORT = "/api/campaign/{id}/organization/export";
   public static final String API_CAMPAIGN_SU_COMPLETED = "/api/campaign/{id}/survey-units/completed";
+  public static final String API_CAMPAIGN_SU_COMPLETED_EXPORT = "/api/campaign/{id}/survey-units/completed/export";
+
 
   public static final String API_INTERVIEWERS = "/api/interviewers";
   public static final String API_INTERVIEWERS_SU_STATECOUNT = "/api/interviewers/survey-units/state-count";

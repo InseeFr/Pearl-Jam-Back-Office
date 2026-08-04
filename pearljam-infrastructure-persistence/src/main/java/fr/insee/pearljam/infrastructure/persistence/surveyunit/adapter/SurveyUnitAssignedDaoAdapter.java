@@ -66,13 +66,14 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                              END AS department,
                              CASE
                                  WHEN a.l6 ~ '^\\d{5}\\s+' THEN substring(a.l6 from '^\\d{5}\\s+(.*)$')
-                                 WHEN trim(coalesce(a.l6, '')) <> '' THEN a.l6
+                                 WHEN trim(coalesce(a.l6, '')) <> '' THEN trim(a.l6)
                                  ELSE NULL
                              END AS city,
                            ls.current_state                   AS currentStateType,
                            cc.type                            AS closingCauseType,
                           int.first_name                      AS interviewerFirstName,
-                          int.last_name                       AS interviewerLastName
+                          int.last_name                       AS interviewerLastName,
+                          int.id                              AS interviewerId
                          FROM survey_unit su
                          JOIN LATERAL (
                            SELECT s.type AS current_state
@@ -87,6 +88,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                              ON si.id = su.sample_identifier_id
                          LEFT JOIN closing_cause cc
                              ON cc.survey_unit_id = su.id
+                             AND ls.current_state NOT IN ('CLO', 'FIN')
                          LEFT JOIN contact_outcome co
                              ON co.survey_unit_id = su.id
                          LEFT JOIN interviewer int
@@ -95,21 +97,30 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
                             AND su.organization_unit_id in (:ouIds)
                          """ +
                      buildSearchCondition(search) +
-                     PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS) +
-                     """
-                         LIMIT :limit OFFSET :offset
-                         """;
+                     PaginationHelpers.buildSortClause(pageable, ALLOWED_SORTS);
 
-        return jdbc.sql(sql)
-            .param("campaignIds", campaignIds)
-            .param("ouIds", lstOuIds)
-            .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%")
-            .param("limit", pageable.getPageSize())
-            .param("offset", pageable.getOffset())
+
+        boolean isPaged = pageable.isPaged();
+        if (isPaged) {
+            sql += """
+                        LIMIT :limit OFFSET :offset
+                        """;
+        }
+
+        JdbcClient.StatementSpec statementSpec = jdbc.sql(sql)
+                .param("campaignIds", campaignIds)
+                .param("ouIds", lstOuIds)
+                .param("search", "%" + (search != null ? search.toLowerCase() : "") + "%");
+
+        if (isPaged) {
+            statementSpec = statementSpec
+                    .param("limit", pageable.getPageSize())
+                    .param("offset", pageable.getOffset());
+        }
+
+        return statementSpec
             .query(this::mapToSurveyUnitAssigned)
             .list();
-
-
     }
 
     private long executeCountQuery(List<String> campaignIds, List<String> lstOuIds, String search) {
@@ -152,7 +163,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         return """
             AND (
                 LOWER(COALESCE(a.l6, '')) LIKE :search OR
-                LOWER(su.id) LIKE :search OR
+                LOWER(su.display_name) LIKE :search OR
                 LOWER(CONCAT(int.first_name, ' ', int.last_name)) LIKE :search
             )
             """;
@@ -163,6 +174,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
             rs.getString("surveyUnitId"),
             rs.getString("surveyUnitDisplayName"),
             rs.getString("ssech"),
+            rs.getString("interviewerId"),
             rs.getString("interviewerFirstName"),
             rs.getString("interviewerLastName"),
             rs.getString("department"),
