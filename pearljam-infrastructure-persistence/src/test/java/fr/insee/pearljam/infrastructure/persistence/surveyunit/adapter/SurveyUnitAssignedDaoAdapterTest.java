@@ -144,7 +144,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 jean,
                 "75000 Paris",
-                StateType.TBR
+                StateType.TBR,
+                "Alpha-Display-1"
         );
 
         createSurveyUnit(
@@ -153,7 +154,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "69000 Lyon",
-                StateType.CLO
+                StateType.CLO,
+                "Bravo-Display-2"
         );
 
         createSurveyUnit(
@@ -162,7 +164,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 bernard,
                 "33000 Bordeaux",
-                StateType.INS
+                StateType.INS,
+                "Charlie-Display-3"
         );
 
         createSurveyUnit(
@@ -171,7 +174,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "59000 Lille",
-                StateType.TBR
+                StateType.TBR,
+                "Delta-Display-4"
         );
 
         createSurveyUnit(
@@ -180,7 +184,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB1,
                 marie,
                 "",
-                StateType.TBR
+                StateType.TBR,
+                "Echo-Display-5"
         );
 
         createSurveyUnit(
@@ -189,7 +194,8 @@ class SurveyUnitAssignedDaoAdapterTest {
                 ouDB2,
                 marie,
                 "Lille",
-                StateType.TBR
+                StateType.TBR,
+                "Foxtrot-Display-6"
         );
 
 
@@ -224,13 +230,15 @@ class SurveyUnitAssignedDaoAdapterTest {
             OrganizationUnitDB ouDB,
             InterviewerDB interviewer,
             String address,
-            StateType state
+            StateType state,
+            String displayName
     ) {
         SurveyUnitDB su = new SurveyUnitDB();
         su.setId(id);
         su.setCampaign(campaign);
         su.setOrganizationUnit(ouDB);
         su.setInterviewer(interviewer);
+        su.setDisplayName(displayName);
 
         InseeAddressDB addr = new InseeAddressDB();
         addr.setL6(address);
@@ -258,13 +266,13 @@ class SurveyUnitAssignedDaoAdapterTest {
     }
 
     @Test
-    void should_search_by_survey_unit_id() {
+    void should_search_by_survey_unit_display_name() {
 
         Page<SurveyUnitAssigned> result =
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "su-2",
+                        "bravo-display-2",
                         PageRequest.of(0, 20)
                 );
 
@@ -332,7 +340,7 @@ class SurveyUnitAssignedDaoAdapterTest {
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "SU-1",
+                        "alpha-display-1",
                         PageRequest.of(0, 20)
                 );
 
@@ -349,7 +357,7 @@ class SurveyUnitAssignedDaoAdapterTest {
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "SU-1",
+                        "alpha-display-1",
                         PageRequest.of(0, 20)
                 );
 
@@ -365,7 +373,7 @@ class SurveyUnitAssignedDaoAdapterTest {
                 adapter.findSurveyUnitsAssigned(
                         List.of(CAMPAIGN_1_ID),
                         List.of(OU_1),
-                        "SU-2",
+                        "bravo-display-2",
                         PageRequest.of(0, 20)
                 );
 
@@ -450,5 +458,4 @@ class SurveyUnitAssignedDaoAdapterTest {
         // Then
         assertNotNull(result);
     }
-
 }
