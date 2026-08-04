@@ -163,7 +163,7 @@ public class SurveyUnitAssignedDaoAdapter implements SurveyUnitAssignedRepositor
         return """
             AND (
                 LOWER(COALESCE(a.l6, '')) LIKE :search OR
-                LOWER(su.id) LIKE :search OR
+                LOWER(su.display_name) LIKE :search OR
                 LOWER(CONCAT(int.first_name, ' ', int.last_name)) LIKE :search
             )
             """;
