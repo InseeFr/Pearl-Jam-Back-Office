@@ -204,7 +204,6 @@ class SurveyUnitClosingTest {
     }
 
     @Test
-    @Test
     @DisplayName("Should update existing provisional closing causes in batch")
     void shouldUpdateExistingProvisionalClosingCausesInBatch() {
         // Given
@@ -229,7 +228,7 @@ class SurveyUnitClosingTest {
         assertEquals(1, closingCauseRepository.getUpdatedClosingCausesCount());
         assertEquals(2, closingCauseRepository.getAddedClosingCausesCount());
     }
-    }
+
 
     @Test
     @DisplayName("Should handle empty list of survey units")
