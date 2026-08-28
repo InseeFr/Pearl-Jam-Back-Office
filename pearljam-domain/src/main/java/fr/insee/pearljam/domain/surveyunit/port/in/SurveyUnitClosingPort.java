@@ -2,7 +2,6 @@ package fr.insee.pearljam.domain.surveyunit.port.in;
 
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
-import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import jakarta.annotation.Nullable;
@@ -23,8 +22,7 @@ public interface SurveyUnitClosingPort {
      *       </ul>
      *   <li>If {@code toClose} is {@code true}: definitive closing
      *       <ul>
-     *         <li>Validates that no existing closing cause exists for any survey unit
-     *             (throws {@link ClosingCauseAlreadyExistsException} if found).
+     *         <li>Updates any existing provisional closing causes to the new type.
      *         <li>Validates that all survey units are in closable states (not CLO/TBR/FIN).
      *         <li>Closes the survey units by setting their state to {@link StateType#CLO}.
      *       </ul>
@@ -35,8 +33,6 @@ public interface SurveyUnitClosingPort {
      * @param toClose   if {@code false }, the closing cause is temporary and can be modified later;
      *                      if {@code true}, the closing cause is definitive and the survey units will be closed.
      * @throws SurveyUnitNotFoundException      if any survey unit ID does not exist.
-     * @throws ClosingCauseAlreadyExistsException if {@code toClose} is {@code true} and a closing cause already exists
-     *                                            for any survey unit.
      * @throws SurveyUnitNotClosableException    if any survey unit is in a non-closable state (CLO, TBR, or FIN).
      */
     void addClosingCauseToMultipleSurveyUnits(List<String> surveyUnitIds, ClosingCauseType type, boolean toClose);
