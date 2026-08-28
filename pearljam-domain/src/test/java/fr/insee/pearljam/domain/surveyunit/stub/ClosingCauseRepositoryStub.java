@@ -15,6 +15,7 @@ import java.util.Map;
 public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
     private final Map<String, ClosingCauseType> closingCauses = new HashMap<>();
     private int addedClosingCausesCount;
+    private int updatedClosingCausesCount;
 
     @Override
     public Map<String, Long> getStateClosedByClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
@@ -66,7 +67,12 @@ public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
 
     @Override
     public void updateExistingClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
-        // Stub method used only in tests - intentionally left blank
+        for (String surveyUnitId : surveyUnitIds) {
+            if (closingCauses.containsKey(surveyUnitId)) {
+                closingCauses.put(surveyUnitId, closingCause);
+                updatedClosingCausesCount++;
+            }
+        }
     }
 
     @Override
