@@ -153,7 +153,7 @@ public class CampaignProgressSnapshot {
                 sc.campaign_id,
                 sc.organization_unit_id,
                 sc.interviewer_id,
-                :synchronizationDate AS synchronization_date,
+                :updatedAt AS updatedAt,
                 sc.nvm_count, sc.nns_count, sc.anv_count, sc.vin_count,
                 sc.vic_count, sc.prc_count, sc.aoc_count, sc.aps_count,
                 sc.ins_count, sc.wft_count, sc.wfs_count,
@@ -184,8 +184,7 @@ public class CampaignProgressSnapshot {
         ),
         upsert AS (
             INSERT INTO campaign_daily_stats (
-                day, campaign_id, organization_unit_id, interviewer_id,
-                synchronization_date,
+                day, campaign_id, organization_unit_id, interviewer_id,updated_at,
                 nvm_count, nns_count, anv_count, vin_count, vic_count, prc_count,
                 aoc_count, aps_count, ins_count, wft_count, wfs_count,
                 tbr_count, fin_count, clo_count, nva_count,
@@ -198,7 +197,6 @@ public class CampaignProgressSnapshot {
             SELECT * FROM new_data
             ON CONFLICT (day, campaign_id, organization_unit_id, interviewer_id)
             DO UPDATE SET
-                synchronization_date = EXCLUDED.synchronization_date,
                 nvm_count = EXCLUDED.nvm_count,
                 nns_count = EXCLUDED.nns_count,
                 anv_count = EXCLUDED.anv_count,
@@ -232,7 +230,8 @@ public class CampaignProgressSnapshot {
                 ala_count = EXCLUDED.ala_count,
                 duk_count = EXCLUDED.duk_count,
                 nuh_count = EXCLUDED.nuh_count,
-                noa_count = EXCLUDED.noa_count
+                noa_count = EXCLUDED.noa_count,
+               updated_at = EXCLUDED.updated_at
             RETURNING 1
         )
         DELETE FROM campaign_daily_stats cds
