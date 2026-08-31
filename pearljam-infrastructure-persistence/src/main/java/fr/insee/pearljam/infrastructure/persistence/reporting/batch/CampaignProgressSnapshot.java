@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -16,7 +15,7 @@ import java.time.ZoneOffset;
 @Transactional
 public class CampaignProgressSnapshot {
 
-    DateService dateService;
+    private final DateService dateService;
 
     private final EntityManager em;
 
