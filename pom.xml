@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/>
     </parent>
 
@@ -18,7 +18,7 @@
     <name>Pearl-Jam-Back-Office Parent</name>
 
     <properties>
-        <revision>5.38.9</revision>
+        <revision>5.38.10</revision>
         <changelist></changelist>
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
@@ -31,11 +31,11 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <cucumber.version>7.34.3</cucumber.version>
-        <springdoc.version>3.0.3</springdoc.version>
-        <archunit.version>1.4.2</archunit.version>
+        <cucumber.version>7.34.7</cucumber.version>
+        <springdoc.version>3.1.0</springdoc.version>
+        <archunit.version>1.5.0</archunit.version>
         <jacoco.version>0.8.15</jacoco.version>
-        <commons-validator.version>1.10.1</commons-validator.version>
+        <commons-validator.version>1.11.0</commons-validator.version>
         <postgresql.version>42.7.13</postgresql.version>
     </properties>
 
