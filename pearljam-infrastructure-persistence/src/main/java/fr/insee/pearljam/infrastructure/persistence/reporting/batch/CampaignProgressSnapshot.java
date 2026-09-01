@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -251,13 +250,11 @@ public class CampaignProgressSnapshot {
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
                 .toEpochMilli();
-        
-        Instant updatedAt = dateService.now();
 
         em.createNativeQuery(UPSERT_SNAPSHOT)
                 .setParameter("day", day)
                 .setParameter("startOfNextDayEpoch", startOfNextDayEpoch)
-                .setParameter("updatedAt", updatedAt)
+                .setParameter("updatedAt", dateService.now().toEpochMilli())
                 .executeUpdate();
     }
 }

@@ -353,8 +353,10 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         + CASE WHEN :newState = 'CLO' THEN input.cc_npx_count ELSE 0 END,
 
     row_count = row_count
-        + CASE WHEN :newState = 'CLO' THEN input.cc_row_count ELSE 0 END
-
+        + CASE WHEN :newState = 'CLO' THEN input.cc_row_count ELSE 0 END,
+        
+    updated_at = :updatedAt
+    
 FROM (
     SELECT
         campaign_id,
@@ -471,7 +473,8 @@ FROM (
     @Override
     public void updateDailyStatsForSurveyUnits(List<String> surveyUnitIds,
                                                @Nullable StateType newState,
-                                               @Nullable ClosingCauseType closingCause
+                                               @Nullable ClosingCauseType closingCause,
+                                               Instant updatedAt
     ) {
         if (surveyUnitIds.isEmpty()) {
             return;
@@ -481,6 +484,7 @@ FROM (
                 .param("newState", newState != null ? newState.name() : null)
                 .param("isProvisional", newState == null)
                 .param("stateOffset", newState != null ? 1 : 0)
+                .param("updatedAt", updatedAt.toEpochMilli())
                 .param("causeOffset", StateType.CLO.equals(newState) && closingCause != null ? 1 : 0)
                 .update();
     }

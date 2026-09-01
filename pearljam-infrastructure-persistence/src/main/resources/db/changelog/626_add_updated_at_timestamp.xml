@@ -6,13 +6,13 @@
 
     <changeSet id="0625-1" author="prwozny" runInTransaction="false">
         <sql dbms="postgresql">
-            ALTER TABLE campaign_daily_stats ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE;
+            ALTER TABLE campaign_daily_stats ADD COLUMN IF NOT EXISTS updated_at BIGINT;
         </sql>
     </changeSet>
     <changeSet id="0625-2" author="prwozny" runInTransaction="false">
         <sql dbms="postgresql">
-            CREATE INDEX IF NOT EXISTS idx_cds_sync_date 
-            ON campaign_daily_stats (updated_at);
+            CREATE INDEX IF NOT EXISTS idx_cds_sync_date
+                ON campaign_daily_stats (updated_at);
         </sql>
     </changeSet>
 </databaseChangeLog>

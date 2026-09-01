@@ -34,12 +34,12 @@ class CampaignProgressByInterviewerControllerTest {
                     0L,
                     new StatesProgressResponse(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-                    new CommunicationsProgressResponse(0L, 0L), null),
+                    new CommunicationsProgressResponse(0L, 0L), 0L),
             new CampaignProgressByInterviewersResponse.Campaign(0f,
                     new StatesProgressResponse(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgressResponse(0L, 0L),
-                    null)
+                    0L)
     );
 
     @BeforeEach

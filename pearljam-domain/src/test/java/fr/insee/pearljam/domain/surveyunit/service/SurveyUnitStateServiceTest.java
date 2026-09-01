@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
+import fr.insee.pearljam.domain.campaign.service.dummy.FixedDateService;
 import fr.insee.pearljam.domain.reporting.port.out.CampaignDailyStatsRepositoryPort;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.service.exception.ForbiddenOperation;
@@ -28,14 +29,16 @@ class SurveyUnitStateServiceTest {
     private SurveyUnitExistencePortStub surveyUnitExistencePort;
     private SurveyUnitClosingPortStub surveyUnitClosingPort;
     private StateRepositoryStub stateRepository;
+    private FixedDateService dateService;
 
     @BeforeEach
     void init() {
         surveyUnitExistencePort = new SurveyUnitExistencePortStub();
         surveyUnitClosingPort = new SurveyUnitClosingPortStub();
         stateRepository = new StateRepositoryStub();
+        dateService = new FixedDateService();
         CampaignDailyStatsRepositoryPort campaignDailyStatsRepositoryPort = mock(CampaignDailyStatsRepositoryPort.class);
-        service = new SurveyUnitUpdateStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository, campaignDailyStatsRepositoryPort);
+        service = new SurveyUnitUpdateStateService(surveyUnitExistencePort, surveyUnitClosingPort, stateRepository, campaignDailyStatsRepositoryPort, dateService);
     }
 
     // ==================== Multiple Survey Units Tests ====================

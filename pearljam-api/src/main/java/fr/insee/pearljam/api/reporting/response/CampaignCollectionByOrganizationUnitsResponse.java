@@ -4,7 +4,6 @@ import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.Instant;
 import java.util.List;
 
 @Schema(name = "CampaignCollectionByOrganizationUnits")
@@ -43,7 +42,7 @@ public record CampaignCollectionByOrganizationUnitsResponse(
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
             ClosingCausesProgressResponse closingCauses,
-            Instant updatedAt
+            long updatedAt
     ) {}
 
     @Schema(name = "CampaignCollectionByOrganizationUnitsCampaign")
@@ -52,6 +51,6 @@ public record CampaignCollectionByOrganizationUnitsResponse(
             CollectionRatesResponse rates,
             ContactOutcomesProgressResponse outcomes,
             ClosingCausesProgressResponse closingCauses,
-            Instant updatedAt
+            long updatedAt
     ) {}
 }

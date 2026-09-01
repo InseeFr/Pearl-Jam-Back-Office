@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -49,7 +47,7 @@ public abstract class AbstractDailyStats {
     private long dukContactOutcomeCount;
     private long nuhContactOutcomeCount;
     private long noaContactOutcomeCount;
-    private Instant updatedAt;
+    private long updatedAt;
 
     public float getProgressStateRate() {
         long allocated = getAllocatedCount();

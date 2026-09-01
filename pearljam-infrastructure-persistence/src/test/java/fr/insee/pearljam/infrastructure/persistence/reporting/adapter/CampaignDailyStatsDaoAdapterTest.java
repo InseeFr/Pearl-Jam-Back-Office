@@ -565,7 +565,7 @@ class CampaignDailyStatsDaoAdapterTest {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getVinStateCount()).isEqualTo(4);
@@ -587,7 +587,7 @@ class CampaignDailyStatsDaoAdapterTest {
         stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getNvmStateCount()).isZero();
@@ -611,7 +611,7 @@ class CampaignDailyStatsDaoAdapterTest {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), null, ClosingCauseType.NPI);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), null, ClosingCauseType.NPI, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
 
@@ -650,7 +650,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getTbrStateCount()).isZero();
@@ -677,7 +677,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
         su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.NPI), su));
         surveyUnitRepository.save(su);
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPI);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPI, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getTbrStateCount()).isZero();
@@ -703,7 +703,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
         su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.NPX), su));
         surveyUnitRepository.save(su);
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPX);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.NPX, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getTbrStateCount()).isZero();
@@ -729,7 +729,7 @@ class CampaignDailyStatsDaoAdapterTest {
 
         su.setClosingCause(new ClosingCauseDB(new ClosingCauseDto(dateService.getCurrentTimestamp(), ClosingCauseType.ROW), su));
         surveyUnitRepository.save(su);
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.ROW);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.CLO, ClosingCauseType.ROW, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getTbrStateCount()).isZero();
@@ -771,7 +771,7 @@ class CampaignDailyStatsDaoAdapterTest {
         surveyUnitRepository.save(su2);
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId(), su2.getId()), null, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId(), su2.getId()), null, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getNvmStateCount()).isEqualTo(2);
@@ -793,7 +793,7 @@ class CampaignDailyStatsDaoAdapterTest {
         stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getVinStateCount()).isEqualTo(1);
@@ -829,7 +829,7 @@ class CampaignDailyStatsDaoAdapterTest {
         entityManager.flush();
 
         // Only update su1
-        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su1.getId()), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats statsOU1 = adapter.findCampaignStatsForOrganizationUnits(
                 CAMPAIGN_ID, List.of(OU1_ID), today).orElseThrow();
@@ -863,7 +863,7 @@ class CampaignDailyStatsDaoAdapterTest {
         stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats statsYesterday = adapter.findCampaignStats(CAMPAIGN_ID, yesterday).orElseThrow();
         CampaignDailyStats statsToday = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
@@ -889,7 +889,7 @@ class CampaignDailyStatsDaoAdapterTest {
         stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.APS));
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.APS, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.APS, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getNnsStateCount()).isZero();
@@ -914,7 +914,7 @@ class CampaignDailyStatsDaoAdapterTest {
         stateRepository.save(new StateDB(dateService.getCurrentTimestamp(), su, StateType.VIN));
         entityManager.flush();
 
-        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA);
+        adapter.updateDailyStatsForSurveyUnits(List.of(su.getId()), StateType.VIN, ClosingCauseType.NPA, dateService.now());
 
         CampaignDailyStats stats = adapter.findCampaignStats(CAMPAIGN_ID, today).orElseThrow();
         assertThat(stats.getNvmStateCount()).isEqualTo(1);
