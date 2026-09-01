@@ -71,7 +71,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             WHERE campaign_id = :campaignId
             AND interviewer_id is NULL
         ) AS unaffectedCount,
-        MAX(cds.updated_at) AS updatedAt,
+        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN campaign c ON c.id = cds.campaign_id
@@ -99,7 +99,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
               AND su.organization_unit_id IN (:ouIds)
               AND su.interviewer_id IS NULL
         ) AS unaffectedCount,
-        MAX(cds.updated_at) AS updatedAt,
+        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
         %s
         FROM campaign_daily_stats cds
         WHERE campaign_id = :campaignId
@@ -131,7 +131,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         ou.id AS ouId,
         ou.label AS ouLabel,
         COALESCE(su.unaffected, 0) AS unaffectedCount,
-        MAX(cds.updated_at) AS updatedAt,
+        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
@@ -178,7 +178,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             c.id AS campaignId,
             c.label AS campaignLabel,
             COALESCE(su.unaffected, 0) AS unaffectedCount,
-            MAX(cds.updated_at) AS updatedAt,
+            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
@@ -204,7 +204,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         SELECT
             c.id AS campaignId,
             c.label AS campaignLabel,
-            MAX(cds.updated_at) AS updatedAt,
+            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
@@ -235,7 +235,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             interv.id AS interviewerId,
             interv.first_name AS interviewerFirstName,
             interv.last_name AS interviewerLastName,
-            MAX(cds.updated_at) AS updatedAt,
+            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN interviewer interv ON interv.id = cds.interviewer_id
@@ -465,7 +465,7 @@ FROM (
         interviewer_id
     ) input
 
-    WHERE cds.day = CURRENT_DATE
+    WHERE cds.day = :targetDay
       AND cds.campaign_id = input.campaign_id
       AND cds.organization_unit_id = input.organization_unit_id
       AND cds.interviewer_id = input.interviewer_id;
@@ -486,6 +486,7 @@ FROM (
                 .param("stateOffset", newState != null ? 1 : 0)
                 .param("updatedAt", updatedAt.toEpochMilli())
                 .param("causeOffset", StateType.CLO.equals(newState) && closingCause != null ? 1 : 0)
+                .param("targetDay", LocalDate.now())
                 .update();
     }
 }
