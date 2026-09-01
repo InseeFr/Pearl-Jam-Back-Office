@@ -1,20 +1,18 @@
 package fr.insee.pearljam.infrastructure.persistence.reporting.batch;
 
-import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
 @Repository
 @RequiredArgsConstructor
 @Transactional
-public class CampaignProgressSnapshot {
-
-    private final DateService dateService;
+public class CampaignProgressSnapshotRepository {
 
     private final EntityManager em;
 
@@ -245,7 +243,7 @@ public class CampaignProgressSnapshot {
         );
     """;
 
-    public void computeAndStoreSnapshot(LocalDate day) {
+    public void computeAndStoreSnapshot(LocalDate day, Instant updatedAt) {
         long startOfNextDayEpoch = day.plusDays(1)
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
@@ -254,7 +252,7 @@ public class CampaignProgressSnapshot {
         em.createNativeQuery(UPSERT_SNAPSHOT)
                 .setParameter("day", day)
                 .setParameter("startOfNextDayEpoch", startOfNextDayEpoch)
-                .setParameter("updatedAt", dateService.now().toEpochMilli())
+                .setParameter("updatedAt", updatedAt.toEpochMilli())
                 .executeUpdate();
     }
 }
