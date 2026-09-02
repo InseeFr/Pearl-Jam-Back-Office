@@ -7,15 +7,15 @@ import java.util.List;
 @Schema(name = "CampaignProgressByOrganizationUnits")
 public record CampaignProgressByOrganizationUnitsResponse(
         List<OrganizationUnit> organizationUnits,
-        Campaign campaign
+        Campaign campaign,
+        long updatedAt
 ) {
     @Schema(name = "CampaignProgressByOrganizationUnitsOU")
     public record OrganizationUnit(
             String organizationUnitLabel,
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications,
-            long updatedAt
+            CommunicationsProgressResponse communications
     ) {
     }
 
@@ -23,8 +23,7 @@ public record CampaignProgressByOrganizationUnitsResponse(
     public record Campaign(
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications,
-            long updatedAt
+            CommunicationsProgressResponse communications
     ) {
     }
 }

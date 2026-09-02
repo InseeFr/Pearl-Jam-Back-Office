@@ -8,15 +8,15 @@ import java.util.List;
 public record CampaignProgressByInterviewersResponse(
         List<Interviewer> interviewers,
         OrganizationUnit site,
-        Campaign campaign
+        Campaign campaign,
+        long updatedAt
 ) {
     @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(
             String interviewerLabel,
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications,
-            long updatedAt
+            CommunicationsProgressResponse communications
     ) {
     }
 
@@ -25,8 +25,7 @@ public record CampaignProgressByInterviewersResponse(
             float progressRate,
             long unaffected,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications,
-            long updatedAt
+            CommunicationsProgressResponse communications
     ) {
     }
 
@@ -34,8 +33,7 @@ public record CampaignProgressByInterviewersResponse(
     public record Campaign(
             float progressRate,
             StatesProgressResponse states,
-            CommunicationsProgressResponse communications,
-            long updatedAt
+            CommunicationsProgressResponse communications
     ) {
     }
 }

@@ -5,11 +5,13 @@ import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByInterviewersPresenter;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerDailyStats;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 public class CampaignCollectionByInterviewersPresenter implements
@@ -19,6 +21,8 @@ public class CampaignCollectionByInterviewersPresenter implements
     public CampaignCollectionByInterviewersResponse present(List<InterviewerDailyStats> interviewerStats,
                                                             CampaignDailyStats siteStats,
                                                             CampaignDailyStats campaignStats) {
+        long maxUpdatedAt = computeMaxUpdatedAt(interviewerStats, siteStats, campaignStats);
+        
         return new CampaignCollectionByInterviewersResponse(
                 interviewerStats.stream()
                         .map(interviewer -> new CampaignCollectionByInterviewersResponse.Interviewer(
@@ -41,7 +45,15 @@ public class CampaignCollectionByInterviewersPresenter implements
                         CollectionRatesResponse.from(campaignStats),
                         ContactOutcomesProgressResponse.from(campaignStats),
                         ClosingCausesProgressResponse.from(campaignStats)
-                )
+                ),
+                maxUpdatedAt
         );
+    }
+    
+    private long computeMaxUpdatedAt(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
+        return Stream.concat(
+                Stream.concat(interviewerStats.stream(), Stream.of(siteStats)),
+                Stream.of(campaignStats)
+        ).mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
     }
 }

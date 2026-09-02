@@ -40,9 +40,9 @@ class CampaignCollectionByOrganizationUnitControllerTest {
                             0L,
                             new CollectionRatesResponse(0f, 0f, 0f),
                             new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
-                            new ClosingCausesProgressResponse(0L, 0L, 0L),
-                            0
-                    )
+                            new ClosingCausesProgressResponse(0L, 0L, 0L)
+                    ),
+                    0L
             );
 
     @BeforeEach
