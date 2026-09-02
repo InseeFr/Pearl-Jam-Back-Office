@@ -23,6 +23,7 @@ public class InterviewerCampaignsProgressPresenter implements InterviewerCampaig
                 stats.getCampaignLabel(),
                 stats.getProgressStateRate(),
                 StatesInterviewerProgressResponse.from(stats),
-                CommunicationsProgressResponse.from(stats));
+                CommunicationsProgressResponse.from(stats),
+                stats.getUpdatedAt());
     }
 }

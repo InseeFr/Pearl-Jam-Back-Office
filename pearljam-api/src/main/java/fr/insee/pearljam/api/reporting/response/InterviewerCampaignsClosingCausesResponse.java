@@ -9,7 +9,8 @@ import java.util.List;
 public record InterviewerCampaignsClosingCausesResponse(
 
         List<InterviewerCampaignSurveyUnits> interviewerCampaignSurveyUnits,
-        InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit
+        InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit,
+        long updatedAt
 ) {
 
     @Schema(name = "InterviewerCampaignsClosingCauses")

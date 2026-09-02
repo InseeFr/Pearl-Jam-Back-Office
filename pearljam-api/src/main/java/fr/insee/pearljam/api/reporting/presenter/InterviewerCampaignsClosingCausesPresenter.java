@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCause
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse.*;
 
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsStatsPresenter;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +48,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalClosingCauseInterviewer
                 ));
 
-        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);
+        long maxUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        
+        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit, maxUpdatedAt);
     }
 }

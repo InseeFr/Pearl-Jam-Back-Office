@@ -33,6 +33,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         when(stats.getNpxProvisionalClosingCauseCount()).thenReturn(npx);
         when(stats.getRowProvisionalClosingCauseCount()).thenReturn(row);
         when(stats.getTotalProvisionalClosingCauses()).thenReturn(total);
+        when(stats.getUpdatedAt()).thenReturn(0L);
         return stats;
     }
 
