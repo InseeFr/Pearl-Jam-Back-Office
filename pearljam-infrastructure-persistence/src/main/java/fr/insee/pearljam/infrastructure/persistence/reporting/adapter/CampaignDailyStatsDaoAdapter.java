@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -486,7 +487,7 @@ FROM (
                 .param("stateOffset", newState != null ? 1 : 0)
                 .param("updatedAt", updatedAt.toEpochMilli())
                 .param("causeOffset", StateType.CLO.equals(newState) && closingCause != null ? 1 : 0)
-                .param("targetDay", LocalDate.now())
+                .param("targetDay", LocalDate.now(ZoneId.of("UTC")))
                 .update();
     }
 }
