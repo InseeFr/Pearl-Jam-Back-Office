@@ -9,15 +9,15 @@ import java.util.List;
 public record InterviewerCampaignsClosingCausesResponse(
 
         List<InterviewerCampaignSurveyUnits> interviewerCampaignSurveyUnits,
-        InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit,
-        long updatedAt
+        InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit
 ) {
 
     @Schema(name = "InterviewerCampaignsClosingCauses")
     public record InterviewerCampaignSurveyUnits  (
             String campaignLabel,
             Long allocated,
-            ClosingCauseResponse closingCauses
+            ClosingCauseResponse closingCauses,
+            long updatedAt
     ) {
         @Schema(name = "InterviewerCampaignsClosingCausesForSurveyUnit")
         public record ClosingCauseResponse (
@@ -32,7 +32,8 @@ public record InterviewerCampaignsClosingCausesResponse(
     @Schema(name = "InterviewerCampaignsClosingCausesTotalSurveyUnit")
     public record InterviewerCampaignsTotalSurveyUnit(
             Long allocated,
-            ClosingCauseResponse closingCauses
+            ClosingCauseResponse closingCauses,
+            long updatedAt
     ) {
         @Schema(name = "InterviewerCampaignsClosingCausesTotal")
         public record ClosingCauseResponse(

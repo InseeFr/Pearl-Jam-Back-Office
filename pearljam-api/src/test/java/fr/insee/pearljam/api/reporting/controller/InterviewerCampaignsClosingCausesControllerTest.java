@@ -40,14 +40,16 @@ class InterviewerCampaignsClosingCausesControllerTest {
         InterviewerCampaignSurveyUnits campaignSurveyUnits = new InterviewerCampaignSurveyUnits(
                 "CAMPAIGN-1",
                 10L,
-                new InterviewerCampaignSurveyUnits.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L)
+                new InterviewerCampaignSurveyUnits.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L),
+                0L
         );
         InterviewerCampaignsTotalSurveyUnit total = new InterviewerCampaignsTotalSurveyUnit(
                 10L,
-                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L)
+                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L),
+                0L
         );
         InterviewerCampaignsClosingCausesResponse expected =
-                new InterviewerCampaignsClosingCausesResponse(List.of(campaignSurveyUnits), total, 0L);
+                new InterviewerCampaignsClosingCausesResponse(List.of(campaignSurveyUnits), total);
 
         when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, day, interviewerId, presenter))
                 .thenReturn(expected);
@@ -69,9 +71,9 @@ class InterviewerCampaignsClosingCausesControllerTest {
                         List.of(),
                         new InterviewerCampaignsTotalSurveyUnit(
                                 0L,
-                                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(0L, 0L, 0L, 0L, 0L)
-                        ),
-                        0L
+                                new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(0L, 0L, 0L, 0L, 0L),
+                                0L
+                        )
                 );
 
         when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter))

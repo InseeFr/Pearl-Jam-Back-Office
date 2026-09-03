@@ -24,7 +24,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
             long npi,
             long npx,
             long row,
-            long total) {
+            long total,
+            long updatedAt) {
         InterviewerCampaignDailyStats stats = mock(InterviewerCampaignDailyStats.class);
         when(stats.getCampaignLabel()).thenReturn(campaignLabel);
         when(stats.getAllocatedCount()).thenReturn(allocatedCount);
@@ -33,7 +34,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         when(stats.getNpxProvisionalClosingCauseCount()).thenReturn(npx);
         when(stats.getRowProvisionalClosingCauseCount()).thenReturn(row);
         when(stats.getTotalProvisionalClosingCauses()).thenReturn(total);
-        when(stats.getUpdatedAt()).thenReturn(0L);
+        when(stats.getUpdatedAt()).thenReturn(updatedAt);
         return stats;
     }
 
@@ -55,7 +56,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
     @Test
     void present_shouldMapStatsToResponse() {
         // Given
-        InterviewerCampaignDailyStats stats = mockStats("CAMPAIGN-1", 10L, 1L, 2L, 3L, 4L, 10L);
+        long campaignUpdatedAt = 1000L;
+        InterviewerCampaignDailyStats stats = mockStats("CAMPAIGN-1", 10L, 1L, 2L, 3L, 4L, 10L, campaignUpdatedAt);
 
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats));
@@ -65,6 +67,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         InterviewerCampaignSurveyUnits campaignEntry = result.interviewerCampaignSurveyUnits().getFirst();
         assertThat(campaignEntry.campaignLabel()).isEqualTo("CAMPAIGN-1");
         assertThat(campaignEntry.allocated()).isEqualTo(10L);
+        assertThat(campaignEntry.updatedAt()).isEqualTo(campaignUpdatedAt);
 
         InterviewerCampaignSurveyUnits.ClosingCauseResponse campaignClosing = campaignEntry.closingCauses();
         assertThat(campaignClosing.interviewerAbsence()).isEqualTo(1L);
@@ -76,6 +79,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // Then — totals (single campaign, same values)
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(10L);
+        assertThat(total.updatedAt()).isEqualTo(campaignUpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(1L);
@@ -88,8 +92,10 @@ class InterviewerCampaignsClosingCausesPresenterTest {
     @Test
     void present_shouldMapMultipleStatsAndAggregateTotals() {
         // Given
-        InterviewerCampaignDailyStats stats1 = mockStats("CAMPAIGN-1", 5L, 1L, 1L, 1L, 1L, 4L);
-        InterviewerCampaignDailyStats stats2 = mockStats("CAMPAIGN-2", 20L, 5L, 6L, 7L, 0L, 18L);
+        long campaign1UpdatedAt = 1000L;
+        long campaign2UpdatedAt = 2000L;
+        InterviewerCampaignDailyStats stats1 = mockStats("CAMPAIGN-1", 5L, 1L, 1L, 1L, 1L, 4L, campaign1UpdatedAt);
+        InterviewerCampaignDailyStats stats2 = mockStats("CAMPAIGN-2", 20L, 5L, 6L, 7L, 0L, 18L, campaign2UpdatedAt);
 
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats1, stats2));
@@ -97,12 +103,15 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // Then — per-campaign entries
         assertThat(result.interviewerCampaignSurveyUnits()).hasSize(2);
         assertThat(result.interviewerCampaignSurveyUnits().get(0).campaignLabel()).isEqualTo("CAMPAIGN-1");
+        assertThat(result.interviewerCampaignSurveyUnits().get(0).updatedAt()).isEqualTo(campaign1UpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).campaignLabel()).isEqualTo("CAMPAIGN-2");
+        assertThat(result.interviewerCampaignSurveyUnits().get(1).updatedAt()).isEqualTo(campaign2UpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).closingCauses().total()).isEqualTo(18L);
 
         // Then — aggregated totals across both campaigns
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(25L);
+        assertThat(total.updatedAt()).isEqualTo(campaign2UpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(6L);

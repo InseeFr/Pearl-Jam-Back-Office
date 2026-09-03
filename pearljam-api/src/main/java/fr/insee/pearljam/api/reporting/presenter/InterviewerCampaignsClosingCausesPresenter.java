@@ -26,7 +26,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                             interv.getNpiProvisionalClosingCauseCount(),
                             interv.getNpxProvisionalClosingCauseCount(),
                             interv.getRowProvisionalClosingCauseCount(),
-                            interv.getTotalProvisionalClosingCauses())
+                            interv.getTotalProvisionalClosingCauses()),
+                        interv.getUpdatedAt()
                         )
         ).toList();
 
@@ -38,6 +39,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         long totalClosingCauseInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getTotalProvisionalClosingCauses).sum();
 
 
+        long maxUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit = new InterviewerCampaignsTotalSurveyUnit(
                 totalSUInterviewer,
                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(
@@ -46,10 +49,10 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalNpxInterviewer,
                         totalRowInterviewer,
                         totalClosingCauseInterviewer
-                ));
+                ),
+                maxUpdatedAt
+        );
 
-        long maxUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
-        
-        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit, maxUpdatedAt);
+        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);
     }
 }
