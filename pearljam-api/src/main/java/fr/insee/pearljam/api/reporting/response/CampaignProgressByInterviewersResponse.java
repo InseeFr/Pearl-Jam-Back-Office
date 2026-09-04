@@ -8,7 +8,8 @@ import java.util.List;
 public record CampaignProgressByInterviewersResponse(
         List<Interviewer> interviewers,
         OrganizationUnit site,
-        Campaign campaign
+        Campaign campaign,
+        long updatedAt
 ) {
     @Schema(name = "CampaignProgressByInterviewersInterviewer")
     public record Interviewer(

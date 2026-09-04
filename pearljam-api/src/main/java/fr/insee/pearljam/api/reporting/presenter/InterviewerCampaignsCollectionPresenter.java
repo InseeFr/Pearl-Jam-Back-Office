@@ -26,6 +26,7 @@ public class InterviewerCampaignsCollectionPresenter
                 stats.getAllocatedCount(),
                 CollectionRatesResponse.from(stats),
                 ContactOutcomesProgressResponse.from(stats),
-                ClosingCausesProgressResponse.from(stats));
+                ClosingCausesProgressResponse.from(stats),
+                stats.getUpdatedAt());
     }
 }

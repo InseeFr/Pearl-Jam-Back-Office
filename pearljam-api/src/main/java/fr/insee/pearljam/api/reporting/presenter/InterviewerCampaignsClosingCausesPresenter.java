@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCause
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse.*;
 
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsStatsPresenter;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                             interv.getNpiProvisionalClosingCauseCount(),
                             interv.getNpxProvisionalClosingCauseCount(),
                             interv.getRowProvisionalClosingCauseCount(),
-                            interv.getTotalProvisionalClosingCauses())
+                            interv.getTotalProvisionalClosingCauses()),
+                        interv.getUpdatedAt()
                         )
         ).toList();
 
@@ -37,6 +39,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         long totalClosingCauseInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getTotalProvisionalClosingCauses).sum();
 
 
+        long minUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
+        
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit = new InterviewerCampaignsTotalSurveyUnit(
                 totalSUInterviewer,
                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(
@@ -45,7 +49,9 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalNpxInterviewer,
                         totalRowInterviewer,
                         totalClosingCauseInterviewer
-                ));
+                ),
+                minUpdatedAt
+        );
 
         return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);
     }

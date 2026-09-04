@@ -7,7 +7,8 @@ import java.util.List;
 @Schema(name = "CampaignProgressByOrganizationUnits")
 public record CampaignProgressByOrganizationUnitsResponse(
         List<OrganizationUnit> organizationUnits,
-        Campaign campaign
+        Campaign campaign,
+        long updatedAt
 ) {
     @Schema(name = "CampaignProgressByOrganizationUnitsOU")
     public record OrganizationUnit(

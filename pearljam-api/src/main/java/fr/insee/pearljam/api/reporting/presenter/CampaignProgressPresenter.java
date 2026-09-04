@@ -23,6 +23,7 @@ public class CampaignProgressPresenter implements CampaignStatsPresenter<List<Ca
                 stats.getCampaignLabel(),
                 stats.getProgressStateRate(),
                 StatesProgressResponse.from(stats),
-                CommunicationsProgressResponse.from(stats));
+                CommunicationsProgressResponse.from(stats),
+                stats.getUpdatedAt());
     }
 }
