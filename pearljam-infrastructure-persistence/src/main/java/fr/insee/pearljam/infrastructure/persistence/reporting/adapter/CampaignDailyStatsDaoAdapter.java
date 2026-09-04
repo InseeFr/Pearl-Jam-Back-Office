@@ -179,7 +179,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             c.id AS campaignId,
             c.label AS campaignLabel,
             COALESCE(su.unaffected, 0) AS unaffectedCount,
-            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+            COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
