@@ -39,7 +39,7 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         long totalClosingCauseInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getTotalProvisionalClosingCauses).sum();
 
 
-        long maxUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        long minUpdatedAt = stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
         
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit = new InterviewerCampaignsTotalSurveyUnit(
                 totalSUInterviewer,
@@ -50,7 +50,7 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalRowInterviewer,
                         totalClosingCauseInterviewer
                 ),
-                maxUpdatedAt
+                minUpdatedAt
         );
 
         return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);

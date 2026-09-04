@@ -111,7 +111,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // Then — aggregated totals across both campaigns
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(25L);
-        assertThat(total.updatedAt()).isEqualTo(campaign2UpdatedAt);
+        assertThat(total.updatedAt()).isEqualTo(campaign1UpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(6L);

@@ -20,7 +20,7 @@ public class CampaignProgressByInterviewersPresenter implements
     public CampaignProgressByInterviewersResponse present(List<InterviewerDailyStats> interviewerStats,
                                                           CampaignDailyStats siteStats,
                                                           CampaignDailyStats campaignStats) {
-        long maxUpdatedAt = computeMaxUpdatedAt(interviewerStats, siteStats, campaignStats);
+        long minUpdatedAt = computeMinUpdatedAt(interviewerStats, siteStats, campaignStats);
         
         return new CampaignProgressByInterviewersResponse(
                 interviewerStats.stream()
@@ -39,14 +39,14 @@ public class CampaignProgressByInterviewersPresenter implements
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
                         CommunicationsProgressResponse.from(campaignStats)),
-                maxUpdatedAt
+                minUpdatedAt
         );
     }
     
-    private long computeMaxUpdatedAt(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
+    private long computeMinUpdatedAt(List<InterviewerDailyStats> interviewerStats, CampaignDailyStats siteStats, CampaignDailyStats campaignStats) {
         return Stream.concat(
                 Stream.concat(interviewerStats.stream(), Stream.of(siteStats)),
                 Stream.of(campaignStats)
-        ).mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        ).mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 }

@@ -20,7 +20,7 @@ public class CampaignCollectionByOrganizationUnitsPresenter implements
     @Override
     public CampaignCollectionByOrganizationUnitsResponse present(List<OrganizationUnitDailyStats> organizationUnitStats,
                                                                  CampaignDailyStats campaignStats) {
-        long maxUpdatedAt = computeMaxUpdatedAt(organizationUnitStats, campaignStats);
+        long minUpdatedAt = computeMinUpdatedAt(organizationUnitStats, campaignStats);
         
         return new CampaignCollectionByOrganizationUnitsResponse(
                 organizationUnitStats.stream()
@@ -38,14 +38,14 @@ public class CampaignCollectionByOrganizationUnitsPresenter implements
                         ContactOutcomesProgressResponse.from(campaignStats),
                         ClosingCausesProgressResponse.from(campaignStats)
                 ),
-                maxUpdatedAt
+                minUpdatedAt
         );
     }
     
-    private long computeMaxUpdatedAt(List<OrganizationUnitDailyStats> organizationUnitStats, CampaignDailyStats campaignStats) {
+    private long computeMinUpdatedAt(List<OrganizationUnitDailyStats> organizationUnitStats, CampaignDailyStats campaignStats) {
         return Stream.concat(
                 organizationUnitStats.stream(),
                 Stream.of(campaignStats)
-        ).mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        ).mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 }

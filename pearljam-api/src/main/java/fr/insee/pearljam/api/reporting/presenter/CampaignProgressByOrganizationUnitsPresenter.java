@@ -19,7 +19,7 @@ public class CampaignProgressByOrganizationUnitsPresenter implements
     @Override
     public CampaignProgressByOrganizationUnitsResponse present(List<OrganizationUnitDailyStats> organizationUnitStats,
                                                                CampaignDailyStats campaignStats) {
-        long maxUpdatedAt = computeMaxUpdatedAt(organizationUnitStats, campaignStats);
+        long minUpdatedAt = computeMinUpdatedAt(organizationUnitStats, campaignStats);
         
         return new CampaignProgressByOrganizationUnitsResponse(
                 organizationUnitStats.stream()
@@ -33,14 +33,14 @@ public class CampaignProgressByOrganizationUnitsPresenter implements
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
                         CommunicationsProgressResponse.from(campaignStats)),
-                maxUpdatedAt
+                minUpdatedAt
         );
     }
     
-    private long computeMaxUpdatedAt(List<OrganizationUnitDailyStats> organizationUnitStats, CampaignDailyStats campaignStats) {
+    private long computeMinUpdatedAt(List<OrganizationUnitDailyStats> organizationUnitStats, CampaignDailyStats campaignStats) {
         return Stream.concat(
                 organizationUnitStats.stream(),
                 Stream.of(campaignStats)
-        ).mapToLong(AbstractDailyStats::getUpdatedAt).max().orElse(0L);
+        ).mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 }
