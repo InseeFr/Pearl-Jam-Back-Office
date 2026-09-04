@@ -18,7 +18,7 @@
     <name>Pearl-Jam-Back-Office Parent</name>
 
     <properties>
-        <revision>5.38.11</revision>
+        <revision>5.38.12</revision>
         <changelist></changelist>
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
@@ -36,7 +36,7 @@
         <archunit.version>1.5.0</archunit.version>
         <jacoco.version>0.8.15</jacoco.version>
         <commons-validator.version>1.11.0</commons-validator.version>
-        <postgresql.version>42.7.13</postgresql.version>
+        <tomcat.version>11.0.25</tomcat.version>
     </properties>
 
     <dependencyManagement>
