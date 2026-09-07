@@ -69,7 +69,8 @@ class OrganizationUnitCollectionCsvExporterTest {
         when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
 
         // When / Then
-        assertThatThrownBy(() -> exporter.export("user1", "unknown", LocalDate.of(2025, 6, 10)))
+        LocalDate date = LocalDate.of(2025, 6, 10);
+        assertThatThrownBy(() -> exporter.export("user1", "unknown", date))
                 .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 }
