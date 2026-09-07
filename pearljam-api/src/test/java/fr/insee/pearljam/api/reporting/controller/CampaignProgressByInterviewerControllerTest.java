@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,7 +41,7 @@ class CampaignProgressByInterviewerControllerTest {
                     new StatesProgressResponse(
                             0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgressResponse(0L, 0L)),
-            0L
+            123456789L
     );
 
     @BeforeEach
@@ -68,6 +70,20 @@ class CampaignProgressByInterviewerControllerTest {
 
         // Then
         verify(port).getProgressForDay(any(), eq("campaign-1"), eq(day), any());
+    }
+
+    @Test
+    @DisplayName("Returns response with updatedAt field")
+    void shouldReturnResponseWithUpdatedAtField() {
+        // Given
+        CampaignProgressByInterviewersPresenter presenter = new CampaignProgressByInterviewersPresenter();
+        CampaignProgressByInterviewerController controller = new CampaignProgressByInterviewerController(port, presenter);
+        
+        // When
+        CampaignProgressByInterviewersResponse result = controller.getCampaignProgressForInterviewersFromStats("campaign-1", "user-1", null);
+        
+        // Then
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 
     @Test

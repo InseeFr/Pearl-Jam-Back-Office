@@ -30,6 +30,7 @@ class CampaignProgressPresenterTest {
             assertThat(response.states().allocated()).isEqualTo(stats.getAllocatedCount());
             assertThat(response.states().validated()).isEqualTo(stats.getCompletedStateCount());
             assertThat(response.communications().noticeLetter()).isEqualTo(stats.getNoticeCommunicationCount());
+            assertThat(response.updatedAt()).isEqualTo(123456789L);
         });
     }
 }

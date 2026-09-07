@@ -3,7 +3,7 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByOrganizationUnitsPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUnitsResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
@@ -34,11 +34,11 @@ class CampaignProgressByOrganizationUnitControllerTest {
             new CampaignProgressByOrganizationUnitsResponse.Campaign(0f,
                     new StatesProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                     new CommunicationsProgressResponse(0L, 0L)),
-            0L
+            123456789L
     );
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
         when(port.getProgressForDay(anyString(), anyString(), any(), any())).thenReturn(EMPTY_RESULT);
 
@@ -56,12 +56,11 @@ class CampaignProgressByOrganizationUnitControllerTest {
         // Given
         LocalDate day = LocalDate.of(2025, 6, 10);
 
-        // When
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress")
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        // Then
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isEqualTo(day);
@@ -70,21 +69,34 @@ class CampaignProgressByOrganizationUnitControllerTest {
     @Test
     @DisplayName("Passes a null day to the port when day is not provided")
     void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
-        // Given / When
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/progress"))
                 .andExpect(status().isOk());
 
-        // Then
         ArgumentCaptor<LocalDate> dayCaptor = ArgumentCaptor.forClass(LocalDate.class);
         verify(port).getProgressForDay(any(), eq("campaign-1"), dayCaptor.capture(), any());
         assertThat(dayCaptor.getValue()).isNull();
     }
 
     @Test
+    @DisplayName("Returns response with updatedAt field")
+    void shouldReturnResponseWithUpdatedAtField() {
+        // Given
+        CampaignProgressByOrganizationUnitsPresenter presenter = new CampaignProgressByOrganizationUnitsPresenter();
+        CampaignProgressByOrganizationUnitController controller = new CampaignProgressByOrganizationUnitController(port, presenter);
+        
+        // When
+        CampaignProgressByOrganizationUnitsResponse result = controller.getCampaignProgressForOUsFromStats("campaign-1", "user-1", null);
+        
+        // Then
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
+    }
+
+    @Test
     @DisplayName("Returns 404 Not Found when campaign does not exist")
     void shouldReturn404_whenCampaignNotFound() throws Exception {
         // Given
-        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/unknown/organization-units/progress"))

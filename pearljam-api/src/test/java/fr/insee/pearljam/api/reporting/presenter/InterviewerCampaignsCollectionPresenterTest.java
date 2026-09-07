@@ -30,6 +30,7 @@ class InterviewerCampaignsCollectionPresenterTest {
             assertThat(response.rates().collection()).isEqualTo(stats.getCollectionRate());
             assertThat(response.outcomes().total()).isEqualTo(stats.getTotalContactOutcomes());
             assertThat(response.closingCauses().totalClosed()).isEqualTo(stats.getTotalClosingCauses());
+            assertThat(response.updatedAt()).isEqualTo(123456789L);
         });
     }
 }

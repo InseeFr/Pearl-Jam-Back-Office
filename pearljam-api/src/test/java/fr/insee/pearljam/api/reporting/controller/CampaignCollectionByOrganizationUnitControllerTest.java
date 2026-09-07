@@ -6,7 +6,7 @@ import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,11 +44,11 @@ class CampaignCollectionByOrganizationUnitControllerTest {
                             new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
                             new ClosingCausesProgressResponse(0L, 0L, 0L)
                     ),
-                    0L
+                    123456789L
             );
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
         when(port.getProgressForDay(anyString(), anyString(), any(), any())).thenReturn(EMPTY_RESULT);
 
@@ -64,31 +66,43 @@ class CampaignCollectionByOrganizationUnitControllerTest {
         // Given
         LocalDate day = LocalDate.of(2025, 6, 10);
 
-        // When
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/collection")
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        // Then
         verify(port).getProgressForDay(any(), eq("campaign-1"), eq(day), any());
     }
 
     @Test
     @DisplayName("Passes a null day to the port when day is not provided")
     void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
-        // Given / When
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/organization-units/collection"))
                 .andExpect(status().isOk());
 
-        // Then
         verify(port).getProgressForDay(any(), eq("campaign-1"), isNull(), any());
+    }
+
+    @Test
+    @DisplayName("Returns response with updatedAt field")
+    void shouldReturnResponseWithUpdatedAtField() {
+        // Given
+        CampaignCollectionByOrganizationUnitsPresenter presenter = new CampaignCollectionByOrganizationUnitsPresenter();
+        CampaignCollectionByOrganizationUnitController controller = new CampaignCollectionByOrganizationUnitController(port, presenter);
+        
+        // When
+        CampaignCollectionByOrganizationUnitsResponse result = controller.getCampaignProgressForOUsFromStats("campaign-1", "user-1", null);
+        
+        // Then
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 
     @Test
     @DisplayName("Returns 404 Not Found when campaign does not exist")
     void shouldReturn404_whenCampaignNotFound() throws Exception {
         // Given
-        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), anyString(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/unknown/organization-units/collection"))
