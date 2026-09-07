@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.export.csv.CsvRow;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +65,7 @@ class OrganizationUnitCollectionCsvExporterTest {
     @DisplayName("Propagates CampaignNotFoundException raised by the port")
     void shouldThrowCampaignNotFoundException_whenCampaignNotFound() {
         // Given
-        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
         LocalDate date = LocalDate.of(2025, 6, 10);
