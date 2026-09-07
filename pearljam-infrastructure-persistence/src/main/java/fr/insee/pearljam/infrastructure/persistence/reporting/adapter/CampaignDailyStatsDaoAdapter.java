@@ -72,7 +72,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             WHERE campaign_id = :campaignId
             AND interviewer_id is NULL
         ) AS unaffectedCount,
-        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+        COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN campaign c ON c.id = cds.campaign_id
@@ -100,7 +100,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
               AND su.organization_unit_id IN (:ouIds)
               AND su.interviewer_id IS NULL
         ) AS unaffectedCount,
-        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+        COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
         %s
         FROM campaign_daily_stats cds
         WHERE campaign_id = :campaignId
@@ -132,7 +132,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         ou.id AS ouId,
         ou.label AS ouLabel,
         COALESCE(su.unaffected, 0) AS unaffectedCount,
-        COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+        COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
         %s
     FROM campaign_daily_stats cds
     JOIN organization_unit ou ON ou.id = cds.organization_unit_id
@@ -205,7 +205,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
         SELECT
             c.id AS campaignId,
             c.label AS campaignLabel,
-            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+            COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN campaign c ON c.id = cds.campaign_id
@@ -236,7 +236,7 @@ public class CampaignDailyStatsDaoAdapter implements CampaignDailyStatsRepositor
             interv.id AS interviewerId,
             interv.first_name AS interviewerFirstName,
             interv.last_name AS interviewerLastName,
-            COALESCE(MAX(cds.updated_at), 0) AS updatedAt,
+            COALESCE(MIN(cds.updated_at), 0) AS updatedAt,
             %s
         FROM campaign_daily_stats cds
         JOIN interviewer interv ON interv.id = cds.interviewer_id
