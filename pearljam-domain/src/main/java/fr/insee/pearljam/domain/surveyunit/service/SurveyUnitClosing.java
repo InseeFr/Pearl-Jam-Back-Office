@@ -75,7 +75,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
 
         closeSurveyUnits(ids);
 
-        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type);
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type, dateService.now());
     }
 
     private void handleUpdateFlow(List<String> ids, ClosingCauseType type) {
@@ -83,7 +83,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         //insert missing
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
-        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type);
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type, dateService.now());
     }
 
     @Override

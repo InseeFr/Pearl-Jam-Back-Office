@@ -37,5 +37,6 @@ class CampaignCollectionByInterviewersPresenterTest {
         assertThat(result.site().outcomes().total()).isEqualTo(siteStats.getTotalContactOutcomes());
         assertThat(result.site().unaffected()).isEqualTo(5L);
         assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedCount());
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 }

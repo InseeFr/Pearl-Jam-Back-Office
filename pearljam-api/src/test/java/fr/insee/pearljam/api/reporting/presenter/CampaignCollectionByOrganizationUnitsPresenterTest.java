@@ -36,5 +36,6 @@ class CampaignCollectionByOrganizationUnitsPresenterTest {
         });
         assertThat(result.campaign().allocated()).isEqualTo(campaignStats.getAllocatedCount());
         assertThat(result.campaign().rates().outOfScope()).isEqualTo(campaignStats.getOutOfScopeRate());
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 }

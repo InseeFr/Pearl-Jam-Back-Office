@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.scheduler;
 
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressSnapshotServicePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class CampaignProgressSchedulerTest {
 
     @Mock
-    private CampaignProgressBatch campaignProgressBatch;
+    private CampaignProgressSnapshotServicePort snapshotService;
 
     private Clock clock;
 
@@ -31,7 +31,7 @@ class CampaignProgressSchedulerTest {
 
         scheduler = new CampaignProgressScheduler(
                 clock,
-                campaignProgressBatch,
+                snapshotService,
                 2,
                 3
         );
@@ -43,9 +43,9 @@ class CampaignProgressSchedulerTest {
         scheduler.computePeriodicSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 10));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
-        verifyNoMoreInteractions(campaignProgressBatch);
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 10));
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 9));
+        verifyNoMoreInteractions(snapshotService);
     }
 
     @Test
@@ -54,11 +54,11 @@ class CampaignProgressSchedulerTest {
         scheduler.computeHistoricalSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 8));
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 7));
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 9));
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 8));
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 7));
 
-        verifyNoMoreInteractions(campaignProgressBatch);
+        verifyNoMoreInteractions(snapshotService);
     }
 
     @Test
@@ -66,7 +66,7 @@ class CampaignProgressSchedulerTest {
         // Given
         scheduler = new CampaignProgressScheduler(
                 clock,
-                campaignProgressBatch,
+                snapshotService,
                 2,1
         );
 
@@ -74,8 +74,8 @@ class CampaignProgressSchedulerTest {
         scheduler.computeHistoricalSnapshot();
 
         // Then
-        verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
-        verifyNoMoreInteractions(campaignProgressBatch);
+        verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 9));
+        verifyNoMoreInteractions(snapshotService);
     }
 
     @Test
@@ -84,11 +84,11 @@ class CampaignProgressSchedulerTest {
         scheduler.computeHistoricalSnapshot();
 
         // Then
-        InOrder inOrder = inOrder(campaignProgressBatch);
+        InOrder inOrder = inOrder(snapshotService);
 
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 9));
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 8));
-        inOrder.verify(campaignProgressBatch).run(LocalDate.of(2025, Month.JUNE, 7));
+        inOrder.verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 9));
+        inOrder.verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 8));
+        inOrder.verify(snapshotService).computeSnapshot(LocalDate.of(2025, Month.JUNE, 7));
 
         inOrder.verifyNoMoreInteractions();
     }

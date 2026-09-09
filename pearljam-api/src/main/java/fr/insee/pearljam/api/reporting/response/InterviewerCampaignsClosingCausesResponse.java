@@ -16,7 +16,8 @@ public record InterviewerCampaignsClosingCausesResponse(
     public record InterviewerCampaignSurveyUnits  (
             String campaignLabel,
             Long allocated,
-            ClosingCauseResponse closingCauses
+            ClosingCauseResponse closingCauses,
+            long updatedAt
     ) {
         @Schema(name = "InterviewerCampaignsClosingCausesForSurveyUnit")
         public record ClosingCauseResponse (
@@ -31,7 +32,8 @@ public record InterviewerCampaignsClosingCausesResponse(
     @Schema(name = "InterviewerCampaignsClosingCausesTotalSurveyUnit")
     public record InterviewerCampaignsTotalSurveyUnit(
             Long allocated,
-            ClosingCauseResponse closingCauses
+            ClosingCauseResponse closingCauses,
+            long updatedAt
     ) {
         @Schema(name = "InterviewerCampaignsClosingCausesTotal")
         public record ClosingCauseResponse(

@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
 @Repository
 @RequiredArgsConstructor
 @Transactional
-public class CampaignProgressSnapshot {
+public class CampaignProgressSnapshotRepository {
 
     private final EntityManager em;
 
@@ -149,6 +150,7 @@ public class CampaignProgressSnapshot {
                 sc.campaign_id,
                 sc.organization_unit_id,
                 sc.interviewer_id,
+                :updatedAt AS updatedAt,
                 sc.nvm_count, sc.nns_count, sc.anv_count, sc.vin_count,
                 sc.vic_count, sc.prc_count, sc.aoc_count, sc.aps_count,
                 sc.ins_count, sc.wft_count, sc.wfs_count,
@@ -179,7 +181,7 @@ public class CampaignProgressSnapshot {
         ),
         upsert AS (
             INSERT INTO campaign_daily_stats (
-                day, campaign_id, organization_unit_id, interviewer_id,
+                day, campaign_id, organization_unit_id, interviewer_id,updated_at,
                 nvm_count, nns_count, anv_count, vin_count, vic_count, prc_count,
                 aoc_count, aps_count, ins_count, wft_count, wfs_count,
                 tbr_count, fin_count, clo_count, nva_count,
@@ -225,7 +227,8 @@ public class CampaignProgressSnapshot {
                 ala_count = EXCLUDED.ala_count,
                 duk_count = EXCLUDED.duk_count,
                 nuh_count = EXCLUDED.nuh_count,
-                noa_count = EXCLUDED.noa_count
+                noa_count = EXCLUDED.noa_count,
+               updated_at = EXCLUDED.updated_at
             RETURNING 1
         )
         DELETE FROM campaign_daily_stats cds
@@ -240,7 +243,7 @@ public class CampaignProgressSnapshot {
         );
     """;
 
-    public void computeAndStoreSnapshot(LocalDate day) {
+    public void computeAndStoreSnapshot(LocalDate day, Instant updatedAt) {
         long startOfNextDayEpoch = day.plusDays(1)
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
@@ -249,6 +252,7 @@ public class CampaignProgressSnapshot {
         em.createNativeQuery(UPSERT_SNAPSHOT)
                 .setParameter("day", day)
                 .setParameter("startOfNextDayEpoch", startOfNextDayEpoch)
+                .setParameter("updatedAt", updatedAt.toEpochMilli())
                 .executeUpdate();
     }
 }

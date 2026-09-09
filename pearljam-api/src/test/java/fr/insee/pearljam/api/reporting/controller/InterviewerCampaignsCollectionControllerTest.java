@@ -1,8 +1,13 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
+import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
+import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
+import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
+import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class InterviewerCampaignsCollectionControllerTest {
@@ -28,7 +34,23 @@ class InterviewerCampaignsCollectionControllerTest {
     @BeforeEach
     void setup() {
         reportingService = mock(InterviewerCampaignsReportingPort.class);
-        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of());
+        
+        InterviewerCampaignDailyStats stats = new InterviewerCampaignDailyStats();
+        stats.setCampaignId("camp-1");
+        stats.setCampaignLabel("Campaign 1");
+        stats.setUpdatedAt(123456789L);
+        
+        InterviewerCampaignCollectionResponse response = new InterviewerCampaignCollectionResponse(
+                "camp-1",
+                "Campaign 1",
+                0L,
+                new CollectionRatesResponse(0f, 0f, 0f),
+                new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
+                new ClosingCausesProgressResponse(0L, 0L, 0L),
+                123456789L
+        );
+        
+        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of(response));
 
         InterviewerCampaignsCollectionController controller = new InterviewerCampaignsCollectionController(
                 reportingService,
@@ -40,22 +62,22 @@ class InterviewerCampaignsCollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Returns 200 OK when interviewerId and day are provided")
+    @DisplayName("Returns 200 OK with updatedAt field when interviewerId and day are provided")
     void shouldReturnOk_whenInterviewerIdAndDayProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
                         .param("day", "2025-06-10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test
-    @DisplayName("Returns 200 OK when interviewerId is provided without day")
+    @DisplayName("Returns 200 OK with updatedAt field when interviewerId is provided without day")
     void shouldReturnOk_whenInterviewerIdAndDayIsNotProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test

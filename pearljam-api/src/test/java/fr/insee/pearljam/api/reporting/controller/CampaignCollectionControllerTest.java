@@ -1,7 +1,11 @@
 package fr.insee.pearljam.api.reporting.controller;
 
-import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
+import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
+import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
+import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
+import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CampaignCollectionControllerTest {
@@ -28,7 +33,18 @@ class CampaignCollectionControllerTest {
     @BeforeEach
     void setup() {
         reportingService = mock(CampaignReportingPort.class);
-        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of());
+        
+        CampaignCollectionResponse response = new CampaignCollectionResponse(
+                "camp-1",
+                "Campaign 1",
+                0L,
+                new CollectionRatesResponse(0f, 0f, 0f),
+                new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
+                new ClosingCausesProgressResponse(0L, 0L, 0L),
+                123456789L
+        );
+        
+        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
 
         CampaignCollectionController controller = new CampaignCollectionController(
                 reportingService,
@@ -40,22 +56,22 @@ class CampaignCollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Returns 200 OK when day is provided")
+    @DisplayName("Returns 200 OK with updatedAt field when day is provided")
     void shouldReturnOk_whenDayProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/collection")
                         .param("day", "2025-06-10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test
-    @DisplayName("Returns 200 OK when day is not provided")
+    @DisplayName("Returns 200 OK with updatedAt field when day is not provided")
     void shouldReturnOk_whenDayIsNotProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/collection"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test

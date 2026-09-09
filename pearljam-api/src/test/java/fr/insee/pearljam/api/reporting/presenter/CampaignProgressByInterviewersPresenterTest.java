@@ -36,5 +36,6 @@ class CampaignProgressByInterviewersPresenterTest {
         assertThat(result.site().states().allocated()).isEqualTo(siteStats.getAllocatedCount());
         assertThat(result.site().unaffected()).isEqualTo(5L);
         assertThat(result.campaign().states().validated()).isEqualTo(campaignStats.getCompletedStateCount());
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 }

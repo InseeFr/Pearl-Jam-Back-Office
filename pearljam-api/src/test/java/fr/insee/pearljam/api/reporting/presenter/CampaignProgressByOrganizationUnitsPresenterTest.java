@@ -35,5 +35,6 @@ class CampaignProgressByOrganizationUnitsPresenterTest {
         });
         assertThat(result.campaign().progressRate()).isEqualTo(campaignStats.getProgressStateRate());
         assertThat(result.campaign().states().allocated()).isEqualTo(campaignStats.getAllocatedCount());
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 }

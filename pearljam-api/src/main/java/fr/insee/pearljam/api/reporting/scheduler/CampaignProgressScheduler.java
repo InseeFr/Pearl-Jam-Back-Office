@@ -1,6 +1,6 @@
 package fr.insee.pearljam.api.reporting.scheduler;
 
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressSnapshotServicePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class CampaignProgressScheduler {
 
     private final Clock clock;
-    private final CampaignProgressBatch campaignProgressBatch;
+    private final CampaignProgressSnapshotServicePort snapshotService;
     @Value("${feature.stats-scheduling.periodic-cron-days}")
     private final int periodicCronDays;
     @Value("${feature.stats-scheduling.historical-cron-days}")
@@ -47,7 +47,7 @@ public class CampaignProgressScheduler {
         for (int i = 0; i < numberOfDays; i++) {
             LocalDate date = startDate.minusDays(i);
             log.info("Scheduled snapshot computation for {}", date);
-            campaignProgressBatch.run(date);
+            snapshotService.computeSnapshot(date);
         }
     }
 }

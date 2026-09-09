@@ -1,8 +1,12 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
+import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
+import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
+import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.service.exception.FutureReportingDateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CampaignProgressControllerTest {
@@ -28,7 +33,22 @@ class CampaignProgressControllerTest {
     @BeforeEach
     void setup() {
         reportingService = mock(CampaignReportingPort.class);
-        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of());
+        
+        CampaignDailyStats stats = new CampaignDailyStats();
+        stats.setCampaignId("camp-1");
+        stats.setCampaignLabel("Campaign 1");
+        stats.setUpdatedAt(123456789L);
+        
+        CampaignProgressResponse response = new CampaignProgressResponse(
+                "camp-1",
+                "Campaign 1",
+                0f,
+                new StatesProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                new CommunicationsProgressResponse(0L, 0L),
+                123456789L
+        );
+        
+        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
 
         CampaignProgressController controller = new CampaignProgressController(
                 reportingService,
@@ -40,22 +60,22 @@ class CampaignProgressControllerTest {
     }
 
     @Test
-    @DisplayName("Returns 200 OK when day is provided")
+    @DisplayName("Returns 200 OK with updatedAt field when day is provided")
     void shouldReturnOk_whenDayProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress")
                         .param("day", "2025-06-10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test
-    @DisplayName("Returns 200 OK when day is not provided")
+    @DisplayName("Returns 200 OK with updatedAt field when day is not provided")
     void shouldReturnOk_whenDayIsNotProvided() throws Exception {
-        // Given
-        // When / Then
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
     }
 
     @Test

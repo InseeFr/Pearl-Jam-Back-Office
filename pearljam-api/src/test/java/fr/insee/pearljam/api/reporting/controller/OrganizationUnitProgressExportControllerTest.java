@@ -5,7 +5,7 @@ import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressC
 import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressCsvExporter;
 import fr.insee.pearljam.api.reporting.export.progress.OrganizationUnitProgressCsvPresenter;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ class OrganizationUnitProgressExportControllerTest {
     private CampaignReportingByOrganizationUnitsPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
         when(port.getProgressForDay(any(), any(), any(), any()))
                 .thenReturn(new OrganizationUnitProgressCsv(List.of()));
@@ -107,7 +107,7 @@ class OrganizationUnitProgressExportControllerTest {
     void shouldReturn404_whenCampaignNotFound() throws Exception {
         // Given
         when(port.getProgressForDay(any(), any(), any(), any()))
-                .thenThrow(new CampaignNotFoundException());
+                .thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/unknown/organization-units/progress/export")
