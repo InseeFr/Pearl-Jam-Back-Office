@@ -17,6 +17,15 @@ public record Person(
 		Set<PhoneNumber> phoneNumbers,
 		ContactHistory contactHistory) {
 
+	/**
+	 * @return a copy of this person without its technical id, so that persisting it creates a new
+	 * entity instead of trying to update a row that may no longer exist
+	 */
+	public Person withoutId() {
+		return new Person(null, title, firstName, lastName, email, birthdate, privileged, isPanel,
+				phoneNumbers, contactHistory);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

@@ -3,6 +3,7 @@ package fr.insee.pearljam.infrastructure.surveyunit.entity;
 import fr.insee.pearljam.api.domain.ContactOutcomeType;
 import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.domain.surveyunit.model.person.ContactHistory;
+import fr.insee.pearljam.domain.surveyunit.model.person.Person;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,9 @@ public class ContactHistoryDB implements Serializable {
                 new HashSet<>());
 
         contactHistory.persons().stream()
+                // the contact history and its persons are always recreated : the id sent by the client
+                // refers to a row that may no longer exist, forcing it to null creates a new entity
+                .map(Person::withoutId)
                 .map(person -> PersonDB.fromModel(person, contactHistoryDB, surveyUnit))
                 .forEach(person -> contactHistoryDB.getPersons().add(person));
 

@@ -24,8 +24,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -1110,5 +1112,88 @@ class SurveyUnitIT {
 				]
 				""";
 		JSONAssert.assertEquals(expectedResult, contentResult, JSONCompareMode.NON_EXTENSIBLE);
+	}
+
+	/**
+	 * Reproduces E-001 : on synchronization, the interviewer device sends back the next contact
+	 * history persons with the ids it got from the previous GET (person 16 for survey unit 11).
+	 */
+	@Test
+	@DisplayName("Should update survey unit when next contact history persons are sent back with their ids")
+	@Sql(statements = {
+			"DELETE FROM phone_number WHERE person_id IN (SELECT id FROM person WHERE survey_unit_id = '11')",
+			"DELETE FROM contact_history WHERE survey_unit_id = '11'",
+			"DELETE FROM person WHERE survey_unit_id = '11'"
+	}, executionPhase = BEFORE_TEST_METHOD)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
+	void testPutSurveyUnitWithNextContactHistoryPersonIds() throws Exception {
+		String updateJson = """
+				{
+				  "id": "11",
+				  "nextContactHistory": {
+				    "persons": [
+				      {
+				        "id": 16,
+				        "title": "MISS",
+				        "firstName": "Futur",
+				        "lastName": "Ama",
+				        "phoneNumber": "+33677542866",
+				        "email": "futur.ama@ch.com",
+				        "preferredContact": true
+				      }
+				    ]
+				  }
+				}
+				""";
+
+		MvcResult result = mockMvc.perform(put("/api/survey-unit/11")
+						.with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
+						.accept(MediaType.APPLICATION_JSON)
+						.content(updateJson)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+
+		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	/**
+	 * Control case for E-001 : the same stale ids sent in "persons" are harmless, because
+	 * SurveyUnit#updatePersons forces the id to null before rebuilding the PersonDB entities.
+	 */
+	@Test
+	@DisplayName("Should update survey unit when persons are sent back with ids that no longer exist")
+	@Sql(statements = {
+			"DELETE FROM phone_number WHERE person_id IN (SELECT id FROM person WHERE survey_unit_id = '11')",
+			"DELETE FROM contact_history WHERE survey_unit_id = '11'",
+			"DELETE FROM person WHERE survey_unit_id = '11'"
+	}, executionPhase = BEFORE_TEST_METHOD)
+	@Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
+	void testPutSurveyUnitWithStalePersonIds() throws Exception {
+		String updateJson = """
+				{
+				  "id": "11",
+				  "persons": [
+				    {
+				      "id": 1,
+				      "title": "MISTER",
+				      "firstName": "Ted",
+				      "lastName": "Farmer",
+				      "email": "test@test.com",
+				      "birthdate": 11111111,
+				      "privileged": true,
+				      "phoneNumbers": []
+				    }
+				  ]
+				}
+				""";
+
+		MvcResult result = mockMvc.perform(put("/api/survey-unit/11")
+						.with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
+						.accept(MediaType.APPLICATION_JSON)
+						.content(updateJson)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+
+		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 }
