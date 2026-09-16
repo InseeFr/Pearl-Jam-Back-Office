@@ -31,8 +31,8 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../pearljam-coverage/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <cucumber.version>7.34.7</cucumber.version>
-        <springdoc.version>3.1.0</springdoc.version>
+        <cucumber.version>7.34.8</cucumber.version>
+        <springdoc.version>3.1.1</springdoc.version>
         <archunit.version>1.5.0</archunit.version>
         <jacoco.version>0.8.15</jacoco.version>
         <commons-validator.version>1.11.0</commons-validator.version>
@@ -130,7 +130,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.6</version>
+                <version>3.6.0</version>
                 <configuration>
                     <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                     <includes>
@@ -144,7 +144,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.6</version>
+                <version>3.6.0</version>
                 <configuration>
                     <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                     <includes>
