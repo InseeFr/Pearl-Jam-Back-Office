@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.extract_branch.outputs.branch }}
+      snapshot-version: ${{ steps.version-step.outputs.version }}
     steps:
       - name: Extract branch name
         shell: bash
@@ -19,6 +20,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
+
+      - name: Get source version
+        id: version-step
+        run: echo "version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -35,7 +40,13 @@ jobs:
           name: app-jar
           path: api/target/*.jar
 
-  docker:
+      - name: Upload JMS jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: jms-jar
+          path: listener-jms/target/*.jar
+
+  docker-api:
     needs:
       - build-snapshot
     runs-on: ubuntu-latest
@@ -51,13 +62,31 @@ jobs:
           name: app-jar
           path: api/target/
 
-      - name: Create docker version tag
-        id: docker-version
-        run: |
-          # replace '/' by '-' for docker tags
-          docker_tag="${{ needs.build-snapshot.outputs.branch }}"
-          docker_tag=$(echo "$docker_tag" | sed 's/[\/+]/-/g')
-          echo "docker_tag=${docker_tag}" >> $GITHUB_ENV
+      - name: Publish to Docker Hub
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: inseefr/pearl-jam-back-office
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          default_branch: ${{ github.ref }}
+          tags: ${{ needs.build-snapshot.outputs.snapshot-version }}
+          workdir: api
+
+  docker-jms:
+    needs:
+      - build-snapshot
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: listener-jms
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download uploaded jar
+        uses: actions/download-artifact@v4
+        with:
+          name: jms-jar
+          path: listener-jms/target/
 
       - name: Publish to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@v5
@@ -66,5 +95,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           default_branch: ${{ github.ref }}
-          tags: "snapshot-${{ env.docker_tag }}"
-          workdir: api
+          tags: ${{ needs.build-snapshot.outputs.snapshot-version }}-jms
+          workdir: listener-jms
