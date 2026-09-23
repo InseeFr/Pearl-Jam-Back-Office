@@ -1,11 +1,10 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressListResponse;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +29,7 @@ public class CampaignProgressController {
     @Operation(summary = "Get campaigns reporting")
     @GetMapping(Constants.API_REPORTING_CAMPAIGNS_PROGRESS)
     @Parameter(name = "userId", hidden = true)
-    public List<CampaignProgressResponse> getCampaignsProgress(
+    public CampaignProgressListResponse getCampaignsProgress(
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {
         return campaignReportingService.getCampaignsStats(userId, day, presenter);

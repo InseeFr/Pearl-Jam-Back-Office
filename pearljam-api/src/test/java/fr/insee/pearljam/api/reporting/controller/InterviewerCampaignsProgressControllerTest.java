@@ -2,6 +2,8 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsProgressPresenter;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressItemResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressListResponse;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesInterviewerProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
@@ -33,17 +35,18 @@ class InterviewerCampaignsProgressControllerTest {
     void setup() {
         reportingService = mock(InterviewerCampaignsReportingPort.class);
         
-        InterviewerCampaignsProgressResponse response = new InterviewerCampaignsProgressResponse(
-                "camp-1",
-                "Campaign 1",
-                0f,
-                new StatesInterviewerProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-                new CommunicationsProgressResponse(0L, 0L),
+        InterviewerCampaignsProgressListResponse response = new InterviewerCampaignsProgressListResponse(
+                List.of(new InterviewerCampaignsProgressItemResponse(
+                        "camp-1",
+                        "Campaign 1",
+                        0f,
+                        new StatesInterviewerProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                        new CommunicationsProgressResponse(0L, 0L))),
                 123456789L
         );
         
         when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any()))
-                .thenReturn(List.of(response));
+                .thenReturn(response);
 
         InterviewerCampaignsProgressController controller = new InterviewerCampaignsProgressController(
                 reportingService,
@@ -61,7 +64,8 @@ class InterviewerCampaignsProgressControllerTest {
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/progress", "interviewer1")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test
@@ -70,7 +74,8 @@ class InterviewerCampaignsProgressControllerTest {
         // Given / When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/progress", "interviewer1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test

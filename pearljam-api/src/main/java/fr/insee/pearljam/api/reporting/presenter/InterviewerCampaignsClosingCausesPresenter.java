@@ -16,6 +16,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
 
     @Override
     public InterviewerCampaignsClosingCausesResponse present(List<InterviewerCampaignDailyStats> stats) {
+        long minUpdatedAt = computeMinUpdatedAt(stats);
+        
         List<InterviewerCampaignSurveyUnits> interviewerCampaignSurveyUnits =
                 stats.stream().map(interv ->
                 new InterviewerCampaignSurveyUnits(
@@ -26,8 +28,7 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                             interv.getNpiProvisionalClosingCauseCount(),
                             interv.getNpxProvisionalClosingCauseCount(),
                             interv.getRowProvisionalClosingCauseCount(),
-                            interv.getTotalProvisionalClosingCauses()),
-                        computeMinUpdatedAt(stats)
+                            interv.getTotalProvisionalClosingCauses())
                         )
         ).toList();
 
@@ -38,8 +39,6 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         long totalRowInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getRowProvisionalClosingCauseCount).sum();
         long totalClosingCauseInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getTotalProvisionalClosingCauses).sum();
 
-        long minUpdatedAt = computeMinUpdatedAt(stats);
-
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit = new InterviewerCampaignsTotalSurveyUnit(
                 totalSUInterviewer,
                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(
@@ -48,11 +47,10 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalNpxInterviewer,
                         totalRowInterviewer,
                         totalClosingCauseInterviewer
-                ),
-                minUpdatedAt
+                )
         );
 
-        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);
+        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit, minUpdatedAt);
     }
 
     private long computeMinUpdatedAt(List<InterviewerCampaignDailyStats> stats) {

@@ -67,7 +67,6 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         InterviewerCampaignSurveyUnits campaignEntry = result.interviewerCampaignSurveyUnits().getFirst();
         assertThat(campaignEntry.campaignLabel()).isEqualTo("CAMPAIGN-1");
         assertThat(campaignEntry.allocated()).isEqualTo(10L);
-        assertThat(campaignEntry.updatedAt()).isEqualTo(campaignUpdatedAt);
 
         InterviewerCampaignSurveyUnits.ClosingCauseResponse campaignClosing = campaignEntry.closingCauses();
         assertThat(campaignClosing.interviewerAbsence()).isEqualTo(1L);
@@ -79,7 +78,6 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // Then — totals (single campaign, same values)
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(10L);
-        assertThat(total.updatedAt()).isEqualTo(campaignUpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(1L);
@@ -87,6 +85,9 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         assertThat(totalClosing.exceptionalReason()).isEqualTo(3L);
         assertThat(totalClosing.rightOfWithdrawal()).isEqualTo(4L);
         assertThat(totalClosing.total()).isEqualTo(10L);
+        
+        // Then - updatedAt should be the minimum across all stats
+        assertThat(result.updatedAt()).isEqualTo(campaignUpdatedAt);
     }
 
     @Test
@@ -101,18 +102,15 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats1, stats2));
 
-        // Then — per-campaign entries (all should have the minimal updatedAt)
+        // Then — per-campaign entries (all should have the same updatedAt at the response level)
         assertThat(result.interviewerCampaignSurveyUnits()).hasSize(2);
         assertThat(result.interviewerCampaignSurveyUnits().get(0).campaignLabel()).isEqualTo("CAMPAIGN-1");
-        assertThat(result.interviewerCampaignSurveyUnits().get(0).updatedAt()).isEqualTo(expectedMinUpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).campaignLabel()).isEqualTo("CAMPAIGN-2");
-        assertThat(result.interviewerCampaignSurveyUnits().get(1).updatedAt()).isEqualTo(expectedMinUpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).closingCauses().total()).isEqualTo(18L);
 
         // Then — aggregated totals across both campaigns
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(25L);
-        assertThat(total.updatedAt()).isEqualTo(expectedMinUpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(6L);
@@ -120,5 +118,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         assertThat(totalClosing.exceptionalReason()).isEqualTo(8L);
         assertThat(totalClosing.rightOfWithdrawal()).isEqualTo(1L);
         assertThat(totalClosing.total()).isEqualTo(22L);
+        
+        // Then - updatedAt should be the minimum across all stats
+        assertThat(result.updatedAt()).isEqualTo(expectedMinUpdatedAt);
     }
 }

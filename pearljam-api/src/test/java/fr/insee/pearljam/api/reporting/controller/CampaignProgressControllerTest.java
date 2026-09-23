@@ -1,6 +1,8 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressItemResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignProgressListResponse;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
@@ -39,16 +41,17 @@ class CampaignProgressControllerTest {
         stats.setCampaignLabel("Campaign 1");
         stats.setUpdatedAt(123456789L);
         
-        CampaignProgressResponse response = new CampaignProgressResponse(
-                "camp-1",
-                "Campaign 1",
-                0f,
-                new StatesProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-                new CommunicationsProgressResponse(0L, 0L),
+        CampaignProgressListResponse response = new CampaignProgressListResponse(
+                List.of(new CampaignProgressItemResponse(
+                        "camp-1",
+                        "Campaign 1",
+                        0f,
+                        new StatesProgressResponse(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+                        new CommunicationsProgressResponse(0L, 0L))),
                 123456789L
         );
         
-        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
+        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(response);
 
         CampaignProgressController controller = new CampaignProgressController(
                 reportingService,
@@ -66,7 +69,8 @@ class CampaignProgressControllerTest {
         mockMvc.perform(get("/api/reporting/campaigns/progress")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test
@@ -75,7 +79,8 @@ class CampaignProgressControllerTest {
         // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/progress"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test

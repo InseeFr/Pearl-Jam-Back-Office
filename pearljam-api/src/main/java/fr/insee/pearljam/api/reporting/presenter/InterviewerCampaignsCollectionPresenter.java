@@ -1,5 +1,7 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionItemResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionListResponse;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
@@ -13,19 +15,32 @@ import java.util.List;
 
 @Component
 public class InterviewerCampaignsCollectionPresenter
-        implements InterviewerCampaignsStatsPresenter<List<InterviewerCampaignCollectionResponse>> {
+        implements InterviewerCampaignsStatsPresenter<InterviewerCampaignCollectionListResponse> {
 
     private long computeMinUpdatedAt(List<InterviewerCampaignDailyStats> stats) {
         return stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 
     @Override
-    public List<InterviewerCampaignCollectionResponse> present(List<InterviewerCampaignDailyStats> stats) {
+    public InterviewerCampaignCollectionListResponse present(List<InterviewerCampaignDailyStats> stats) {
         long minUpdatedAt = computeMinUpdatedAt(stats);
-        return stats.stream().map(campaignStats -> present(campaignStats, minUpdatedAt)).toList();
+        List<InterviewerCampaignCollectionItemResponse> items = stats.stream()
+                .map(this::presentItem)
+                .toList();
+        return new InterviewerCampaignCollectionListResponse(items, minUpdatedAt);
     }
 
-    public InterviewerCampaignCollectionResponse present(InterviewerCampaignDailyStats stats, long minUpdatedAt) {
+    private InterviewerCampaignCollectionItemResponse presentItem(InterviewerCampaignDailyStats stats) {
+        return new InterviewerCampaignCollectionItemResponse(
+                stats.getCampaignId(),
+                stats.getCampaignLabel(),
+                stats.getAllocatedCount(),
+                CollectionRatesResponse.from(stats),
+                ContactOutcomesProgressResponse.from(stats),
+                ClosingCausesProgressResponse.from(stats));
+    }
+
+    public InterviewerCampaignCollectionResponse present(InterviewerCampaignDailyStats stats) {
         return new InterviewerCampaignCollectionResponse(
                 stats.getCampaignId(),
                 stats.getCampaignLabel(),
@@ -33,10 +48,6 @@ public class InterviewerCampaignsCollectionPresenter
                 CollectionRatesResponse.from(stats),
                 ContactOutcomesProgressResponse.from(stats),
                 ClosingCausesProgressResponse.from(stats),
-                minUpdatedAt);
-    }
-
-    public InterviewerCampaignCollectionResponse present(InterviewerCampaignDailyStats stats) {
-        return present(stats, stats.getUpdatedAt());
+                stats.getUpdatedAt());
     }
 }
