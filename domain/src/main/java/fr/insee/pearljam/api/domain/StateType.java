@@ -26,7 +26,8 @@ public enum StateType {
 	TBR("To be reviewed"), 
 	FIN("Finalized"),
 	CLO("Closed"),
-	NVA("Not Available to All");
+	NVA("Not Available to All"),
+	RCI("Regained control of interview");
 
 	private final String label;
 
