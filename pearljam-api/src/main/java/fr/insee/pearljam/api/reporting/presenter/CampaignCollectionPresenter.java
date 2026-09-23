@@ -5,6 +5,7 @@ import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsPresenter;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,17 @@ import java.util.List;
 @Component
 public class CampaignCollectionPresenter implements CampaignStatsPresenter<List<CampaignCollectionResponse>> {
 
-    @Override
-    public List<CampaignCollectionResponse> present(List<CampaignDailyStats> stats) {
-        return stats.stream().map(this::present).toList();
+    private long computeMinUpdatedAt(List<CampaignDailyStats> stats) {
+        return stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 
-    public CampaignCollectionResponse present(CampaignDailyStats stats) {
+    @Override
+    public List<CampaignCollectionResponse> present(List<CampaignDailyStats> stats) {
+        long minUpdatedAt = computeMinUpdatedAt(stats);
+        return stats.stream().map(campaignStats -> present(campaignStats, minUpdatedAt)).toList();
+    }
+
+    public CampaignCollectionResponse present(CampaignDailyStats stats, long minUpdatedAt) {
         return new CampaignCollectionResponse(
                 stats.getCampaignId(),
                 stats.getCampaignLabel(),
@@ -26,6 +32,10 @@ public class CampaignCollectionPresenter implements CampaignStatsPresenter<List<
                 CollectionRatesResponse.from(stats),
                 ContactOutcomesProgressResponse.from(stats),
                 ClosingCausesProgressResponse.from(stats),
-                stats.getUpdatedAt());
+                minUpdatedAt);
+    }
+
+    public CampaignCollectionResponse present(CampaignDailyStats stats) {
+        return present(stats, stats.getUpdatedAt());
     }
 }

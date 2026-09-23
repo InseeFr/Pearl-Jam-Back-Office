@@ -94,24 +94,25 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         // Given
         long campaign1UpdatedAt = 1000L;
         long campaign2UpdatedAt = 2000L;
+        long expectedMinUpdatedAt = Math.min(campaign1UpdatedAt, campaign2UpdatedAt);
         InterviewerCampaignDailyStats stats1 = mockStats("CAMPAIGN-1", 5L, 1L, 1L, 1L, 1L, 4L, campaign1UpdatedAt);
         InterviewerCampaignDailyStats stats2 = mockStats("CAMPAIGN-2", 20L, 5L, 6L, 7L, 0L, 18L, campaign2UpdatedAt);
 
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats1, stats2));
 
-        // Then — per-campaign entries
+        // Then — per-campaign entries (all should have the minimal updatedAt)
         assertThat(result.interviewerCampaignSurveyUnits()).hasSize(2);
         assertThat(result.interviewerCampaignSurveyUnits().get(0).campaignLabel()).isEqualTo("CAMPAIGN-1");
-        assertThat(result.interviewerCampaignSurveyUnits().get(0).updatedAt()).isEqualTo(campaign1UpdatedAt);
+        assertThat(result.interviewerCampaignSurveyUnits().get(0).updatedAt()).isEqualTo(expectedMinUpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).campaignLabel()).isEqualTo("CAMPAIGN-2");
-        assertThat(result.interviewerCampaignSurveyUnits().get(1).updatedAt()).isEqualTo(campaign2UpdatedAt);
+        assertThat(result.interviewerCampaignSurveyUnits().get(1).updatedAt()).isEqualTo(expectedMinUpdatedAt);
         assertThat(result.interviewerCampaignSurveyUnits().get(1).closingCauses().total()).isEqualTo(18L);
 
         // Then — aggregated totals across both campaigns
         InterviewerCampaignsTotalSurveyUnit total = result.interviewerCampaignsTotalSurveyUnit();
         assertThat(total.allocated()).isEqualTo(25L);
-        assertThat(total.updatedAt()).isEqualTo(campaign1UpdatedAt);
+        assertThat(total.updatedAt()).isEqualTo(expectedMinUpdatedAt);
 
         InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse totalClosing = total.closingCauses();
         assertThat(totalClosing.interviewerAbsence()).isEqualTo(6L);
