@@ -34,8 +34,9 @@ class InterviewerCampaignsCollectionPresenterTest {
         });
         assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
-    
-    @Testn    @DisplayName("Returns response with updatedAt field")
+
+    @Test
+    @DisplayName("Returns response with updatedAt field")
     void shouldReturnResponseWithUpdatedAtField() {
         // Given
         InterviewerCampaignDailyStats stats = ReportingPresenterTestData.interviewerCampaignStats("camp-1", "Campaign 1");
