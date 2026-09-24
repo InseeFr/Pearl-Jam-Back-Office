@@ -1,7 +1,6 @@
 package fr.insee.pearljam.api.reporting.presenter;
 
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionListResponse;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

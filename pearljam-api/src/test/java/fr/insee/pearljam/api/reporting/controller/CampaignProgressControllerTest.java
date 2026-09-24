@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressItemResponse;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressListResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;

@@ -4,7 +4,6 @@ import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsProgressPre
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressItemResponse;
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressListResponse;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesInterviewerProgressResponse;
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;

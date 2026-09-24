@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionItemResponse;
 import fr.insee.pearljam.api.reporting.response.CampaignCollectionListResponse;
-import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
