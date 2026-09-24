@@ -21,7 +21,7 @@ public class MovedSurveyUnitDaoAdapter implements MovedSurveyUnitRepository {
         var surveyUnit = surveyUnitRepository.findById(surveyUnitId);
         surveyUnit.ifPresent(unit -> {
             unit.setPriority(true);
-            var state = new State(System.currentTimeMillis(), unit, StateType.INS);
+            var state = new State(System.currentTimeMillis(), unit, StateType.PRC);
             unit.getStates().clear();
             unit.getStates().add(state);
 
