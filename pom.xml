@@ -14,7 +14,7 @@
 
 	<properties>
 		<revision>5.13.5</revision>
-		<changelist>-multimode-rc.1</changelist>
+		<changelist>-multimode-rc.2</changelist>
 		<java.version>21</java.version>
 		<sonar.organization>inseefr</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
