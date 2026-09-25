@@ -1,6 +1,7 @@
 package fr.insee.pearljam.api.service.impl;
 
 import fr.insee.pearljam.api.domain.OtherModeQuestionnaireState;
+import fr.insee.pearljam.api.domain.SurveyUnit;
 import fr.insee.pearljam.api.repository.OtherModeQuestionnaireRepository;
 import fr.insee.pearljam.api.repository.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.model.OtherModeQuestionnaire;
@@ -23,11 +24,22 @@ public class OtherModeQuestionnaireServiceImpl implements OtherModeQuestionnaire
     @Override
     public void addOtherModeQuestionnaire(OtherModeQuestionnaire otherModeQuestionnaire) {
         var surveyUnit = surveyUnitRepository.findById(otherModeQuestionnaire.surveyUnitId());
-        var otherModeQuestionnaireState = new OtherModeQuestionnaireState();
-        otherModeQuestionnaireState.setState(otherModeQuestionnaire.type());
+
         if(surveyUnit.isPresent()){
-            otherModeQuestionnaireState.setSurveyUnit(surveyUnit.get());
-            this.repository.save(otherModeQuestionnaireState);
+
+            SurveyUnit existingSurveyUnit = surveyUnit.get();
+
+            boolean surveyUnitMoved = existingSurveyUnit.getOtherModeQuestionnaireState().stream()
+                    .anyMatch(state -> "MULTIMODE_MOVED".equals(state.getState()));
+
+            // Save otherMode Questionnaire only if survey unit not moved
+            if(!surveyUnitMoved){
+                var otherModeQuestionnaireState = new OtherModeQuestionnaireState();
+                otherModeQuestionnaireState.setState(otherModeQuestionnaire.type());
+
+                otherModeQuestionnaireState.setSurveyUnit(existingSurveyUnit);
+                this.repository.save(otherModeQuestionnaireState);
+            }
         }
     }
 }
