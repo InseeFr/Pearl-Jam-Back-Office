@@ -1,7 +1,8 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.CampaignCollectionPresenter;
-import fr.insee.pearljam.api.reporting.response.CampaignCollectionResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignCollectionItemResponse;
+import fr.insee.pearljam.api.reporting.response.CampaignCollectionListResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
@@ -34,17 +35,18 @@ class CampaignCollectionControllerTest {
     void setup() {
         reportingService = mock(CampaignReportingPort.class);
         
-        CampaignCollectionResponse response = new CampaignCollectionResponse(
-                "camp-1",
-                "Campaign 1",
-                0L,
-                new CollectionRatesResponse(0f, 0f, 0f),
-                new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
-                new ClosingCausesProgressResponse(0L, 0L, 0L),
+        CampaignCollectionListResponse response = new CampaignCollectionListResponse(
+                List.of(new CampaignCollectionItemResponse(
+                        "camp-1",
+                        "Campaign 1",
+                        0L,
+                        new CollectionRatesResponse(0f, 0f, 0f),
+                        new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
+                        new ClosingCausesProgressResponse(0L, 0L, 0L))),
                 123456789L
         );
         
-        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(List.of(response));
+        when(reportingService.getCampaignsStats(any(), any(), any())).thenReturn(response);
 
         CampaignCollectionController controller = new CampaignCollectionController(
                 reportingService,
@@ -62,7 +64,8 @@ class CampaignCollectionControllerTest {
         mockMvc.perform(get("/api/reporting/campaigns/collection")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test
@@ -71,7 +74,8 @@ class CampaignCollectionControllerTest {
         // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/collection"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test

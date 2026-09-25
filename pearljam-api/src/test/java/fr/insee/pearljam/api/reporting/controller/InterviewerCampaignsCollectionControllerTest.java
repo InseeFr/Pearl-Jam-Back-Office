@@ -1,7 +1,8 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionItemResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionListResponse;
 import fr.insee.pearljam.api.reporting.response.ClosingCausesProgressResponse;
 import fr.insee.pearljam.api.reporting.response.CollectionRatesResponse;
 import fr.insee.pearljam.api.reporting.response.ContactOutcomesProgressResponse;
@@ -40,17 +41,18 @@ class InterviewerCampaignsCollectionControllerTest {
         stats.setCampaignLabel("Campaign 1");
         stats.setUpdatedAt(123456789L);
         
-        InterviewerCampaignCollectionResponse response = new InterviewerCampaignCollectionResponse(
-                "camp-1",
-                "Campaign 1",
-                0L,
-                new CollectionRatesResponse(0f, 0f, 0f),
-                new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
-                new ClosingCausesProgressResponse(0L, 0L, 0L),
+        InterviewerCampaignCollectionListResponse response = new InterviewerCampaignCollectionListResponse(
+                List.of(new InterviewerCampaignCollectionItemResponse(
+                        "camp-1",
+                        "Campaign 1",
+                        0L,
+                        new CollectionRatesResponse(0f, 0f, 0f),
+                        new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
+                        new ClosingCausesProgressResponse(0L, 0L, 0L))),
                 123456789L
         );
         
-        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(List.of(response));
+        when(reportingService.getCampaignsStatsForInterviewer(any(), any(), any(), any())).thenReturn(response);
 
         InterviewerCampaignsCollectionController controller = new InterviewerCampaignsCollectionController(
                 reportingService,
@@ -68,7 +70,8 @@ class InterviewerCampaignsCollectionControllerTest {
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1")
                         .param("day", "2025-06-10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test
@@ -77,7 +80,8 @@ class InterviewerCampaignsCollectionControllerTest {
         // Given / When / Then
         mockMvc.perform(get("/api/reporting/interviewers/{interviewerId}/campaigns/collection", "interviewer1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].updatedAt").value(123456789L));
+                .andExpect(jsonPath("$.campaigns[0].campaignId").value("camp-1"))
+                .andExpect(jsonPath("$.updatedAt").value(123456789L));
     }
 
     @Test
