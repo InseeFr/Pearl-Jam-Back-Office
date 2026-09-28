@@ -326,13 +326,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
 		long currentTime = new Date().getTime();
 		int offsetMs = 1;
-		for (StateDto s : incomingStates.stream()
+		List<StateDto> orderedStates = incomingStates.stream()
 				.sorted((a, b) -> {
-					Long dateA = a.date() != null ? a.date() : 0L;
-					Long dateB = b.date() != null ? b.date() : 0L;
+					long dateA = a.date() != null ? a.date() : 0L;
+					long dateB = b.date() != null ? b.date() : 0L;
 					return Long.compare(dateB, dateA); // descending order
 				})
-				.toList()) {
+				.toList();
+
+		for (StateDto s : orderedStates) {
 			long stateDate = s.date() != null ? s.date() : 0L;
 			long adjustedDate = stateDate > currentTime
 					? currentTime - offsetMs++
