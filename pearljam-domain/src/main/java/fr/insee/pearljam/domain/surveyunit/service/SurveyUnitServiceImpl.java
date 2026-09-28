@@ -110,7 +110,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		return toSurveyUnitInterviewerResponseDto(surveyUnitForInterviewer);
 	}
 
-
 	@Override
 	public SurveyUnitInterviewerResponseDto getSurveyUnitInterviewerDetail(String userId, String surveyUnitId) {
 		SurveyUnitDB surveyUnit = surveyUnitRepository
@@ -311,9 +310,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private void updateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.states() != null) {
-			surveyUnitUpdateDto.states().stream()
-					.filter(s -> s.id() == null || !stateRepository.existsById(s.id()))
-					.forEach(s -> stateRepository.save(new StateDB(s.date(), surveyUnit, s.type())));
+			processIncomingStates(surveyUnit, surveyUnitUpdateDto.states());
 		}
 		StateType currentState = stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(surveyUnit.getId())
 				.type();
@@ -322,12 +319,39 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		List<StateDto> dbStates = stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(surveyUnit.getId());
 		if (StateBusinessRules.shouldFallBackToTbrOrFin(dbStates)) {
-			Set<StateDB> ueStates = surveyUnit.getStates();
-			if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
-				ueStates.add(new StateDB(new Date().getTime(), surveyUnit, StateType.FIN));
-			} else if (ueStates.stream().anyMatch(s -> s.getType() == StateType.TBR)) {
-				ueStates.add(new StateDB(new Date().getTime(), surveyUnit, StateType.TBR));
-			}
+			addFallbackTbrOrFinState(surveyUnit);
+		}
+	}
+
+	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
+		long currentTime = new Date().getTime();
+		int offsetMs = 1;
+		for (StateDto s : incomingStates.stream()
+				.sorted((a, b) -> {
+					Long dateA = a.date() != null ? a.date() : 0L;
+					Long dateB = b.date() != null ? b.date() : 0L;
+					return Long.compare(dateB, dateA); // descending order
+				})
+				.toList()) {
+			long stateDate = s.date() != null ? s.date() : 0L;
+			long adjustedDate = stateDate > currentTime
+					? currentTime - offsetMs++
+					: stateDate;
+			StateDB stateToSave = new StateDB(adjustedDate, surveyUnit, s.type());
+			stateToSave.setId(s.id());
+			stateRepository.save(stateToSave);
+		}
+	}
+
+	private void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
+		Set<StateDB> ueStates = surveyUnit.getStates();
+		long currentTime = new Date().getTime();
+		if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
+			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
+		} else if (ueStates.stream().anyMatch(s -> s.getType() == StateType.TBR)) {
+			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.FIN));
+		} else {
+			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
 		}
 	}
 
@@ -475,7 +499,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		return neverTransmitted || inaWithoutQuestionnaire;
 	}
-
 
 	private Map<String, String> getQuestionnaireStatesFromDataCollection(
 			Set<String> lstSu) {
