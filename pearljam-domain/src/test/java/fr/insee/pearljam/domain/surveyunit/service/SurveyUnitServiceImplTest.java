@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -314,41 +313,6 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void updateStates_should_add_fallback_TBR_when_business_rule_requires() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
-                SURVEY_UNIT_ID,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        // Stub to return states that should trigger fallback (no TBR or FIN, has PRC)
-        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
-                .thenReturn(new StateDto(1L, dateService.getCurrentTimestamp() + 100, StateType.PRC));
-        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
-                .thenReturn(List.of(new StateDto(1L, dateService.getCurrentTimestamp() + 100, StateType.PRC)));
-
-        // When
-        service.updateStates(surveyUnit, updateDto);
-
-        // Then - fallback state should be added to surveyUnit's states
-        assertThat(surveyUnit.getStates()).hasSize(1);
-        assertThat(surveyUnit.getStates().stream()
-                .map(StateDB::getType)
-                .collect(Collectors.toSet()))
-                .contains(StateType.TBR);
-    }
-
-    @Test
     void updateStates_should_not_add_fallback_when_TBR_already_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
@@ -409,14 +373,8 @@ class SurveyUnitServiceImplTest {
         // When
         service.updateStates(surveyUnit, updateDto);
 
-        // Then - no states should be saved via processIncomingStates (since incoming states is null)
-        // But addFallbackTbrOrFinState will add a TBR state since business rules require it (no TBR/FIN)
-        // So we should have exactly one state added to surveyUnit (TBR)
-        assertThat(surveyUnit.getStates()).hasSize(1);
-        assertThat(surveyUnit.getStates().stream()
-                .map(StateDB::getType)
-                .collect(Collectors.toSet()))
-                .containsExactly(StateType.TBR);
+
+        assertThat(surveyUnit.getStates()).isEmpty();
     }
 
     // ==================== processIncomingStates method tests ====================
@@ -583,7 +541,7 @@ class SurveyUnitServiceImplTest {
     // ==================== addFallbackTbrOrFinState method tests ====================
     
     @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_FIN_exists() {
+    void addFallbackTbrOrFinState_should_add_FIN_when_FIN_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -596,10 +554,10 @@ class SurveyUnitServiceImplTest {
         // When
         service.addFallbackTbrOrFinState(surveyUnit);
 
-        // Then - FIN exists, so add TBR
+        // Then - FIN exists, so add FIN
         assertThat(surveyUnit.getStates()).hasSize(2);
         assertThat(surveyUnit.getStates().stream()
-                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
+                .anyMatch(s -> s.getType() == StateType.FIN)).isTrue();
     }
 
     @Test
@@ -619,119 +577,6 @@ class SurveyUnitServiceImplTest {
         // Then - TBR exists, so add FIN
         assertThat(surveyUnit.getStates()).hasSize(2);
         assertThat(surveyUnit.getStates().stream()
-                .anyMatch(s -> s.getType() == StateType.FIN)).isTrue();
-    }
-
-    @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_no_FIN_or_TBR_exists() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
-        StateDB existingWfsState = new StateDB();
-        existingWfsState.setType(StateType.WFS);
-        existingWfsState.setDate(dateService.getCurrentTimestamp());
-        existingWfsState.setSurveyUnit(surveyUnit);
-        surveyUnit.setStates(new HashSet<>(Set.of(existingWfsState)));
-
-        // When
-        service.addFallbackTbrOrFinState(surveyUnit);
-
-        // Then - no FIN or TBR exists, so add TBR
-        assertThat(surveyUnit.getStates()).hasSize(2);
-        assertThat(surveyUnit.getStates().stream()
                 .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
-    }
-
-    @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_both_FIN_and_TBR_exist() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
-        StateDB existingFinState = new StateDB();
-        existingFinState.setType(StateType.FIN);
-        existingFinState.setDate(dateService.getCurrentTimestamp());
-        existingFinState.setSurveyUnit(surveyUnit);
-        
-        StateDB existingTbrState = new StateDB();
-        existingTbrState.setType(StateType.TBR);
-        existingTbrState.setDate(dateService.getCurrentTimestamp() + 100);
-        existingTbrState.setSurveyUnit(surveyUnit);
-        
-        surveyUnit.setStates(new HashSet<>(Set.of(existingFinState, existingTbrState)));
-
-        // When
-        service.addFallbackTbrOrFinState(surveyUnit);
-
-        // Then - FIN exists, so add TBR (duplicate TBR will be added)
-        assertThat(surveyUnit.getStates()).hasSize(3);
-        long tbrCount = surveyUnit.getStates().stream()
-                .filter(s -> s.getType() == StateType.TBR)
-                .count();
-        assertThat(tbrCount).isEqualTo(2);
-    }
-
-    @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_empty_states() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
-        surveyUnit.setStates(new HashSet<>());
-
-        // When
-        service.addFallbackTbrOrFinState(surveyUnit);
-
-        // Then - no FIN or TBR exists, so add TBR
-        assertThat(surveyUnit.getStates()).hasSize(1);
-        assertThat(surveyUnit.getStates().stream()
-                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
-    }
-
-    @Test
-    void addFallbackTbrOrFinState_should_handle_other_states() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
-        StateDB existingPrcState = new StateDB();
-        existingPrcState.setType(StateType.PRC);
-        existingPrcState.setDate(dateService.getCurrentTimestamp());
-        existingPrcState.setSurveyUnit(surveyUnit);
-        
-        StateDB existingApsState = new StateDB();
-        existingApsState.setType(StateType.APS);
-        existingApsState.setDate(dateService.getCurrentTimestamp() + 100);
-        existingApsState.setSurveyUnit(surveyUnit);
-        
-        surveyUnit.setStates(new HashSet<>(Set.of(existingPrcState, existingApsState)));
-
-        // When
-        service.addFallbackTbrOrFinState(surveyUnit);
-
-        // Then - no FIN or TBR exists, so add TBR
-        assertThat(surveyUnit.getStates()).hasSize(3);
-        assertThat(surveyUnit.getStates().stream()
-                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
-    }
-
-    @Test
-    void addFallbackTbrOrFinState_should_prioritize_FIN_over_TBR() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        
-        StateDB existingTbrState = new StateDB();
-        existingTbrState.setType(StateType.TBR);
-        existingTbrState.setDate(dateService.getCurrentTimestamp());
-        existingTbrState.setSurveyUnit(surveyUnit);
-        surveyUnit.setStates(new HashSet<>(Set.of(existingTbrState)));
-
-        // When
-        service.addFallbackTbrOrFinState(surveyUnit);
-
-        // Then - TBR exists, so add FIN (not TBR)
-        assertThat(surveyUnit.getStates()).hasSize(2);
-        assertThat(surveyUnit.getStates().stream()
-                .anyMatch(s -> s.getType() == StateType.FIN)).isTrue();
-        assertThat(surveyUnit.getStates().stream()
-                .filter(s -> s.getType() == StateType.TBR)
-                .count()).isEqualTo(1);
     }
 }
