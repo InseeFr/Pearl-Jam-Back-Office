@@ -308,7 +308,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	public void updateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
+	private void updateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.states() != null) {
 			processIncomingStates(surveyUnit, surveyUnitUpdateDto.states());
 		}
@@ -323,7 +323,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	public void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
+	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
 		long currentTime = dateService.getCurrentTimestamp();
 		int offsetMs = 1;
 
@@ -360,7 +360,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	public void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
+	private void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
 		Set<StateDB> ueStates = surveyUnit.getStates();
 		long currentTime = dateService.getCurrentTimestamp();
 		if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
@@ -373,7 +373,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		 }
 	}
 
-	public void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
+	private void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
 
 		boolean surveyUnitAmongFirstFive = surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5;
