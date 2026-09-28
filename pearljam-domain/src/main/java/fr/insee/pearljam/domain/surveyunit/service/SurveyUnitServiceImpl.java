@@ -324,17 +324,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	}
 
 	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
-		long currentTime = new Date().getTime();
+		long currentTime = dateService.getCurrentTimestamp();
 		int offsetMs = 1;
-		List<StateDto> orderedStates = incomingStates.stream()
+		for (StateDto s : incomingStates.stream()
 				.sorted((a, b) -> {
-					long dateA = a.date() != null ? a.date() : 0L;
-					long dateB = b.date() != null ? b.date() : 0L;
+					Long dateA = a.date() != null ? a.date() : 0L;
+					Long dateB = b.date() != null ? b.date() : 0L;
 					return Long.compare(dateB, dateA); // descending order
 				})
-				.toList();
-
-		for (StateDto s : orderedStates) {
+				.toList()) {
 			long stateDate = s.date() != null ? s.date() : 0L;
 			long adjustedDate = stateDate > currentTime
 					? currentTime - offsetMs++
@@ -347,14 +345,18 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 	private void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
 		Set<StateDB> ueStates = surveyUnit.getStates();
-		long currentTime = new Date().getTime();
+		long currentTime = dateService.getCurrentTimestamp();
 		if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
 			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
-		} else if (ueStates.stream().anyMatch(s -> s.getType() == StateType.TBR)) {
-			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.FIN));
-		} else {
-			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
+			return;
 		}
+
+		 if (ueStates.stream().anyMatch(s -> s.getType() == StateType.TBR)) {
+			 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.FIN));
+			 return;
+		 }
+
+		 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
 	}
 
 	private void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
