@@ -26,11 +26,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,17 +140,10 @@ class SurveyUnitServiceImplTest {
                 .thenReturn(count);
     }
 
-    private void invokeAddStateAuto(SurveyUnitDB surveyUnit, ContactOutcomeDto contactOutcomeDto) throws Exception {
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("addStateAuto", SurveyUnitDB.class, ContactOutcomeDto.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit, contactOutcomeDto);
-    }
-
     // ==================== addStateAuto method tests ====================
 
     @Test
-    void addStateAuto_should_add_TBR_state_when_contact_outcome_is_INA_and_among_first_five() throws Exception {
+    void addStateAuto_should_add_TBR_state_when_contact_outcome_is_INA_and_among_first_five() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
@@ -160,7 +153,7 @@ class SurveyUnitServiceImplTest {
         stubCountUeINATBR(surveyUnit, 2); // < 5 -> eligible for TBR
 
         // When
-        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
+        service.addStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -175,7 +168,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_INA_but_not_among_first_five() throws Exception {
+    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_INA_but_not_among_first_five() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
@@ -185,7 +178,7 @@ class SurveyUnitServiceImplTest {
         stubCountUeINATBR(surveyUnit, 5); // not < 5 -> falls through to FIN
 
         // When
-        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
+        service.addStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -197,7 +190,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_not_INA() throws Exception {
+    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_not_INA() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
@@ -207,7 +200,7 @@ class SurveyUnitServiceImplTest {
         stubCountUeINATBR(surveyUnit, 2); // among first five, but type isn't INA
 
         // When
-        invokeAddStateAuto(surveyUnit, contactOutcomeDto);
+        service.addStateAuto(surveyUnit, contactOutcomeDto);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -222,7 +215,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_null() throws Exception {
+    void addStateAuto_should_add_FIN_state_when_contact_outcome_is_null() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         ClosingCauseDB closingCause = new ClosingCauseDB();
@@ -231,7 +224,7 @@ class SurveyUnitServiceImplTest {
         stubCountUeINATBR(surveyUnit, 2); // among first five, but no contact outcome
 
         // When
-        invokeAddStateAuto(surveyUnit, null);
+        service.addStateAuto(surveyUnit, null);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -247,15 +240,8 @@ class SurveyUnitServiceImplTest {
 
     // ==================== updateStates method tests ====================
 
-    private void invokeUpdateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) throws Exception {
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("updateStates", SurveyUnitDB.class, SurveyUnitUpdateDto.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit, surveyUnitUpdateDto);
-    }
-
     @Test
-    void updateStates_should_process_incoming_states_when_not_null() throws Exception {
+    void updateStates_should_process_incoming_states_when_not_null() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         List<StateDto> incomingStates = List.of(
@@ -281,7 +267,7 @@ class SurveyUnitServiceImplTest {
                 .thenReturn(List.of(new StateDto(1L, dateService.getCurrentTimestamp() + 500, StateType.WFS)));
 
         // When
-        invokeUpdateStates(surveyUnit, updateDto);
+        service.updateStates(surveyUnit, updateDto);
 
         // Then - incoming states should be processed
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -291,7 +277,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void updateStates_should_add_auto_state_when_current_state_is_WFS() throws Exception {
+    void updateStates_should_add_auto_state_when_current_state_is_WFS() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
@@ -316,7 +302,7 @@ class SurveyUnitServiceImplTest {
         stubCountUeINATBR(surveyUnit, 10);
 
         // When
-        invokeUpdateStates(surveyUnit, updateDto);
+        service.updateStates(surveyUnit, updateDto);
 
         // Then - auto state should be added (FIN because not INA)
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -328,7 +314,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void updateStates_should_add_fallback_TBR_when_business_rule_requires() throws Exception {
+    void updateStates_should_add_fallback_TBR_when_business_rule_requires() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
@@ -352,7 +338,7 @@ class SurveyUnitServiceImplTest {
                 .thenReturn(List.of(new StateDto(1L, dateService.getCurrentTimestamp() + 100, StateType.PRC)));
 
         // When
-        invokeUpdateStates(surveyUnit, updateDto);
+        service.updateStates(surveyUnit, updateDto);
 
         // Then - fallback state should be added to surveyUnit's states
         assertThat(surveyUnit.getStates()).hasSize(1);
@@ -363,7 +349,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void updateStates_should_not_add_fallback_when_TBR_already_exists() throws Exception {
+    void updateStates_should_not_add_fallback_when_TBR_already_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         surveyUnit.setStates(new HashSet<>(Set.of(
@@ -390,14 +376,14 @@ class SurveyUnitServiceImplTest {
                 .thenReturn(List.of(new StateDto(1L, dateService.getCurrentTimestamp() + 100, StateType.TBR)));
 
         // When
-        invokeUpdateStates(surveyUnit, updateDto);
+        service.updateStates(surveyUnit, updateDto);
 
         // Then - no new fallback state should be added since TBR already exists
         assertThat(surveyUnit.getStates()).hasSize(1);
     }
 
     @Test
-    void updateStates_should_skip_processing_when_incoming_states_is_null() throws Exception {
+    void updateStates_should_skip_processing_when_incoming_states_is_null() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -421,7 +407,7 @@ class SurveyUnitServiceImplTest {
                 .thenReturn(List.of(new StateDto(1L, dateService.getCurrentTimestamp() + 100, StateType.PRC)));
 
         // When
-        invokeUpdateStates(surveyUnit, updateDto);
+        service.updateStates(surveyUnit, updateDto);
 
         // Then - no states should be saved via processIncomingStates (since incoming states is null)
         // But addFallbackTbrOrFinState will add a TBR state since business rules require it (no TBR/FIN)
@@ -435,15 +421,8 @@ class SurveyUnitServiceImplTest {
 
     // ==================== processIncomingStates method tests ====================
 
-    private void invokeProcessIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) throws Exception {
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("processIncomingStates", SurveyUnitDB.class, List.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit, incomingStates);
-    }
-
     @Test
-    void processIncomingStates_should_adjust_future_dates_with_incremental_offset() throws Exception {
+    void processIncomingStates_should_adjust_future_dates_with_incremental_offset() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -461,7 +440,7 @@ class SurveyUnitServiceImplTest {
         );
 
         // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
+        service.processIncomingStates(surveyUnit, incomingStates);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -487,7 +466,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void processIncomingStates_should_not_adjust_past_dates() throws Exception {
+    void processIncomingStates_should_not_adjust_past_dates() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -499,7 +478,7 @@ class SurveyUnitServiceImplTest {
         );
 
         // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
+        service.processIncomingStates(surveyUnit, incomingStates);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -514,54 +493,37 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void processIncomingStates_should_handle_null_dates() throws Exception {
+    void processIncomingStates_should_throw_exception_for_null_dates() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
-        // State with null date and state with past date (before FIXED_TIMESTAMP)
+        // State with null date
         List<StateDto> incomingStates = List.of(
-                new StateDto(1L, null, StateType.WFS),
-                new StateDto(2L, dateService.getCurrentTimestamp() - 2000, StateType.PRC)
+                new StateDto(1L, null, StateType.WFS)
         );
 
-        // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
-
-        // Then
-        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
-        verify(stateRepository, times(2)).save(stateCaptor.capture());
-
-        List<StateDB> savedStates = stateCaptor.getAllValues();
-        assertThat(savedStates).hasSize(2);
-        
-        // Null dates are treated as 0, which is < current system time, so not adjusted
-        // The PRC state with past date is also not adjusted
-        // Both dates should be non-null in the saved states
-        assertThat(savedStates.get(0).getDate()).isNotNull();
-        assertThat(savedStates.get(1).getDate()).isNotNull();
-        
-        // The state with the non-null date (dateService.getCurrentTimestamp() - 2000) should come first (descending order)
-        // The state with null date (treated as 0) should come second
-        assertThat(savedStates.get(0).getDate()).isEqualTo(dateService.getCurrentTimestamp() - 2000);
-        assertThat(savedStates.get(1).getDate()).isZero();
+        // When/Then - expect IllegalArgumentException for null date
+        assertThatThrownBy(() -> service.processIncomingStates(surveyUnit, incomingStates))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("State with id=1 has a null date");
     }
 
     @Test
-    void processIncomingStates_should_handle_empty_list() throws Exception {
+    void processIncomingStates_should_handle_empty_list() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
         List<StateDto> incomingStates = List.of();
 
         // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
+        service.processIncomingStates(surveyUnit, incomingStates);
 
         // Then - no states should be saved
         verify(stateRepository, never()).save(any());
     }
 
     @Test
-    void processIncomingStates_should_preserve_state_ids() throws Exception {
+    void processIncomingStates_should_preserve_state_ids() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -572,7 +534,7 @@ class SurveyUnitServiceImplTest {
         );
 
         // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
+        service.processIncomingStates(surveyUnit, incomingStates);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -586,7 +548,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void processIncomingStates_should_sort_by_date_descending() throws Exception {
+    void processIncomingStates_should_sort_by_date_descending() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -599,7 +561,7 @@ class SurveyUnitServiceImplTest {
         );
 
         // When
-        invokeProcessIncomingStates(surveyUnit, incomingStates);
+        service.processIncomingStates(surveyUnit, incomingStates);
 
         // Then
         ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
@@ -619,16 +581,9 @@ class SurveyUnitServiceImplTest {
     }
 
     // ==================== addFallbackTbrOrFinState method tests ====================
-
-    private void invokeAddFallbackTbrOrFinState(SurveyUnitDB surveyUnit) throws Exception {
-        Method method = SurveyUnitServiceImpl.class
-                .getDeclaredMethod("addFallbackTbrOrFinState", SurveyUnitDB.class);
-        method.setAccessible(true);
-        method.invoke(service, surveyUnit);
-    }
-
+    
     @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_FIN_exists() throws Exception {
+    void addFallbackTbrOrFinState_should_add_TBR_when_FIN_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -639,7 +594,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingFinState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - FIN exists, so add TBR
         assertThat(surveyUnit.getStates()).hasSize(2);
@@ -648,7 +603,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_add_FIN_when_TBR_exists() throws Exception {
+    void addFallbackTbrOrFinState_should_add_FIN_when_TBR_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -659,7 +614,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingTbrState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - TBR exists, so add FIN
         assertThat(surveyUnit.getStates()).hasSize(2);
@@ -668,7 +623,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_no_FIN_or_TBR_exists() throws Exception {
+    void addFallbackTbrOrFinState_should_add_TBR_when_no_FIN_or_TBR_exists() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -679,7 +634,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingWfsState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - no FIN or TBR exists, so add TBR
         assertThat(surveyUnit.getStates()).hasSize(2);
@@ -688,7 +643,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_both_FIN_and_TBR_exist() throws Exception {
+    void addFallbackTbrOrFinState_should_add_TBR_when_both_FIN_and_TBR_exist() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -705,7 +660,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingFinState, existingTbrState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - FIN exists, so add TBR (duplicate TBR will be added)
         assertThat(surveyUnit.getStates()).hasSize(3);
@@ -716,14 +671,14 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_add_TBR_when_empty_states() throws Exception {
+    void addFallbackTbrOrFinState_should_add_TBR_when_empty_states() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
         surveyUnit.setStates(new HashSet<>());
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - no FIN or TBR exists, so add TBR
         assertThat(surveyUnit.getStates()).hasSize(1);
@@ -732,7 +687,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_handle_other_states() throws Exception {
+    void addFallbackTbrOrFinState_should_handle_other_states() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -749,7 +704,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingPrcState, existingApsState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - no FIN or TBR exists, so add TBR
         assertThat(surveyUnit.getStates()).hasSize(3);
@@ -758,7 +713,7 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void addFallbackTbrOrFinState_should_prioritize_FIN_over_TBR() throws Exception {
+    void addFallbackTbrOrFinState_should_prioritize_FIN_over_TBR() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
         
@@ -769,7 +724,7 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setStates(new HashSet<>(Set.of(existingTbrState)));
 
         // When
-        invokeAddFallbackTbrOrFinState(surveyUnit);
+        service.addFallbackTbrOrFinState(surveyUnit);
 
         // Then - TBR exists, so add FIN (not TBR)
         assertThat(surveyUnit.getStates()).hasSize(2);

@@ -308,7 +308,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	private void updateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
+	public void updateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) {
 		if (surveyUnitUpdateDto.states() != null) {
 			processIncomingStates(surveyUnit, surveyUnitUpdateDto.states());
 		}
@@ -323,17 +323,34 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
+	public void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
 		long currentTime = dateService.getCurrentTimestamp();
 		int offsetMs = 1;
-		for (StateDto s : incomingStates.stream()
-				.sorted((a, b) -> {
-					Long dateA = a.date() != null ? a.date() : 0L;
-					Long dateB = b.date() != null ? b.date() : 0L;
-					return Long.compare(dateB, dateA); // descending order
-				})
-				.toList()) {
-			long stateDate = s.date() != null ? s.date() : 0L;
+
+		incomingStates.forEach(s -> {
+			if (s.date() == null) {
+				throw new IllegalArgumentException(
+						"State with id=%s has a null date".formatted(s.id()));
+			}
+		});
+
+		Set<Long> incomingIds = incomingStates.stream()
+				.map(StateDto::id)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+
+		Set<Long> existingIds = stateRepository.findAllByIds(incomingIds).stream()
+				.map(StateDB::getId)
+				.collect(Collectors.toSet());
+
+		List<StateDto> newStates = incomingStates.stream()
+				.filter(s -> s.id() == null || !existingIds.contains(s.id()))
+				.sorted(Comparator.comparingLong(StateDto::date).reversed())
+				.toList();
+
+		for (StateDto s : newStates)
+		{
+			long stateDate = s.date();
 			long adjustedDate = stateDate > currentTime
 					? currentTime - offsetMs++
 					: stateDate;
@@ -343,7 +360,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 	}
 
-	private void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
+	public void addFallbackTbrOrFinState(SurveyUnitDB surveyUnit) {
 		Set<StateDB> ueStates = surveyUnit.getStates();
 		long currentTime = dateService.getCurrentTimestamp();
 		if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
@@ -359,7 +376,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
 	}
 
-	private void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
+	public void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
 
 		boolean surveyUnitAmongFirstFive = surveyUnitRepository.findCountUeINATBRByInterviewerIdAndCampaignId(surveyUnit.getInterviewer().getId(),
 				surveyUnit.getCampaign().getId(), surveyUnit.getId()) < 5;
