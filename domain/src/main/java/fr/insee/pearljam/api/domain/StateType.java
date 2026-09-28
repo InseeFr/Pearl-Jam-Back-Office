@@ -27,7 +27,12 @@ public enum StateType {
 	FIN("Finalized"),
 	CLO("Closed"),
 	NVA("Not Available to All"),
-	RCI("Regained control of interview");
+	RCI("Regained control of interview"),
+	/**
+	 * State put by UI when last otherModeState is `MULTIMODE_MOVED`
+	 */
+	WMR("Web Moving Received");
+
 
 	private final String label;
 

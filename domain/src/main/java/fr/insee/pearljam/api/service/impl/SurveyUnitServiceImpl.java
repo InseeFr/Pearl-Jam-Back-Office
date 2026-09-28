@@ -165,13 +165,15 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		}
 		SurveyUnit surveyUnit = surveyUnitOpt.orElseThrow(() -> new SurveyUnitNotFoundException(surveyUnitId));
 
-		// Check if survey unit has been moved (MULTIMODE_MOVED event)
-		if (surveyUnit.getOtherModeQuestionnaireState() != null && !surveyUnit.getOtherModeQuestionnaireState().isEmpty()) {
-			Optional<OtherModeQuestionnaireState> lastState = surveyUnit.getOtherModeQuestionnaireState().stream()
-				.max(Comparator.comparing(OtherModeQuestionnaireState::getDate));
-			if (lastState.isPresent() && "MULTIMODE_MOVED".equals(lastState.get().getState())) {
-				log.warn("Survey Unit {} has been moved (last state is MULTIMODE_MOVED), update is not allowed", surveyUnitId);
-				return new SurveyUnitDetailDto(surveyUnit);
+		if(!hasWebMovingReceivedState(surveyUnitUpdate)){
+			// Check if survey unit has been moved (MULTIMODE_MOVED event)
+			if (surveyUnit.getOtherModeQuestionnaireState() != null && !surveyUnit.getOtherModeQuestionnaireState().isEmpty()) {
+				Optional<OtherModeQuestionnaireState> lastState = surveyUnit.getOtherModeQuestionnaireState().stream()
+						.max(Comparator.comparing(OtherModeQuestionnaireState::getDate));
+				if (lastState.isPresent() && "MULTIMODE_MOVED".equals(lastState.get().getState())) {
+					log.warn("Survey Unit {} has been moved (last state is MULTIMODE_MOVED), update is not allowed", surveyUnitId);
+					return new SurveyUnitDetailDto(surveyUnit);
+				}
 			}
 		}
 
@@ -597,5 +599,11 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	@Override
 	public void removeInterviewerLink(List<String> ids) {
 		surveyUnitRepository.setInterviewer(ids, null);
+	}
+
+	private boolean hasWebMovingReceivedState(SurveyUnitUpdateDto surveyUnitUpdateDto){
+		return surveyUnitUpdateDto.states().stream()
+				.map(StateDto::type)
+				.anyMatch(StateType.WMR::equals);
 	}
 }

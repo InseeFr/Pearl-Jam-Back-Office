@@ -47,7 +47,8 @@ public class BusinessRules {
 				StateType.TBR,
 				StateType.FIN,
 				StateType.CLO,
-				StateType.RCI
+				StateType.RCI,
+				StateType.WMR
 		};
 		return Arrays.asList(possibleTypes).contains(currentState);
 	}
