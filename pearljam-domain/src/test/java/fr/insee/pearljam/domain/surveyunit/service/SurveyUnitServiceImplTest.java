@@ -1,6 +1,8 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.ContactOutcomeDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.SurveyUnitUpdateDto;
 import fr.insee.pearljam.domain.campaign.port.in.DateService;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
@@ -24,7 +26,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Method;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -84,6 +87,7 @@ class SurveyUnitServiceImplTest {
     private static final String CAMPAIGN_ID = "CAMPAIGN-001";
     private static final String OU_ID = "OU-001";
     private static final String INTERVIEWER_ID = "INTERVIEWER-001";
+    private static final long FAR_PAST_TIME = 1000L;
 
     private SurveyUnitDB buildTestSurveyUnit() {
         CampaignDB campaign = new CampaignDB();
@@ -100,11 +104,12 @@ class SurveyUnitServiceImplTest {
         surveyUnit.setCampaign(campaign);
         surveyUnit.setOrganizationUnit(ou);
         surveyUnit.setInterviewer(interviewer);
+        surveyUnit.setStates(new HashSet<>());
         return surveyUnit;
     }
 
     private ContactOutcomeDto buildContactOutcomeDto(ContactOutcomeType type) {
-        return new ContactOutcomeDto(new Date().getTime(), type, 1);
+        return new ContactOutcomeDto(FAR_PAST_TIME + 1000, type, 1);
     }
 
     private void stubCountUeINATBR(SurveyUnitDB surveyUnit, Integer count) {
@@ -218,5 +223,525 @@ class SurveyUnitServiceImplTest {
         assertThat(savedState.getDate()).isNotNull();
 
         assertThat(surveyUnit.getClosingCause()).isNull();
+    }
+
+    // ==================== updateStates method tests ====================
+
+    private void invokeUpdateStates(SurveyUnitDB surveyUnit, SurveyUnitUpdateDto surveyUnitUpdateDto) throws Exception {
+        Method method = SurveyUnitServiceImpl.class
+                .getDeclaredMethod("updateStates", SurveyUnitDB.class, SurveyUnitUpdateDto.class);
+        method.setAccessible(true);
+        method.invoke(service, surveyUnit, surveyUnitUpdateDto);
+    }
+
+    @Test
+    void updateStates_should_process_incoming_states_when_not_null() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        List<StateDto> incomingStates = List.of(
+                new StateDto(1L, FAR_PAST_TIME + 1000, StateType.WFS)
+        );
+        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
+                SURVEY_UNIT_ID,
+                null,
+                null,
+                null,
+                null,
+                incomingStates,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
+                .thenReturn(new StateDto(1L, FAR_PAST_TIME + 500, StateType.WFS));
+        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
+                .thenReturn(List.of(new StateDto(1L, FAR_PAST_TIME + 500, StateType.WFS)));
+
+        // When
+        invokeUpdateStates(surveyUnit, updateDto);
+
+        // Then - incoming states should be processed
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, atLeastOnce()).save(stateCaptor.capture());
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        assertThat(savedStates).isNotEmpty();
+    }
+
+    @Test
+    void updateStates_should_add_auto_state_when_current_state_is_WFS() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
+                SURVEY_UNIT_ID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                buildContactOutcomeDto(ContactOutcomeType.REF),
+                null,
+                null,
+                null
+        );
+
+        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
+                .thenReturn(new StateDto(1L, FAR_PAST_TIME, StateType.WFS));
+        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
+                .thenReturn(List.of(new StateDto(1L, FAR_PAST_TIME, StateType.WFS)));
+
+        stubCountUeINATBR(surveyUnit, 10);
+
+        // When
+        invokeUpdateStates(surveyUnit, updateDto);
+
+        // Then - auto state should be added (FIN because not INA)
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, atLeastOnce()).save(stateCaptor.capture());
+        
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        boolean hasFinState = savedStates.stream().anyMatch(s -> s.getType() == StateType.FIN);
+        assertThat(hasFinState).isTrue();
+    }
+
+    @Test
+    void updateStates_should_add_fallback_TBR_when_business_rule_requires() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
+                SURVEY_UNIT_ID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Stub to return states that should trigger fallback (no TBR or FIN, has PRC)
+        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
+                .thenReturn(new StateDto(1L, FAR_PAST_TIME + 100, StateType.PRC));
+        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
+                .thenReturn(List.of(new StateDto(1L, FAR_PAST_TIME + 100, StateType.PRC)));
+
+        // When
+        invokeUpdateStates(surveyUnit, updateDto);
+
+        // Then - fallback state should be added to surveyUnit's states
+        assertThat(surveyUnit.getStates()).hasSize(1);
+        assertThat(surveyUnit.getStates().stream()
+                .map(StateDB::getType)
+                .collect(Collectors.toSet()))
+                .contains(StateType.TBR);
+    }
+
+    @Test
+    void updateStates_should_not_add_fallback_when_TBR_already_exists() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        surveyUnit.setStates(new HashSet<>(Set.of(
+                new StateDB(FAR_PAST_TIME, surveyUnit, StateType.TBR)
+        )));
+        
+        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
+                SURVEY_UNIT_ID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
+                .thenReturn(new StateDto(1L, FAR_PAST_TIME + 100, StateType.TBR));
+        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
+                .thenReturn(List.of(new StateDto(1L, FAR_PAST_TIME + 100, StateType.TBR)));
+
+        // When
+        invokeUpdateStates(surveyUnit, updateDto);
+
+        // Then - no new fallback state should be added since TBR already exists
+        assertThat(surveyUnit.getStates()).hasSize(1);
+    }
+
+    @Test
+    void updateStates_should_skip_processing_when_incoming_states_is_null() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        SurveyUnitUpdateDto updateDto = new SurveyUnitUpdateDto(
+                SURVEY_UNIT_ID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(stateRepository.findFirstDtoBySurveyUnitIdOrderByDateDesc(SURVEY_UNIT_ID))
+                .thenReturn(new StateDto(1L, FAR_PAST_TIME + 100, StateType.PRC));
+        when(stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(SURVEY_UNIT_ID))
+                .thenReturn(List.of(new StateDto(1L, FAR_PAST_TIME + 100, StateType.PRC)));
+
+        // When
+        invokeUpdateStates(surveyUnit, updateDto);
+
+        // Then - no states should be saved via processIncomingStates (since incoming states is null)
+        // But addFallbackTbrOrFinState will add a TBR state since business rules require it (no TBR/FIN)
+        // So we should have exactly one state added to surveyUnit (TBR)
+        assertThat(surveyUnit.getStates()).hasSize(1);
+        assertThat(surveyUnit.getStates().stream()
+                .map(StateDB::getType)
+                .collect(Collectors.toSet()))
+                .containsExactly(StateType.TBR);
+    }
+
+    // ==================== processIncomingStates method tests ====================
+
+    private void invokeProcessIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) throws Exception {
+        Method method = SurveyUnitServiceImpl.class
+                .getDeclaredMethod("processIncomingStates", SurveyUnitDB.class, List.class);
+        method.setAccessible(true);
+        method.invoke(service, surveyUnit, incomingStates);
+    }
+
+    @Test
+    void processIncomingStates_should_adjust_future_dates_with_incremental_offset() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        
+        // Simulate the offline bug scenario from production:
+        // States with dates far in the future (will be adjusted)
+        // WFS arrived at timestamp, TBR created at timestamp
+        // We want to verify that future dates are adjusted to maintain chronological order
+        List<StateDto> incomingStates = List.of(
+                new StateDto(4237190L, Long.MAX_VALUE - 100, StateType.WFS),
+                new StateDto(4237192L, Long.MAX_VALUE - 200, StateType.TBR),
+                new StateDto(4237191L, Long.MAX_VALUE - 300, StateType.TBR)
+        );
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, times(3)).save(stateCaptor.capture());
+
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        
+        // Verify IDs are preserved and in the order they were processed (descending by original date)
+        assertThat(savedStates.get(0).getId()).isEqualTo(4237190L);
+        assertThat(savedStates.get(0).getType()).isEqualTo(StateType.WFS);
+        assertThat(savedStates.get(1).getId()).isEqualTo(4237192L);
+        assertThat(savedStates.get(1).getType()).isEqualTo(StateType.TBR);
+        assertThat(savedStates.get(2).getId()).isEqualTo(4237191L);
+        assertThat(savedStates.get(2).getType()).isEqualTo(StateType.TBR);
+        
+        // Verify dates are adjusted (less than original future dates) and in descending order
+        assertThat(savedStates.get(0).getDate()).isLessThan(Long.MAX_VALUE - 100);
+        assertThat(savedStates.get(1).getDate()).isLessThan(Long.MAX_VALUE - 200);
+        assertThat(savedStates.get(2).getDate()).isLessThan(Long.MAX_VALUE - 300);
+        // Adjusted dates should be in descending order (with incremental offsets)
+        assertThat(savedStates.get(0).getDate()).isGreaterThan(savedStates.get(1).getDate());
+        assertThat(savedStates.get(1).getDate()).isGreaterThan(savedStates.get(2).getDate());
+    }
+
+    @Test
+    void processIncomingStates_should_not_adjust_past_dates() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        
+        List<StateDto> incomingStates = List.of(
+                new StateDto(1L, FAR_PAST_TIME, StateType.WFS),
+                new StateDto(2L, FAR_PAST_TIME + 100, StateType.PRC),
+                new StateDto(3L, FAR_PAST_TIME + 200, StateType.APS)
+        );
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, times(3)).save(stateCaptor.capture());
+
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        
+        // Dates should remain unchanged for past dates (sorted descending)
+        assertThat(savedStates.get(0).getDate()).isEqualTo(FAR_PAST_TIME + 200);
+        assertThat(savedStates.get(1).getDate()).isEqualTo(FAR_PAST_TIME + 100);
+        assertThat(savedStates.get(2).getDate()).isEqualTo(FAR_PAST_TIME);
+    }
+
+    @Test
+    void processIncomingStates_should_handle_null_dates() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        
+        // State with null date and state with past date
+        List<StateDto> incomingStates = List.of(
+                new StateDto(1L, null, StateType.WFS),
+                new StateDto(2L, FAR_PAST_TIME + 2000, StateType.PRC)
+        );
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, times(2)).save(stateCaptor.capture());
+
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        assertThat(savedStates).hasSize(2);
+        
+        // Null dates are treated as 0, which is < current system time, so not adjusted
+        // The PRC state with past date is also not adjusted
+        // Both dates should be non-null in the saved states
+        assertThat(savedStates.get(0).getDate()).isNotNull();
+        assertThat(savedStates.get(1).getDate()).isNotNull();
+        
+        // The state with the non-null date (FAR_PAST_TIME + 2000) should come first (descending order)
+        // The state with null date (treated as 0) should come second
+        assertThat(savedStates.get(0).getDate()).isEqualTo(FAR_PAST_TIME + 2000);
+        assertThat(savedStates.get(1).getDate()).isZero();
+    }
+
+    @Test
+    void processIncomingStates_should_handle_empty_list() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        List<StateDto> incomingStates = List.of();
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then - no states should be saved
+        verify(stateRepository, never()).save(any());
+    }
+
+    @Test
+    void processIncomingStates_should_preserve_state_ids() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        
+        List<StateDto> incomingStates = List.of(
+                new StateDto(100L, FAR_PAST_TIME + 2000, StateType.WFS),
+                new StateDto(200L, FAR_PAST_TIME + 1000, StateType.PRC)
+        );
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, times(2)).save(stateCaptor.capture());
+
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        
+        // IDs should be preserved for updates
+        assertThat(savedStates.get(0).getId()).isEqualTo(100L);
+        assertThat(savedStates.get(1).getId()).isEqualTo(200L);
+    }
+
+    @Test
+    void processIncomingStates_should_sort_by_date_descending() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        
+        // States in ascending order of date (oldest first)
+        List<StateDto> incomingStates = List.of(
+                new StateDto(1L, FAR_PAST_TIME + 100, StateType.WFS),
+                new StateDto(2L, FAR_PAST_TIME + 200, StateType.PRC),
+                new StateDto(3L, FAR_PAST_TIME + 300, StateType.APS)
+        );
+
+        // When
+        invokeProcessIncomingStates(surveyUnit, incomingStates);
+
+        // Then
+        ArgumentCaptor<StateDB> stateCaptor = ArgumentCaptor.forClass(StateDB.class);
+        verify(stateRepository, times(3)).save(stateCaptor.capture());
+
+        List<StateDB> savedStates = stateCaptor.getAllValues();
+        
+        // Should be processed in descending order (most recent first)
+        assertThat(savedStates.get(0).getType()).isEqualTo(StateType.APS);
+        assertThat(savedStates.get(1).getType()).isEqualTo(StateType.PRC);
+        assertThat(savedStates.get(2).getType()).isEqualTo(StateType.WFS);
+        
+        // Dates should be unchanged (all are in the past) and in descending order
+        assertThat(savedStates.get(0).getDate()).isEqualTo(FAR_PAST_TIME + 300);
+        assertThat(savedStates.get(1).getDate()).isEqualTo(FAR_PAST_TIME + 200);
+        assertThat(savedStates.get(2).getDate()).isEqualTo(FAR_PAST_TIME + 100);
+    }
+
+    // ==================== addFallbackTbrOrFinState method tests ====================
+
+    private void invokeAddFallbackTbrOrFinState(SurveyUnitDB surveyUnit) throws Exception {
+        Method method = SurveyUnitServiceImpl.class
+                .getDeclaredMethod("addFallbackTbrOrFinState", SurveyUnitDB.class);
+        method.setAccessible(true);
+        method.invoke(service, surveyUnit);
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_add_TBR_when_FIN_exists() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingFinState = new StateDB();
+        existingFinState.setType(StateType.FIN);
+        existingFinState.setDate(FAR_PAST_TIME);
+        existingFinState.setSurveyUnit(surveyUnit);
+        surveyUnit.setStates(new HashSet<>(Set.of(existingFinState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - FIN exists, so add TBR
+        assertThat(surveyUnit.getStates()).hasSize(2);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_add_FIN_when_TBR_exists() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingTbrState = new StateDB();
+        existingTbrState.setType(StateType.TBR);
+        existingTbrState.setDate(FAR_PAST_TIME);
+        existingTbrState.setSurveyUnit(surveyUnit);
+        surveyUnit.setStates(new HashSet<>(Set.of(existingTbrState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - TBR exists, so add FIN
+        assertThat(surveyUnit.getStates()).hasSize(2);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.FIN)).isTrue();
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_add_TBR_when_no_FIN_or_TBR_exists() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingWfsState = new StateDB();
+        existingWfsState.setType(StateType.WFS);
+        existingWfsState.setDate(FAR_PAST_TIME);
+        existingWfsState.setSurveyUnit(surveyUnit);
+        surveyUnit.setStates(new HashSet<>(Set.of(existingWfsState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - no FIN or TBR exists, so add TBR
+        assertThat(surveyUnit.getStates()).hasSize(2);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_add_TBR_when_both_FIN_and_TBR_exist() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingFinState = new StateDB();
+        existingFinState.setType(StateType.FIN);
+        existingFinState.setDate(FAR_PAST_TIME);
+        existingFinState.setSurveyUnit(surveyUnit);
+        
+        StateDB existingTbrState = new StateDB();
+        existingTbrState.setType(StateType.TBR);
+        existingTbrState.setDate(FAR_PAST_TIME + 100);
+        existingTbrState.setSurveyUnit(surveyUnit);
+        
+        surveyUnit.setStates(new HashSet<>(Set.of(existingFinState, existingTbrState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - FIN exists, so add TBR (duplicate TBR will be added)
+        assertThat(surveyUnit.getStates()).hasSize(3);
+        long tbrCount = surveyUnit.getStates().stream()
+                .filter(s -> s.getType() == StateType.TBR)
+                .count();
+        assertThat(tbrCount).isEqualTo(2);
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_add_TBR_when_empty_states() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        surveyUnit.setStates(new HashSet<>());
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - no FIN or TBR exists, so add TBR
+        assertThat(surveyUnit.getStates()).hasSize(1);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_handle_other_states() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingPrcState = new StateDB();
+        existingPrcState.setType(StateType.PRC);
+        existingPrcState.setDate(FAR_PAST_TIME);
+        existingPrcState.setSurveyUnit(surveyUnit);
+        
+        StateDB existingApsState = new StateDB();
+        existingApsState.setType(StateType.APS);
+        existingApsState.setDate(FAR_PAST_TIME + 100);
+        existingApsState.setSurveyUnit(surveyUnit);
+        
+        surveyUnit.setStates(new HashSet<>(Set.of(existingPrcState, existingApsState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - no FIN or TBR exists, so add TBR
+        assertThat(surveyUnit.getStates()).hasSize(3);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.TBR)).isTrue();
+    }
+
+    @Test
+    void addFallbackTbrOrFinState_should_prioritize_FIN_over_TBR() throws Exception {
+        // Given
+        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
+        StateDB existingTbrState = new StateDB();
+        existingTbrState.setType(StateType.TBR);
+        existingTbrState.setDate(FAR_PAST_TIME);
+        existingTbrState.setSurveyUnit(surveyUnit);
+        surveyUnit.setStates(new HashSet<>(Set.of(existingTbrState)));
+
+        // When
+        invokeAddFallbackTbrOrFinState(surveyUnit);
+
+        // Then - TBR exists, so add FIN (not TBR)
+        assertThat(surveyUnit.getStates()).hasSize(2);
+        assertThat(surveyUnit.getStates().stream()
+                .anyMatch(s -> s.getType() == StateType.FIN)).isTrue();
+        assertThat(surveyUnit.getStates().stream()
+                .filter(s -> s.getType() == StateType.TBR)
+                .count()).isEqualTo(1);
     }
 }
