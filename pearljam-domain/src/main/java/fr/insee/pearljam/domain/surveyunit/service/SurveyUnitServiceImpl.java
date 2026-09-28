@@ -364,16 +364,13 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		Set<StateDB> ueStates = surveyUnit.getStates();
 		long currentTime = dateService.getCurrentTimestamp();
 		if (ueStates.stream().anyMatch(s -> s.getType() == StateType.FIN)) {
-			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
+			ueStates.add(new StateDB(currentTime, surveyUnit, StateType.FIN));
 			return;
 		}
 
 		 if (ueStates.stream().anyMatch(s -> s.getType() == StateType.TBR)) {
-			 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.FIN));
-			 return;
+			 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
 		 }
-
-		 ueStates.add(new StateDB(currentTime, surveyUnit, StateType.TBR));
 	}
 
 	public void addStateAuto(SurveyUnitDB surveyUnit, @Nullable ContactOutcomeDto contactOutcomeDto) {
