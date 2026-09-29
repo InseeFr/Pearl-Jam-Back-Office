@@ -55,10 +55,6 @@ public interface CampaignService {
      */
     List<CampaignDto> getInterviewerCampaigns(String userId);
 
-    CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException;
-
-    CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException;
-
     void createCampaign(CampaignCreateDto campaignDto) throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException;
 
     Optional<CampaignDB> findById(String campaignId);

@@ -143,20 +143,6 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
-        int nbSUAbandoned = 0;
-        userService.checkUserAssociationToCampaign(campaignId, userId);
-        return new CountDto(nbSUAbandoned);
-    }
-
-    @Override
-    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
-        int nbSUNotAttributed = 0;
-        userService.checkUserAssociationToCampaign(campaignId, userId);
-        return new CountDto(nbSUNotAttributed);
-    }
-
-    @Override
     public void createCampaign(CampaignCreateDto campaignDto)
             throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
 

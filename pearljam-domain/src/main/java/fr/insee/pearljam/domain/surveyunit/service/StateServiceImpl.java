@@ -184,51 +184,6 @@ public class StateServiceImpl implements StateService {
     return result;
   }
 
-  public List<StateCountDto> getStateCountByCampaigns(String userId, Long date) {
-    Long dateToUse = (date != null) ? date : System.currentTimeMillis();
-
-    List<String> userOrgUnitIds = userService
-            .getUserOUs(userId, true)
-            .stream().map(OrganizationUnitDto::getId).toList();
-    if (userOrgUnitIds.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    Map<String, CampaignDto> campaigns = campaignRepository.findAllDtoByOuIds(userOrgUnitIds)
-            .stream().collect(Collectors.toMap(CampaignDto::getId, campaign -> campaign));
-
-    List<String> campaignIds = campaignRepository.findAllManagedAndNotClosedCampaignIdsByOuIds(userOrgUnitIds, dateToUse);
-    if (campaignIds.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    Map<String, StateCountDto> stateCountsByCampaign = toDtos(
-            stateRepository.findGroupedByCampaign(campaignIds, userOrgUnitIds, dateToUse)
-    );
-
-    Map<String, CommunicationRequestCount> commRequestCountsByCampaign =
-            communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
-                    .stream()
-                    .collect(Collectors.toMap(CommunicationRequestCount::entityId, projection -> projection));
-
-    Map<String, ClosingCauseCount> closingCauseCountsByCampaign =
-            closingCauseRepository.getStateClosedByClosingCauseCountByCampaigns(campaignIds, userOrgUnitIds, dateToUse)
-                    .stream()
-                    .collect(Collectors.toMap(ClosingCauseCount::entityId, projection -> projection));
-
-    return campaignIds.stream()
-            .map(id -> {
-              StateCountDto campaignSum = mergeCounts(
-                      stateCountsByCampaign.get(id),
-                      commRequestCountsByCampaign.get(id),
-                      closingCauseCountsByCampaign.get(id)
-              );
-              campaignSum.setCampaign(campaigns.get(id));
-              return campaignSum;
-            })
-            .toList();
-  }
-
   private Map<String, StateCountDto> toDtos(List<StateCount> results) {
     return results.stream()
             .collect(Collectors.toMap(StateCount::entityId, this::toDto));
@@ -289,9 +244,6 @@ public class StateServiceImpl implements StateService {
     return counts;
   }
 
-
-
-
   @Override
   public List<StateCountDto> getStateCountByInterviewer(String userId, Long date) {
     List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(
@@ -301,13 +253,6 @@ public class StateServiceImpl implements StateService {
     );
     return getStateCountByInterviewerCommon(userId, campaignIds, date);
   }
-
-  @Override
-  public List<StateCountDto> getInterviewersStateCountByCampaign(String userId, String campaignId,
-      Long date) {
-    return getStateCountByInterviewerCommon(userId, List.of(campaignId), date);
-  }
-
 
   private List<StateCountDto> getStateCountByInterviewerCommon(String userId,
       List<String> campaignIds, Long date) {
@@ -354,24 +299,4 @@ public class StateServiceImpl implements StateService {
     return returnList;
   }
 
-
-  @Override
-  public StateCountDto getNbSUNotAttributedStateCount(String userId, String campaignId, Long date)
-          throws CampaignNotFoundException {
-    userService.checkUserAssociationToCampaign(campaignId, userId);
-
-    List<String> organizationUnits = userService.getUserOUs(userId, true)
-            .stream().map(OrganizationUnitDto::getId).toList();
-    Long dateToUse = date;
-    if (dateToUse == null) {
-      dateToUse = System.currentTimeMillis();
-    }
-
-    StateCountDto interviewerSum = new StateCountDto(
-            stateRepository.getStateCountNotAttributed(campaignId, organizationUnits, dateToUse));
-    interviewerSum.addClosingCauseCount(
-            closingCauseRepository.getClosingCauseCountNotAttributed(campaignId, organizationUnits, dateToUse));
-
-    return interviewerSum;
-  }
 }

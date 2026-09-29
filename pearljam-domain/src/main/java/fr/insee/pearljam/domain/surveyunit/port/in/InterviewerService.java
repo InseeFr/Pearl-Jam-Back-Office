@@ -3,9 +3,7 @@ package fr.insee.pearljam.domain.surveyunit.port.in;
 import fr.insee.pearljam.contracts.campaign.dto.output.CampaignVisibilityPeriodDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerContextDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerDto;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.shared.model.Response;
-import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +30,5 @@ public interface InterviewerService {
 
 	List<InterviewerContextDto> getCompleteListInterviewers();
 
-	List<InterviewerDto> getInterviewersByUserAndCampaign(String campaignId) throws InterviewerNotFoundException, CampaignNotFoundException;
 
 }

@@ -40,28 +40,6 @@ public interface StateService {
 	 * @param date
 	 * @return {@link List<StateCountDto>}
 	 */
-	List<StateCountDto> getStateCountByCampaigns(String userId, Long date);
-	
-	/**
-	 * @param userId
-	 * @param date
-	 * @return {@link List<StateCountDto>}
-	 */
 	List<StateCountDto> getStateCountByInterviewer(String userId, Long date);
 
-	/**
-	 * @param userId
-	 * @param campaignId
-	 * @param date
-	 * @return {@link List<StateCountDto>}
-	 */
-	List<StateCountDto> getInterviewersStateCountByCampaign(String userId, String campaignId, Long date);
-
-	/**
-	 * @param userId
-	 * @param id
-	 * @param date
-	 * @return {@link StateCountDto}
-	 */
-	StateCountDto getNbSUNotAttributedStateCount(String userId, String id, Long date) throws CampaignNotFoundException;
 }

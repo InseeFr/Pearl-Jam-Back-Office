@@ -82,16 +82,6 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
-    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getNbSUAbandonedByCampaign'");
-    }
-
-    @Override
-    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getNbSUNotAttributedByCampaign'");
-    }
-
-    @Override
     public void createCampaign(CampaignCreateDto campaignDto)
             throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
         if (shouldThrowCampaignAlreadyExistException) {

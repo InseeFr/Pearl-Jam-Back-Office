@@ -64,7 +64,7 @@ public class InterviewerServiceImpl implements InterviewerService {
 		List<String> interviewerErrors = new ArrayList<>();
 		List<InterviewerDB> listInterviewers = new ArrayList<>();
 		List<String> interviewersDb = interviewerRepository.findAllIds();
-		interviewers.stream().forEach(itwr -> {
+		interviewers.forEach(itwr -> {
 			if (!duplicates.containsKey(itwr.getId())) {
 				duplicates.put(itwr.getId(), 0);
 			}
@@ -152,43 +152,4 @@ public class InterviewerServiceImpl implements InterviewerService {
 				.toList();
 	}
 
-	@Override
-	public List<InterviewerDto> getInterviewersByUserAndCampaign(String campaignId) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		userService.checkUserAssociationToCampaign(campaignId, userId);
-
-		List<String> userOUIds = userService.getUserOUs(userId, false).stream()
-				.map(OrganizationUnitDto::getId)
-				.toList();
-
-		Map<String, InterviewerDto> aggregatedInterviewersById = new HashMap<>();
-
-		List<InterviewerDto> interviewersInOu =
-				campaignInterviewerRepository
-						.findCampaignInterviewers(campaignId, userOUIds)
-						.stream()
-						.map(InterviewerDto::fromModel)
-						.toList();
-		for (InterviewerDto interviewer : interviewersInOu) {
-
-			aggregatedInterviewersById.merge(
-					interviewer.getId(),
-					interviewer,
-					(existing, incoming) -> {
-						Long existingCount = existing.getSurveyUnitCount();
-						Long incomingCount = incoming.getSurveyUnitCount();
-						existing.setSurveyUnitCount(existingCount + incomingCount);
-                        return existing;
-                    }
-			);
-		}
-
-		List<InterviewerDto> aggregatedInterviewers = new ArrayList<>(aggregatedInterviewersById.values());
-
-		if (aggregatedInterviewers.isEmpty()) {
-			log.warn("No interviewers found for the campaign {}", campaignId);
-		}
-
-		return aggregatedInterviewers;
-	}
 }

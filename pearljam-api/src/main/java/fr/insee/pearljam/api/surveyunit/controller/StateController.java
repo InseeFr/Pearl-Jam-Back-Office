@@ -58,56 +58,6 @@ public class StateController {
   }
 
   /**
-   * Return the interviewer state count by campaign
-   *
-   * @param id
-   * @param date
-   * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
-   * {@link HttpStatus} FORBIDDEN
-   */
-  @Operation(summary = "Get interviewersStateCount")
-  @GetMapping(Constants.API_CAMPAIGN_ID_INTERVIEWERS_STATECOUNT)
-  public ResponseEntity<List<StateCountDto>> getInterviewersStateCountByCampaign(
-      @PathVariable(value = "id") String id,
-      @RequestParam(required = false, name = "date") Long date) {
-    String userId = authenticatedUserService.getCurrentUserId();
-    List<StateCountDto> stateCountCampaignsDto = stateService.getInterviewersStateCountByCampaign(
-        userId, id, date);
-    if (stateCountCampaignsDto == null) {
-      log.info("Get interviewersStateCount resulting in 404");
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    log.info("Get interviewersStateCount resulting in 200");
-    return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
-  }
-
-  /**
-   * This method is used to count survey units not attributed by states
-   *
-   * @param id
-   * @param date
-   * @return {@link StateCountDto} if exist, {@link HttpStatus} NOT_FOUND, or {@link HttpStatus}
-   * FORBIDDEN
-   */
-  @Operation(summary = "Get state count for non attributted SUs")
-  @GetMapping(Constants.API_CAMPAIGN_ID_SU_NOT_ATTRIBUTED_STATECOUNT)
-  public ResponseEntity<StateCountDto> getNbSUNotAttributedStateCount(
-      @PathVariable(value = "id") String id,
-      @RequestParam(required = false, name = "date") Long date) {
-    String userId = authenticatedUserService.getCurrentUserId();
-    StateCountDto stateCountDto;
-    try {
-      stateCountDto = stateService.getNbSUNotAttributedStateCount(userId, id, date);
-    } catch (CampaignNotFoundException e) {
-      log.error(e.getMessage());
-      log.info("Get state count for non attributted SUs resulting in 404");
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    log.info("Get state count for non attributted SUs resulting in 200");
-    return new ResponseEntity<>(stateCountDto, HttpStatus.OK);
-  }
-
-  /**
    * This method is used to count survey units by states, organizational units and campaign
    *
    * @param id
@@ -158,30 +108,6 @@ public class StateController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     log.info("Get interviewersStateCount resulting in 200");
-    return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
-  }
-
-  /**
-   * @deprecated
-   * Return the sum of survey units states by campaign as a list
-   *
-   * @param date
-   * @return {@link StateCountCampaignDto} if exist, {@link HttpStatus} NOT_FOUND, or
-   * {@link HttpStatus} FORBIDDEN
-   */
-  @Operation(summary = "Get campaignStateCount")
-  @Deprecated(forRemoval = true)
-  @GetMapping(Constants.API_CAMPAIGNS_SU_STATECOUNT)
-  public ResponseEntity<List<StateCountDto>> getCampaignsStateCount(
-      @RequestParam(required = false, name = "date") Long date) {
-    String userId = authenticatedUserService.getCurrentUserId();
-    List<StateCountDto> stateCountCampaignsDto = stateService.getStateCountByCampaigns(userId,
-        date);
-    if (stateCountCampaignsDto == null) {
-      log.info("Get campaignStateCount resulting in 404");
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    log.info("Get campaignStateCount resulting in 200");
     return new ResponseEntity<>(stateCountCampaignsDto, HttpStatus.OK);
   }
 }
