@@ -192,61 +192,6 @@ class TestAuthKeyCloak {
 						jsonPath("$.localOrganizationUnits[0].label").value("North region organizational unit"));
 	}
 
-	@Test
-	@Order(1)
-	void testGetCampaignInterviewerStateCountNotAttributed() throws Exception {
-
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/state-count")
-						.accept(MediaType.APPLICATION_JSON)
-						.with(authentication(LOCAL_USER)))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.nvmCount").value("0"),
-						jsonPath("$.nnsCount").value("0"),
-						jsonPath("$.anvCount").value("0"),
-						jsonPath("$.vinCount").value("0"),
-						jsonPath("$.vicCount").value("0"),
-						jsonPath("$.prcCount").value("0"),
-						jsonPath("$.aocCount").value("0"),
-						jsonPath("$.apsCount").value("0"),
-						jsonPath("$.insCount").value("0"),
-						jsonPath("$.wftCount").value("0"),
-						jsonPath("$.wfsCount").value("0"),
-						jsonPath("$.tbrCount").value("1"),
-						jsonPath("$.finCount").value("0"),
-						jsonPath("$.cloCount").value("0"),
-						jsonPath("$.nvaCount").value("0"),
-						jsonPath("$.npaCount").value("0"),
-						jsonPath("$.npiCount").value("0"),
-						jsonPath("$.npxCount").value("0"),
-						jsonPath("$.rowCount").value("0"),
-						jsonPath("$.total").value("1"));
-
-	}
-
-	@Test
-	@Order(1)
-	void testGetContactOutcomeCountNotattributed() throws Exception {
-		mockMvc.perform(get(
-						"https://localhost:8080/api/campaign/SIMPSONS2020X00/survey-units/not-attributed/contact" +
-								"-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						jsonPath("$.inaCount").value("0"),
-						jsonPath("$.refCount").value("0"),
-						jsonPath("$.impCount").value("0"),
-						jsonPath("$.ucdCount").value("0"),
-						jsonPath("$.utrCount").value("0"),
-						jsonPath("$.alaCount").value("0"),
-						jsonPath("$.nuhCount").value("0"),
-						jsonPath("$.dukCount").value("1"),
-						jsonPath("$.duuCount").value("0"),
-						jsonPath("$.noaCount").value("0"));
-
-	}
-
 	/**
 	 * Test that the GET endpoint "api/user"
 	 * return null
@@ -330,41 +275,6 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
-	 * return 200
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(4)
-	void testGetCampaignInterviewer() throws Exception {
-		String interviewerJsonPath = "$.[?(@.id == 'INTW1')].%s";
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/interviewers")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isOk(),
-						checkJsonPath(interviewerJsonPath, "interviewerFirstName", "Margie"),
-						checkJsonPath(interviewerJsonPath, "interviewerLastName", "Lucas"),
-						checkJsonPath(interviewerJsonPath, "surveyUnitCount", 2L));
-	}
-
-	/**
-	 * Test that the GET endpoint "api/campaign/{id}/interviewers"
-	 * return 404 when campaign Id is false
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(5)
-	void testGetCampaignInterviewerNotFound() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/interviewers")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
-
-	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/state-count"
 	 * return 200
 	 *
@@ -435,41 +345,6 @@ class TestAuthKeyCloak {
 	/**
 	 * Test that the GET endpoint
 	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
-	 * return 200
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(8)
-	void testGetCampaignInterviewerStateCount() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/state-count")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.nvmCount").value(0L),
-						jsonPath("$.nnsCount").value(0L),
-						jsonPath("$.anvCount").value(0L),
-						jsonPath("$.vinCount").value(1L),
-						jsonPath("$.vicCount").value(0L),
-						jsonPath("$.prcCount").value(0L),
-						jsonPath("$.aocCount").value(0L),
-						jsonPath("$.apsCount").value(0L),
-						jsonPath("$.insCount").value(0L),
-						jsonPath("$.wftCount").value(0L),
-						jsonPath("$.wfsCount").value(0L),
-						jsonPath("$.tbrCount").value(1L),
-						jsonPath("$.finCount").value(0L),
-						jsonPath("$.cloCount").value(0L),
-						jsonPath("$.nvaCount").value(0L),
-						jsonPath("$.npaCount").value(0L),
-						jsonPath("$.npiCount").value(0L),
-						jsonPath("$.rowCount").value(0L),
-						jsonPath("$.total").value(2L));
-	}
-
-	/**
-	 * Test that the GET endpoint
-	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
 	 * return 404 when campaign Id is false
 	 *
 	 * @throws Exception e
@@ -519,26 +394,6 @@ class TestAuthKeyCloak {
 						checkJsonPath(ouJsonPath, "tbrCount", 3L),
 						checkJsonPath(ouJsonPath, "rowCount", 1L));
 	}
-
-	/**
-	 * Test that the GET endpoint
-	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
-	 * return 404 when interviewer Id is false
-	 *
-	 * @throws InterruptedException ie
-	 * @throws JSONException        jsone
-	 */
-	@Test
-	@Order(10)
-	void testGetCampaignInterviewerStateCountNotFoundIntw() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/test/state-count")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
-
-	/* SurveyUnitController */
-
 
 	/**
 	 * Test that the GET endpoint "api/survey-unit/{id}"
@@ -639,28 +494,6 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the GET endpoint
-	 * "/campaign/{id}/survey-units/interviewer/{idep}/closing-causes" returns 200
-	 *
-	 * @throws InterruptedException ie
-	 */
-	@Test
-	@Order(19)
-	void testGetCampaignInterviewerClosingCauseCount() throws Exception {
-		// use a beforeEach method to run each test with a cleaned database
-
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/closing-causes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.npaCount").value("0"),
-						jsonPath("$.npiCount").value("1"),
-						jsonPath("$.rowCount").value("0"),
-						jsonPath("$.npxCount").value("0"),
-						jsonPath("$.total").value("2"));
-	}
-
-	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
 	 *
 	 * @throws Exception e
@@ -676,77 +509,6 @@ class TestAuthKeyCloak {
 	}
 
 	/**
-	 * Test that the Get endpoint
-	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 200
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(20)
-	void testGetContactOutcomeCountByCampaign() throws Exception {
-		String ouJsonPath = "$.organizationUnits.[?(@.idDem == 'OU-NORTH')].%s";
-
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/contact-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "labelDem", "North region organizational unit"),
-						checkJsonPath(ouJsonPath, "inaCount", 0L),
-						checkJsonPath(ouJsonPath, "refCount", 0L),
-						checkJsonPath(ouJsonPath, "impCount", 0L),
-						checkJsonPath(ouJsonPath, "ucdCount", 0L),
-						checkJsonPath(ouJsonPath, "utrCount", 0L),
-						checkJsonPath(ouJsonPath, "alaCount", 0L),
-						checkJsonPath(ouJsonPath, "nuhCount", 0L),
-						checkJsonPath(ouJsonPath, "dukCount", 1L),
-						checkJsonPath(ouJsonPath, "duuCount", 0L),
-						checkJsonPath(ouJsonPath, "noaCount", 0L));
-	}
-
-	/**
-	 * Test that the Get endpoint
-	 * "/campaign/survey-units/contact-outcomes[?date={date}]" return 200
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(20)
-	void testGetContactOutcomeCountAllCampaign() throws Exception {
-		String ouJsonPath = "$.[?(@.campaign.id == 'SIMPSONS2020X00')].%s";
-
-		mockMvc.perform(get("/api/campaigns/survey-units/contact-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						checkJsonPath(ouJsonPath, "campaign.label", "Survey on the Simpsons tv show 2020"),
-						checkJsonPath(ouJsonPath, "inaCount", 0L),
-						checkJsonPath(ouJsonPath, "refCount", 0L),
-						checkJsonPath(ouJsonPath, "impCount", 0L),
-						checkJsonPath(ouJsonPath, "ucdCount", 0L),
-						checkJsonPath(ouJsonPath, "utrCount", 0L),
-						checkJsonPath(ouJsonPath, "alaCount", 0L),
-						checkJsonPath(ouJsonPath, "nuhCount", 0L),
-						checkJsonPath(ouJsonPath, "nuhCount", 0L),
-						checkJsonPath(ouJsonPath, "dukCount", 1L),
-						checkJsonPath(ouJsonPath, "duuCount", 0L),
-						checkJsonPath(ouJsonPath, "noaCount", 0L));
-	}
-
-	/**
-	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(21)
-	void testGetNbSuAbandonedNotFound() throws Exception {
-		mockMvc.perform(get("/api/campaign/test/survey-units/abandoned")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
-
-	/**
 	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
 	 *
 	 * @throws Exception e
@@ -759,21 +521,6 @@ class TestAuthKeyCloak {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk(),
 						jsonPath("$.count").value("0"));
-	}
-
-	/**
-	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
-	 *
-	 * @throws InterruptedException ie
-	 * @throws JSONException        jsone
-	 */
-	@Test
-	@Order(23)
-	void testGetNbSuNotAttributedNotFound() throws Exception {
-		mockMvc.perform(get("/api/campaign/test/survey-units/not-attributed")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
 	}
 
 	/**
@@ -1048,102 +795,18 @@ class TestAuthKeyCloak {
 						.contentType(MediaType.APPLICATION_JSON)
 						.body(expectedBody));
 
-    mockMvc
-        .perform(get("/api/survey-units/closable")
-            .with(authentication(LOCAL_USER))
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpectAll(
-            status().isOk(),
-            jsonPath("$.[?(@.id == '20')]").exists(),
-            jsonPath("$.[?(@.id == '21')]").exists(),
-            jsonPath("$.[?(@.id == '23')]").exists(),
-            jsonPath("$.[?(@.id == '20')].ssech").value(1),
-            jsonPath("$.[?(@.id == '20')].questionnaireState").value(QUESTIONNAIRE_STATE_UNAVAILABLE)
-        );
-	}
-
-	/**
-	 * Test that the Get endpoint
-	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
-	 * return 200
-	 *
-	 * @throws InterruptedException ie
-	 */
-	@Test
-	@Order(48)
-	void testGetContactOutcomeCountByCampaignAndInterviewer()
-			throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/interviewer/INTW1/contact-outcomes")
+		mockMvc
+				.perform(get("/api/survey-units/closable")
 						.with(authentication(LOCAL_USER))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpectAll(
 						status().isOk(),
-						jsonPath("$.inaCount").value(0L),
-						jsonPath("$.refCount").value(0L),
-						jsonPath("$.impCount").value(0L),
-						jsonPath("$.ucdCount").value(0L),
-						jsonPath("$.utrCount").value(0L),
-						jsonPath("$.alaCount").value(0L),
-						jsonPath("$.nuhCount").value(0L),
-						jsonPath("$.dukCount").value(0L),
-						jsonPath("$.duuCount").value(0L),
-						jsonPath("$.noaCount").value(0L));
-	}
-
-	/**
-	 * Test that the Get endpoint
-	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
-	 * return 404
-	 *
-	 * @throws InterruptedException ie
-	 */
-	@Test
-	@Order(49)
-	void testGetContactOutcomeCountByCampaignNotExistAndInterviewer()
-			throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/contact-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isNotFound());
-
-	}
-
-	/**
-	 * Test that the Get endpoint
-	 * "/campaign/{id}/survey-units/interviewer/{id}/contact-outcomes[?date={date}]"
-	 * return 404
-	 *
-	 * @throws InterruptedException ie
-	 */
-	@Test
-	@Order(50)
-	void testGetContactOutcomeCountByCampaignAndInterviewerNotExist()
-			throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW123/contact-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isNotFound());
-
-	}
-
-	/**
-	 * Test that the Get endpoint
-	 * "/campaign/{id}/survey-units/contact-outcomes[?date={date}]" return 404
-	 *
-	 * @throws InterruptedException ie
-	 */
-	@Test
-	@Order(52)
-	void testGetContactOutcomeCountByCampaignNotExist()
-			throws Exception {
-
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/contact-outcomes")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(
-						status().isNotFound());
+						jsonPath("$.[?(@.id == '20')]").exists(),
+						jsonPath("$.[?(@.id == '21')]").exists(),
+						jsonPath("$.[?(@.id == '23')]").exists(),
+						jsonPath("$.[?(@.id == '20')].ssech").value(1),
+						jsonPath("$.[?(@.id == '20')].questionnaireState").value(QUESTIONNAIRE_STATE_UNAVAILABLE)
+				);
 	}
 
 	/**
