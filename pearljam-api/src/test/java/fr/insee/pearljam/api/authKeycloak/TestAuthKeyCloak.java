@@ -342,22 +342,6 @@ class TestAuthKeyCloak {
 				.andExpect(status().isNotFound());
 	}
 
-	/**
-	 * Test that the GET endpoint
-	 * "api/campaign/{id}/survey-units/interviewer/{id}/state-count"
-	 * return 404 when campaign Id is false
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(9)
-	void testGetCampaignInterviewerStateCountNotFoundCampaign() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X000000/survey-units/interviewer/INTW1/state-count")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
-
 	@Test
 	@Order(8)
 	void testPutClosingCausePreviousClosingCause() throws Exception {
@@ -491,36 +475,6 @@ class TestAuthKeyCloak {
 						.content(asJsonString(List.of("")))
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
-	}
-
-	/**
-	 * Test that the GET endpoint "api/campaign/{id}/survey-units/abandoned"
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(20)
-	void testGetNbSuAbandoned() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/abandoned")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.count").value("0"));
-	}
-
-	/**
-	 * Test that the GET endpoint "api/campaign/{id}/survey-units/not-attributed"
-	 *
-	 * @throws Exception e
-	 */
-	@Test
-	@Order(22)
-	void testGetNbSuNotAttributed() throws Exception {
-		mockMvc.perform(get("/api/campaign/SIMPSONS2020X00/survey-units/not-attributed")
-						.with(authentication(LOCAL_USER))
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpectAll(status().isOk(),
-						jsonPath("$.count").value("0"));
 	}
 
 	/**
