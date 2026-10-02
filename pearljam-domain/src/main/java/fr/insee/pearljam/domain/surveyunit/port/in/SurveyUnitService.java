@@ -1,7 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.port.in;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
@@ -67,25 +65,15 @@ public interface SurveyUnitService {
 	Set<SurveyUnitCampaignDto> getSurveyUnitByCampaign(String campaignId, String userId, StateType state);
 
 	/**
-	 * @param suId
-	 * @return {@link List} of {@link StateDto}
-	 */
-	List<StateDto> getListStatesBySurveyUnitId(String suId);
-
-	/**
 	 *
 	 * @param surveyUnitId survey unit id
 	 * @return {@link SurveyUnitDB} the survey unit
 	 */
 	SurveyUnitDB getSurveyUnit(String surveyUnitId);
 
-	List<ClosableSurveyUnitDto> getClosableSurveyUnits(String userId);
-
 	HttpStatus updateSurveyUnitViewed(String userId, String surveyUnitId);
 
 	HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause);
-
-	HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause);
 
 	Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits);
 
@@ -112,6 +100,4 @@ public interface SurveyUnitService {
 	void removeInterviewerLink(List<String> ids);
 
     List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds);
-
-	HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state);
 }

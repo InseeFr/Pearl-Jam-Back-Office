@@ -1,40 +1,31 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
 import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
-import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
-import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 class StateServiceImplTest {
 
@@ -50,12 +41,6 @@ class StateServiceImplTest {
   private CommunicationRequestRepository communicationRequestRepository;
   @Mock
   private ClosingCauseRepository closingCauseRepository;
-  @Mock
-  private VisibilityRepository visibilityRepository;
-  @Mock
-  private OrganizationUnitRepository organizationRepository;
-  @Mock
-  private RelatedOrganizationUnitService relatedOrganizationUnitService;
 
   @InjectMocks
   private StateServiceImpl stateService;
@@ -68,8 +53,7 @@ class StateServiceImplTest {
     MockitoAnnotations.openMocks(this);
     stateService = new StateServiceImpl(campaignRepository, stateRepository,
             closingCauseRepository, interviewerRepository,
-            visibilityRepository, organizationRepository,
-            userService, relatedOrganizationUnitService,
+            userService,
             communicationRequestRepository
             );
 
