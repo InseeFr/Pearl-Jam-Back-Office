@@ -1,38 +1,27 @@
 package fr.insee.pearljam.domain.surveyunit.service;
 
-import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
+import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
+import fr.insee.pearljam.contracts.surveyunit.dto.interviewer.InterviewerCountDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
-import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
-import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
-import fr.insee.pearljam.domain.campaign.port.out.VisibilityRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
+import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
+import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.model.count.ClosingCauseCount;
 import fr.insee.pearljam.domain.surveyunit.model.count.CommunicationRequestCount;
-import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
 import fr.insee.pearljam.domain.surveyunit.model.count.StateCount;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
-import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.service.exception.InterviewerNotFoundException;
-import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
-import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
-import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
-import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
+import fr.insee.pearljam.domain.surveyunit.port.out.ClosingCauseRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.CommunicationRequestRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.InterviewerRepository;
+import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -50,139 +39,8 @@ public class StateServiceImpl implements StateService {
   private final StateRepository stateRepository;
   private final ClosingCauseRepository closingCauseRepository;
   private final InterviewerRepository interviewerRepository;
-  private final VisibilityRepository visibilityRepository;
-  private final OrganizationUnitRepository organizationUnitRepository;
   private final UserService userService;
-  private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final CommunicationRequestRepository communicationRequestRepository;
-
-
-  public StateCountDto getStateCount(String userId, String campaignId, String interviewerId,
-      Long date,
-      List<String> associatedOrgUnits) throws CampaignNotFoundException {
-    StateCountDto stateCountDto = new StateCountDto();
-    userService.checkUserAssociationToCampaign(campaignId, userId);
-    if (interviewerRepository.findById(interviewerId).isEmpty()) {
-      throw new InterviewerNotFoundException(interviewerId);
-    }
-    List<String> userOuIds;
-    if (!userId.equals(Constants.GUEST)) {
-      userOuIds = relatedOrganizationUnitService.getRelatedOrganizationUnits(userId);
-    } else {
-      userOuIds = organizationUnitRepository.findAllId();
-    }
-
-    List<String> intervIds = interviewerRepository.findInterviewersByOrganizationUnits(
-        associatedOrgUnits).stream().map(InterviewerDB::getId).toList();
-    Long dateToUse = date;
-    if (dateToUse == null) {
-      dateToUse = System.currentTimeMillis();
-    }
-    if (!intervIds.isEmpty() && (intervIds.contains(interviewerId)) || userId.equals(
-        Constants.GUEST)) {
-      Map<String, Long> stateCounts = new HashMap<>(
-          stateRepository.getStateCount(campaignId, interviewerId, userOuIds, dateToUse));
-      stateCounts.put(Constants.NOTICE_COUNT,
-          communicationRequestRepository.getCommRequestCountByInterviewersAndType(
-                  List.of(campaignId), Set.of(interviewerId), CommunicationType.NOTICE, userOuIds, dateToUse)
-              .stream().findFirst().map(InterviewerCountDto::count).orElse(0L));
-
-      stateCounts.put(Constants.REMINDER_COUNT,
-          communicationRequestRepository.getCommRequestCountByInterviewersAndType(
-                  List.of(campaignId), Set.of(interviewerId), CommunicationType.REMINDER, userOuIds, dateToUse)
-              .stream().findFirst().map(InterviewerCountDto::count).orElse(0L));
-
-
-
-      stateCountDto = new StateCountDto(stateCounts);
-      stateCountDto.addClosingCauseCount(
-          closingCauseRepository.getStateClosedByClosingCauseCount(campaignId,
-              interviewerId, userOuIds, dateToUse));
-    }
-    if (stateCountDto.getTotal() == null) {
-      log.warn("No matching interviewers {} were found for the user {} and the campaign {}", interviewerId, userId, campaignId);
-      throw new InterviewerNotFoundException("All");
-    }
-    return stateCountDto;
-  }
-
-  public StateCountCampaignDto getStateCountByCampaign(String userId, String campaignId, Long date)
-          throws EntityNotFoundException {
-
-    userService.checkUserAssociationToCampaign(campaignId, userId);
-    long dateToUse = (date != null) ? date : System.currentTimeMillis();
-
-    // check OU - Campaign link via Visibility
-    List<String> targetOuIds = visibilityRepository.findVisibilities(campaignId)
-            .stream().map(Visibility::organizationalUnitId).toList();
-    if (targetOuIds.isEmpty()) {
-      throw new EntityNotFoundException(String.format(
-              "No visibility found for campaign %s", campaignId));
-    }
-
-
-    // Load labels in one go (1 query)
-    Map<String, String> ouLabels = organizationUnitRepository.findLabelsByIds(targetOuIds).stream()
-            .collect(Collectors.toMap(OrganizationUnitLabel::id, OrganizationUnitLabel::label));
-
-    // State counts grouped by OU (1 query)
-    Map<String, StateCountDto> stateCountsByOu = toDtos(
-            stateRepository.findGroupedByOu(campaignId, targetOuIds, dateToUse)
-    );
-
-    // 5) Comm request counts grouped by OU (1 query)
-    Map<String, CommunicationRequestCount> commByOu =
-            communicationRequestRepository.getCommRequestCountByCampaignAndOus(
-                            campaignId, targetOuIds, dateToUse)
-                    .stream()
-                    .collect(Collectors.toMap(CommunicationRequestCount::entityId, x -> x));
-
-    // 6) Closing cause counts grouped by OU (1 query)
-    Map<String, ClosingCauseCount> closingByOu =
-            closingCauseRepository.getClosingCauseCountByCampaignAndOus(
-                            campaignId, targetOuIds, dateToUse)
-                    .stream()
-                    .collect(Collectors.toMap(ClosingCauseCount::entityId, Function.identity()));
-
-    // 7) Build per-OU DTOs in memory (no DB)
-    List<StateCountDto> ouDtos = targetOuIds.stream()
-            .map(ouId -> {
-              StateCountDto merged = mergeCounts(
-                      stateCountsByOu.get(ouId),
-                      commByOu.get(ouId),
-                      closingByOu.get(ouId)
-              );
-              merged.setIdDem(ouId);
-              merged.setLabelDem(ouLabels.getOrDefault(ouId, ouId));
-              return merged;
-            })
-            .toList();
-
-    // 8) France totals (keep your existing 3 queries for now)
-    Map<String, Long> stateCountsByCampaign = new HashMap<>(
-            stateRepository.getStateCountByCampaignId(campaignId, dateToUse));
-    stateCountsByCampaign.put(Constants.NOTICE_COUNT,
-            communicationRequestRepository.getCommRequestCountByCampaignAndType(
-                    campaignId, CommunicationType.NOTICE, dateToUse));
-    stateCountsByCampaign.put(Constants.REMINDER_COUNT,
-            communicationRequestRepository.getCommRequestCountByCampaignAndType(
-                    campaignId, CommunicationType.REMINDER, dateToUse));
-
-    StateCountDto dtoFrance = new StateCountDto(stateCountsByCampaign);
-    dtoFrance.addClosingCauseCount(
-            closingCauseRepository.getClosingCauseCountByCampaignId(campaignId, dateToUse));
-
-    StateCountCampaignDto result = new StateCountCampaignDto();
-    result.setOrganizationUnits(ouDtos);
-    result.setFrance(dtoFrance);
-
-    if (result.getFrance() == null || result.getOrganizationUnits() == null) {
-      throw new EntityNotFoundException(String.format(
-              "No matching survey units states were found for the user %s and the campaign %s",
-              userId, campaignId));
-    }
-    return result;
-  }
 
   public List<StateCountDto> getStateCountByCampaigns(String userId, Long date) {
     Long dateToUse = (date != null) ? date : System.currentTimeMillis();
@@ -289,9 +147,6 @@ public class StateServiceImpl implements StateService {
     return counts;
   }
 
-
-
-
   @Override
   public List<StateCountDto> getStateCountByInterviewer(String userId, Long date) {
     List<String> campaignIds = campaignRepository.findAllCampaignIdsByOuIds(
@@ -301,13 +156,6 @@ public class StateServiceImpl implements StateService {
     );
     return getStateCountByInterviewerCommon(userId, campaignIds, date);
   }
-
-  @Override
-  public List<StateCountDto> getInterviewersStateCountByCampaign(String userId, String campaignId,
-      Long date) {
-    return getStateCountByInterviewerCommon(userId, List.of(campaignId), date);
-  }
-
 
   private List<StateCountDto> getStateCountByInterviewerCommon(String userId,
       List<String> campaignIds, Long date) {
@@ -352,26 +200,5 @@ public class StateServiceImpl implements StateService {
     }
 
     return returnList;
-  }
-
-
-  @Override
-  public StateCountDto getNbSUNotAttributedStateCount(String userId, String campaignId, Long date)
-          throws CampaignNotFoundException {
-    userService.checkUserAssociationToCampaign(campaignId, userId);
-
-    List<String> organizationUnits = userService.getUserOUs(userId, true)
-            .stream().map(OrganizationUnitDto::getId).toList();
-    Long dateToUse = date;
-    if (dateToUse == null) {
-      dateToUse = System.currentTimeMillis();
-    }
-
-    StateCountDto interviewerSum = new StateCountDto(
-            stateRepository.getStateCountNotAttributed(campaignId, organizationUnits, dateToUse));
-    interviewerSum.addClosingCauseCount(
-            closingCauseRepository.getClosingCauseCountNotAttributed(campaignId, organizationUnits, dateToUse));
-
-    return interviewerSum;
   }
 }
