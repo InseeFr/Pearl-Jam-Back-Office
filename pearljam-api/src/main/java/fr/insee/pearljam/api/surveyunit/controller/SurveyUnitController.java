@@ -198,26 +198,6 @@ public class SurveyUnitController {
 	}
 
 	/**
-	 * This method is used to update the state of a survey unit
-	 *
-	 * @deprecated still used by CPIEs + Sabiane Management V1
-	 * @param surveyUnitId survey unit id
-	 * @param state state to set
-	 * @return {@link HttpStatus}
-	 */
-	@Operation(summary = "Update the state of Survey Units listed in request body")
-	@PutMapping(Constants.API_SURVEYUNIT_ID_STATE)
-	@Deprecated(forRemoval = true)
-	public ResponseEntity<Void> updateSurveyUnitState(
-			@PathVariable(value = "id") String surveyUnitId,
-			@PathVariable(value = "state") StateType state) {
-		HttpStatus returnCode = surveyUnitService.addStateToSurveyUnit(surveyUnitId, state);
-		log.info("PUT state '{}' on survey unit {} resulting in {}", state.getLabel(), surveyUnitId,
-				returnCode.value());
-		return new ResponseEntity<>(returnCode);
-	}
-
-	/**
 	 * This method closes the survey unit {id} with the closing cause {closingCause}
 	 * Updates the closing cause if the SU is already closed
 	 * 
@@ -233,25 +213,6 @@ public class SurveyUnitController {
 		String userId = authenticatedUserService.getCurrentUserId();
 		log.info("{} : PUT close with cause '{}' on su {}", userId, closingCause, surveyUnitId);
 		HttpStatus returnCode = surveyUnitService.closeSurveyUnit(surveyUnitId, closingCause);
-		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
-				returnCode.value());
-		return new ResponseEntity<>(returnCode);
-	}
-
-	/**
-	 * This method adds or updates the closing cause of the survey unit {id}
-	 * but does not modify its state
-	 *
-	 * @param surveyUnitId survey unit id
-	 * @param closingCause closing cause to add
-	 * @return {@link HttpStatus}
-	 */
-	@Operation(summary = "Add Closing cause")
-	@PutMapping(Constants.API_SURVEYUNIT_ID_CLOSINGCAUSE)
-	public ResponseEntity<Object> updateClosingCause(
-			@PathVariable(value = "id") String surveyUnitId,
-			@PathVariable(value = "closingCause") ClosingCauseType closingCause) {
-		HttpStatus returnCode = surveyUnitService.updateClosingCause(surveyUnitId, closingCause);
 		log.info("PUT close with cause '{}' on su {} resulting in {}", closingCause, surveyUnitId,
 				returnCode.value());
 		return new ResponseEntity<>(returnCode);
@@ -334,45 +295,6 @@ public class SurveyUnitController {
 		log.info("Check habilitation of {} as {} for accessing survey-unit {} resulted in {}", userId,
 				role.isBlank() ? "interviewer" : role, surveyUnitId, resp.isHabilitated());
 		return new ResponseEntity<>(resp, HttpStatus.OK);
-	}
-
-	/**
-	 * This method is used to get the list of states for a specific survey unit
-	 * 
-	 * @param id survey unit it
-	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
-	 *         or NOT_FOUND
-	 */
-	@Operation(summary = "Get states of given survey unit")
-	@GetMapping(Constants.API_SURVEYUNIT_ID_STATES)
-	@Deprecated(forRemoval = true)
-	public ResponseEntity<SurveyUnitStatesDto> getStatesBySurveyUnitId(
-			@PathVariable(value = "id") String id) {
-
-		log.info("GET states of surveyUnit {} resulting in 403", id);
-		List<StateDto> lstState = surveyUnitService.getListStatesBySurveyUnitId(id);
-		if (lstState.isEmpty()) {
-			log.info("GET states of surveyUnit {} resulting in 404", id);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(new SurveyUnitStatesDto(id, lstState), HttpStatus.OK);
-	}
-
-	/**
-	 * This method returns the list of states for a specific survey unit
-	 * @deprecated still used by CPIEs + Sabiane Management V1
-	 * @param request http servlet request
-	 * @return List of {@link StateDto} if exists, else {@link HttpStatus} FORBIDDEN
-	 *         or NOT_FOUND
-	 */
-	@Operation(summary = "Get closable survey units")
-	@GetMapping(Constants.API_SURVEYUNITS_CLOSABLE)
-	@Deprecated(forRemoval = true)
-	public List<ClosableSurveyUnitDto> getClosableSurveyUnits(HttpServletRequest request) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		List<ClosableSurveyUnitDto> lstSu = surveyUnitService.getClosableSurveyUnits(userId);
-		log.info("Retrieved closable survey units");
-		return lstSu;
 	}
 
 	/**

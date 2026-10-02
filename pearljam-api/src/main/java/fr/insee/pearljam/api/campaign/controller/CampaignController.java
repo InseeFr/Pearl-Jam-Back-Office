@@ -140,36 +140,6 @@ public class CampaignController {
 	}
 
 	/**
-	 * This method is used to count survey units that are abandoned by campaign
-	 * Return the sum of survey units states by campaign as a list
-	 *
-	 * @param id campaign id
-	 * @return CountDto counts
-	 */
-	@Deprecated(forRemoval = true)
-	@Operation(summary = "Get numberSUAbandoned")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_ABANDONED)
-	public CountDto getNbSUAbandoned(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		return campaignService.getNbSUAbandonedByCampaign(userId, id);
-
-	}
-
-	/**
-	 * This method is used to count survey units that are not attributed by campaign
-	 *
-	 * @param campaignId campaign id
-	 * @return CountDto counts
-	 */
-	@Deprecated(forRemoval = true)
-	@Operation(summary = "Get numberSUNotAttributed")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID_SU_NOTATTRIBUTED)
-	public CountDto getNbSUNotAttributed(@PathVariable(value = "id") String campaignId) throws CampaignNotFoundException {
-		String userId = authenticatedUserService.getCurrentUserId();
-		return campaignService.getNbSUNotAttributedByCampaign(userId, campaignId);
-	}
-
-	/**
 	 * This method deletes a campaign
 	 * 
 	 * @param campaignId the value to delete
