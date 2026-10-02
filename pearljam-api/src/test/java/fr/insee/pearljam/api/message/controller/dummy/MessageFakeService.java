@@ -9,11 +9,6 @@ import java.util.List;
 
 public class MessageFakeService implements MessageService {
     @Override
-    public HttpStatus addMessage(String text, List<String> recipients, String userId) {
-        throw new IllegalArgumentException("not implemented");
-    }
-
-    @Override
     public HttpStatus markAsRead(Long id, String idep) {
         throw new IllegalArgumentException("not implemented");
     }
@@ -25,16 +20,6 @@ public class MessageFakeService implements MessageService {
 
     @Override
     public List<MessageDto> getMessages(String interviewerId) {
-        throw new IllegalArgumentException("not implemented");
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> verifyName(String text, String userId) {
-        throw new IllegalArgumentException("not implemented");
-    }
-
-    @Override
-    public List<MessageDto> getMessageHistory(String userId) {
         throw new IllegalArgumentException("not implemented");
     }
 
