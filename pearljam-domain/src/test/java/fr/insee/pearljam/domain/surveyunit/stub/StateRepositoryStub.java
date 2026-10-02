@@ -31,22 +31,7 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
-    public Map<String, Long> getStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        throw new UnsupportedOperationException("Not implemented for unit tests");
-    }
-
-    @Override
     public Map<String, Long> getStateCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date) {
-        throw new UnsupportedOperationException("Not implemented for unit tests");
-    }
-
-    @Override
-    public Map<String, Long> getStateCountNotAttributed(String campaignId, List<String> ouIds, Long date) {
-        throw new UnsupportedOperationException("Not implemented for unit tests");
-    }
-
-    @Override
-    public Map<String, Long> getStateCountByCampaignId(String campaignId, Long date) {
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }
 
@@ -57,11 +42,6 @@ public class StateRepositoryStub implements StateRepository {
 
     @Override
     public List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
-        throw new UnsupportedOperationException("Not implemented for unit tests");
-    }
-
-    @Override
-    public List<StateCount> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse) {
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }
 
@@ -98,10 +78,5 @@ public class StateRepositoryStub implements StateRepository {
 
     public List<StateType> getSavedStatesForSurveyUnit(String surveyUnitId) {
         return saveHistory.getOrDefault(surveyUnitId, Collections.emptyList());
-    }
-
-    public void reset() {
-        surveyUnitStates.clear();
-        saveHistory.clear();
     }
 }
