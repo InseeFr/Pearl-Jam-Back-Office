@@ -44,30 +44,6 @@ public class MessageController{
 
 	/**
 	 * @deprecated
-	 * This method is used to post a message
-	 */
-	@Operation(summary = "Post a message")
-	@PostMapping(Constants.API_MESSAGE)
-	@Deprecated(forRemoval = true)
-	public ResponseEntity<Object> postMessage(@RequestBody MessageDto message) {
-		if(!deprecatedEndpointsEnabled) {
-			throw new EndpointDisabledException();
-		}
-
-		String userId = authenticatedUserService.getCurrentUserId();
-		String text = message.getText();
-		List<String> recipients = message.getRecipients();
-		log.info("POST text '{}' ", text);
-		for (String recipient : recipients) {
-			log.info("POST recipient '{}' ", recipient);
-		}
-		HttpStatus returnCode = messageService.addMessage(text, recipients, userId);
-		return new ResponseEntity<>(returnCode);
-
-	}
-
-	/**
-	 * @deprecated
 	 * This method is used to mark a message as read with id: {id} as read for the
 	 * interviewer {idep}
 	 */
@@ -123,37 +99,6 @@ public class MessageController{
 		}
 		List<MessageDto> messages = messageService.getMessages(id);
 		return new ResponseEntity<>(messages, HttpStatus.OK);
-	}
-
-	/**
-	 * @deprecated
-	 * Retrieves message history
-	 */
-	@Operation(summary = "Get the message history")
-	@GetMapping(Constants.API_MESSAGEHISTORY)
-	@Deprecated(forRemoval = true)
-	public ResponseEntity<List<MessageDto>> getMessageHistory() {
-		if(!deprecatedEndpointsEnabled) {
-			throw new EndpointDisabledException();
-		}
-		String userId = authenticatedUserService.getCurrentUserId();
-		List<MessageDto> messages = messageService.getMessageHistory(userId);
-		return new ResponseEntity<>(messages, HttpStatus.OK);
-	}
-
-	/**
-	 * Retrieves matching interviewers and campaigns
-	 */
-	@Operation(summary = "Update Messages with campaigns or interviewers listed in request body")
-	@PostMapping(Constants.API_VERIFYNAME)
-	public ResponseEntity<Object> postMessage(@RequestBody WsTextDto name) {
-		String userId = authenticatedUserService.getCurrentUserId();
-		String text = name.getText();
-		List<VerifyNameResponseDto> resp = messageService.verifyName(text, userId);
-		if (resp != null) {
-			return new ResponseEntity<>(resp, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
