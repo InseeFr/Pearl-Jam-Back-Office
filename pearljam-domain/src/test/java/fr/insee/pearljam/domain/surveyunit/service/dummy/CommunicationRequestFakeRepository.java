@@ -26,12 +26,6 @@ public class CommunicationRequestFakeRepository implements CommunicationRequestR
   }
 
   @Override
-  public Long getCommRequestCountByCampaignAndType(String campaignId,
-      CommunicationType type, Long date) {
-    return 0L;
-  }
-
-  @Override
   public List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(
       List<String> campaignIds, Set<String> interviewerId, CommunicationType type,
       List<String> ouIds, Long date) {
@@ -40,11 +34,6 @@ public class CommunicationRequestFakeRepository implements CommunicationRequestR
 
   @Override
   public List<CommunicationRequestCount> getCommRequestCountByCampaigns(List<String> campaignIds, List<String> ouIds, Long date) {
-    return List.of();
-  }
-
-  @Override
-  public List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
     return List.of();
   }
 

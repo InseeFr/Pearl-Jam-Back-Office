@@ -43,12 +43,6 @@ public class StateDaoAdapter implements StateRepository {
         return stateJpaRepository.getStateCountSumByInterviewer(campaignIds, interviewerId, ouIds, date);
     }
 
-
-    @Override
-    public Long getTotalStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return stateJpaRepository.getTotalStateCount(campaignId, interviewerId, ouIds, date);
-    }
-
     @Override
     public List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
         return stateJpaRepository.findGroupedByCampaign(campaignIds, ouIds, date);

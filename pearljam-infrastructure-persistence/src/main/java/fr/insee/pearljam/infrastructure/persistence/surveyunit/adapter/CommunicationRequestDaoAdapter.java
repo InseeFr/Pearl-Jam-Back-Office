@@ -49,13 +49,6 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
   }
 
   @Override
-  public Long getCommRequestCountByCampaignAndType(String campaignId,
-      CommunicationType type, Long date) {
-    return communicationRequestRepository.getCommRequestCountByCampaignAndType(
-        campaignId, type, date);
-  }
-
-  @Override
   public List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(List<String> campaignIds,
       Set<String> interviewersId, CommunicationType type, List<String> ouIds, Long date) {
 
@@ -69,11 +62,6 @@ public class CommunicationRequestDaoAdapter implements CommunicationRequestRepos
           List<String> ouIds,
           Long date) {
     return communicationRequestRepository.getCommRequestCountByCampaigns(campaignIds, ouIds, date);
-  }
-
-  @Override
-  public List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
-    return communicationRequestRepository.getCommRequestCountByCampaignAndOus(campaignId,ouIds,dateToUse);
   }
 
   @Override

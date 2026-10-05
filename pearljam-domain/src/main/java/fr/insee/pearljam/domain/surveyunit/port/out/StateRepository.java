@@ -20,8 +20,6 @@ public interface StateRepository {
 
     Map<String, Long> getStateCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date);
 
-    Long getTotalStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date);
-
     List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date);
 
     boolean existsById(Long id);

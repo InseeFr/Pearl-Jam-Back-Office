@@ -36,11 +36,6 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
-    public Long getTotalStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        throw new UnsupportedOperationException("Not implemented for unit tests");
-    }
-
-    @Override
     public List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }
