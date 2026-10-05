@@ -55,11 +55,6 @@ public class SurveyUnitTempZoneDB {
 	@Column(name = "survey_unit", columnDefinition = "jsonb")
 	private String surveyUnit;
 
-	public SurveyUnitTempZoneDB() {
-		super();
-		this.id = UUID.randomUUID();
-	}
-
 	public SurveyUnitTempZoneDB(String surveyUnitId, String interviewerId, Long date, String surveyUnit) {
 		super();
 		this.id = UUID.randomUUID();

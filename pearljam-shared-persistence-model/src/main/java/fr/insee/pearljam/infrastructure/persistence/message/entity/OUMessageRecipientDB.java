@@ -50,10 +50,4 @@ public class OUMessageRecipientDB implements Serializable {
 	@JoinColumn(name = "organization_unit_id", insertable = false, updatable = false)
 	private OrganizationUnitDB organizationUnit;
 
-	public OUMessageRecipientDB(MessageDB message, OrganizationUnitDB organizationUnit) {
-		super();
-		this.message = message;
-		this.organizationUnit = organizationUnit;
-	}
-
 }
