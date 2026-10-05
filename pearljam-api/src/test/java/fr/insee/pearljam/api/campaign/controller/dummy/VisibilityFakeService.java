@@ -1,8 +1,8 @@
 package fr.insee.pearljam.api.campaign.controller.dummy;
 
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
 import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import lombok.Getter;
@@ -26,9 +26,9 @@ public class VisibilityFakeService implements VisibilityService {
     private final List<Visibility> visibilities = new ArrayList<>();
 
     @Override
-    public List<Visibility> findVisibilities(String campaignId) throws CampaignNotFoundException {
+    public List<Visibility> findVisibilities(String campaignId) {
         if(shouldThrowCampaignNotFoundException) {
-            throw new CampaignNotFoundException();
+            throw new CampaignNotFoundExceptionRuntime();
         }
         return visibilities;
     }
