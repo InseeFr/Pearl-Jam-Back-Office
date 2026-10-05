@@ -18,37 +18,12 @@ public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
     private int updatedClosingCausesCount;
 
     @Override
-    public Map<String, Long> getStateClosedByClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return Map.of();
-    }
-
-    @Override
-    public Map<String, Long> getClosingCauseCountNotAttributed(String campaignId, List<String> ouIds, Long date) {
-        return Map.of();
-    }
-
-    @Override
     public Map<String, Long> getClosingCauseCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date) {
         return Map.of();
     }
 
     @Override
-    public Map<String, Long> getClosingCauseCountByCampaignId(String campaignId, Long date) {
-        return Map.of();
-    }
-
-    @Override
-    public Map<String, Long> getClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return Map.of();
-    }
-
-    @Override
     public List<ClosingCauseCount> getStateClosedByClosingCauseCountByCampaigns(List<String> campaignIds, List<String> ouIds, Long date) {
-        return List.of();
-    }
-
-    @Override
-    public List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
         return List.of();
     }
 
@@ -95,10 +70,5 @@ public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
 
     public ClosingCauseType getClosingCauseType(String surveyUnitId) {
         return closingCauses.get(surveyUnitId);
-    }
-
-    public void reset() {
-        closingCauses.clear();
-        addedClosingCausesCount = 0;
     }
 }

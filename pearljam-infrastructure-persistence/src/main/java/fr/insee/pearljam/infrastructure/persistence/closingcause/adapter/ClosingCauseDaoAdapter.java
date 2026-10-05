@@ -16,38 +16,13 @@ public class ClosingCauseDaoAdapter implements ClosingCauseRepository {
     private final ClosingCauseJpaRepository closingCauseJpaRepository;
 
     @Override
-    public Map<String, Long> getStateClosedByClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return closingCauseJpaRepository.getStateClosedByClosingCauseCount(campaignId, interviewerId, ouIds, date);
-    }
-
-    @Override
-    public Map<String, Long> getClosingCauseCountNotAttributed(String campaignId, List<String> ouIds, Long date) {
-        return closingCauseJpaRepository.getClosingCauseCountNotAttributed(campaignId, ouIds, date);
-    }
-
-    @Override
     public Map<String, Long> getClosingCauseCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date) {
         return closingCauseJpaRepository.getClosingCauseCountSumByInterviewer(campaignIds, interviewerId, ouIds, date);
     }
 
     @Override
-    public Map<String, Long> getClosingCauseCountByCampaignId(String campaignId, Long date) {
-        return closingCauseJpaRepository.getClosingCauseCountByCampaignId(campaignId, date);
-    }
-
-    @Override
-    public Map<String, Long> getClosingCauseCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return closingCauseJpaRepository.getClosingCauseCount(campaignId, interviewerId, ouIds, date);
-    }
-
-    @Override
     public List<ClosingCauseCount> getStateClosedByClosingCauseCountByCampaigns(List<String> campaignIds, List<String> ouIds, Long date) {
         return closingCauseJpaRepository.getStateClosedByClosingCauseCountByCampaigns(campaignIds, ouIds, date);
-    }
-
-    @Override
-    public List<ClosingCauseCount> getClosingCauseCountByCampaignAndOus(String campaignId, List<String> ouIds, Long dateToUse) {
-        return closingCauseJpaRepository.getClosingCauseCountByCampaignAndOus(campaignId, ouIds, dateToUse);
     }
 
     @Override

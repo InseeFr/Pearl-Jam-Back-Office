@@ -211,7 +211,7 @@ public class CampaignController {
 	// API for REFERENT entity
 
 	@Operation(summary = "Get referents of targeted campaign")
-	@GetMapping(path = Constants.API_CAMPAIGN_ID_REFERENTS)
+@GetMapping(path = Constants.API_CAMPAIGN_ID_REFERENTS)
 	@Deprecated(forRemoval = true)
 	public List<ReferentDto> getReferents(@PathVariable(value = "id") String id) throws CampaignNotFoundException {
 		if(!deprecatedEndpointsEnabled) {
