@@ -32,7 +32,6 @@ import fr.insee.pearljam.domain.surveyunit.model.contacthistory.HistoryContactOu
 import fr.insee.pearljam.domain.surveyunit.model.contactoutcome.ContactOutcomeType;
 import fr.insee.pearljam.domain.surveyunit.port.in.SurveyUnitService;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.UserDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
@@ -40,7 +39,6 @@ import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.UserJpa
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.InterviewerDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.entity.SurveyUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.InterviewerJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.StateJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.jpa.SurveyUnitJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
