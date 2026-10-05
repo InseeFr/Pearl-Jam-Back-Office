@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.api.utils.MockMvcTestUtils;
-import fr.insee.pearljam.infrastructure.persistence.reporting.batch.CampaignProgressBatch;
+import fr.insee.pearljam.domain.reporting.port.in.CampaignProgressSnapshotServicePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,15 +18,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CampaignReportingSnapshotControllerTest {
 
     private MockMvc mockMvc;
-    private CampaignProgressBatch batch;
+    private CampaignProgressSnapshotServicePort snapshotService;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2025, 6, 15);
     private static final Clock FIXED_CLOCK = Clock.fixed(
             FIXED_TODAY.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
     @BeforeEach
     void setup() {
-        batch = mock(CampaignProgressBatch.class);
-        CampaignReportingSnapshotController controller = new CampaignReportingSnapshotController(batch, FIXED_CLOCK);
+        snapshotService = mock(CampaignProgressSnapshotServicePort.class);
+        CampaignReportingSnapshotController controller = new CampaignReportingSnapshotController(snapshotService, FIXED_CLOCK);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MockMvcTestUtils.createExceptionControllerAdvice())
@@ -41,7 +41,7 @@ class CampaignReportingSnapshotControllerTest {
                         .param("date", pastDate.toString()))
                 .andExpect(status().isNoContent());
 
-        verify(batch).run(pastDate);
+        verify(snapshotService).computeSnapshot(pastDate);
     }
 
     @Test
@@ -50,7 +50,7 @@ class CampaignReportingSnapshotControllerTest {
                         .param("date", FIXED_TODAY.toString()))
                 .andExpect(status().isNoContent());
 
-        verify(batch).run(FIXED_TODAY);
+        verify(snapshotService).computeSnapshot(FIXED_TODAY);
     }
 
     @Test
@@ -61,6 +61,6 @@ class CampaignReportingSnapshotControllerTest {
                         .param("date", futureDate.toString()))
                 .andExpect(status().isBadRequest());
 
-        verify(batch, never()).run(any());
+        verify(snapshotService, never()).computeSnapshot(any());
     }
 }

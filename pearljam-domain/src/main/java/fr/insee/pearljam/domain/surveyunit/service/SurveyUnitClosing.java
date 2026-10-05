@@ -67,13 +67,15 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
     }
 
     private void handleCloseFlow(List<String> ids, ClosingCauseType type) {
-        validateNoExistingClosingCause(ids);
-
+        // Survey units with existing provisional closing causes should be allowed to be closed
+        // (validateClosableStates already ensures they're not in CLO/TBR/FIN states,
+        // so any existing closing causes must be provisional)
+        closingCauseRepository.updateExistingClosingCauseToSurveyUnits(ids, type);
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
         closeSurveyUnits(ids);
 
-        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type);
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, StateType.CLO, type, dateService.now());
     }
 
     private void handleUpdateFlow(List<String> ids, ClosingCauseType type) {
@@ -81,7 +83,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         //insert missing
         closingCauseRepository.addClosingCauseToSurveyUnits(ids, type);
 
-        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type);
+        campaignDailyStatsRepositoryPort.updateDailyStatsForSurveyUnits(ids, null, type, dateService.now());
     }
 
     @Override
@@ -127,6 +129,7 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
             candidatesById,
             states
         );
+
     }
 
     @Override

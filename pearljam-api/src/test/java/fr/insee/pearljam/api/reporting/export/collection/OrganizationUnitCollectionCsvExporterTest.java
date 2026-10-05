@@ -1,7 +1,7 @@
 package fr.insee.pearljam.api.reporting.export.collection;
 
 import fr.insee.pearljam.api.export.csv.CsvRow;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,7 @@ class OrganizationUnitCollectionCsvExporterTest {
     private CampaignReportingByOrganizationUnitsPort port;
 
     @BeforeEach
-    void setup() throws CampaignNotFoundException {
+    void setup() {
         port = mock(CampaignReportingByOrganizationUnitsPort.class);
         when(port.getProgressForDay(any(), any(), any(), any()))
                 .thenReturn(new OrganizationUnitCollectionCsv(List.of()));
@@ -32,7 +32,7 @@ class OrganizationUnitCollectionCsvExporterTest {
 
     @Test
     @DisplayName("Returns CSV with data rows when organization units are available")
-    void shouldReturnCsvWithDataRows() throws CampaignNotFoundException {
+    void shouldReturnCsvWithDataRows() {
         // Given
         OrganizationUnitCollectionCsv csv = new OrganizationUnitCollectionCsv(List.of(
                 CsvRow.from("Site Paris", 50f, 25f, 10f, 1L, 2L, 3L, 4L, 10L, 5L, 6L, 11L, 100L)
@@ -52,7 +52,7 @@ class OrganizationUnitCollectionCsvExporterTest {
 
     @Test
     @DisplayName("Generates filename with campaign id and date in the Content-Disposition header")
-    void shouldGenerateFilenameWithCampaignIdAndDate() throws CampaignNotFoundException {
+    void shouldGenerateFilenameWithCampaignIdAndDate() {
         // Given / When
         ResponseEntity<byte[]> response = exporter.export("user1", "camp-1", LocalDate.of(2025, 6, 10));
 
@@ -63,12 +63,13 @@ class OrganizationUnitCollectionCsvExporterTest {
 
     @Test
     @DisplayName("Propagates CampaignNotFoundException raised by the port")
-    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() throws CampaignNotFoundException {
+    void shouldThrowCampaignNotFoundException_whenCampaignNotFound() {
         // Given
-        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundException());
+        when(port.getProgressForDay(any(), any(), any(), any())).thenThrow(new CampaignNotFoundExceptionRuntime());
 
         // When / Then
-        assertThatThrownBy(() -> exporter.export("user1", "unknown", LocalDate.of(2025, 6, 10)))
-                .isInstanceOf(CampaignNotFoundException.class);
+        LocalDate date = LocalDate.of(2025, 6, 10);
+        assertThatThrownBy(() -> exporter.export("user1", "unknown", date))
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 }

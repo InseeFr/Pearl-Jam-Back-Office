@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,7 +50,8 @@ class CampaignCollectionByInterviewerControllerTest {
                             new CollectionRatesResponse(0f, 0f, 0f),
                             new ContactOutcomesProgressResponse(0L, 0L, 0L, 0L, 0L),
                             new ClosingCausesProgressResponse(0L, 0L, 0L)
-                    )
+                    ),
+                    123456789L
             );
 
     @BeforeEach
@@ -70,24 +73,36 @@ class CampaignCollectionByInterviewerControllerTest {
         // Given
         LocalDate day = LocalDate.of(2025, 6, 10);
 
-        // When
+        // When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/collection")
                         .param("day", day.toString()))
                 .andExpect(status().isOk());
 
-        // Then
         verify(port).getProgressForDay(any(), eq("campaign-1"), eq(day), any());
     }
 
     @Test
     @DisplayName("Passes a null day to the port when day is not provided")
     void shouldPassNullDay_whenDayIsNotProvided() throws Exception {
-        // Given / When
+        // Given / When / Then
         mockMvc.perform(get("/api/reporting/campaigns/campaign-1/interviewers/collection"))
                 .andExpect(status().isOk());
 
-        // Then
         verify(port).getProgressForDay(any(), eq("campaign-1"), isNull(), any());
+    }
+
+    @Test
+    @DisplayName("Returns response with updatedAt field")
+    void shouldReturnResponseWithUpdatedAtField() {
+        // Given
+        CampaignCollectionByInterviewersPresenter presenter = new CampaignCollectionByInterviewersPresenter();
+        CampaignCollectionByInterviewerController controller = new CampaignCollectionByInterviewerController(port, presenter);
+        
+        // When
+        CampaignCollectionByInterviewersResponse result = controller.getCampaignProgressForInterviewersFromStats("campaign-1", "user-1", null);
+        
+        // Then
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
     }
 
     @Test

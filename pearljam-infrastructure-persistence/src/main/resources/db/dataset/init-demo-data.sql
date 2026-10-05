@@ -172,15 +172,16 @@ INSERT INTO public.campaign (id, label, email, identification_configuration, con
     ('AQV2024X00', 'Campagne qualité volaille en 2024', 'second.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
     ('INDTEL2025X00', 'INDTEL campaign', 'third.email@test.com', 'INDTEL', 'TEL', 'TEL', false, false),
     ('IASCO2025X00', 'IASCO campaign', 'third.email@test.com', 'IASCO', 'F2F', 'F2F', false, false),
-    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', NULL, NULL, false, false),
+    ('NOIDENT2025X00', 'NOIDENT campaign', 'third.email@test.com', 'NOIDENT', 'F2F', 'F2F', false, false),
     ('HOUSEF2F2025X00', 'HOUSEF2F campaign', 'third.email@test.com', 'HOUSEF2F', 'F2F', 'F2F', false, false),
     ('HOUSETEL2025X00', 'HOUSETEL campaign', 'third.email@test.com', 'HOUSETEL', 'TEL', 'TEL', false, false),
     ('HOUSETELWSR2025X00', 'HOUSETELWSR campaign', 'third.email@test.com', 'HOUSETELWSR', 'TEL', 'TEL', false, false),
-    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', NULL, NULL, false, false),
+    ('SRCVREINT2025X00', 'SRCVREINT campaign', 'third.email@test.com', 'SRCVREINT', 'TEL', 'TEL', false, false),
     ('INDTELNOR2025X00', 'INDTELNOR campaign', 'third.email@test.com', 'INDTELNOR', 'TEL', 'TEL', false, false),
     ('INDF2F2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false, false),
     ('INDF2FNOR2025X00', 'INDF2F campaign', 'third.email@test.com', 'INDF2FNOR', 'F2F', 'F2F', false, false),
-    ('CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INDF2F campaign with collect history', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false, true);
+    ('CAMPAIGN_WITH_COLLECT_HISTORY_1', 'INDF2F campaign with collect history', 'third.email@test.com', 'INDF2F', 'F2F', 'F2F', false, true),
+    ('UDT2026A00P01', 'Enquête emploi du temps 2025-2026 - Formation Gestionnaires - EDT2026A00', 'udt.email@test.com', 'INDF2F', 'F2F', 'F2F', false, true);
 
 
 INSERT INTO public.preference (id_user, id_campaign) VALUES
@@ -385,6 +386,15 @@ INSERT INTO visibility (
         true, 'indtel@nooneknows.fr', '0321234567'),
 
     ('OU-NORTH', 'CAMPAIGN_WITH_COLLECT_HISTORY_1',
+     EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
+     EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '2 days') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '3 days') * 1000,
+     EXTRACT(EPOCH FROM NOW() - INTERVAL '4 days') * 1000,
+     true, 'indtel@nooneknows.fr', '0321234567'),
+
+    ('OU-NORTH', 'UDT2026A00P01',
         EXTRACT(EPOCH FROM NOW() + INTERVAL '1 month') * 1000,
         EXTRACT(EPOCH FROM NOW() - INTERVAL '1 day') * 1000,
         EXTRACT(EPOCH FROM NOW() + INTERVAL '2 months') * 1000,
@@ -434,6 +444,9 @@ INSERT INTO public.survey_unit (id, display_name, priority, address_id, campaign
     ('PROTO28', 'business-id-proto28', FALSE, 36, 'AQV2024X00', 'INTERV5', 36, 'OU-NORTH'),
     ('PROTO29', 'business-id-proto29', FALSE, 37, 'AQV2024X00', 'INTERV5', 37, 'OU-NORTH'),
     ('PROTO30', 'business-id-proto30', TRUE, 38, 'AQV2024X00', 'INTERV5', 38, 'OU-NORTH'),
+    ('PROTO36', 'business-id-proto36', TRUE, 38, 'UDT2026A00P01', 'INTERV5', 38, 'OU-NORTH'),
+    ('PROTO37', 'business-id-proto37', TRUE, 38, 'UDT2026A00P01', 'INTERV5', 38, 'OU-NORTH'),
+    ('PROTO38', 'business-id-proto38', TRUE, 38, 'UDT2026A00P01', 'INTERV5', 38, 'OU-NORTH'),
     ('SABIANE01', 'business-id-sabiane01', TRUE, 39, 'INDTEL2025X00', 'INTERV1', 39, 'OU-NORTH'),
     ('SABIANE02', 'business-id-sabiane02', TRUE, 40, 'INDTEL2025X00', 'INTERV1', 40, 'OU-NORTH'),
     ('SABIANE03', 'business-id-sabiane03', TRUE, 41, 'IASCO2025X00', 'INTERV1', 41, 'OU-NORTH'),

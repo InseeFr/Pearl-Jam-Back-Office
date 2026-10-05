@@ -5,6 +5,7 @@ import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCause
 import fr.insee.pearljam.api.reporting.response.InterviewerCampaignsClosingCausesResponse.*;
 
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsStatsPresenter;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.InterviewerCampaignDailyStats;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
 
     @Override
     public InterviewerCampaignsClosingCausesResponse present(List<InterviewerCampaignDailyStats> stats) {
+        long minUpdatedAt = computeMinUpdatedAt(stats);
+        
         List<InterviewerCampaignSurveyUnits> interviewerCampaignSurveyUnits =
                 stats.stream().map(interv ->
                 new InterviewerCampaignSurveyUnits(
@@ -36,7 +39,6 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
         long totalRowInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getRowProvisionalClosingCauseCount).sum();
         long totalClosingCauseInterviewer = stats.stream().mapToLong(InterviewerCampaignDailyStats::getTotalProvisionalClosingCauses).sum();
 
-
         InterviewerCampaignsTotalSurveyUnit interviewerCampaignsTotalSurveyUnit = new InterviewerCampaignsTotalSurveyUnit(
                 totalSUInterviewer,
                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(
@@ -45,8 +47,13 @@ public class InterviewerCampaignsClosingCausesPresenter implements InterviewerCa
                         totalNpxInterviewer,
                         totalRowInterviewer,
                         totalClosingCauseInterviewer
-                ));
+                )
+        );
 
-        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit);
+        return new InterviewerCampaignsClosingCausesResponse(interviewerCampaignSurveyUnits, interviewerCampaignsTotalSurveyUnit, minUpdatedAt);
+    }
+
+    private long computeMinUpdatedAt(List<InterviewerCampaignDailyStats> stats) {
+        return stats.stream().mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 }

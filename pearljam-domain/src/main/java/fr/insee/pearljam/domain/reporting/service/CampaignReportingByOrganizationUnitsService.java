@@ -1,6 +1,5 @@
 package fr.insee.pearljam.domain.reporting.service;
 
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.organizationunit.port.in.UserService;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
@@ -27,7 +26,7 @@ public class CampaignReportingByOrganizationUnitsService implements CampaignRepo
 
     @Override
     public <T> T getProgressForDay(String userId, String campaignId, LocalDate day,
-                                   CampaignStatsByOrganizationUnitsPresenter<T> presenter) throws CampaignNotFoundException {
+                                   CampaignStatsByOrganizationUnitsPresenter<T> presenter) {
         day = resolveReportingDay(day);
         userService.checkUserAssociationToCampaign(campaignId, userId);
 

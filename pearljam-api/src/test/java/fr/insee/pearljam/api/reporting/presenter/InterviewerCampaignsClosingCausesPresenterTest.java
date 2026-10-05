@@ -24,7 +24,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
             long npi,
             long npx,
             long row,
-            long total) {
+            long total,
+            long updatedAt) {
         InterviewerCampaignDailyStats stats = mock(InterviewerCampaignDailyStats.class);
         when(stats.getCampaignLabel()).thenReturn(campaignLabel);
         when(stats.getAllocatedCount()).thenReturn(allocatedCount);
@@ -33,6 +34,7 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         when(stats.getNpxProvisionalClosingCauseCount()).thenReturn(npx);
         when(stats.getRowProvisionalClosingCauseCount()).thenReturn(row);
         when(stats.getTotalProvisionalClosingCauses()).thenReturn(total);
+        when(stats.getUpdatedAt()).thenReturn(updatedAt);
         return stats;
     }
 
@@ -54,7 +56,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
     @Test
     void present_shouldMapStatsToResponse() {
         // Given
-        InterviewerCampaignDailyStats stats = mockStats("CAMPAIGN-1", 10L, 1L, 2L, 3L, 4L, 10L);
+        long campaignUpdatedAt = 1000L;
+        InterviewerCampaignDailyStats stats = mockStats("CAMPAIGN-1", 10L, 1L, 2L, 3L, 4L, 10L, campaignUpdatedAt);
 
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats));
@@ -82,18 +85,24 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         assertThat(totalClosing.exceptionalReason()).isEqualTo(3L);
         assertThat(totalClosing.rightOfWithdrawal()).isEqualTo(4L);
         assertThat(totalClosing.total()).isEqualTo(10L);
+        
+        // Then - updatedAt should be the minimum across all stats
+        assertThat(result.updatedAt()).isEqualTo(campaignUpdatedAt);
     }
 
     @Test
     void present_shouldMapMultipleStatsAndAggregateTotals() {
         // Given
-        InterviewerCampaignDailyStats stats1 = mockStats("CAMPAIGN-1", 5L, 1L, 1L, 1L, 1L, 4L);
-        InterviewerCampaignDailyStats stats2 = mockStats("CAMPAIGN-2", 20L, 5L, 6L, 7L, 0L, 18L);
+        long campaign1UpdatedAt = 1000L;
+        long campaign2UpdatedAt = 2000L;
+        long expectedMinUpdatedAt = Math.min(campaign1UpdatedAt, campaign2UpdatedAt);
+        InterviewerCampaignDailyStats stats1 = mockStats("CAMPAIGN-1", 5L, 1L, 1L, 1L, 1L, 4L, campaign1UpdatedAt);
+        InterviewerCampaignDailyStats stats2 = mockStats("CAMPAIGN-2", 20L, 5L, 6L, 7L, 0L, 18L, campaign2UpdatedAt);
 
         // When
         InterviewerCampaignsClosingCausesResponse result = presenter.present(List.of(stats1, stats2));
 
-        // Then — per-campaign entries
+        // Then — per-campaign entries (all should have the same updatedAt at the response level)
         assertThat(result.interviewerCampaignSurveyUnits()).hasSize(2);
         assertThat(result.interviewerCampaignSurveyUnits().get(0).campaignLabel()).isEqualTo("CAMPAIGN-1");
         assertThat(result.interviewerCampaignSurveyUnits().get(1).campaignLabel()).isEqualTo("CAMPAIGN-2");
@@ -109,5 +118,8 @@ class InterviewerCampaignsClosingCausesPresenterTest {
         assertThat(totalClosing.exceptionalReason()).isEqualTo(8L);
         assertThat(totalClosing.rightOfWithdrawal()).isEqualTo(1L);
         assertThat(totalClosing.total()).isEqualTo(22L);
+        
+        // Then - updatedAt should be the minimum across all stats
+        assertThat(result.updatedAt()).isEqualTo(expectedMinUpdatedAt);
     }
 }

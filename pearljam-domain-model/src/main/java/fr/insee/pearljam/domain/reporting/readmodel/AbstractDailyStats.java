@@ -47,6 +47,7 @@ public abstract class AbstractDailyStats {
     private long dukContactOutcomeCount;
     private long nuhContactOutcomeCount;
     private long noaContactOutcomeCount;
+    private long updatedAt;
 
     public float getProgressStateRate() {
         long allocated = getAllocatedCount();

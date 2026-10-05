@@ -4,11 +4,13 @@ import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUn
 import fr.insee.pearljam.domain.reporting.port.in.CampaignStatsByOrganizationUnitsPresenter;
 import fr.insee.pearljam.api.reporting.response.CommunicationsProgressResponse;
 import fr.insee.pearljam.api.reporting.response.StatesProgressResponse;
+import fr.insee.pearljam.domain.reporting.readmodel.AbstractDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
 import fr.insee.pearljam.domain.reporting.readmodel.OrganizationUnitDailyStats;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 public class CampaignProgressByOrganizationUnitsPresenter implements
@@ -17,6 +19,8 @@ public class CampaignProgressByOrganizationUnitsPresenter implements
     @Override
     public CampaignProgressByOrganizationUnitsResponse present(List<OrganizationUnitDailyStats> organizationUnitStats,
                                                                CampaignDailyStats campaignStats) {
+        long minUpdatedAt = computeMinUpdatedAt(organizationUnitStats, campaignStats);
+        
         return new CampaignProgressByOrganizationUnitsResponse(
                 organizationUnitStats.stream()
                         .map(organizationUnit -> new CampaignProgressByOrganizationUnitsResponse.OrganizationUnit(
@@ -28,7 +32,15 @@ public class CampaignProgressByOrganizationUnitsPresenter implements
                 new CampaignProgressByOrganizationUnitsResponse.Campaign(
                         campaignStats.getProgressStateRate(),
                         StatesProgressResponse.from(campaignStats),
-                        CommunicationsProgressResponse.from(campaignStats))
+                        CommunicationsProgressResponse.from(campaignStats)),
+                minUpdatedAt
         );
+    }
+    
+    private long computeMinUpdatedAt(List<OrganizationUnitDailyStats> organizationUnitStats, CampaignDailyStats campaignStats) {
+        return Stream.concat(
+                organizationUnitStats.stream(),
+                Stream.of(campaignStats)
+        ).mapToLong(AbstractDailyStats::getUpdatedAt).min().orElse(0L);
     }
 }

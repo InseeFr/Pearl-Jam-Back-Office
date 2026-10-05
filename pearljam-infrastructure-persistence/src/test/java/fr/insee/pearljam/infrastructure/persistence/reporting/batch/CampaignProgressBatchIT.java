@@ -7,6 +7,7 @@ import fr.insee.pearljam.domain.campaign.model.communication.CommunicationMedium
 import fr.insee.pearljam.domain.campaign.model.communication.CommunicationType;
 import fr.insee.pearljam.domain.organizationunit.model.OrganizationUnitType;
 import fr.insee.pearljam.domain.reporting.readmodel.CampaignDailyStats;
+import fr.insee.pearljam.infrastructure.persistence.reporting.adapter.CampaignProgressSnapshotAdapter;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.model.closingcause.ClosingCauseType;
 import fr.insee.pearljam.domain.surveyunit.model.communication.CommunicationRequestEmitter;
@@ -32,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CampaignProgressBatchIT {
 
     @Autowired
-    private CampaignProgressBatch batch;
+    private CampaignProgressSnapshotAdapter snapshotAdapter;
 
     @Autowired
     private CampaignDailyStatsDaoAdapter statsAdapter;
@@ -109,7 +111,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su2);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -146,7 +148,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3, su4));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -179,7 +181,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -241,7 +243,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -266,7 +268,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         var interviewerStats = statsAdapter.getInterviewerStats("CAMP-BATCH", List.of("OU-BATCH-1"), DAY);
@@ -289,8 +291,8 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -310,7 +312,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(suAssigned, suUnassigned));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -328,7 +330,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         var statsBefore = statsAdapter.getInterviewerStats("CAMP-BATCH", List.of("OU-BATCH-1"), DAY);
@@ -341,7 +343,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         var statsAfter = statsAdapter.getInterviewerStats("CAMP-BATCH", List.of("OU-BATCH-1"), DAY);
@@ -367,7 +369,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
 
@@ -406,7 +408,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> firstRun = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -420,7 +422,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> secondRun = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -449,7 +451,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2, su3));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> camp1Stats = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -476,7 +478,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -515,7 +517,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.saveAll(List.of(su1, su2));
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -555,7 +557,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -593,7 +595,7 @@ class CampaignProgressBatchIT {
         surveyUnitRepository.save(su);
         entityManager.flush();
 
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);
@@ -604,7 +606,7 @@ class CampaignProgressBatchIT {
     @Test
     @DisplayName("Should produce no rows when no survey units exist")
     void shouldProduceNoRows_whenNoSurveyUnits() {
-        batch.run(DAY);
+        snapshotAdapter.computeAndStoreSnapshot(DAY, Instant.now());
         entityManager.clear();
 
         Optional<CampaignDailyStats> result = statsAdapter.findCampaignStats("CAMP-BATCH", DAY);

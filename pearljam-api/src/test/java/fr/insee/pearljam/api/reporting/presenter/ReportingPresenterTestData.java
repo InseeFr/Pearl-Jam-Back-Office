@@ -70,5 +70,8 @@ final class ReportingPresenterTestData {
         stats.setNpiClosingCauseCount(25L);
         stats.setNpxClosingCauseCount(26L);
         stats.setRowClosingCauseCount(27L);
+
+        // Synchronization date field - required for updatedAt feature testing
+        stats.setUpdatedAt(123456789L);
     }
 }

@@ -2,7 +2,7 @@ package fr.insee.pearljam.api.reporting.controller;
 
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.api.reporting.presenter.InterviewerCampaignsCollectionPresenter;
-import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionResponse;
+import fr.insee.pearljam.api.reporting.response.InterviewerCampaignCollectionListResponse;
 import fr.insee.pearljam.domain.reporting.port.in.InterviewerCampaignsReportingPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class InterviewerCampaignsCollectionController {
     @Operation(summary = "Get interviewer campaigns reporting")
     @GetMapping(Constants.API_REPORTING_INTERVIEWER_CAMPAIGNS_COLLECTION)
     @Parameter(name = "userId", hidden = true)
-    public List<InterviewerCampaignCollectionResponse> getInterviewerCampaignsCollection(
+    public InterviewerCampaignCollectionListResponse getInterviewerCampaignsCollection(
             @PathVariable String interviewerId,
             @RequestParam(required = false) LocalDate day,
             @CurrentSecurityContext(expression = "authentication.name") String userId) {

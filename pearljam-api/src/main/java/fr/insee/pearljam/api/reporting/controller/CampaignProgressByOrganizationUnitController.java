@@ -3,7 +3,6 @@ package fr.insee.pearljam.api.reporting.controller;
 import fr.insee.pearljam.api.reporting.presenter.CampaignProgressByOrganizationUnitsPresenter;
 import fr.insee.pearljam.api.reporting.response.CampaignProgressByOrganizationUnitsResponse;
 import fr.insee.pearljam.contracts.constants.Constants;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.reporting.port.in.CampaignReportingByOrganizationUnitsPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +34,7 @@ public class CampaignProgressByOrganizationUnitController {
     public CampaignProgressByOrganizationUnitsResponse getCampaignProgressForOUsFromStats(
             @PathVariable(value = "campaignId") @NotBlank String campaignId,
             @CurrentSecurityContext(expression = "authentication.name") String userId,
-            @RequestParam(required = false) LocalDate day) throws CampaignNotFoundException {
+            @RequestParam(required = false) LocalDate day) {
 
         return progressByOrganizationUnitsPort.getProgressForDay(userId, campaignId, day, presenter);
     }

@@ -9,6 +9,7 @@ public record CampaignCollectionResponse(
         long allocated,
         CollectionRatesResponse rates,
         ContactOutcomesProgressResponse outcomes,
-        ClosingCausesProgressResponse closingCauses
+        ClosingCausesProgressResponse closingCauses,
+        long updatedAt
 ) {
 }

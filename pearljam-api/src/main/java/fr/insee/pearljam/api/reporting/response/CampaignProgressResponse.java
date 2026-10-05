@@ -8,6 +8,7 @@ public record CampaignProgressResponse(
         String campaignLabel,
         float progressRate,
         StatesProgressResponse states,
-        CommunicationsProgressResponse communications
+        CommunicationsProgressResponse communications,
+        long updatedAt
 ) {
 }

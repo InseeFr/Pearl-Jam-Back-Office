@@ -29,7 +29,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
 
     private static final Map<String, String> ALLOWED_SORTS = Map.of(
             "campaignLabel", "c.label",
-            "surveyUnitId", "su.id",
+            "surveyUnitDisplayName", "su.display_name",
             "interviewerLastName", "i.last_name",
             "contactOutcome", "co.type"
     );
@@ -147,7 +147,7 @@ public class SurveyUnitToReviewDaoAdapter implements SurveyUnitToReviewRepositor
         return """
                 AND (
                     LOWER(c.label) LIKE :search OR
-                    LOWER(su.id) LIKE :search OR
+                    LOWER(su.display_name) LIKE :search OR
                     LOWER(CONCAT(i.first_name, ' ', i.last_name)) LIKE :search
                 )
                 """;

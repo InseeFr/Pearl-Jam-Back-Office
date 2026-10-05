@@ -47,7 +47,7 @@ class InterviewerCampaignsClosingCausesControllerTest {
                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(1L, 2L, 3L, 4L, 10L)
         );
         InterviewerCampaignsClosingCausesResponse expected =
-                new InterviewerCampaignsClosingCausesResponse(List.of(campaignSurveyUnits), total);
+                new InterviewerCampaignsClosingCausesResponse(List.of(campaignSurveyUnits), total, 123456789L);
 
         when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, day, interviewerId, presenter))
                 .thenReturn(expected);
@@ -56,6 +56,7 @@ class InterviewerCampaignsClosingCausesControllerTest {
                 controller.getInterviewerClosingCausesByCampaign(interviewerId, day, userId);
 
         assertThat(result).isEqualTo(expected);
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
         verify(interviewerCampaignsReportingPort).getCampaignsStatsForInterviewer(userId, day, interviewerId, presenter);
     }
 
@@ -70,7 +71,8 @@ class InterviewerCampaignsClosingCausesControllerTest {
                         new InterviewerCampaignsTotalSurveyUnit(
                                 0L,
                                 new InterviewerCampaignsTotalSurveyUnit.ClosingCauseResponse(0L, 0L, 0L, 0L, 0L)
-                        )
+                        ),
+                        123456789L
                 );
 
         when(interviewerCampaignsReportingPort.getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter))
@@ -80,6 +82,7 @@ class InterviewerCampaignsClosingCausesControllerTest {
                 controller.getInterviewerClosingCausesByCampaign(interviewerId, null, userId);
 
         assertThat(result).isEqualTo(expected);
+        assertThat(result.updatedAt()).isEqualTo(123456789L);
         verify(interviewerCampaignsReportingPort).getCampaignsStatsForInterviewer(userId, null, interviewerId, presenter);
     }
 }

@@ -107,11 +107,11 @@ class SurveyUnitToReviewDaoAdapterTest {
         interviewerRepository.save(intw1);
         interviewerRepository.save(intw2);
 
-        create("SU-1", OU1_ID, INTW1_ID, StateType.TBR, true);
-        create("SU-2", OU1_ID, INTW2_ID, StateType.TBR, false);
-        create("SU-3", OU2_ID, INTW1_ID, StateType.TBR, false);
-        create("SU-4", OU2_ID, INTW2_ID, StateType.TBR, true);
-        create("SU-5", OU1_ID, INTW1_ID, StateType.NVM, false);
+        create("SU-1", OU1_ID, INTW1_ID, StateType.TBR, true, "SU-1-DN");
+        create("SU-2", OU1_ID, INTW2_ID, StateType.TBR, false, "SU-2-DN");
+        create("SU-3", OU2_ID, INTW1_ID, StateType.TBR, false, "SU-3-DN");
+        create("SU-4", OU2_ID, INTW2_ID, StateType.TBR, true, "SU-4-DN");
+        create("SU-5", OU1_ID, INTW1_ID, StateType.NVM, false, "SU-5-DN");
 
         createManagementComment("SU-1", "Comment for SU-1");
         createManagementComment("SU-2", "Comment for SU-2");
@@ -119,9 +119,10 @@ class SurveyUnitToReviewDaoAdapterTest {
         entityManager.flush();
     }
 
-    private void create(String id, String ouId, String interviewerId, StateType state, boolean viewed) {
+    private void create(String id, String ouId, String interviewerId, StateType state, boolean viewed, String displayName) {
         SurveyUnitDB su = new SurveyUnitDB();
         su.setId(id);
+        su.setDisplayName(displayName);
         su.setCampaign(campaignRepository.findById(CAMPAIGN_ID).orElseThrow());
         su.setOrganizationUnit(ouRepository.findById(ouId).orElseThrow());
         su.setInterviewer(interviewerRepository.findById(interviewerId).orElseThrow());
@@ -209,7 +210,7 @@ class SurveyUnitToReviewDaoAdapterTest {
                 adapter.findSurveyUnitsToReview(
                         List.of(CAMPAIGN_ID),
                         List.of(OU1_ID, OU2_ID),
-                        "SU-1",
+                        "SU-1-DN",
                         null,
                         PageRequest.of(0, 10)
                 );
