@@ -18,15 +18,9 @@ public interface OrganizationUnitRepository {
 
     List<String> findChildrenId(String orgUnitId);
 
-    List<OrganizationUnitDB> findChildren(String orgUnitId);
-
     List<String> findAllId();
 
-    String findLabel(String orgUnitId);
-
     List<OrganizationUnitDB> findSubtree(String rootId);
-
-    List<OrganizationUnitLabel> findLabelsByIds(List<String> ids);
 
     OrganizationUnitDB save(OrganizationUnitDB organizationUnit);
 

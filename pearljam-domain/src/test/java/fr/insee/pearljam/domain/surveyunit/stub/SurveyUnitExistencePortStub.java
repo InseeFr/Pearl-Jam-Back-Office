@@ -22,8 +22,4 @@ public class SurveyUnitExistencePortStub implements SurveyUnitExistencePort {
     public void addExistingSurveyUnit(String surveyUnitId) {
         existingSurveyUnits.add(surveyUnitId);
     }
-
-    public void reset() {
-        existingSurveyUnits.clear();
-    }
 }

@@ -20,12 +20,6 @@ public interface MessageRepository {
 
     List<String> getMessageStatus(Long messageId, String interviewerId);
 
-    List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds);
-
-    List<VerifyNameResponseDto> getCampaignRecipients(Long messageId);
-
-    List<VerifyNameResponseDto> getOuRecipients(Long messageId);
-
     void deleteCampaignMessageRecipientByCampaignId(String campaignId);
 
     void deleteOUMessageRecipientByOrganizationUnitId(String organizationUnitId);

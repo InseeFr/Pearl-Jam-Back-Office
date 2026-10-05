@@ -47,21 +47,6 @@ public class MessageDaoAdapter implements MessageRepository {
     }
 
     @Override
-    public List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds) {
-        return messageJpaRepository.getAllOrganizationMessagesIds(organizationUnitIds);
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getCampaignRecipients(Long messageId) {
-        return messageJpaRepository.getCampaignRecipients(messageId);
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getOuRecipients(Long messageId) {
-        return messageJpaRepository.getOuRecipients(messageId);
-    }
-
-    @Override
     public void deleteCampaignMessageRecipientByCampaignId(String campaignId) {
         messageJpaRepository.deleteCampaignMessageRecipientByCampaignId(campaignId);
     }

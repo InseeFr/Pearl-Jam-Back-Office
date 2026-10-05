@@ -60,8 +60,4 @@ public class VisibilityFakeService implements VisibilityService {
     public void save(Visibility visibility) {
         visibilities.add(visibility);
     }
-
-    public void clearVisibilities() {
-        visibilities.clear();
-    }
 }

@@ -42,28 +42,13 @@ public class OrganizationUnitDaoAdapter implements OrganizationUnitRepository {
     }
 
     @Override
-    public List<OrganizationUnitDB> findChildren(String orgUnitId) {
-        return organizationUnitJpaRepository.findChildren(orgUnitId);
-    }
-
-    @Override
     public List<String> findAllId() {
         return organizationUnitJpaRepository.findAllId();
     }
 
     @Override
-    public String findLabel(String orgUnitId) {
-        return organizationUnitJpaRepository.findLabel(orgUnitId);
-    }
-
-    @Override
     public List<OrganizationUnitDB> findSubtree(String rootId) {
         return organizationUnitJpaRepository.findSubtree(rootId);
-    }
-
-    @Override
-    public List<OrganizationUnitLabel> findLabelsByIds(List<String> ids) {
-        return organizationUnitJpaRepository.findLabelsByIds(ids);
     }
 
     @Override

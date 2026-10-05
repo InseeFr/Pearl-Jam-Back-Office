@@ -192,40 +192,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 		return messages;
 	}
-
-	public List<MessageDto> getMessageHistory(String userId) {
-		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
-		List<Long> messageIds = messageRepository.getAllOrganizationMessagesIds(userOUIds);
-
-		List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
-		for (MessageDto message : messages) {
-			List<VerifyNameResponseDto> recipients = messageRepository.getCampaignRecipients(message.getId());
-
-			recipients.addAll(
-					messageRepository.getOuRecipients(message.getId()));
-
-			message.setTypedRecipients(recipients);
-
-		}
-
-		return messages;
-	}
-
-	public List<VerifyNameResponseDto> verifyName(String text, String userId) {
-        List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
-		Pageable topFifteen = PageRequest.of(0, 15);
-
-        List<VerifyNameResponseDto> returnValue = new ArrayList<>(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
-
-		return returnValue.stream()
-				.collect(
-						collectingAndThen(
-								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::id))),
-								ArrayList::new));
-	}
-
+	
 	@Override
 	@Transactional
 	public void deleteMessageByUserId(String userId) {

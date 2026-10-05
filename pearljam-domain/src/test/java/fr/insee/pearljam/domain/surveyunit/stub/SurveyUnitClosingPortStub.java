@@ -39,8 +39,4 @@ public class SurveyUnitClosingPortStub implements SurveyUnitClosingPort {
     public boolean wasClosingCauseDeletedFor(String surveyUnitId) {
         return deletedClosingCauses.contains(surveyUnitId);
     }
-
-    public void reset() {
-        deletedClosingCauses.clear();
-    }
 }

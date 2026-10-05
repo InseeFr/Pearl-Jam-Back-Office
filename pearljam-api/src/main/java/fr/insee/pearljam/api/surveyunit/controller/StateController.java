@@ -4,10 +4,7 @@ import fr.insee.pearljam.api.campaign.controller.EndpointDisabledException;
 import fr.insee.pearljam.contracts.constants.Constants;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountCampaignDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.state.StateCountDto;
-import fr.insee.pearljam.domain.organizationunit.port.in.RelatedOrganizationUnitService;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
 import fr.insee.pearljam.domain.security.port.in.AuthenticatedUserService;
-import fr.insee.pearljam.domain.shared.exception.EntityNotFoundException;
 import fr.insee.pearljam.domain.surveyunit.port.in.StateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +26,6 @@ import java.util.List;
 public class StateController {
 
   private final StateService stateService;
-  private final RelatedOrganizationUnitService relatedOrganizationUnitService;
   private final AuthenticatedUserService authenticatedUserService;
 
   @Value("${feature.deprecated.endpoints.enabled}")

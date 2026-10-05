@@ -269,7 +269,7 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should return true if the campaign is ongoing")
-    void shouldReturnTrueIfCampaignIsOngoing() throws CampaignNotFoundException {
+    void shouldReturnTrueIfCampaignIsOngoing() {
         Visibility ongoingVisibility = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
@@ -289,7 +289,7 @@ class CampaignServiceImplTest {
 
     @Test
     @DisplayName("Should return false if the campaign is not ongoing")
-    void shouldReturnFalseIfCampaignIsNotOngoing() throws CampaignNotFoundException {
+    void shouldReturnFalseIfCampaignIsNotOngoing() {
         Visibility closedVisibility1 = new Visibility(existingCampaign.getId(), existingOrganizationUnit.getId(),
                 1627845600000L, 1627932000000L,
                 1628018400000L, 1628104800000L,
@@ -308,10 +308,10 @@ class CampaignServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should throw CampaignNotFoundException when checking if a non-existent campaign is ongoing")
-    void shouldThrowCampaignNotFoundExceptionWhenCheckingIfNonExistentCampaignIsOngoing() {
+    @DisplayName("Should throw CampaignNotFoundExceptionRuntime when checking if a non-existent campaign is ongoing")
+    void shouldThrowCampaignNotFoundExceptionRuntimeWhenCheckingIfNonExistentCampaignIsOngoing() {
         assertThatThrownBy(() -> campaignService.isCampaignOngoing("notfound-campaign"))
-                .isInstanceOf(CampaignNotFoundException.class);
+                .isInstanceOf(CampaignNotFoundExceptionRuntime.class);
     }
 
     @Test

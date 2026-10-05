@@ -15,10 +15,6 @@ public class CommunicationTemplateFakeRepository implements CommunicationTemplat
         communicationTemplates.add(communicationTemplate);
     }
 
-    public void clearCommunicationTemplates() {
-        communicationTemplates.clear();
-    }
-
     @Override
     public Optional<CommunicationTemplate> findCommunicationTemplate(String campaignId, String meshuggahId) {
         return communicationTemplates.stream()

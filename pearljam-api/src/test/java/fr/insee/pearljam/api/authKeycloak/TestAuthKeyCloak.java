@@ -92,12 +92,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestAuthKeyCloak {
 
 	private final UserService userService;
-	private final StateJpaRepository stateRepository;
 	private final SurveyUnitService surveyUnitService;
 	private final UserJpaRepository userRepository;
 	private final SurveyUnitJpaRepository surveyUnitRepository;
 	private final CampaignJpaRepository campaignRepository;
-	private final MessageJpaRepository messageRepository;
 	private final OrganizationUnitJpaRepository organizationUnitRepository;
 	private final InterviewerJpaRepository interviewerRepository;
 	private final MessageService messageService;

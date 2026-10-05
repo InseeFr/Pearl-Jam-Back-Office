@@ -40,21 +40,6 @@ public class MessageFakeRepository implements MessageRepository {
     }
 
     @Override
-    public List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds) {
-        return List.of();
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getCampaignRecipients(Long messageId) {
-        return List.of();
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getOuRecipients(Long messageId) {
-        return List.of();
-    }
-
-    @Override
     public void deleteCampaignMessageRecipientByCampaignId(String campaignId) {
         // not used at this moment
     }

@@ -41,18 +41,8 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public List<OrganizationUnitDB> findChildren(String orgUnitId) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findAllId() {
         return organizationUnits.stream().map(OrganizationUnitDB::getId).toList();
-    }
-
-    @Override
-    public String findLabel(String orgUnitId) {
-        return findById(orgUnitId).map(OrganizationUnitDB::getLabel).orElse("");
     }
 
     @Override
@@ -60,10 +50,6 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
         return List.of();
     }
 
-    @Override
-    public List<OrganizationUnitLabel> findLabelsByIds(List<String> ids) {
-        return List.of();
-    }
 
     @Override
     public OrganizationUnitDB save(OrganizationUnitDB organizationUnit) {
