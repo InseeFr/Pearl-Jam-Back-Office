@@ -267,6 +267,12 @@ public class CampaignController {
 		return campaignService.findCampaignsCommonsOngoing();
 	}
 
+	@Operation(summary = "Get commons campaigns")
+	@GetMapping(value = Constants.API_CAMPAIGNS_COMMONS, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<CampaignCommonsDto> getCommonsCampaigns() {
+		return campaignService.findCampaignsCommons();
+	}
+
 	@Operation(summary = "Get campaign portal data")
 	@GetMapping(value = Constants.API_CAMPAIGN_ID_PORTAL_DATA, produces = MediaType.APPLICATION_JSON_VALUE)
 	public PortalDataDto getPortalData(@PathVariable("id") String id) throws CampaignNotFoundException {
