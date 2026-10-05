@@ -19,20 +19,4 @@ public class MessageDto {
 	private List<VerifyNameResponseDto> typedRecipients;
 	private Long date;
 	private String status;
-
-	// don't remove : called from SQL
-	public MessageDto(Long id, String text, String sender, Long date) {
-		super();
-		this.id = id;
-		this.text = text;
-		this.sender = sender;
-		this.date = date;
-	}
-  
-	public MessageDto(String text, List<String> recipients) {
-		super();
-		this.text = text;
-		this.recipients = recipients;
-	}
-
 }
