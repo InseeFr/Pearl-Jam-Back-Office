@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -76,6 +73,11 @@ public class StateDaoAdapter implements StateRepository {
     @Override
     public boolean existsById(Long id) {
         return stateJpaRepository.existsById(id);
+    }
+
+    @Override
+    public List<StateDB> findAllByIds(Set<Long> ids) {
+        return stateJpaRepository.findAllById(ids);
     }
 
     @Override

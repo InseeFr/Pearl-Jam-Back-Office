@@ -71,6 +71,11 @@ public class StateRepositoryStub implements StateRepository {
     }
 
     @Override
+    public List<StateDB> findAllByIds(Set<Long> ids) {
+        return List.of();
+    }
+
+    @Override
     public StateDB save(StateDB state) {
         throw new UnsupportedOperationException("Not implemented for unit tests");
     }
