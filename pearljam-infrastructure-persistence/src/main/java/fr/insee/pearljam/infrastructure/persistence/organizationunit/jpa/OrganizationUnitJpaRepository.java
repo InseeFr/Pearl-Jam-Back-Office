@@ -3,7 +3,6 @@ package fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,14 +31,8 @@ public interface OrganizationUnitJpaRepository extends JpaRepository<Organizatio
 	@Query(value = "SELECT id FROM organization_unit WHERE organization_unit_parent_id =?1", nativeQuery = true)
 	List<String> findChildrenId(String orgUnitId);
 
-	@Query("SELECT ou FROM OrganizationUnitDB ou WHERE ou.organizationUnitParent.id =?1")
-	List<OrganizationUnitDB> findChildren(String orgUnitId);
-
 	@Query("SELECT id FROM OrganizationUnitDB")
 	List<String> findAllId();
-
-	@Query("SELECT label FROM OrganizationUnitDB ou WHERE ou.id =?1")
-	String findLabel(String orgUnitId);
 
 	@Query(value = """
 			SELECT id, label, type, organization_unit_parent_id
@@ -49,12 +42,4 @@ public interface OrganizationUnitJpaRepository extends JpaRepository<Organizatio
 			"""
 			, nativeQuery = true)
 	List<OrganizationUnitDB> findSubtree(@Param("rootId") String rootId);
-
-
-	@Query("""
-        select ou.id as id, ou.label as label
-        from OrganizationUnitDB ou
-        where ou.id in :ids
-    """)
-	List<OrganizationUnitLabel> findLabelsByIds(@Param("ids") List<String> ids);
 }

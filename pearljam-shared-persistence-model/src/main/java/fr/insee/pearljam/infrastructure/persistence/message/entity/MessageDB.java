@@ -68,18 +68,4 @@ public class MessageDB implements Serializable {
 	 */
 	@OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<MessageStatusDB> messageStatus;
-
-	/**
-	 * The phone number of the Message
-	 */
-	@Column
-	public Long date;
-
-	public MessageDB(String text, UserDB sender, Long date) {
-		super();
-		this.text = text;
-		this.sender = sender;
-		this.date = date;
-	}
-
 }
