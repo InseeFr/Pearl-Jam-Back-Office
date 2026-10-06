@@ -38,9 +38,4 @@ public class ClosingCauseDaoAdapter implements ClosingCauseRepository {
     public void updateExistingClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause) {
         closingCauseJpaRepository.updateExistingClosingCauseToSurveyUnits(surveyUnitIds, closingCause.toString());
     }
-
-    @Override
-    public List<String>  findSurveyUnitIdsWithClosingCause(List<String> surveyUnitIds) {
-        return closingCauseJpaRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
-    }
 }

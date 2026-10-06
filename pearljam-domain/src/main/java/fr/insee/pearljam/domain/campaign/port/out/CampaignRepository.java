@@ -45,6 +45,4 @@ public interface CampaignRepository {
     void delete(CampaignDB campaign);
 
     List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
-
-    List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable);
 }

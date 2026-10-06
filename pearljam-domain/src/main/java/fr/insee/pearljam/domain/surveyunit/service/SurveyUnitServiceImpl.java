@@ -474,16 +474,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 		surveyUnitRepository.save(surveyUnit);
 	}
 
-	public List<StateDto> getListStatesBySurveyUnitId(String suId) {
-		Optional<SurveyUnitDB> su = surveyUnitRepository.findById(suId);
-		if (su.isEmpty()) {
-			log.error("SU {} not found in database", suId);
-			return List.of();
-		}
-		return stateRepository.findAllDtoBySurveyUnitIdOrderByDateAsc(suId);
-
-	}
-
 	@Override
 	public Response createSurveyUnits(List<SurveyUnitCreationDto> surveyUnits) {
 		// Check duplicate line in interviewers to create

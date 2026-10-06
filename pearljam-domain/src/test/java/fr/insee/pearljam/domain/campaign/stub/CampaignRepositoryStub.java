@@ -44,5 +44,4 @@ public class CampaignRepositoryStub implements CampaignRepository {
         // not used at this moment
     }
     @Override public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) { return List.of(); }
-    @Override public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) { return List.of(); }
 }

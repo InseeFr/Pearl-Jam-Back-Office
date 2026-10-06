@@ -52,13 +52,6 @@ public class ClosingCauseRepositoryStub implements ClosingCauseRepository {
         }
     }
 
-    @Override
-    public List<String> findSurveyUnitIdsWithClosingCause(List<String> surveyUnitIds) {
-        return surveyUnitIds.stream()
-                .filter(closingCauses::containsKey)
-                .toList();
-    }
-
     // Helper methods for testing
     public void addInitialClosingCauseToSurveyUnit(String surveyUnitId, ClosingCauseType type) {
         closingCauses.put(surveyUnitId, type);

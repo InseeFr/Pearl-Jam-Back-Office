@@ -113,11 +113,6 @@ public class CampaignFakeRepository implements CampaignRepository {
         return List.of();
     }
 
-    @Override
-    public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) {
-        return List.of();
-    }
-
     public void addCampaign(CampaignDB campaign) {
         campaigns.add(campaign);
     }

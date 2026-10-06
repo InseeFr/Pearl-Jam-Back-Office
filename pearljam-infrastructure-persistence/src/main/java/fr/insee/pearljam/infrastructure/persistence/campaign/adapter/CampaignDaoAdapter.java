@@ -108,9 +108,4 @@ public class CampaignDaoAdapter implements CampaignRepository {
     public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) {
         return campaignJpaRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
     }
-
-    @Override
-    public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) {
-        return campaignJpaRepository.findMatchingCampaigns(text, ouIds, date, pageable);
-    }
 }

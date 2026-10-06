@@ -16,6 +16,4 @@ public interface ClosingCauseRepository {
     void addClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause);
 
     void updateExistingClosingCauseToSurveyUnits(List<String> surveyUnitIds, ClosingCauseType closingCause);
-
-    List<String> findSurveyUnitIdsWithClosingCause(List<String> surveyUnitIds);
 }
