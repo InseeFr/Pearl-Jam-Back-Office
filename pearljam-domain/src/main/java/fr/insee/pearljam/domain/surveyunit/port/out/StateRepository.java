@@ -18,19 +18,9 @@ public interface StateRepository {
 
     StateDto findFirstDtoBySurveyUnitIdOrderByDateDesc(String surveyUnitId);
 
-    Map<String, Long> getStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date);
-
     Map<String, Long> getStateCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date);
 
-    Map<String, Long> getStateCountNotAttributed(String campaignId, List<String> ouIds, Long date);
-
-    Map<String, Long> getStateCountByCampaignId(String campaignId, Long date);
-
-    Long getTotalStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date);
-
     List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date);
-
-    List<StateCount> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse);
 
     boolean existsById(Long id);
 

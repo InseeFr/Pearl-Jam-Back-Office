@@ -21,18 +21,12 @@ public interface CommunicationRequestRepository {
   void addCommunicationRequests(SurveyUnitDB surveyUnit,
                                 List<CommunicationRequest> communicationRequests);
 
-  Long getCommRequestCountByCampaignAndType(String campaignId, CommunicationType type, Long date);
-
   List<InterviewerCountDto> getCommRequestCountByInterviewersAndType(List<String> campaignIds, Set<String> interviewerId, CommunicationType type, List<String> ouIds, Long date);
 
   List<CommunicationRequestCount> getCommRequestCountByCampaigns(
           List<String> campaignIds,
           List<String> ouIds,
           Long date);
-
-  List<CommunicationRequestCount> getCommRequestCountByCampaignAndOus(String campaignId,
-                                                                      List<String> ouIds,
-                                                                      Long dateToUse);
 
   List<CommunicationHistoryDto> findAllDtoBySurveyUnitIdOrderByDateAsc(String surveyUnitId);
 }

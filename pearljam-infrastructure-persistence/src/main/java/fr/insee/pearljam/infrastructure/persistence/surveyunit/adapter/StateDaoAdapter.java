@@ -39,38 +39,13 @@ public class StateDaoAdapter implements StateRepository {
     }
 
     @Override
-    public Map<String, Long> getStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return stateJpaRepository.getStateCount(campaignId, interviewerId, ouIds, date);
-    }
-
-    @Override
     public Map<String, Long> getStateCountSumByInterviewer(List<String> campaignIds, String interviewerId, List<String> ouIds, Long date) {
         return stateJpaRepository.getStateCountSumByInterviewer(campaignIds, interviewerId, ouIds, date);
     }
 
     @Override
-    public Map<String, Long> getStateCountNotAttributed(String campaignId, List<String> ouIds, Long date) {
-        return stateJpaRepository.getStateCountNotAttributed(campaignId, ouIds, date);
-    }
-
-    @Override
-    public Map<String, Long> getStateCountByCampaignId(String campaignId, Long date) {
-        return stateJpaRepository.getStateCountByCampaignId(campaignId, date);
-    }
-
-    @Override
-    public Long getTotalStateCount(String campaignId, String interviewerId, List<String> ouIds, Long date) {
-        return stateJpaRepository.getTotalStateCount(campaignId, interviewerId, ouIds, date);
-    }
-
-    @Override
     public List<StateCount> findGroupedByCampaign(List<String> campaignIds, List<String> ouIds, Long date) {
         return stateJpaRepository.findGroupedByCampaign(campaignIds, ouIds, date);
-    }
-
-    @Override
-    public List<StateCount> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse) {
-        return stateJpaRepository.findGroupedByOu(campaignId, ouIds, dateToUse);
     }
 
     @Override
@@ -110,6 +85,4 @@ public class StateDaoAdapter implements StateRepository {
     public List<String> findSurveyUnitsInStates(List<String> surveyUnitIds, List<StateType> stateTypes) {
         return stateJpaRepository.findSurveyUnitIdsInStates(surveyUnitIds, stateTypes);
     }
-
-
 }

@@ -1,7 +1,6 @@
 package fr.insee.pearljam.domain.message.port.out;
 
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 
 import java.util.List;
@@ -19,12 +18,6 @@ public interface MessageRepository {
     List<MessageDto> findMessagesDtoByIds(List<Long> ids);
 
     List<String> getMessageStatus(Long messageId, String interviewerId);
-
-    List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds);
-
-    List<VerifyNameResponseDto> getCampaignRecipients(Long messageId);
-
-    List<VerifyNameResponseDto> getOuRecipients(Long messageId);
 
     void deleteCampaignMessageRecipientByCampaignId(String campaignId);
 

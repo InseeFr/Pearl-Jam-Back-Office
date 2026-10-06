@@ -28,11 +28,10 @@ public class MessageDto {
 		this.sender = sender;
 		this.date = date;
 	}
-  
+
 	public MessageDto(String text, List<String> recipients) {
 		super();
 		this.text = text;
 		this.recipients = recipients;
 	}
-
 }

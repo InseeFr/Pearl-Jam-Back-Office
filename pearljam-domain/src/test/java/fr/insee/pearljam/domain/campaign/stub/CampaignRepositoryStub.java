@@ -2,11 +2,9 @@ package fr.insee.pearljam.domain.campaign.stub;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -44,5 +42,4 @@ public class CampaignRepositoryStub implements CampaignRepository {
         // not used at this moment
     }
     @Override public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) { return List.of(); }
-    @Override public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) { return List.of(); }
 }

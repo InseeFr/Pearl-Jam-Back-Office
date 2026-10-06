@@ -27,11 +27,6 @@ public class InterviewerDaoAdapter implements InterviewerRepository {
     }
 
     @Override
-    public List<InterviewerDB> findInterviewersWorkingOnCampaign(String campaignId, List<String> ouIds) {
-        return interviewerJpaRepository.findInterviewersWorkingOnCampaign(campaignId, ouIds);
-    }
-
-    @Override
     public List<InterviewerDB> findInterviewersByOrganizationUnits(List<String> ouIds) {
         return interviewerJpaRepository.findInterviewersByOrganizationUnits(ouIds);
     }

@@ -52,12 +52,6 @@ public class StateCountDto {
 		dispatchAttributeValues(obj, STATE_COUNT_FIELDS);
 	}
 
-	public StateCountDto(String idDem, String labelDem, Map<String, Long> obj) {
-		this(obj);
-		this.idDem = idDem;
-		this.labelDem = labelDem;
-	}
-
 	public void addClosingCauseCount(Map<String, Long> obj) {
 		dispatchAttributeValues(obj, STATECOUNT_CLOSED_CLOSING_CAUSE_FIELDS);
 	}

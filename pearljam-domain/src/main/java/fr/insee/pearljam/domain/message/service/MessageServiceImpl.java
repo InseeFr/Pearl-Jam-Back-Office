@@ -45,14 +45,8 @@ public class MessageServiceImpl implements MessageService {
 
 	private final MessageRepository messageRepository;
 	private final MessageStatusRepository messageStatusRepository;
-	private final UserRepository userRepository;
 	private final UserService userService;
 	private final InterviewerRepository interviewerRepository;
-	private final CampaignRepository campaignRepository;
-	private final OrganizationUnitRepository organizationUnitRepository;
-	private final SimpMessagingTemplate brokerMessagingTemplate;
-
-	private static final String NOTIFICATIONS = "/notifications/";
 
 	public HttpStatus markAsRead(Long id, String idep) {
 		Optional<InterviewerDB> interv = interviewerRepository.findByIdIgnoreCase(idep);
@@ -100,71 +94,6 @@ public class MessageServiceImpl implements MessageService {
 		return HttpStatus.NOT_FOUND;
 	}
 
-	public HttpStatus addMessage(String text, List<String> recipients, String userId) {
-		Optional<UserDB> optSender = userRepository.findByIdIgnoreCase(userId);
-		UserDB sender;
-		ArrayList<OrganizationUnitDB> ouMessageRecipients = new ArrayList<>();
-		ArrayList<InterviewerDB> interviewerMessageRecipients = new ArrayList<>();
-		ArrayList<CampaignDB> campaignMessageRecipients = new ArrayList<>();
-		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
-
-		if (optSender.isPresent()) {
-			sender = optSender.get();
-		} else {
-			log.warn("Message sender is null");
-			sender = null;
-		}
-		MessageDB message = new MessageDB(text, sender, System.currentTimeMillis());
-
-		for (String recipient : recipients) {
-			if (recipient.equalsIgnoreCase("All") || recipient.equalsIgnoreCase("Tous")) {
-				for (String OUId : userOUIds) {
-					Optional<OrganizationUnitDB> ouRecipient = organizationUnitRepository.findByIdIgnoreCase(OUId);
-					if (ouRecipient.isEmpty()) {
-						return HttpStatus.BAD_REQUEST;
-
-					}
-					ouMessageRecipients.add(ouRecipient.get());
-				}
-			} else {
-				Optional<CampaignDB> camp = campaignRepository.findByIdIgnoreCase(recipient);
-				if (camp.isPresent()) {
-					campaignMessageRecipients.add(camp.get());
-					interviewerMessageRecipients.addAll(
-							interviewerRepository.findInterviewersWorkingOnCampaign(camp.get().getId(), userOUIds));
-				} else {
-					String errMsg = String.format("Campaign message recipient %s was not found in database", recipient);
-					log.error(errMsg);
-					return HttpStatus.BAD_REQUEST;
-				}
-
-			}
-
-		}
-
-		List<InterviewerDB> uniqueInterviwerRecipients = interviewerMessageRecipients.stream()
-				.collect(collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(InterviewerDB::getId))),
-						ArrayList::new));
-		message.setOuMessageRecipients(ouMessageRecipients);
-		message.setCampaignMessageRecipients(campaignMessageRecipients);
-
-		for (InterviewerDB recipient : uniqueInterviwerRecipients) {
-			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
-			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
-					"new message");
-		}
-
-		for (OrganizationUnitDB recipient : ouMessageRecipients) {
-			log.info("push to '{}' ", NOTIFICATIONS.concat(recipient.getId().toUpperCase()));
-			this.brokerMessagingTemplate.convertAndSend(NOTIFICATIONS.concat(recipient.getId().toUpperCase()),
-					"new message");
-		}
-
-		messageRepository.save(message);
-		return HttpStatus.OK;
-	}
-
 	public List<MessageDto> getMessages(String interviewerId) {
 		List<Long> ids = messageRepository.getMessageIdsByInterviewer(interviewerId);
 		List<OrganizationUnitDto> userOUs = userService.getUserOUs(interviewerId, true);
@@ -192,48 +121,15 @@ public class MessageServiceImpl implements MessageService {
 		}
 		return messages;
 	}
-
-	public List<MessageDto> getMessageHistory(String userId) {
-		List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
-		List<Long> messageIds = messageRepository.getAllOrganizationMessagesIds(userOUIds);
-
-		List<MessageDto> messages = messageRepository.findMessagesDtoByIds(messageIds);
-		for (MessageDto message : messages) {
-			List<VerifyNameResponseDto> recipients = messageRepository.getCampaignRecipients(message.getId());
-
-			recipients.addAll(
-					messageRepository.getOuRecipients(message.getId()));
-
-			message.setTypedRecipients(recipients);
-
-		}
-
-		return messages;
-	}
-
-	public List<VerifyNameResponseDto> verifyName(String text, String userId) {
-        List<String> userOUIds = userService.getUserOUs(userId, true)
-				.stream().map(OrganizationUnitDto::getId).collect(Collectors.toList());
-		Pageable topFifteen = PageRequest.of(0, 15);
-
-        List<VerifyNameResponseDto> returnValue = new ArrayList<>(campaignRepository.findMatchingCampaigns(text, userOUIds, System.currentTimeMillis(), topFifteen));
-
-		return returnValue.stream()
-				.collect(
-						collectingAndThen(
-								toCollection(() -> new TreeSet<>(Comparator.comparing(VerifyNameResponseDto::id))),
-								ArrayList::new));
-	}
-
+	
 	@Override
 	@Transactional
 	public void deleteMessageByUserId(String userId) {
 		List<MessageDB> lstMessage = messageRepository.findAllBySenderId(userId);
-		lstMessage.stream().forEach(msg -> {
+		lstMessage.forEach(msg -> {
 			messageRepository.deleteCampaignMessageRecipientByMessageId(msg.getId());
 			messageRepository.deleteOUMessageRecipientByMessageId(msg.getId());
-			msg.getMessageStatus().stream().forEach(messageStatusRepository::delete);
+			msg.getMessageStatus().forEach(messageStatusRepository::delete);
 		});
 		messageRepository.deleteAll(lstMessage);
 	}

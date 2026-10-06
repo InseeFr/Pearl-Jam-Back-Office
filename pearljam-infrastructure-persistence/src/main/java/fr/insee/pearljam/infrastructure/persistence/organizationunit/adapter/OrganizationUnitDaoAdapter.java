@@ -1,7 +1,6 @@
 package fr.insee.pearljam.infrastructure.persistence.organizationunit.adapter;
 
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
@@ -42,28 +41,13 @@ public class OrganizationUnitDaoAdapter implements OrganizationUnitRepository {
     }
 
     @Override
-    public List<OrganizationUnitDB> findChildren(String orgUnitId) {
-        return organizationUnitJpaRepository.findChildren(orgUnitId);
-    }
-
-    @Override
     public List<String> findAllId() {
         return organizationUnitJpaRepository.findAllId();
     }
 
     @Override
-    public String findLabel(String orgUnitId) {
-        return organizationUnitJpaRepository.findLabel(orgUnitId);
-    }
-
-    @Override
     public List<OrganizationUnitDB> findSubtree(String rootId) {
         return organizationUnitJpaRepository.findSubtree(rootId);
-    }
-
-    @Override
-    public List<OrganizationUnitLabel> findLabelsByIds(List<String> ids) {
-        return organizationUnitJpaRepository.findLabelsByIds(ids);
     }
 
     @Override

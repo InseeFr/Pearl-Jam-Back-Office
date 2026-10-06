@@ -2,10 +2,8 @@ package fr.insee.pearljam.domain.campaign.port.out;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.List;
@@ -45,6 +43,4 @@ public interface CampaignRepository {
     void delete(CampaignDB campaign);
 
     List<String> findAllOrganistionUnitIdByCampaignId(String campaignId);
-
-    List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable);
 }

@@ -143,20 +143,6 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public CountDto getNbSUAbandonedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
-        int nbSUAbandoned = 0;
-        userService.checkUserAssociationToCampaign(campaignId, userId);
-        return new CountDto(nbSUAbandoned);
-    }
-
-    @Override
-    public CountDto getNbSUNotAttributedByCampaign(String userId, String campaignId) throws CampaignNotFoundException {
-        int nbSUNotAttributed = 0;
-        userService.checkUserAssociationToCampaign(campaignId, userId);
-        return new CountDto(nbSUNotAttributed);
-    }
-
-    @Override
     public void createCampaign(CampaignCreateDto campaignDto)
             throws CampaignAlreadyExistException, OrganizationalUnitNotFoundException, VisibilityHasInvalidDatesException {
 
@@ -290,9 +276,9 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public boolean isCampaignOngoing(String campaignId) throws CampaignNotFoundException {
+    public boolean isCampaignOngoing(String campaignId) {
         CampaignDB campaign = findById(campaignId)
-                .orElseThrow(CampaignNotFoundException::new);
+                .orElseThrow(CampaignNotFoundExceptionRuntime::new);
         List<Visibility> visibilities = visibilityService.findVisibilities(campaign.getId());
         return visibilities.stream()
                 .anyMatch(visibility -> visibility.endDate() > dateService.getCurrentTimestamp());
@@ -352,20 +338,21 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException {
+    public List<CampaignCommonsDto> findCampaignsCommonsOngoing() {
         List<CampaignCommonsDto> campaignsCommonsOngoing = new ArrayList<>();
         List<CampaignDB> campaigns = campaignRepository.findAll();
-        for (CampaignDB campaign : campaigns) {
-            if (isCampaignOngoing(campaign.getId())) {
+        campaigns.forEach(c -> {
+            if (isCampaignOngoing(c.getId())) {
                 campaignsCommonsOngoing.add(new CampaignCommonsDto(
-                        campaign.getId(),
-                        campaign.getId(),
+                        c.getId(),
+                        c.getId(),
                         "LUNATIC_NORMAL",
-                        campaign.getSensitivity(),
-                        campaign.getContactAttemptConfiguration().name())
+                        c.getSensitivity(),
+                        c.getContactAttemptConfiguration().name())
                 );
             }
         }
+            );
         return campaignsCommonsOngoing;
     }
 

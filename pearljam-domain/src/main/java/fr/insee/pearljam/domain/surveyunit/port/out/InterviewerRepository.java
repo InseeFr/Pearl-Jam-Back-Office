@@ -12,8 +12,6 @@ public interface InterviewerRepository {
 
     Optional<InterviewerDB> findById(String interviewerId);
 
-    List<InterviewerDB> findInterviewersWorkingOnCampaign(String campaignId, List<String> ouIds);
-
     List<InterviewerDB> findInterviewersByOrganizationUnits(List<String> ouIds);
 
     Set<String> findIdsByOrganizationUnitsAndCampaignId(List<String> ouIds, List<String> campaignIds);

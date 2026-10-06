@@ -1,7 +1,6 @@
 package fr.insee.pearljam.infrastructure.persistence.message.adapter;
 
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.domain.message.port.out.MessageRepository;
 import fr.insee.pearljam.infrastructure.persistence.message.jpa.MessageJpaRepository;
@@ -14,7 +13,7 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class MessageDaoAdapter implements MessageRepository {
-    private final MessageJpaRepository messageJpaRepository;
+private final MessageJpaRepository messageJpaRepository;
 
     @Override
     public Optional<MessageDB> findById(Long id) {
@@ -44,21 +43,6 @@ public class MessageDaoAdapter implements MessageRepository {
     @Override
     public List<String> getMessageStatus(Long messageId, String interviewerId) {
         return messageJpaRepository.getMessageStatus(messageId, interviewerId);
-    }
-
-    @Override
-    public List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds) {
-        return messageJpaRepository.getAllOrganizationMessagesIds(organizationUnitIds);
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getCampaignRecipients(Long messageId) {
-        return messageJpaRepository.getCampaignRecipients(messageId);
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getOuRecipients(Long messageId) {
-        return messageJpaRepository.getOuRecipients(messageId);
     }
 
     @Override

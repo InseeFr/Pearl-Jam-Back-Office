@@ -2,12 +2,10 @@ package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import lombok.Getter;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -110,11 +108,6 @@ public class CampaignFakeRepository implements CampaignRepository {
 
     @Override
     public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) {
-        return List.of();
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) {
         return List.of();
     }
 

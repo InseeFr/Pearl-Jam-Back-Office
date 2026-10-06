@@ -1,7 +1,7 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.domain.campaign.port.in.VisibilityService;
-import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundException;
+import fr.insee.pearljam.domain.campaign.service.exception.CampaignNotFoundExceptionRuntime;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityHasInvalidDatesException;
 import fr.insee.pearljam.domain.campaign.service.exception.VisibilityNotFoundException;
 import fr.insee.pearljam.domain.campaign.service.model.Visibility;
@@ -26,9 +26,9 @@ public class VisibilityFakeService implements VisibilityService {
     private final List<Visibility> visibilities = new ArrayList<>();
 
     @Override
-    public List<Visibility> findVisibilities(String campaignId) throws CampaignNotFoundException {
+    public List<Visibility> findVisibilities(String campaignId) {
         if (shouldThrowCampaignNotFoundException) {
-            throw new CampaignNotFoundException();
+            throw new CampaignNotFoundExceptionRuntime();
         }
         return visibilities;
     }
@@ -58,9 +58,5 @@ public class VisibilityFakeService implements VisibilityService {
 
     public void save(Visibility visibility) {
         visibilities.add(visibility);
-    }
-
-    public void clearVisibilities() {
-        visibilities.clear();
     }
 }

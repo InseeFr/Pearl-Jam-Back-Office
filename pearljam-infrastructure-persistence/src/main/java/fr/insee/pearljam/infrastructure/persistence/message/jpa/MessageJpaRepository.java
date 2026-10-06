@@ -2,7 +2,6 @@ package fr.insee.pearljam.infrastructure.persistence.message.jpa;
 
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -57,24 +56,6 @@ public interface MessageJpaRepository extends JpaRepository<MessageDB, Long> {
 			+ "where message_id = ?1 "
 		    + "and interviewer_id = ?2", nativeQuery=true)
 	List<String> getMessageStatus(Long messageId, String interviewerId);
-	
-	
-	@Query("SELECT new fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto(camp.id,  'campaign', camp.label) "
-			  + "FROM CampaignMessageRecipientDB cmr "
-			  + "INNER JOIN CampaignDB camp "
-			  + "ON camp.id = cmr.campaign.id "
-			  + "WHERE cmr.message.id = :messageId ")
-	List<VerifyNameResponseDto> getCampaignRecipients(@Param("messageId") Long messageId);
-	
-	@Query("SELECT new fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto(ou.id,  'organization', ou.label) "
-			  + "FROM OUMessageRecipientDB oumr "
-			  + "INNER JOIN OrganizationUnitDB ou "
-			  + "ON ou.id = oumr.organizationUnit.id "
-			  + "WHERE oumr.message.id = :messageId "
-			  + "AND NOT EXISTS (SELECT 1 FROM OUMessageRecipientDB oumr2 "
-			  + "WHERE oumr.organizationUnit.organizationUnitParent.id = oumr2.organizationUnit.id "
-			  + "AND oumr2.message.id=:messageId )")
-	List<VerifyNameResponseDto> getOuRecipients(@Param("messageId") Long messageId);
 
 	@Modifying
 	@Query(value="DELETE FROM campaign_message_recipient as cmr "

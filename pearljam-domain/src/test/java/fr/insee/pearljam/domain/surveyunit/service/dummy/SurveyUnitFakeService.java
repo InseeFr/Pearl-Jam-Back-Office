@@ -1,7 +1,5 @@
 package fr.insee.pearljam.domain.surveyunit.service.dummy;
 
-import fr.insee.pearljam.contracts.surveyunit.dto.closable.ClosableSurveyUnitDto;
-import fr.insee.pearljam.contracts.surveyunit.dto.state.StateDto;
 import fr.insee.pearljam.contracts.surveyunit.dto.surveyunit.*;
 import fr.insee.pearljam.domain.shared.model.Response;
 import fr.insee.pearljam.domain.surveyunit.model.StateType;
@@ -54,17 +52,7 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     }
 
     @Override
-    public List<StateDto> getListStatesBySurveyUnitId(String suId) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
     public SurveyUnitDB getSurveyUnit(String surveyUnitId) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
-    public List<ClosableSurveyUnitDto> getClosableSurveyUnits(String userId) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -75,11 +63,6 @@ public class SurveyUnitFakeService implements SurveyUnitService {
 
     @Override
     public HttpStatus closeSurveyUnit(String surveyUnitId, ClosingCauseType closingCause) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
-    @Override
-    public HttpStatus updateClosingCause(String surveyUnitId, ClosingCauseType closingCause) {
         throw new IllegalArgumentException("not implemented yet");
     }
 
@@ -146,11 +129,6 @@ public class SurveyUnitFakeService implements SurveyUnitService {
     @Override
     public List<SurveyUnitInterviewerResponseDto> getSurveyUnitsDetails(List<String> surveyUnitIds) {
         return List.of();
-    }
-
-    @Override
-    public HttpStatus addStateToSurveyUnit(String surveyUnitId, StateType state) {
-        return null;
     }
 
     @Override

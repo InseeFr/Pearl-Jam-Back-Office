@@ -1,7 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.contracts.organizationunit.dto.OrganizationUnitDto;
-import fr.insee.pearljam.domain.surveyunit.model.count.OrganizationUnitLabel;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.domain.organizationunit.port.out.OrganizationUnitRepository;
 import lombok.Setter;
@@ -41,18 +40,8 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
     }
 
     @Override
-    public List<OrganizationUnitDB> findChildren(String orgUnitId) {
-        return List.of();
-    }
-
-    @Override
     public List<String> findAllId() {
         return organizationUnits.stream().map(OrganizationUnitDB::getId).toList();
-    }
-
-    @Override
-    public String findLabel(String orgUnitId) {
-        return findById(orgUnitId).map(OrganizationUnitDB::getLabel).orElse("");
     }
 
     @Override
@@ -60,10 +49,6 @@ public class OrganizationUnitFakeRepository implements OrganizationUnitRepositor
         return List.of();
     }
 
-    @Override
-    public List<OrganizationUnitLabel> findLabelsByIds(List<String> ids) {
-        return List.of();
-    }
 
     @Override
     public OrganizationUnitDB save(OrganizationUnitDB organizationUnit) {

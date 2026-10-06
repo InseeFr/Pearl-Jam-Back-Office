@@ -10,7 +10,6 @@ import fr.insee.pearljam.domain.surveyunit.model.StateType;
 import fr.insee.pearljam.domain.surveyunit.readmodel.SurveyUnitToReview;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
-import fr.insee.pearljam.infrastructure.persistence.contactoutcome.jpa.ContactOutcomeJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.entity.OrganizationUnitDB;
 import fr.insee.pearljam.infrastructure.persistence.organizationunit.jpa.OrganizationUnitJpaRepository;
 import fr.insee.pearljam.infrastructure.persistence.surveyunit.adapter.CommentDaoAdapter;
@@ -62,9 +61,6 @@ class SurveyUnitToReviewDaoAdapterTest {
 
     @Autowired
     private StateJpaRepository stateRepository;
-
-    @Autowired
-    private ContactOutcomeJpaRepository contactOutcomeRepository;
 
     @Autowired
     private CommentDaoAdapter commentDaoAdapter;

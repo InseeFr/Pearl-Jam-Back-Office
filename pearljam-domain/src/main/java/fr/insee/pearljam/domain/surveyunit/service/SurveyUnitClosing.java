@@ -15,7 +15,6 @@ import fr.insee.pearljam.domain.surveyunit.port.out.StateRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.SurveyUnitRepository;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitCandidateView;
 import fr.insee.pearljam.domain.surveyunit.port.out.view.ClosableSurveyUnitView;
-import fr.insee.pearljam.domain.surveyunit.service.exception.ClosingCauseAlreadyExistsException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotClosableException;
 import fr.insee.pearljam.domain.surveyunit.service.exception.SurveyUnitNotFoundException;
 import jakarta.annotation.Nullable;
@@ -147,16 +146,6 @@ public class SurveyUnitClosing implements SurveyUnitClosingPort {
         if (!missingSurveyUnits.isEmpty()) {
             log.info("Missing survey units to close {}", missingSurveyUnits);
             throw new SurveyUnitNotFoundException(String.join(", ", missingSurveyUnits));
-        }
-    }
-
-    void validateNoExistingClosingCause(List<String> surveyUnitIds) {
-        List<String> alreadyWithClosingCause =
-            closingCauseRepository.findSurveyUnitIdsWithClosingCause(surveyUnitIds);
-
-        if (!alreadyWithClosingCause.isEmpty()) {
-            log.info("Closing cause already exist on survey units {}", alreadyWithClosingCause);
-            throw new ClosingCauseAlreadyExistsException(String.join(", ", alreadyWithClosingCause));
         }
     }
 

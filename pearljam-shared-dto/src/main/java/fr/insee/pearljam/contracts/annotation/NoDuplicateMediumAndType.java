@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoDuplicateMediumAndType {
     String message() default "Some communication configurations have same type and medium, that should not be possible";
+    //do not delete or it breaks tests
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

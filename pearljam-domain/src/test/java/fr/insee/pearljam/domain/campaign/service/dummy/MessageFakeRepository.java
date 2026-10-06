@@ -1,7 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service.dummy;
 
 import fr.insee.pearljam.contracts.message.dto.MessageDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.infrastructure.persistence.message.entity.MessageDB;
 import fr.insee.pearljam.domain.message.port.out.MessageRepository;
 
@@ -36,21 +35,6 @@ public class MessageFakeRepository implements MessageRepository {
 
     @Override
     public List<String> getMessageStatus(Long messageId, String interviewerId) {
-        return List.of();
-    }
-
-    @Override
-    public List<Long> getAllOrganizationMessagesIds(List<String> organizationUnitIds) {
-        return List.of();
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getCampaignRecipients(Long messageId) {
-        return List.of();
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> getOuRecipients(Long messageId) {
         return List.of();
     }
 

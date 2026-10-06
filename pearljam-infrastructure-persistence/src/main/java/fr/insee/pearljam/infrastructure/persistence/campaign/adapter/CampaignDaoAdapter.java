@@ -2,14 +2,12 @@ package fr.insee.pearljam.infrastructure.persistence.campaign.adapter;
 
 import fr.insee.pearljam.contracts.campaign.dto.CampaignDto;
 import fr.insee.pearljam.contracts.campaign.dto.CampaignPreferenceDto;
-import fr.insee.pearljam.contracts.message.dto.VerifyNameResponseDto;
 import fr.insee.pearljam.domain.campaign.port.out.CampaignRepository;
 import fr.insee.pearljam.domain.campaign.readmodel.CampaignSummary;
 import fr.insee.pearljam.infrastructure.persistence.campaign.entity.CampaignDB;
 import fr.insee.pearljam.infrastructure.persistence.campaign.jpa.CampaignJpaRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -107,10 +105,5 @@ public class CampaignDaoAdapter implements CampaignRepository {
     @Override
     public List<String> findAllOrganistionUnitIdByCampaignId(String campaignId) {
         return campaignJpaRepository.findAllOrganistionUnitIdByCampaignId(campaignId);
-    }
-
-    @Override
-    public List<VerifyNameResponseDto> findMatchingCampaigns(String text, List<String> ouIds, Long date, Pageable pageable) {
-        return campaignJpaRepository.findMatchingCampaigns(text, ouIds, date, pageable);
     }
 }
