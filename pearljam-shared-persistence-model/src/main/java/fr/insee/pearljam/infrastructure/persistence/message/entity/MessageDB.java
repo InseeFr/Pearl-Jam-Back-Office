@@ -48,6 +48,11 @@ public class MessageDB implements Serializable {
 	private UserDB sender;
 
 	/**
+	 * The date of the Message (epoch millis)
+	 */
+	private Long date;
+
+	/**
 	 * The List of campaign for the Interviewer
 	 */
 	@ManyToMany
