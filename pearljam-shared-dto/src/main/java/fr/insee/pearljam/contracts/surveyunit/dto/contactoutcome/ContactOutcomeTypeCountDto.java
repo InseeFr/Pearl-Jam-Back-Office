@@ -45,43 +45,4 @@ public class ContactOutcomeTypeCountDto {
   private Long noaCount;
 
   private Long total;
-
-	public ContactOutcomeTypeCountDto(Map<String, Long> obj) {
-		dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
-	}
-
-  public ContactOutcomeTypeCountDto(Map<String, Long> obj, CampaignDto campaign) {
-    this.campaign = campaign;
-    dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
-  }
-
-  public ContactOutcomeTypeCountDto(String idDem, String labelDem, Map<String, Long> obj) {
-    this(obj);
-    this.idDem = idDem;
-    this.labelDem = labelDem;
-    dispatchAttributeValues(obj, CONTACT_OUTCOME_FIELDS);
-  }
-
-  @SuppressWarnings("null") // to refactor with typed input
-  private void dispatchAttributeValues(Map<String, Long> obj, List<String> fieldKeys) {
-    boolean nullOrEmpty = (obj == null || obj.isEmpty());
-    for (String str : fieldKeys) {
-      if (nullOrEmpty) {
-        setLongField(str, 0L);
-      } else {
-        setLongField(str, Optional.ofNullable(obj.get(str)).orElse(0L));
-      }
-    }
-  }
-
-  private void setLongField(String fieldName, Long value) {
-    try {
-      Field field = getClass().getDeclaredField(fieldName);
-      field.set(this, value);
-    } catch (NoSuchFieldException | SecurityException | IllegalArgumentException |
-             IllegalAccessException e) {
-      throw new IllegalStateException("Couldn't set field " + fieldName + " with value " + value, e);
-    }
-  }
-
 }
