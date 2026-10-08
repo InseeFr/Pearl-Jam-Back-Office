@@ -166,6 +166,11 @@ public class CampaignFakeService implements CampaignService {
     }
 
     @Override
+    public List<CampaignCommonsDto> findCampaignsCommons() {
+        return List.of();
+    }
+
+    @Override
     public PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException {
         if (shouldThrowCampaignNotFoundException) {
             throw new CampaignNotFoundException();
