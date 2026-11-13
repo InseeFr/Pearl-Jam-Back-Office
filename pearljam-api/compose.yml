@@ -1,6 +1,6 @@
 services:
   pearl-db:
-    image: postgres:14.24@sha256:156f0b253fd61366d5fc2107ad45955027d5612f695a8436ce20167f3fa79bff
+    image: postgres:14.25@sha256:9c8a7df7224219e4fa32bb93f4dea665c5b3f322cb443a849bd92eec79af8b81
     profiles:
       - all
       - db
