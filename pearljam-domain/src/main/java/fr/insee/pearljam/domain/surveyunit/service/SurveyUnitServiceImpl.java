@@ -326,14 +326,6 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 	private void processIncomingStates(SurveyUnitDB surveyUnit, List<StateDto> incomingStates) {
 		long currentTime = dateService.getCurrentTimestamp();
 		int offsetMs = 1;
-
-		incomingStates.forEach(s -> {
-			if (s.date() == null) {
-				throw new IllegalArgumentException(
-						"State with id=%s has a null date".formatted(s.id()));
-			}
-		});
-
 		Set<Long> incomingIds = incomingStates.stream()
 				.map(StateDto::id)
 				.filter(Objects::nonNull)
@@ -350,12 +342,19 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 
 		for (StateDto s : newStates)
 		{
-			long stateDate = s.date();
-			long adjustedDate = stateDate > currentTime
-					? currentTime - offsetMs++
-					: stateDate;
-			StateDB stateToSave = new StateDB(adjustedDate, surveyUnit, s.type());
-			stateToSave.setId(s.id());
+			Long date = s.date();
+			if(date != null && date > currentTime)
+			{
+				date = currentTime - offsetMs++;
+			}
+
+			StateDB stateToSave = new StateDB(date, surveyUnit, s.type());
+
+			if(s.id() != null)
+			{
+				stateToSave.setId(s.id());
+			}
+
 			stateRepository.save(stateToSave);
 		}
 	}
