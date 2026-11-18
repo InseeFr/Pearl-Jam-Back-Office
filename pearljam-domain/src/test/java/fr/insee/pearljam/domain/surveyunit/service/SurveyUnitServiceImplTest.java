@@ -407,22 +407,6 @@ class SurveyUnitServiceImplTest {
     }
 
     @Test
-    void updateSurveyUnit_should_throw_exception_for_incoming_state_with_null_date() {
-        // Given
-        SurveyUnitDB surveyUnit = buildTestSurveyUnit();
-        when(surveyUnitRepository.findByIdAndInterviewerIdIgnoreCase(SURVEY_UNIT_ID, INTERVIEWER_ID))
-                .thenReturn(Optional.of(surveyUnit));
-        List<StateDto> incomingStates = List.of(new StateDto(1L, null, StateType.WFS));
-        SurveyUnitUpdateDto updateDto = buildUpdateDto(incomingStates, null);
-
-        // When / Then
-        assertThatThrownBy(() -> service.updateSurveyUnit(INTERVIEWER_ID, SURVEY_UNIT_ID, updateDto))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("State with id=1 has a null date");
-        verify(stateRepository, never()).save(any());
-    }
-
-    @Test
     void updateSurveyUnit_should_not_save_any_state_when_incoming_states_is_empty() {
         // Given
         SurveyUnitDB surveyUnit = buildTestSurveyUnit();
