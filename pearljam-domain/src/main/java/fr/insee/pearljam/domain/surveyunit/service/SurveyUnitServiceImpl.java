@@ -349,12 +349,7 @@ public class SurveyUnitServiceImpl implements SurveyUnitService {
 			}
 
 			StateDB stateToSave = new StateDB(date, surveyUnit, s.type());
-
-			if(s.id() != null)
-			{
-				stateToSave.setId(s.id());
-			}
-
+			stateToSave.setId(s.id());
 			stateRepository.save(stateToSave);
 		}
 	}
