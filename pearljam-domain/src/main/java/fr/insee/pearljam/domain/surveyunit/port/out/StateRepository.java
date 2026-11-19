@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface StateRepository {
     StateDto findFirstDtoBySurveyUnitOrderByDateDesc(SurveyUnitDB surveyUnit);
@@ -33,6 +34,8 @@ public interface StateRepository {
     List<StateCount> findGroupedByOu(String campaignId, List<String> ouIds, Long dateToUse);
 
     boolean existsById(Long id);
+
+    List<StateDB> findAllByIds(Set<Long> ids);
 
     StateDB save(StateDB state);
 
