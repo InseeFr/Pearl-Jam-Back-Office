@@ -120,15 +120,15 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public List<CampaignModel> getUserCampaignsForSpecificPhase(String userId, CampaignPhase campaignPhase) {
         List<String> organizationUnitIds = userService
-            .getUserOUs(userId, true)
-            .stream()
-            .map(OrganizationUnitDto::getId)
-            .toList();
+                .getUserOUs(userId, true)
+                .stream()
+                .map(OrganizationUnitDto::getId)
+                .toList();
 
         Long currentTimestamp = dateService.getCurrentTimestamp();
 
         List<CampaignVisibility> userCampaigns = campaignVisibilityPort
-            .findCampaignsWithVisibilityByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
+                .findCampaignsWithVisibilityByUserAndManagementVisibility(organizationUnitIds, userId, currentTimestamp);
 
         List<CampaignVisibility> campaignsFilteredForPhase = userCampaigns.stream().filter(c -> CampaignPhase.fromDates(
                 dateService.getCurrentTimestamp(),
@@ -367,6 +367,22 @@ public class CampaignServiceImpl implements CampaignService {
             }
         }
         return campaignsCommonsOngoing;
+    }
+
+    @Override
+    public List<CampaignCommonsDto> findCampaignsCommons() {
+        List<CampaignCommonsDto> campaignsCommons = new ArrayList<>();
+        List<CampaignDB> campaigns = campaignRepository.findAll();
+        for (CampaignDB campaign : campaigns) {
+            campaignsCommons.add(new CampaignCommonsDto(
+                    campaign.getId(),
+                    campaign.getId(),
+                    "LUNATIC_NORMAL",
+                    campaign.getSensitivity(),
+                    campaign.getContactAttemptConfiguration().name())
+            );
+        }
+        return campaignsCommons;
     }
 
     @Override

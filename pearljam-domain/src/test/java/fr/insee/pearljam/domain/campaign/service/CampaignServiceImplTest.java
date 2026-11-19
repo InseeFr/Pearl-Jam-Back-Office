@@ -1,5 +1,6 @@
 package fr.insee.pearljam.domain.campaign.service;
 
+import fr.insee.pearljam.contracts.campaign.dto.CampaignCommonsDto;
 import fr.insee.pearljam.contracts.campaign.dto.input.*;
 import fr.insee.pearljam.domain.campaign.CampaignModel;
 import fr.insee.pearljam.domain.campaign.model.ContactAttemptConfiguration;
@@ -367,7 +368,37 @@ class CampaignServiceImplTest {
         assertThat(result).isEmpty();
     }
 
+    @Test
+    @DisplayName("Should return a commons DTO for every campaign")
+    void shouldReturnCommonsDtoForEveryCampaign() {
+        CampaignDB secondCampaign = new CampaignDB(
+                "CAMPAIGN-ID-2",
+                "label-campaign-2",
+                IdentificationConfiguration.HOUSEF2F,
+                ContactOutcomeConfiguration.F2F,
+                ContactAttemptConfiguration.TEL,
+                "email2@email.com",
+                false,
+                false);
+        campaignRepository.addCampaign(secondCampaign);
 
+        List<CampaignCommonsDto> result = campaignService.findCampaignsCommons();
+
+        assertThat(result).containsExactlyInAnyOrder(
+                new CampaignCommonsDto(existingCampaign.getId(), existingCampaign.getId(), "LUNATIC_NORMAL",
+                        existingCampaign.getSensitivity(), existingCampaign.getContactAttemptConfiguration().name()),
+                new CampaignCommonsDto(secondCampaign.getId(), secondCampaign.getId(), "LUNATIC_NORMAL",
+                        secondCampaign.getSensitivity(), secondCampaign.getContactAttemptConfiguration().name())
+        );
+    }
+
+    @Test
+    @DisplayName("Should return an empty list of commons campaigns when there are no campaigns")
+    void shouldReturnEmptyListOfCommonsWhenNoCampaignsExist() {
+        campaignRepository.delete(existingCampaign);
+
+        assertThat(campaignService.findCampaignsCommons()).isEmpty();
+    }
 
         @Test
         @DisplayName("Should filter campaigns by phase and return only matching ones")

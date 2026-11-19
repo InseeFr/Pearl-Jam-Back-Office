@@ -77,5 +77,7 @@ public interface CampaignService {
 
     List<CampaignCommonsDto> findCampaignsCommonsOngoing() throws CampaignNotFoundException;
 
+    List<CampaignCommonsDto> findCampaignsCommons();
+
     PortalDataDto findCampaignPortalData(String campaignId, String userId) throws CampaignNotFoundException;
 }

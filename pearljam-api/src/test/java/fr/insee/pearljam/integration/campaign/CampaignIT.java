@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles(profiles = {"auth", "test"})
@@ -411,6 +413,82 @@ class CampaignIT {
         String contentResult = mvcResult.getResponse().getContentAsString();
 
         JSONAssert.assertEquals(expectedCampaigns, contentResult, true);
+    }
+
+    @Test
+    @DisplayName("Should retrieve all commons campaigns, including closed ones")
+    void testGetAllCommonsCampaigns() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(Constants.API_CAMPAIGNS_COMMONS)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expectedCampaigns =
+                """
+                [
+                    {
+                        "id":"SIMPSONS2020X00",
+                        "campaignId":"SIMPSONS2020X00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "sensitivity":false,
+                        "collectMode":"F2F"
+                     },
+                     {
+                        "id":"VQS2021X00",
+                        "campaignId":"VQS2021X00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "sensitivity":false,
+                        "collectMode":"TEL"
+                    },
+                    {
+                        "id":"ZCLOSEDX00",
+                        "campaignId":"ZCLOSEDX00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "sensitivity":false,
+                        "collectMode":"F2F"
+                    },
+                    {
+                        "id":"XCLOSEDX00",
+                        "campaignId":"XCLOSEDX00",
+                        "dataCollectionTarget":"LUNATIC_NORMAL",
+                        "sensitivity":false,
+                        "collectMode":"TEL"
+                    }
+                ]
+                """;
+
+        String contentResult = mvcResult.getResponse().getContentAsString();
+
+        JSONAssert.assertEquals(expectedCampaigns, contentResult, true);
+    }
+
+    @Test
+    @DisplayName("Should retrieve an empty list when there are no campaigns")
+    @Sql(value = ScriptConstants.REINIT_SQL_SCRIPT, executionPhase = AFTER_TEST_METHOD)
+    void testGetAllCommonsCampaignsWhenNoCampaignExists() throws Exception {
+        for (String campaignId : List.of("SIMPSONS2020X00", "VQS2021X00", "ZCLOSEDX00", "XCLOSEDX00")) {
+            mockMvc.perform(delete("/api/campaign/" + campaignId)
+                            .param("force", "true")
+                            .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
+
+        mockMvc.perform(get(Constants.API_CAMPAIGNS_COMMONS)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    @DisplayName("Should return forbidden when user does not have the required role")
+    void testGetAllCommonsCampaignsWithoutRequiredRole() throws Exception {
+        mockMvc.perform(get(Constants.API_CAMPAIGNS_COMMONS)
+                        .with(authentication(AuthenticatedUserTestHelper.AUTH_INTERVIEWER))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     private void assertVisibility(VisibilityDB visibilityToCheck, String campaignId, String organizationUnitId,
